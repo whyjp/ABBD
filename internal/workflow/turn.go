@@ -131,12 +131,24 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		Time:         now(),
 	}
 	w.s.Changes[chg.ID] = chg
-	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID, Scope: model.ScopeChange}
-	if intent.IsProjectRule(request) {
-		req.Scope, req.Auto = model.ScopeProject, true
+	// The requirement is the user's own words when the host captured them; the agent's request
+	// text is only the summary of the turn.
+	stated := request
+	if p := strings.TrimSpace(w.s.State.UserPrompt); p != "" {
+		stated = p
+		w.s.State.UserPrompt, w.s.State.UserPromptAt = "", ""
 	}
+	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(stated, model.UserStated), Change: chg.ID, Scope: model.ScopeChange}
 	w.s.Requirements[req.ID] = req
 	chg.Intends = []string{req.ID}
+	for _, sentence := range intent.RuleSentences(stated) {
+		if hasRule(w.s, sentence) {
+			continue
+		}
+		rule := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(sentence, model.UserStated), Change: chg.ID, Scope: model.ScopeProject, Auto: true}
+		w.s.Requirements[rule.ID] = rule
+		chg.Intends = append(chg.Intends, rule.ID)
+	}
 	chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, rework.IntentDelta.Additions...)
 	markConsumed(w.s, chg.ID)
 	plan.Requirement = req.ID
@@ -182,6 +194,15 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		plan.StandingRules = append(plan.StandingRules, rule.ID+": "+rule.Statement.Value)
 	}
 	return plan, nil
+}
+
+func hasRule(s *ssot.Snapshot, text string) bool {
+	for _, r := range knowledge.StandingRules(s) {
+		if intent.SameRule(r.Statement.Value, text) {
+			return true
+		}
+	}
+	return false
 }
 
 // readFirst: the blueprint page, then the md originals of the matched targets.

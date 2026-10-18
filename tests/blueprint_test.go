@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/workflow"
 )
 
 // The agent's context is the current blueprint; per-request history stays out of it.
@@ -139,5 +141,32 @@ func TestStoredRunIsReadableThroughInspect(t *testing.T) {
 	id := str(list(ev, "runs")[0], "id")
 	if got := p.ok("inspect", id); str(got, "id") != id || str(got, "command") == "" {
 		t.Fatalf("inspect run-... returns the stored run: %v", got)
+	}
+}
+
+func TestUserWordsAndEveryRuleSentenceAreRecorded(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	e, _ := workflow.New(p.dir)
+	prompt := "Add GET /routes. Every route the server serves, including ones added later, must appear in GET /routes. Also ids are case-insensitive everywhere in the service."
+	if err := e.NotePrompt(prompt); err != nil {
+		t.Fatal(err)
+	}
+	plan := p.ok("run", "add routes endpoint")
+	req := p.ok("inspect", str(plan, "requirement"))
+	if str(req, "statement", "value") != prompt {
+		t.Fatalf("the requirement must be the user's words, not the agent's summary: %q", str(req, "statement", "value"))
+	}
+	rules := strings.Join(strs(p.ok("plan", "x"), "standing_rules"), " | ")
+	if !strings.Contains(rules, "Every route the server serves") || !strings.Contains(rules, "case-insensitive everywhere") {
+		t.Fatalf("each rule sentence becomes its own standing rule: %s", rules)
+	}
+	p.ok("turn", "abort")
+	if err := e.NotePrompt("Every route the server serves, including later ones, must appear in GET /routes."); err != nil {
+		t.Fatal(err)
+	}
+	p.ok("run", "again")
+	if n := strings.Count(strings.Join(strs(p.ok("plan", "x"), "standing_rules"), " | "), "must appear in GET /routes"); n != 1 {
+		t.Fatalf("the same rule stated twice is stored once, got %d", n)
 	}
 }

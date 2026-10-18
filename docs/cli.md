@@ -31,6 +31,7 @@ commands:
   abbd intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)
   abbd learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts
   abbd mcp (stdio MCP server)
+  abbd note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)
   abbd open-docs
   abbd plan "REQUEST"
   abbd policy classify --action ACTION
@@ -232,3 +233,11 @@ user's own; only then is it CONFIRMED, and only a user approval passes a tier C 
 decision file and the MCP decision tools are user channels.
 
 `run --tier` below the routed tier needs `--reason`, which is kept on the receipt.
+
+## The user's words
+
+The plugin's UserPromptSubmit hook runs `abbd note-prompt`, which keeps the user's last message verbatim.
+The next `abbd run` records that text, not the agent's request summary, as the USER_STATED requirement,
+and stores each sentence that states a project-wide rule as its own standing rule (a rule already in
+force with mostly the same words is not stored twice). Hosts without the hook fall back to the request
+text passed to `run`, so pass the user's words there.

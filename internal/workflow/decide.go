@@ -6,6 +6,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/html"
 	"github.com/whyjp/abbd/internal/impact"
+	"github.com/whyjp/abbd/internal/intent"
 	"github.com/whyjp/abbd/internal/knowledge"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/policy"
@@ -658,6 +659,11 @@ func (e *Engine) IntentRule(in IntentRuleInput) (*model.Requirement, error) {
 			return nil, fmt.Errorf("%s not found", in.Req)
 		}
 	case in.Claim != "":
+		for _, existing := range knowledge.StandingRules(w.s) {
+			if intent.SameRule(existing.Statement.Value, in.Claim) {
+				return existing, nil
+			}
+		}
 		r = &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(in.Claim, model.UserStated), Change: chg.ID}
 		w.s.Requirements[r.ID] = r
 		chg.Intends = append(chg.Intends, r.ID)

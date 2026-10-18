@@ -150,6 +150,61 @@ var ruleWords = []string{"항상", "모든 ", "어떤 경로", "어디서든", "
 // IsProjectRule reports whether a request reads as a standing rule.
 func IsProjectRule(request string) bool { return hasAny(strings.ToLower(request), ruleWords) }
 
+// RuleSentences returns the sentences of a message that state a project-wide rule, so one
+// message with several rules records each, and a rule buried in a feature request is kept.
+func RuleSentences(message string) []string {
+	var out []string
+	for _, s := range splitSentences(message) {
+		if IsProjectRule(s) {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+func splitSentences(s string) []string {
+	var out []string
+	var cur strings.Builder
+	runes := []rune(s)
+	for i, r := range runes {
+		cur.WriteRune(r)
+		end := r == '\n' || ((r == '.' || r == '!' || r == '?' || r == '。') && (i+1 == len(runes) || runes[i+1] == ' ' || runes[i+1] == '\n'))
+		if end {
+			if t := strings.TrimSpace(cur.String()); t != "" {
+				out = append(out, t)
+			}
+			cur.Reset()
+		}
+	}
+	if t := strings.TrimSpace(cur.String()); t != "" {
+		out = append(out, t)
+	}
+	return out
+}
+
+// SameRule: two rule texts that share most of their words are one rule stated twice.
+func SameRule(a, b string) bool {
+	ta, tb := Tokens(a), Tokens(b)
+	if len(ta) == 0 || len(tb) == 0 {
+		return false
+	}
+	set := map[string]bool{}
+	for _, t := range tb {
+		set[t] = true
+	}
+	common := 0
+	for _, t := range ta {
+		if set[t] {
+			common++
+		}
+	}
+	small := len(ta)
+	if len(tb) < small {
+		small = len(tb)
+	}
+	return float64(common) >= 0.7*float64(small)
+}
+
 var (
 	modificationWords = []string{"변경", "수정", "개선", "바꿔", "change", "update", "modify", "improve"}
 	addWords          = []string{"추가", "만들", "생성", "신규", "add", "new", "create", "implement", "구현", "지원"}

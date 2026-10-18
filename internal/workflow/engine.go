@@ -6,6 +6,7 @@ package workflow
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/whyjp/abbd/internal/analysis"
@@ -93,6 +94,20 @@ func (w *world) countGraphQuery() {
 		w.s.State.TurnGraphQueries++
 		_ = w.s.SaveState()
 	}
+}
+
+// NotePrompt stores the user's message verbatim for the next turn. It never fails the host: a
+// project without .abbd simply has nothing to record yet.
+func (e *Engine) NotePrompt(prompt string) error {
+	if !ssot.Exists(e.Root) || strings.TrimSpace(prompt) == "" {
+		return nil
+	}
+	s, err := ssot.Load(e.Root)
+	if err != nil {
+		return nil
+	}
+	s.State.UserPrompt, s.State.UserPromptAt = prompt, now()
+	return s.SaveState()
 }
 
 // Init is `abbd init`: bootstrap when there is no knowledge, otherwise a session start.

@@ -88,6 +88,10 @@ type State struct {
 	SSOTHash    string `yaml:"ssot_hash"`
 	SyncedAt    string `yaml:"synced_at"`
 	ActiveTurn  string `yaml:"active_turn,omitempty"`
+	// UserPrompt is the user's last message, verbatim, captured by the host's prompt hook. The
+	// next `abbd run` takes it as the USER_STATED requirement instead of the agent's summary.
+	UserPrompt   string `yaml:"user_prompt,omitempty"`
+	UserPromptAt string `yaml:"user_prompt_at,omitempty"`
 	// EngineHash is the md hash the engine last wrote; a different hash on load means the
 	// originals were edited by hand.
 	EngineHash string `yaml:"engine_hash,omitempty"`

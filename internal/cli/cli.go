@@ -61,6 +61,7 @@ var Commands = map[string]command{
 	"verification-plan": {"verification-plan", func(e *workflow.Engine, a []string) (any, error) { return e.VerificationPlan() }},
 	"mcp":               {"mcp (stdio MCP server)", runMCP},
 	"driver":            {"driver set FEAT-x|IF-x --run CMD --expect TEXT | driver list (user-level checks per entry point)", runDriver},
+	"note-prompt":       {"note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)", runNotePrompt},
 	"serve":             {"serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)", runServe},
 	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]", runReview},
 	"domain":            {"domain ... (reserved for Phase 3)", reserved("domain state layer (DOM/STATE/TRN/INV) is reserved for Phase 3; Phase 1 only reserves the ID prefixes")},
@@ -580,6 +581,17 @@ func runDriver(e *workflow.Engine, args []string) (any, error) {
 		return e.SetDriver(pos[0], *run, *expect)
 	}
 	return nil, errUsage
+}
+
+func runNotePrompt(e *workflow.Engine, args []string) (any, error) {
+	var in struct {
+		Prompt string `json:"prompt"`
+	}
+	b, _ := io.ReadAll(io.LimitReader(os.Stdin, 1<<20))
+	if json.Unmarshal(b, &in) != nil {
+		in.Prompt = string(b)
+	}
+	return nil, e.NotePrompt(in.Prompt)
 }
 
 func runServe(e *workflow.Engine, args []string) (any, error) {
