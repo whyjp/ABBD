@@ -17,15 +17,15 @@
 
 | 턴 단계 (PRD 04장) | skill | 주요 CLI 명령 | 산출물 / 게이트 |
 |---|---|---|---|
-| 0. Session bootstrap | session-bootstrap | `abbd status`, `abbd init [--preview]`, `abbd bootstrap`, `abbd reconcile`, `abbd review` | ProjectStateSnapshot, 지난 턴의 결정 대기 카드 수 |
-| 1. Route | session-bootstrap | `abbd run "REQUEST" [--type T] [--tier T0..T3]`, `abbd plan "REQUEST"` | WorkflowPlan + 검증 수준. `run`은 bootstrap과 외부 변경 재조정을 먼저 하고, 거부된 카드를 `rework`로 넘긴다 |
+| 0. Session bootstrap | session-bootstrap | `.abbd/BLUEPRINT.md`, `abbd status`, `abbd init [--preview]`, `abbd bootstrap`, `abbd reconcile`, `abbd review`, `abbd intent rule --claim TEXT` | ProjectStateSnapshot, 지난 턴의 결정 대기 카드 수, 사용자의 standing rule |
+| 1. Route | session-bootstrap | `abbd run "REQUEST" [--type T] [--tier T0..T3 [--reason TEXT]]`, `abbd plan "REQUEST"` | WorkflowPlan + 검증 수준 + `read_first` + `standing_rules`. `run`은 bootstrap과 외부 변경 재조정을 먼저 하고, 거부된 카드를 `rework`로 넘긴다. 수준을 낮추려면 `--reason`이 필요하다 |
 | 2. Understand current | understand-project | `abbd inspect ID`, `abbd graph neighbors ID`, `abbd graph trace`, `abbd contracts list`, `abbd decisions [QUERY]` | 근거 링크 있는 현재 상태 |
-| 3. Resolve intent | change-intent | `abbd intent delta`, `abbd intent feature`, `abbd intent invariant`, `abbd intent module`, `abbd intent contract`, `abbd decide`, `abbd decide --adr`, `abbd decisions`, `abbd confirm`, `abbd review CHG-x` | IntentDelta(rework 먼저) / 등급 B 질문(턴당 3개, 답한 질문은 재사용) |
+| 3. Resolve intent | change-intent | `abbd intent rule`, `abbd intent delta`, `abbd intent feature`, `abbd intent invariant`, `abbd intent module`, `abbd intent contract`, `abbd decide`, `abbd decide --adr ADR-x --answer KEY --user`, `abbd decisions`, `abbd confirm`, `abbd review CHG-x` | IntentDelta(rework 먼저, 새 경로에 걸리는 standing rule) / 등급 B 질문(턴당 3개, 답한 질문은 재사용) |
 | 4. Design | architect-change | `abbd inspect ID`, `abbd graph neighbors ID`, `abbd intent module --id/--path`, `abbd verification-plan` | ChangePlan(예상 구조 변경 카드 포함) + 검증 계약 |
 | 4. Impact | impact-review | `abbd contracts impact [--diff]`, `abbd impact`, `abbd policy classify`, `abbd decide --tier C` | ChangePlan의 영향 범위, 예상 카드와 등급, 등급 C 정지 기록(종료 코드 2) |
-| 5. Implement / 6. Prove | implement-and-prove | `abbd verification-plan`, `abbd verify`, `abbd verify --unverifiable "CHECK" --reason TEXT`, `abbd turn note --model-calls N` | diff + EvidenceReport(재현 실패 → 수정 후 통과, 실행함 / 실행 못함). verify FAILED는 종료 코드 2 |
-| 7. Synchronize | sync-knowledge | `abbd intent contract`, `abbd intent module`, `abbd sync [--commit]`, `abbd check`, `abbd render`, `abbd status`, `abbd serve`, `abbd review` | ConsistencyReport, ChangeReceipt, 구조 변경이 있으면 리뷰 화면 링크. sync·check 종료 코드 2는 게이트 거부 |
-| 8. Review / ship, 9. Learn | reflect-and-correct | `abbd turn show`, `abbd review CHG-x`, `abbd policy classify`, `abbd turn abort [--reason TEXT]`, `abbd learn --kind K --proposal TEXT`, `abbd learn --preference key=value` | 검토된 ChangeReceipt, `.abbd/learning.yaml`의 교정 제안 |
+| 5. Implement / 6. Prove | implement-and-prove | `abbd verification-plan`, `abbd verify`, `abbd verify --no-repro --reason TEXT`, `abbd driver set ID --run CMD --expect TEXT`, `abbd verify --drive`, `abbd verify --unverifiable "CHECK" --reason TEXT`, `abbd turn note --model-calls N` | diff + EvidenceReport(재현 실패 → 수정 후 통과, T3 사용자 수준 실행, 실행함 / 실행 못함). verify FAILED는 종료 코드 2 |
+| 7. Synchronize | sync-knowledge | `abbd intent contract`, `abbd intent module`, `abbd sync [--commit]`, `abbd check`, `abbd render`, `abbd status`, `abbd serve`, `abbd review --decide ... --user` | ConsistencyReport, ChangeReceipt, 새 BLUEPRINT.md, 구조 변경이 있으면 리뷰 화면 링크. sync·check 종료 코드 2는 게이트 거부 |
+| 8. Review / ship, 9. Learn | reflect-and-correct | `abbd turn show`, `abbd review CHG-x`, `abbd policy classify`, `abbd turn abort [--reason TEXT]`, `abbd learn --from-receipts`, `abbd learn --kind K --proposal TEXT`, `abbd learn --preference key=value` | 검토된 ChangeReceipt, `.abbd/learning.yaml`의 교정 제안 |
 
 계측은 하네스가 센다. 그래프 조회(inspect, contracts, impact, graph), 테스트 실행(verify), 질문 수(decide), 소요 시간(sync)은 자동이고, 모델 호출 수만 호스트가 `abbd turn note --model-calls N`으로 보고한다.
 
@@ -46,6 +46,26 @@ session-bootstrap → understand-project → change-intent → architect-change
 - 코드 변경 없는 질문: session-bootstrap(`plan`, turn 열지 않음) → understand-project.
 
 어느 경로든 두 게이트는 생략하지 않는다. 필수 검증이 PASSED가 아니면 sync하지 않고, maps/graph/HTML이 CURRENT가 아니면 완료라고 보고하지 않는다.
+
+## 컨텍스트
+
+에이전트의 컨텍스트는 `.abbd/BLUEPRINT.md` 한 장에서 시작한다. standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정이 지금 값으로 있고 publish마다 다시 만들어진다. 그다음 `abbd run`의 `read_first`가 고른 md 원본을 읽는다. 요청마다 쌓이는 이력(`.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`, state·candidates·learning·bootstrap-report 파일)은 컨텍스트가 아니다. 엔진이 쓰는 `.abbd/.ignore`가 ripgrep 기반 검색에서 빼고, 이 플러그인의 PreToolUse 훅(`scripts/history-guard.sh`)이 Read·Grep·Glob과 셸의 직접 읽기를 거부한다. 이력은 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다.
+
+사용자가 프로젝트 전체에 건 규칙은 `abbd intent rule --claim`으로 standing rule이 되고, 새 경로에도 적용된다. 규칙처럼 읽히는 요청은 `run`이 자동으로 저장한다.
+
+## 엔진이 막는 것
+
+skill 문장 대신 엔진이 거부하는 규칙이다. skill은 해당 명령과 게이트만 가리킨다.
+
+| 규칙 | 막는 곳 |
+|---|---|
+| `--user` 없는 답은 사용자 결정이 아니다. 등급 C를 풀지 못한다 | `decide`, `review --decide` |
+| 버그 수정 턴은 수정 전 FAILED verify가 있어야 한다(`verify --no-repro --reason`으로 면제) | sync |
+| T3 턴은 사용자 수준 실행이 있어야 한다(`verify --drive` 또는 `verify --unverifiable user-level --reason`) | sync |
+| 라우팅된 수준보다 낮추려면 이유가 있어야 한다 | `run --tier` |
+| 이번 턴 범위 밖 항목에 INFERRED 의미를 쓰지 않는다 | `intent` |
+| `.abbd/` md의 엔진 영역을 손으로 고치지 않는다 | check |
+| 예산 초과(모델 호출, 그래프 조회, 테스트 실행)는 경고로 남는다 | verify, sync |
 
 ## 리뷰 화면
 

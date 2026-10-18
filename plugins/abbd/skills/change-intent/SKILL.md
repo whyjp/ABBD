@@ -11,7 +11,7 @@ description: Turns a user request plus the current project state into an IntentD
 
 - 요청이 기능의 동작·계약·불변조건을 추가·변경·삭제할 때.
 - 요청이 CONFIRMED 계약과 충돌하거나, 해석이 둘 이상일 때.
-- 기본값으로 진행 중인 ADR(reconcile이 남긴 외부 변경 충돌, 지난 턴의 등급 B 질문)에 사용자가 답할 때. `abbd decisions QUERY`로 ADR ID와 options를 찾고 `abbd decide --adr ADR-x --answer KEY`로 기록한다. 이 형태는 turn 밖에서도 동작하고, 없는 선택지는 거부된다. 구조 변경 카드의 ADR은 여기서 답하지 않고 카드로 결정한다(sync-knowledge 4절).
+- 기본값으로 진행 중인 ADR(reconcile이 남긴 외부 변경 충돌, 지난 턴의 등급 B 질문)에 사용자가 답할 때. `abbd decisions QUERY`로 ADR ID와 options를 찾고 `abbd decide --adr ADR-x --answer KEY --user`로 기록한다. 이 형태는 turn 밖에서도 동작하고, 없는 선택지는 거부된다. 구조 변경 카드의 ADR은 여기서 답하지 않고 카드로 결정한다(sync-knowledge 4절).
 - WorkflowPlan에 `rework`가 있을 때. 아래 "거부된 카드 다루기".
 - 의도 변화가 없는 단순 버그 수정이나 문서 갱신이면 건너뛴다.
 
@@ -31,6 +31,14 @@ description: Turns a user request plus the current project state into an IntentD
 같은 문장을 세 곳에 중복 저장하지 않는다. CHG와 ADR은 FEAT의 의도를 ID로 참조한다.
 
 ## 절차
+
+### 0. Standing rule을 새 경로에 대조
+
+`abbd run` 결과의 `standing_rules`(BLUEPRINT.md에도 있다)는 사용자가 프로젝트 전체에 건 규칙이다. 기존 경로만이 아니라 이번 턴이 만드는 경로에도 적용된다.
+
+- 규칙마다 이번 변경이 만드는 경로(새 라우트, 새 소비자, 새 모듈, 새 설정 키)가 그 규칙에 걸리는지 본다.
+- 걸리면 `intent delta --preserve "REQ-x: 규칙 문장"`으로 지킬 제약에 넣는다. 그 경로에서 규칙을 확인하는 테스트는 architect-change의 검증 계약에 한 줄로 넣는다.
+- 사용자가 이번 요청에서 새 프로젝트 규칙을 말했으면 `abbd intent rule --claim "<사용자의 말>"`로 기록한다. 규칙처럼 읽히는 요청은 `run`이 이미 저장했을 수 있으므로 `standing_rules`를 먼저 본다.
 
 ### 1. IntentDelta 초안
 
@@ -97,7 +105,7 @@ abbd decide \
 - 선택지는 2~3개다. 각 선택지의 effect에 그 선택이 바꾸는 범위를 적는다.
 - "답하지 않아도 진행되는 범위"는 `--proceeds-without SCOPE`로 적는다. `--title`은 ADR 목록에서 보일 짧은 이름이다. `--subject`는 여러 번 쓸 수 있다.
 - 결과의 `ask`가 true일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 결과는 반드시 decide로 기록한다.
-- 사용자가 답하면 `abbd decide --adr ADR-x --answer KEY`로 기록한다. 같은 `--question`에 `--answer`를 붙여 다시 불러도 같은 ADR에 기록된다. 그 ADR은 USER_STATED·CONFIRMED가 된다. 답이 없으면 기본값으로 진행하고 ADR의 rationale은 origin INFERRED, confirmation UNCONFIRMED로 남는다. 답 없는 등급 B ADR이 있으면 sync 후 턴 상태는 NEEDS_USER다.
+- 사용자가 답하면 `abbd decide --adr ADR-x --answer KEY --user`로 기록한다. 같은 `--question`에 `--answer KEY --user`를 붙여 다시 불러도 같은 ADR에 기록된다. `--user`가 있어야 USER_STATED·CONFIRMED가 된다. 에이전트가 스스로 고른 답에는 `--user`를 붙이지 않는다. 그 답은 INFERRED로 남고 사용자 확인을 계속 기다린다. 답이 없으면 기본값으로 진행하고 ADR의 rationale은 origin INFERRED, confirmation UNCONFIRMED로 남는다. 답 없는 등급 B ADR이 있으면 sync 후 턴 상태는 NEEDS_USER다.
 - 이미 답한 질문을 다시 decide하면 하네스가 묻지 않고 `reused: true`와 기존 답을 돌려준다. 그 답을 따른다.
 - 턴당 질문은 최대 3개다(`project.yaml`의 `policy.max_questions_per_turn`). 하네스가 센다. 한도를 넘긴 decide는 `ask: false`로 기본값을 기록하므로, 결과를 가장 크게 바꾸는 질문부터 decide한다.
 
@@ -143,8 +151,9 @@ abbd intent contract --id IF-002 --compatibility "필드 추가만 허용" \
 ```
 
 - `--origin`을 생략하면 INFERRED다. 사용자가 이번 턴에 말한 것만 `--origin USER_STATED`로 쓴다.
+- 이번 턴이 겨냥하거나 영향을 주지 않는 항목의 의미는 INFERRED로 쓸 수 없다. 엔진이 "outside this turn"으로 거부한다. 범위 밖 의미를 덮지 않기 위해서다. 사용자가 그 항목을 고쳐 달라고 말했을 때만 `--origin USER_STATED`로 쓴다.
 - `run`이 새 기능을 판단했으면 WorkflowPlan의 `new_feature` ID를 `--id`로 준다. `--id` 없이 부르면 새 FEAT를 만든다. 앵커(`--anchor kind:ref`, kind는 symbol, path, test, entry)는 2종 이상을 준다.
-- 의미 필드를 바꾸기 전에 `abbd inspect ID`로 현재 값의 origin과 confirmation을 본다. CONFIRMED 또는 USER_STATED이면 INFERRED 문장으로 덮지 않고 `abbd decide --subject ID`로 등급 B 질문을 만든다. 하네스도 CONFIRMED purpose·responsibility를 INFERRED로 바꾸는 intent 호출을 거부한다. 거부되면 우회하지 말고 decide로 간다.
+- CONFIRMED purpose·responsibility를 USER_STATED가 아닌 값으로 바꾸는 intent 호출은 엔진이 거부한다. 사용자가 확인한 문장을 추정으로 덮지 않기 위해서다. 거부되면 우회하지 말고 `abbd decide --subject ID`로 등급 B 질문을 만든다.
 
 ## 게이트와 출력
 
@@ -164,4 +173,6 @@ abbd intent contract --id IF-002 --compatibility "필드 추가만 허용" \
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

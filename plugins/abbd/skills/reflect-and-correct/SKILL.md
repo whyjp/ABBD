@@ -31,7 +31,7 @@ receipt의 각 항목이 실제 diff와 맞는지 확인한다. 코드와 문서
 | 구조 변경 | `structural_deltas` | ChangePlan의 예상 카드와 같은가. 등급별 상태(applied, default_applied, pending, approved, rejected) |
 | 결정 | `decisions`, `blocked` | 기본값으로 진행한 B, 대기 중인 C |
 | 의도 충실도 | `intent_fidelity` | 요청 항목 수, 테스트로 덮인 수, 사용자 CONFIRMED 수 |
-| 계측 | `telemetry` | model_calls(호스트 보고), graph_queries, test_runs, questions_asked, duration_sec |
+| 계측 | `telemetry` | model_calls(호스트 보고), graph_queries, test_runs, questions_asked, duration_sec. 예산 초과 경고는 `risks`에 있다 |
 | 후속 | `risks`, `next_steps`, `new_unconfirmed` | 잔여 위험과 다음 작업 |
 
 구조 변경 카드의 승인·거부는 사람이 리뷰 화면에서 한다. 이 skill은 카드를 검토해 보고할 뿐 결정하지 않는다. 변경이 독립 리뷰를 받아야 하는데 리뷰어를 돌릴 수 없으면, 그 사실을 보고에 적는다.
@@ -47,13 +47,19 @@ receipt의 각 항목이 실제 diff와 맞는지 확인한다. 코드와 문서
 
 ## 3. 반복 찾기 (교정이 필요할 때만)
 
-ABBD는 실수의 흔적을 이미 기록한다. 대화 기억 대신 이 기록에서 찾는다.
+ABBD는 실수의 흔적을 이미 기록한다. 대화 기억 대신 이 기록에서 찾고, 엔진의 집계에서 시작한다.
 
-| 기록 | 위치 | 보는 것 |
+```sh
+abbd learn --from-receipts
+```
+
+두 턴 이상에서 반복된 문제(실패한 테스트, 거부된 카드 kind, BLOCKED 사유)를 사례 CHG ID와 먼저 시도할 구조적 교정과 함께 돌려준다. 빈 결과면 아래 기록 중 엔진이 세지 않는 것만 본다. `.abbd/changes`와 `.abbd/verification`은 이력이라 직접 열지 않고 명령으로 묻는다.
+
+| 기록 | 묻는 명령 | 보는 것 |
 |---|---|---|
 | 거부된 카드 | `abbd review CHG-x`의 `deltas[].decision`, 다음 턴의 `rework` | kind와 거부 사유. 같은 kind에 같은 취지의 사유가 두 번이면 후보 |
-| 실패한 검증 | `.abbd/verification/runs/`, receipt의 `verification_evidence` | 같은 테스트나 같은 종류의 실패가 여러 턴에 걸쳐 나옴 |
-| 버린 턴 | `.abbd/changes/CHG-*.md` 중 state BLOCKED인 receipt와 `blocked`의 "aborted: 사유" | 같은 이유로 버림 |
+| 실패한 검증 | `learn --from-receipts`, `abbd inspect CHG-x`의 `verification_evidence` | 같은 테스트나 같은 종류의 실패가 여러 턴에 걸쳐 나옴 |
+| 버린 턴 | `learn --from-receipts`의 blocked 항목, `abbd inspect CHG-x`의 `blocked` "aborted: 사유" | 같은 이유로 버림 |
 | 계획 밖 카드 | receipt의 `structural_deltas`와 그 턴의 ChangePlan | 같은 kind의 예상 못 한 카드 |
 | 재조정 충돌 | `intent_source: external` CHG의 등급 B ADR | 같은 계약이 반복해서 충돌 |
 | 사용자 교정 | 이번 세션의 지적, revert 커밋 | 같은 지적 |
@@ -110,4 +116,6 @@ abbd learn --kind architecture --proposal "MOD-002는 MOD-003(storage 내부)을
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/ssot"
 	"github.com/whyjp/abbd/internal/verify"
@@ -48,7 +49,11 @@ func (e *Engine) drive(w *world, chg *model.Change, rep *EvidenceReport) (*Evide
 	ids := model.SortedKeys(w.s.Project.Drivers)
 	if chg != nil {
 		scope := map[string]bool{}
-		for _, id := range append(append(append([]string{}, chg.Impacted...), chg.Delivers...), chg.Plan.Targets...) {
+		touched := append(append(append([]string{}, chg.Impacted...), chg.Delivers...), chg.Plan.Targets...)
+		if res, err := w.analyze(); err == nil {
+			touched = append(touched, impact.Analyze(w.s, res, w.changedSinceSync()).Affected()...)
+		}
+		for _, id := range touched {
 			scope[id] = true
 			if f := w.s.Features[id]; f != nil {
 				for _, c := range f.ExternalContracts {

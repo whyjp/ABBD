@@ -19,6 +19,19 @@ description: Opens every ABBD turn. Checks whether project knowledge exists, run
 
 ## 절차
 
+### 0. 컨텍스트는 지금의 Blueprint에서
+
+`.abbd/BLUEPRINT.md`를 먼저 읽는다. standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정이 지금 유효한 값으로 한 장에 있고, publish마다 다시 만들어진다. 그다음 `abbd run`이 주는 `read_first`의 md 원본만 읽는다. turn을 열지 않는 질문이면 `abbd plan`의 `matches`에 나온 ID를 `abbd inspect ID`로 본다(`plan`은 `read_first`를 주지 않는다).
+
+- `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 요청마다 쌓인 이력이다. 지난 의도가 지금 의도에 섞이므로 훑어보지 않는다. `.abbd/.ignore`가 ripgrep 검색에서 빼고, Claude Code 플러그인의 PreToolUse 훅(history-guard.sh)이 직접 읽기를 거부한다.
+- 이력이 필요하면 묻는다. 항목 하나는 `abbd inspect ID`, 결정은 `abbd decisions QUERY`, 지난 턴은 `abbd turn show`나 `abbd review CHG-x`.
+- 사용자가 프로젝트 전체에 대한 규칙("항상", "모든", "어떤 경로로도")을 말하면 그 말 그대로 기록한다. 규칙처럼 읽히는 요청은 `run`이 자동으로 저장하므로, `run` 결과의 `standing_rules`에 들어갔는지 확인하고 빠졌을 때만 직접 부른다. `intent rule`은 열린 turn이 있어야 한다.
+
+```sh
+abbd intent rule --claim "모든 API는 인증을 거친다"   # 사용자의 문장, USER_STATED, 프로젝트 범위
+abbd intent rule --req REQ-3 --retire                  # 사용자가 규칙을 거둘 때
+```
+
 ### 1. 현재 상태 읽기
 
 ```sh
@@ -72,13 +85,16 @@ abbd reconcile
 
 ```sh
 abbd run "REQUEST"
-abbd run "REQUEST" --type bug-fix --tier T1   # 라우팅을 바로잡을 때만
+abbd run "REQUEST" --type bug-fix --tier T1 --reason TEXT   # 라우팅을 바로잡을 때만
 ```
 
-`run`은 `.abbd/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산이 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
+`run`은 `.abbd/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산, `read_first`, `standing_rules`가 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
+
+- `read_first`를 순서대로 읽는다(BLUEPRINT.md, 그다음 대상 md 원본). 이력 디렉터리는 열지 않는다(0절).
+- `standing_rules`는 새 경로에도 적용된다. 이번 변경이 만드는 경로마다 규칙을 대조하는 일은 change-intent와 architect-change가 맡는다.
 
 - `--type`은 docs, bug-fix, perf, interface-change, refactor, feature 중 하나다. 다른 값은 usage 오류(종료 코드 1)다.
-- `--tier`는 T0~T3다. 요청에 재시도·동시성·중복 같은 위험어가 있으면 `run`이 T3로 올린다. 낮출 때는 이유를 EvidenceReport에 적는다.
+- `--tier`는 T0~T3다. 요청에 재시도·동시성·중복 같은 위험어가 있으면 `run`이 T3로 올린다. 라우팅된 수준보다 낮추려면 `--tier T1 --reason TEXT`를 준다. 이유 없이 낮추면 `run`이 거부하고, 이유는 receipt에 남는다.
 - `ambiguous: true`이면 change-intent에서 등급 B 질문을 남긴다.
 - `rework`가 있으면 리뷰 화면에서 거부되거나 되돌리기를 요청받은 구조 변경 카드다. 줄마다 카드 ID, kind, 대상, 사용자가 적은 사유가 있고, 엔진이 이미 이번 CHG의 IntentDelta additions에 넣었다. 새 요청보다 먼저 다룬다. change-intent의 "거부된 카드 다루기"로 간다. 사용자 보고 첫머리에 rework 건수를 적는다.
 - 진행 중인 turn이 있으면 `run`은 거부된다. 이어서 쓸지 판단하고, 버릴 때만 `abbd turn abort --reason TEXT`를 쓴다.
@@ -108,7 +124,7 @@ WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. `rework`가 �
 ## 게이트와 출력
 
 - ProjectStateSnapshot: revision, 최신성 4종, 외부 변경 처리 결과, UNCONFIRMED 수.
-- WorkflowPlan: 작업 타입, 난도/위험도, 검증 수준 T0~T3, 실행할 skill 순서, `rework` 건수.
+- WorkflowPlan: 작업 타입, 난도/위험도, 검증 수준 T0~T3, 실행할 skill 순서, `rework` 건수, `read_first`, `standing_rules`.
 - 상태 전이: DISCOVERING에서 시작한다. bootstrap이나 reconcile이 실패하면 BLOCKED로 보고하고 원인을 적는다.
 
 다음 단계는 understand-project다.
@@ -123,4 +139,6 @@ WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. `rework`가 �
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

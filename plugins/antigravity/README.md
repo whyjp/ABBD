@@ -37,7 +37,9 @@ MCP 설정 (`mcp_config.json`이 이미 있으면 설치 스크립트가 이 블
 trigger: always_on
 ---
 이 워크스페이스는 abbd 턴 루프를 쓴다. 코드를 바꾸는 요청은 abbd-session-bootstrap skill로 시작하고 `abbd run "REQUEST"`로 turn을 연다.
+컨텍스트는 `.abbd/BLUEPRINT.md`와 `run`이 주는 `read_first`의 md에서 가져온다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 열지 않는다. `.abbd/.ignore`가 ripgrep 검색에서 빼지만 직접 읽기를 막는 훅은 없으니 이 규칙을 지킨다. 이력은 `abbd inspect ID`, `abbd decisions QUERY`, `abbd turn show`, `abbd review CHG-x`로 묻는다.
+사용자가 프로젝트 전체 규칙을 말하면 `abbd intent rule --claim "<사용자의 말>"`로 기록한다. standing rule은 새 경로에도 적용된다.
 필수 검증이 PASSED가 아니면 `abbd sync`를 하지 않는다. sync가 종료 코드 2를 내면 완료가 아니다.
-등급 B 질문은 `abbd decide`가 `ask: true`를 줄 때만 묻는다. 등급 C 행동은 명시적 승인 없이 하지 않는다.
+등급 B 질문은 `abbd decide`가 `ask: true`를 줄 때만 묻고, 사용자의 답만 `--user`를 붙여 기록한다. 등급 C 행동은 명시적 승인 없이 하지 않는다.
 sync 결과에 `review`가 있으면 `abbd serve`의 리뷰 화면 링크와 대기 카드 수만 알리고, 카드는 사용자가 결정한다.
 ```

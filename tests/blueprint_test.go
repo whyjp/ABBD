@@ -108,3 +108,36 @@ func TestSearchSkipsHistory(t *testing.T) {
 		t.Fatalf("search must not return history: %s", out)
 	}
 }
+
+func TestRulesAndContextOutsideATurn(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	r := p.ok("intent", "rule", "--claim", "모든 쓰기 경로에서 1 KiB 넘는 payload는 413으로 거부한다")
+	if str(r, "scope") != "project" {
+		t.Fatalf("a rule can be recorded without a turn: %v", r)
+	}
+	plan := p.ok("plan", "POST /messages 개선")
+	if len(strs(plan, "read_first")) == 0 || !strings.Contains(strings.Join(strs(plan, "standing_rules"), " "), "1 KiB") {
+		t.Fatalf("plan shows read_first and standing rules: %v %v", get(plan, "read_first"), get(plan, "standing_rules"))
+	}
+	p.ok("run", "앞으로 모든 응답에 X-Trace 헤더를 붙인다")
+	p.ok("turn", "abort", "--reason", "취소")
+	later := p.ok("plan", "아무 작업")
+	if strings.Contains(strings.Join(strs(later, "standing_rules"), " "), "X-Trace") {
+		t.Fatal("a rule auto-detected from an abandoned request must not stay in force")
+	}
+	if !strings.Contains(strings.Join(strs(later, "standing_rules"), " "), "1 KiB") {
+		t.Fatal("a rule recorded on purpose stays")
+	}
+}
+
+func TestStoredRunIsReadableThroughInspect(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	p.ok("run", "문서 정리")
+	ev := p.ok("verify")
+	id := str(list(ev, "runs")[0], "id")
+	if got := p.ok("inspect", id); str(got, "id") != id || str(got, "command") == "" {
+		t.Fatalf("inspect run-... returns the stored run: %v", got)
+	}
+}

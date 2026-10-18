@@ -20,6 +20,7 @@ import tempfile
 
 BENCH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BENCH)
+sys.dont_write_bytecode = True
 import run  # noqa: E402
 
 RULE_TEST = re.compile(r"^TestHidden(T\d+)Rule(\w+)$")

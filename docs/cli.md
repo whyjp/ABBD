@@ -222,7 +222,7 @@ during a turn. `test_runs` counts each command `verify` runs; UNVERIFIABLE recor
 `turn abort`. Model calls are the only host-reported figure, added with `abbd turn note --model-calls N`; `model_calls_note`
 reads `host-reported` once a figure arrives. Per-tier limits are in `budgets` of
 `.abbd/project.yaml`, and `verify` adds a warning when `test_runs` exceeds the turn's limit. The other two limits
-are recorded, not enforced.
+are recorded and, past the tier budget, warned in the receipt's `risks`.
 
 ## Who decides
 

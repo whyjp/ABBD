@@ -13,11 +13,13 @@
 
 경로의 근거는 code.claude.com plugins 문서, learn.chatgpt.com Codex 문서, antigravity.google 문서다. 호스트가 자주 바뀌므로 설치 전에 그 호스트의 현재 문서와 대조한다.
 
-Claude Code 플러그인은 SessionStart 훅(`abbd/hooks/hooks.json`)으로 세션마다 abbd 상태 몇 줄과 진입 skill을 알려 준다. 이 훅은 `sh`로 실행되므로 Windows에서는 Git Bash 같은 sh가 PATH에 있어야 한다. Codex와 Antigravity에는 같은 역할의 훅이 없어서 `AGENTS.md`나 규칙 파일 스니펫으로 대신한다(각 README).
+Claude Code 플러그인에는 훅이 셋 있다(`abbd/hooks/hooks.json`). SessionStart 훅은 세션마다 abbd 상태 몇 줄, standing rule, 진입 skill을 알려 준다. PreToolUse 훅(`history-guard.sh`)은 `.abbd/` 이력(changes, requirements, decisions, verification, generated와 state·candidates·learning·bootstrap-report 파일)의 직접 읽기를 거부하고 `.abbd/BLUEPRINT.md`와 abbd 조회 명령을 가리킨다. Stop 훅은 열린 turn이나 동기화되지 않은 변경이 남아 있으면 에이전트를 한 번 되돌려 보낸다. 훅은 `sh`로 실행되므로 Windows에서는 Git Bash 같은 sh가 PATH에 있어야 한다.
+
+Codex와 Antigravity에는 같은 역할의 훅이 없어서 `AGENTS.md`나 규칙 파일 스니펫으로 대신한다(각 README). 이력이 검색에 섞이지 않는 것은 엔진이 쓰는 `.abbd/.ignore`가 ripgrep 기반 검색에서 맡고, 직접 읽지 않는 것은 스니펫의 지시가 맡는다.
 
 ## 등급 B 질문의 호스트 차이
 
-change-intent skill은 질문을 먼저 `abbd decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 답은 `abbd decide --adr ADR-x --answer KEY`(또는 같은 질문에 `--answer KEY`)로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
+change-intent skill은 질문을 먼저 `abbd decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 사용자의 답은 `abbd decide --adr ADR-x --answer KEY --user`(또는 같은 질문에 `--answer KEY --user`)로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
 
 ## 리뷰 화면의 호스트 차이
 
@@ -25,7 +27,7 @@ change-intent skill은 질문을 먼저 `abbd decide`로 기록하고, 결과가
 
 ## 계측의 호스트 차이
 
-그래프 조회, 테스트 실행, 질문 수, 소요 시간은 하네스가 센다. 모델 호출 수만 하네스가 볼 수 없으므로 호스트나 에이전트가 `abbd turn note --model-calls N`으로 보고한다. 호스트가 그 수를 알려 주지 않으면 보고하지 않고, receipt의 `model_calls_note`가 보고되지 않았음을 남긴다.
+그래프 조회, 테스트 실행, 질문 수, 소요 시간은 하네스가 센다. 모델 호출 수만 하네스가 볼 수 없으므로 호스트나 에이전트가 `abbd turn note --model-calls N`으로 보고한다. 호스트가 그 수를 알려 주지 않으면 보고하지 않고, receipt의 `model_calls_note`가 보고되지 않았음을 남긴다. 예산을 넘으면 테스트 실행은 verify의 `warnings`에, 모델 호출과 그래프 조회는 sync가 receipt의 `risks`에 경고로 남긴다.
 
 ## 서브에이전트가 없을 때
 

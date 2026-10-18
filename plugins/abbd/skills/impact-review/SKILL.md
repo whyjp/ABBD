@@ -103,12 +103,12 @@ abbd decide --tier C --question "IF-003 POST /messages 경로를 /v2/messages로
 - 종료 코드는 2이고 stderr에 `BLOCKED`가 찍힌다. 결과는 출력되며 `blocked: true`, `ask: true`이고 CHG의 `blocked`에 들어간다.
 - 정지 상태를 다시 보려면 같은 decide를 반복하지 않고 `abbd decide --adr ADR-x`(답 없이)나 `abbd decisions IF-003`을 쓴다.
 - 가역적 준비(로컬 코드, 마이그레이션 초안, 테스트)까지만 하고 BLOCKED로 보고한다. 보고에는 승인 요청과 준비된 변경을 함께 적는다.
-- 승인은 사용자가 한다. 리뷰 화면의 C 카드 승인이나, 사용자가 채팅에서 명시적으로 승인한 뒤의 `--answer approve` 기록 둘 다 sync가 인정한다. 에이전트가 승인을 대신 기록하지 않는다.
+- 승인은 사용자가 한다. sync는 리뷰 화면의 C 카드 승인과, 사용자가 채팅에서 명시적으로 승인한 뒤의 `--answer approve --user` 기록만 인정한다. `--user` 없는 approve는 에이전트의 선택이라 C 정지를 풀지 못한다.
 - decide를 잊어도 sync가 C 카드에서 멈추므로 C 변경이 반영되는 일은 없다. 다만 구현 전에 멈추면 버릴 작업이 줄어든다.
 
 ### 6. verify 범위
 
-`impact`의 `tests`, 3절의 unknowns를 덮는 테스트, 4절의 증명 테스트를 합친다. `abbd verification-plan`과 대조하고, 그보다 좁히면 이유를 적는다. 위험 점수가 낮다는 이유로 영향 기능의 회귀 테스트를 빼지 않는다.
+`impact`의 `tests`, 3절의 unknowns를 덮는 테스트, 4절의 증명 테스트, 새 경로에 걸리는 standing rule의 테스트(change-intent 0절)를 합친다. `abbd verification-plan`과 대조하고, 그보다 좁히면 이유를 적는다. 위험 점수가 낮다는 이유로 영향 기능의 회귀 테스트를 빼지 않는다.
 
 ## 출력
 
@@ -137,4 +137,6 @@ ChangePlan의 영향 절에 다음을 쓴다.
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

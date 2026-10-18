@@ -2,12 +2,14 @@ package workflow
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/graph"
 	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/policy"
 	"github.com/whyjp/abbd/internal/ssot"
+	"github.com/whyjp/abbd/internal/verify"
 )
 
 type FeatureContext struct {
@@ -73,6 +75,13 @@ func decisionsAbout(s *ssot.Snapshot, id string) []*model.Decision {
 // SSOT stores each relation in one direction only (PRD ch.06 schema principle).
 func inspectIn(w *world, id string) (any, error) {
 	s := w.s
+	if strings.HasPrefix(id, "run-") {
+		ev, err := verify.Load(s.Root, id)
+		if err != nil {
+			return nil, fmt.Errorf("%s not found", id)
+		}
+		return ev, nil
+	}
 	switch model.KindOf(id) {
 	case model.KindFeature:
 		f := s.Features[id]

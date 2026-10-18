@@ -230,6 +230,9 @@ type Requirement struct {
 	Statement Semantic         `yaml:"statement" json:"statement"`
 	Change    string           `yaml:"change" json:"change"`
 	Scope     RequirementScope `yaml:"scope,omitempty" json:"scope,omitempty"`
+	// Auto marks a rule detected from the wording of a request, not recorded on purpose; it is
+	// retired with the request if that turn is abandoned.
+	Auto bool `yaml:"auto,omitempty" json:"auto,omitempty"`
 }
 
 // Tier is the approval grade of PRD ch.10.

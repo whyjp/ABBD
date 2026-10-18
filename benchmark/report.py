@@ -83,7 +83,7 @@ def spread(values, pct=False, digits=2):
     vals = [v for v in values if v is not None]
     if not vals:
         return "n/a"
-    f = (lambda v: f"{v * 100:.0f}%") if pct else (lambda v: f"{v:.{digits}f}")
+    f = (lambda v: f"{v * 100:.0f}%") if pct else (lambda v: str(int(v)) if float(v).is_integer() else f"{v:.{digits}f}")
     mean = sum(vals) / len(vals)
     return f(mean) if len(vals) == 1 else f"{f(mean)} [{f(min(vals))}, {f(max(vals))}]"
 

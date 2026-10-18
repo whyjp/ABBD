@@ -133,7 +133,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	w.s.Changes[chg.ID] = chg
 	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID, Scope: model.ScopeChange}
 	if intent.IsProjectRule(request) {
-		req.Scope = model.ScopeProject
+		req.Scope, req.Auto = model.ScopeProject, true
 	}
 	w.s.Requirements[req.ID] = req
 	chg.Intends = []string{req.ID}
@@ -276,8 +276,13 @@ func (e *Engine) Plan(request string) (map[string]any, error) {
 	r := intent.Resolve(request, w.s)
 	strategy, reason := e.contextStrategy(w, r)
 	imp := impact.Analyze(w.s, res, w.changedSinceSync())
+	var rules []string
+	for _, rule := range knowledge.StandingRules(w.s) {
+		rules = append(rules, rule.ID+": "+rule.Statement.Value)
+	}
 	return map[string]any{"resolution": r, "context_strategy": strategy, "context_reason": reason, "impact": imp,
-		"verification_commands": imp.TestCommands, "budget": w.s.Project.Budgets[r.Tier]}, nil
+		"verification_commands": imp.TestCommands, "budget": w.s.Project.Budgets[r.Tier],
+		"read_first": readFirst(w.s, topTargets(r.Matches)), "standing_rules": rules}, nil
 }
 
 type VerifyOptions struct {
@@ -972,6 +977,11 @@ func (e *Engine) TurnAbort(reason string) (*model.Change, error) {
 	c := w.s.ActiveChange()
 	if c == nil {
 		return nil, fmt.Errorf("no active turn")
+	}
+	for _, rid := range c.Intends {
+		if r := w.s.Requirements[rid]; r != nil && r.Auto {
+			r.Scope = model.ScopeChange
+		}
 	}
 	var kept []string
 	for _, fid := range c.Delivers {

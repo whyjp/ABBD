@@ -642,9 +642,14 @@ type IntentRuleInput struct {
 // IntentRule records a standing rule the user stated, promotes an existing requirement to project
 // scope, or retires one. A rule's text is the user's: origin USER_STATED.
 func (e *Engine) IntentRule(in IntentRuleInput) (*model.Requirement, error) {
-	w, chg, err := e.activeTurn()
+	// A rule may be stated in a question that changes no code, so no turn is required.
+	w, err := e.load()
 	if err != nil {
 		return nil, err
+	}
+	chg := w.s.ActiveChange()
+	if chg == nil {
+		chg = &model.Change{}
 	}
 	var r *model.Requirement
 	switch {
@@ -659,12 +664,15 @@ func (e *Engine) IntentRule(in IntentRuleInput) (*model.Requirement, error) {
 	default:
 		return nil, fmt.Errorf("give --claim TEXT or --req REQ-x")
 	}
-	r.Scope = model.ScopeProject
+	r.Scope, r.Auto = model.ScopeProject, false
 	if in.Retire {
 		r.Scope = model.ScopeChange
 		chg.IntentDelta.Removals = append(chg.IntentDelta.Removals, "rule retired: "+r.ID+" "+r.Statement.Value)
 	} else {
 		chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, "standing rule: "+r.ID+" "+r.Statement.Value)
+	}
+	if w.s.ActiveChange() == nil {
+		return r, e.republish(w, "규칙 기록 "+r.ID)
 	}
 	return r, w.s.Save()
 }

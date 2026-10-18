@@ -4,3 +4,4 @@
 /bin/
 .playwright-mcp/
 benchmark/results/
+__pycache__/

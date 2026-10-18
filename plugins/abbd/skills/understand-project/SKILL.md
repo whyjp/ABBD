@@ -17,6 +17,14 @@ description: Builds an evidence-linked picture of the current project before a c
 - WorkflowPlan의 관련 ID(FEAT-*, MOD-*, IF-*, TEST-*)와 요청 원문.
 - ProjectStateSnapshot의 최신성. STALE이면 그래프·맵보다 소스를 우선한다.
 
+## 먼저 읽는 것
+
+1. `.abbd/BLUEPRINT.md`. 지금 유효한 standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정이 한 장에 있다.
+2. `abbd run`이 준 `read_first`의 md 원본(`.abbd/architecture/`, `.abbd/features/`). turn을 열지 않은 질문이면 `abbd plan`의 `matches`에 나온 ID를 `abbd inspect ID`로 본다.
+3. 그다음은 아래 조회 명령과 소스다.
+
+이력 디렉터리(`.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`)와 state·candidates·learning·bootstrap-report 파일은 훑어보지 않는다. 지난 요청의 의도가 지금 의도처럼 읽히기 때문이다. `.abbd/.ignore`가 검색에서 빼고 플러그인 훅이 직접 읽기를 거부한다. 이력에서 필요한 것은 `abbd inspect ID`, `abbd decisions QUERY`, `abbd turn show`, `abbd review CHG-x`로 묻는다.
+
 ## 원칙
 
 - 맵의 주장은 확인 전까지 맵의 주장일 뿐이다. `inspect`가 준 `file:line`을 열어 지금 코드와 맞는지 본 뒤에 코드 확인 수준으로 올린다.
@@ -56,7 +64,7 @@ abbd contracts list --module MOD-002
 
 다음 순서로 근거를 찾는다.
 
-1. 해당 FEAT-*.intent와 관련 ADR-*(`abbd decisions FEAT-001`처럼 ID나 낱말로 검색). origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다. 답한 ADR(`answered: true`)은 사용자가 이미 정한 것이다.
+1. BLUEPRINT.md의 standing rule, 해당 FEAT-*.intent, 관련 ADR-*(`abbd decisions FEAT-001`처럼 ID나 낱말로 검색). origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다. 답한 ADR(`answered: true`, confirmation CONFIRMED)은 사용자가 정한 것이다. 답했어도 origin이 INFERRED이면 에이전트가 고른 것이므로 추정으로 인용한다.
 2. confirmation이 CONFIRMED인 불변조건.
 3. Git 이력. `git log --follow -- PATH`, `git blame -L a,b PATH`로 변경 커밋과 PR 설명을 읽는다.
 4. 코드의 방어 로직(재시도, 타임아웃, 중복 제거)은 과거 장애의 흔적일 수 있다. 근거를 찾으면 링크하고, 못 찾으면 추정이라고 적는다.
@@ -124,4 +132,6 @@ origin이 INFERRED ∧ UNCONFIRMED인 purpose는 "추정"으로만 인용한다.
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.
