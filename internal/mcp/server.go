@@ -118,6 +118,14 @@ var Tools = map[string]tool{
 		func(e *workflow.Engine, a args) (any, error) { return e.Contracts(a.str("module")) }},
 	"analyze_contract_impact": {"Contracts the working tree adds, removes or modifies, with their tier A/B/C.", nil, nil,
 		func(e *workflow.Engine, a args) (any, error) { return e.ContractsImpact() }},
+	"list_review_cards": {"Structural change cards of a turn (default: the review target) with tier, status and the review page path. Show the page link to the user; the picture is there, not in chat.",
+		map[string]string{"change": str("optional CHG-*")}, nil,
+		func(e *workflow.Engine, a args) (any, error) { return e.Review(a.str("change")) }},
+	"decide_structural_change": {"Record the user's decision on one structural change card (approve | reject | revert | option:KEY, reason required for reject/revert). Prefer MCP elicitation to ask; never decide for the user.",
+		map[string]string{"delta": str("CHG-x#n"), "decision": str("approve|reject|revert|option:KEY"), "reason": str("why")}, []string{"delta", "decision"},
+		func(e *workflow.Engine, a args) (any, error) {
+			return e.DecideDelta(workflow.DeltaDecisionInput{Delta: a.str("delta"), Decision: a.str("decision"), Reason: a.str("reason"), Channel: "mcp"})
+		}},
 	"list_unconfirmed": {"The confirm queue: UNCONFIRMED meaning fields, decisions and merge candidates.", nil, nil,
 		func(e *workflow.Engine, a args) (any, error) { return e.Pending() }},
 	"confirm_item": {"Confirm an item (optionally replacing its value) or reject it. Only the user's word promotes INFERRED.",

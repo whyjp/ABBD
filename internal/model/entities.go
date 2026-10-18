@@ -439,6 +439,7 @@ type StructuralDelta struct {
 	Reason   string        `yaml:"reason" json:"reason"`
 	Inferred bool          `yaml:"inferred,omitempty" json:"inferred,omitempty"` // new INFERRED item: drawn dashed
 	Status   DeltaStatus   `yaml:"status" json:"status"`
+	ADR      string        `yaml:"adr,omitempty" json:"adr,omitempty"` // tier B/C decision record
 	Decision *ItemDecision `yaml:"decision,omitempty" json:"decision,omitempty"`
 }
 

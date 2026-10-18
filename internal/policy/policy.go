@@ -92,7 +92,10 @@ type ContractChange struct {
 func ContractTier(c model.Contract, change string) (model.Tier, bool, string) {
 	breaking := change == "removed" || change == "modified"
 	if !breaking {
-		return model.TierA, false, "추가는 기존 소비자를 깨지 않음"
+		if c.ExternalConsumers != nil && *c.ExternalConsumers {
+			return model.TierC, false, "외부 소비자가 있는 계약 추가"
+		}
+		return model.TierB, false, "외부 계약 추가는 구조 변경 (PRD v1.4 08B)"
 	}
 	switch {
 	case c.ExternalConsumers != nil && *c.ExternalConsumers:

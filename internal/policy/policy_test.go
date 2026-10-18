@@ -18,7 +18,8 @@ func TestContractTiers(t *testing.T) {
 		{"breaking with external consumers stops", &yes, "removed", model.TierC},
 		{"breaking with unknown consumers asks", nil, "modified", model.TierB},
 		{"breaking without consumers is automatic", &no, "removed", model.TierA},
-		{"additions never break", &yes, "added", model.TierA},
+		{"an addition is a structural change to review", nil, "added", model.TierB},
+		{"an addition with external consumers stops", &yes, "added", model.TierC},
 	}
 	for _, c := range cases {
 		got, _, _ := ContractTier(model.Contract{ExternalConsumers: c.consumers}, c.change)

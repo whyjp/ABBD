@@ -13,6 +13,7 @@ import (
 	"github.com/whyjp/abbd/internal/knowledge"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/policy"
+	"github.com/whyjp/abbd/internal/review"
 	"github.com/whyjp/abbd/internal/ssot"
 	"github.com/whyjp/abbd/internal/verify"
 	"github.com/whyjp/abbd/internal/workspace"
@@ -41,6 +42,7 @@ type WorkflowPlan struct {
 	Requirement     string            `json:"requirement,omitempty"`
 	ConfirmIfUsed   []string          `json:"confirm_if_purpose_used"`
 	Budget          ssot.Budget       `json:"budget"`
+	Rework          []string          `json:"rework,omitempty"`
 	Bootstrap       *bootstrap.Report `json:"bootstrap,omitempty"`
 	Reconciled      *ReconcileResult  `json:"reconciled,omitempty"`
 }
@@ -103,6 +105,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID}
 	w.s.Requirements[req.ID] = req
 	chg.Intends = []string{req.ID}
+	plan.Rework = consumeRejections(w.s, chg)
 	plan.Requirement = req.ID
 
 	if r.NewFeature {
@@ -126,6 +129,9 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	}
 	if r.Ambiguous {
 		plan.AmbiguityHint = "요청이 둘 이상의 기능과 같은 정도로 맞는다: `abbd decide`로 등급 B 질문(선택지 2~3개 + 기본값)을 남기고 기본값으로 진행"
+	}
+	if err := review.SaveBase(w.s); err != nil {
+		return nil, err
 	}
 	w.s.State.ActiveTurn = chg.ID
 	res, err := w.analyze()
@@ -387,6 +393,9 @@ type SyncResult struct {
 	Freshness   Freshness          `json:"freshness"`
 	Commit      string             `json:"commit,omitempty"`
 	Reconciled  *ReconcileResult   `json:"reconciled,omitempty"`
+	// Review is set only when the turn has structural changes to look at; a turn that only
+	// touched module internals produces no review notice (AC-REV-05).
+	Review *ReviewSummary `json:"review,omitempty"`
 }
 
 var docExts = map[string]bool{".md": true, ".markdown": true, ".txt": true, ".rst": true, ".adoc": true}
@@ -463,12 +472,17 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 
 	chg.State = model.StateSynchronizing
 	imp := impact.Analyze(w.s, res, changed)
-	if blocked := e.gateContracts(w, chg, imp); len(blocked) > 0 {
-		chg.State = model.StateBlocked
-		chg.Blocked = append(chg.Blocked, blocked...)
-		return e.draft(w, chg, res, "등급 C: 명시적 승인 필요 — "+strings.Join(blocked, "; "))
+
+	// The turn is applied to a copy first. Its structural deltas decide whether the copy may
+	// become the SSOT: an unapproved tier C delta leaves the original untouched (AC-REV-04).
+	orig, origChg := w, chg
+	trial, err := w.s.Clone()
+	if err != nil {
+		return nil, err
 	}
-	chg.Blocked = openTierC(w.s, chg)
+	before := review.LoadBase(w.s)
+	w = &world{s: trial, ws: w.ws, res: res}
+	chg = trial.Changes[chg.ID]
 
 	w.s.Project.Languages = res.Languages
 	opt := knowledge.Options{Revision: w.ws.Revision, Renames: w.renames()}
@@ -507,11 +521,21 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 	chg.NextSteps = append(chg.NextSteps, imp.Unknowns...)
 	chg.Risks = uniqStrings(append(chg.Risks, imp.Risks...))
 
+	deltas := carryDecisions(review.Diff(before, review.Project(w.s), chg.ID), origChg.StructuralDeltas)
+	if blocked := pendingTierC(w.s, chg, deltas); len(blocked) > 0 {
+		origChg.StructuralDeltas = deltas
+		origChg.State = model.StateBlocked
+		origChg.Blocked = uniqStrings(append(origChg.Blocked, blocked...))
+		return e.draft(orig, origChg, res, "등급 C: 명시적 승인 필요 — "+strings.Join(blocked, "; "))
+	}
+	chg.StructuralDeltas = deltas
+	recordDeltaDecisions(w.s, chg)
+	chg.Blocked = openTierC(w.s, chg)
+
 	if cons := checkSnapshot(w.s); !cons.OK {
-		return e.draft(w, chg, res, "스키마/계약 검사 실패: "+strings.Join(cons.Errors, "; "))
+		return e.draft(orig, origChg, res, "스키마/계약 검사 실패: "+strings.Join(cons.Errors, "; "))
 	}
 
-	prevState := w.s.State
 	chg.State = model.StateCompleted
 	for _, d := range chg.Decisions {
 		if d.Tier == model.TierB && !d.Answered {
@@ -536,9 +560,9 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		if err != nil {
 			reason = "산출물 게시 실패: " + err.Error()
 		}
-		chg.State, w.s.State = model.StateImplementing, prevState
-		w.s.State.ActiveTurn = chg.ID
-		res2, derr := e.draft(w, chg, res, reason)
+		// The trial is discarded; the original SSOT and its watermark stay as they were.
+		origChg.State = model.StateImplementing
+		res2, derr := e.draft(orig, origChg, res, reason)
 		if res2 != nil {
 			res2.Consistency = result.Consistency
 		}
@@ -548,6 +572,9 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		return res2, derr
 	}
 	result.Completed = true
+	if len(chg.StructuralDeltas) > 0 {
+		result.Review = summarize(e.Root, chg)
+	}
 	if o.Commit {
 		result.Commit, err = e.commit(w, chg)
 		if err != nil {
@@ -599,50 +626,17 @@ func (e *Engine) draft(w *world, chg *model.Change, res *analysisResult, reason 
 	if _, err := knowledge.Publish(w.s, res, w.ws, false, "초안: "+reason); err != nil {
 		return nil, err
 	}
-	return &SyncResult{Completed: false, Reason: reason, Receipt: chg, Freshness: e.freshnessNow()}, ErrGate
-}
-
-// gateContracts turns contract changes into tier B records and tier C stops.
-func (e *Engine) gateContracts(w *world, chg *model.Change, imp impact.Report) []string {
-	var blocked []string
-	for _, c := range imp.Contracts {
-		switch c.Tier {
-		case model.TierC:
-			if !approved(w.s, chg, c.ID, model.TierC) {
-				blocked = append(blocked, fmt.Sprintf("%s %s (%s)", c.ID, c.Selector, c.Reason))
-			}
-		case model.TierB:
-			if !decided(w.s, chg, c.ID) {
-				d := recordDecision(w.s, chg, DecideInput{
-					Title: "외부 계약 변경 " + c.ID, Tier: model.TierB,
-					Question: fmt.Sprintf("%s `%s` %s: %s. 호환성을 어떻게 다룰까?", c.ID, c.Selector, c.Change, c.Reason),
-					Options: []model.Option{
-						{Key: "proceed", Label: "변경 그대로 진행", Effect: "외부 소비자가 있으면 깨질 수 있음"},
-						{Key: "compat", Label: "호환 경로 유지", Effect: "이전 selector를 함께 유지하는 후속 작업"},
-					},
-					Default: "proceed", Subjects: []string{c.ID},
-					ProceedsWithout: "현재 변경과 맵 동기화. 호환 경로 결정만 보류",
-				}, false)
-				chg.Risks = append(chg.Risks, d.ID+": 등급 B 기본값으로 진행 ("+c.Selector+")")
-			}
-		}
+	out := &SyncResult{Completed: false, Reason: reason, Receipt: chg, Freshness: e.freshnessNow()}
+	if len(chg.StructuralDeltas) > 0 {
+		out.Review = summarize(e.Root, chg)
 	}
-	return blocked
+	return out, ErrGate
 }
 
 func approved(s *ssot.Snapshot, chg *model.Change, subject string, tier model.Tier) bool {
 	for _, ref := range chg.Decisions {
 		d := s.Decisions[ref.ADR]
 		if d != nil && d.Tier == tier && d.Answered && d.Chosen == "approve" && contains(d.Subjects, subject) {
-			return true
-		}
-	}
-	return false
-}
-
-func decided(s *ssot.Snapshot, chg *model.Change, subject string) bool {
-	for _, ref := range chg.Decisions {
-		if d := s.Decisions[ref.ADR]; d != nil && contains(d.Subjects, subject) {
 			return true
 		}
 	}

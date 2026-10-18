@@ -212,7 +212,25 @@ func (w *walker) call(c *ast.CallExpr) {
 		}
 	}
 	w.route(c, name)
-	w.topicCall(c, name)
+	w.topicCall(c, name, w.messagingPackage(c.Fun))
+}
+
+// messagingWords mark an import path as a messaging client. A constructor like NewWriter is a
+// topic producer only there; bufio.NewWriter or a storage writer is not.
+var messagingWords = []string{"kafka", "sarama", "nats", "pubsub", "amqp", "rabbit", "sqs", "sns", "kinesis", "pulsar", "mq", "broker", "stream", "queue", "event"}
+
+// messagingPackage reports whether the call goes to a messaging client: a qualified call into
+// such a package, or an unqualified call made from inside one.
+func (w *walker) messagingPackage(fun ast.Expr) bool {
+	path := w.p.key
+	if sel, ok := fun.(*ast.SelectorExpr); ok {
+		ip, ok := w.importOf(sel.X)
+		if !ok {
+			return false
+		}
+		path = ip
+	}
+	return containsAny(strings.ToLower(path), messagingWords...)
 }
 
 var routeVerbs = map[string]bool{"GET": true, "POST": true, "PUT": true, "DELETE": true, "PATCH": true}
@@ -289,16 +307,16 @@ func (w *walker) topicFields(lit *ast.CompositeLit) {
 	}
 }
 
-func (w *walker) topicCall(c *ast.CallExpr, name string) {
+func (w *walker) topicCall(c *ast.CallExpr, name string, messaging bool) {
 	isTopic := strings.Contains(name, "Topic")
-	isClient := strings.HasPrefix(name, "New") && containsAny(strings.ToLower(name), clientWords...)
+	isClient := messaging && strings.HasPrefix(name, "New") && containsAny(strings.ToLower(name), clientWords...)
 	isPubSub := hasAnyPrefix(name, "Publish", "Produce", "Subscribe", "Consume")
 	if !isTopic && !isClient && !isPubSub {
 		return
 	}
 	dir := topicDirection(name, shortName(w.from))
 	for _, a := range c.Args {
-		if v, ok := w.x.evalString(a, w.f, w.p, 0); ok {
+		if v, ok := w.x.evalString(a, w.f, w.p, 0); ok && v != "" {
 			w.add(KindKafka, dir, v, a.Pos(), w.from, model.Extracted, "")
 			return
 		}

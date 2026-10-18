@@ -7,6 +7,7 @@ import (
 	"github.com/whyjp/abbd/internal/graph"
 	"github.com/whyjp/abbd/internal/html"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/review"
 	"github.com/whyjp/abbd/internal/ssot"
 	"github.com/whyjp/abbd/internal/workspace"
 )
@@ -31,6 +32,9 @@ func Publish(s *ssot.Snapshot, res *analysis.Result, ws workspace.Snapshot, sett
 		fresh = model.Draft
 	}
 	if err := html.Render(s, g, html.Meta{Revision: ws.Revision, Fingerprint: ws.Fingerprint, SSOTHash: hash, Freshness: fresh, Note: note}); err != nil {
+		return nil, err
+	}
+	if err := review.Write(s, ws.Fingerprint); err != nil {
 		return nil, err
 	}
 	if settle {

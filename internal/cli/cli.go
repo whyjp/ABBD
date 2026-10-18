@@ -15,6 +15,8 @@ import (
 	"github.com/whyjp/abbd/internal/intent"
 	"github.com/whyjp/abbd/internal/mcp"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/review"
+	"github.com/whyjp/abbd/internal/serve"
 	"github.com/whyjp/abbd/internal/ssot"
 	"github.com/whyjp/abbd/internal/workflow"
 	"gopkg.in/yaml.v3"
@@ -58,6 +60,8 @@ var Commands = map[string]command{
 	}},
 	"verification-plan": {"verification-plan", func(e *workflow.Engine, a []string) (any, error) { return e.VerificationPlan() }},
 	"mcp":               {"mcp (stdio MCP server)", runMCP},
+	"serve":             {"serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)", runServe},
+	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT] [--relayout]", runReview},
 	"domain":            {"domain ... (reserved for Phase 3)", reserved("domain state layer (DOM/STATE/TRN/INV) is reserved for Phase 3; Phase 1 only reserves the ID prefixes")},
 	"eval":              {"eval run (optional appendix A benchmark)", reserved("appendix A benchmark is optional and runs after completion; Phase 1 keeps only the ChangeReceipt telemetry hooks")},
 }
@@ -541,6 +545,55 @@ func typeNames() []string {
 		out = append(out, t.Name)
 	}
 	return out
+}
+
+func runServe(e *workflow.Engine, args []string) (any, error) {
+	fs := newFlags("serve")
+	addr := fs.String("addr", "127.0.0.1:7787", "loopback address")
+	if _, err := parse(fs, args); err != nil {
+		return nil, err
+	}
+	if _, err := e.Render(); err != nil {
+		return nil, err
+	}
+	return nil, serve.Run(e, *addr, os.Stdout)
+}
+
+func runReview(e *workflow.Engine, args []string) (any, error) {
+	fs := newFlags("review")
+	apply := fs.String("apply", "", "decision file downloaded from the review page")
+	relayout := fs.Bool("relayout", false, "drop the stable layout and place every node again")
+	var in workflow.DeltaDecisionInput
+	fs.StringVar(&in.Delta, "decide", "", "structural change ID, e.g. CHG-003#2")
+	fs.StringVar(&in.Decision, "decision", "", "approve|reject|revert|option:KEY")
+	fs.StringVar(&in.Reason, "reason", "", "")
+	pos, err := parse(fs, args)
+	if err != nil {
+		return nil, err
+	}
+	chg := ""
+	if len(pos) > 0 {
+		chg = pos[0]
+	}
+	switch {
+	case *relayout:
+		if err := review.Relayout(e.Root); err != nil {
+			return nil, err
+		}
+		if _, err := e.Render(); err != nil {
+			return nil, err
+		}
+	case *apply != "":
+		if _, err := e.ApplyDecisionFile(*apply); err != nil {
+			return nil, err
+		}
+	case in.Delta != "":
+		in.Channel = "cli"
+		if _, err := e.DecideDelta(in); err != nil {
+			return nil, err
+		}
+	}
+	return e.Review(chg)
 }
 
 func runMCP(e *workflow.Engine, args []string) (any, error) {

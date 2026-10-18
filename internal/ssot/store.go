@@ -390,3 +390,25 @@ func MigrateLegacy(root string) (string, error) {
 	}
 	return "", nil
 }
+
+// Clone deep-copies the snapshot through its own serialization, so a trial sync can be applied
+// and thrown away without touching the original (PRD v1.4: a tier C change is not reflected
+// before approval).
+func (s *Snapshot) Clone() (*Snapshot, error) {
+	c := NewSnapshot(s.Root)
+	pairs := []struct{ from, to any }{
+		{s.Project, &c.Project}, {s.State, &c.State}, {s.Candidates, &c.Candidates},
+		{s.Features, &c.Features}, {s.Modules, &c.Modules}, {s.Tests, &c.Tests},
+		{s.Decisions, &c.Decisions}, {s.Changes, &c.Changes}, {s.Requirements, &c.Requirements},
+	}
+	for _, p := range pairs {
+		b, err := yaml.Marshal(p.from)
+		if err != nil {
+			return nil, err
+		}
+		if err := yaml.Unmarshal(b, p.to); err != nil {
+			return nil, err
+		}
+	}
+	return c, nil
+}

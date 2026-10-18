@@ -126,8 +126,10 @@ func TestCodeOnlyE2E(t *testing.T) {
 	p.ok("verify")
 	p.ok("turn", "note", "--model-calls", "4")
 	sync := p.ok("sync")
-	if get(sync, "completed") != true || str(sync, "receipt", "state") != "COMPLETED" {
-		t.Fatalf("sync must complete: %v", get(sync, "reason"))
+	// v1.4: a new external contract is a tier B structural change, so the turn completes with
+	// its default applied and waits for a decision (NEEDS_USER).
+	if get(sync, "completed") != true || str(sync, "receipt", "state") != "NEEDS_USER" || get(sync, "review", "by_tier", "B") == nil {
+		t.Fatalf("sync must complete with an open B card: %v %v %v", get(sync, "reason"), str(sync, "receipt", "state"), get(sync, "review"))
 	}
 	receipt := get(sync, "receipt")
 	if !has(strs(receipt, "delivers"), newFeat) || get(receipt, "telemetry", "test_runs").(float64) < 2 || get(receipt, "telemetry", "model_calls") != float64(4) {

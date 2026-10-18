@@ -7,6 +7,7 @@ import (
 	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/knowledge"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/review"
 )
 
 type analysisResult = analysis.Result
@@ -54,7 +55,12 @@ func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 		Time:      now(),
 	}
 	w.s.Changes[chg.ID] = chg
+	before := review.Project(w.s)
 	krep := knowledge.Apply(w.s, res, knowledge.Options{Revision: w.ws.Revision, Renames: w.renames()})
+	// The code already changed outside the harness, so nothing is held back; the cards show
+	// what changed structurally and a rejection becomes the next turn's work.
+	chg.StructuralDeltas = review.Diff(before, review.Project(w.s), chg.ID)
+	recordDeltaDecisions(w.s, chg)
 	rr := &ReconcileResult{Change: chg.ID, Files: files, Knowledge: krep}
 
 	for _, id := range krep.Removed {
@@ -82,8 +88,10 @@ func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 	}
 	chg.Impacted = krep.Touched()
 	chg.State = model.StateCompleted
-	if len(rr.Conflicts) > 0 {
-		chg.State = model.StateNeedsUser
+	for _, d := range chg.Decisions {
+		if !d.Answered {
+			chg.State = model.StateNeedsUser
+		}
 	}
 	finish(chg)
 	chg.SyncState = model.SyncState{FeatureMap: model.Current, ArchitectureMap: model.Current, Graph: model.Current, HTML: model.Current}
