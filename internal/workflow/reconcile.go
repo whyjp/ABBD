@@ -24,7 +24,9 @@ type ReconcileResult struct {
 	Questions int              `json:"questions_asked"`
 }
 
-func (e *Engine) Reconcile() (*ReconcileResult, error) {
+// Reconcile absorbs an outside change. byUser says the user made it, the only way to reconcile
+// while a host agent session is open.
+func (e *Engine) Reconcile(byUser bool) (*ReconcileResult, error) {
 	w, err := e.load()
 	if err != nil {
 		return nil, err
@@ -34,6 +36,9 @@ func (e *Engine) Reconcile() (*ReconcileResult, error) {
 	}
 	if len(w.changedSinceSync()) == 0 {
 		return &ReconcileResult{State: model.StateCompleted}, nil
+	}
+	if err := w.duringSession(byUser); err != nil {
+		return nil, err
 	}
 	return e.reconcile(w)
 }
@@ -100,6 +105,7 @@ func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 		return &ReconcileResult{Change: chg.ID, Files: files, State: model.StateBlocked, Conflicts: blocked}, ErrGate
 	}
 	recordDeltaDecisions(w.s, chg)
+	chg.Risks = uniqStrings(append(chg.Risks, untestedNewPaths(w.s, chg)...))
 	rr := &ReconcileResult{Change: chg.ID, Files: files, Knowledge: krep}
 
 	for _, id := range krep.Removed {
@@ -145,7 +151,8 @@ func lastBlockedReconcile(s *ssot.Snapshot) *model.Change {
 	ids := model.SortedKeys(s.Changes)
 	for i := len(ids) - 1; i >= 0; i-- {
 		c := s.Changes[ids[i]]
-		if c.IntentSource == "external" && c.State == model.StateBlocked {
+		// A record whose tier C card was rejected is closed: the next outside change gets its own.
+		if c.IntentSource == "external" && c.State == model.StateBlocked && !hasRejectedTierC(c) {
 			return c
 		}
 		if c.IntentSource != "external" {
@@ -153,6 +160,15 @@ func lastBlockedReconcile(s *ssot.Snapshot) *model.Change {
 		}
 	}
 	return nil
+}
+
+func hasRejectedTierC(c *model.Change) bool {
+	for _, d := range c.StructuralDeltas {
+		if d.Tier == model.TierC && (d.Status == model.DeltaRejected || d.Status == model.DeltaRevertAsked) {
+			return true
+		}
+	}
+	return false
 }
 
 func confirmed(s model.Semantic) bool {

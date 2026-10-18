@@ -67,8 +67,10 @@ type Project struct {
 type Driver struct {
 	Run    string `yaml:"run" json:"run"`
 	Expect string `yaml:"expect" json:"expect"`
-	// SetIn is the turn that registered the driver; it cannot prove that same turn.
-	SetIn string `yaml:"set_in,omitempty" json:"set_in,omitempty"`
+	// SetIn is the turn that registered or changed the driver, and Prompt the user message it was
+	// set for; it cannot prove that turn, a turn that never completed, or a turn for that message.
+	SetIn  string `yaml:"set_in,omitempty" json:"set_in,omitempty"`
+	Prompt string `yaml:"prompt,omitempty" json:"prompt,omitempty"`
 }
 
 type VerificationCfg struct {
@@ -100,9 +102,20 @@ type State struct {
 	// next `abbd run` takes it as the USER_STATED requirement instead of the agent's summary.
 	UserPrompt   string `yaml:"user_prompt,omitempty"`
 	UserPromptAt string `yaml:"user_prompt_at,omitempty"`
+	// LastPrompt marks the user's latest message and is never cleared: a turn and a driver set in
+	// answer to the same message share it.
+	LastPrompt string `yaml:"last_prompt,omitempty"`
+	// Sessions are the host agent sessions open on this workspace (session id -> last seen), from
+	// the host's session hooks. While one is open an unsynced change is the agent's, whatever tool
+	// made it (Bash sed -i included), so it goes through a turn, not reconcile.
+	Sessions map[string]string `yaml:"sessions,omitempty"`
 	// EngineHash is the md hash the engine last wrote; a different hash on load means the
 	// originals were edited by hand.
 	EngineHash string `yaml:"engine_hash,omitempty"`
+	// Marks are the meaning fields as the engine last wrote them, and HeldEdits the hand-typed
+	// ones that raised user-only provenance, held until `abbd check --accept-edits` (marks.go).
+	Marks     map[string]Mark `yaml:"marks,omitempty"`
+	HeldEdits map[string]Mark `yaml:"held_edits,omitempty"`
 	// TurnGraphQueries counts knowledge queries of the active turn until verify or sync folds it into the CHG.
 	TurnGraphQueries int `yaml:"turn_graph_queries,omitempty"`
 	// Commits maps a CHG to the local commit `sync --commit` made for it.
@@ -196,6 +209,7 @@ func Load(root string) (*Snapshot, error) {
 	defer func() {
 		if s.State.EngineHash != "" && Hash(root) != s.State.EngineHash {
 			s.HandEdited = true
+			s.holdHandRaises()
 		}
 	}()
 	_ = readYAML(Path(root, "candidates.yaml"), &s.Candidates)
@@ -261,6 +275,7 @@ func (s *Snapshot) Save() error {
 		s.State.HandEdits = true
 	}
 	s.State.EngineHash = Hash(s.Root)
+	s.recordMarks()
 	return s.SaveState()
 }
 

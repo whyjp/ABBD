@@ -73,7 +73,7 @@ func TestCodeOnlyE2E(t *testing.T) {
 	p.assertAllCurrent("after bootstrap")
 
 	// AC-BOOT-03: a re-run keeps stable IDs and confirmed intent, and creates no duplicates.
-	p.ok("confirm", postFeat, "--value", "메시지를 받아 message-events 토픽에 발행한다")
+	p.ok("confirm", postFeat, "--value", "메시지를 받아 message-events 토픽에 발행한다", "--user")
 	again := p.ok("bootstrap", "--mode", "code-only")
 	if n := len(list(again, "knowledge", "new")); n != 0 {
 		t.Fatalf("AC-BOOT-03: re-run created %d new objects: %v", n, get(again, "knowledge", "new"))
@@ -190,7 +190,7 @@ func TestCodeOnlyE2E(t *testing.T) {
 
 	// External removal of a route whose purpose the user confirmed: tier B record, no stop.
 	health := p.featureFor("GET /health")
-	p.ok("confirm", health, "--value", "헬스 체크")
+	p.ok("confirm", health, "--value", "헬스 체크", "--user")
 	p.replace("internal/api/api.go", "	s.mux.HandleFunc(\"GET /health\", s.handleHealth)\n", "")
 	test := p.read("internal/api/api_test.go")
 	p.write("internal/api/api_test.go", test[:strings.Index(test, "func TestHealth")])
@@ -206,7 +206,7 @@ func TestCodeOnlyE2E(t *testing.T) {
 
 	// Tier C: a breaking change to an interface with external consumers stops until approved.
 	post := p.findContract("POST /messages")
-	p.ok("confirm", post, "--external-consumers", "true")
+	p.ok("confirm", post, "--external-consumers", "true", "--user")
 	p.ok("run", "POST /messages 경로를 /v2/messages 로 변경")
 	p.replace("internal/api/api.go", `"POST /messages"`, `"POST /v2/messages"`)
 	p.replace("internal/api/api_test.go", `"/messages", strings.NewReader(`+"`"+`{"key"`, `"/v2/messages", strings.NewReader(`+"`"+`{"key"`)

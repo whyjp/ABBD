@@ -10,6 +10,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/policy"
 	"github.com/whyjp/abbd/internal/ssot"
 	"github.com/whyjp/abbd/internal/verify"
 )
@@ -27,6 +28,9 @@ func (e *Engine) SetDriver(id, run, expect string) (map[string]ssot.Driver, erro
 	if strings.TrimSpace(run) == "" || strings.TrimSpace(expect) == "" {
 		return nil, fmt.Errorf("a driver needs --run and --expect: a user-level run without an expected outcome proves nothing")
 	}
+	if err := runnableCheck("driver", run); err != nil {
+		return nil, err
+	}
 	if w.s.Project.Drivers == nil {
 		w.s.Project.Drivers = map[string]ssot.Driver{}
 	}
@@ -35,7 +39,7 @@ func (e *Engine) SetDriver(id, run, expect string) (map[string]ssot.Driver, erro
 		setIn = c.ID
 		c.Risks = uniqStrings(append(c.Risks, "driver "+id+" registered in this turn: it proves later turns, not this one"))
 	}
-	w.s.Project.Drivers[id] = ssot.Driver{Run: run, Expect: expect, SetIn: setIn}
+	w.s.Project.Drivers[id] = ssot.Driver{Run: run, Expect: expect, SetIn: setIn, Prompt: w.s.State.LastPrompt}
 	return w.s.Project.Drivers, w.s.Save()
 }
 
@@ -78,6 +82,11 @@ func (e *Engine) drive(w *world, chg *model.Change, rep *EvidenceReport) (*Evide
 		return nil, fmt.Errorf("no driver covers this turn; register one: abbd driver set FEAT-x|IF-x --run CMD --expect TEXT")
 	}
 	sort.Strings(ids)
+	for _, id := range ids {
+		if err := runnableCheck("driver "+id, w.s.Project.Drivers[id].Run); err != nil {
+			return nil, err
+		}
+	}
 	changeID := ""
 	if chg != nil {
 		changeID = chg.ID
@@ -117,6 +126,15 @@ func (e *Engine) drive(w *world, chg *model.Change, rep *EvidenceReport) (*Evide
 		return rep, ErrFailed
 	}
 	return rep, nil
+}
+
+// runnableCheck refuses a command with an outside effect (push, deploy, publish): it is a tier C
+// action, never a check, whichever path (verify --cmd, a driver) would run it.
+func runnableCheck(what, command string) error {
+	if tier, why := policy.CommandTier(command); tier == model.TierC {
+		return fmt.Errorf("refusing %s %q: %s (tier C)", what, command, why)
+	}
+	return nil
 }
 
 func shellCmd(command string) *exec.Cmd {

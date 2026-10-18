@@ -6,6 +6,7 @@ package workflow
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -56,7 +57,17 @@ func (e *Engine) load() (*world, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &world{s: s, ws: ws}, nil
+	w := &world{s: s, ws: ws}
+	// An agent edit that was reverted is no longer pending work; left recorded, it would hold a
+	// later human edit of the same file as the agent's.
+	if n := len(s.State.AgentEdits); n > 0 {
+		if s.State.AgentEdits = w.agentEdited(w.changedSinceSync()); len(s.State.AgentEdits) != n {
+			if err := s.SaveState(); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return w, nil
 }
 
 func (w *world) analyze() (*analysis.Result, error) {
@@ -107,7 +118,51 @@ func (e *Engine) NotePrompt(prompt string) error {
 		return nil
 	}
 	s.State.UserPrompt, s.State.UserPromptAt = prompt, now()
+	s.State.LastPrompt = s.State.UserPromptAt
 	return s.SaveState()
+}
+
+// NoteSession records a host agent session opening ("start", refreshed on each prompt) or
+// closing ("end"). Like the other hooks it never fails the host.
+func (e *Engine) NoteSession(event, id string) error {
+	if !ssot.Exists(e.Root) {
+		return nil
+	}
+	s, err := ssot.Load(e.Root)
+	if err != nil {
+		return nil
+	}
+	if id == "" {
+		id = "default"
+	}
+	if event == "end" {
+		delete(s.State.Sessions, id)
+	} else {
+		s.State.Sessions = mapSet(s.State.Sessions, id, now())
+	}
+	return s.SaveState()
+}
+
+// sessionTTL bounds a session whose end hook never ran (a crash): it stops counting after this.
+const sessionTTL = 12 * time.Hour
+
+// agentSession returns an open host agent session, or "".
+func (w *world) agentSession() string {
+	for _, id := range model.SortedKeys(w.s.State.Sessions) {
+		if t, err := time.Parse(time.RFC3339, w.s.State.Sessions[id]); err == nil && time.Since(t) < sessionTTL {
+			return id
+		}
+	}
+	return ""
+}
+
+// duringSession refuses to take a change as outside while a host agent session is open: the
+// agent may have made it with any tool, and only the user can say they made it.
+func (w *world) duringSession(byUser bool) error {
+	if id := w.agentSession(); id != "" && !byUser {
+		return fmt.Errorf("%w: %s changed while agent session %s is open. Open a turn (abbd run \"<request>\"), then abbd verify and abbd sync; if the user made the change: abbd reconcile --user", ErrAgentEdits, strings.Join(w.changedSinceSync(), ", "), id)
+	}
+	return nil
 }
 
 // NoteEdit records a file the agent edited (host PostToolUse hook). Edits under .abbd are the
@@ -116,43 +171,63 @@ func (e *Engine) NoteEdit(path string) error {
 	if !ssot.Exists(e.Root) || strings.TrimSpace(path) == "" {
 		return nil
 	}
-	rel := path
-	if filepath.IsAbs(path) {
-		if r, err := filepath.Rel(e.Root, path); err == nil {
-			rel = r
+	rel := filepath.Clean(path)
+	if filepath.IsAbs(rel) {
+		r, err := filepath.Rel(e.Root, rel)
+		if err != nil {
+			return nil
 		}
+		rel = r
 	}
 	rel = filepath.ToSlash(rel)
-	if strings.HasPrefix(rel, "..") || strings.HasPrefix(rel, ssot.Dir+"/") || rel == ssot.Dir {
+	if rel == ".." || strings.HasPrefix(rel, "../") || samePath(rel, ssot.Dir) || hasPathPrefix(rel, ssot.Dir+"/") {
 		return nil
 	}
 	s, err := ssot.Load(e.Root)
 	if err != nil {
 		return nil
 	}
-	if !contains(s.State.AgentEdits, rel) {
-		s.State.AgentEdits = append(s.State.AgentEdits, rel)
+	for _, f := range s.State.AgentEdits {
+		if samePath(f, rel) {
+			return nil
+		}
 	}
+	s.State.AgentEdits = append(s.State.AgentEdits, rel)
 	return s.SaveState()
+}
+
+// foldCase: Windows and macOS file systems ignore case, so INTERNAL/api.go is internal/api.go.
+var foldCase = runtime.GOOS == "windows" || runtime.GOOS == "darwin"
+
+func samePath(a, b string) bool { return a == b || foldCase && strings.EqualFold(a, b) }
+
+func hasPathPrefix(p, prefix string) bool {
+	return len(p) >= len(prefix) && samePath(p[:len(prefix)], prefix)
 }
 
 // agentEdited returns the changed files the agent edited without a completed turn.
 func (w *world) agentEdited(changed []string) []string {
 	var out []string
 	for _, f := range changed {
-		if contains(w.s.State.AgentEdits, f) {
-			out = append(out, f)
+		for _, a := range w.s.State.AgentEdits {
+			if samePath(a, f) {
+				out = append(out, f)
+				break
+			}
 		}
 	}
 	return out
 }
 
-// AcceptHandEdits acknowledges md originals edited outside abbd.
-func (e *Engine) AcceptHandEdits() error {
+// AcceptHandEdits acknowledges md originals edited outside abbd. Hand-typed user-only
+// provenance (USER_STATED, CONFIRMED, an answer, an approval) survives only the user's own
+// acceptance (byUser); any other acceptance lowers it.
+func (e *Engine) AcceptHandEdits(byUser bool) error {
 	w, err := e.load()
 	if err != nil {
 		return err
 	}
+	w.s.AcceptHeldEdits(byUser)
 	w.s.HandEdited, w.s.State.HandEdits = false, false
 	return w.s.Save()
 }

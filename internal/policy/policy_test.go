@@ -54,13 +54,27 @@ func TestQuestionBudget(t *testing.T) {
 
 func TestCommandTiersMatchCommandsNotWords(t *testing.T) {
 	for cmd, want := range map[string]model.Tier{
-		"git -c core.x=y push origin main": model.TierC,
-		"rtk git push":                     model.TierC,
-		"kubectl apply -f k8s.yaml":        model.TierC,
-		"deploy --prod":                    model.TierC,
-		"go vet ./internal/deploy/...":     model.TierA,
-		"go test ./internal/push/...":      model.TierA,
-		"grep -rn 'terraform' docs":        model.TierA,
+		"git -c core.x=y push origin main":  model.TierC,
+		"rtk git push":                      model.TierC,
+		"kubectl apply -f k8s.yaml":         model.TierC,
+		"deploy --prod":                     model.TierC,
+		"go vet ./internal/deploy/...":      model.TierA,
+		"go test ./internal/push/...":       model.TierA,
+		"grep -rn 'terraform' docs":         model.TierA,
+		"make deploy":                       model.TierC,
+		"npm run deploy":                    model.TierC,
+		"yarn publish":                      model.TierC,
+		"pnpm publish --access public":      model.TierC,
+		"npm publish":                       model.TierC,
+		"docker buildx build -t x --push .": model.TierC,
+		"git send-pack origin main":         model.TierC,
+		"rm -rf /*":                         model.TierC,
+		"rm -r -f /":                        model.TierC,
+		"rm -rf ~":                          model.TierC,
+		"rm -rf ./build":                    model.TierA,
+		"rm -rf ~/project/tmp":              model.TierA,
+		"make test":                         model.TierA,
+		"npm run test":                      model.TierA,
 	} {
 		if got, _ := CommandTier(cmd); got != want {
 			t.Errorf("%q: %s, want %s", cmd, got, want)

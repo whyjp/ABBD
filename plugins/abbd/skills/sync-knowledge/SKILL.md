@@ -34,7 +34,7 @@ abbd intent invariant --feature FEAT-001 \
 - IntentDelta가 바꾸지 않은 의미 필드는 다시 쓰지 않는다. 이번 턴 범위 밖 항목에 INFERRED 의미를 쓰면 엔진이 거부한다(사용자의 말일 때만 `--origin USER_STATED`).
 - 에이전트가 쓴 의미 필드는 origin INFERRED다. 사용자가 이번 턴에 말한 문장만 USER_STATED로 쓴다. 테스트 PASSED는 verification만 바꾸고, CONFIRMED는 사용자 확인(`abbd confirm`이나 리뷰 화면의 카드 승인)으로만 생긴다.
 - 외부 계약을 바꿨으면 호환성 정책과 외부 소비자 여부를 `intent contract`로, 모듈 책임이나 의존 정책을 `intent module`로 기록한다. 이번 턴이 만든 모듈은 `intent module --path DIR`로 쓴다. selector와 위치 같은 EXTRACTED 사실은 sync가 갱신한다.
-- `.abbd/` 아래 md의 엔진 영역을 손으로 고치면 엔진이 그 사실을 state에 남기고, `abbd check`가 "edited outside abbd" 오류를 낸다. 이후 다른 명령이 md를 다시 써도 이 기록은 지워지지 않는다. 사용자가 그 편집을 받아들이기로 했을 때만 `abbd check --accept-edits`로 푼다. origin과 confirmation 규칙은 intent, confirm, decide, review 명령만 지키기 때문이다. 파일 끝의 사용자 메모 영역은 엔진이 덮어쓰지 않으므로 고쳐도 된다.
+- `.abbd/` 아래 md의 엔진 영역을 손으로 고치면 엔진이 그 사실을 state에 남기고, `abbd check`가 "edited outside abbd" 오류를 낸다. 이후 다른 명령이 md를 다시 써도 이 기록은 지워지지 않는다. 사용자가 그 편집을 받아들이기로 했을 때만 `abbd check --accept-edits --user`로 푼다. 그 전까지 손으로 올린 USER_STATED·CONFIRMED·답변·C 카드 승인은 엔진이 믿지 않고 마지막으로 쓴 값을 쓴다. `--user` 없이 `--accept-edits`만 하면 편집은 받아들이되 그런 provenance는 INFERRED·UNCONFIRMED로 내려간다. origin과 confirmation 규칙은 intent, confirm, decide, review 명령만 지키기 때문이다. 파일 끝의 사용자 메모 영역은 엔진이 덮어쓰지 않으므로 고쳐도 된다.
 
 ```sh
 abbd intent contract --id IF-002 --compatibility "필드 추가만 허용"
@@ -82,7 +82,7 @@ abbd status --json
 구조 변경의 리뷰 대상은 채팅 답변이 아니라 리뷰 화면이다. sync 결과의 `review`에는 화면 파일 경로(`path`), 턴(`change`), 등급별 카드 수(`by_tier`), 결정 대기 수(`open`), 카드 목록(`deltas`)이 있다.
 
 1. 사용자에게 링크와 숫자만 준다. 예: "구조 변경 3건(B 2, A 1), 결정 대기 2건. 리뷰 화면: http://localhost:7787/". 카드를 하나씩 글로 풀거나 구조를 채팅에서 설명하지 않는다. 그림과 근거는 화면에 있다.
-2. 승인·거부를 바로 기록하려면 서버가 필요하다. `abbd serve`를 백그라운드로 띄우고 출력된 URL을 준다. 서버를 띄울 수 없으면 `review.path`의 HTML 파일 경로를 준다. 그 페이지는 결정 파일을 내려받게 하고, 사용자가 그 파일을 주면 `abbd review --apply FILE`로 반영한다.
+2. 승인·거부를 바로 기록하려면 서버가 필요하다. `abbd serve`를 백그라운드로 띄우고 출력된 URL을 준다. 서버를 띄울 수 없으면 `review.path`의 HTML 파일 경로를 준다. 그 페이지는 결정 파일을 내려받게 하고, 사용자가 그 파일을 주면 `abbd review --apply FILE --user`로 반영한다. 직접 만든 결정 파일에는 `--user`를 붙이지 않는다.
 3. 카드 결정은 사용자가 한다. 에이전트는 카드를 승인·거부하지 않는다. 사용자가 채팅에서 특정 카드에 대해 결정을 명시적으로 말했을 때만 그 말을 `--user`와 함께 그대로 기록한다. `--user`가 없으면 사용자 결정으로 기록되지 않는다. 거부와 되돌리기 요청은 사유가 필요하다.
 
 ```sh

@@ -152,7 +152,8 @@ var (
 	ruleScope = regexp.MustCompile(`(항상|모든\s|어떤 경로|어디서든|어떤 경우에도|앞으로|\balways\b|\bevery\b|\beverywhere\b|\bany (path|endpoint|route)\b|\ball (http|endpoints|routes|paths|errors)\b|\bfrom now on\b|\btoday or in anything\b|\bcurrent and future\b|\bincluding ones added later\b)`)
 	// A scope this strong states a rule on its own ("ids are case-insensitive everywhere").
 	ruleStrong = regexp.MustCompile(`(어디서든|어떤 경우에도|\beverywhere\b|\bfrom now on\b|\bincluding ones added later\b|\bcurrent and future\b)`)
-	ruleDuty   = regexp.MustCompile(`(해야|하여야|돼야|되어야|어야 한|아야 한|하지 않|않는다|안 된다|금지|반드시|\bmust\b|\bshould\b|\bnever\b|\bshall\b|\bare the same\b|\bis rejected\b|\bmust not\b|\bonly\b)`)
+	// Any Korean "-야 한다/해/함/된다" obligation ("거쳐야 한다", "써야 해") counts, as do require/need.
+	ruleDuty = regexp.MustCompile(`(해야|하여야|돼야|되어야|[가-힣]야\s*(한다|합니다|해|함|된다)|\brequires?\b|\bneeds?\b|하지 않|않는다|안 된다|금지|반드시|\bmust\b|\bshould\b|\bnever\b|\bshall\b|\bare the same\b|\bis rejected\b|\bmust not\b|\bonly\b)`)
 )
 
 // IsProjectRule reports whether a sentence reads as a standing rule.

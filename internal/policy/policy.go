@@ -68,11 +68,16 @@ func ActionNames() []string {
 var externalEffects = []*regexp.Regexp{
 	regexp.MustCompile(`\bgit\b[^;&|]*\bpush\b`),
 	regexp.MustCompile(`\bdocker\s+(\S+\s+)*push\b`),
-	regexp.MustCompile(`\bnpm\s+publish\b`),
+	regexp.MustCompile(`\bgit\b[^;&|]*\bsend-pack\b`),
+	regexp.MustCompile(`\bdocker\b[^;&|]*\s--push\b`),
+	regexp.MustCompile(`\b(npm|yarn|pnpm)\s+(\S+\s+)*publish\b`),
+	regexp.MustCompile(`\b(npm|yarn|pnpm)\s+(run\s+)?deploy\b`),
+	regexp.MustCompile(`\bmake\s+(\S+\s+)*deploy\b`),
 	regexp.MustCompile(`\bkubectl\b[^;&|]*\b(apply|delete|rollout|scale|patch)\b`),
 	regexp.MustCompile(`\bterraform\b[^;&|]*\b(apply|destroy)\b`),
 	regexp.MustCompile(`\bhelm\b[^;&|]*\b(install|upgrade|uninstall|rollback)\b`),
-	regexp.MustCompile(`\brm\s+-[a-z]*r[a-z]*f?[a-z]*\s+/(\s|$)`),
+	// rm -rf / in its spellings: split flags, a glob of /, the home directory.
+	regexp.MustCompile(`\brm\s+(-\S+\s+)*(/\*?|~/?\*?|\$home/?\*?)(\s|$)`),
 	regexp.MustCompile(`\bdrop\s+(table|database)\b`),
 	// a deploy script or tool as the command itself, not a path segment such as ./internal/deploy/...
 	regexp.MustCompile(`(^|[;&|]\s*)(\S*/)?deploy(\.sh|\.ps1)?(\s|$)`),

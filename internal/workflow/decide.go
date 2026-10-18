@@ -236,10 +236,16 @@ type ConfirmInput struct {
 	Split             string
 	ExternalConsumers string
 	All               bool
+	// ByUser: every confirm writes the user's word (CONFIRMED, USER_STATED, external consumers),
+	// so the agent's channels (the CLI without --user, MCP) are refused.
+	ByUser bool
 }
 
 // Confirm is lazy confirmation. Only this path promotes an INFERRED meaning to CONFIRMED.
 func (e *Engine) Confirm(in ConfirmInput) ([]string, error) {
+	if !in.ByUser {
+		return nil, fmt.Errorf("confirm records the user's word (CONFIRMED, USER_STATED, external consumers); pass --user only when the user said it, or leave it on the confirm queue")
+	}
 	w, err := e.load()
 	if err != nil {
 		return nil, err

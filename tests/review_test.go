@@ -142,7 +142,7 @@ func TestACREV04BreakingConsumerContractIsCOnly(t *testing.T) {
 	p := newProject(t, "code-only")
 	p.ok("init")
 	post := p.findContract("POST /messages")
-	p.ok("confirm", post, "--external-consumers", "true")
+	p.ok("confirm", post, "--external-consumers", "true", "--user")
 	p.commit("harness")
 	p.ok("run", "POST /messages 경로를 /v2/messages 로 변경")
 	p.replace("internal/api/api.go", `"POST /messages"`, `"POST /v2/messages"`)
@@ -276,7 +276,7 @@ func TestServeRequiresTokenAndLoopback(t *testing.T) {
 	// The decision file channel writes the same record.
 	f := filepath.Join(p.dir, "decisions.json")
 	os.WriteFile(f, []byte(`{"decisions":[{"delta":"`+str(card, "id")+`","decision":"reject","reason":"file channel"}]}`), 0o644)
-	p.ok("review", "--apply", f)
+	p.ok("review", "--apply", f, "--user")
 	for _, d := range list(p.ok("review"), "deltas") {
 		if str(d, "id") == str(card, "id") && str(d, "decision", "channel") != "file" {
 			t.Fatalf("file decision recorded: %v", d)

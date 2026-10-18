@@ -3,36 +3,54 @@
 # .abbd/ (receipts, request texts, decision log, run evidence, derived views) is the audit trail;
 # read as context it mixes superseded intent into the current one. Reads of it are refused and
 # pointed at .abbd/BLUEPRINT.md and the abbd queries. The abbd CLI is not affected.
-input=$(cat)
+# Quotes that split a word (.ab""bd, gi''t) are dropped and JSON "\\" becomes "/" before matching;
+# matching ignores case (Windows and macOS paths do).
+input=$(cat | sed -e 's/\\\\/\//g' -e 's/\\"//g' -e "s/'//g")
 dir='\.(abbd|cccv|myharness)'
-printf '%s' "$input" | grep -Eq "$dir" || exit 0
+# The directory itself, not a longer name such as docs/.abbd-notes.md.
+dirb="$dir([/\" ]|\$)"
+printf '%s' "$input" | grep -Eiq "$dirb" || exit 0
 
-history="$dir[/\\\\]+(changes|requirements|decisions|verification[/\\\\]+runs|generated)|$dir[/\\\\]+(candidates\.yaml|state\.yaml|learning\.yaml|bootstrap-report)"
-# A wildcard right under .abbd/ (".abbd/*", ".abbd/ch*", ".abbd/**") can reach history.
-wild="$dir[/\\\\]+[^/\\\\\" ]*[*?{]"
-current="$dir[/\\\\]+(BLUEPRINT\.md|features|architecture|verification[/\\\\]+TEST-|project\.yaml|\.ignore)"
+history="$dir/+(changes|requirements|decisions|verification/+runs|generated)|$dir/+(candidates\.yaml|state\.yaml|learning\.yaml|bootstrap-report)"
+# A wildcard right under .abbd/ (".abbd/*", ".abbd/ch*", ".abbd/**") can reach history, and so
+# can a ".." anywhere below it (features/../changes).
+wild="$dir/+[^/\" ]*[*?{]|$dir/[^\" ]*\.\.(/|\"|\$| )"
+current="$dir/+(BLUEPRINT\.md|features|architecture|verification/+TEST-|project\.yaml|\.ignore)"
+# Grep/Glob relative to .abbd name a current place through their glob or pattern.
+currentRel='"(glob|pattern)"[[:space:]]*:[[:space:]]*"(BLUEPRINT\.md|features|architecture|verification/TEST-)'
+# Commands that write or ask abbd rather than read history: abbd itself and git bookkeeping.
+allowed='^[[:space:]]*(rtk[[:space:]]+)?(abbd([[:space:]]|$)|git[[:space:]]+(add|commit|status|rm|mv|restore|checkout|stash|reset)([[:space:]]|$))'
 
 tool=$(printf '%s' "$input" | sed -n 's/.*"tool_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
 deny=0
 case "$tool" in
   Bash|PowerShell)
     command=$(printf '%s' "$input" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p')
-    single=1
-    case "$command" in *'&&'*|*';'*|*'|'*|*'`'*|*'$('*) single=0 ;; esac
-    if [ $single = 1 ] && printf '%s' "$command" | grep -Eq '^[[:space:]]*(rtk[[:space:]]+)?(abbd[[:space:]]|git[[:space:]]+(add|commit|status|rm|mv|restore|checkout|stash|reset)([[:space:]]|$))'; then
-      exit 0
-    fi
-    if printf '%s' "$command" | grep -Eq "$history|$wild"; then
+    # A chain made only of allowed commands (git add .abbd && git commit -m x) passes; a pipe or a
+    # substitution can feed history anywhere, so it never does.
+    case "$command" in
+      ''|*'`'*|*'$('*) ;;
+      *)
+        if ! printf '%s\n' "$command" | awk '{ gsub(/&&|\|\||;/, "\n"); print }' | grep -v '^[[:space:]]*$' | grep -Eqv "$allowed" \
+          && ! printf '%s' "$command" | sed -e 's/||//g' | grep -q '|'; then
+          exit 0
+        fi
+        ;;
+    esac
+    if printf '%s' "$command" | grep -Eiq "$history|$wild"; then
       deny=1
-    elif printf '%s' "$command" | grep -Eq "(^|[[:space:];&|])cd[[:space:]]+[^;&|]*$dir"; then
+    elif printf '%s' "$command" | grep -Eiq "(^|[[:space:];&|])cd[[:space:]]+[^;&|]*$dir"; then
       deny=1
-    elif ! printf '%s' "$command" | grep -Eq "$current"; then
+    elif ! printf '%s' "$command" | grep -Eiq "$current"; then
       # Mentions .abbd without naming a current blueprint path: a whole-directory read.
       deny=1
     fi
     ;;
   *)
-    if printf '%s' "$input" | grep -Eq "$history|$wild"; then
+    if printf '%s' "$input" | grep -Eiq "$history|$wild"; then
+      deny=1
+    elif ! printf '%s' "$input" | grep -Eiq "$current|$currentRel"; then
+      # Grep/Glob/Read on .abbd itself (or an unlisted file in it) without naming a current path.
       deny=1
     fi
     ;;

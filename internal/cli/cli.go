@@ -37,7 +37,7 @@ var Commands = map[string]command{
 	"init":      {"init [DIR] [--mode M] [--from PATH] [--verify-available] [--preview]", runInit},
 	"bootstrap": {"bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]", runBootstrap},
 	"status":    {"status [--knowledge]", runStatus},
-	"reconcile": {"reconcile", func(e *workflow.Engine, a []string) (any, error) { return e.Reconcile() }},
+	"reconcile": {"reconcile [--user]", runReconcile},
 	"run":       {`run "REQUEST" [--type T] [--tier T0..T3 [--reason TEXT]]`, runRun},
 	"plan":      {`plan "REQUEST"`, func(e *workflow.Engine, a []string) (any, error) { return e.Plan(strings.Join(a, " ")) }},
 	"inspect":   {"inspect ID", runInspect},
@@ -49,12 +49,12 @@ var Commands = map[string]command{
 	"graph":     {"graph trace --from ID --to ID | graph neighbors ID [--depth N]", runGraph},
 	"policy":    {"policy classify --action ACTION", runPolicy},
 	"verify":    {`verify [--affected|--all] [--cmd "CMD"]... [--drive] [--unverifiable "CHECK" --reason TEXT] [--no-repro --reason TEXT]`, runVerify},
-	"sync":      {"sync [--commit]", runSync},
+	"sync":      {"sync [--commit] [--user]", runSync},
 	"turn":      {"turn show | turn note --model-calls N | turn abort [--reason TEXT]", runTurn},
-	"confirm":   {`confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]`, runConfirm},
+	"confirm":   {`confirm [--list] | confirm --user [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]`, runConfirm},
 	"learn":     {`learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts`, runLearn},
 	"render":    {"render", func(e *workflow.Engine, a []string) (any, error) { return e.Render() }},
-	"check":     {"check [--accept-edits]", runCheck},
+	"check":     {"check [--accept-edits [--user]]", runCheck},
 	"open-docs": {"open-docs", func(e *workflow.Engine, a []string) (any, error) {
 		return ssot.Path(e.Root, "generated", "explorer.html"), nil
 	}},
@@ -63,8 +63,9 @@ var Commands = map[string]command{
 	"driver":            {"driver set FEAT-x|IF-x --run CMD --expect TEXT | driver list (user-level checks per entry point)", runDriver},
 	"note-edit":         {"note-edit < hook-json (host PostToolUse hook: records a file the agent edited, so it is verified in a turn)", runNoteEdit},
 	"note-prompt":       {"note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)", runNotePrompt},
+	"note-session":      {"note-session start|end < hook-json (host SessionStart/SessionEnd hooks: while a session is open, unsynced changes are the agent's)", runNoteSession},
 	"serve":             {"serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)", runServe},
-	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]", runReview},
+	"review":            {"review [CHG-ID] [--apply FILE --user] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]", runReview},
 	"domain":            {"domain ... (reserved for Phase 3)", reserved("domain state layer (DOM/STATE/TRN/INV) is reserved for Phase 3; Phase 1 only reserves the ID prefixes")},
 	"eval":              {"eval run (optional appendix A benchmark)", reserved("appendix A benchmark is optional and runs after completion; Phase 1 keeps only the ChangeReceipt telemetry hooks")},
 }
@@ -465,10 +466,20 @@ func runSync(e *workflow.Engine, args []string) (any, error) {
 	fs := newFlags("sync")
 	var o workflow.SyncOptions
 	fs.BoolVar(&o.Commit, "commit", false, "local commit when policy allows (tier A)")
+	fs.BoolVar(&o.ByUser, "user", false, "the user made the outside change (turnless sync during an agent session)")
 	if _, err := parse(fs, args); err != nil {
 		return nil, err
 	}
 	return e.Sync(o)
+}
+
+func runReconcile(e *workflow.Engine, args []string) (any, error) {
+	fs := newFlags("reconcile")
+	byUser := fs.Bool("user", false, "the user made the change (needed while an agent session is open)")
+	if _, err := parse(fs, args); err != nil {
+		return nil, err
+	}
+	return e.Reconcile(*byUser)
 }
 
 func runTurn(e *workflow.Engine, args []string) (any, error) {
@@ -503,6 +514,7 @@ func runConfirm(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Split, "split", "", "")
 	fs.StringVar(&in.ExternalConsumers, "external-consumers", "", "true|false")
 	fs.BoolVar(&in.All, "all", false, "")
+	fs.BoolVar(&in.ByUser, "user", false, "the confirmation is the user's own")
 	pos, err := parse(fs, args)
 	if err != nil {
 		return nil, err
@@ -541,11 +553,12 @@ func runLearn(e *workflow.Engine, args []string) (any, error) {
 func runCheck(e *workflow.Engine, args []string) (any, error) {
 	fs := newFlags("check")
 	accept := fs.Bool("accept-edits", false, "acknowledge md originals edited outside abbd")
+	byUser := fs.Bool("user", false, "the user accepts their own edits: hand-typed USER_STATED/CONFIRMED stays")
 	if _, err := parse(fs, args); err != nil {
 		return nil, err
 	}
 	if *accept {
-		if err := e.AcceptHandEdits(); err != nil {
+		if err := e.AcceptHandEdits(*byUser); err != nil {
 			return nil, err
 		}
 	}
@@ -612,13 +625,30 @@ func runNoteEdit(e *workflow.Engine, args []string) (any, error) {
 
 func runNotePrompt(e *workflow.Engine, args []string) (any, error) {
 	var in struct {
-		Prompt string `json:"prompt"`
+		Prompt    string `json:"prompt"`
+		SessionID string `json:"session_id"`
 	}
 	b, _ := io.ReadAll(io.LimitReader(os.Stdin, 1<<20))
 	if json.Unmarshal(b, &in) != nil {
 		in.Prompt = string(b)
 	}
+	// A prompt also keeps its session open, in case the start hook did not run.
+	if err := e.NoteSession("start", in.SessionID); err != nil {
+		return nil, err
+	}
 	return nil, e.NotePrompt(in.Prompt)
+}
+
+func runNoteSession(e *workflow.Engine, args []string) (any, error) {
+	if len(args) != 1 || (args[0] != "start" && args[0] != "end") {
+		return nil, errUsage
+	}
+	var in struct {
+		SessionID string `json:"session_id"`
+	}
+	b, _ := io.ReadAll(io.LimitReader(os.Stdin, 1<<20))
+	_ = json.Unmarshal(b, &in)
+	return nil, e.NoteSession(args[0], in.SessionID)
 }
 
 func runServe(e *workflow.Engine, args []string) (any, error) {
@@ -659,7 +689,7 @@ func runReview(e *workflow.Engine, args []string) (any, error) {
 			return nil, err
 		}
 	case *apply != "":
-		if _, err := e.ApplyDecisionFile(*apply); err != nil {
+		if _, err := e.ApplyDecisionFile(*apply, in.ByUser); err != nil {
 			return nil, err
 		}
 	case in.Delta != "":

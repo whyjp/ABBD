@@ -120,15 +120,15 @@ INFERRED ∧ UNCONFIRMED 항목은 다음 두 조건이 모두 맞을 때만 묻
 
 ```sh
 abbd confirm --list
-abbd confirm FEAT-003                                              # 추정 문장 그대로 수락: CONFIRMED, origin INFERRED 유지
-abbd confirm FEAT-003 --purpose "heartbeat를 검증해 저장한다"      # 사용자 문장: USER_STATED, CONFIRMED
-abbd confirm FEAT-003 --reject                                     # REJECTED
-abbd confirm FEAT-003 --reject --value "heartbeat를 집계만 한다"    # 새 문장 USER_STATED·CONFIRMED, 옛 문장은 rejected_value로 보존
-abbd confirm IF-002 --external-consumers true                      # 외부 소비자 여부, USER_STATED
-abbd confirm --merge CAND-7                                        # 앵커 1개 일치 병합 후보 (--split CAND-7은 분리)
+abbd confirm FEAT-003 --user                                       # 추정 문장 그대로 수락: CONFIRMED, origin INFERRED 유지
+abbd confirm FEAT-003 --user --purpose "heartbeat를 검증해 저장한다"  # 사용자 문장: USER_STATED, CONFIRMED
+abbd confirm FEAT-003 --user --reject                              # REJECTED
+abbd confirm FEAT-003 --user --reject --value "heartbeat를 집계만 한다"  # 새 문장 USER_STATED·CONFIRMED, 옛 문장은 rejected_value로 보존
+abbd confirm IF-002 --user --external-consumers true               # 외부 소비자 여부, USER_STATED
+abbd confirm --user --merge CAND-7                                 # 앵커 1개 일치 병합 후보 (--split CAND-7은 분리)
 ```
 
-`confirm`은 사용자가 본 문장을 기록하는 명령이다. 사용자가 확인하지 않은 항목에 에이전트가 부르지 않는다. 사용자가 명시적으로 요청하지 않는 한, 이번 턴과 무관한 확인 대기 목록을 한꺼번에 처리하지 않는다(`confirm --all`은 그 요청이 있을 때만).
+`confirm`은 사용자가 본 문장을 기록하는 명령이라 `--list` 말고는 `--user` 없이 거부된다. `--user`는 사용자가 그렇게 말했을 때만 붙인다. 사용자가 확인하지 않은 항목에 에이전트가 부르지 않는다. 사용자가 명시적으로 요청하지 않는 한, 이번 턴과 무관한 확인 대기 목록을 한꺼번에 처리하지 않는다(`confirm --all`은 그 요청이 있을 때만).
 
 ### 6. 의도 기록
 

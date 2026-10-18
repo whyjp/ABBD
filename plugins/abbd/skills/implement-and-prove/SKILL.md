@@ -36,7 +36,7 @@ T1의 PASSED는 테스트가 지나간 분기가 기대대로 동작한다는 �
 
 수정 전에 버그를 드러내는 테스트를 쓰고 verify로 돌린다. 버그 수정 턴(`--type bug-fix`)은 수정 전 작업 트리에서 FAILED가 난 verify 없이는 sync가 거부한다. 고친 뒤의 PASSED만으로는 그 테스트가 버그를 잡는지 알 수 없기 때문이다.
 
-엔진이 재현으로 치는 것은 둘이다. 최종 PASSED와 다른 작업 트리(fingerprint)에서 FAILED가 났고 그 실행에 실패한 테스트가 하나 이상 있는 verify, 또는 사용자 수준 실행(`verify --drive`)의 FAILED다. 실패한 테스트 없이 명령만 실패한 실행(`verify --cmd false` 같은)은 재현이 아니다.
+엔진이 재현으로 치는 것은 둘이다. 최종 PASSED와 다른 작업 트리(fingerprint)에서 FAILED가 난 테스트가 최종 작업 트리에서 같은 이름으로 PASSED인 경우, 또는 앞선 요청에서 등록한 driver(`verify --drive`)가 그렇게 FAILED 뒤 PASSED인 경우다. 재현 뒤 지운 실패 테스트는 재현이 아니다. 실패한 테스트 없이 명령만 실패한 실행(`verify --cmd false` 같은)은 재현이 아니다.
 
 ```sh
 abbd verify --cmd "go test ./internal/heartbeat -run TestDuplicateIsNotStoredTwice"
@@ -105,7 +105,7 @@ abbd verify --unverifiable user-level --reason "이 환경에 브로커 없음" 
 - driver는 진입점(FEAT 또는 IF)마다 `project.yaml`에 남고 다음 턴에도 쓰인다. 명령이 성공하고 출력에 `--expect` 문자열이 있어야 PASSED다.
 - `--drive`는 이번 턴이 겨냥하는 ID(WorkflowPlan의 대상, 새 기능이면 `new_feature`)의 driver만 돌린다. "no driver covers this turn"이 나오면 그 ID에 driver를 등록한다.
 - `--run`은 어떤 명령이든 받는다. 엔진은 그 명령이 진입점을 실제로 지나는지 확인하지 않는다. 그래서 driver 명령은 사용자가 닿는 방식(CLI 실행, HTTP 요청, 워커 1회 실행)으로 그 진입점을 돌려야 한다. `echo`처럼 기대 문자열만 찍는 명령은 증거가 아니다.
-- 같은 turn에서 등록하거나 바꾼 driver의 PASSED는 그 turn의 T3 게이트를 통과시키지 못한다. 이번 turn을 증명할 기준을 이번 turn에 맞춰 만들 수 있기 때문이다. receipt `risks`에 그 사실이 남는다. driver는 앞선 turn에서 등록해 둔다.
+- 같은 turn에서 등록하거나 바꾼 driver의 PASSED는 그 turn의 T3 게이트를 통과시키지 못한다. 이번 turn을 증명할 기준을 이번 turn에 맞춰 만들 수 있기 때문이다. receipt `risks`에 그 사실이 남는다. 중단(abort)한 turn에서 등록한 driver, turn을 열기 전이라도 같은 사용자 메시지에 등록한 driver도 같다. driver는 앞선 turn에서 등록하고 그 turn을 sync로 완료해 둔다. push·deploy·publish처럼 바깥에 효과가 있는 명령(등급 C)은 driver로 등록되지 않는다.
 - 이번 turn에 돌릴 driver가 없으면 `--unverifiable user-level --reason TEXT`로 남긴다. CHECK는 글자 그대로 `user-level`이어야 이 게이트에 쓰인다. sync는 완료하지만 receipt 상태는 NEEDS_USER이고 `risks`에 사유가 남는다.
 
 ### 7. "실행함"과 "실행 못함"을 나눈다

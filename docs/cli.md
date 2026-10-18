@@ -16,8 +16,8 @@ global flags: --root DIR, --json
 
 commands:
   abbd bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]
-  abbd check [--accept-edits]
-  abbd confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]
+  abbd check [--accept-edits [--user]]
+  abbd confirm [--list] | confirm --user [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]
   abbd contracts list [--module MOD-x] | contracts impact [--diff]
   abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY [--user]] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY --user [--reason TEXT]
   abbd decisions [QUERY]
@@ -33,16 +33,17 @@ commands:
   abbd mcp (stdio MCP server)
   abbd note-edit < hook-json (host PostToolUse hook: records a file the agent edited, so it is verified in a turn)
   abbd note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)
+  abbd note-session start|end < hook-json (host SessionStart/SessionEnd hooks: while a session is open, unsynced changes are the agent's)
   abbd open-docs
   abbd plan "REQUEST"
   abbd policy classify --action ACTION
-  abbd reconcile
+  abbd reconcile [--user]
   abbd render
-  abbd review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]
+  abbd review [CHG-ID] [--apply FILE --user] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]
   abbd run "REQUEST" [--type T] [--tier T0..T3 [--reason TEXT]]
   abbd serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)
   abbd status [--knowledge]
-  abbd sync [--commit]
+  abbd sync [--commit] [--user]
   abbd turn show | turn note --model-calls N | turn abort [--reason TEXT]
   abbd verification-plan
   abbd verify [--affected|--all] [--cmd "CMD"]... [--drive] [--unverifiable "CHECK" --reason TEXT] [--no-repro --reason TEXT]
@@ -55,7 +56,7 @@ commands:
 | `abbd init [DIR] [--mode M] [--from PATH] [--verify-available] [--preview]` | Without `.abbd/`, runs Zero-Map Bootstrap and writes `.abbd/` and the BootstrapReport. Never asks questions. With `.abbd/` present and no `--mode` or `--from`, returns `status` instead. |
 | `abbd bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]` | Re-runs bootstrap explicitly. Stable IDs and confirmed intent are kept through anchor matching. Refused during an active turn. |
 | `abbd status [--knowledge]` | Revision, fingerprint, freshness of feature map, architecture map, graph and HTML, active turn, pending external changes (`pending_changes`), UNCONFIRMED count. |
-| `abbd reconcile` | External code change: creates a `CHG` with `intent_source: external`, refreshes EXTRACTED facts only, asks nothing. A conflict with a CONFIRMED contract or feature becomes a tier B ADR with default `accept`, and the CHG state is NEEDS_USER. An unapproved tier C structural change is not taken into the blueprint: the CHG stays BLOCKED and the command exits 2 until the card is decided. Refused while a turn is active, and refused when a changed file was edited by the agent (recorded by the PostToolUse hook, `abbd note-edit`): those files are verified in a turn. |
+| `abbd reconcile [--user]` | External code change: creates a `CHG` with `intent_source: external`, refreshes EXTRACTED facts only, asks nothing. A conflict with a CONFIRMED contract or feature becomes a tier B ADR with default `accept`, and the CHG state is NEEDS_USER. An unapproved tier C structural change is not taken into the blueprint: the CHG stays BLOCKED and the command exits 2 until the card is decided. Refused while a turn is active, and refused when a changed file was edited by the agent (recorded by the PostToolUse hook, `abbd note-edit`): those files are verified in a turn. Also refused while a host agent session is open (`abbd note-session`), since the agent may have made the change with any tool; `--user` says the user made it. |
 
 | Flag | Commands | Meaning |
 |---|---|---|
@@ -78,10 +79,10 @@ commands:
 | `abbd intent invariant --feature FEAT-x --claim C [--origin O] [--test TEST-x]` | Adds an invariant claim and appends it to the turn's preserved invariants. `--test` links that test's evidence. |
 | `abbd intent module (--id MOD-x \| --path DIR) [--responsibility T] [--allow MOD-y]... [--forbid MOD-z]... [--origin O]` | Records a module's responsibility and dependency policy. `--path DIR` names a module this turn creates; sync assigns its MOD ID and moves the recorded responsibility onto it. Any `--allow` or `--forbid` replaces the whole policy. |
 | `abbd intent contract --id IF-x [--compatibility T] [--external-consumers true\|false] [--origin O]` | Records a contract's compatibility policy and whether it has external consumers. |
-| `abbd driver set FEAT-x|IF-x --run CMD --expect TEXT` | Registers a user-level check for an entry point in `project.yaml`: a command that exercises it the way a user reaches it, and text its output must contain. `--run` takes any command; the engine does not check that it reaches the entry point. A driver set or changed during a turn does not satisfy that turn's T3 gate. |
+| `abbd driver set FEAT-x|IF-x --run CMD --expect TEXT` | Registers a user-level check for an entry point in `project.yaml`: a command that exercises it the way a user reaches it, and text its output must contain. `--run` takes any command; the engine does not check that it reaches the entry point. A command with an outside effect (push, deploy, publish, `rm -rf /`) is tier C and refused here and again when `verify --drive` would run it. A driver proves only later work: one set or changed in a turn, in a turn that never completed (aborted), or for the same user message as the turn (the UserPromptSubmit mark) does not satisfy that turn's T3 gate or count as its failing-first run. |
 | `abbd driver list` | Lists registered drivers. |
-| `abbd verify --drive` | Runs the drivers of what the turn touches; each run is user-level evidence, PASSED only when the command succeeds and the output contains the expected text. A T3 turn needs a PASSED run of a driver registered before the turn, or `verify --unverifiable user-level --reason`, which lets sync complete with the turn NEEDS_USER and the reason in `risks`. |
-| `abbd verify --no-repro --reason TEXT` | Waives the failing-first rule for a bug-fix turn. Needs an active turn and a reason of 10 or more characters. Without it, sync refuses a bug fix unless the turn has a FAILED run with at least one failing test on a working tree other than the one that passed, or a FAILED user-level run. A command that fails with no failing test (for example `verify --cmd false`) does not count. |
+| `abbd verify --drive` | Runs the drivers of what the turn touches; each run is user-level evidence, PASSED only when the command succeeds and the output contains the expected text. A T3 turn needs a PASSED run of a driver registered in an earlier completed turn (or outside any turn, for an earlier user message), or `verify --unverifiable user-level --reason`, which lets sync complete with the turn NEEDS_USER and the reason in `risks`. |
+| `abbd verify --no-repro --reason TEXT` | Waives the failing-first rule for a bug-fix turn. Needs an active turn and a reason of 10 or more characters. Without it, sync refuses a bug fix unless a test that FAILED on a working tree other than the one that passed PASSES, by name, on the final one, or a user-level driver from an earlier request FAILED before and PASSES on the final tree. A failing test deleted after the reproduction does not count. A command that fails with no failing test (for example `verify --cmd false`) does not count. |
 | `abbd learn --from-receipts` | Lists problems that repeated in two or more turns (failing tests, rejected card kinds, blocked reasons) with the first structural fix to try. |
 | `abbd intent rule --claim TEXT \| --req REQ-x [--retire]` | Records a standing rule the user stated for the whole project (USER_STATED, project scope), promotes a requirement to one, or retires it. Works without a turn. A rule with mostly the same words as one in force is not stored again; the existing rule is returned. Standing rules are listed in `.abbd/BLUEPRINT.md` and in every `run` and `plan` result. `run` also stores rules it detects in the user's words (see "The user's words"). |
 | `abbd intent delta [--add T]... [--remove T]... [--preserve "FEAT-x: claim"]...` | Appends to the turn's IntentDelta and moves the turn from INTENT_RESOLVED to IMPLEMENTING. |
@@ -125,7 +126,7 @@ UNCONFIRMED and the turn ends NEEDS_USER.
 |---|---|
 | `abbd verify [--affected\|--all] [--cmd "CMD"]... [--unverifiable "CHECK" --reason TEXT]` | Runs verification and stores Evidence under `.abbd/verification/runs/`. The report has `overall`, `runs`, `ran`, `could_not_run`, `failed_tests`, `failures` (each failing test with its own `output` and `evidence`) and `warnings`. A command matching a tier C pattern is refused: `git ... push`, `docker push`, `npm publish`, `kubectl apply\|delete\|rollout\|scale\|patch`, `terraform apply\|destroy`, `helm install\|upgrade\|uninstall\|rollback`, `rm -rf /`, `drop table\|database`, or a `deploy` script as the command itself (a path such as `./internal/deploy/...` does not match). Other external effects are not detected. Exits 2 when `overall` is FAILED. |
 | `abbd sync [--commit]` | Completion gate. See below. |
-| `abbd check [--accept-edits]` | Schema, provenance rules, reference integrity, evidence links, md/html/graph revision agreement. Prints the report (`ok`, `errors`, `warnings`, `stale`, `freshness`) and exits 2 when `errors` is not empty. A hand edit of an engine area in `.abbd/` md is recorded in state and stays an error, even after other commands rewrite the md, until `--accept-edits` acknowledges it. |
+| `abbd check [--accept-edits [--user]]` | Schema, provenance rules, reference integrity, evidence links, md/html/graph revision agreement. Prints the report (`ok`, `errors`, `warnings`, `stale`, `freshness`) and exits 2 when `errors` is not empty. A hand edit of an engine area in `.abbd/` md is recorded in state and stays an error, even after other commands rewrite the md, until `--accept-edits` acknowledges it. Until then the engine keeps what it last wrote for any meaning field whose hand edit raised user-only provenance (USER_STATED, CONFIRMED, an answered decision, an approved tier C card) or changed a user-stated value; the blueprint and the gates see that, not the typed text. `--accept-edits --user` keeps the typed text as it is; `--accept-edits` alone takes it with that provenance lowered to INFERRED/UNCONFIRMED, and a user-stated field keeps its recorded value. |
 | `abbd render` | Regenerates `generated/explorer.html`, `generated/confirm-queue.html` and `generated/review.html` from the Markdown sources. |
 | `abbd open-docs` | Prints the path of the generated HTML Explorer. |
 
@@ -148,7 +149,7 @@ revision, writes the ChangeReceipt and runs `check`. The result has `completed`,
 refusal, artifacts stay DRAFT and the turn stays open. `--commit` makes one local commit after success when policy
 puts `local-commit` in tier A; otherwise the sync still completes, `commit` is empty and `reason` starts with
 "commit 안 함". With no active turn, sync reconciles external changes or regenerates artifacts. That reconcile
-refuses files the agent edited, and holds an unapproved tier C change out of the blueprint (BLOCKED, exit 2),
+refuses files the agent edited and changes made while an agent session is open (unless `--user`), and holds an unapproved tier C change out of the blueprint (BLOCKED, exit 2),
 exactly like `abbd reconcile`.
 
 ## Review screen (PRD 08B)
@@ -158,7 +159,7 @@ exactly like `abbd reconcile`.
 | `abbd serve [--addr 127.0.0.1:7787]` | Serves the review screen on a loopback address and prints its URL. Decisions made on the page are written straight to `.abbd/`. Non-loopback addresses are refused. Runs until stopped. |
 | `abbd review [CHG-ID]` | Summary of one turn's structural change cards: `path` (the `generated/review.html` file), `change`, `open` (tier B and C cards waiting for a decision), `by_tier`, `deltas`, `message`. Without `CHG-ID`, the active turn when it has cards, else the latest turn that has cards. |
 | `abbd review --decide CHG-x#n --decision D [--reason TEXT] [--user]` | Records a decision on one card, then prints the summary. A tier B or C card needs `--user`. |
-| `abbd review --apply FILE` | Applies a decision file downloaded from a review page opened without `abbd serve`. |
+| `abbd review --apply FILE --user` | Applies a decision file downloaded from a review page opened without `abbd serve`. B/C cards in it need `--user`: the agent can write such a file as easily as the user. |
 | `abbd review --relayout` | Drops the stored layout (`generated/layout.json`) and places every node again. Only on an explicit user request; otherwise node positions stay fixed across revisions. |
 
 | `--decision` | Allowed on | Effect |
@@ -192,7 +193,7 @@ field.
 | `abbd learn --kind architecture\|type\|lint\|test\|doc\|skill --proposal TEXT` | Records a correction proposal in `.abbd/learning.yaml` with `status: proposed`, and in the active turn's next steps. Kinds are listed in order of preference. |
 | `abbd learn --preference key=value` | Writes a preference to `preferences` in `.abbd/project.yaml`. |
 | `abbd confirm [--list]` | The confirm queue: UNCONFIRMED meaning fields, decisions and merge candidates. Also the result with no arguments. |
-| `abbd confirm ID [--value TEXT\|--purpose TEXT] [--reject] [--external-consumers true\|false]` | Lazy confirmation by the user. `ID` alone accepts the inferred text: CONFIRMED, origin unchanged. `--value`, or its alias `--purpose`, replaces it with USER_STATED CONFIRMED text. `--reject` alone marks it REJECTED; with `--value`, the old text is kept as `rejected_value`. `--external-consumers` sets a contract's consumers flag as USER_STATED. |
+| `abbd confirm ID [--value TEXT\|--purpose TEXT] [--reject] [--external-consumers true\|false]` | Lazy confirmation by the user; every form needs `--user` and is refused without it (MCP `confirm_item` is refused too). `ID` alone accepts the inferred text: CONFIRMED, origin unchanged. `--value`, or its alias `--purpose`, replaces it with USER_STATED CONFIRMED text. `--reject` alone marks it REJECTED; with `--value`, the old text is kept as `rejected_value`. `--external-consumers` sets a contract's consumers flag as USER_STATED. |
 | `abbd confirm --merge CAND-x\|--split CAND-x` | Resolves a bootstrap merge candidate. |
 | `abbd confirm --all` | Accepts every pending meaning field except candidates and consumer flags. Use only on an explicit user request. |
 
@@ -237,7 +238,7 @@ are recorded and, past the tier budget, warned in the receipt's `risks`.
 `decide --answer`, `decide --adr` and `review --decide` without `--user` record the agent's choice
 (INFERRED, still open for the user) or are refused. `--user` is the attestation that the answer is the
 user's own; only then is it CONFIRMED, and only a user approval passes a tier C stop. The user's channels
-are the `abbd serve` review page, the decision file (`review --apply`), and the CLI with `--user` carrying the
+are the `abbd serve` review page, the decision file (`review --apply FILE --user`), and the CLI with `--user` carrying the
 user's own words. The MCP decision tools are an agent channel and cannot record the user's decision.
 
 `run --tier` below the routed tier needs `--reason`, which is kept on the receipt.
@@ -248,8 +249,8 @@ The plugin's UserPromptSubmit hook runs `abbd note-prompt`, which keeps the user
 The next `abbd run` records that text, not the agent's request summary, as the USER_STATED requirement,
 and stores each sentence that states a project-wide rule as its own standing rule (a rule already in
 force with mostly the same words is not stored twice). A sentence states a rule when it has both a scope
-word ("항상", "모든", "앞으로", "always", "every", "any route" ...) and a duty word ("해야", "하지 않",
-"금지", "must", "never", "only" ...), or a strong scope on its own ("어디서든", "everywhere", "from now
+word ("항상", "모든", "앞으로", "always", "every", "any route" ...) and a duty word ("해야", "거쳐야 한다" and any
+"-야 한다", "하지 않", "금지", "must", "never", "only", "require", "need" ...), or a strong scope on its own ("어디서든", "everywhere", "from now
 on"). The words are the user's, but reading them as a rule is the engine's guess: such a rule is in force
 and UNCONFIRMED, shown on `.abbd/BLUEPRINT.md` as "user's words, detected as a rule, unconfirmed". Hosts
 without the hook fall back to the request text passed to `run`, so pass the user's words there.
@@ -260,4 +261,10 @@ The plugin's PostToolUse hook (Edit, Write, MultiEdit, NotebookEdit) runs `abbd 
 the edited path in state. Such files are the agent's work and are verified in a turn: `abbd reconcile` and
 `sync` with no active turn refuse them, and the next `abbd run` takes them into its turn. A completed sync
 clears the record. Edits made through shell commands, and every edit on a host without the hook, are not
-recorded; there the agent opens a turn before editing, or the edit is reconciled as an outside change.
+recorded by that hook. The SessionStart and SessionEnd hooks run `abbd note-session start|end` (each
+prompt also refreshes it): while a session is open, every unsynced change counts as the agent's, whatever
+tool made it (`sed -i`, `perl -pi`, a script), so `reconcile` and a turnless `sync` refuse it and `run`
+takes it into its turn. A change the user made meanwhile is reconciled with `--user`. A session whose end
+hook never ran stops counting after 12 hours. Changes made with no session open (and every change on a host
+without these hooks) are reconciled as outside changes. A recorded edit that was later reverted is
+dropped from the record on the next command, so it never holds a later human edit of that file.

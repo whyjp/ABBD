@@ -14,7 +14,7 @@ func breakingSetup(t *testing.T) (*project, string) {
 	p := newProject(t, "code-only")
 	p.ok("init")
 	post := p.findContract("POST /messages")
-	p.ok("confirm", post, "--external-consumers", "true")
+	p.ok("confirm", post, "--external-consumers", "true", "--user")
 	p.commit("harness")
 	p.ok("run", "POST /messages 경로 변경")
 	p.replace("internal/api/api.go", `"POST /messages"`, `"POST /v2/messages"`)

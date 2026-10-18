@@ -93,8 +93,8 @@ func TestOneSharedAnchorNeverMovesConfirmedMeaning(t *testing.T) {
 	p := newProject(t, "code-only")
 	p.ok("init")
 	health := p.findContract("GET /health")
-	p.ok("confirm", health, "--external-consumers", "true")
-	p.ok("confirm", health, "--value", "backward-compatible, 외부 모니터링이 호출")
+	p.ok("confirm", health, "--external-consumers", "true", "--user")
+	p.ok("confirm", health, "--value", "backward-compatible, 외부 모니터링이 호출", "--user")
 	p.commit("harness")
 	p.replace("internal/api/api.go", `	s.mux.HandleFunc("GET /health", s.handleHealth)`, `	s.mux.HandleFunc("GET /stats", s.handleStats)`)
 	p.replace("internal/api/api.go", "func (s *Server) handleHealth(", "func (s *Server) handleStats(")
@@ -128,7 +128,7 @@ func TestOneSharedAnchorNeverMovesConfirmedMeaning(t *testing.T) {
 	if cand == "" {
 		t.Fatalf("the one-anchor match must be presented as a merge candidate: %v", pending)
 	}
-	p.ok("confirm", "--merge", cand)
+	p.ok("confirm", "--merge", cand, "--user")
 	merged := p.ok("inspect", health)
 	if str(merged, "contract", "selector") != "GET /stats" || get(merged, "contract", "external_consumers") != true {
 		t.Fatalf("merge keeps the old ID and its confirmed attributes: %v", get(merged, "contract"))
@@ -158,8 +158,8 @@ func TestConfirmedMeaningIsNotOverwrittenByTheAgent(t *testing.T) {
 	post := p.findContract("POST /messages")
 	feat := p.featureFor("POST /messages")
 	p.ok("run", "POST /messages 응답 형식 변경")
-	p.ok("confirm", post, "--value", "backward-compatible")
-	p.ok("confirm", feat, "--value", "메시지를 받아 발행한다")
+	p.ok("confirm", post, "--value", "backward-compatible", "--user")
+	p.ok("confirm", feat, "--value", "메시지를 받아 발행한다", "--user")
 	if _, code, _ := p.run("intent", "contract", "--id", post, "--compatibility", "breaking allowed"); code == 0 {
 		t.Fatal("an INFERRED write must not replace a CONFIRMED compatibility")
 	}

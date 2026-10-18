@@ -76,7 +76,7 @@ abbd reconcile
 - purpose, responsibility, invariant 같은 의미 필드는 건드리지 않는다. 질문도 하지 않는다.
 - 외부 변경이 CONFIRMED 계약이나 확정된 기능과 충돌하면 reconcile이 등급 B ADR을 기본값 `accept`로 남기고 상태를 NEEDS_USER로 둔다. 결과의 `conflicts`가 비어 있지 않으면 사용자 보고에 그 ADR을 적는다.
 - 진행 중인 turn이 있으면 reconcile은 거부된다. 그 turn의 변경은 `abbd sync`가 처리한다.
-- 에이전트가 Edit·Write로 고친 파일은 외부 변경이 아니다. Claude Code 플러그인의 PostToolUse 훅(note-edit.sh)이 그 경로를 기록하고, reconcile은 그 파일이 있으면 거부한다("edited by the agent without a turn"). 다음 `abbd run`이 그 파일을 turn으로 가져가므로 verify와 sync를 거친다. 셸 명령으로 고친 파일은 기록되지 않는다. 그래서 코드를 고치기 전에 turn을 연다.
+- 에이전트가 Edit·Write로 고친 파일은 외부 변경이 아니다. Claude Code 플러그인의 PostToolUse 훅(note-edit.sh)이 그 경로를 기록하고, reconcile은 그 파일이 있으면 거부한다("edited by the agent without a turn"). 다음 `abbd run`이 그 파일을 turn으로 가져가므로 verify와 sync를 거친다. 셸 명령으로 고친 파일은 이 훅이 기록하지 않는다. SessionStart·SessionEnd 훅(`abbd note-session start|end`, 프롬프트마다 갱신)이 세션이 열려 있음을 남긴다. 세션이 열린 동안 동기화되지 않은 변경은 어떤 도구로 만들었든(`sed -i`, `perl -pi`, 스크립트) 에이전트의 것으로 보고, `reconcile`과 turn 없는 `sync`가 거부하며 다음 `abbd run`이 turn으로 가져간다. 그 사이 사용자가 직접 고친 변경은 `abbd reconcile --user`로 반영한다. 세션이 열려 있지 않을 때 만든 변경과 훅이 없는 호스트의 변경은 외부 변경으로 재조정된다. 그래서 코드를 고치기 전에 turn을 연다.
 - 외부 변경에 승인되지 않은 등급 C 구조 변경이 있으면 reconcile은 그 변경을 Blueprint에 넣지 않는다. CHG를 BLOCKED로 남기고 종료 코드 2로 끝난다. 이 상태에서는 `run`도 거부된다. 리뷰 화면 링크를 사용자에게 주고, 사용자가 결정한 뒤 다시 한다.
 
 ### 4. STALE 처리

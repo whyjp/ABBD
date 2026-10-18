@@ -139,7 +139,7 @@ var Tools = map[string]tool{
 		}},
 	"list_unconfirmed": {"The confirm queue: UNCONFIRMED meaning fields, decisions and merge candidates.", nil, nil,
 		func(e *workflow.Engine, a args) (any, error) { return e.Pending() }},
-	"confirm_item": {"Confirm an item (optionally replacing its value) or reject it. Only the user's word promotes INFERRED.",
+	"confirm_item": {"Refused on this agent channel: confirming an item is the user's word (abbd confirm --user, or the review page). Kept so a host sees why.",
 		map[string]string{"id": str("ID"), "value": str("replacement text"), "reject": "boolean"}, []string{"id"},
 		func(e *workflow.Engine, a args) (any, error) {
 			reject, _ := a["reject"].(bool)

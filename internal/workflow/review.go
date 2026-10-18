@@ -119,8 +119,8 @@ func orDash(s string) string {
 }
 
 type DeltaDecisionInput struct {
-	// ByUser is required on the CLI channel for B/C cards; serve and the decision file are user
-	// channels, MCP is the agent's.
+	// ByUser is required for B/C cards on the CLI and on the decision file (the agent can write a
+	// file as easily as the user); serve is the user's channel, MCP the agent's.
 	ByUser   bool   `json:"-"`
 	Delta    string `json:"delta"`
 	Decision string `json:"decision"` // approve | reject | revert | option:<key>
@@ -179,10 +179,10 @@ func (e *Engine) decideIn(w *world, in DeltaDecisionInput) (*model.StructuralDel
 	if in.Channel == "" {
 		in.Channel = "cli"
 	}
-	// The plugin's own MCP server is called by the agent, so it is an agent channel like the CLI
-	// without --user; the user's channels are the served review page and the decision file.
-	if (in.Channel == "cli" || in.Channel == "mcp") && !in.ByUser && d.Tier != model.TierA {
-		return nil, nil, fmt.Errorf("deciding %s records the user's decision; pass --user only with the user's own answer, or let the user decide on the review page", d.ID)
+	// Only the served review page needs no flag: the agent calls the plugin's MCP server and can
+	// write a decision file, so those and the CLI carry the user's answer only with --user.
+	if in.Channel != "serve" && !in.ByUser && d.Tier != model.TierA {
+		return nil, nil, fmt.Errorf("deciding %s records the user's decision; pass --user only with the user's own answer (a decision file: review --apply FILE --user), or let the user decide on the review page", d.ID)
 	}
 	d.Decision = &model.ItemDecision{Decision: decision, Reason: in.Reason, At: now(), Revision: w.ws.Fingerprint, Channel: in.Channel}
 	switch decision {
@@ -287,8 +287,8 @@ type DecisionFile struct {
 }
 
 // ApplyDecisionFile is the offline channel: decisions downloaded from a review page opened
-// without abbd serve (`abbd review --apply FILE`).
-func (e *Engine) ApplyDecisionFile(path string) ([]*model.StructuralDelta, error) {
+// without abbd serve (`abbd review --apply FILE --user`). byUser says the user applies it.
+func (e *Engine) ApplyDecisionFile(path string, byUser bool) ([]*model.StructuralDelta, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -303,7 +303,7 @@ func (e *Engine) ApplyDecisionFile(path string) ([]*model.StructuralDelta, error
 	}
 	var out []*model.StructuralDelta
 	for _, in := range f.Decisions {
-		in.Channel = "file"
+		in.Channel, in.ByUser = "file", byUser
 		d, _, err := e.decideIn(w, in)
 		if err != nil {
 			return out, err

@@ -7,6 +7,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/scanner"
+	"go/token"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -293,9 +295,32 @@ func testsMentioning(s *ssot.Snapshot, m *model.Module, selector string) []*mode
 			file = file[:i]
 		}
 		b, err := os.ReadFile(filepath.Join(s.Root, filepath.FromSlash(file)))
-		if err == nil && strings.Contains(string(b), path) {
+		if err == nil && strings.Contains(codeText(file, b), path) {
 			out = append(out, t)
 		}
 	}
 	return out
+}
+
+// codeText drops Go comments, so a route named only in a comment ("// GET /x is covered
+// elsewhere") is not a test of it. Other languages are matched as written.
+func codeText(file string, src []byte) string {
+	if !strings.HasSuffix(file, ".go") {
+		return string(src)
+	}
+	var b strings.Builder
+	var sc scanner.Scanner
+	fset := token.NewFileSet()
+	sc.Init(fset.AddFile(file, -1, len(src)), src, nil, 0)
+	for {
+		_, tok, lit := sc.Scan()
+		if tok == token.EOF {
+			return b.String()
+		}
+		if lit == "" {
+			lit = tok.String()
+		}
+		b.WriteString(lit)
+		b.WriteByte(' ')
+	}
 }

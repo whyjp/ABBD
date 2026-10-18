@@ -5,6 +5,8 @@ if ! command -v abbd >/dev/null 2>&1; then
   echo "ABBD plugin: the abbd CLI is not on PATH. Install it with: go install github.com/whyjp/abbd/cmd/abbd@latest"
   exit 0
 fi
+# Mark the session open: until SessionEnd, unsynced changes are the agent's (any tool, Bash too).
+abbd note-session start >/dev/null 2>&1
 cat <<'EOF'
 <ABBD>
 This repository is developed from its blueprint (ABBD). The blueprint is .abbd/: Architecture Map,
@@ -16,8 +18,8 @@ Every request that changes code, tests or configuration runs the ABBD turn, howe
   3. abbd verify                     must report PASSED on the final working tree
   4. abbd sync                       the turn is done only when sync exits 0
 A small fix runs the turn lightly; it does not skip it. Open the turn before the first edit.
-Your Edit/Write calls are recorded: reconcile refuses those files and the next abbd run takes
-them into its turn. Exit code 2 from verify, sync or reconcile means not done: fix and repeat.
+While this session is open every unsynced change is yours, whatever tool made it (Bash too):
+reconcile refuses it and the next abbd run takes it into its turn. Exit code 2 from verify, sync or reconcile means not done: fix and repeat.
 Never describe structure in chat; if sync returns `review`, give the user the review link
 (abbd serve) and leave decisions to them. Skills: abbd:session-bootstrap first.
 

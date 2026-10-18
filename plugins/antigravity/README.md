@@ -47,4 +47,4 @@ sync 결과에 `review`가 있으면 `abbd serve`의 리뷰 화면 링크와 대
 ## 호스트 차이
 
 - Claude Code 플러그인의 훅(SessionStart, UserPromptSubmit, PreToolUse 이력 읽기 거부, PostToolUse 편집 기록, Stop)이 없다. 위 규칙 파일이 그 지시를 대신하지만 엔진이 확인하지는 못한다. 특히 에이전트의 편집이 기록되지 않으므로 turn을 먼저 여는 순서는 에이전트가 지킨다.
-- MCP 서버(`abbd mcp`)는 에이전트가 부르는 통로다. `decide_structural_change`는 B·C 카드를, `answer_decision`은 기존 ADR을 결정하지 못한다. 사용자의 결정은 `abbd serve`의 리뷰 화면, 결정 파일(`abbd review --apply FILE`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI로 기록한다.
+- MCP 서버(`abbd mcp`)는 에이전트가 부르는 통로다. `decide_structural_change`는 B·C 카드를, `answer_decision`은 기존 ADR을, `confirm_item`은 확인을 기록하지 못한다. 사용자의 결정은 `abbd serve`의 리뷰 화면, 사용자가 준 결정 파일(`abbd review --apply FILE --user`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI로 기록한다.

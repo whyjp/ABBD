@@ -93,7 +93,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 			return nil, err
 		}
 	}
-	if changed := w.changedSinceSync(); len(changed) > 0 && len(w.agentEdited(changed)) == 0 && !subset(changed, rejectedFiles) {
+	if changed := w.changedSinceSync(); len(changed) > 0 && len(w.agentEdited(changed)) == 0 && w.agentSession() == "" && !subset(changed, rejectedFiles) {
 		rec, err := e.reconcile(w)
 		if err != nil && !errors.Is(err, ErrGate) {
 			return nil, err
@@ -134,6 +134,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		Verification: model.NotRun,
 		Telemetry:    model.Telemetry{StartedAt: now(), ModelCallsNote: "host reports with `abbd turn note --model-calls N`"},
 		SyncState:    model.SyncState{FeatureMap: model.Draft, ArchitectureMap: model.Draft, Graph: model.Draft, HTML: model.Draft},
+		Prompt:       w.s.State.LastPrompt,
 		Time:         now(),
 	}
 	w.s.Changes[chg.ID] = chg
@@ -378,8 +379,8 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 			return nil, err
 		}
 		for _, cmd := range cmds {
-			if tier, why := policy.CommandTier(cmd); tier == model.TierC {
-				return nil, fmt.Errorf("refusing to run %q as verification: %s (tier C)", cmd, why)
+			if err := runnableCheck("verification", cmd); err != nil {
+				return nil, err
 			}
 		}
 		for _, cmd := range cmds {
@@ -496,6 +497,8 @@ func (e *Engine) verificationCommands(w *world, o VerifyOptions) ([]string, erro
 
 type SyncOptions struct {
 	Commit bool
+	// ByUser lets a turnless sync reconcile a change the user made while an agent session is open.
+	ByUser bool
 }
 
 type SyncResult struct {
@@ -535,6 +538,9 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 	chg := w.s.ActiveChange()
 	if chg == nil {
 		if len(w.changedSinceSync()) > 0 {
+			if err := w.duringSession(o.ByUser); err != nil {
+				return nil, err
+			}
 			rec, err := e.reconcile(w)
 			if errors.Is(err, ErrGate) {
 				return &SyncResult{Completed: false, Reason: "외부 변경이 등급 C 승인을 기다림", Reconciled: rec, Freshness: e.freshnessNow()}, err
@@ -588,7 +594,7 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		return e.draft(w, chg, res, reason)
 	}
 	if len(changed) > 0 && !docsOnly(changed) {
-		if reason := e.proofGaps(chg); reason != "" {
+		if reason := e.proofGaps(w, chg); reason != "" {
 			return e.draft(w, chg, res, reason)
 		}
 	}
@@ -754,7 +760,7 @@ func openTierC(s *ssot.Snapshot, chg *model.Change) []string {
 
 // proofGaps are the proof rules sync enforces beyond PASSED (PRD ch.04): a bug fix shows the
 // failure before the fix, and a T3 turn shows a user-level run.
-func (e *Engine) proofGaps(chg *model.Change) string {
+func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 	var runs []model.Evidence
 	for _, id := range chg.VerificationEvidence {
 		if ev, err := verify.Load(e.Root, id); err == nil {
@@ -762,19 +768,34 @@ func (e *Engine) proofGaps(chg *model.Change) string {
 		}
 	}
 	if chg.Plan.TaskType == "bug-fix" && chg.ReproWaiver == "" {
-		// The reproduction is a FAILED run on a working tree other than the one that passed:
-		// the failure was seen before the fix.
+		// The reproduction is a check that FAILED on a working tree other than the one that passed
+		// and PASSES on the final one: the same test by name, or the same user-level driver from
+		// an earlier request. A failing test deleted after the repro shows nothing was fixed.
+		passedAtEnd := map[string]bool{}
+		for _, ev := range runs {
+			if ev.Fingerprint != chg.ResultFingerprint {
+				continue
+			}
+			for _, t := range ev.Tests {
+				if t.Result == model.Passed {
+					passedAtEnd["test "+t.Package+"."+t.Name] = true
+				}
+			}
+			if ev.Level == model.LevelUser && ev.Verification == model.Passed {
+				passedAtEnd["driver "+ev.Command] = true
+			}
+		}
 		failedFirst := false
 		for _, ev := range runs {
 			if ev.Verification != model.Failed || ev.Fingerprint == chg.ResultFingerprint {
 				continue
 			}
 			for _, t := range ev.Tests {
-				if t.Result == model.Failed {
+				if t.Result == model.Failed && passedAtEnd["test "+t.Package+"."+t.Name] {
 					failedFirst = true
 				}
 			}
-			if ev.Level == model.LevelUser {
+			if ev.Level == model.LevelUser && passedAtEnd["driver "+ev.Command] && !driverOfThisRequest(w.s, ev.Command, chg) {
 				failedFirst = true
 			}
 		}
@@ -792,23 +813,27 @@ func (e *Engine) proofGaps(chg *model.Change) string {
 				chg.UserLevelWaived = true
 				return ""
 			}
-			if ev.Verification == model.Passed && !e.driverSetIn(ev.Command, chg.ID) {
+			if ev.Verification == model.Passed && !driverOfThisRequest(w.s, ev.Command, chg) {
 				return ""
 			}
 		}
-		return "T3 턴에 사용자 수준 실행 증거가 없음: `abbd driver set ID --run CMD --expect TEXT` 후 `abbd verify --drive`, 또는 `abbd verify --unverifiable user-level --reason`"
+		return "T3 턴에 사용자 수준 실행 증거가 없음: 앞선 완료된 턴에서 `abbd driver set ID --run CMD --expect TEXT`로 등록한 driver로 `abbd verify --drive`, 또는 `abbd verify --unverifiable user-level --reason`"
 	}
 	return ""
 }
 
-// driverSetIn: a driver registered or changed inside the turn it is meant to prove.
-func (e *Engine) driverSetIn(command, chgID string) bool {
-	w, err := e.load()
-	if err != nil {
-		return false
-	}
-	for _, d := range w.s.Project.Drivers {
-		if d.Run == command && d.SetIn == chgID {
+// driverOfThisRequest: a driver registered or changed for the work it would prove could be shaped
+// to give the wanted answer. That is one set in this turn, in a turn that never completed (an
+// aborted attempt, re-run to launder it), or in answer to the same user message as this turn.
+func driverOfThisRequest(s *ssot.Snapshot, command string, chg *model.Change) bool {
+	for _, d := range s.Project.Drivers {
+		if d.Run != command {
+			continue
+		}
+		if d.SetIn == chg.ID || d.Prompt != "" && d.Prompt == chg.Prompt {
+			return true
+		}
+		if c := s.Changes[d.SetIn]; d.SetIn != "" && (c == nil || c.State != model.StateCompleted && c.State != model.StateNeedsUser) {
 			return true
 		}
 	}

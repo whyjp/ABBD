@@ -53,7 +53,7 @@ session-bootstrap → understand-project → change-intent → architect-change
 
 사용자가 프로젝트 전체에 건 규칙은 `abbd intent rule --claim`으로 standing rule이 되고, 새 경로에도 적용된다. `intent rule`은 turn 없이도 동작하고 같은 규칙을 두 번 만들지 않는다. `run`은 사용자의 메시지에서 범위를 넓히는 말과 의무를 나타내는 말이 함께 있는 문장(또는 "everywhere", "from now on" 같은 강한 범위의 문장)을 문장마다 규칙으로 저장한다. 이 규칙은 UNCONFIRMED이고 BLUEPRINT.md에 "user's words, detected as a rule, unconfirmed"로 표시된다.
 
-이 플러그인의 PostToolUse 훅(`scripts/note-edit.sh`)은 에이전트가 Edit·Write·MultiEdit·NotebookEdit로 고친 파일을 기록한다. 그 파일은 외부 변경이 아니므로 `reconcile`과 turn 없는 `sync`가 거부하고, 다음 `abbd run`이 turn으로 가져가 verify와 sync를 거치게 한다. 셸 명령으로 고친 파일은 기록되지 않는다.
+이 플러그인의 PostToolUse 훅(`scripts/note-edit.sh`)은 에이전트가 Edit·Write·MultiEdit·NotebookEdit로 고친 파일을 기록한다. 그 파일은 외부 변경이 아니므로 `reconcile`과 turn 없는 `sync`가 거부하고, 다음 `abbd run`이 turn으로 가져가 verify와 sync를 거치게 한다. 셸 명령으로 고친 파일은 이 훅이 기록하지 않는다. SessionStart·SessionEnd 훅(`abbd note-session start|end`, 프롬프트마다 갱신)이 세션이 열려 있음을 남긴다. 세션이 열린 동안 동기화되지 않은 변경은 어떤 도구로 만들었든(`sed -i`, `perl -pi`, 스크립트) 에이전트의 것으로 보고, `reconcile`과 turn 없는 `sync`가 거부하며 다음 `abbd run`이 turn으로 가져간다. 그 사이 사용자가 직접 고친 변경은 `abbd reconcile --user`로 반영한다. 세션이 열려 있지 않을 때 만든 변경과 훅이 없는 호스트의 변경은 외부 변경으로 재조정된다.
 
 ## 엔진이 막는 것
 
@@ -64,13 +64,13 @@ skill 문장 대신 엔진이 거부하는 규칙이다. skill은 해당 명령�
 | `--user` 없는 답은 사용자 결정이 아니다. 등급 C를 풀지 못한다. `--adr` 답은 `--user`가 있어야 하고, 카드의 ADR이면 카드 결정으로 기록된다 | `decide`, `review --decide` |
 | MCP는 에이전트 통로다. B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택이다 | MCP `decide_structural_change`, `answer_decision`, `ask_user_decision` |
 | 버그 수정 턴은 수정 전 작업 트리에서 실패한 테스트가 있는 FAILED verify(또는 사용자 수준 FAILED)가 있어야 한다. `verify --no-repro --reason`(10자 이상)으로 면제 | sync |
-| T3 턴은 사용자 수준 실행이 있어야 한다(앞선 turn에 등록한 driver의 `verify --drive` PASSED, 또는 `verify --unverifiable user-level --reason`이면 NEEDS_USER). 같은 turn에 등록한 driver는 치지 않는다. driver 명령이 진입점을 지나는지는 검사하지 않는다 | sync |
+| T3 턴은 사용자 수준 실행이 있어야 한다(앞선 turn에 등록한 driver의 `verify --drive` PASSED, 또는 `verify --unverifiable user-level --reason`이면 NEEDS_USER). 같은 turn, 완료되지 않은(중단된) turn, 같은 사용자 메시지에 등록한 driver는 치지 않는다. push·deploy·publish 같은 등급 C 명령은 driver로 등록도 실행도 되지 않는다. driver 명령이 진입점을 지나는지는 검사하지 않는다 | sync |
 | 승인 안 된 등급 C 구조 변경은 Blueprint에 들어가지 않는다. turn 밖의 변경도 같다 | sync, reconcile, `run`의 재조정 |
-| 에이전트가 turn 없이 고친 파일은 외부 변경으로 흡수되지 않는다 | reconcile, turn 없는 sync |
+| 에이전트가 turn 없이 고친 파일, 세션이 열린 동안의 변경은 외부 변경으로 흡수되지 않는다(사용자가 고친 것은 `--user`) | reconcile, turn 없는 sync |
 | verify 명령이 등급 C 행동(push, publish, apply, deploy 등)이면 실행하지 않는다 | verify |
 | 라우팅된 수준보다 낮추려면 이유가 있어야 한다 | `run --tier` |
 | 이번 턴 범위 밖 항목에 INFERRED 의미를 쓰지 않는다 | `intent` |
-| `.abbd/` md의 엔진 영역을 손으로 고치지 않는다. 손편집 기록은 `check --accept-edits`까지 남는다 | check |
+| `.abbd/` md의 엔진 영역을 손으로 고치지 않는다. 손편집 기록은 `check --accept-edits`까지 남고, 손으로 올린 USER_STATED·CONFIRMED·승인은 그 전까지 엔진이 믿지 않으며 `--user` 없는 수락에서는 INFERRED·UNCONFIRMED로 내려간다 | check |
 | 예산 초과(모델 호출, 그래프 조회, 테스트 실행)는 경고로 남는다 | verify, sync |
 
 ## 리뷰 화면

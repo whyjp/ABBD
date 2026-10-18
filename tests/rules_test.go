@@ -3,6 +3,8 @@ package tests
 import (
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/workflow"
 )
 
 // Rules that used to be prose in the skills and are now held by the engine.
@@ -60,7 +62,11 @@ func TestT3NeedsAUserLevelRun(t *testing.T) {
 	if str(plan, "verification_tier") != "T3" {
 		t.Fatalf("retry/duplicate work is T3: %v", get(plan, "verification_tier"))
 	}
+	orig := p.read("internal/api/api.go")
 	p.replace("internal/api/api.go", "	w.WriteHeader(http.StatusAccepted)\n}", "	w.WriteHeader(http.StatusAccepted)\n}\n\nfunc dedupeKey(k string) string { return k }")
+	// The host's edit hook: the code stays the agent's across an abort, never an outside change.
+	e, _ := workflow.New(p.dir)
+	e.NoteEdit("internal/api/api.go")
 	p.ok("verify")
 	if v, code, _ := p.run("sync"); code != 2 || !strings.Contains(str(v, "reason"), "사용자 수준") {
 		t.Fatalf("T3 must not sync without user-level evidence: exit %d %v", code, get(v, "reason"))
@@ -73,12 +79,28 @@ func TestT3NeedsAUserLevelRun(t *testing.T) {
 	if _, code, _ := p.run("sync"); code != 2 {
 		t.Fatal("a driver set in this turn must not satisfy this turn's T3 gate")
 	}
+	// Aborting and re-running the same work does not launder the driver.
 	p.ok("turn", "abort")
 	p.ok("run", "POST /messages 재시도 시 중복 발행 방지")
 	p.ok("verify")
 	p.ok("verify", "--drive")
+	if _, code, _ := p.run("sync"); code != 2 {
+		t.Fatal("a driver set in an aborted turn must not satisfy the re-run's T3 gate")
+	}
+	p.ok("turn", "abort")
+	p.write("internal/api/api.go", orig)
+	// A driver registered in an earlier turn that completed proves later turns.
+	p.ok("run", "POST /messages 사용자 수준 driver 등록")
+	p.ok("driver", "set", feat, "--run", "go test ./internal/api -run TestPostMessagePublishes -v", "--expect", "PASS: TestPostMessagePublishes")
 	if s := p.ok("sync"); get(s, "completed") != true {
-		t.Fatalf("T3 with a driver from an earlier turn completes: %v", get(s, "reason"))
+		t.Fatalf("the driver turn completes: %v", get(s, "reason"))
+	}
+	p.ok("run", "POST /messages 재시도 시 중복 발행 방지")
+	p.replace("internal/api/api.go", "	w.WriteHeader(http.StatusAccepted)\n}", "	w.WriteHeader(http.StatusAccepted)\n}\n\nfunc dedupeKey(k string) string { return k }")
+	p.ok("verify")
+	p.ok("verify", "--drive")
+	if s := p.ok("sync"); get(s, "completed") != true {
+		t.Fatalf("T3 with a driver from an earlier completed turn completes: %v", get(s, "reason"))
 	}
 }
 
