@@ -11,12 +11,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/whyjp/for-my-harness/internal/bootstrap"
-	"github.com/whyjp/for-my-harness/internal/intent"
-	"github.com/whyjp/for-my-harness/internal/mcp"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/workflow"
+	"github.com/whyjp/cccv/internal/bootstrap"
+	"github.com/whyjp/cccv/internal/intent"
+	"github.com/whyjp/cccv/internal/mcp"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/workflow"
 	"gopkg.in/yaml.v3"
 )
 
@@ -104,6 +104,9 @@ func Main(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
+	if e.Notice != "" {
+		fmt.Fprintln(stderr, e.Notice)
+	}
 	out, err := cmd.run(e, rest[1:])
 	// A refused gate or a failed verification still returns the receipt that explains it;
 	// any other error returns nothing worth printing.
@@ -113,7 +116,7 @@ func Main(args []string, stdout, stderr io.Writer) int {
 	}
 	switch {
 	case errors.Is(err, errUsage):
-		fmt.Fprintf(stderr, "usage: myharness %s\n", cmd.usage)
+		fmt.Fprintf(stderr, "usage: cccv %s\n", cmd.usage)
 		return 1
 	case gate:
 		fmt.Fprintf(stderr, "BLOCKED: %v\n", err)
@@ -126,9 +129,9 @@ func Main(args []string, stdout, stderr io.Writer) int {
 }
 
 func printHelp(w io.Writer) {
-	fmt.Fprintln(w, "myharness — For My Harness Core CLI (Phase 1 draft)\n\nglobal flags: --root DIR, --json\n\ncommands:")
+	fmt.Fprintln(w, "cccv — For My Harness Core CLI (Phase 1 draft)\n\nglobal flags: --root DIR, --json\n\ncommands:")
 	for _, name := range model.SortedKeys(Commands) {
-		fmt.Fprintf(w, "  myharness %s\n", Commands[name].usage)
+		fmt.Fprintf(w, "  cccv %s\n", Commands[name].usage)
 	}
 }
 
@@ -148,7 +151,7 @@ func emit(w io.Writer, name string, v any, asJSON bool) {
 		fmt.Fprintf(w, "%v\n", v)
 		return
 	}
-	fmt.Fprintf(w, "# myharness %s\n%s", name, b)
+	fmt.Fprintf(w, "# cccv %s\n%s", name, b)
 }
 
 // toPlain routes text output through JSON so YAML uses the same field names as --json and MCP.

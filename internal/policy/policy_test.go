@@ -3,8 +3,8 @@ package policy
 import (
 	"testing"
 
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 func TestContractTiers(t *testing.T) {

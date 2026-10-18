@@ -8,10 +8,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/policy"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/policy"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 type Report struct {

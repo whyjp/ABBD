@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/whyjp/for-my-harness/internal/cli"
-	"github.com/whyjp/for-my-harness/internal/mcp"
-	"github.com/whyjp/for-my-harness/internal/workflow"
+	"github.com/whyjp/cccv/internal/cli"
+	"github.com/whyjp/cccv/internal/mcp"
+	"github.com/whyjp/cccv/internal/workflow"
 	"gopkg.in/yaml.v3"
 )
 
@@ -88,7 +88,7 @@ func TestMCPMatchesCLI(t *testing.T) {
 	}
 }
 
-var cmdRe = regexp.MustCompile("myharness ([a-z][a-z-]+)")
+var cmdRe = regexp.MustCompile("cccv ([a-z][a-z-]+)")
 
 // TestSkillsUseRegisteredCommands encodes the agreement between the skills and the CLI: a
 // skill that names a command the CLI does not register fails the build.
@@ -109,7 +109,7 @@ func TestSkillsUseRegisteredCommands(t *testing.T) {
 		b, _ := os.ReadFile(f)
 		for _, m := range cmdRe.FindAllStringSubmatch(string(b), -1) {
 			if _, ok := cli.Commands[m[1]]; !ok {
-				t.Errorf("%s names `myharness %s`, which the CLI does not register", f, m[1])
+				t.Errorf("%s names `cccv %s`, which the CLI does not register", f, m[1])
 			}
 		}
 	}

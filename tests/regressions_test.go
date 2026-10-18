@@ -69,7 +69,7 @@ func TestFailedPublishLeavesNoCompletedReceipt(t *testing.T) {
 	p.ok("init")
 	plan := p.ok("run", "README 문서 보강")
 	p.write("README.md", "# heartbeat\n")
-	staging := filepath.Join(p.dir, ".myharness", "generated", "explorer.html.staging")
+	staging := filepath.Join(p.dir, ".cccv", "generated", "explorer.html.staging")
 	if err := os.MkdirAll(staging, 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -173,4 +173,20 @@ func TestOpenDecisionIsAnsweredByID(t *testing.T) {
 	if _, code, _ := p.run("decide", "--adr", adr, "--answer", "bogus"); code == 0 {
 		t.Fatal("an answer that is not an option is refused")
 	}
+}
+
+func TestLegacyDirectoryIsMovedOnceWithANotice(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	if err := os.Rename(filepath.Join(p.dir, ".cccv"), filepath.Join(p.dir, ".myharness")); err != nil {
+		t.Fatal(err)
+	}
+	_, code, stderr := p.run("status")
+	if code != 0 || !strings.Contains(stderr, "moved .myharness/ to .cccv/") {
+		t.Fatalf("first run moves and notices: exit %d %q", code, stderr)
+	}
+	if _, _, stderr = p.run("status"); strings.Contains(stderr, "moved") {
+		t.Fatal("the notice is shown once")
+	}
+	p.assertAllCurrent("after migration")
 }

@@ -3,12 +3,12 @@ package knowledge
 import (
 	"time"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/graph"
-	"github.com/whyjp/for-my-harness/internal/html"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/workspace"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/graph"
+	"github.com/whyjp/cccv/internal/html"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/workspace"
 )
 
 // Publish writes the md originals, then derives graph and HTML from them with one watermark.

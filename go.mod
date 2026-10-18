@@ -1,4 +1,4 @@
-module github.com/whyjp/for-my-harness
+module github.com/whyjp/cccv
 
 go 1.26.3
 

@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 const File = "generated/graph.json"

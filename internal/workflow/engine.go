@@ -8,18 +8,20 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/bootstrap"
-	"github.com/whyjp/for-my-harness/internal/graph"
-	"github.com/whyjp/for-my-harness/internal/html"
-	"github.com/whyjp/for-my-harness/internal/identity"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/workspace"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/bootstrap"
+	"github.com/whyjp/cccv/internal/graph"
+	"github.com/whyjp/cccv/internal/html"
+	"github.com/whyjp/cccv/internal/identity"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/workspace"
 )
 
 type Engine struct {
 	Root string
+	// Notice is a one-time message for the user, such as the v1.3 directory migration.
+	Notice string
 }
 
 func New(root string) (*Engine, error) {
@@ -27,7 +29,11 @@ func New(root string) (*Engine, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Engine{Root: abs}, nil
+	notice, err := ssot.MigrateLegacy(abs)
+	if err != nil {
+		return nil, err
+	}
+	return &Engine{Root: abs, Notice: notice}, nil
 }
 
 // world is one consistent observation of the project for the duration of a command.
@@ -39,7 +45,7 @@ type world struct {
 
 func (e *Engine) load() (*world, error) {
 	if !ssot.Exists(e.Root) {
-		return nil, fmt.Errorf("no project knowledge in %s; run `myharness init`", e.Root)
+		return nil, fmt.Errorf("no project knowledge in %s; run `cccv init`", e.Root)
 	}
 	s, err := ssot.Load(e.Root)
 	if err != nil {
@@ -89,7 +95,7 @@ func (w *world) countGraphQuery() {
 	}
 }
 
-// Init is `myharness init`: bootstrap when there is no knowledge, otherwise a session start.
+// Init is `cccv init`: bootstrap when there is no knowledge, otherwise a session start.
 func (e *Engine) Init(opt bootstrap.Options) (any, error) {
 	if ssot.Exists(e.Root) && opt.Mode == "" && opt.From == "" {
 		return e.Status()

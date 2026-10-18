@@ -1,4 +1,4 @@
-// Package ssot owns the Markdown source of truth under .myharness/.
+// Package ssot owns the Markdown source of truth under .cccv/.
 // Each object is one Markdown file: YAML frontmatter is the structured original, an
 // auto-generated summary block follows, and anything after it belongs to the user and is
 // preserved on rewrite.
@@ -14,11 +14,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/whyjp/for-my-harness/internal/model"
+	"github.com/whyjp/cccv/internal/model"
 	"gopkg.in/yaml.v3"
 )
 
-const Dir = ".myharness"
+const Dir = ".cccv"
 
 const (
 	autoStart = "<!-- fmh:auto:start -->"
@@ -369,3 +369,21 @@ func WriteText(root string, rel string, text string) error {
 
 func WriteYAMLFile(root, rel string, v any) error { return writeYAML(Path(root, rel), v) }
 func ReadYAMLFile(root, rel string, v any) error  { return readYAML(Path(root, rel), v) }
+
+// LegacyDir is the v1.3 directory name. MigrateLegacy moves it to Dir once (PRD v1.4 CR-1)
+// and returns a notice to show the user that one time; afterwards it is a no-op.
+const LegacyDir = ".myharness"
+
+func MigrateLegacy(root string) (string, error) {
+	legacy := filepath.Join(root, LegacyDir)
+	if _, err := os.Stat(legacy); err != nil {
+		return "", nil
+	}
+	if _, err := os.Stat(filepath.Join(root, Dir)); err == nil {
+		return "", fmt.Errorf("both %s and %s exist in %s; keep one", LegacyDir, Dir, root)
+	}
+	if err := os.Rename(legacy, filepath.Join(root, Dir)); err != nil {
+		return "", fmt.Errorf("move %s to %s: %w", LegacyDir, Dir, err)
+	}
+	return fmt.Sprintf("notice: moved %s/ to %s/ (cccv v1.4 rename). Generated files keep working; commit the move.", LegacyDir, Dir), nil
+}

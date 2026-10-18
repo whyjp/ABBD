@@ -65,7 +65,7 @@ func TestGreenfieldE2E(t *testing.T) {
 	if str(boot, "mode") != "greenfield" || get(boot, "questions_asked") != float64(0) {
 		t.Fatalf("empty dir must bootstrap greenfield without questions: %v", boot)
 	}
-	if _, err := os.Stat(filepath.Join(p.dir, ".myharness", "generated", "explorer.html")); err != nil {
+	if _, err := os.Stat(filepath.Join(p.dir, ".cccv", "generated", "explorer.html")); err != nil {
 		t.Fatalf("AC-BOOT-04: explorer must exist without any input: %v", err)
 	}
 
@@ -127,8 +127,8 @@ func TestAdoptMode(t *testing.T) {
 	q := newProject(t, "code-only")
 	q.write("legacy/architecture.md", "| 모듈 | 경로 | 책임 |\n|---|---|---|\n| storage | internal/storage | heartbeat 레코드를 저장한다 |\n| ghost | internal/ghost | 존재하지 않는 모듈 |\n")
 	preview := q.ok("init", "--mode", "adopt", "--from", filepath.Join(q.dir, "legacy"), "--preview")
-	if _, err := os.Stat(filepath.Join(q.dir, ".myharness")); err == nil {
-		t.Fatal("--preview must not write .myharness")
+	if _, err := os.Stat(filepath.Join(q.dir, ".cccv")); err == nil {
+		t.Fatal("--preview must not write .cccv")
 	}
 	if len(strs(preview, "adopt", "applied")) != 1 {
 		t.Fatalf("preview reports what adopt would apply: %v", get(preview, "adopt"))

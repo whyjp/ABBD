@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/verify"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/verify"
 )
 
 type ConsistencyReport struct {
@@ -17,7 +17,7 @@ type ConsistencyReport struct {
 	Freshness Freshness `json:"freshness"`
 }
 
-// Check is `myharness check`: schema, provenance rules, reference integrity, evidence links,
+// Check is `cccv check`: schema, provenance rules, reference integrity, evidence links,
 // dependency policy and cross-artifact freshness (FR-06, FR-29).
 func (e *Engine) Check() (*ConsistencyReport, error) {
 	w, err := e.load()

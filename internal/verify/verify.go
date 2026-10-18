@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 const runsDir = "verification/runs"

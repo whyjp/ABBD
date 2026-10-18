@@ -5,12 +5,12 @@
 
 ```sh
 mkdir new-service && cd new-service
-myharness init .
-myharness run "$(cat ../request.txt)"
+cccv init .
+cccv run "$(cat ../request.txt)"
 # 에이전트가 코드와 테스트를 쓴다
-myharness verify
-myharness sync
-myharness status
+cccv verify
+cccv sync
+cccv status
 ```
 
 같은 흐름을 자동으로 검증하는 테스트는 `tests/greenfield_test.go`의 `TestGreenfieldE2E`다.

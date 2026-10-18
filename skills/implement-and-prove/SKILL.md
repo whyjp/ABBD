@@ -15,13 +15,13 @@ description: Implements a planned change in small units that each end in a check
 ## 입력
 
 - ChangePlan(타입·시그니처, 검증 계약)과 impact-review의 verify 범위.
-- WorkflowPlan의 검증 수준과 턴 예산(`.myharness/project.yaml`).
+- WorkflowPlan의 검증 수준과 턴 예산(`.cccv/project.yaml`).
 
 ## 검증 수준
 
 | 수준 | 대상 | 최소 증거 |
 |---|---|---|
-| T0 | 문서·표현만 변경 | 링크, 스키마, 생성물 일치(`myharness check`) |
+| T0 | 문서·표현만 변경 | 링크, 스키마, 생성물 일치(`cccv check`) |
 | T1 | 국소 코드 수정 | 단위 테스트 + 타입/컴파일 확인 |
 | T2 | 교차 모듈 기능 | 관련 통합 테스트 + 경계/호환성 검사 |
 | T3 | 고위험 상태·동시성·데이터 | 장애 주입, 확대된 회귀 범위, 사용자 수준 실행 증거 |
@@ -52,13 +52,13 @@ ChangePlan을 각각 검사 하나로 끝나는 단위로 나눈다. 앞 단위�
 ### 4. verify로 증거 남기기
 
 ```sh
-myharness verification-plan                   # 하네스가 고른 명령·테스트·UNKNOWN을 먼저 본다
-myharness verify --affected                   # 기본값. build 명령 + impact 기준 영향 테스트
-myharness verify --all                        # build + 전체 test 명령(T3 등)
-myharness verify --cmd "go test ./service/heartbeat/..." --cmd "go vet ./..."
+cccv verification-plan                   # 하네스가 고른 명령·테스트·UNKNOWN을 먼저 본다
+cccv verify --affected                   # 기본값. build 명령 + impact 기준 영향 테스트
+cccv verify --all                        # build + 전체 test 명령(T3 등)
+cccv verify --cmd "go test ./service/heartbeat/..." --cmd "go vet ./..."
 ```
 
-- verify는 명령, revision, fingerprint, 통과/실패를 Evidence(`.myharness/verification/runs/`)로 저장하고 turn을 갱신한다.
+- verify는 명령, revision, fingerprint, 통과/실패를 Evidence(`.cccv/verification/runs/`)로 저장하고 turn을 갱신한다.
 - 종료 코드는 FAILED여도 0이다. 결과의 `overall`과 `failed_tests`로 판단한다.
 - verify 뒤에 작업 트리를 바꾸면 그 PASSED는 sync에서 무효다. 마지막 수정 뒤에 다시 verify한다.
 - 검증 계약의 각 항목이 어느 Evidence로 덮였는지 연결한다.
@@ -72,7 +72,7 @@ EvidenceReport에는 두 목록을 따로 둔다.
 - 실행 못함: 항목, 이유(환경 없음, 실서비스 의존, 권한 없음 등). 이 항목의 verification은 UNVERIFIABLE이다. 이유 없이는 기록되지 않는다.
 
 ```sh
-myharness verify --unverifiable "운영 heartbeat-events 토픽 소비" --reason "이 환경에 브로커 없음"
+cccv verify --unverifiable "운영 heartbeat-events 토픽 소비" --reason "이 환경에 브로커 없음"
 ```
 
 - 결과의 `could_not_run`에 들어가고 Evidence로 남는다. `test_runs`는 늘지 않는다.
@@ -93,7 +93,7 @@ T0/T1 작업은 경량 루프로 돈다. 모델 호출, 그래프 조회, 테스
 계측은 하네스가 대부분 직접 센다. 그래프 조회는 inspect, contracts, impact, graph 명령이, 테스트 실행은 verify가, 질문 수는 decide가, 소요 시간은 sync가 기록한다. 하네스가 볼 수 없는 것은 모델 호출 수뿐이다. 호스트가 그 수를 알려 주면 누적해서 기록한다(부를 때마다 더해진다).
 
 ```sh
-myharness turn note --model-calls 7
+cccv turn note --model-calls 7
 ```
 
 ## 게이트와 출력

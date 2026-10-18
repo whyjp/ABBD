@@ -12,7 +12,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/whyjp/for-my-harness/internal/model"
+	"github.com/whyjp/cccv/internal/model"
 )
 
 type goResult struct {

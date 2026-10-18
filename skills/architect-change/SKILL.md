@@ -28,10 +28,10 @@ description: Designs a change before code is written. Picks the owning module, c
 - 새 모듈이 필요하면 responsibility 초안을 ChangePlan과 `intent delta --add`에 쓴다. MOD ID는 sync가 새 패키지를 발견할 때 생기고 responsibility는 INFERRED 자리표시로 시작한다. `intent module`은 이미 있는 모듈만 받으므로, 초안 문장은 다음 turn에서 `intent module --id MOD-new`로 옮기거나 사용자가 `confirm MOD-new --value`로 확정한다.
 
 ```sh
-myharness inspect MOD-002
-myharness graph neighbors MOD-002 --depth 1
-myharness intent module --id MOD-002 --allow MOD-005 --forbid MOD-003
-myharness intent delta --add "새 모듈 internal/retrypolicy: 재시도 정책을 소유한다 (INFERRED)"
+cccv inspect MOD-002
+cccv graph neighbors MOD-002 --depth 1
+cccv intent module --id MOD-002 --allow MOD-005 --forbid MOD-003
+cccv intent delta --add "새 모듈 internal/retrypolicy: 재시도 정책을 소유한다 (INFERRED)"
 ```
 
 ### 2. 타입과 경계 스케치
@@ -66,8 +66,8 @@ IntentDelta의 각 항목마다 무엇이 그것을 증명하는지 정한다.
 | FEAT-001 중복 저장 금지 유지 | TEST-019 재실행 | T2 |
 
 - 증명은 사용자가 관찰할 수 있는 동작을 단언한다. 내부 구현을 단언하는 테스트는 리팩터링마다 깨진다.
-- 실행할 수 없는 증명(실서비스 토픽 등)은 미리 UNVERIFIABLE 후보로 표시하고 이유를 적는다. implement-and-prove가 `myharness verify --unverifiable "CHECK" --reason TEXT`로 기록한다.
-- 하네스가 영향 범위에서 뽑은 명령·테스트는 `myharness verification-plan`으로 본다. 검증 계약이 그보다 좁으면 빠진 이유를 적는다.
+- 실행할 수 없는 증명(실서비스 토픽 등)은 미리 UNVERIFIABLE 후보로 표시하고 이유를 적는다. implement-and-prove가 `cccv verify --unverifiable "CHECK" --reason TEXT`로 기록한다.
+- 하네스가 영향 범위에서 뽑은 명령·테스트는 `cccv verification-plan`으로 본다. 검증 계약이 그보다 좁으면 빠진 이유를 적는다.
 
 ## 출력: ChangePlan
 

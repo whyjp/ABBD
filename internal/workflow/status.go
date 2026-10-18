@@ -1,10 +1,10 @@
 package workflow
 
 import (
-	"github.com/whyjp/for-my-harness/internal/graph"
-	"github.com/whyjp/for-my-harness/internal/html"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/graph"
+	"github.com/whyjp/cccv/internal/html"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 type Freshness struct {
@@ -104,7 +104,7 @@ func (w *world) status() *Status {
 		st.ActiveTurn = &TurnSummary{ID: c.ID, Request: c.RequestSummary, State: c.State, Plan: c.Plan}
 	} else if len(st.PendingChanges) > 0 {
 		st.ExternalChange = true
-		st.Hint = "외부 변경 감지: `myharness reconcile` (또는 `myharness run`이 자동 재조정)"
+		st.Hint = "외부 변경 감지: `cccv reconcile` (또는 `cccv run`이 자동 재조정)"
 	}
 	st.Knowledge = map[string]int{}
 	for _, f := range s.Features {

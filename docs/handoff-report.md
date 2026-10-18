@@ -8,10 +8,10 @@
 
 ## [Bootstrap Modes]
 
-- **greenfield.** 소스가 없으면 자동 선택된다. 빈 지식으로 시작하고, 첫 `myharness run` 요청이 REQ와 FEAT 초안(USER_STATED)이 된다.
+- **greenfield.** 소스가 없으면 자동 선택된다. 빈 지식으로 시작하고, 첫 `cccv run` 요청이 REQ와 FEAT 초안(USER_STATED)이 된다.
 - **code-only.** 소스가 있으면 자동 선택된다. Discover → Observe(`--verify-available`일 때만 실행, 아니면 NOT_RUN으로 명시) → Infer(진입점마다 INFERRED FEAT 후보) → Seed → BootstrapReport.
 - **adopt.** `--from` 문서(md/html 표, yaml/json)에서 의미 필드만 ADOPTED로 가져오고 구조는 코드에서 다시 추출한다. 충돌과 매칭 실패는 보고서에 남는다. 입력이 깨져도 기본 경로는 계속된다.
-- 세 모드 모두 입력을 읽지 않는다. 불확실한 항목은 확인 대기 목록(`confirm-queue.html`, `myharness confirm --list`)에 올라간다.
+- 세 모드 모두 입력을 읽지 않는다. 불확실한 항목은 확인 대기 목록(`confirm-queue.html`, `cccv confirm --list`)에 올라간다.
 
 ## [Contract View]
 
@@ -29,8 +29,8 @@ Phase 1 추출 범위는 Go AST 기준이다 (`internal/analysis`).
 ## [Approval Tiers]
 
 - **A.** 읽기, 로컬 수정, 맵 동기화, 렌더, 로컬 검증, 로컬 commit(`project.yaml`로 변경 가능)은 자동이다.
-- **B.** `myharness decide`는 선택지 2~3개와 기본값을 받는다. 턴당 3회까지만 묻고, 넘치면 묻지 않고 기본값으로 진행한다. 같은 질문은 ADR에서 찾아 다시 묻지 않는다. 답이 없으면 UNCONFIRMED ADR이 남고 턴은 NEEDS_USER로 끝난다. sync는 소비자 미상 계약의 breaking change를 자동으로 B로 기록한다.
-- **C.** external_consumers: true 계약의 breaking change가 있으면 sync가 BLOCKED + exit 2로 멈춘다. `decide --tier C --subject ID --answer approve`가 있어야 진행한다. push/deploy 등은 `myharness policy classify`가 C로 분류한다.
+- **B.** `cccv decide`는 선택지 2~3개와 기본값을 받는다. 턴당 3회까지만 묻고, 넘치면 묻지 않고 기본값으로 진행한다. 같은 질문은 ADR에서 찾아 다시 묻지 않는다. 답이 없으면 UNCONFIRMED ADR이 남고 턴은 NEEDS_USER로 끝난다. sync는 소비자 미상 계약의 breaking change를 자동으로 B로 기록한다.
+- **C.** external_consumers: true 계약의 breaking change가 있으면 sync가 BLOCKED + exit 2로 멈춘다. `decide --tier C --subject ID --answer approve`가 있어야 진행한다. push/deploy 등은 `cccv policy classify`가 C로 분류한다.
 - **지연 확인.** bootstrap 항목은 묻지 않는다. `run`이 이번 턴의 대상 중 의미가 미확인인 항목을 `confirm_if_purpose_used`로 알려 주고, 결과가 그 의미에 의존할 때만 에이전트가 등급 B로 묻는다.
 
 ## [pstack Source Review]
@@ -42,7 +42,7 @@ Phase 1 추출 범위는 Go AST 기준이다 (`internal/analysis`).
 ## [Proposed Architecture]
 
 ```
-cmd/myharness → internal/cli ─┐
+cmd/cccv → internal/cli ─┐
 internal/mcp ─────────────────┴→ internal/workflow   턴 엔진 + Project Intelligence API
                                    ├ bootstrap   greenfield/code-only/adopt
                                    ├ intent      라우팅(표) + 의도 해석
@@ -65,8 +65,8 @@ internal/mcp ─────────────────┴→ internal/
 | 최신성 기준 | git HEAD + 파일별 내용 fingerprint | 큰 저장소에서 비용이 문제면 git 기반 증분 |
 | 첫 언어 / 호스트 (Q2, Q3) | Go 정적 분석 / Claude Code 어댑터 + Codex 안내 | 다른 언어 분석기 추가 |
 | 로컬 commit (Q18) | A, 단 `sync --commit`을 줄 때만 | `project.yaml` `policy.local_commit_tier` |
-| 의미 필드 자동 생성 문구 | `(추정) ...` 기계적 문장, INFERRED | 에이전트가 `myharness intent ...`로 INFERRED 재작성 |
-| 외부 소비자 기본값 | 미상(nil) → breaking이면 B | `myharness confirm IF-x --external-consumers true` |
+| 의미 필드 자동 생성 문구 | `(추정) ...` 기계적 문장, INFERRED | 에이전트가 `cccv intent ...`로 INFERRED 재작성 |
+| 외부 소비자 기본값 | 미상(nil) → breaking이면 B | `cccv confirm IF-x --external-consumers true` |
 
 ## [Implemented Prototype]
 

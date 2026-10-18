@@ -10,9 +10,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/workflow"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/workflow"
 )
 
 const ProtocolVersion = "2025-11-25"
@@ -172,7 +172,7 @@ func handle(e *workflow.Engine, req request) (any, *rpcError) {
 		return map[string]any{
 			"protocolVersion": ProtocolVersion,
 			"capabilities":    map[string]any{"tools": map[string]any{}, "resources": map[string]any{}},
-			"serverInfo":      map[string]any{"name": "myharness", "version": "0.1.0-draft"},
+			"serverInfo":      map[string]any{"name": "cccv", "version": "0.1.0-draft"},
 			"instructions":    "For My Harness project intelligence. Every answer carries revision and freshness; STALE or UNKNOWN means fall back to LSP/source.",
 		}, nil
 	case "ping":

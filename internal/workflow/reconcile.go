@@ -3,10 +3,10 @@ package workflow
 import (
 	"fmt"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/impact"
-	"github.com/whyjp/for-my-harness/internal/knowledge"
-	"github.com/whyjp/for-my-harness/internal/model"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/impact"
+	"github.com/whyjp/cccv/internal/knowledge"
+	"github.com/whyjp/cccv/internal/model"
 )
 
 type analysisResult = analysis.Result
@@ -26,7 +26,7 @@ func (e *Engine) Reconcile() (*ReconcileResult, error) {
 		return nil, err
 	}
 	if c := w.s.ActiveChange(); c != nil {
-		return nil, fmt.Errorf("turn %s is active; its changes are synced by `myharness sync`", c.ID)
+		return nil, fmt.Errorf("turn %s is active; its changes are synced by `cccv sync`", c.ID)
 	}
 	if len(w.changedSinceSync()) == 0 {
 		return &ReconcileResult{State: model.StateCompleted}, nil

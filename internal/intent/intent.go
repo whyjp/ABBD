@@ -8,8 +8,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 type TaskType struct {
@@ -22,17 +22,17 @@ type TaskType struct {
 // Types is ordered: the first matching type wins, so specific types precede the default.
 var Types = []TaskType{
 	{"docs", []string{"문서", "readme", "docs", "주석", "documentation"}, "T0", []string{
-		"원본 SSOT(md)인지 생성 HTML인지 식별", "원본 수정", "myharness render", "myharness check로 코드·계약 증거 점검", "myharness sync"}},
+		"원본 SSOT(md)인지 생성 HTML인지 식별", "원본 수정", "cccv render", "cccv check로 코드·계약 증거 점검", "cccv sync"}},
 	{"bug-fix", []string{"버그", "bug", "fix", "고쳐", "오류", "에러", "error", "crash", "fail", "깨짐", "안됨"}, "T1", []string{
-		"관련 feature/contract 조회 (myharness inspect)", "실패 재현 테스트 작성", "수정", "관련 테스트 (myharness verify --affected)", "myharness sync"}},
+		"관련 feature/contract 조회 (cccv inspect)", "실패 재현 테스트 작성", "수정", "관련 테스트 (cccv verify --affected)", "cccv sync"}},
 	{"perf", []string{"성능", "perf", "latency", "느림", "느려", "빠르게", "throughput", "최적화"}, "T2", []string{
-		"병목·기준 환경 확인", "설계 불변조건 조회", "동일 조건 실측 루프", "비교 결과와 결정 기록", "myharness verify --affected", "myharness sync"}},
+		"병목·기준 환경 확인", "설계 불변조건 조회", "동일 조건 실측 루프", "비교 결과와 결정 기록", "cccv verify --affected", "cccv sync"}},
 	{"interface-change", []string{"api 변경", "endpoint", "엔드포인트", "topic", "토픽", "schema", "스키마", "interface", "인터페이스", "호환", "breaking", "migration", "마이그레이션"}, "T2", []string{
-		"구조 이해 (myharness inspect / graph neighbors)", "의도 충돌 확인", "myharness contracts impact (등급 B/C 트리거)", "인터페이스 계획", "코드", "폭넓은 회귀 (myharness verify --all)", "myharness sync"}},
+		"구조 이해 (cccv inspect / graph neighbors)", "의도 충돌 확인", "cccv contracts impact (등급 B/C 트리거)", "인터페이스 계획", "코드", "폭넓은 회귀 (cccv verify --all)", "cccv sync"}},
 	{"refactor", []string{"리팩터", "refactor", "rename", "이름 변경", "정리", "이동", "move", "분리", "extract"}, "T1", []string{
-		"현재 경계와 의존 정책 조회", "동작 보존 범위 명시", "작은 단위 변경", "myharness verify --affected", "myharness sync (안정 ID 유지 확인)"}},
+		"현재 경계와 의존 정책 조회", "동작 보존 범위 명시", "작은 단위 변경", "cccv verify --affected", "cccv sync (안정 ID 유지 확인)"}},
 	{"feature", nil, "T1", []string{
-		"기능 계약·시나리오·검증 계획 작성 (myharness intent feature)", "myharness impact", "코드·테스트 생성", "myharness verify --affected", "myharness sync (Feature 신규 ID와 Architecture 연결 확정)"}},
+		"기능 계약·시나리오·검증 계획 작성 (cccv intent feature)", "cccv impact", "코드·테스트 생성", "cccv verify --affected", "cccv sync (Feature 신규 ID와 Architecture 연결 확정)"}},
 }
 
 // riskWords raise the verification tier to T3 (state, concurrency, data).

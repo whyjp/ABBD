@@ -11,13 +11,13 @@ description: Turns a user request plus the current project state into an IntentD
 
 - 요청이 기능의 동작·계약·불변조건을 추가·변경·삭제할 때.
 - 요청이 CONFIRMED 계약과 충돌하거나, 해석이 둘 이상일 때.
-- reconcile이나 sync가 기본값으로 남긴 등급 B ADR(외부 변경과 확정 계약의 충돌, 외부 계약 변경)에 사용자가 답할 때. decide는 진행 중인 turn 안에서만 동작하므로 답은 다음 turn에서 기록한다. `myharness decisions ID`로 그 ADR의 question과 options를 읽고, question을 글자 그대로, options를 다시 붙여 `myharness decide --question "..." --option K1=L1 --option K2=L2 --answer KEY`로 부른다.
+- reconcile이나 sync가 기본값으로 남긴 등급 B ADR(외부 변경과 확정 계약의 충돌, 외부 계약 변경)에 사용자가 답할 때. decide는 진행 중인 turn 안에서만 동작하므로 답은 다음 turn에서 기록한다. `cccv decisions ID`로 그 ADR의 question과 options를 읽고, question을 글자 그대로, options를 다시 붙여 `cccv decide --question "..." --option K1=L1 --option K2=L2 --answer KEY`로 부른다.
 - 의도 변화가 없는 단순 버그 수정이나 문서 갱신이면 건너뛴다.
 
 ## 입력
 
 - understand-project의 현재 상태 요약.
-- `myharness run`이 만든 초안 CHG와 WorkflowPlan.
+- `cccv run`이 만든 초안 CHG와 WorkflowPlan.
 
 ## 세 가지 의도를 섞지 않는다
 
@@ -42,7 +42,7 @@ description: Turns a user request plus the current project state into an IntentD
 초안은 CHG에 바로 기록한다. 요청 원문은 `run`이 이미 additions에 넣었다. 플래그는 여러 번 쓸 수 있고, 부를 때마다 목록에 덧붙는다.
 
 ```sh
-myharness intent delta \
+cccv intent delta \
   --add "설정 키 HEARTBEAT_MAX_RETRY" \
   --remove "FEAT-001: 재시도 3회 고정" \
   --preserve "FEAT-001: 중복 수신 시 중복 저장되지 않는다"
@@ -53,10 +53,10 @@ myharness intent delta \
 질문하기 전에 다음 순서로 조사한다. 이미 답이 있으면 묻지 않는다.
 
 1. 사용자 요청 원문을 다시 읽는다.
-2. 관련 FEAT/MOD/IF와 ADR-*을 조회한다(`myharness inspect ID`).
+2. 관련 FEAT/MOD/IF와 ADR-*을 조회한다(`cccv inspect ID`).
 3. 코드와 테스트를 확인한다.
 4. Git 이력을 확인한다.
-5. 같은 질문에 답한 ADR이 있는지 확인한다(`myharness decisions QUERY`, 질문·제목·subject를 검색). 있으면 그 답을 따른다.
+5. 같은 질문에 답한 ADR이 있는지 확인한다(`cccv decisions QUERY`, 질문·제목·subject를 검색). 있으면 그 답을 따른다.
 6. 기본값을 정한다.
 
 ### 3. 등급 B 질문이 필요한지 판단
@@ -73,7 +73,7 @@ bootstrap 중에는 절대 묻지 않는다. 동작으로 관찰해서 알 수 �
 ### 4. decide로 묻기
 
 ```sh
-myharness decide \
+cccv decide \
   --question "재시도 정책을 런타임에 바꿀 때 진행 중인 메시지에도 적용할까?" \
   --option "next=다음 메시지부터=진행 중 메시지는 기존 정책 유지" \
   --option "all=즉시 전체 적용=진행 중 메시지도 재계산, IF-002 동작 변경" \
@@ -98,13 +98,13 @@ INFERRED ∧ UNCONFIRMED 항목은 다음 두 조건이 모두 맞을 때만 묻
 건드리지 않는 추정은 묻지 않는다. 확인은 decide의 등급 B 질문으로 하고, 사용자가 답하면 해당 항목에 반영한다.
 
 ```sh
-myharness confirm --list
-myharness confirm FEAT-003                                              # 추정 문장 그대로 수락: CONFIRMED, origin INFERRED 유지
-myharness confirm FEAT-003 --purpose "heartbeat를 검증해 저장한다"      # 사용자 문장: USER_STATED, CONFIRMED
-myharness confirm FEAT-003 --reject                                     # REJECTED
-myharness confirm FEAT-003 --reject --value "heartbeat를 집계만 한다"    # 새 문장 USER_STATED·CONFIRMED, 옛 문장은 rejected_value로 보존
-myharness confirm IF-002 --external-consumers true                      # 외부 소비자 여부, USER_STATED
-myharness confirm --merge CAND-7                                        # 앵커 1개 일치 병합 후보 (--split CAND-7은 분리)
+cccv confirm --list
+cccv confirm FEAT-003                                              # 추정 문장 그대로 수락: CONFIRMED, origin INFERRED 유지
+cccv confirm FEAT-003 --purpose "heartbeat를 검증해 저장한다"      # 사용자 문장: USER_STATED, CONFIRMED
+cccv confirm FEAT-003 --reject                                     # REJECTED
+cccv confirm FEAT-003 --reject --value "heartbeat를 집계만 한다"    # 새 문장 USER_STATED·CONFIRMED, 옛 문장은 rejected_value로 보존
+cccv confirm IF-002 --external-consumers true                      # 외부 소비자 여부, USER_STATED
+cccv confirm --merge CAND-7                                        # 앵커 1개 일치 병합 후보 (--split CAND-7은 분리)
 ```
 
 `confirm`은 사용자가 본 문장을 기록하는 명령이다. 사용자가 확인하지 않은 항목에 에이전트가 부르지 않는다. 사용자가 명시적으로 요청하지 않는 한, 이번 턴과 무관한 확인 대기 목록을 한꺼번에 처리하지 않는다(`confirm --all`은 그 요청이 있을 때만).
@@ -112,25 +112,25 @@ myharness confirm --merge CAND-7                                        # 앵커
 ### 6. 의도 기록
 
 ```sh
-myharness intent feature --name "dynamic retry policy" \
+cccv intent feature --name "dynamic retry policy" \
   --purpose "재시도 정책을 설정으로 바꿀 수 있다" --origin USER_STATED \
   --id FEAT-001 --anchor symbol:go:service/heartbeat.Consumer.Run
-myharness intent invariant --feature FEAT-001 \
+cccv intent invariant --feature FEAT-001 \
   --claim "중복 수신 시 중복 저장되지 않는다" --origin USER_STATED --test TEST-019
 ```
 
 모듈 책임·의존 정책과 계약의 호환성·외부 소비자 여부가 바뀌는 요청이면 같이 기록한다.
 
 ```sh
-myharness intent module --id MOD-002 --responsibility "heartbeat 수신과 저장" \
+cccv intent module --id MOD-002 --responsibility "heartbeat 수신과 저장" \
   --allow MOD-005 --forbid MOD-003
-myharness intent contract --id IF-002 --compatibility "필드 추가만 허용" \
+cccv intent contract --id IF-002 --compatibility "필드 추가만 허용" \
   --external-consumers true --origin USER_STATED
 ```
 
 - `--origin`을 생략하면 INFERRED다. 사용자가 이번 턴에 말한 것만 `--origin USER_STATED`로 쓴다.
 - `run`이 새 기능을 판단했으면 WorkflowPlan의 `new_feature` ID를 `--id`로 준다. `--id` 없이 부르면 새 FEAT를 만든다. 앵커(`--anchor kind:ref`, kind는 symbol, path, test, entry)는 2종 이상을 준다.
-- 의미 필드를 바꾸기 전에 `myharness inspect ID`로 현재 값의 origin과 confirmation을 본다. CONFIRMED 또는 USER_STATED이면 INFERRED 문장으로 덮지 않고 `myharness decide --subject ID`로 등급 B 질문을 만든다. 하네스도 CONFIRMED purpose·responsibility를 INFERRED로 바꾸는 intent 호출을 거부한다. 거부되면 우회하지 말고 decide로 간다.
+- 의미 필드를 바꾸기 전에 `cccv inspect ID`로 현재 값의 origin과 confirmation을 본다. CONFIRMED 또는 USER_STATED이면 INFERRED 문장으로 덮지 않고 `cccv decide --subject ID`로 등급 B 질문을 만든다. 하네스도 CONFIRMED purpose·responsibility를 INFERRED로 바꾸는 intent 호출을 거부한다. 거부되면 우회하지 말고 decide로 간다.
 
 ## 게이트와 출력
 

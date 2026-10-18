@@ -2,23 +2,23 @@
 
 호스트 중립 Agent Skills다. [Agent Skills 사양](https://agentskills.io/specification)을 따른다. 디렉터리 하나에 `SKILL.md` 하나, frontmatter의 `name`은 디렉터리 이름과 같다. 호스트별 설치 경로와 기능 차이는 [`../hosts/README.md`](../hosts/README.md)에 있다.
 
-모든 skill은 하네스 코어 CLI를 호출한다. 명령과 플래그의 원본은 [`../docs/cli.md`](../docs/cli.md)다. 같은 기능은 `myharness mcp`의 MCP 도구로도 쓸 수 있다.
+모든 skill은 하네스 코어 CLI를 호출한다. 명령과 플래그의 원본은 [`../docs/cli.md`](../docs/cli.md)다. 같은 기능은 `cccv mcp`의 MCP 도구로도 쓸 수 있다.
 
 ## 턴 단계와 skill
 
 | 턴 단계 (PRD 04장) | skill | 주요 CLI 명령 | 산출물 / 게이트 |
 |---|---|---|---|
-| 0. Session bootstrap | session-bootstrap | `myharness status`, `myharness init [--preview]`, `myharness bootstrap`, `myharness reconcile` | ProjectStateSnapshot |
-| 1. Route | session-bootstrap | `myharness run "REQUEST" [--type T] [--tier T0..T3]`, `myharness plan "REQUEST"` | WorkflowPlan + 검증 수준. `run`은 bootstrap과 외부 변경 재조정을 먼저 한다 |
-| 2. Understand current | understand-project | `myharness inspect ID`, `myharness graph neighbors ID`, `myharness graph trace`, `myharness contracts list`, `myharness decisions [QUERY]` | 근거 링크 있는 현재 상태 |
-| 3. Resolve intent | change-intent | `myharness intent delta`, `myharness intent feature`, `myharness intent invariant`, `myharness intent module`, `myharness intent contract`, `myharness decide`, `myharness decisions`, `myharness confirm` | IntentDelta / 등급 B 질문(턴당 3개, 답한 질문은 재사용) |
-| 4. Design | architect-change | `myharness inspect ID`, `myharness graph neighbors ID`, `myharness intent module`, `myharness verification-plan` | ChangePlan + 검증 계약 |
-| 4. Impact | impact-review | `myharness contracts impact [--diff]`, `myharness impact`, `myharness policy classify`, `myharness decide --tier C` | ChangePlan의 영향 범위, 등급 판정, 등급 C 정지 기록 |
-| 5. Implement / 6. Prove | implement-and-prove | `myharness verification-plan`, `myharness verify`, `myharness verify --unverifiable "CHECK" --reason TEXT`, `myharness turn note --model-calls N` | diff + EvidenceReport(실행함 / 실행 못함) |
-| 7. Synchronize | sync-knowledge | `myharness intent contract`, `myharness intent module`, `myharness sync [--commit]`, `myharness check`, `myharness render`, `myharness status` | ConsistencyReport, ChangeReceipt. sync 종료 코드 2는 게이트 거부 |
-| 8. Review / ship, 9. Learn | reflect-and-correct | `myharness turn show`, `myharness policy classify`, `myharness turn abort [--reason TEXT]`, `myharness learn --kind K --proposal TEXT`, `myharness learn --preference key=value` | 검토된 ChangeReceipt, `.myharness/learning.yaml`의 교정 제안 |
+| 0. Session bootstrap | session-bootstrap | `cccv status`, `cccv init [--preview]`, `cccv bootstrap`, `cccv reconcile` | ProjectStateSnapshot |
+| 1. Route | session-bootstrap | `cccv run "REQUEST" [--type T] [--tier T0..T3]`, `cccv plan "REQUEST"` | WorkflowPlan + 검증 수준. `run`은 bootstrap과 외부 변경 재조정을 먼저 한다 |
+| 2. Understand current | understand-project | `cccv inspect ID`, `cccv graph neighbors ID`, `cccv graph trace`, `cccv contracts list`, `cccv decisions [QUERY]` | 근거 링크 있는 현재 상태 |
+| 3. Resolve intent | change-intent | `cccv intent delta`, `cccv intent feature`, `cccv intent invariant`, `cccv intent module`, `cccv intent contract`, `cccv decide`, `cccv decisions`, `cccv confirm` | IntentDelta / 등급 B 질문(턴당 3개, 답한 질문은 재사용) |
+| 4. Design | architect-change | `cccv inspect ID`, `cccv graph neighbors ID`, `cccv intent module`, `cccv verification-plan` | ChangePlan + 검증 계약 |
+| 4. Impact | impact-review | `cccv contracts impact [--diff]`, `cccv impact`, `cccv policy classify`, `cccv decide --tier C` | ChangePlan의 영향 범위, 등급 판정, 등급 C 정지 기록 |
+| 5. Implement / 6. Prove | implement-and-prove | `cccv verification-plan`, `cccv verify`, `cccv verify --unverifiable "CHECK" --reason TEXT`, `cccv turn note --model-calls N` | diff + EvidenceReport(실행함 / 실행 못함) |
+| 7. Synchronize | sync-knowledge | `cccv intent contract`, `cccv intent module`, `cccv sync [--commit]`, `cccv check`, `cccv render`, `cccv status` | ConsistencyReport, ChangeReceipt. sync 종료 코드 2는 게이트 거부 |
+| 8. Review / ship, 9. Learn | reflect-and-correct | `cccv turn show`, `cccv policy classify`, `cccv turn abort [--reason TEXT]`, `cccv learn --kind K --proposal TEXT`, `cccv learn --preference key=value` | 검토된 ChangeReceipt, `.cccv/learning.yaml`의 교정 제안 |
 
-계측은 하네스가 센다. 그래프 조회(inspect, contracts, impact, graph), 테스트 실행(verify), 질문 수(decide), 소요 시간(sync)은 자동이고, 모델 호출 수만 호스트가 `myharness turn note --model-calls N`으로 보고한다.
+계측은 하네스가 센다. 그래프 조회(inspect, contracts, impact, graph), 테스트 실행(verify), 질문 수(decide), 소요 시간(sync)은 자동이고, 모델 호출 수만 호스트가 `cccv turn note --model-calls N`으로 보고한다.
 
 ## 실행 순서
 

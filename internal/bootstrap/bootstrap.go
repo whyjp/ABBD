@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/whyjp/for-my-harness/internal/analysis"
-	"github.com/whyjp/for-my-harness/internal/html"
-	"github.com/whyjp/for-my-harness/internal/identity"
-	"github.com/whyjp/for-my-harness/internal/knowledge"
-	"github.com/whyjp/for-my-harness/internal/model"
-	"github.com/whyjp/for-my-harness/internal/ssot"
-	"github.com/whyjp/for-my-harness/internal/verify"
-	"github.com/whyjp/for-my-harness/internal/workspace"
+	"github.com/whyjp/cccv/internal/analysis"
+	"github.com/whyjp/cccv/internal/html"
+	"github.com/whyjp/cccv/internal/identity"
+	"github.com/whyjp/cccv/internal/knowledge"
+	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/cccv/internal/verify"
+	"github.com/whyjp/cccv/internal/workspace"
 )
 
 const (
@@ -193,9 +193,9 @@ func countLive[T any](m map[string]*T, status func(*T) model.ItemStatus) int {
 
 func nextTurnHint(mode string) string {
 	if mode == Greenfield {
-		return `myharness run "<첫 기능 요청>" — 요청이 REQ/FEAT 초안(USER_STATED)이 되고 구현·검증·동기화로 이어진다`
+		return `cccv run "<첫 기능 요청>" — 요청이 REQ/FEAT 초안(USER_STATED)이 되고 구현·검증·동기화로 이어진다`
 	}
-	return `myharness run "<수정 의도>" — 생성된 Map·코드·외부 계약 뷰를 근거로 계획한다`
+	return `cccv run "<수정 의도>" — 생성된 Map·코드·외부 계약 뷰를 근거로 계획한다`
 }
 
 func Markdown(r *Report) string {

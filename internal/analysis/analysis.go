@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/whyjp/for-my-harness/internal/model"
+	"github.com/whyjp/cccv/internal/model"
 )
 
 type Result struct {

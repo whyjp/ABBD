@@ -38,8 +38,8 @@ Add this server to <project>/.mcp.json (merge with existing "mcpServers" if pres
 
 {
   "mcpServers": {
-    "myharness": {
-      "command": "myharness",
+    "cccv": {
+      "command": "cccv",
       "args": ["mcp"]
     }
   }

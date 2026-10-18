@@ -40,10 +40,10 @@ description: Builds an evidence-linked picture of the current project before a c
 ### 1. How: 무엇을 하나
 
 ```sh
-myharness inspect FEAT-001 --json      # 기능 / 모듈 / 계약 / 테스트의 refs와 evidence
-myharness graph neighbors MOD-002 --depth 1
-myharness graph trace --from FEAT-001 --to IF-002
-myharness contracts list --module MOD-002
+cccv inspect FEAT-001 --json      # 기능 / 모듈 / 계약 / 테스트의 refs와 evidence
+cccv graph neighbors MOD-002 --depth 1
+cccv graph trace --from FEAT-001 --to IF-002
+cccv contracts list --module MOD-002
 ```
 
 - `inspect` 결과의 파일 경로와 라인을 직접 열어 읽는다. 결과만 믿고 넘어가지 않는다.
@@ -56,7 +56,7 @@ myharness contracts list --module MOD-002
 
 다음 순서로 근거를 찾는다.
 
-1. 해당 FEAT-*.intent와 관련 ADR-*(`myharness decisions FEAT-001`처럼 ID나 낱말로 검색). origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다. 답한 ADR(`answered: true`)은 사용자가 이미 정한 것이다.
+1. 해당 FEAT-*.intent와 관련 ADR-*(`cccv decisions FEAT-001`처럼 ID나 낱말로 검색). origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다. 답한 ADR(`answered: true`)은 사용자가 이미 정한 것이다.
 2. confirmation이 CONFIRMED인 불변조건.
 3. Git 이력. `git log --follow -- PATH`, `git blame -L a,b PATH`로 변경 커밋과 PR 설명을 읽는다.
 4. 코드의 방어 로직(재시도, 타임아웃, 중복 제거)은 과거 장애의 흔적일 수 있다. 근거를 찾으면 링크하고, 못 찾으면 추정이라고 적는다.

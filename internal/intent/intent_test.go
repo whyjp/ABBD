@@ -3,7 +3,7 @@ package intent
 import (
 	"testing"
 
-	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/cccv/internal/ssot"
 )
 
 func TestRouting(t *testing.T) {

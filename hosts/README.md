@@ -1,6 +1,6 @@
 # Host adapters
 
-하네스 코어는 CLI(`myharness`)와 같은 API를 내는 MCP 서버(`myharness mcp`)다. 어떤 호스트에서도 CLI와 검증 명령은 그대로 돈다. 어댑터가 조절하는 것은 다섯 가지뿐이다. skill 발견 경로, 서브에이전트, 사용자에게 묻기, 모델 선택, diff/도구 접근.
+하네스 코어는 CLI(`cccv`)와 같은 API를 내는 MCP 서버(`cccv mcp`)다. 어떤 호스트에서도 CLI와 검증 명령은 그대로 돈다. 어댑터가 조절하는 것은 다섯 가지뿐이다. skill 발견 경로, 서브에이전트, 사용자에게 묻기, 모델 선택, diff/도구 접근.
 
 호스트에만 있는 기능을 공통 프로토콜의 필수 기능으로 만들지 않는다. skills/의 본문은 호스트 도구 이름을 쓰지 않고 CLI 명령만 쓴다.
 
@@ -20,11 +20,11 @@ Claude Code 행은 이 저장소에서 쓰는 설정을 기준으로 했다. Cod
 
 ## 등급 B 질문의 호스트 차이
 
-change-intent skill은 질문을 먼저 `myharness decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 답은 같은 질문에 `--answer KEY`를 붙인 decide로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
+change-intent skill은 질문을 먼저 `cccv decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 답은 같은 질문에 `--answer KEY`를 붙인 decide로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
 
 ## 계측의 호스트 차이
 
-그래프 조회, 테스트 실행, 질문 수, 소요 시간은 하네스가 센다. 모델 호출 수만 하네스가 볼 수 없으므로 호스트나 에이전트가 `myharness turn note --model-calls N`으로 보고한다. 호스트가 그 수를 알려 주지 않으면 보고하지 않고, receipt의 `model_calls_note`가 보고되지 않았음을 남긴다.
+그래프 조회, 테스트 실행, 질문 수, 소요 시간은 하네스가 센다. 모델 호출 수만 하네스가 볼 수 없으므로 호스트나 에이전트가 `cccv turn note --model-calls N`으로 보고한다. 호스트가 그 수를 알려 주지 않으면 보고하지 않고, receipt의 `model_calls_note`가 보고되지 않았음을 남긴다.
 
 ## 서브에이전트가 없을 때
 
@@ -34,4 +34,4 @@ architect-change의 후보 비교, impact-review의 다중 관점 검토는 순�
 
 - Claude Code: `sh hosts/claude-code/install.sh <project>` 또는 `powershell -ExecutionPolicy Bypass -File hosts/claude-code/install.ps1 -Project <project>`. 기본 실행 정책이 서명 없는 스크립트를 막는 Windows에서는 `-ExecutionPolicy Bypass`가 필요하다. 두 스크립트 모두 하네스 skill 디렉터리만 교체하고 다른 skill은 건드리지 않는다. `.mcp.json`은 쓰지 않고 붙여 넣을 스니펫만 출력한다.
 - Codex: [`codex/README.md`](codex/README.md).
-- 그 밖의 호스트: `skills/` 아래 여덟 개 디렉터리를 그 호스트의 skill 경로로 복사하고, MCP 서버 명령을 `myharness mcp`로 등록한다.
+- 그 밖의 호스트: `skills/` 아래 여덟 개 디렉터리를 그 호스트의 skill 경로로 복사하고, MCP 서버 명령을 `cccv mcp`로 등록한다.
