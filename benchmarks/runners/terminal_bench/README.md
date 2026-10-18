@@ -81,3 +81,18 @@ export CLAUDE_FORCE_OAUTH=1
 Consequence: the dollar figures in reports/feasibility_and_cost.md become usage-limit consumption.
 Runs go in small chunks (`-n 1..2`), and a chunk stopped by the usage limit is recorded as
 `limit_stopped`, then rerun after the reset. A limit stop is never scored as a task failure.
+
+## Smoke (2026-10-18, abbd 5e5eb43, claude-sonnet-5-5, subscription auth, -n 1)
+
+Not a score: 2 tasks, 1 rep. Purpose: adapter and auth work end to end.
+
+| group | cancel-async-tasks | sparql-university | cost (reported) | runtime |
+|---|---|---|---|---|
+| A (stock claude-code) | 1.0 | 0.0 | $0.045 + $0.087 | 7m55s |
+| E (abbd plugin) | 1.0 | 1.0 | $0.067 + $0.126 | 6m10s |
+
+E used more input tokens (99.8k vs 48.9k, 211.9k vs 128.4k). ABBD engagement in E was partial: the
+agent ran `abbd run` in both tasks, `abbd verify` in one and `abbd turn` in the other, and never `abbd sync`.
+TB2 tasks are one-shot terminal tasks without a cumulative blueprint, so this track measures overhead
+more than the blueprint's value. An earlier attempt failed with 401 because the stored value was not a
+setup-token; those 4 trials are recorded as env_error, not as task failures.
