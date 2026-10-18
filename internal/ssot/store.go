@@ -393,7 +393,7 @@ func MigrateLegacy(root string) (string, error) {
 		if err := os.Rename(legacy, filepath.Join(root, Dir)); err != nil {
 			return "", fmt.Errorf("move %s to %s: %w", name, Dir, err)
 		}
-		return fmt.Sprintf("notice: moved %s/ to %s/ (renamed to ABBD). Generated files keep working; commit the move.", name, Dir), nil
+		return fmt.Sprintf("notice: moved %s/ to %s/ (renamed to ABBD). Generated files keep working; commit the move and update .gitignore lines that name %s/.", name, Dir, name), nil
 	}
 	return "", nil
 }

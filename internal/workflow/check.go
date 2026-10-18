@@ -186,6 +186,30 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 			errf("%s: domain layer object exists, but Phase 1 only reserves the prefix", id)
 		}
 	}
+	validState := map[model.TurnState]bool{model.StateDiscovering: true, model.StateIntentResolved: true, model.StateImplementing: true,
+		model.StateVerifying: true, model.StateSynchronizing: true, model.StateCompleted: true, model.StateBlocked: true, model.StateNeedsUser: true}
+	validDelta := map[model.DeltaStatus]bool{model.DeltaApplied: true, model.DeltaDefaultApplied: true, model.DeltaPending: true,
+		model.DeltaApproved: true, model.DeltaRejected: true, model.DeltaRevertAsked: true, model.DeltaSuperseded: true}
+	validTier := map[model.Tier]bool{model.TierA: true, model.TierB: true, model.TierC: true}
+	for _, cid := range model.SortedKeys(s.Changes) {
+		c := s.Changes[cid]
+		if !validState[c.State] {
+			errf("%s: invalid state %q", cid, c.State)
+		}
+		if !c.Verification.Valid() {
+			errf("%s: invalid verification %q", cid, c.Verification)
+		}
+		for _, d := range c.StructuralDeltas {
+			if !validDelta[d.Status] || !validTier[d.Tier] {
+				errf("%s: invalid tier/status %q/%q", d.ID, d.Tier, d.Status)
+			}
+		}
+	}
+	for _, tid := range model.SortedKeys(s.Tests) {
+		if !s.Tests[tid].Verification.Valid() {
+			errf("%s: invalid verification %q", tid, s.Tests[tid].Verification)
+		}
+	}
 	for _, m := range s.Misnamed {
 		errf("%s: the id must match the file name", m)
 	}

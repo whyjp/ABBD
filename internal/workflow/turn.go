@@ -62,7 +62,26 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		return nil, err
 	}
 	if c := w.s.ActiveChange(); c != nil && c.State != model.StateCompleted {
-		return nil, fmt.Errorf("turn %s is active (%s); finish it with `abbd sync` or `abbd turn abort`", c.ID, c.State)
+		if !rejectedOnly(c) {
+			return nil, fmt.Errorf("turn %s is active (%s); finish it with `abbd sync` or `abbd turn abort`", c.ID, c.State)
+		}
+		c.State = model.StateBlocked
+		c.Blocked = uniqStrings(append(c.Blocked, "closed: its tier C changes were rejected; the next turn reverts them"))
+		finish(c)
+		w.s.State.ActiveTurn = ""
+		if err := w.s.Save(); err != nil {
+			return nil, err
+		}
+		if err := w.s.SaveState(); err != nil {
+			return nil, err
+		}
+	}
+	rework := &model.Change{}
+	plan.Rework = consumeRejections(w.s, rework)
+	if len(plan.Rework) > 0 {
+		if err := w.s.Save(); err != nil {
+			return nil, err
+		}
 	}
 	if len(w.changedSinceSync()) > 0 {
 		rec, err := e.reconcile(w)
@@ -105,7 +124,8 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID}
 	w.s.Requirements[req.ID] = req
 	chg.Intends = []string{req.ID}
-	plan.Rework = consumeRejections(w.s, chg)
+	chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, rework.IntentDelta.Additions...)
+	markConsumed(w.s, chg.ID)
 	plan.Requirement = req.ID
 
 	if r.NewFeature {
@@ -531,7 +551,13 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 	chg.Risks = uniqStrings(append(chg.Risks, imp.Risks...))
 
 	deltas := carryDecisions(review.Diff(before, review.Project(w.s), chg.ID), origChg.StructuralDeltas)
-	if blocked := pendingTierC(w.s, chg, deltas); len(blocked) > 0 {
+	if blocked := pendingTierC(w.s, chg, origChg.StructuralDeltas, deltas); len(blocked) > 0 {
+		// Nothing of this trial reached the blueprint, so no card may claim "applied".
+		for i := range deltas {
+			if deltas[i].Status == model.DeltaApplied || deltas[i].Status == model.DeltaDefaultApplied {
+				deltas[i].Status = model.DeltaPending
+			}
+		}
 		origChg.StructuralDeltas = deltas
 		origChg.State = model.StateBlocked
 		origChg.Blocked = uniqStrings(append(origChg.Blocked, blocked...))

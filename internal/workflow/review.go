@@ -16,25 +16,50 @@ import (
 func carryDecisions(fresh, prev []model.StructuralDelta) []model.StructuralDelta {
 	for i := range fresh {
 		for _, p := range prev {
-			if p.Kind == fresh[i].Kind && p.Subject == fresh[i].Subject && p.Decision != nil {
-				fresh[i].Decision, fresh[i].ADR = p.Decision, p.ADR
-				fresh[i].Status = p.Status
+			if p.Kind != fresh[i].Kind || p.Subject != fresh[i].Subject || p.Decision == nil {
+				continue
 			}
+			// A decision covers the change it saw. The same item changed again within the turn
+			// is a new card (08B §6), so an approval of v2 never authorizes v3.
+			if p.Before != fresh[i].Before || p.After != fresh[i].After {
+				fresh[i].Reason += fmt.Sprintf(" (이전 결정 %s 무효: 같은 항목이 다시 바뀜)", p.Decision.Decision)
+				continue
+			}
+			fresh[i].Decision, fresh[i].ADR = p.Decision, p.ADR
+			fresh[i].Status = p.Status
 		}
 	}
 	return fresh
 }
 
+// changedAgain reports whether an earlier card of this turn on the same item saw a different
+// change; then an ADR approval naming the item no longer applies.
+func changedAgain(prev []model.StructuralDelta, d model.StructuralDelta) bool {
+	for _, p := range prev {
+		if p.Kind == d.Kind && p.Subject == d.Subject && (p.Before != d.Before || p.After != d.After) {
+			return true
+		}
+	}
+	return false
+}
+
 // pendingTierC lists tier C deltas without approval. An approval is either a decision on the
 // card or a tier C ADR answered "approve" that names the item (`abbd decide --tier C`).
-func pendingTierC(s *ssot.Snapshot, chg *model.Change, deltas []model.StructuralDelta) []string {
+func pendingTierC(s *ssot.Snapshot, chg *model.Change, prev, deltas []model.StructuralDelta) []string {
 	var out []string
 	for i := range deltas {
 		d := &deltas[i]
-		if d.Tier == model.TierC && d.Status != model.DeltaApproved && approved(s, chg, d.Subject, model.TierC) {
+		if d.Tier != model.TierC {
+			continue
+		}
+		if d.Status == model.DeltaPending && !changedAgain(prev, *d) && approved(s, chg, d.Subject, model.TierC) {
 			d.Status = model.DeltaApproved
 		}
-		if d.Tier == model.TierC && d.Status != model.DeltaApproved {
+		switch d.Status {
+		case model.DeltaApproved:
+		case model.DeltaRejected:
+			out = append(out, fmt.Sprintf("%s 거부됨: 변경을 되돌려야 함 (%s)", d.ID, d.Decision.Reason))
+		default:
 			out = append(out, fmt.Sprintf("%s %s %s (%s)", d.ID, d.Kind, d.Subject, d.Reason))
 		}
 	}
@@ -77,7 +102,8 @@ func invalidateEarlier(s *ssot.Snapshot, current, subject string) {
 		c := s.Changes[id]
 		for i := range c.StructuralDeltas {
 			d := &c.StructuralDeltas[i]
-			if d.Subject == subject && d.Decision != nil && d.Decision.Invalidated == "" && d.Status != model.DeltaSuperseded {
+			awaitingRework := (d.Status == model.DeltaRejected || d.Status == model.DeltaRevertAsked) && d.Decision != nil && d.Decision.Consumed == ""
+			if d.Subject == subject && d.Decision != nil && d.Decision.Invalidated == "" && d.Status != model.DeltaSuperseded && !awaitingRework {
 				d.Decision.Invalidated = current
 				d.Status = model.DeltaSuperseded
 			}
@@ -196,6 +222,34 @@ func confirmSubject(s *ssot.Snapshot, subject, where string) {
 	}
 }
 
+// rejectedOnly: a blocked turn whose every tier C card was rejected cannot proceed, and the
+// rejection means "revert", which is the next turn's work.
+func rejectedOnly(c *model.Change) bool {
+	found := false
+	for _, d := range c.StructuralDeltas {
+		if d.Tier == model.TierC {
+			if d.Status != model.DeltaRejected {
+				return false
+			}
+			found = true
+		}
+	}
+	return found
+}
+
+// markConsumed names the turn that took rejections staged under the placeholder consumer.
+func markConsumed(s *ssot.Snapshot, chgID string) {
+	for _, c := range s.Changes {
+		for i := range c.StructuralDeltas {
+			if d := c.StructuralDeltas[i].Decision; d != nil && d.Consumed == pendingConsumer {
+				d.Consumed = chgID
+			}
+		}
+	}
+}
+
+const pendingConsumer = "next-turn"
+
 // consumeRejections turns rejected and revert-requested cards into the new turn's IntentDelta,
 // once each (CR-4: the next turn reverts or reworks).
 func consumeRejections(s *ssot.Snapshot, chg *model.Change) []string {
@@ -210,6 +264,9 @@ func consumeRejections(s *ssot.Snapshot, chg *model.Change) []string {
 			line := fmt.Sprintf("거부됨 %s %s %s: %s → 되돌리거나 다른 안으로 재작업", d.ID, d.Kind, d.Subject, d.Decision.Reason)
 			chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, line)
 			d.Decision.Consumed = chg.ID
+			if chg.ID == "" {
+				d.Decision.Consumed = pendingConsumer
+			}
 			out = append(out, line)
 		}
 	}
@@ -303,6 +360,6 @@ func (e *Engine) RenderReview(chgID, token string) (string, error) {
 		}
 	}
 	l := review.LoadLayout(e.Root)
-	page := review.Render(w.s, target, l, w.ws.Fingerprint, token)
+	page := review.Render(w.s, target, l, w.s.State.Fingerprint, token)
 	return page, l.Save(e.Root)
 }

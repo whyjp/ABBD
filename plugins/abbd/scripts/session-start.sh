@@ -21,7 +21,7 @@ user the review link (abbd serve) and leave decisions to them. Skills: abbd:sess
 </ABBD>
 EOF
 if [ -d .abbd ] || [ -d .cccv ] || [ -d .myharness ]; then
-  abbd status 2>/dev/null | grep -E '^( +(feature_map|graph|html):|external_change: true|unconfirmed:|active_turn:)' | head -6
+  abbd status 2>&1 | grep -E '^(notice:| +(feature_map|graph|html):|external_change: true|unconfirmed:|active_turn:)' | head -7
 else
   echo "No .abbd/ yet: abbd run (or abbd init) creates it without asking questions."
 fi

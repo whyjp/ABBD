@@ -23,6 +23,9 @@ if ($Scope -eq 'project' -and -not (Test-Path $Project -PathType Container)) {
     Write-Error "project directory not found: $Project"
 }
 $skills, $mcp, $fmt = $targets["${HostName}:$Scope"]
+# .NET file calls resolve relative paths against the process directory, not PowerShell's.
+$skills = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($skills)
+if ($mcp) { $mcp = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($mcp) }
 
 New-Item -ItemType Directory -Force $skills | Out-Null
 $count = 0
@@ -56,7 +59,7 @@ if ($mcp) {
     } else {
         New-Item -ItemType Directory -Force (Split-Path $mcp) | Out-Null
         # WriteAllText writes UTF-8 without a BOM; a BOM breaks TOML parsers.
-        [IO.File]::WriteAllText((Join-Path (Resolve-Path (Split-Path $mcp)) (Split-Path $mcp -Leaf)), $snippet + "`n")
+        [IO.File]::WriteAllText($mcp, $snippet + "`n")
         Write-Output "MCP: wrote $mcp"
     }
 }

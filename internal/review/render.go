@@ -99,7 +99,7 @@ func Render(s *ssot.Snapshot, target *model.Change, l *Layout, revision, token s
 	if target == nil {
 		b.WriteString("<p class=\"muted\">구조 변경이 기록된 턴이 없다. 토폴로지는 현재 설계도다.</p>")
 	} else {
-		fmt.Fprintf(&b, "<p><b>%s</b> %s · 상태 %s · 구조 변경 %d건</p>", esc(target.ID), esc(target.RequestSummary), target.State, len(deltas))
+		fmt.Fprintf(&b, "<p><b>%s</b> %s · 상태 %s · 구조 변경 %d건</p>", esc(target.ID), esc(target.RequestSummary), esc(string(target.State)), len(deltas))
 	}
 	b.WriteString("<div class=\"legend\"><span class=\"lg ext\">EXTRACTED 실선</span><span class=\"lg inf\">추정 점선</span><span class=\"lg unk\">UNKNOWN ?</span><span class=\"lg forb\">금지 의존</span><span class=\"lg add\">추가</span><span class=\"lg rem\">삭제</span><span class=\"lg chg\">변경</span></div>")
 	b.WriteString("<nav class=\"zoom\">")
@@ -137,7 +137,8 @@ func systemView(s *ssot.Snapshot) view {
 		}
 	}
 	unitOf := map[string][]string{}
-	for u, mods := range units {
+	for _, u := range model.SortedKeys(units) {
+		mods := units[u]
 		v.Nodes = append(v.Nodes, node{ID: "unit:" + u, Kind: "unit", Label: u, Sub: strings.Join(mods, " ")})
 		for _, m := range mods {
 			unitOf[m] = append(unitOf[m], "unit:"+u)
@@ -479,7 +480,7 @@ func renderView(b *strings.Builder, v view, l *Layout, revision string, deltas [
 	}
 	draw := func(n node, c Cell, removed bool) {
 		x, y := pad+c.Col*cellW, pad+c.Row*cellH
-		classes := []string{"node", strings.ReplaceAll(n.Kind, " ", " t-")}
+		classes := []string{"node", esc(strings.ReplaceAll(n.Kind, " ", " t-"))}
 		if n.Inferred {
 			classes = append(classes, "inf")
 		}
@@ -583,8 +584,8 @@ func cards(b *strings.Builder, target *model.Change, deltas []model.StructuralDe
 }
 
 func card(b *strings.Builder, target *model.Change, d model.StructuralDelta) {
-	fmt.Fprintf(b, "<article class=\"card tier-%s st-%s\" data-delta=\"%s\" data-nodes=\"%s\">", d.Tier, d.Status, esc(d.ID), esc(strings.Join(d.Nodes, " ")))
-	fmt.Fprintf(b, "<header><span class=\"tier\">%s</span> <b>%s</b> <code>%s</code> <span class=\"status\">%s</span></header>", d.Tier, esc(kindLabel[d.Kind]), esc(d.Subject), esc(statusLabel(d.Status)))
+	fmt.Fprintf(b, "<article class=\"card tier-%s st-%s\" data-delta=\"%s\" data-nodes=\"%s\">", esc(string(d.Tier)), esc(string(d.Status)), esc(d.ID), esc(strings.Join(d.Nodes, " ")))
+	fmt.Fprintf(b, "<header><span class=\"tier\">%s</span> <b>%s</b> <code>%s</code> <span class=\"status\">%s</span></header>", esc(string(d.Tier)), esc(kindLabel[d.Kind]), esc(d.Subject), esc(statusLabel(d.Status)))
 	if d.Before != "" || d.After != "" {
 		fmt.Fprintf(b, "<p class=\"diff\"><del>%s</del> → <ins>%s</ins></p>", esc(orDash(d.Before)), esc(orDash(d.After)))
 	}
@@ -594,7 +595,7 @@ func card(b *strings.Builder, target *model.Change, d model.StructuralDelta) {
 	}
 	b.WriteString("</p>")
 	fmt.Fprintf(b, "<p class=\"why\">왜: %s</p>", esc(strings.Join(target.IntentDelta.Additions, " / ")))
-	fmt.Fprintf(b, "<p class=\"ev\">근거: %s %s</p>", target.Verification, esc(strings.Join(target.VerificationEvidence, ", ")))
+	fmt.Fprintf(b, "<p class=\"ev\">근거: %s %s</p>", esc(string(target.Verification)), esc(strings.Join(target.VerificationEvidence, ", ")))
 	if dec := d.Decision; dec != nil {
 		fmt.Fprintf(b, "<p class=\"dec\">결정 %s · %s · %s · revision %s", esc(dec.Decision), esc(dec.Channel), esc(dec.At), esc(dec.Revision))
 		if dec.Reason != "" {

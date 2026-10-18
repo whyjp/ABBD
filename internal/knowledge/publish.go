@@ -34,7 +34,11 @@ func Publish(s *ssot.Snapshot, res *analysis.Result, ws workspace.Snapshot, sett
 	if err := html.Render(s, g, html.Meta{Revision: ws.Revision, Fingerprint: ws.Fingerprint, SSOTHash: hash, Freshness: fresh, Note: note}); err != nil {
 		return nil, err
 	}
-	if err := review.Write(s, ws.Fingerprint); err != nil {
+	layoutRev := s.State.Fingerprint
+	if settle {
+		layoutRev = ws.Fingerprint
+	}
+	if err := review.Write(s, layoutRev); err != nil {
 		return nil, err
 	}
 	if settle {
