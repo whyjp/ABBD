@@ -75,7 +75,7 @@ IntentDelta의 각 항목마다 무엇이 그것을 증명하는지 정한다.
 
 - 증명은 계약이나 공개 함수의 결과를 단언한다.
 - `standing_rules`의 규칙이 이번에 만드는 경로에 걸리면(change-intent 0절), 그 규칙을 새 경로에서 확인하는 테스트를 한 줄로 넣는다. 기존 경로의 테스트는 새 경로를 증명하지 않는다.
-- T3 턴이면 사용자가 닿는 방식으로 진입점을 돌리는 user-level 실행을 한 줄 넣는다. 등록과 실행은 implement-and-prove 6절이고, sync가 이 증거 없이는 거부한다.
+- T3 턴이면 사용자가 닿는 방식으로 진입점을 돌리는 user-level 실행을 한 줄 넣는다. 등록과 실행은 implement-and-prove 6절이고, sync가 이 증거 없이는 거부한다. 이번 turn에 등록한 driver는 이번 turn을 증명하지 못하므로, 앞선 turn의 driver를 쓰거나 `--unverifiable user-level`(NEEDS_USER)로 남긴다.
 - 실행할 수 없는 증명(실서비스 토픽 등)은 UNVERIFIABLE 후보로 표시하고 이유를 적는다. implement-and-prove가 `abbd verify --unverifiable "CHECK" --reason TEXT`로 기록한다.
 - 엔진이 영향 범위에서 고른 명령은 `abbd verification-plan`으로 본다. 검증 계약이 그보다 좁으면 이유를 적는다.
 
@@ -118,6 +118,6 @@ sync 뒤 receipt의 `structural_deltas`에 예상하지 않은 카드가 있으�
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

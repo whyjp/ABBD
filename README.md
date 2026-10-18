@@ -30,7 +30,7 @@ abbd open-docs                 # .abbd/generated/explorer.html
 
 ```sh
 go install github.com/whyjp/abbd/cmd/abbd@latest
-# Claude Code (플러그인: 스킬 8개 + MCP 서버 + SessionStart 훅)
+# Claude Code (플러그인: 스킬 8개 + MCP 서버 + 훅 5개: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Stop)
 /plugin marketplace add whyjp/ABBD
 /plugin install abbd@abbd
 # Codex / Antigravity (같은 스킬 원본을 호스트 경로로 복사, MCP 설정 생성)
@@ -66,11 +66,11 @@ Markdown이 원본이다. YAML frontmatter가 구조화 데이터이고, 자동 
 | 세 축 근거 어휘, "why" 필드는 USER_STATED/ADOPTED/INFERRED만 (06장) | `internal/model/provenance.go` `NewSemantic`, `abbd check` |
 | purpose는 사용자 확인으로만 승격, 테스트는 verification만 바꿈 | `internal/verify` `ApplyResults`, `workflow.Confirm` |
 | 앵커 ≥2 일치는 같은 ID, 1개는 병합 후보, git rename 반영 (FR-27) | `internal/identity`, `internal/knowledge/apply.go` |
-| bootstrap은 묻지 않는다 (AC-BOOT-06) | `internal/bootstrap`는 입력을 읽지 않는다. `decide`는 턴 밖에서 거부된다 |
+| bootstrap은 묻지 않는다 (AC-BOOT-06) | `internal/bootstrap`는 입력을 읽지 않는다. `decide --question`은 턴 밖에서 거부된다 |
 | 검증 실패나 최신성 미달이면 완료 금지 (07장) | `workflow.Sync`: 현재 작업 트리에서 PASSED가 아니면 DRAFT + exit 2. 게시 후 다시 읽어 전부 CURRENT일 때만 완료 |
 | 등급 A/B/C, 턴당 질문 ≤3, 답한 질문 재질문 금지 (10장) | `internal/policy`, `workflow.Decide`, sync의 계약 게이트 |
 | 외부 계약 뷰는 Phase 1의 1급 항목 (08A) | `internal/analysis` 추출기, `MOD-*.external_contracts` |
-| 외부 변경은 EXTRACTED만 갱신, 질문 없음 (03장 Reconcile) | `workflow.reconcile` |
+| 외부 변경은 EXTRACTED만 갱신, 질문 없음 (03장 Reconcile) | `workflow.reconcile`. 에이전트가 턴 없이 고친 파일(PostToolUse 훅이 기록)은 거부하고, 승인 안 된 등급 C 구조 변경은 설계도에 넣지 않고 BLOCKED |
 | Graph-on-demand와 폴백 이유 기록 (FR-21) | `workflow.contextStrategy` → `CHG.plan.context_*` |
 | 도메인 층은 ID 접두사만 예약 (08A) | `model.ReservedKinds`, `abbd domain`은 reserved |
 

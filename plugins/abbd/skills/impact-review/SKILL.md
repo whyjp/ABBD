@@ -52,7 +52,7 @@ sync는 턴 시작 시점의 구조와 결과 구조를 비교해 구조 변경(
 
 - A 카드는 적용된 상태로 남고 사람은 되돌리기를 요청할 수 있다.
 - B 카드는 기본값으로 적용되고, sync가 카드마다 UNCONFIRMED ADR(기본값 `approve`)을 남긴다. 턴은 NEEDS_USER로 끝난다.
-- C 카드는 승인 전까지 Blueprint에 반영되지 않는다. sync가 종료 코드 2로 멈추고 `reason`에 카드 ID를 적는다.
+- C 카드는 승인 전까지 Blueprint에 반영되지 않는다. turn 안의 sync는 종료 코드 2로 멈추고 `reason`에 카드 ID를 적는다. turn 밖의 `sync`와 `reconcile`(`run`이 먼저 하는 재조정 포함)도 그 변경을 Blueprint에 넣지 않고 CHG를 BLOCKED로 남긴다(종료 코드 2).
 - 카드 결정은 사람이 리뷰 화면에서 한다(sync-knowledge 4절). 에이전트는 카드를 승인하지 않는다.
 
 ### 3. 계약 종류별로 unknowns 확인
@@ -93,6 +93,8 @@ abbd policy classify --action local-commit
 ```
 
 모르는 action이면 오류에 엔진이 아는 action 목록이 나온다.
+
+verify는 돌릴 명령도 검사한다. 명령 자리에 맞춘 정규식(`git ... push`, `docker push`, `npm publish`, `kubectl apply|delete|rollout|scale|patch`, `terraform apply|destroy`, `helm install|upgrade|uninstall|rollback`, `rm -rf /`, `drop table|database`, 명령 맨 앞의 `deploy` 스크립트)에 걸리면 등급 C로 보고 실행하지 않는다. `./internal/deploy/...` 같은 경로 안의 낱말은 걸리지 않는다. 이 목록 밖의 외부 효과는 잡지 못하므로, 그런 명령은 verify에 넣기 전에 그 행동의 등급을 `policy classify --action`으로 묻는다.
 
 등급 C 행동이 계획 자체에 들어 있으면(배포, 외부 리소스 삭제, 외부 소비자가 있는 계약의 breaking change) 구현 전에 정지를 기록한다.
 
@@ -137,6 +139,6 @@ ChangePlan의 영향 절에 다음을 쓴다.
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

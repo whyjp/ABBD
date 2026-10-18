@@ -1,0 +1,33 @@
+{
+  "started": "2026-10-18T21:20:07.623918",
+  "suite": "v2",
+  "model": "sonnet",
+  "budget_per_task": 4.0,
+  "arms": [
+    "baseline",
+    "pstack",
+    "superpowers",
+    "gstack",
+    "abbd"
+  ],
+  "reps": 2,
+  "harness": {
+    "superpowers": "claude-plugins-official/superpowers 7.0.0",
+    "gstack": "github.com/garrytan/gstack 25dbe34 (skills wrapped as a plugin)"
+  },
+  "tasks": [
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07",
+    "T08",
+    "T09",
+    "T10",
+    "T11",
+    "T12"
+  ],
+  "abbd_commit": "86fe734"
+}

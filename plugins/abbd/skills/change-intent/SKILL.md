@@ -11,7 +11,7 @@ description: Turns a user request plus the current project state into an IntentD
 
 - 요청이 기능의 동작·계약·불변조건을 추가·변경·삭제할 때.
 - 요청이 CONFIRMED 계약과 충돌하거나, 해석이 둘 이상일 때.
-- 기본값으로 진행 중인 ADR(reconcile이 남긴 외부 변경 충돌, 지난 턴의 등급 B 질문)에 사용자가 답할 때. `abbd decisions QUERY`로 ADR ID와 options를 찾고 `abbd decide --adr ADR-x --answer KEY --user`로 기록한다. 이 형태는 turn 밖에서도 동작하고, 없는 선택지는 거부된다. 구조 변경 카드의 ADR은 여기서 답하지 않고 카드로 결정한다(sync-knowledge 4절).
+- 기본값으로 진행 중인 ADR(reconcile이 남긴 외부 변경 충돌, 지난 턴의 등급 B 질문)에 사용자가 답할 때. `abbd decisions QUERY`로 ADR ID와 options를 찾고 `abbd decide --adr ADR-x --answer KEY --user`로 기록한다. 이 형태는 turn 밖에서도 동작하고, 없는 선택지는 거부된다. 구조 변경 카드의 ADR에 이렇게 답하면 엔진이 그 카드의 결정으로 기록하므로 카드 상태와 rework가 함께 따라온다(sync-knowledge 4절). `--user` 없이 `--adr`에 답하면 거부된다.
 - WorkflowPlan에 `rework`가 있을 때. 아래 "거부된 카드 다루기".
 - 의도 변화가 없는 단순 버그 수정이나 문서 갱신이면 건너뛴다.
 
@@ -38,7 +38,7 @@ description: Turns a user request plus the current project state into an IntentD
 
 - 규칙마다 이번 변경이 만드는 경로(새 라우트, 새 소비자, 새 모듈, 새 설정 키)가 그 규칙에 걸리는지 본다.
 - 걸리면 `intent delta --preserve "REQ-x: 규칙 문장"`으로 지킬 제약에 넣는다. 그 경로에서 규칙을 확인하는 테스트는 architect-change의 검증 계약에 한 줄로 넣는다.
-- 사용자가 이번 요청에서 새 프로젝트 규칙을 말했으면 `abbd intent rule --claim "<사용자의 말>"`로 기록한다. 규칙처럼 읽히는 요청은 `run`이 이미 저장했을 수 있으므로 `standing_rules`를 먼저 본다.
+- 사용자가 이번 요청에서 새 프로젝트 규칙을 말했으면 `abbd intent rule --claim "<사용자의 말>"`로 기록한다. `run`이 규칙으로 읽은 문장은 이미 UNCONFIRMED standing rule로 저장돼 있을 수 있으므로 `standing_rules`를 먼저 본다(session-bootstrap 0절). `intent rule`은 turn 없이도 동작하고, 거의 같은 말의 규칙이 이미 있으면 기존 규칙을 돌려준다.
 
 ### 1. IntentDelta 초안
 
@@ -173,6 +173,6 @@ abbd intent contract --id IF-002 --compatibility "필드 추가만 허용" \
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

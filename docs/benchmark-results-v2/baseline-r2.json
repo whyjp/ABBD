@@ -1,0 +1,1294 @@
+[
+  {
+    "task": "T01",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.12061820000000001,
+      "num_turns": 7,
+      "duration_ms": 23153,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 19318,
+        "cache_read_input_tokens": 150362,
+        "output_tokens": 2829,
+        "output_tokens_details": {
+          "thinking_tokens": 216
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 19318,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 525,
+            "cache_read_input_tokens": 35776,
+            "cache_creation_input_tokens": 439,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 439
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "59ed19d6-9884-421c-a50e-11ae258666d0",
+      "result_tail": "order.\n\nThe routes list comes from a small `handle` helper in `internal/api/api.go`. It registers each route on the mux and records its pattern. A route added later through `s.handle(...)` shows up in `/routes` automatically. One registered directly on `s.mux` would be missing from it, so the helper carries a comment saying to always use it.\n\nI added two tests, one that checks the exact `/routes` list and one for the count response. `gofmt -l` flags `cmd/heartbeat-worker/main.go`, `internal/api/api.go` and `internal/api/api_test.go`. I didn't look into why. It may just be Windows line endings."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.530s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T02",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.11241330000000001,
+      "num_turns": 6,
+      "duration_ms": 20214,
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 18906,
+        "cache_read_input_tokens": 189453,
+        "output_tokens": 1782,
+        "output_tokens_details": {
+          "thinking_tokens": 123
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 18906,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 366,
+            "cache_read_input_tokens": 37329,
+            "cache_creation_input_tokens": 291,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 291
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "48ebaed0-cbf4-4f38-bd9d-5bd3b8c92c93",
+      "result_tail": "ath you add later is covered too.\n- **Consumer:** `Consumer.Handle` in `internal/heartbeat/consumer.go` skips them right after validation, so they never reach dedupe or the store.\n- **Shared definition:** `SourceTest` and `Heartbeat.IsTest()` in `internal/heartbeat/heartbeat.go` define \"test\" in one place, and both checks use it.\n- **Tests:** `TestWriterDropsTestSource` and `TestConsumerDropsTestSource`.\n\nHeartbeats with an empty source are still rejected as invalid. A test heartbeat that is missing its id or timestamp is also still rejected as invalid, because validation runs before the drop."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.717s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.522s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T03",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1225656,
+      "num_turns": 10,
+      "duration_ms": 21277,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 21026,
+        "cache_read_input_tokens": 121556,
+        "output_tokens": 2629,
+        "output_tokens_details": {
+          "thinking_tokens": 399
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 21026,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 449,
+            "cache_read_input_tokens": 37612,
+            "cache_creation_input_tokens": 2128,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2128
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "ece41473-3745-4dad-9dcd-cb0385a3c90c",
+      "result_tail": "ormalizes the id before the row lookup. It stores the lowercased id, so a saved \"ABC\" reads back as \"abc\".\n- **Migration:** I added `migrations/002_heartbeat_id_lowercase.sql`, which adds a `CHECK (id = lower(id))` constraint to the `heartbeats` table. I wrote it as `NOT VALID`, so existing rows aren't checked and only new writes are enforced. It is untested, since the repo has no database. Any mixed-case ids already in the table are untouched, so you may want to lowercase and deduplicate them separately.\n- **Tests:** `TestDedupeIgnoresIDCase` and `TestSaveIgnoresIDCase` cover the two changes."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.601s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.527s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.458s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T04",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1236856,
+      "num_turns": 8,
+      "duration_ms": 24228,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20566,
+        "cache_read_input_tokens": 160716,
+        "output_tokens": 2533,
+        "output_tokens_details": {
+          "thinking_tokens": 295
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 20566,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 377,
+            "cache_read_input_tokens": 39075,
+            "cache_creation_input_tokens": 205,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 205
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "3db5203a-d227-426a-bd00-a0e9cf44246a",
+      "result_tail": "eturns 400 `{\"error\":\"invalid message\"}`. A Kafka write failure returns 503 with the underlying error text as the message.\n- **Unmatched routes:** the router's own plain-text 404 and 405 responses went through none of the handlers, so `ServeHTTP` now re-sends them as JSON. A 405 keeps its `Allow` header. Redirects are passed through unchanged.\n\nI added `TestErrorsAreJSON` in `internal/api/api_test.go`, which checks the 400, 404 and 405 cases for status, content type and body.\n\n`gofmt -l` still flags `api_test.go`, which was already unformatted before my edit. I ran `gofmt -w` on `api.go` only."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.535s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.394s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.392s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.639s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T05",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1325724,
+      "num_turns": 10,
+      "duration_ms": 29863,
+      "usage": {
+        "input_tokens": 14,
+        "cache_creation_input_tokens": 19502,
+        "cache_read_input_tokens": 226664,
+        "output_tokens": 3187,
+        "output_tokens_details": {
+          "thinking_tokens": 251
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 19502,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 334,
+            "cache_read_input_tokens": 38054,
+            "cache_creation_input_tokens": 162,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 162
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "c891244b-1bb9-4aaf-9b00-c0f4ae5744d7",
+      "result_tail": "o future endpoints are covered without any extra code.\n\n- **Declared size:** a request whose `Content-Length` is over 1024 is rejected right away.\n- **Unknown size:** a request with no `Content-Length` (chunked) is read up to 1025 bytes. If it goes past 1024 it gets the 413. Otherwise the handler receives the buffered body.\n\nThe new `TestBodyLimit` in `api_test.go` covers 1025 bytes with a declared length, 1025 bytes with no declared length, and exactly 1024 bytes. The 1024-byte case only checks that the response is not 413, because the `/messages` handler isn't set up to succeed in that test."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.581s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.441s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.455s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.770s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.680s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T06",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.10149150000000001,
+      "num_turns": 8,
+      "duration_ms": 19106,
+      "usage": {
+        "input_tokens": 14,
+        "cache_creation_input_tokens": 15754,
+        "cache_read_input_tokens": 214775,
+        "output_tokens": 1697,
+        "output_tokens_details": {
+          "thinking_tokens": 56
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 15754,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 339,
+            "cache_read_input_tokens": 33848,
+            "cache_creation_input_tokens": 620,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 620
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "1de9f3b3-02fb-407e-b82c-14f6d96ccf99",
+      "result_tail": "too far in the future`. Timestamps up to 5 minutes ahead and any in the past still pass. All tests pass (15 across 5 packages).\n\n- **Change:** the limit is a new constant, `MaxFutureSkew`, in `internal/heartbeat/heartbeat.go`.\n- **Test:** I added `TestValidateFutureTimestamp` in `heartbeat_test.go`. It checks 4 minutes ahead (accepted), 1 hour in the past (accepted), and 6 minutes ahead (rejected with an error containing \"future\").\n- **gofmt:** `gofmt -l` lists `heartbeat.go` and three other files, including ones I didn't touch. I didn't check why, so I can't say whether my edit adds anything."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.682s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.415s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.418s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.535s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.615s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.394s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T07",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1420693,
+      "num_turns": 5,
+      "duration_ms": 32472,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 22857,
+        "cache_read_input_tokens": 157813,
+        "output_tokens": 3484,
+        "output_tokens_details": {
+          "thinking_tokens": 570
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 22857,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 575,
+            "cache_read_input_tokens": 38963,
+            "cache_creation_input_tokens": 2608,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2608
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "d5ed0e16-25af-4d75-ad4d-1d9f1ed2749a",
+      "result_tail": "y limit:** the global 1024-byte limit would have allowed only about ten items, so I gave this route a 1 MiB limit through a small per-route override. Every other endpoint keeps 1024 bytes, and the existing body-limit test still passes. The 1 MiB figure is my choice, so adjust `MaxImportBodyBytes` if you want a different cap.\n- **Routes test:** the new route now appears in `GET /routes`, so I updated that test's expected list.\n\nThe changes are in `internal/api/api.go` and `internal/api/api_test.go`. `gofmt -l` lists every file in the repo, including ones I didn't touch. I left formatting alone."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.710s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.403s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.406s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.609s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.602s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.343s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.561s\nFAIL\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T08",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.2173022,
+      "num_turns": 19,
+      "duration_ms": 64027,
+      "usage": {
+        "input_tokens": 28,
+        "cache_creation_input_tokens": 27597,
+        "cache_read_input_tokens": 537082,
+        "output_tokens": 5315,
+        "output_tokens_details": {
+          "thinking_tokens": 919
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 27597,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 435,
+            "cache_read_input_tokens": 45789,
+            "cache_creation_input_tokens": 522,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 522
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "ca8643c5-fb09-4051-9f2f-a9a4a41968d4",
+      "result_tail": "t also shows up in `GET /routes`. I updated the expected list in `TestRoutesListsAllRegistered` to include it.\n- **`Server.ServeHTTP` change:** it used to call the handler returned by `mux.Handler` directly, and that doesn't fill in path wildcards, so `PathValue(\"id\")` was empty. Matched routes now go through `s.mux.ServeHTTP`. The body limit and the JSON 404/405 handling still run as before.\n- **New test:** `TestHeartbeatGet` covers a hit (including an uppercase id saved and fetched in lowercase) and a miss.\n- **Line endings:** the repo uses CRLF, so I kept it that way in the files I touched."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.612s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.477s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.378s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.594s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.643s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.434s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.565s\nFAIL\n"
+      },
+      "T08": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT08StorageGet": true,
+          "TestHiddenT08GetEndpoint": true,
+          "TestHiddenT08RuleCaseInsensitiveIDs": true,
+          "TestHiddenT08RuleJSONErrors": true,
+          "TestHiddenT08RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT08StorageGet\n--- PASS: TestHiddenT08StorageGet (0.00s)\n=== RUN   TestHiddenT08GetEndpoint\n--- PASS: TestHiddenT08GetEndpoint (0.00s)\n=== RUN   TestHiddenT08RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT08RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT08RuleJSONErrors\n--- PASS: TestHiddenT08RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT08RuleRoutesListed\n--- PASS: TestHiddenT08RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.709s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T09",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.10617720000000001,
+      "num_turns": 4,
+      "duration_ms": 21778,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 17883,
+        "cache_read_input_tokens": 118592,
+        "output_tokens": 2277,
+        "output_tokens_details": {
+          "thinking_tokens": 221
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 17883,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 498,
+            "cache_read_input_tokens": 34809,
+            "cache_creation_input_tokens": 1788,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1788
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "357d740c-aada-4c77-9050-c95bd1d227e5",
+      "result_tail": " returned count includes such repeats, so it can be higher than the number of rows stored.\n- **Errors:** a file that can't be opened or read is an error. A store error or a cancelled context stops the replay and returns the count saved so far.\n- **Line length:** there is no cap, so a very long line won't break it.\n\n**`cmd/heartbeat-replay`:** it takes exactly one argument, the file path, and exits with a usage message otherwise. It replays into `storage.NewWriter(os.Getenv(\"HEARTBEAT_DB_URL\"))` and prints `replayed N heartbeats`.\n\n`gofmt -l` lists several existing files, which I did not touch."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.589s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.538s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.409s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.583s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.556s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.346s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.598s\nFAIL\n"
+      },
+      "T08": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT08StorageGet": true,
+          "TestHiddenT08GetEndpoint": true,
+          "TestHiddenT08RuleCaseInsensitiveIDs": true,
+          "TestHiddenT08RuleJSONErrors": true,
+          "TestHiddenT08RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT08StorageGet\n--- PASS: TestHiddenT08StorageGet (0.00s)\n=== RUN   TestHiddenT08GetEndpoint\n--- PASS: TestHiddenT08GetEndpoint (0.00s)\n=== RUN   TestHiddenT08RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT08RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT08RuleJSONErrors\n--- PASS: TestHiddenT08RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT08RuleRoutesListed\n--- PASS: TestHiddenT08RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.496s\n"
+      },
+      "T09": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT09ReplaySavesValidLines": true,
+          "TestHiddenT09ReplayMissingFileIsError": true,
+          "TestHiddenT09RuleNoTestSource": true,
+          "TestHiddenT09RuleCaseInsensitiveIDs": true
+        },
+        "tail": "=== RUN   TestHiddenT09ReplaySavesValidLines\n--- PASS: TestHiddenT09ReplaySavesValidLines (0.01s)\n=== RUN   TestHiddenT09ReplayMissingFileIsError\n--- PASS: TestHiddenT09ReplayMissingFileIsError (0.00s)\n=== RUN   TestHiddenT09RuleNoTestSource\n--- PASS: TestHiddenT09RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT09RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT09RuleCaseInsensitiveIDs (0.01s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.475s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T10",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1378871,
+      "num_turns": 13,
+      "duration_ms": 24322,
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 22140,
+        "cache_read_input_tokens": 196131,
+        "output_tokens": 2969,
+        "output_tokens_details": {
+          "thinking_tokens": 26
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 22140,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 363,
+            "cache_read_input_tokens": 39259,
+            "cache_creation_input_tokens": 1595,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1595
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "0f9d3016-b2bd-429b-a5a4-eae2f9358647",
+      "result_tail": "ts`, but only when a row was actually removed.\n- **Endpoint** (`internal/api/api.go`): it responds 204 when the heartbeat was deleted. It responds 404 with the standard JSON error body when it didn't exist. The route is registered through `s.handle`, so it also shows up in `GET /routes`.\n- **Tests**: I added a `TestDelete` for the writer and a `TestHeartbeatDelete` for the endpoint. I also added the new route to the hardcoded list in `TestRoutesListsAllRegistered`.\n\n`api_test.go` changed on disk after I last read it. I didn't look at what changed, and the tests passed against the current file."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.589s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.696s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.491s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.555s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.778s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.409s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.613s\nFAIL\n"
+      },
+      "T08": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT08StorageGet": true,
+          "TestHiddenT08GetEndpoint": true,
+          "TestHiddenT08RuleCaseInsensitiveIDs": true,
+          "TestHiddenT08RuleJSONErrors": true,
+          "TestHiddenT08RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT08StorageGet\n--- PASS: TestHiddenT08StorageGet (0.00s)\n=== RUN   TestHiddenT08GetEndpoint\n--- PASS: TestHiddenT08GetEndpoint (0.00s)\n=== RUN   TestHiddenT08RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT08RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT08RuleJSONErrors\n--- PASS: TestHiddenT08RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT08RuleRoutesListed\n--- PASS: TestHiddenT08RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.666s\n"
+      },
+      "T09": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT09ReplaySavesValidLines": true,
+          "TestHiddenT09ReplayMissingFileIsError": true,
+          "TestHiddenT09RuleNoTestSource": true,
+          "TestHiddenT09RuleCaseInsensitiveIDs": true
+        },
+        "tail": "=== RUN   TestHiddenT09ReplaySavesValidLines\n--- PASS: TestHiddenT09ReplaySavesValidLines (0.01s)\n=== RUN   TestHiddenT09ReplayMissingFileIsError\n--- PASS: TestHiddenT09ReplayMissingFileIsError (0.00s)\n=== RUN   TestHiddenT09RuleNoTestSource\n--- PASS: TestHiddenT09RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT09RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT09RuleCaseInsensitiveIDs (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.572s\n"
+      },
+      "T10": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT10StorageDelete": true,
+          "TestHiddenT10DeleteEndpoint": true,
+          "TestHiddenT10RuleCaseInsensitiveIDs": true,
+          "TestHiddenT10RuleJSONErrors": true,
+          "TestHiddenT10RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT10StorageDelete\n--- PASS: TestHiddenT10StorageDelete (0.00s)\n=== RUN   TestHiddenT10DeleteEndpoint\n--- PASS: TestHiddenT10DeleteEndpoint (0.00s)\n=== RUN   TestHiddenT10RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT10RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT10RuleJSONErrors\n--- PASS: TestHiddenT10RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT10RuleRoutesListed\n--- PASS: TestHiddenT10RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.602s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T11",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1434543,
+      "num_turns": 11,
+      "duration_ms": 26242,
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 23190,
+        "cache_read_input_tokens": 198903,
+        "output_tokens": 3078,
+        "output_tokens_details": {
+          "thinking_tokens": 239
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 23190,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 389,
+            "cache_read_input_tokens": 40672,
+            "cache_creation_input_tokens": 1232,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1232
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "691c7693-090b-4963-b253-3a6ba49d6810",
+      "result_tail": "urce \"test\":** the repo has a rule that heartbeats with source \"test\" (the load-test tool) are never stored. QA's smoke test posts exactly that. For these, the endpoint skips the store and still returns 201 with the heartbeat echoed back. QA's check passes and the rule holds. The catch is that a smoke-test heartbeat can't be read back with `GET /heartbeats/{id}`.\n- **Route list:** I added the route to the `GET /routes` expectation in `internal/api/api_test.go`.\n\nThe tool told me `api_test.go` changed on disk after I last read it. I didn't look at what changed, and the test run came back clean."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.695s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.414s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.393s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.566s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.739s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.384s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.546s\nFAIL\n"
+      },
+      "T08": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT08StorageGet": true,
+          "TestHiddenT08GetEndpoint": true,
+          "TestHiddenT08RuleCaseInsensitiveIDs": true,
+          "TestHiddenT08RuleJSONErrors": true,
+          "TestHiddenT08RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT08StorageGet\n--- PASS: TestHiddenT08StorageGet (0.00s)\n=== RUN   TestHiddenT08GetEndpoint\n--- PASS: TestHiddenT08GetEndpoint (0.00s)\n=== RUN   TestHiddenT08RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT08RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT08RuleJSONErrors\n--- PASS: TestHiddenT08RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT08RuleRoutesListed\n--- PASS: TestHiddenT08RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.541s\n"
+      },
+      "T09": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT09ReplaySavesValidLines": true,
+          "TestHiddenT09ReplayMissingFileIsError": true,
+          "TestHiddenT09RuleNoTestSource": true,
+          "TestHiddenT09RuleCaseInsensitiveIDs": true
+        },
+        "tail": "=== RUN   TestHiddenT09ReplaySavesValidLines\n--- PASS: TestHiddenT09ReplaySavesValidLines (0.00s)\n=== RUN   TestHiddenT09ReplayMissingFileIsError\n--- PASS: TestHiddenT09ReplayMissingFileIsError (0.00s)\n=== RUN   TestHiddenT09RuleNoTestSource\n--- PASS: TestHiddenT09RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT09RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT09RuleCaseInsensitiveIDs (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.390s\n"
+      },
+      "T10": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT10StorageDelete": true,
+          "TestHiddenT10DeleteEndpoint": true,
+          "TestHiddenT10RuleCaseInsensitiveIDs": true,
+          "TestHiddenT10RuleJSONErrors": true,
+          "TestHiddenT10RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT10StorageDelete\n--- PASS: TestHiddenT10StorageDelete (0.00s)\n=== RUN   TestHiddenT10DeleteEndpoint\n--- PASS: TestHiddenT10DeleteEndpoint (0.00s)\n=== RUN   TestHiddenT10RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT10RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT10RuleJSONErrors\n--- PASS: TestHiddenT10RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT10RuleRoutesListed\n--- PASS: TestHiddenT10RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.712s\n"
+      },
+      "T11": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT11PostStoresHeartbeat": true,
+          "TestHiddenT11PostRejectsInvalid": true,
+          "TestHiddenT11RuleNoTestSource": true,
+          "TestHiddenT11RuleCaseInsensitiveIDs": true,
+          "TestHiddenT11RuleBodyLimit": true,
+          "TestHiddenT11RuleJSONErrors": true,
+          "TestHiddenT11RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT11PostStoresHeartbeat\n--- PASS: TestHiddenT11PostStoresHeartbeat (0.00s)\n=== RUN   TestHiddenT11PostRejectsInvalid\n--- PASS: TestHiddenT11PostRejectsInvalid (0.00s)\n=== RUN   TestHiddenT11RuleNoTestSource\n--- PASS: TestHiddenT11RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT11RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT11RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT11RuleBodyLimit\n--- PASS: TestHiddenT11RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT11RuleJSONErrors\n--- PASS: TestHiddenT11RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT11RuleRoutesListed\n--- PASS: TestHiddenT11RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.632s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  },
+  {
+    "task": "T12",
+    "session": {
+      "is_error": false,
+      "subtype": "success",
+      "total_cost_usd": 0.1161667,
+      "num_turns": 4,
+      "duration_ms": 20129,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 21036,
+        "cache_read_input_tokens": 120167,
+        "output_tokens": 1999,
+        "output_tokens_details": {
+          "thinking_tokens": 100
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 21036,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 403,
+            "cache_read_input_tokens": 38024,
+            "cache_creation_input_tokens": 1726,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1726
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "d3cc06ff-1cc1-468b-b2d0-59d55353c74c",
+      "result_tail": "as missing, which was my call since you didn't specify it.\n- **Source matching:** it is exact and case-sensitive. Ids are stored lowercased, so the id sort is lowercase order.\n- **`/routes`:** the new route is registered through `s.handle`, so `GET /routes` now lists it. I updated the existing routes test to expect it.\n- **Where the code is:** the handler is in `internal/api/api.go`, and a new `BySource` method on the store is in `internal/storage/storage.go`.\n\n`gofmt -l` flags a few files I didn't touch (`cmd/heartbeat-worker/main.go` and three under `internal/heartbeat/`). I left them alone."
+    },
+    "hidden": {
+      "T01": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT01CountEndpoint": true,
+          "TestHiddenT01RoutesEndpoint": true
+        },
+        "tail": "=== RUN   TestHiddenT01CountEndpoint\n--- PASS: TestHiddenT01CountEndpoint (0.00s)\n=== RUN   TestHiddenT01RoutesEndpoint\n--- PASS: TestHiddenT01RoutesEndpoint (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.624s\n"
+      },
+      "T02": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT02ConsumerDropsTestSource": true
+        },
+        "tail": "=== RUN   TestHiddenT02ConsumerDropsTestSource\n--- PASS: TestHiddenT02ConsumerDropsTestSource (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.450s\n"
+      },
+      "T03": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT03ConsumerTreatsIDsCaseInsensitively": true,
+          "TestHiddenT03StorageTreatsIDsCaseInsensitively": true
+        },
+        "tail": "=== RUN   TestHiddenT03ConsumerTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03ConsumerTreatsIDsCaseInsensitively (0.00s)\n=== RUN   TestHiddenT03StorageTreatsIDsCaseInsensitively\n--- PASS: TestHiddenT03StorageTreatsIDsCaseInsensitively (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.520s\n"
+      },
+      "T04": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT04MessageValidationErrorsAreJSON": true,
+          "TestHiddenT04PublishFailureIsJSON": true
+        },
+        "tail": "=== RUN   TestHiddenT04MessageValidationErrorsAreJSON\n--- PASS: TestHiddenT04MessageValidationErrorsAreJSON (0.00s)\n=== RUN   TestHiddenT04PublishFailureIsJSON\n--- PASS: TestHiddenT04PublishFailureIsJSON (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.613s\n"
+      },
+      "T05": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT05MessagesBodyLimit": true,
+          "TestHiddenT05RuleJSONErrors": true
+        },
+        "tail": "=== RUN   TestHiddenT05MessagesBodyLimit\n--- PASS: TestHiddenT05MessagesBodyLimit (0.00s)\n=== RUN   TestHiddenT05RuleJSONErrors\n--- PASS: TestHiddenT05RuleJSONErrors (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.881s\n"
+      },
+      "T06": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT06RejectsFarFutureTimestamps": true
+        },
+        "tail": "=== RUN   TestHiddenT06RejectsFarFutureTimestamps\n--- PASS: TestHiddenT06RejectsFarFutureTimestamps (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.429s\n"
+      },
+      "T07": {
+        "passed": false,
+        "tests": {
+          "TestHiddenT07ImportStoresValidHeartbeats": true,
+          "TestHiddenT07ImportRejectsNonArrayBody": true,
+          "TestHiddenT07RuleNoTestSource": true,
+          "TestHiddenT07RuleCaseInsensitiveIDs": true,
+          "TestHiddenT07RuleBodyLimit": false,
+          "TestHiddenT07RuleJSONErrors": true,
+          "TestHiddenT07RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT07ImportStoresValidHeartbeats\n--- PASS: TestHiddenT07ImportStoresValidHeartbeats (0.00s)\n=== RUN   TestHiddenT07ImportRejectsNonArrayBody\n--- PASS: TestHiddenT07ImportRejectsNonArrayBody (0.00s)\n=== RUN   TestHiddenT07RuleNoTestSource\n--- PASS: TestHiddenT07RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT07RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT07RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT07RuleBodyLimit\n    zz_hidden_t07_test.go:112: 2 KB import = 200, want 413\n--- FAIL: TestHiddenT07RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT07RuleJSONErrors\n--- PASS: TestHiddenT07RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT07RuleRoutesListed\n--- PASS: TestHiddenT07RuleRoutesListed (0.00s)\nFAIL\nFAIL\texample.com/heartbeat/internal/zzhidden\t0.532s\nFAIL\n"
+      },
+      "T08": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT08StorageGet": true,
+          "TestHiddenT08GetEndpoint": true,
+          "TestHiddenT08RuleCaseInsensitiveIDs": true,
+          "TestHiddenT08RuleJSONErrors": true,
+          "TestHiddenT08RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT08StorageGet\n--- PASS: TestHiddenT08StorageGet (0.00s)\n=== RUN   TestHiddenT08GetEndpoint\n--- PASS: TestHiddenT08GetEndpoint (0.00s)\n=== RUN   TestHiddenT08RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT08RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT08RuleJSONErrors\n--- PASS: TestHiddenT08RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT08RuleRoutesListed\n--- PASS: TestHiddenT08RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.653s\n"
+      },
+      "T09": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT09ReplaySavesValidLines": true,
+          "TestHiddenT09ReplayMissingFileIsError": true,
+          "TestHiddenT09RuleNoTestSource": true,
+          "TestHiddenT09RuleCaseInsensitiveIDs": true
+        },
+        "tail": "=== RUN   TestHiddenT09ReplaySavesValidLines\n--- PASS: TestHiddenT09ReplaySavesValidLines (0.00s)\n=== RUN   TestHiddenT09ReplayMissingFileIsError\n--- PASS: TestHiddenT09ReplayMissingFileIsError (0.00s)\n=== RUN   TestHiddenT09RuleNoTestSource\n--- PASS: TestHiddenT09RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT09RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT09RuleCaseInsensitiveIDs (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.384s\n"
+      },
+      "T10": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT10StorageDelete": true,
+          "TestHiddenT10DeleteEndpoint": true,
+          "TestHiddenT10RuleCaseInsensitiveIDs": true,
+          "TestHiddenT10RuleJSONErrors": true,
+          "TestHiddenT10RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT10StorageDelete\n--- PASS: TestHiddenT10StorageDelete (0.00s)\n=== RUN   TestHiddenT10DeleteEndpoint\n--- PASS: TestHiddenT10DeleteEndpoint (0.00s)\n=== RUN   TestHiddenT10RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT10RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT10RuleJSONErrors\n--- PASS: TestHiddenT10RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT10RuleRoutesListed\n--- PASS: TestHiddenT10RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.622s\n"
+      },
+      "T11": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT11PostStoresHeartbeat": true,
+          "TestHiddenT11PostRejectsInvalid": true,
+          "TestHiddenT11RuleNoTestSource": true,
+          "TestHiddenT11RuleCaseInsensitiveIDs": true,
+          "TestHiddenT11RuleBodyLimit": true,
+          "TestHiddenT11RuleJSONErrors": true,
+          "TestHiddenT11RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT11PostStoresHeartbeat\n--- PASS: TestHiddenT11PostStoresHeartbeat (0.00s)\n=== RUN   TestHiddenT11PostRejectsInvalid\n--- PASS: TestHiddenT11PostRejectsInvalid (0.00s)\n=== RUN   TestHiddenT11RuleNoTestSource\n--- PASS: TestHiddenT11RuleNoTestSource (0.00s)\n=== RUN   TestHiddenT11RuleCaseInsensitiveIDs\n--- PASS: TestHiddenT11RuleCaseInsensitiveIDs (0.00s)\n=== RUN   TestHiddenT11RuleBodyLimit\n--- PASS: TestHiddenT11RuleBodyLimit (0.00s)\n=== RUN   TestHiddenT11RuleJSONErrors\n--- PASS: TestHiddenT11RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT11RuleRoutesListed\n--- PASS: TestHiddenT11RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.759s\n"
+      },
+      "T12": {
+        "passed": true,
+        "tests": {
+          "TestHiddenT12ListBySource": true,
+          "TestHiddenT12ListRequiresSource": true,
+          "TestHiddenT12RuleJSONErrors": true,
+          "TestHiddenT12RuleRoutesListed": true
+        },
+        "tail": "=== RUN   TestHiddenT12ListBySource\n--- PASS: TestHiddenT12ListBySource (0.01s)\n=== RUN   TestHiddenT12ListRequiresSource\n--- PASS: TestHiddenT12ListRequiresSource (0.00s)\n=== RUN   TestHiddenT12RuleJSONErrors\n--- PASS: TestHiddenT12RuleJSONErrors (0.00s)\n=== RUN   TestHiddenT12RuleRoutesListed\n--- PASS: TestHiddenT12RuleRoutesListed (0.00s)\nPASS\nok  \texample.com/heartbeat/internal/zzhidden\t0.549s\n"
+      }
+    },
+    "own_tests_pass": true,
+    "vet_pass": true,
+    "abbd": null
+  }
+]

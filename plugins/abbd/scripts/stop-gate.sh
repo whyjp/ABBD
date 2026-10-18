@@ -14,6 +14,6 @@ if printf '%s' "$status" | grep -Eq '"feature_map"[[:space:]]*:[[:space:]]*"CURR
   exit 0
 fi
 cat <<'EOF'
-{"decision":"block","reason":"ABBD: the blueprint does not match the working tree (an open turn or unsynced changes). Finish the turn: abbd verify until PASSED, then abbd sync until it exits 0. If the edits were not meant to stay, abbd turn abort --reason \"...\". Report a gate you cannot pass instead of claiming done."}
+{"decision":"block","reason":"ABBD: the blueprint does not match the working tree (an open turn or unsynced changes). Finish the turn: abbd verify until PASSED, then abbd sync until it exits 0. abbd turn abort --reason \"...\" closes the turn but keeps the code: revert edits that should not stay, or the next abbd run takes them into its turn. Report a gate you cannot pass instead of claiming done."}
 EOF
 exit 0

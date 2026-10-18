@@ -36,13 +36,15 @@ T1의 PASSED는 테스트가 지나간 분기가 기대대로 동작한다는 �
 
 수정 전에 버그를 드러내는 테스트를 쓰고 verify로 돌린다. 버그 수정 턴(`--type bug-fix`)은 수정 전 작업 트리에서 FAILED가 난 verify 없이는 sync가 거부한다. 고친 뒤의 PASSED만으로는 그 테스트가 버그를 잡는지 알 수 없기 때문이다.
 
+엔진이 재현으로 치는 것은 둘이다. 최종 PASSED와 다른 작업 트리(fingerprint)에서 FAILED가 났고 그 실행에 실패한 테스트가 하나 이상 있는 verify, 또는 사용자 수준 실행(`verify --drive`)의 FAILED다. 실패한 테스트 없이 명령만 실패한 실행(`verify --cmd false` 같은)은 재현이 아니다.
+
 ```sh
 abbd verify --cmd "go test ./internal/heartbeat -run TestDuplicateIsNotStoredTwice"
 ```
 
 - 종료 코드 2와 `overall: FAILED`가 나와야 한다. 이 실행의 evidence ID가 재현의 증거다.
-- 재현이 정말 불가능하면(환경 의존, 이미 사라진 데이터) `abbd verify --no-repro --reason TEXT`로 이유를 남긴다.
-- 실패가 버그 때문인지 출력으로 확인한다(3절). 컴파일 오류, 다른 테스트의 panic, 빠진 fixture, `no test files`는 재현이 아니다. 테스트를 고쳐 다시 돌린다.
+- 재현이 정말 불가능하면(환경 의존, 이미 사라진 데이터) `abbd verify --no-repro --reason TEXT`로 이유를 남긴다. 열린 turn이 있어야 하고, 사유는 10자 이상이어야 한다.
+- 엔진은 실패한 테스트가 있는지까지만 본다. 그 실패가 버그 때문인지는 보지 않는다. 출력으로 직접 확인한다(3절). 컴파일 오류, 다른 테스트의 panic, 빠진 fixture, `no test files`는 재현이 아니다. 테스트를 고쳐 다시 돌린다.
 - 재현 테스트가 FAILED를 내지 못하면 코드를 고치지 않는다. 재현 실패를 보고하고, 입력과 중간 값을 찍는 테스트를 더 만들어 다시 시도한다.
 - 수정 뒤 같은 명령을 다시 돌려 PASSED를 받는다. EvidenceReport에는 두 evidence ID를 순서대로 적는다.
 
@@ -91,7 +93,7 @@ abbd verify --cmd "go test ./service/heartbeat/..." --cmd "go vet ./..."
 
 ### 6. 사용자 수준 실행 (T3)
 
-T3 턴은 사용자가 닿는 방식으로 진입점을 돌린 증거 없이는 sync가 거부한다. 단위 테스트는 부품을 증명할 뿐 사용자가 보는 동작을 증명하지 않기 때문이다.
+T3 턴은 사용자 수준 실행(driver의 PASSED) 없이는 sync가 거부한다. 단위 테스트는 부품을 증명할 뿐 사용자가 보는 동작을 증명하지 않기 때문이다.
 
 ```sh
 abbd driver set FEAT-005 --run "go run ./cmd/worker --once" --expect "stored 1"
@@ -102,7 +104,9 @@ abbd verify --unverifiable user-level --reason "이 환경에 브로커 없음" 
 
 - driver는 진입점(FEAT 또는 IF)마다 `project.yaml`에 남고 다음 턴에도 쓰인다. 명령이 성공하고 출력에 `--expect` 문자열이 있어야 PASSED다.
 - `--drive`는 이번 턴이 겨냥하는 ID(WorkflowPlan의 대상, 새 기능이면 `new_feature`)의 driver만 돌린다. "no driver covers this turn"이 나오면 그 ID에 driver를 등록한다.
-- `--unverifiable`의 CHECK는 글자 그대로 `user-level`이어야 이 게이트에 쓰인다.
+- `--run`은 어떤 명령이든 받는다. 엔진은 그 명령이 진입점을 실제로 지나는지 확인하지 않는다. 그래서 driver 명령은 사용자가 닿는 방식(CLI 실행, HTTP 요청, 워커 1회 실행)으로 그 진입점을 돌려야 한다. `echo`처럼 기대 문자열만 찍는 명령은 증거가 아니다.
+- 같은 turn에서 등록하거나 바꾼 driver의 PASSED는 그 turn의 T3 게이트를 통과시키지 못한다. 이번 turn을 증명할 기준을 이번 turn에 맞춰 만들 수 있기 때문이다. receipt `risks`에 그 사실이 남는다. driver는 앞선 turn에서 등록해 둔다.
+- 이번 turn에 돌릴 driver가 없으면 `--unverifiable user-level --reason TEXT`로 남긴다. CHECK는 글자 그대로 `user-level`이어야 이 게이트에 쓰인다. sync는 완료하지만 receipt 상태는 NEEDS_USER이고 `risks`에 사유가 남는다.
 
 ### 7. "실행함"과 "실행 못함"을 나눈다
 
@@ -156,6 +160,6 @@ EvidenceReport (CHG-024, 검증 수준 T2)
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

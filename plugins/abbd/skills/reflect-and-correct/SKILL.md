@@ -41,7 +41,7 @@ receipt의 각 항목이 실제 diff와 맞는지 확인한다. 코드와 문서
 - 로컬 commit 등급은 `abbd policy classify --action local-commit`으로 본다. 등급 A이면 `abbd sync --commit`이 sync와 함께 commit을 만든다. 거부되면 sync는 완료된 채 결과의 `reason`이 "commit 안 함"으로 시작하고 `commit`이 비어 있다.
 - 등급 C 행동(push, 배포 등)은 실행하지 않는다. 준비된 변경과 승인 요청을 보고한다. 대기 항목은 receipt의 `blocked`, `abbd review`의 pending C 카드, `abbd decisions`의 답 없는 등급 C ADR로 확인한다.
 - 사용자 보고는 receipt 요지로 쓴다. 목적, 바뀐 것, 검증(실행함 / 실행 못함), 동기화 상태, 기본값으로 진행한 결정과 뒤집는 방법, 등급 C 대기, 새 UNCONFIRMED 수. 구조 변경이 있으면 카드 수와 결정 대기 수, 리뷰 화면 링크만 적는다(sync-knowledge 4절).
-- 턴을 버려야 하면 `abbd turn abort --reason TEXT`를 쓴다. 초안 FEAT는 지워지고 CHG는 BLOCKED 기록으로 남는다. 작업 트리의 코드는 되돌리지 않으므로, 버린 코드가 남아 있으면 다음 `run`이 외부 변경으로 재조정한다.
+- 턴을 버려야 하면 `abbd turn abort --reason TEXT`를 쓴다. 초안 FEAT는 지워지고 CHG는 BLOCKED 기록으로 남는다. 작업 트리의 코드는 되돌리지 않는다. 에이전트가 Edit·Write로 고친 파일이 남아 있으면 다음 `run`이 그 파일을 새 turn으로 가져가 verify와 sync를 거치게 한다. `reconcile`과 turn 없는 `sync`는 그 파일을 거부한다. 남기지 않을 편집은 abort 전에 되돌린다.
 
 여기까지 끝나야 턴이 COMPLETED다.
 
@@ -116,6 +116,6 @@ abbd learn --kind architecture --proposal "MOD-002는 MOD-003(storage 내부)을
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

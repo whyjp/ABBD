@@ -34,7 +34,7 @@ abbd intent invariant --feature FEAT-001 \
 - IntentDelta가 바꾸지 않은 의미 필드는 다시 쓰지 않는다. 이번 턴 범위 밖 항목에 INFERRED 의미를 쓰면 엔진이 거부한다(사용자의 말일 때만 `--origin USER_STATED`).
 - 에이전트가 쓴 의미 필드는 origin INFERRED다. 사용자가 이번 턴에 말한 문장만 USER_STATED로 쓴다. 테스트 PASSED는 verification만 바꾸고, CONFIRMED는 사용자 확인(`abbd confirm`이나 리뷰 화면의 카드 승인)으로만 생긴다.
 - 외부 계약을 바꿨으면 호환성 정책과 외부 소비자 여부를 `intent contract`로, 모듈 책임이나 의존 정책을 `intent module`로 기록한다. 이번 턴이 만든 모듈은 `intent module --path DIR`로 쓴다. selector와 위치 같은 EXTRACTED 사실은 sync가 갱신한다.
-- `.abbd/` 아래 md의 엔진 영역을 손으로 고치면 `abbd check`가 "edited outside abbd" 오류를 낸다. origin과 confirmation 규칙은 intent, confirm, decide, review 명령만 지키기 때문이다. 파일 끝의 사용자 메모 영역은 엔진이 덮어쓰지 않으므로 고쳐도 된다.
+- `.abbd/` 아래 md의 엔진 영역을 손으로 고치면 엔진이 그 사실을 state에 남기고, `abbd check`가 "edited outside abbd" 오류를 낸다. 이후 다른 명령이 md를 다시 써도 이 기록은 지워지지 않는다. 사용자가 그 편집을 받아들이기로 했을 때만 `abbd check --accept-edits`로 푼다. origin과 confirmation 규칙은 intent, confirm, decide, review 명령만 지키기 때문이다. 파일 끝의 사용자 메모 영역은 엔진이 덮어쓰지 않으므로 고쳐도 된다.
 
 ```sh
 abbd intent contract --id IF-002 --compatibility "필드 추가만 허용"
@@ -57,7 +57,7 @@ sync는 현재 작업 트리 그대로에서 마지막 verify가 PASSED일 때�
 | 검증 이후 작업 트리가 바뀜 | 다시 verify |
 | 버그 수정 턴에 실패 재현 증거가 없음 | implement-and-prove 1절. 수정 전 FAILED verify, 재현 불가면 `verify --no-repro --reason` |
 | T3 턴에 사용자 수준 실행 증거가 없음 | implement-and-prove 6절. `driver set` 후 `verify --drive` |
-| 등급 C: 명시적 승인 필요, 뒤에 카드 ID(`CHG-x#n kind subject`) | 상태 BLOCKED. 승인 전에는 Blueprint에 반영되지 않는다. 4절대로 사용자에게 화면을 주고, 승인된 뒤 다시 sync |
+| 등급 C: 명시적 승인 필요, 뒤에 카드 ID(`CHG-x#n kind subject`) | 상태 BLOCKED. 승인 전에는 Blueprint에 반영되지 않는다(turn 밖의 sync와 reconcile도 같다). 4절대로 사용자에게 화면을 주고, 승인된 뒤 다시 sync |
 | T0 검사 실패, 스키마/계약 검사 실패, 동기화 후 산출물 불일치 | 원인을 고치고 다시 sync |
 
 - 결과에 `review`가 있으면 이번 턴에 구조 변경 카드가 있다는 뜻이다. 4절로 간다. 없으면 구조 변경이 0건이고, 리뷰 화면을 언급하지 않는다.
@@ -65,7 +65,7 @@ sync는 현재 작업 트리 그대로에서 마지막 verify가 PASSED일 때�
 - 모델 호출이나 그래프 조회가 `budgets`를 넘었으면 receipt의 `risks`에 경고가 붙는다. sync를 막지는 않는다.
 - 완료한 sync는 `.abbd/BLUEPRINT.md`를 다시 만든다. 다음 턴의 컨텍스트는 이 파일에서 시작한다.
 - `abbd sync --commit`은 완료 뒤 로컬 commit을 하나 만든다(`CHG-x: 요청`). `project.yaml`의 local-commit이 등급 A가 아니면 commit하지 않는다. 이때도 sync는 완료(종료 코드 0)이고, `reason`이 "commit 안 함"으로 시작하며 `commit`이 비어 있다. push는 하지 않는다.
-- 진행 중인 turn이 없으면 sync는 외부 변경을 재조정하거나 생성물만 다시 만든다.
+- 진행 중인 turn이 없으면 sync는 외부 변경을 재조정하거나 생성물만 다시 만든다. 에이전트가 Edit·Write로 고친 파일이 있으면 재조정을 거부한다. 그 파일은 `abbd run`으로 turn을 열어 verify와 sync로 닫는다. 외부 변경에 승인되지 않은 등급 C 구조 변경이 있으면 Blueprint를 바꾸지 않고 BLOCKED, 종료 코드 2로 끝난다.
 
 ### 3. 정합성 확인
 
@@ -90,7 +90,7 @@ abbd serve
 abbd review CHG-024 --decide CHG-024#2 --decision reject --reason "구버전 클라이언트 호환 유지" --user
 ```
 
-4. 카드에 결정을 기록할 때는 `abbd review --decide`(또는 화면, MCP `decide_structural_change`)를 쓴다. 카드의 ADR에 `abbd decide --adr`로 답하면 카드 상태가 따라오지 않는다.
+4. 카드에 결정을 기록하는 길은 화면, 결정 파일, `abbd review --decide ... --user`다. 카드의 ADR에 `abbd decide --adr ADR-x --answer KEY --user`로 답해도 엔진이 그 카드의 결정으로 기록하므로 카드 상태와 rework가 똑같이 따라온다. MCP `decide_structural_change`는 에이전트 통로라 B·C 카드를 결정하지 못한다.
 5. 처리하지 않은 B 카드는 기본값으로 적용된 채 남고 확인 대기 목록에 계속 보인다. 턴 완료를 미루지 않는다.
 6. 거부된 카드는 다음 `abbd run`의 `rework`와 IntentDelta로 들어간다. 이번 턴에서 바로 고치지 않는다.
 7. `abbd review --relayout`은 사용자가 전체 재배치를 요청했을 때만 쓴다. 평소에는 노드 위치가 revision 사이에 고정된다.
@@ -138,6 +138,6 @@ ConsistencyReport (CHG-024)
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
 - 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
-- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다.
+- 결정 주체: `decide --answer`, `decide --adr`, `review --decide`에서 `--user`는 사용자가 직접 한 답이라는 표시다. 없으면 에이전트의 INFERRED 선택으로 남거나 거부되고, 등급 C 정지를 풀지 못한다. 에이전트 자신의 선택에는 `--user`를 붙이지 않는다. 플러그인의 MCP 서버는 에이전트가 부르는 통로라 `--user`가 없다. MCP로는 B·C 카드와 기존 ADR을 결정하지 못하고, MCP 질문에 붙인 답은 에이전트의 선택으로 남는다. 사용자의 통로는 `abbd serve`의 리뷰 화면, 결정 파일(`review --apply`), 사용자의 말을 그대로 `--user`와 함께 적은 CLI 세 가지다.
 - 컨텍스트: 지금 유효한 설계는 `.abbd/BLUEPRINT.md`(standing rule, 모듈, 계약, 기능, 불변조건, 열린 결정)와 `abbd run`의 `read_first`에 있다. `.abbd/changes`, `requirements`, `decisions`, `verification`, `generated`와 state·candidates·learning·bootstrap-report 파일은 이력이므로 컨텍스트로 읽지 않고 `abbd inspect`, `abbd decisions`, `abbd turn show`, `abbd review CHG-x`로 묻는다. standing rule은 새 경로에도 적용된다.
 - 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

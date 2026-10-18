@@ -15,15 +15,18 @@ Every request that changes code, tests or configuration runs the ABBD turn, howe
   2. make the change; abbd impact / abbd inspect ID when you need the blueprint's view
   3. abbd verify                     must report PASSED on the final working tree
   4. abbd sync                       the turn is done only when sync exits 0
-A small fix runs the turn lightly; it does not skip it. Exit code 2 from verify or sync means
-not done: fix and repeat. Never describe structure in chat; if sync returns `review`, give the
-user the review link (abbd serve) and leave decisions to them. Skills: abbd:session-bootstrap first.
+A small fix runs the turn lightly; it does not skip it. Open the turn before the first edit.
+Your Edit/Write calls are recorded: reconcile refuses those files and the next abbd run takes
+them into its turn. Exit code 2 from verify, sync or reconcile means not done: fix and repeat.
+Never describe structure in chat; if sync returns `review`, give the user the review link
+(abbd serve) and leave decisions to them. Skills: abbd:session-bootstrap first.
 
 Context comes from the CURRENT blueprint: read .abbd/BLUEPRINT.md first (standing rules, modules,
 contracts, features, open decisions), then the md of the items `abbd run` lists in read_first.
 .abbd/changes, requirements, decisions, verification and generated are history: do not read them
-as context (search skips them; direct reads are refused). Standing rules apply to every new path.
-When the user states a rule for the whole project, record it: abbd intent rule --claim "<their words>".
+as context (search skips them; a hook refuses common reads of them). Standing rules apply to every new path.
+When the user states a rule for the whole project, record it: abbd intent rule --claim "<their words>"
+(no turn needed). Rules abbd run detected in the user's words are UNCONFIRMED until the user confirms.
 </ABBD>
 EOF
 if [ -f .abbd/BLUEPRINT.md ]; then

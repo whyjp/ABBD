@@ -119,7 +119,8 @@ func orDash(s string) string {
 }
 
 type DeltaDecisionInput struct {
-	// ByUser is required on the CLI channel; serve, the decision file and MCP are user channels.
+	// ByUser is required on the CLI channel for B/C cards; serve and the decision file are user
+	// channels, MCP is the agent's.
 	ByUser   bool   `json:"-"`
 	Delta    string `json:"delta"`
 	Decision string `json:"decision"` // approve | reject | revert | option:<key>

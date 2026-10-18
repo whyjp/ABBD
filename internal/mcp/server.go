@@ -114,7 +114,7 @@ var Tools = map[string]tool{
 			}
 			return e.Decide(in)
 		}},
-	"answer_decision": {"Record the user's answer to an open ADR (tier B option key, or approve/reject for tier C). An ADR behind a structural change card is decided on the card.",
+	"answer_decision": {"Show an ADR's state. An answer is refused here: answering an ADR records the user's decision, made on the review page (abbd serve), the decision file, or `abbd decide --adr ID --user` typed by the user.",
 		map[string]string{"adr": str("ADR-*"), "answer": str("option key"), "reason": str("the user's reason")}, []string{"adr", "answer"},
 		func(e *workflow.Engine, a args) (any, error) {
 			return e.Decide(workflow.DecideInput{ADR: a.str("adr"), Answer: a.str("answer"), Reason: a.str("reason")})
@@ -132,7 +132,7 @@ var Tools = map[string]tool{
 	"list_review_cards": {"Structural change cards of a turn (default: the review target) with tier, status and the review page path. Show the page link to the user; the picture is there, not in chat.",
 		map[string]string{"change": str("optional CHG-*")}, nil,
 		func(e *workflow.Engine, a args) (any, error) { return e.Review(a.str("change")) }},
-	"decide_structural_change": {"Record the user's decision on one structural change card (approve | reject | revert | option:KEY, reason required for reject/revert). Prefer MCP elicitation to ask; never decide for the user.",
+	"decide_structural_change": {"Decide one structural change card from the agent channel (approve | reject | revert | option:KEY, reason required for reject/revert). Tier B/C cards are refused here: they are the user's, decided on the review page (abbd serve) or the decision file.",
 		map[string]string{"delta": str("CHG-x#n"), "decision": str("approve|reject|revert|option:KEY"), "reason": str("why")}, []string{"delta", "decision"},
 		func(e *workflow.Engine, a args) (any, error) {
 			return e.DecideDelta(workflow.DeltaDecisionInput{Delta: a.str("delta"), Decision: a.str("decision"), Reason: a.str("reason"), Channel: "mcp"})
