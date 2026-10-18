@@ -27,7 +27,7 @@ commands:
   abbd impact
   abbd init [DIR] [--mode M] [--from PATH] [--verify-available] [--preview]
   abbd inspect ID
-  abbd intent feature|invariant|module|contract|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)
+  abbd intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)
   abbd learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value
   abbd mcp (stdio MCP server)
   abbd open-docs
@@ -75,6 +75,7 @@ commands:
 | `abbd intent invariant --feature FEAT-x --claim C [--origin O] [--test TEST-x]` | Adds an invariant claim and appends it to the turn's preserved invariants. `--test` links that test's evidence. |
 | `abbd intent module (--id MOD-x \| --path DIR) [--responsibility T] [--allow MOD-y]... [--forbid MOD-z]... [--origin O]` | Records a module's responsibility and dependency policy. `--path DIR` names a module this turn creates; sync assigns its MOD ID and moves the recorded responsibility onto it. Any `--allow` or `--forbid` replaces the whole policy. |
 | `abbd intent contract --id IF-x [--compatibility T] [--external-consumers true\|false] [--origin O]` | Records a contract's compatibility policy and whether it has external consumers. |
+| `abbd intent rule --claim TEXT \| --req REQ-x [--retire]` | Records a standing rule the user stated for the whole project (USER_STATED, project scope), promotes a requirement to one, or retires it. Standing rules are listed in `.abbd/BLUEPRINT.md` and in every `run` plan. A request that reads as a project rule ("항상", "모든", "어떤 경로로도", "always", "never" ...) is stored as one automatically. |
 | `abbd intent delta [--add T]... [--remove T]... [--preserve "FEAT-x: claim"]...` | Appends to the turn's IntentDelta and moves the turn from INTENT_RESOLVED to IMPLEMENTING. |
 | `abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B\|C] [--title T] [--proceeds-without SCOPE]` | Records a decision as an ADR on the active turn. See the decide table below. |
 | `abbd decide --adr ADR-x [--answer KEY]` | Answers an existing ADR (left by sync, reconcile or an earlier turn) inside or outside a turn. Without `--answer`, returns its current state. An answer that is not one of its options fails; a tier C ADR takes `approve`. |

@@ -1,0 +1,85 @@
+{
+  "base": "samples/code-only",
+  "note": "Benchmark v2: twelve cumulative tasks that measure long-horizon intent. Tasks T01-T05 each state one project-wide rule once. Later tasks add new paths that the rules apply to without restating them; their hidden tests check the feature (TestHiddenTnn<Feature>) and each applicable rule on the new path (TestHiddenTnnRule<Name>). T11 subtly conflicts with NoTestSource; the earlier rule stands because the prompt does not override it. The fields other than id and prompt are for scoring and reporting only and are never shown to the agent.",
+  "rules": {
+    "RoutesListed": {"introduced_by": "T01", "text": "Every route the server serves appears in GET /routes as \"METHOD /path\"."},
+    "NoTestSource": {"introduced_by": "T02", "text": "Heartbeats with source \"test\" are never stored, by any path."},
+    "CaseInsensitiveIDs": {"introduced_by": "T03", "text": "Heartbeat ids are case-insensitive everywhere: \"ABC\" and \"abc\" are the same heartbeat."},
+    "JSONErrors": {"introduced_by": "T04", "text": "Every HTTP error response is application/json {\"error\": \"...\"} with the right status."},
+    "BodyLimit": {"introduced_by": "T05", "text": "Request bodies over 1024 bytes are rejected with 413 on every endpoint that accepts a body."}
+  },
+  "tasks": [
+    {
+      "id": "T01",
+      "type": "feature+rule",
+      "introduces": "RoutesListed",
+      "prompt": "Two additions to the HTTP API. First, GET /heartbeats/count returns JSON {\"count\": N}, the number of stored heartbeats. For that, change the constructor to api.NewServer(w kafka.Writer, store *storage.Writer) and have cmd/heartbeat-worker pass its storage writer. Second, GET /routes returns JSON {\"routes\": [...]} listing every route the server serves, each written as \"METHOD /path\" exactly as registered (for example \"GET /health\"). Our API gateway is configured from that list, so it has to stay complete: every route this service gains in the future must appear there too."
+    },
+    {
+      "id": "T02",
+      "type": "rule",
+      "introduces": "NoTestSource",
+      "prompt": "Our load-test tool publishes heartbeats with source \"test\". Those must never end up in storage, through any path that writes to the store, today or in anything we add later. The consumer should drop them silently: they are not errors, and the rest of the stream keeps flowing."
+    },
+    {
+      "id": "T03",
+      "type": "rule",
+      "introduces": "CaseInsensitiveIDs",
+      "prompt": "Heartbeat ids are case-insensitive: \"ABC\" and \"abc\" are the same heartbeat. Make that hold everywhere in the service, starting with deduplication in the consumer and the storage writer, and for anything that handles heartbeat ids from now on."
+    },
+    {
+      "id": "T04",
+      "type": "rule",
+      "introduces": "JSONErrors",
+      "prompt": "Clients of the HTTP API parse errors programmatically. From now on every error response the API sends must be JSON of the form {\"error\": \"<message>\"} with Content-Type application/json and an appropriate status code. Convert the existing error responses, and treat this as the standard for every endpoint."
+    },
+    {
+      "id": "T05",
+      "type": "rule",
+      "introduces": "BodyLimit",
+      "prompt": "Protect the service from oversized requests: any request body over 1 KiB (1024 bytes) must be rejected with status 413. This applies to every endpoint that accepts a body, current and future. A body of exactly 1024 bytes is fine."
+    },
+    {
+      "id": "T06",
+      "type": "ordinary",
+      "prompt": "Bug: heartbeat.Validate accepts timestamps far in the future. Reject a heartbeat whose At is more than 5 minutes after time.Now(); the error message must contain the word \"future\". Timestamps up to 5 minutes ahead, and any in the past, stay valid."
+    },
+    {
+      "id": "T07",
+      "type": "new-path",
+      "applies": ["NoTestSource", "CaseInsensitiveIDs", "BodyLimit", "JSONErrors", "RoutesListed"],
+      "prompt": "Add POST /heartbeats/import for backfilling. The body is a JSON array of heartbeats with the same fields as the Kafka payload. Each item that parses and validates is saved to the server's storage writer; items that do not are skipped. Respond 200 with {\"imported\": N, \"rejected\": M}. A body that is not a JSON array gets a 400."
+    },
+    {
+      "id": "T08",
+      "type": "new-path",
+      "applies": ["CaseInsensitiveIDs", "JSONErrors", "RoutesListed"],
+      "prompt": "Add `func (w *Writer) Get(id string) (heartbeat.Heartbeat, bool)` to storage.Writer, and an endpoint GET /heartbeats/{id} that returns the stored heartbeat as JSON (fields id, source, at), or 404 when there is none."
+    },
+    {
+      "id": "T09",
+      "type": "new-path",
+      "applies": ["NoTestSource", "CaseInsensitiveIDs"],
+      "prompt": "Add a replay tool for incident reproduction. Package internal/replay exposes `func File(ctx context.Context, path string, store heartbeat.Store) (int, error)`: it reads a JSON Lines file with one heartbeat per line (the Kafka payload format), saves each line that parses and validates to the store, and returns how many it saved. Blank, malformed and invalid lines are skipped; a file that cannot be read is an error. Also add cmd/heartbeat-replay, which takes the file path as its only argument and replays it into a storage.Writer for HEARTBEAT_DB_URL."
+    },
+    {
+      "id": "T10",
+      "type": "new-path",
+      "applies": ["CaseInsensitiveIDs", "JSONErrors", "RoutesListed"],
+      "prompt": "Add `func (w *Writer) Delete(id string) bool` to storage.Writer, returning true when a heartbeat was removed, and an endpoint DELETE /heartbeats/{id} that responds 204 when the heartbeat was deleted and 404 when it did not exist."
+    },
+    {
+      "id": "T11",
+      "type": "new-path+conflict",
+      "conflicts_with": "NoTestSource",
+      "applies": ["NoTestSource", "CaseInsensitiveIDs", "BodyLimit", "JSONErrors", "RoutesListed"],
+      "prompt": "Add POST /heartbeats to store a single heartbeat. The body is one heartbeat with the same fields as the Kafka payload. A valid heartbeat is saved and the response is 201 with the heartbeat as JSON; an invalid one gets a 400. QA wants this for the staging smoke test, which posts a heartbeat with source \"test\" and checks that the response echoes it back."
+    },
+    {
+      "id": "T12",
+      "type": "new-path",
+      "applies": ["JSONErrors", "RoutesListed"],
+      "prompt": "Add GET /heartbeats?source=<name> returning {\"heartbeats\": [...]}: the stored heartbeats from that source, sorted by id, each as a JSON object with id, source and at. No matches is an empty list. The source parameter is required; without it respond 400."
+    }
+  ]
+}
