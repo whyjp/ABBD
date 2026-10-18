@@ -1,0 +1,123 @@
+diff --git a/cmd/heartbeat-worker/main.go b/cmd/heartbeat-worker/main.go
+index 9630547..75e9d47 100644
+--- a/cmd/heartbeat-worker/main.go
++++ b/cmd/heartbeat-worker/main.go
+@@ -24,7 +24,7 @@ func main() {
+ 		if !ok {
+ 			addr = ":8080"
+ 		}
+-		log.Fatal(http.ListenAndServe(addr, api.NewServer(api.NewKafkaWriter(brokers))))
++		log.Fatal(http.ListenAndServe(addr, api.NewServer(api.NewKafkaWriter(brokers), store)))
+ 	}()
+ 
+ 	if err := heartbeat.NewConsumer(reader, store).Run(context.Background()); err != nil {
+diff --git a/internal/api/api.go b/internal/api/api.go
+index c39099a..4a4d658 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -5,28 +5,45 @@ import (
+ 	"net/http"
+ 
+ 	"example.com/heartbeat/internal/kafka"
++	"example.com/heartbeat/internal/storage"
+ )
+ 
+ const TopicMessages = "message-events"
+ 
+ type Server struct {
+ 	writer kafka.Writer
++	store  *storage.Writer
+ 	mux    *http.ServeMux
++	routes []string
+ }
+ 
+ func NewKafkaWriter(brokers []string) kafka.Writer {
+ 	return kafka.NewWriter(kafka.WriterConfig{Brokers: brokers, Topic: TopicMessages})
+ }
+ 
+-func NewServer(w kafka.Writer) *Server {
+-	s := &Server{writer: w, mux: http.NewServeMux()}
+-	s.mux.HandleFunc("POST /messages", s.handlePostMessage)
+-	s.mux.HandleFunc("GET /health", s.handleHealth)
++func NewServer(w kafka.Writer, store *storage.Writer) *Server {
++	s := &Server{writer: w, store: store, mux: http.NewServeMux()}
++	s.handle("POST /messages", s.handlePostMessage)
++	s.handle("GET /health", s.handleHealth)
++	s.handle("GET /heartbeats/count", s.handleCount)
++	s.handle("GET /routes", s.handleRoutes)
+ 	return s
+ }
+ 
++// handle is the only way to register a route, so GET /routes cannot drift from the mux.
++func (s *Server) handle(pattern string, h http.HandlerFunc) {
++	s.mux.HandleFunc(pattern, h)
++	s.routes = append(s.routes, pattern)
++}
++
+ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.mux.ServeHTTP(w, r) }
+ 
++func writeJSON(w http.ResponseWriter, status int, v any) {
++	w.Header().Set("Content-Type", "application/json")
++	w.WriteHeader(status)
++	json.NewEncoder(w).Encode(v)
++}
++
+ type message struct {
+ 	Key  string `json:"key"`
+ 	Body string `json:"body"`
+@@ -48,3 +65,11 @@ func (s *Server) handlePostMessage(w http.ResponseWriter, r *http.Request) {
+ func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
+ 	w.Write([]byte("ok"))
+ }
++
++func (s *Server) handleCount(w http.ResponseWriter, _ *http.Request) {
++	writeJSON(w, http.StatusOK, map[string]int{"count": s.store.Count()})
++}
++
++func (s *Server) handleRoutes(w http.ResponseWriter, _ *http.Request) {
++	writeJSON(w, http.StatusOK, map[string][]string{"routes": s.routes})
++}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index 05667ab..c45cb6b 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -7,10 +7,11 @@ import (
+ 	"testing"
+ 
+ 	"example.com/heartbeat/internal/kafka"
++	"example.com/heartbeat/internal/storage"
+ )
+ 
+ func TestPostMessagePublishes(t *testing.T) {
+-	srv := NewServer(NewKafkaWriter(nil))
++	srv := NewServer(NewKafkaWriter(nil), storage.NewWriter("memory://"))
+ 	before := len(kafka.Default.Messages(TopicMessages))
+ 	rec := httptest.NewRecorder()
+ 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(`{"key":"k","body":"hi"}`)))
+@@ -23,7 +24,7 @@ func TestPostMessagePublishes(t *testing.T) {
+ }
+ 
+ func TestPostMessageRejectsEmptyBody(t *testing.T) {
+-	srv := NewServer(NewKafkaWriter(nil))
++	srv := NewServer(NewKafkaWriter(nil), storage.NewWriter("memory://"))
+ 	rec := httptest.NewRecorder()
+ 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(`{}`)))
+ 	if rec.Code != http.StatusBadRequest {
+@@ -33,8 +34,16 @@ func TestPostMessageRejectsEmptyBody(t *testing.T) {
+ 
+ func TestHealth(t *testing.T) {
+ 	rec := httptest.NewRecorder()
+-	NewServer(nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
++	NewServer(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
+ 	if rec.Code != http.StatusOK || rec.Body.String() != "ok" {
+ 		t.Fatalf("health = %d %q", rec.Code, rec.Body.String())
+ 	}
+ }
++
++func TestRoutesListsRegisteredRoutes(t *testing.T) {
++	rec := httptest.NewRecorder()
++	NewServer(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/routes", nil))
++	if !strings.Contains(rec.Body.String(), `"GET /routes"`) || !strings.Contains(rec.Body.String(), `"POST /messages"`) {
++		t.Fatalf("routes = %s", rec.Body.String())
++	}
++}

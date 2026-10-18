@@ -119,6 +119,8 @@ func orDash(s string) string {
 }
 
 type DeltaDecisionInput struct {
+	// ByUser is required on the CLI channel; serve, the decision file and MCP are user channels.
+	ByUser   bool   `json:"-"`
 	Delta    string `json:"delta"`
 	Decision string `json:"decision"` // approve | reject | revert | option:<key>
 	Reason   string `json:"reason"`
@@ -175,6 +177,9 @@ func (e *Engine) decideIn(w *world, in DeltaDecisionInput) (*model.StructuralDel
 	}
 	if in.Channel == "" {
 		in.Channel = "cli"
+	}
+	if in.Channel == "cli" && !in.ByUser && d.Tier != model.TierA {
+		return nil, nil, fmt.Errorf("deciding %s records the user's decision; pass --user only with the user's own answer, or let the user decide on the review page", d.ID)
 	}
 	d.Decision = &model.ItemDecision{Decision: decision, Reason: in.Reason, At: now(), Revision: w.ws.Fingerprint, Channel: in.Channel}
 	switch decision {

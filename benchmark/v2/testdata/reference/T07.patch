@@ -1,0 +1,71 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 619dcf0..4d2cab4 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -5,6 +5,7 @@ import (
+ 	"io"
+ 	"net/http"
+ 
++	"example.com/heartbeat/internal/heartbeat"
+ 	"example.com/heartbeat/internal/kafka"
+ 	"example.com/heartbeat/internal/storage"
+ )
+@@ -30,6 +31,7 @@ func NewServer(w kafka.Writer, store *storage.Writer) *Server {
+ 	s.handle("GET /health", s.handleHealth)
+ 	s.handle("GET /heartbeats/count", s.handleCount)
+ 	s.handle("GET /routes", s.handleRoutes)
++	s.handle("POST /heartbeats/import", s.handleImport)
+ 	return s
+ }
+ 
+@@ -99,3 +101,32 @@ func (s *Server) handleCount(w http.ResponseWriter, _ *http.Request) {
+ func (s *Server) handleRoutes(w http.ResponseWriter, _ *http.Request) {
+ 	writeJSON(w, http.StatusOK, map[string][]string{"routes": s.routes})
+ }
++
++func (s *Server) handleImport(w http.ResponseWriter, r *http.Request) {
++	data, ok := readBody(w, r)
++	if !ok {
++		return
++	}
++	var items []json.RawMessage
++	if err := json.Unmarshal(data, &items); err != nil {
++		writeError(w, http.StatusBadRequest, "body must be a JSON array of heartbeats")
++		return
++	}
++	imported, rejected := 0, 0
++	for _, item := range items {
++		h, err := heartbeat.Parse(item)
++		if err == nil {
++			err = heartbeat.Validate(h)
++		}
++		if err != nil {
++			rejected++
++			continue
++		}
++		if err := s.store.Save(r.Context(), h); err != nil {
++			writeError(w, http.StatusServiceUnavailable, err.Error())
++			return
++		}
++		imported++
++	}
++	writeJSON(w, http.StatusOK, map[string]int{"imported": imported, "rejected": rejected})
++}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index 221ef6a..ceed153 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -64,3 +64,13 @@ func TestPostMessageRejectsOversizedBody(t *testing.T) {
+ 		t.Fatalf("status = %d, want 413", rec.Code)
+ 	}
+ }
++
++func TestImport(t *testing.T) {
++	store := storage.NewWriter("memory://")
++	rec := httptest.NewRecorder()
++	body := `[{"id":"a","source":"node-1","at":"2026-01-01T00:00:00Z"},{"id":"b"}]`
++	NewServer(NewKafkaWriter(nil), store).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/heartbeats/import", strings.NewReader(body)))
++	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"imported":1`) || store.Count() != 1 {
++		t.Fatalf("import = %d %s, stored %d", rec.Code, rec.Body.String(), store.Count())
++	}
++}

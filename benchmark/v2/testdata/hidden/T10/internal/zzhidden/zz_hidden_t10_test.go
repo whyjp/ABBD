@@ -88,16 +88,16 @@ func TestHiddenT10DeleteEndpoint(t *testing.T) {
 
 func TestHiddenT10RuleCaseInsensitiveIDs(t *testing.T) {
 	srv, store := newServer()
-	save(t, store, "DeL")
-	if rec := do(srv, http.MethodDelete, "/heartbeats/del", ""); rec.Code != http.StatusNoContent {
-		t.Fatalf("DELETE /heartbeats/del = %d, want 204 (stored as DeL)", rec.Code)
+	save(t, store, "del")
+	if rec := do(srv, http.MethodDelete, "/heartbeats/DeL", ""); rec.Code != http.StatusNoContent {
+		t.Fatalf("DELETE /heartbeats/DeL = %d, want 204 (stored as del)", rec.Code)
 	}
 	if store.Count() != 0 {
-		t.Fatalf("count %d after deleting DeL via del, want 0", store.Count())
+		t.Fatalf("count %d after deleting del via DeL, want 0", store.Count())
 	}
-	save(t, store, "UP")
-	if !store.Delete("up") {
-		t.Fatal("Delete(up) missed UP")
+	save(t, store, "Up")
+	if !store.Delete("uP") {
+		t.Fatal("Delete(uP) missed Up")
 	}
 }
 

@@ -1,0 +1,62 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 4d2cab4..e783c8e 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -32,6 +32,7 @@ func NewServer(w kafka.Writer, store *storage.Writer) *Server {
+ 	s.handle("GET /heartbeats/count", s.handleCount)
+ 	s.handle("GET /routes", s.handleRoutes)
+ 	s.handle("POST /heartbeats/import", s.handleImport)
++	s.handle("GET /heartbeats/{id}", s.handleGet)
+ 	return s
+ }
+ 
+@@ -130,3 +131,12 @@ func (s *Server) handleImport(w http.ResponseWriter, r *http.Request) {
+ 	}
+ 	writeJSON(w, http.StatusOK, map[string]int{"imported": imported, "rejected": rejected})
+ }
++
++func (s *Server) handleGet(w http.ResponseWriter, r *http.Request) {
++	h, ok := s.store.Get(r.PathValue("id"))
++	if !ok {
++		writeError(w, http.StatusNotFound, "heartbeat not found")
++		return
++	}
++	writeJSON(w, http.StatusOK, h)
++}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index ceed153..09734b6 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -74,3 +74,17 @@ func TestImport(t *testing.T) {
+ 		t.Fatalf("import = %d %s, stored %d", rec.Code, rec.Body.String(), store.Count())
+ 	}
+ }
++
++func TestGetHeartbeat(t *testing.T) {
++	store := storage.NewWriter("memory://")
++	srv := NewServer(NewKafkaWriter(nil), store)
++	rec := httptest.NewRecorder()
++	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/heartbeats/import", strings.NewReader(`[{"id":"Ab","source":"node-1","at":"2026-01-01T00:00:00Z"}]`)))
++	for path, want := range map[string]int{"/heartbeats/ab": 200, "/heartbeats/AB": 200, "/heartbeats/zz": 404} {
++		rec = httptest.NewRecorder()
++		srv.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
++		if rec.Code != want {
++			t.Errorf("GET %s = %d, want %d", path, rec.Code, want)
++		}
++	}
++}
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index da51fc8..346dea4 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -42,3 +42,10 @@ func (w *Writer) Count() int {
+ 	defer w.mu.Unlock()
+ 	return len(w.rows)
+ }
++
++func (w *Writer) Get(id string) (heartbeat.Heartbeat, bool) {
++	w.mu.Lock()
++	defer w.mu.Unlock()
++	h, ok := w.rows[heartbeat.Key(id)]
++	return h, ok
++}

@@ -19,30 +19,31 @@ commands:
   abbd check
   abbd confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]
   abbd contracts list [--module MOD-x] | contracts impact [--diff]
-  abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY [--reason TEXT]
+  abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY [--user]] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY --user [--reason TEXT]
   abbd decisions [QUERY]
   abbd domain ... (reserved for Phase 3)
+  abbd driver set FEAT-x|IF-x --run CMD --expect TEXT | driver list (user-level checks per entry point)
   abbd eval run (optional appendix A benchmark)
   abbd graph trace --from ID --to ID | graph neighbors ID [--depth N]
   abbd impact
   abbd init [DIR] [--mode M] [--from PATH] [--verify-available] [--preview]
   abbd inspect ID
   abbd intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)
-  abbd learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value
+  abbd learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts
   abbd mcp (stdio MCP server)
   abbd open-docs
   abbd plan "REQUEST"
   abbd policy classify --action ACTION
   abbd reconcile
   abbd render
-  abbd review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT] [--relayout]
-  abbd run "REQUEST" [--type T] [--tier T0..T3]
+  abbd review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]
+  abbd run "REQUEST" [--type T] [--tier T0..T3 [--reason TEXT]]
   abbd serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)
   abbd status [--knowledge]
   abbd sync [--commit]
   abbd turn show | turn note --model-calls N | turn abort [--reason TEXT]
   abbd verification-plan
-  abbd verify [--affected|--all] [--cmd "CMD"]... [--unverifiable "CHECK" --reason TEXT]
+  abbd verify [--affected|--all] [--cmd "CMD"]... [--drive] [--unverifiable "CHECK" --reason TEXT] [--no-repro --reason TEXT]
 ```
 
 ## Session and bootstrap (turn step 0)
@@ -75,6 +76,11 @@ commands:
 | `abbd intent invariant --feature FEAT-x --claim C [--origin O] [--test TEST-x]` | Adds an invariant claim and appends it to the turn's preserved invariants. `--test` links that test's evidence. |
 | `abbd intent module (--id MOD-x \| --path DIR) [--responsibility T] [--allow MOD-y]... [--forbid MOD-z]... [--origin O]` | Records a module's responsibility and dependency policy. `--path DIR` names a module this turn creates; sync assigns its MOD ID and moves the recorded responsibility onto it. Any `--allow` or `--forbid` replaces the whole policy. |
 | `abbd intent contract --id IF-x [--compatibility T] [--external-consumers true\|false] [--origin O]` | Records a contract's compatibility policy and whether it has external consumers. |
+| `abbd driver set FEAT-x|IF-x --run CMD --expect TEXT` | Registers a user-level check for an entry point in `project.yaml`: a command that exercises it the way a user reaches it, and text its output must contain. |
+| `abbd driver list` | Lists registered drivers. |
+| `abbd verify --drive` | Runs the drivers of what the turn touches; each run is user-level evidence, PASSED only when the command succeeds and the output contains the expected text. A T3 turn needs one (or `verify --unverifiable user-level --reason`) before sync. |
+| `abbd verify --no-repro --reason TEXT` | Waives the failing-first rule for a bug-fix turn. Without it, sync refuses a bug fix that has no FAILED verify before its PASSED one. |
+| `abbd learn --from-receipts` | Lists problems that repeated in two or more turns (failing tests, rejected card kinds, blocked reasons) with the first structural fix to try. |
 | `abbd intent rule --claim TEXT \| --req REQ-x [--retire]` | Records a standing rule the user stated for the whole project (USER_STATED, project scope), promotes a requirement to one, or retires it. Standing rules are listed in `.abbd/BLUEPRINT.md` and in every `run` plan. A request that reads as a project rule ("항상", "모든", "어떤 경로로도", "always", "never" ...) is stored as one automatically. |
 | `abbd intent delta [--add T]... [--remove T]... [--preserve "FEAT-x: claim"]...` | Appends to the turn's IntentDelta and moves the turn from INTENT_RESOLVED to IMPLEMENTING. |
 | `abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B\|C] [--title T] [--proceeds-without SCOPE]` | Records a decision as an ADR on the active turn. See the decide table below. |
@@ -217,3 +223,12 @@ during a turn. `test_runs` counts each command `verify` runs; UNVERIFIABLE recor
 reads `host-reported` once a figure arrives. Per-tier limits are in `budgets` of
 `.abbd/project.yaml`, and `verify` adds a warning when `test_runs` exceeds the turn's limit. The other two limits
 are recorded, not enforced.
+
+## Who decides
+
+`decide --answer`, `decide --adr` and `review --decide` without `--user` record the agent's choice
+(INFERRED, still open for the user) or are refused. `--user` is the attestation that the answer is the
+user's own; only then is it CONFIRMED, and only a user approval passes a tier C stop. `abbd serve`, the
+decision file and the MCP decision tools are user channels.
+
+`run --tier` below the routed tier needs `--reason`, which is kept on the receipt.

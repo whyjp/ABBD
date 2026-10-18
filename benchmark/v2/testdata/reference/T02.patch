@@ -1,0 +1,46 @@
+diff --git a/internal/heartbeat/heartbeat.go b/internal/heartbeat/heartbeat.go
+index f381e47..ce2ca3a 100644
+--- a/internal/heartbeat/heartbeat.go
++++ b/internal/heartbeat/heartbeat.go
+@@ -8,6 +8,9 @@ import (
+ 
+ const TopicHeartbeat = "heartbeat-events"
+ 
++// LoadTestSource marks synthetic heartbeats from the load-test tool. They are never stored.
++const LoadTestSource = "test"
++
+ type Heartbeat struct {
+ 	ID     string    `json:"id"`
+ 	Source string    `json:"source"`
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index 237772b..49b06fb 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -25,6 +25,9 @@ func (w *Writer) Save(ctx context.Context, h heartbeat.Heartbeat) error {
+ 	if err := ctx.Err(); err != nil {
+ 		return err
+ 	}
++	if h.Source == heartbeat.LoadTestSource {
++		return nil
++	}
+ 	w.mu.Lock()
+ 	defer w.mu.Unlock()
+ 	w.Statements = append(w.Statements, insertHeartbeat)
+diff --git a/internal/storage/storage_test.go b/internal/storage/storage_test.go
+index 6f5b884..1738a1c 100644
+--- a/internal/storage/storage_test.go
++++ b/internal/storage/storage_test.go
+@@ -20,3 +20,13 @@ func TestWriterSaveIsIdempotent(t *testing.T) {
+ 		t.Fatalf("count = %d, want 1", w.Count())
+ 	}
+ }
++
++func TestWriterDropsLoadTestHeartbeats(t *testing.T) {
++	w := NewWriter("memory://")
++	if err := w.Save(context.Background(), heartbeat.Heartbeat{ID: "a", Source: heartbeat.LoadTestSource, At: time.Unix(1, 0)}); err != nil {
++		t.Fatal(err)
++	}
++	if w.Count() != 0 {
++		t.Fatalf("count = %d, want 0", w.Count())
++	}
++}

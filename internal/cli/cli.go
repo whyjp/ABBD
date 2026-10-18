@@ -38,21 +38,21 @@ var Commands = map[string]command{
 	"bootstrap": {"bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]", runBootstrap},
 	"status":    {"status [--knowledge]", runStatus},
 	"reconcile": {"reconcile", func(e *workflow.Engine, a []string) (any, error) { return e.Reconcile() }},
-	"run":       {`run "REQUEST" [--type T] [--tier T0..T3]`, runRun},
+	"run":       {`run "REQUEST" [--type T] [--tier T0..T3 [--reason TEXT]]`, runRun},
 	"plan":      {`plan "REQUEST"`, func(e *workflow.Engine, a []string) (any, error) { return e.Plan(strings.Join(a, " ")) }},
 	"inspect":   {"inspect ID", runInspect},
 	"intent":    {"intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)", runIntent},
-	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY [--reason TEXT]", runDecide},
+	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY [--user]] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY --user [--reason TEXT]", runDecide},
 	"decisions": {"decisions [QUERY]", func(e *workflow.Engine, a []string) (any, error) { return e.Decisions(strings.Join(a, " ")) }},
 	"impact":    {"impact", func(e *workflow.Engine, a []string) (any, error) { return e.Impact() }},
 	"contracts": {"contracts list [--module MOD-x] | contracts impact [--diff]", runContracts},
 	"graph":     {"graph trace --from ID --to ID | graph neighbors ID [--depth N]", runGraph},
 	"policy":    {"policy classify --action ACTION", runPolicy},
-	"verify":    {`verify [--affected|--all] [--cmd "CMD"]... [--unverifiable "CHECK" --reason TEXT]`, runVerify},
+	"verify":    {`verify [--affected|--all] [--cmd "CMD"]... [--drive] [--unverifiable "CHECK" --reason TEXT] [--no-repro --reason TEXT]`, runVerify},
 	"sync":      {"sync [--commit]", runSync},
 	"turn":      {"turn show | turn note --model-calls N | turn abort [--reason TEXT]", runTurn},
 	"confirm":   {`confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]`, runConfirm},
-	"learn":     {`learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value`, runLearn},
+	"learn":     {`learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts`, runLearn},
 	"render":    {"render", func(e *workflow.Engine, a []string) (any, error) { return e.Render() }},
 	"check":     {"check", runCheck},
 	"open-docs": {"open-docs", func(e *workflow.Engine, a []string) (any, error) {
@@ -60,8 +60,9 @@ var Commands = map[string]command{
 	}},
 	"verification-plan": {"verification-plan", func(e *workflow.Engine, a []string) (any, error) { return e.VerificationPlan() }},
 	"mcp":               {"mcp (stdio MCP server)", runMCP},
+	"driver":            {"driver set FEAT-x|IF-x --run CMD --expect TEXT | driver list (user-level checks per entry point)", runDriver},
 	"serve":             {"serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)", runServe},
-	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT] [--relayout]", runReview},
+	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]", runReview},
 	"domain":            {"domain ... (reserved for Phase 3)", reserved("domain state layer (DOM/STATE/TRN/INV) is reserved for Phase 3; Phase 1 only reserves the ID prefixes")},
 	"eval":              {"eval run (optional appendix A benchmark)", reserved("appendix A benchmark is optional and runs after completion; Phase 1 keeps only the ChangeReceipt telemetry hooks")},
 }
@@ -239,6 +240,7 @@ func runRun(e *workflow.Engine, args []string) (any, error) {
 	var o workflow.RunOptions
 	fs.StringVar(&o.TaskType, "type", "", "task type override")
 	fs.StringVar(&o.Tier, "tier", "", "verification tier override")
+	fs.StringVar(&o.TierReason, "reason", "", "why the tier is lowered")
 	pos, err := parse(fs, args)
 	if err != nil || len(pos) == 0 {
 		return nil, errUsage
@@ -353,6 +355,7 @@ func runDecide(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Answer, "answer", "", "")
 	fs.StringVar(&in.ProceedsWithout, "proceeds-without", "", "scope that proceeds without an answer")
 	fs.StringVar(&in.ADR, "adr", "", "answer an existing ADR")
+	fs.BoolVar(&in.ByUser, "user", false, "the answer is the user's own")
 	fs.StringVar(&in.Reason, "reason", "", "the user's reason (with --adr)")
 	fs.Var(&options, "option", "key=label[=effect]")
 	fs.Var(&subjects, "subject", "ID")
@@ -443,11 +446,13 @@ func runVerify(e *workflow.Engine, args []string) (any, error) {
 	fs.BoolVar(&o.All, "all", false, "")
 	fs.Var(&cmds, "cmd", "command")
 	fs.StringVar(&o.Unverifiable, "unverifiable", "", "check that cannot run here")
+	fs.BoolVar(&o.Drive, "drive", false, "run the user-level drivers of this turn")
+	fs.BoolVar(&o.NoRepro, "no-repro", false, "bug fix without a failing-first run (needs --reason)")
 	fs.StringVar(&o.Reason, "reason", "", "")
 	if _, err := parse(fs, args); err != nil {
 		return nil, err
 	}
-	if o.Unverifiable != "" && o.Reason == "" {
+	if (o.Unverifiable != "" || o.NoRepro) && o.Reason == "" {
 		return nil, fmt.Errorf("%w: --unverifiable needs --reason", errUsage)
 	}
 	o.Commands = cmds
@@ -518,7 +523,14 @@ func runLearn(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Kind, "kind", "", "")
 	fs.StringVar(&in.Proposal, "proposal", "", "")
 	fs.StringVar(&in.Preference, "preference", "", "key=value")
-	if _, err := parse(fs, args); err != nil || (in.Preference == "" && in.Proposal == "") {
+	fromReceipts := fs.Bool("from-receipts", false, "list problems that repeated in two or more turns")
+	if _, err := parse(fs, args); err != nil {
+		return nil, errUsage
+	}
+	if *fromReceipts {
+		return e.FromReceipts()
+	}
+	if in.Preference == "" && in.Proposal == "" {
 		return nil, errUsage
 	}
 	return e.Learn(in)
@@ -550,6 +562,26 @@ func typeNames() []string {
 	return out
 }
 
+func runDriver(e *workflow.Engine, args []string) (any, error) {
+	if len(args) == 0 {
+		return nil, errUsage
+	}
+	switch args[0] {
+	case "list":
+		return e.Drivers()
+	case "set":
+		fs := newFlags("driver")
+		run := fs.String("run", "", "command that exercises the entry point as a user would")
+		expect := fs.String("expect", "", "text the output must contain")
+		pos, err := parse(fs, args[1:])
+		if err != nil || len(pos) != 1 {
+			return nil, errUsage
+		}
+		return e.SetDriver(pos[0], *run, *expect)
+	}
+	return nil, errUsage
+}
+
 func runServe(e *workflow.Engine, args []string) (any, error) {
 	fs := newFlags("serve")
 	addr := fs.String("addr", "127.0.0.1:7787", "loopback address")
@@ -570,6 +602,7 @@ func runReview(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Delta, "decide", "", "structural change ID, e.g. CHG-003#2")
 	fs.StringVar(&in.Decision, "decision", "", "approve|reject|revert|option:KEY")
 	fs.StringVar(&in.Reason, "reason", "", "")
+	fs.BoolVar(&in.ByUser, "user", false, "the decision is the user's own")
 	pos, err := parse(fs, args)
 	if err != nil {
 		return nil, err

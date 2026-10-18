@@ -1,0 +1,59 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index e783c8e..8c7be98 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -33,6 +33,7 @@ func NewServer(w kafka.Writer, store *storage.Writer) *Server {
+ 	s.handle("GET /routes", s.handleRoutes)
+ 	s.handle("POST /heartbeats/import", s.handleImport)
+ 	s.handle("GET /heartbeats/{id}", s.handleGet)
++	s.handle("DELETE /heartbeats/{id}", s.handleDelete)
+ 	return s
+ }
+ 
+@@ -140,3 +141,11 @@ func (s *Server) handleGet(w http.ResponseWriter, r *http.Request) {
+ 	}
+ 	writeJSON(w, http.StatusOK, h)
+ }
++
++func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
++	if !s.store.Delete(r.PathValue("id")) {
++		writeError(w, http.StatusNotFound, "heartbeat not found")
++		return
++	}
++	w.WriteHeader(http.StatusNoContent)
++}
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index 346dea4..a7ae2b9 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -49,3 +49,12 @@ func (w *Writer) Get(id string) (heartbeat.Heartbeat, bool) {
+ 	h, ok := w.rows[heartbeat.Key(id)]
+ 	return h, ok
+ }
++
++func (w *Writer) Delete(id string) bool {
++	w.mu.Lock()
++	defer w.mu.Unlock()
++	key := heartbeat.Key(id)
++	_, ok := w.rows[key]
++	delete(w.rows, key)
++	return ok
++}
+diff --git a/internal/storage/storage_test.go b/internal/storage/storage_test.go
+index c34631d..41572c8 100644
+--- a/internal/storage/storage_test.go
++++ b/internal/storage/storage_test.go
+@@ -42,3 +42,13 @@ func TestWriterIDsAreCaseInsensitive(t *testing.T) {
+ 		t.Fatalf("count = %d, want 1", w.Count())
+ 	}
+ }
++
++func TestWriterDelete(t *testing.T) {
++	w := NewWriter("memory://")
++	if err := w.Save(context.Background(), heartbeat.Heartbeat{ID: "Ab", Source: "node-1", At: time.Unix(1, 0)}); err != nil {
++		t.Fatal(err)
++	}
++	if !w.Delete("aB") || w.Delete("ab") || w.Count() != 0 {
++		t.Fatalf("delete sequence wrong, count %d", w.Count())
++	}
++}

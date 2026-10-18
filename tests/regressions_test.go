@@ -166,11 +166,11 @@ func TestOpenDecisionIsAnsweredByID(t *testing.T) {
 	d := p.ok("decide", "--question", "응답 코드를 바꿀까?", "--option", "keep=유지", "--option", "change=201로")
 	adr := str(d, "decision", "id")
 	p.ok("turn", "abort")
-	a := p.ok("decide", "--adr", adr, "--answer", "change")
+	a := p.ok("decide", "--adr", adr, "--answer", "change", "--user")
 	if str(a, "decision", "chosen") != "change" || str(a, "decision", "confirmation") != "CONFIRMED" {
 		t.Fatalf("answer by ID outside a turn: %v", get(a, "decision"))
 	}
-	if _, code, _ := p.run("decide", "--adr", adr, "--answer", "bogus"); code == 0 {
+	if _, code, _ := p.run("decide", "--adr", adr, "--answer", "bogus", "--user"); code == 0 {
 		t.Fatal("an answer that is not an option is refused")
 	}
 }

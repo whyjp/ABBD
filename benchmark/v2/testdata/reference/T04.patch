@@ -1,0 +1,46 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 4a4d658..9ad86cb 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -44,6 +44,11 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
+ 	json.NewEncoder(w).Encode(v)
+ }
+ 
++// writeError is the only way handlers report failure: every API error is {"error": "..."}.
++func writeError(w http.ResponseWriter, status int, msg string) {
++	writeJSON(w, status, map[string]string{"error": msg})
++}
++
+ type message struct {
+ 	Key  string `json:"key"`
+ 	Body string `json:"body"`
+@@ -52,11 +57,11 @@ type message struct {
+ func (s *Server) handlePostMessage(w http.ResponseWriter, r *http.Request) {
+ 	var m message
+ 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil || m.Body == "" {
+-		http.Error(w, "invalid message", http.StatusBadRequest)
++		writeError(w, http.StatusBadRequest, "invalid message")
+ 		return
+ 	}
+ 	if err := s.writer.WriteMessages(r.Context(), kafka.Message{Key: []byte(m.Key), Value: []byte(m.Body)}); err != nil {
+-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
++		writeError(w, http.StatusServiceUnavailable, err.Error())
+ 		return
+ 	}
+ 	w.WriteHeader(http.StatusAccepted)
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index c45cb6b..c529a9f 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -47,3 +47,11 @@ func TestRoutesListsRegisteredRoutes(t *testing.T) {
+ 		t.Fatalf("routes = %s", rec.Body.String())
+ 	}
+ }
++
++func TestErrorsAreJSON(t *testing.T) {
++	rec := httptest.NewRecorder()
++	NewServer(NewKafkaWriter(nil), nil).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(`{}`)))
++	if rec.Header().Get("Content-Type") != "application/json" || !strings.Contains(rec.Body.String(), `"error"`) {
++		t.Fatalf("error response = %q %s", rec.Header().Get("Content-Type"), rec.Body.String())
++	}
++}

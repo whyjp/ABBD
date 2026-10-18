@@ -1,0 +1,72 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 9ad86cb..619dcf0 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -2,6 +2,7 @@ package api
+ 
+ import (
+ 	"encoding/json"
++	"io"
+ 	"net/http"
+ 
+ 	"example.com/heartbeat/internal/kafka"
+@@ -10,6 +11,8 @@ import (
+ 
+ const TopicMessages = "message-events"
+ 
++const maxBodyBytes = 1024
++
+ type Server struct {
+ 	writer kafka.Writer
+ 	store  *storage.Writer
+@@ -49,14 +52,32 @@ func writeError(w http.ResponseWriter, status int, msg string) {
+ 	writeJSON(w, status, map[string]string{"error": msg})
+ }
+ 
++// readBody is the only way handlers read a request body, so every write path enforces the size limit.
++func readBody(w http.ResponseWriter, r *http.Request) ([]byte, bool) {
++	data, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
++	if err != nil {
++		writeError(w, http.StatusBadRequest, "unreadable request body")
++		return nil, false
++	}
++	if len(data) > maxBodyBytes {
++		writeError(w, http.StatusRequestEntityTooLarge, "request body exceeds 1024 bytes")
++		return nil, false
++	}
++	return data, true
++}
++
+ type message struct {
+ 	Key  string `json:"key"`
+ 	Body string `json:"body"`
+ }
+ 
+ func (s *Server) handlePostMessage(w http.ResponseWriter, r *http.Request) {
++	data, ok := readBody(w, r)
++	if !ok {
++		return
++	}
+ 	var m message
+-	if err := json.NewDecoder(r.Body).Decode(&m); err != nil || m.Body == "" {
++	if err := json.Unmarshal(data, &m); err != nil || m.Body == "" {
+ 		writeError(w, http.StatusBadRequest, "invalid message")
+ 		return
+ 	}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index c529a9f..221ef6a 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -55,3 +55,12 @@ func TestErrorsAreJSON(t *testing.T) {
+ 		t.Fatalf("error response = %q %s", rec.Header().Get("Content-Type"), rec.Body.String())
+ 	}
+ }
++
++func TestPostMessageRejectsOversizedBody(t *testing.T) {
++	rec := httptest.NewRecorder()
++	body := `{"key":"k","body":"` + strings.Repeat("x", 2000) + `"}`
++	NewServer(NewKafkaWriter(nil), nil).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(body)))
++	if rec.Code != http.StatusRequestEntityTooLarge {
++		t.Fatalf("status = %d, want 413", rec.Code)
++	}
++}

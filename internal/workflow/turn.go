@@ -23,9 +23,12 @@ import (
 var ErrGate = errors.New("completion gate refused")
 
 type RunOptions struct {
-	TaskType string
-	Tier     string
+	TaskType   string
+	Tier       string
+	TierReason string
 }
+
+var tierRank = map[string]int{"T0": 0, "T1": 1, "T2": 2, "T3": 3}
 
 type WorkflowPlan struct {
 	Change          string         `json:"change"`
@@ -108,6 +111,9 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		}
 	}
 	if o.Tier != "" {
+		if tierRank[o.Tier] < tierRank[r.Tier] && strings.TrimSpace(o.TierReason) == "" {
+			return nil, fmt.Errorf("lowering verification from %s to %s needs --reason (PRD ch.04: record why a tier is reduced)", r.Tier, o.Tier)
+		}
 		r.Tier = o.Tier
 	}
 	strategy, reason := e.contextStrategy(w, r)
@@ -116,7 +122,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	chg := &model.Change{
 		ID: w.s.NextID(model.KindChange), RequestSummary: request, IntentSource: "user", ChangedBy: "harness",
 		State: model.StateIntentResolved, BaseRevision: w.ws.Revision, BaseFingerprint: w.ws.Fingerprint,
-		Plan:         model.Plan{TaskType: r.TaskType, VerificationTier: r.Tier, Steps: r.Steps, ContextStrategy: strategy, ContextReason: reason, Targets: targets, Ambiguous: r.Ambiguous},
+		Plan:         model.Plan{TaskType: r.TaskType, VerificationTier: r.Tier, Steps: r.Steps, ContextStrategy: strategy, ContextReason: reason, Targets: targets, Ambiguous: r.Ambiguous, TierReason: o.TierReason},
 		IntentDelta:  model.IntentDelta{Additions: []string{request}},
 		Impacted:     targets,
 		Verification: model.NotRun,
@@ -275,6 +281,8 @@ func (e *Engine) Plan(request string) (map[string]any, error) {
 }
 
 type VerifyOptions struct {
+	NoRepro      bool
+	Drive        bool
 	All          bool
 	Commands     []string
 	Unverifiable string
@@ -306,10 +314,23 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 		changeID = chg.ID
 		rep.Change = chg.ID
 	}
+	if o.NoRepro {
+		if chg == nil || strings.TrimSpace(o.Reason) == "" {
+			return nil, fmt.Errorf("--no-repro needs an active turn and --reason")
+		}
+		chg.ReproWaiver = o.Reason
+		return rep, w.s.Save()
+	}
+	if o.Drive {
+		return e.drive(w, chg, rep)
+	}
 	if o.Unverifiable != "" {
 		ev := model.Evidence{
 			ID: "", Command: o.Unverifiable, Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint,
 			Verification: model.Unverifiable, Reason: o.Reason, Change: changeID, StartedAt: now(), ExitCode: -1,
+		}
+		if o.Unverifiable == "user-level" {
+			ev.Level = model.LevelUser
 		}
 		if err := verify.Record(e.Root, &ev); err != nil {
 			return nil, err
@@ -527,6 +548,11 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		}
 		return e.draft(w, chg, res, reason)
 	}
+	if len(changed) > 0 && !docsOnly(changed) {
+		if reason := e.proofGaps(chg); reason != "" {
+			return e.draft(w, chg, res, reason)
+		}
+	}
 
 	chg.State = model.StateSynchronizing
 	imp := impact.Analyze(w.s, res, changed)
@@ -607,6 +633,7 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		}
 	}
 	w.s.State.TurnGraphQueries, chg.Telemetry.GraphQueries = 0, chg.Telemetry.GraphQueries+w.s.State.TurnGraphQueries
+	chg.Risks = uniqStrings(append(chg.Risks, budgetWarnings(w.s, chg)...))
 	finish(chg)
 	chg.SyncState = model.SyncState{FeatureMap: model.Current, ArchitectureMap: model.Current, Graph: model.Current, HTML: model.Current}
 	w.s.State.ActiveTurn = ""
@@ -671,6 +698,54 @@ func openTierC(s *ssot.Snapshot, chg *model.Change) []string {
 		if d != nil && d.Tier == model.TierC && !(d.Answered && d.Chosen == "approve") {
 			out = append(out, d.ID+": "+d.Question)
 		}
+	}
+	return out
+}
+
+// proofGaps are the proof rules sync enforces beyond PASSED (PRD ch.04): a bug fix shows the
+// failure before the fix, and a T3 turn shows a user-level run.
+func (e *Engine) proofGaps(chg *model.Change) string {
+	var runs []model.Evidence
+	for _, id := range chg.VerificationEvidence {
+		if ev, err := verify.Load(e.Root, id); err == nil {
+			runs = append(runs, ev)
+		}
+	}
+	if chg.Plan.TaskType == "bug-fix" && chg.ReproWaiver == "" {
+		// The reproduction is a FAILED run on a working tree other than the one that passed:
+		// the failure was seen before the fix.
+		failedFirst := false
+		for _, ev := range runs {
+			if ev.Verification == model.Failed && ev.Fingerprint != chg.ResultFingerprint {
+				failedFirst = true
+			}
+		}
+		if !failedFirst {
+			return "버그 수정 턴에 실패 재현 증거가 없음: 수정 전에 실패하는 verify를 먼저 남기거나 `abbd verify --no-repro --reason` (재현 불가 사유)"
+		}
+	}
+	if chg.Plan.VerificationTier == "T3" {
+		for _, ev := range runs {
+			if ev.Level == model.LevelUser && (ev.Verification == model.Passed || ev.Verification == model.Unverifiable) {
+				return ""
+			}
+		}
+		return "T3 턴에 사용자 수준 실행 증거가 없음: `abbd driver set ID --run CMD --expect TEXT` 후 `abbd verify --drive`, 또는 `abbd verify --unverifiable user-level --reason`"
+	}
+	return ""
+}
+
+func budgetWarnings(s *ssot.Snapshot, chg *model.Change) []string {
+	b, ok := s.Project.Budgets[chg.Plan.VerificationTier]
+	if !ok {
+		return nil
+	}
+	var out []string
+	if b.ModelCalls > 0 && chg.Telemetry.ModelCalls > b.ModelCalls {
+		out = append(out, fmt.Sprintf("모델 호출 %d회가 %s 예산 %d회를 넘음", chg.Telemetry.ModelCalls, chg.Plan.VerificationTier, b.ModelCalls))
+	}
+	if b.GraphQueries > 0 && chg.Telemetry.GraphQueries > b.GraphQueries {
+		out = append(out, fmt.Sprintf("그래프 조회 %d회가 %s 예산 %d회를 넘음", chg.Telemetry.GraphQueries, chg.Plan.VerificationTier, b.GraphQueries))
 	}
 	return out
 }

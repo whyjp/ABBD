@@ -24,7 +24,7 @@ func TestRepeatedTierCQuestionStaysAStop(t *testing.T) {
 	}
 	d := p.ok("decisions", "운영에 배포")
 	adr := str(list(d, "list")[0], "id")
-	if v := p.ok("decide", "--adr", adr, "--answer", "reject", "--reason", "아직 아님"); str(v, "decision", "chosen") != "reject" {
+	if v := p.ok("decide", "--adr", adr, "--answer", "reject", "--reason", "아직 아님", "--user"); str(v, "decision", "chosen") != "reject" {
 		t.Fatalf("a tier C stop can be rejected through its ADR: %v", v)
 	}
 }
@@ -36,7 +36,7 @@ func TestAnsweringACardADRDecidesTheCard(t *testing.T) {
 	p.ok("run", "POST /messages 호환성 변경")
 	p.ok("intent", "contract", "--id", post, "--compatibility", "v2만 지원")
 	card := deltaOf(p.ok("sync"), "contract_compat_changed")
-	p.ok("decide", "--adr", str(card, "adr"), "--answer", "reject", "--reason", "v1 클라이언트가 남아 있음")
+	p.ok("decide", "--adr", str(card, "adr"), "--answer", "reject", "--reason", "v1 클라이언트가 남아 있음", "--user")
 	for _, d := range list(p.ok("review"), "deltas") {
 		if str(d, "id") == str(card, "id") && str(d, "status") != "rejected" {
 			t.Fatalf("the card must follow its ADR: %v", d)

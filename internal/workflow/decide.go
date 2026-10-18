@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/html"
+	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/knowledge"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/policy"
@@ -12,6 +13,9 @@ import (
 )
 
 type DecideInput struct {
+	// ByUser marks the answer as the user's own. Without it an answer is the agent's choice:
+	// recorded, INFERRED, and still open for the user (an agent cannot approve tier C).
+	ByUser          bool
 	ADR             string
 	Reason          string
 	Title           string
@@ -46,8 +50,12 @@ func recordDecision(s *ssot.Snapshot, chg *model.Change, in DecideInput, asked b
 	if d.Title == "" {
 		d.Title = in.Question
 	}
-	if in.Answer != "" {
+	switch {
+	case in.Answer != "" && in.ByUser:
 		answer(d, in.Answer, chg)
+	case in.Answer != "":
+		d.Chosen = in.Answer
+		d.Rationale = model.MustSemantic("에이전트 선택 (사용자 확인 대기)", model.Inferred)
 	}
 	s.Decisions[d.ID] = d
 	chg.Decisions = append(chg.Decisions, model.DecisionRef{ADR: d.ID, Tier: d.Tier, Answered: d.Answered})
@@ -100,7 +108,7 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 			}
 			return &DecideResult{Decision: d, Reused: true, Message: "이미 답한 질문: " + d.ID + " → " + d.Chosen}, w.s.Save()
 		}
-		if in.Answer != "" {
+		if in.Answer != "" && in.ByUser {
 			answer(d, in.Answer, chg)
 			return &DecideResult{Decision: d, Message: "답변 반영: " + d.ID}, w.s.Save()
 		}
@@ -113,7 +121,7 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 	if in.Tier == model.TierC {
 		d := recordDecision(w.s, chg, in, true)
 		res := &DecideResult{Decision: d, Ask: !d.Answered}
-		if d.Answered && d.Chosen == "approve" {
+		if d.Answered && d.Chosen == "approve" && in.ByUser {
 			res.Message = "등급 C 승인됨: " + d.ID
 		} else {
 			res.Blocked = true
@@ -123,7 +131,7 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 		return res, w.s.Save()
 	}
 
-	ask := in.Answer == "" && policy.CanAsk(w.s.Project, chg.Telemetry.QuestionsAsked)
+	ask := (in.Answer == "" || !in.ByUser) && policy.CanAsk(w.s.Project, chg.Telemetry.QuestionsAsked)
 	if ask {
 		chg.Telemetry.QuestionsAsked++
 	}
@@ -150,6 +158,9 @@ func (e *Engine) answerADR(w *world, in DecideInput) (*DecideResult, error) {
 	if in.Answer == "" {
 		return &DecideResult{Decision: d, Ask: !d.Answered, Message: "현재 상태"}, nil
 	}
+	if !in.ByUser {
+		return nil, fmt.Errorf("answering %s records the user's decision; pass --user only with the user's own answer", d.ID)
+	}
 	valid := d.Tier == model.TierC && (in.Answer == "approve" || in.Answer == "reject")
 	for _, o := range d.Options {
 		valid = valid || o.Key == in.Answer
@@ -168,7 +179,7 @@ func (e *Engine) answerADR(w *world, in DecideInput) (*DecideResult, error) {
 		if reason == "" {
 			reason = "decide --adr " + d.ID
 		}
-		if _, _, err := e.decideIn(w, DeltaDecisionInput{Delta: delta, Decision: decision, Reason: reason, Channel: "cli"}); err != nil {
+		if _, _, err := e.decideIn(w, DeltaDecisionInput{Delta: delta, Decision: decision, Reason: reason, Channel: "cli", ByUser: true}); err != nil {
 			return nil, err
 		}
 		return &DecideResult{Decision: d, Message: "카드 결정 반영: " + delta}, e.republish(w, "결정 반영 "+d.ID)
@@ -453,6 +464,11 @@ func (e *Engine) IntentFeature(in IntentFeatureInput) (*model.Feature, error) {
 	if in.Name != "" {
 		f.Name = in.Name
 	}
+	if in.Purpose != "" && origin != model.UserStated && f.Status != model.ItemDraft {
+		if err := e.inScope(w, chg, f.ID); err != nil {
+			return nil, err
+		}
+	}
 	if in.Purpose != "" {
 		if confirmed(f.Intent.Purpose) && origin != model.UserStated && f.Intent.Purpose.Value != in.Purpose {
 			return nil, fmt.Errorf("%s purpose is CONFIRMED (%q); changing it is a tier B decision: `abbd decide --subject %s`", f.ID, f.Intent.Purpose.Value, f.ID)
@@ -546,6 +562,11 @@ func (e *Engine) IntentModule(in IntentModuleInput) (*model.Module, error) {
 		chg.ModuleIntents[in.Path] = sem
 		return &model.Module{Path: in.Path, Responsibility: sem, Status: model.ItemDraft}, w.s.Save()
 	}
+	if in.Responsibility != "" && origin != model.UserStated {
+		if err := e.inScope(w, chg, m.ID); err != nil {
+			return nil, err
+		}
+	}
 	if in.Responsibility != "" {
 		if confirmed(m.Responsibility) && origin != model.UserStated && m.Responsibility.Value != in.Responsibility {
 			return nil, fmt.Errorf("%s responsibility is CONFIRMED; changing it is a tier B decision", m.ID)
@@ -583,6 +604,11 @@ func (e *Engine) IntentContract(in IntentContractInput) (*model.Contract, error)
 	}
 	if !origin.SemanticAllowed() {
 		return nil, fmt.Errorf("contract attributes are USER_STATED or INFERRED, not %s (PRD 08A)", origin)
+	}
+	if in.Compatibility != "" && origin != model.UserStated {
+		if err := e.inScope(w, chg, c.ID); err != nil {
+			return nil, err
+		}
 	}
 	if in.Compatibility != "" {
 		if confirmed(c.Compatibility) && origin != model.UserStated && c.Compatibility.Value != in.Compatibility {
@@ -655,6 +681,20 @@ func (e *Engine) IntentDelta(add, remove, preserve []string) (*model.Change, err
 		chg.State = model.StateImplementing
 	}
 	return chg, w.s.Save()
+}
+
+// inScope: a meaning field may be (re)written only for items this turn targets, delivers or
+// affects; anything else is outside the IntentDelta and stays as recorded.
+func (e *Engine) inScope(w *world, chg *model.Change, id string) error {
+	if contains(chg.Impacted, id) || contains(chg.Delivers, id) || contains(chg.Plan.Targets, id) {
+		return nil
+	}
+	if res, err := w.analyze(); err == nil {
+		if contains(impact.Analyze(w.s, res, w.changedSinceSync()).Affected(), id) {
+			return nil
+		}
+	}
+	return fmt.Errorf("%s is outside this turn (not targeted, delivered or affected); its meaning stays as recorded unless the user asks: then record it with --origin USER_STATED", id)
 }
 
 func (e *Engine) activeTurn() (*world, *model.Change, error) {

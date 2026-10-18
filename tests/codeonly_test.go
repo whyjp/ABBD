@@ -223,7 +223,7 @@ func TestCodeOnlyE2E(t *testing.T) {
 	if code != 2 || !strings.Contains(str(v, "reason"), "등급 C") {
 		t.Fatalf("tier C must block sync: exit %d %v", code, get(v, "reason"))
 	}
-	p.ok("decide", "--tier", "C", "--question", "POST /messages breaking change 승인?", "--subject", post, "--answer", "approve")
+	p.ok("decide", "--tier", "C", "--question", "POST /messages breaking change 승인?", "--subject", post, "--answer", "approve", "--user")
 	p.ok("verify")
 	if sync = p.ok("sync"); get(sync, "completed") != true {
 		t.Fatalf("approved tier C change completes: %v", get(sync, "reason"))

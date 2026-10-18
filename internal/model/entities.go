@@ -323,6 +323,8 @@ type Plan struct {
 	ContextReason    string   `yaml:"context_reason" json:"context_reason"`
 	Targets          []string `yaml:"targets,omitempty" json:"targets,omitempty"`
 	Ambiguous        bool     `yaml:"ambiguous" json:"ambiguous"`
+	// TierReason is required when the verification tier is set below the routed one.
+	TierReason string `yaml:"tier_reason,omitempty" json:"tier_reason,omitempty"`
 }
 
 // Change is the CHG-* record: intent delta, turn state and ChangeReceipt in one place.
@@ -357,12 +359,19 @@ type Change struct {
 	// StructuralDeltas are the turn's structural changes, each with its own tier and decision (v1.4 CR-3).
 	StructuralDeltas []StructuralDelta `yaml:"structural_deltas,omitempty" json:"structural_deltas,omitempty"`
 	Commit           string            `yaml:"commit,omitempty" json:"commit,omitempty"`
-	Time             string            `yaml:"time" json:"time"`
+	// ReproWaiver is why a bug-fix turn has no failing-first evidence; empty means it must have one.
+	ReproWaiver string `yaml:"repro_waiver,omitempty" json:"repro_waiver,omitempty"`
+	Time        string `yaml:"time" json:"time"`
 }
 
 // Evidence is one verification run (PRD FR-07).
+// EvidenceLevel separates unit/integration checks from a run of the product the way a user
+// reaches it (PRD ch.04 T3 "사용자 수준 실행 증거").
+const LevelUser = "user"
+
 type Evidence struct {
 	ID           string       `yaml:"id" json:"id"`
+	Level        string       `yaml:"level,omitempty" json:"level,omitempty"`
 	Command      string       `yaml:"command" json:"command"`
 	Dir          string       `yaml:"dir" json:"dir"`
 	Revision     string       `yaml:"revision" json:"revision"`

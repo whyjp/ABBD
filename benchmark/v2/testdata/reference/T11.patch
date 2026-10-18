@@ -1,0 +1,64 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 8c7be98..464cfb8 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -34,6 +34,7 @@ func NewServer(w kafka.Writer, store *storage.Writer) *Server {
+ 	s.handle("POST /heartbeats/import", s.handleImport)
+ 	s.handle("GET /heartbeats/{id}", s.handleGet)
+ 	s.handle("DELETE /heartbeats/{id}", s.handleDelete)
++	s.handle("POST /heartbeats", s.handlePostHeartbeat)
+ 	return s
+ }
+ 
+@@ -149,3 +150,24 @@ func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
+ 	}
+ 	w.WriteHeader(http.StatusNoContent)
+ }
++
++// handlePostHeartbeat echoes a load-test heartbeat with 201 like any other, but storage drops it.
++func (s *Server) handlePostHeartbeat(w http.ResponseWriter, r *http.Request) {
++	data, ok := readBody(w, r)
++	if !ok {
++		return
++	}
++	h, err := heartbeat.Parse(data)
++	if err == nil {
++		err = heartbeat.Validate(h)
++	}
++	if err != nil {
++		writeError(w, http.StatusBadRequest, err.Error())
++		return
++	}
++	if err := s.store.Save(r.Context(), h); err != nil {
++		writeError(w, http.StatusServiceUnavailable, err.Error())
++		return
++	}
++	writeJSON(w, http.StatusCreated, h)
++}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index 09734b6..41011ac 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -88,3 +88,22 @@ func TestGetHeartbeat(t *testing.T) {
+ 		}
+ 	}
+ }
++
++func TestPostHeartbeat(t *testing.T) {
++	store := storage.NewWriter("memory://")
++	srv := NewServer(NewKafkaWriter(nil), store)
++	for body, want := range map[string]int{
++		`{"id":"p","source":"node-1","at":"2026-01-01T00:00:00Z"}`: http.StatusCreated,
++		`{"id":"q","source":"test","at":"2026-01-01T00:00:00Z"}`:   http.StatusCreated,
++		`{"id":"r"}`: http.StatusBadRequest,
++	} {
++		rec := httptest.NewRecorder()
++		srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/heartbeats", strings.NewReader(body)))
++		if rec.Code != want {
++			t.Errorf("POST %s = %d, want %d", body, rec.Code, want)
++		}
++	}
++	if store.Count() != 1 {
++		t.Fatalf("stored %d, want 1 (load-test heartbeat dropped)", store.Count())
++	}
++}

@@ -121,10 +121,10 @@ func TestACREV03CompatChangeBCardRejectFeedsNextTurn(t *testing.T) {
 	if get(sync, "review") == nil {
 		t.Fatal("a B card must produce a review notice")
 	}
-	if _, code, _ := p.run("review", "--decide", str(card, "id"), "--decision", "reject"); code == 0 {
+	if _, code, _ := p.run("review", "--decide", str(card, "id"), "--decision", "reject", "--user"); code == 0 {
 		t.Fatal("a rejection without a reason is refused")
 	}
-	p.ok("review", "--decide", str(card, "id"), "--decision", "reject", "--reason", "구버전 클라이언트 호환 유지")
+	p.ok("review", "--decide", str(card, "id"), "--decision", "reject", "--reason", "구버전 클라이언트 호환 유지", "--user")
 	next := p.ok("run", "응답 형식 후속 작업")
 	rework := strings.Join(strs(next, "rework"), " ")
 	if !strings.Contains(rework, "구버전 클라이언트 호환 유지") || !strings.Contains(rework, str(card, "id")) {
@@ -171,7 +171,7 @@ func TestACREV04BreakingConsumerContractIsCOnly(t *testing.T) {
 			id = str(d, "id")
 		}
 	}
-	p.ok("review", "--decide", id, "--decision", "approve")
+	p.ok("review", "--decide", id, "--decision", "approve", "--user")
 	if s := p.ok("sync"); get(s, "completed") != true {
 		t.Fatalf("approved C change completes: %v", get(s, "reason"))
 	}
@@ -188,6 +188,7 @@ func TestACREV05InternalChangeHasNoStructuralDelta(t *testing.T) {
 	p.ok("run", "storage Count 버그 고쳐줘")
 	src := p.read("internal/storage/storage.go")
 	p.write("internal/storage/storage.go", src+"\n// countHint documents an internal detail.\nfunc countHint() int { return 0 }\n")
+	p.ok("verify", "--no-repro", "--reason", "내부 정리: 관찰 가능한 동작 변화 없음")
 	p.ok("verify")
 	sync := p.ok("sync")
 	if n := len(list(sync, "receipt", "structural_deltas")); n != 0 {
@@ -207,7 +208,7 @@ func TestACREV06RedecideAfterTheItemChangesAgain(t *testing.T) {
 	p.ok("run", "POST /messages 호환성 정책 변경")
 	p.ok("intent", "contract", "--id", post, "--compatibility", "v2만 지원")
 	first := deltaOf(p.ok("sync"), "contract_compat_changed")
-	p.ok("review", "--decide", str(first, "id"), "--decision", "approve")
+	p.ok("review", "--decide", str(first, "id"), "--decision", "approve", "--user")
 
 	p.ok("run", "POST /messages 호환성 정책 다시 변경")
 	p.ok("intent", "contract", "--id", post, "--compatibility", "v3만 지원", "--origin", "USER_STATED")

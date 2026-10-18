@@ -38,7 +38,7 @@ func pendingCard(t *testing.T, v map[string]any, subject string) string {
 func TestApprovalDoesNotCoverALaterDifferentChange(t *testing.T) {
 	p, post := breakingSetup(t)
 	v, _, _ := p.run("sync")
-	p.ok("review", "--decide", pendingCard(t, v, post), "--decision", "approve")
+	p.ok("review", "--decide", pendingCard(t, v, post), "--decision", "approve", "--user")
 	// Same turn, same contract, a different breaking change than the one approved.
 	p.replace("internal/api/api.go", `"POST /v2/messages"`, `"DELETE /v3/messages"`)
 	test := p.read("internal/api/api_test.go")
@@ -55,7 +55,7 @@ func TestApprovalDoesNotCoverALaterDifferentChange(t *testing.T) {
 func TestRejectedTierCChangeIsRevertedByTheNextTurn(t *testing.T) {
 	p, post := breakingSetup(t)
 	v, _, _ := p.run("sync")
-	p.ok("review", "--decide", pendingCard(t, v, post), "--decision", "reject", "--reason", "v1 소비자가 아직 있음")
+	p.ok("review", "--decide", pendingCard(t, v, post), "--decision", "reject", "--reason", "v1 소비자가 아직 있음", "--user")
 	next := p.ok("run", "거부된 변경 처리")
 	if !strings.Contains(strings.Join(strs(next, "rework"), " "), "v1 소비자가 아직 있음") {
 		t.Fatalf("the rejection reason must reach the next turn even though the code is still in the tree: %v", get(next, "rework"))

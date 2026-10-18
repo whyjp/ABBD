@@ -1,0 +1,69 @@
+diff --git a/internal/heartbeat/dedupe.go b/internal/heartbeat/dedupe.go
+index e8cb6a2..9c75f17 100644
+--- a/internal/heartbeat/dedupe.go
++++ b/internal/heartbeat/dedupe.go
+@@ -7,6 +7,7 @@ type dedupe struct {
+ func newDedupe() *dedupe { return &dedupe{seen: map[string]struct{}{}} }
+ 
+ func (d *dedupe) firstSeen(id string) bool {
++	id = Key(id)
+ 	if _, ok := d.seen[id]; ok {
+ 		return false
+ 	}
+diff --git a/internal/heartbeat/heartbeat.go b/internal/heartbeat/heartbeat.go
+index ce2ca3a..59f62e5 100644
+--- a/internal/heartbeat/heartbeat.go
++++ b/internal/heartbeat/heartbeat.go
+@@ -3,6 +3,7 @@ package heartbeat
+ import (
+ 	"encoding/json"
+ 	"errors"
++	"strings"
+ 	"time"
+ )
+ 
+@@ -17,6 +18,9 @@ type Heartbeat struct {
+ 	At     time.Time `json:"at"`
+ }
+ 
++// Key is the identity of a heartbeat id: ids are case-insensitive everywhere.
++func Key(id string) string { return strings.ToLower(id) }
++
+ func Parse(data []byte) (Heartbeat, error) {
+ 	var h Heartbeat
+ 	err := json.Unmarshal(data, &h)
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index 49b06fb..da51fc8 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -31,8 +31,8 @@ func (w *Writer) Save(ctx context.Context, h heartbeat.Heartbeat) error {
+ 	w.mu.Lock()
+ 	defer w.mu.Unlock()
+ 	w.Statements = append(w.Statements, insertHeartbeat)
+-	if _, ok := w.rows[h.ID]; !ok {
+-		w.rows[h.ID] = h
++	if _, ok := w.rows[heartbeat.Key(h.ID)]; !ok {
++		w.rows[heartbeat.Key(h.ID)] = h
+ 	}
+ 	return nil
+ }
+diff --git a/internal/storage/storage_test.go b/internal/storage/storage_test.go
+index 1738a1c..c34631d 100644
+--- a/internal/storage/storage_test.go
++++ b/internal/storage/storage_test.go
+@@ -30,3 +30,15 @@ func TestWriterDropsLoadTestHeartbeats(t *testing.T) {
+ 		t.Fatalf("count = %d, want 0", w.Count())
+ 	}
+ }
++
++func TestWriterIDsAreCaseInsensitive(t *testing.T) {
++	w := NewWriter("memory://")
++	for _, id := range []string{"ABC", "abc"} {
++		if err := w.Save(context.Background(), heartbeat.Heartbeat{ID: id, Source: "node-1", At: time.Unix(1, 0)}); err != nil {
++			t.Fatal(err)
++		}
++	}
++	if w.Count() != 1 {
++		t.Fatalf("count = %d, want 1", w.Count())
++	}
++}

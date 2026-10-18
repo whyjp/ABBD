@@ -1,0 +1,76 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 464cfb8..6b5c5d4 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -35,6 +35,7 @@ func NewServer(w kafka.Writer, store *storage.Writer) *Server {
+ 	s.handle("GET /heartbeats/{id}", s.handleGet)
+ 	s.handle("DELETE /heartbeats/{id}", s.handleDelete)
+ 	s.handle("POST /heartbeats", s.handlePostHeartbeat)
++	s.handle("GET /heartbeats", s.handleList)
+ 	return s
+ }
+ 
+@@ -171,3 +172,12 @@ func (s *Server) handlePostHeartbeat(w http.ResponseWriter, r *http.Request) {
+ 	}
+ 	writeJSON(w, http.StatusCreated, h)
+ }
++
++func (s *Server) handleList(w http.ResponseWriter, r *http.Request) {
++	source := r.URL.Query().Get("source")
++	if source == "" {
++		writeError(w, http.StatusBadRequest, "query parameter source is required")
++		return
++	}
++	writeJSON(w, http.StatusOK, map[string][]heartbeat.Heartbeat{"heartbeats": s.store.BySource(source)})
++}
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index a7ae2b9..a8927e8 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -2,6 +2,7 @@ package storage
+ 
+ import (
+ 	"context"
++	"sort"
+ 	"sync"
+ 
+ 	"example.com/heartbeat/internal/heartbeat"
+@@ -58,3 +59,17 @@ func (w *Writer) Delete(id string) bool {
+ 	delete(w.rows, key)
+ 	return ok
+ }
++
++// BySource returns the stored heartbeats from source sorted by id, never nil.
++func (w *Writer) BySource(source string) []heartbeat.Heartbeat {
++	w.mu.Lock()
++	defer w.mu.Unlock()
++	out := []heartbeat.Heartbeat{}
++	for _, h := range w.rows {
++		if h.Source == source {
++			out = append(out, h)
++		}
++	}
++	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
++	return out
++}
+diff --git a/internal/storage/storage_test.go b/internal/storage/storage_test.go
+index 41572c8..1ed5293 100644
+--- a/internal/storage/storage_test.go
++++ b/internal/storage/storage_test.go
+@@ -52,3 +52,16 @@ func TestWriterDelete(t *testing.T) {
+ 		t.Fatalf("delete sequence wrong, count %d", w.Count())
+ 	}
+ }
++
++func TestWriterBySource(t *testing.T) {
++	w := NewWriter("memory://")
++	for _, id := range []string{"b", "a"} {
++		if err := w.Save(context.Background(), heartbeat.Heartbeat{ID: id, Source: "node-1", At: time.Unix(1, 0)}); err != nil {
++			t.Fatal(err)
++		}
++	}
++	got := w.BySource("node-1")
++	if len(got) != 2 || got[0].ID != "a" || len(w.BySource("none")) != 0 {
++		t.Fatalf("BySource = %+v", got)
++	}
++}

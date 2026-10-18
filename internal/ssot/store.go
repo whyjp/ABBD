@@ -37,6 +37,8 @@ type Snapshot struct {
 	Changes      map[string]*model.Change
 	Requirements map[string]*model.Requirement
 	Candidates   []model.Candidate
+	// HandEdited is set when the md originals differ from what the engine last wrote.
+	HandEdited bool
 	// Misnamed lists files whose frontmatter id differs from their file name (hand edits).
 	Misnamed []string
 }
@@ -56,6 +58,15 @@ type Project struct {
 	Policy       PolicyCfg         `yaml:"policy"`
 	Budgets      map[string]Budget `yaml:"budgets"`
 	Preferences  map[string]string `yaml:"preferences"`
+	// Drivers run the product the way a user reaches an entry point, keyed by FEAT or contract ID.
+	Drivers map[string]Driver `yaml:"drivers,omitempty"`
+}
+
+// Driver is one user-level check: a command that exercises an entry point end to end and the
+// text its output must contain.
+type Driver struct {
+	Run    string `yaml:"run" json:"run"`
+	Expect string `yaml:"expect" json:"expect"`
 }
 
 type VerificationCfg struct {
@@ -77,6 +88,9 @@ type State struct {
 	SSOTHash    string `yaml:"ssot_hash"`
 	SyncedAt    string `yaml:"synced_at"`
 	ActiveTurn  string `yaml:"active_turn,omitempty"`
+	// EngineHash is the md hash the engine last wrote; a different hash on load means the
+	// originals were edited by hand.
+	EngineHash string `yaml:"engine_hash,omitempty"`
 	// TurnGraphQueries counts knowledge queries of the active turn until verify or sync folds it into the CHG.
 	TurnGraphQueries int `yaml:"turn_graph_queries,omitempty"`
 	// Commits maps a CHG to the local commit `sync --commit` made for it.
@@ -167,6 +181,11 @@ func Load(root string) (*Snapshot, error) {
 		return nil, fmt.Errorf("load project.yaml: %w", err)
 	}
 	_ = readYAML(Path(root, "state.yaml"), &s.State)
+	defer func() {
+		if s.State.EngineHash != "" && Hash(root) != s.State.EngineHash {
+			s.HandEdited = true
+		}
+	}()
 	_ = readYAML(Path(root, "candidates.yaml"), &s.Candidates)
 	for _, c := range s.collections() {
 		files, _ := filepath.Glob(Path(root, c.dir, "*.md"))
@@ -190,7 +209,7 @@ func Load(root string) (*Snapshot, error) {
 
 // Save writes every object. Files of objects no longer present are removed so the
 // directory mirrors the snapshot exactly (idempotent, NFR-04).
-func (s *Snapshot) Save() error {
+func (s *Snapshot) save() error {
 	if err := writeYAML(Path(s.Root, "project.yaml"), s.Project); err != nil {
 		return err
 	}
@@ -219,6 +238,15 @@ func (s *Snapshot) Save() error {
 		}
 	}
 	return nil
+}
+
+// Save writes the originals and records their hash as the engine's own write.
+func (s *Snapshot) Save() error {
+	if err := s.save(); err != nil {
+		return err
+	}
+	s.State.EngineHash = Hash(s.Root)
+	return s.SaveState()
 }
 
 func (s *Snapshot) SaveState() error {

@@ -1,0 +1,36 @@
+diff --git a/internal/heartbeat/heartbeat.go b/internal/heartbeat/heartbeat.go
+index 59f62e5..9ee0781 100644
+--- a/internal/heartbeat/heartbeat.go
++++ b/internal/heartbeat/heartbeat.go
+@@ -9,6 +9,8 @@ import (
+ 
+ const TopicHeartbeat = "heartbeat-events"
+ 
++const maxClockSkew = 5 * time.Minute
++
+ // LoadTestSource marks synthetic heartbeats from the load-test tool. They are never stored.
+ const LoadTestSource = "test"
+ 
+@@ -35,6 +37,8 @@ func Validate(h Heartbeat) error {
+ 		return errors.New("heartbeat: missing source")
+ 	case h.At.IsZero():
+ 		return errors.New("heartbeat: missing timestamp")
++	case h.At.After(time.Now().Add(maxClockSkew)):
++		return errors.New("heartbeat: timestamp too far in the future")
+ 	}
+ 	return nil
+ }
+diff --git a/internal/heartbeat/heartbeat_test.go b/internal/heartbeat/heartbeat_test.go
+index 4230121..b469347 100644
+--- a/internal/heartbeat/heartbeat_test.go
++++ b/internal/heartbeat/heartbeat_test.go
+@@ -40,3 +40,9 @@ func TestConsumerSkipsDuplicates(t *testing.T) {
+ 		t.Fatalf("saved %d heartbeats, want 1", len(store.saved))
+ 	}
+ }
++
++func TestValidateRejectsFarFuture(t *testing.T) {
++	if err := Validate(Heartbeat{ID: "a", Source: "node-1", At: time.Now().Add(time.Hour)}); err == nil {
++		t.Fatal("heartbeat an hour ahead accepted")
++	}
++}

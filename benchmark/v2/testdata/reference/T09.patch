@@ -1,0 +1,101 @@
+diff --git a/cmd/heartbeat-replay/main.go b/cmd/heartbeat-replay/main.go
+new file mode 100644
+index 0000000..d004899
+--- /dev/null
++++ b/cmd/heartbeat-replay/main.go
+@@ -0,0 +1,23 @@
++package main
++
++import (
++	"context"
++	"fmt"
++	"log"
++	"os"
++
++	"example.com/heartbeat/internal/replay"
++	"example.com/heartbeat/internal/storage"
++)
++
++func main() {
++	if len(os.Args) != 2 {
++		fmt.Fprintln(os.Stderr, "usage: heartbeat-replay <dump.jsonl>")
++		os.Exit(2)
++	}
++	n, err := replay.File(context.Background(), os.Args[1], storage.NewWriter(os.Getenv("HEARTBEAT_DB_URL")))
++	if err != nil {
++		log.Fatal(err)
++	}
++	fmt.Printf("replayed %d heartbeats\n", n)
++}
+diff --git a/internal/replay/replay.go b/internal/replay/replay.go
+new file mode 100644
+index 0000000..2ca555a
+--- /dev/null
++++ b/internal/replay/replay.go
+@@ -0,0 +1,37 @@
++// Package replay re-ingests a JSON Lines dump of heartbeats into a store.
++package replay
++
++import (
++	"bufio"
++	"bytes"
++	"context"
++	"os"
++
++	"example.com/heartbeat/internal/heartbeat"
++)
++
++// File saves every line of path that parses and validates, and returns how many it saved.
++func File(ctx context.Context, path string, store heartbeat.Store) (int, error) {
++	f, err := os.Open(path)
++	if err != nil {
++		return 0, err
++	}
++	defer f.Close()
++	saved := 0
++	sc := bufio.NewScanner(f)
++	for sc.Scan() {
++		line := bytes.TrimSpace(sc.Bytes())
++		if len(line) == 0 {
++			continue
++		}
++		h, err := heartbeat.Parse(line)
++		if err != nil || heartbeat.Validate(h) != nil {
++			continue
++		}
++		if err := store.Save(ctx, h); err != nil {
++			return saved, err
++		}
++		saved++
++	}
++	return saved, sc.Err()
++}
+diff --git a/internal/replay/replay_test.go b/internal/replay/replay_test.go
+new file mode 100644
+index 0000000..f96534e
+--- /dev/null
++++ b/internal/replay/replay_test.go
+@@ -0,0 +1,23 @@
++package replay
++
++import (
++	"context"
++	"os"
++	"path/filepath"
++	"testing"
++
++	"example.com/heartbeat/internal/storage"
++)
++
++func TestFileSkipsBadLines(t *testing.T) {
++	path := filepath.Join(t.TempDir(), "dump.jsonl")
++	data := "{\"id\":\"a\",\"source\":\"node-1\",\"at\":\"2026-01-01T00:00:00Z\"}\nnot json\n\n{\"id\":\"b\"}\n"
++	if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
++		t.Fatal(err)
++	}
++	store := storage.NewWriter("memory://")
++	n, err := File(context.Background(), path, store)
++	if err != nil || n != 1 || store.Count() != 1 {
++		t.Fatalf("File = %d, %v; stored %d", n, err, store.Count())
++	}
++}

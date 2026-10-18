@@ -210,6 +210,9 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 			errf("%s: invalid verification %q", tid, s.Tests[tid].Verification)
 		}
 	}
+	if s.HandEdited {
+		errf(".abbd md originals were edited outside abbd; change meaning through abbd intent/confirm/decide, then abbd render")
+	}
 	for _, m := range s.Misnamed {
 		errf("%s: the id must match the file name", m)
 	}
