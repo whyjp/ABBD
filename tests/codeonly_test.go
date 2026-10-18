@@ -100,6 +100,9 @@ func TestCodeOnlyE2E(t *testing.T) {
 	if code != 2 || str(ev, "overall") != "FAILED" {
 		t.Fatalf("broken test must FAIL verification with exit 2: exit %d %v", code, get(ev, "ran"))
 	}
+	if f := list(ev, "failures"); len(f) != 1 || !strings.Contains(str(f[0], "output"), `got {"count":1}`) {
+		t.Fatalf("the report must carry the failing test's own output, not just its name: %v", f)
+	}
 	if _, code, _ := p.run("sync"); code != 2 {
 		t.Fatalf("sync after FAILED verification exited %d, want 2 (gate)", code)
 	}

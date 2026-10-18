@@ -192,3 +192,15 @@ func TestLegacyDirectoriesAreMovedOnceWithANotice(t *testing.T) {
 		p.assertAllCurrent("after migration from " + legacy)
 	}
 }
+
+func TestCheckPrintsItsReportAndExits2OnErrors(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	f := p.featureFor("POST /messages")
+	md := ".abbd/features/" + f + ".md"
+	p.replace(md, "owned_by:\n", "owned_by:\n    - MOD-999\n")
+	v, code, _ := p.run("check")
+	if code != 2 || get(v, "ok") != false || !strings.Contains(strings.Join(strs(v, "errors"), " "), "MOD-999") {
+		t.Fatalf("check must exit 2 and still print the errors: exit %d %v", code, v)
+	}
+}

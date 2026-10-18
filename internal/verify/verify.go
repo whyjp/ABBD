@@ -93,6 +93,7 @@ func shell(command string) *exec.Cmd {
 func parseGoTestJSON(s string) ([]model.TestResult, string) {
 	var results []model.TestResult
 	var text strings.Builder
+	perTest := map[string]*strings.Builder{}
 	sc := bufio.NewScanner(strings.NewReader(s))
 	sc.Buffer(make([]byte, 1024*1024), 1024*1024)
 	for sc.Scan() {
@@ -104,6 +105,13 @@ func parseGoTestJSON(s string) ([]model.TestResult, string) {
 		}
 		if e.Output != "" {
 			text.WriteString(e.Output)
+			if e.Test != "" {
+				key := e.Package + "." + strings.SplitN(e.Test, "/", 2)[0]
+				if perTest[key] == nil {
+					perTest[key] = &strings.Builder{}
+				}
+				perTest[key].WriteString(e.Output)
+			}
 		}
 		if e.Test == "" || strings.Contains(e.Test, "/") {
 			continue
@@ -112,7 +120,11 @@ func parseGoTestJSON(s string) ([]model.TestResult, string) {
 		case "pass":
 			results = append(results, model.TestResult{Package: e.Package, Name: e.Test, Result: model.Passed})
 		case "fail":
-			results = append(results, model.TestResult{Package: e.Package, Name: e.Test, Result: model.Failed})
+			out := ""
+			if b := perTest[e.Package+"."+e.Test]; b != nil {
+				out = tail(b.String(), 20)
+			}
+			results = append(results, model.TestResult{Package: e.Package, Name: e.Test, Result: model.Failed, Output: out})
 		case "skip":
 			results = append(results, model.TestResult{Package: e.Package, Name: e.Test, Result: model.Unverifiable})
 		}

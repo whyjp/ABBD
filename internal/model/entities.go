@@ -371,6 +371,9 @@ type TestResult struct {
 	Package string       `yaml:"package" json:"package"`
 	Name    string       `yaml:"name" json:"name"`
 	Result  Verification `yaml:"result" json:"result"`
+	// Output is the failing test's own output: the evidence of what disagreed, not just that
+	// something did ("red is not a measurement").
+	Output string `yaml:"output,omitempty" json:"output,omitempty"`
 }
 
 // Candidate is a merge candidate produced when exactly one anchor matched (AC-BOOT-03).

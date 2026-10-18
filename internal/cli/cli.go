@@ -525,7 +525,8 @@ func runLearn(e *workflow.Engine, args []string) (any, error) {
 func runCheck(e *workflow.Engine, args []string) (any, error) {
 	r, err := e.Check()
 	if err == nil && !r.OK {
-		return r, fmt.Errorf("%d consistency errors", len(r.Errors))
+		// The report is the point of check: print it and exit 2 like any refused gate.
+		return r, fmt.Errorf("%w: %d consistency errors", workflow.ErrGate, len(r.Errors))
 	}
 	return r, err
 }

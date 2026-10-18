@@ -239,7 +239,9 @@ type EvidenceReport struct {
 	Ran         []string           `json:"ran"`
 	CouldNotRun []string           `json:"could_not_run"`
 	FailedTests []string           `json:"failed_tests"`
-	Warnings    []string           `json:"warnings,omitempty"`
+	// Failures carries each failing test's own output, so the report shows what disagreed.
+	Failures []Failure `json:"failures"`
+	Warnings []string  `json:"warnings,omitempty"`
 }
 
 // Verify is step 6. "Ran and failed" and "could not run" stay distinct (PRD ch.04).
@@ -294,6 +296,7 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 		for _, t := range ev.Tests {
 			if t.Result == model.Failed {
 				rep.FailedTests = append(rep.FailedTests, t.Package+"."+t.Name)
+				rep.Failures = append(rep.Failures, Failure{Test: t.Package + "." + t.Name, Output: t.Output, Evidence: ev.ID})
 			}
 		}
 	}
@@ -332,6 +335,12 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 
 // ErrFailed is returned when verification ran and failed; the CLI exits 2 like a refused gate.
 var ErrFailed = errors.New("verification FAILED")
+
+type Failure struct {
+	Test     string `json:"test"`
+	Output   string `json:"output"`
+	Evidence string `json:"evidence"`
+}
 
 func aggregate(runs []model.Evidence) model.Verification {
 	out := model.Unverifiable
@@ -576,9 +585,11 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		result.Review = summarize(e.Root, chg)
 	}
 	if o.Commit {
-		result.Commit, err = e.commit(w, chg)
-		if err != nil {
-			result.Reason = err.Error()
+		// The turn is complete either way; a refused or failed commit is reported, not raised.
+		var cerr error
+		result.Commit, cerr = e.commit(w, chg)
+		if cerr != nil {
+			result.Reason = "commit 안 함: " + cerr.Error()
 		} else {
 			// The receipt keeps the verified revision; the commit that records it lives in state.
 			w.s.State.Commits = mapSet(w.s.State.Commits, chg.ID, result.Commit)
