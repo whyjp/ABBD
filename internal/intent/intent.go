@@ -70,8 +70,17 @@ func Route(request string) TaskType {
 
 func Resolve(request string, s *ssot.Snapshot) Resolution {
 	t := Route(request)
-	r := Resolution{Request: request, TaskType: t.Name, Tier: t.Tier, Steps: t.Steps}
 	low := strings.ToLower(request)
+	// Adding a new endpoint or topic is a new feature that adds a contract, not a change to
+	// an existing contract; it keeps the wider T2 verification of an interface change.
+	interfaceAdd := t.Name == "interface-change" && hasAny(low, addWords) && !hasAny(low, modificationWords)
+	if interfaceAdd {
+		t = Types[len(Types)-1]
+	}
+	r := Resolution{Request: request, TaskType: t.Name, Tier: t.Tier, Steps: t.Steps}
+	if interfaceAdd {
+		r.Tier = "T2"
+	}
 	for _, w := range riskWords {
 		if strings.Contains(low, w) {
 			r.Tier = "T3"
@@ -126,17 +135,22 @@ func Resolve(request string, s *ssot.Snapshot) Resolution {
 		}
 	}
 	r.Ambiguous = len(feats) >= 2 && feats[0].Score == feats[1].Score && t.Name != "feature"
-	r.NewFeature = t.Name == "feature" && (len(feats) == 0 || !isModification(low))
+	// A modification request never invents a feature, even when nothing matched: the user is
+	// changing something the map does not know yet, not stating a new purpose.
+	r.NewFeature = t.Name == "feature" && !hasAny(low, modificationWords)
 	if r.NewFeature && len(r.Matches) > 1 && r.Tier == "T1" {
 		r.Tier = "T2"
 	}
 	return r
 }
 
-var modificationWords = []string{"변경", "수정", "개선", "바꿔", "change", "update", "modify", "improve"}
+var (
+	modificationWords = []string{"변경", "수정", "개선", "바꿔", "change", "update", "modify", "improve"}
+	addWords          = []string{"추가", "만들", "생성", "신규", "add", "new", "create", "implement", "구현", "지원"}
+)
 
-func isModification(low string) bool {
-	for _, w := range modificationWords {
+func hasAny(low string, words []string) bool {
+	for _, w := range words {
 		if strings.Contains(low, w) {
 			return true
 		}

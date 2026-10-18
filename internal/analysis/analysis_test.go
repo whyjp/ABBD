@@ -160,7 +160,7 @@ func TestSampleTestsAndCommands(t *testing.T) {
 	if got := byName["TestValidate"]; got.ModulePath != "internal/heartbeat" || got.Command != "go test ./internal/heartbeat -run '^TestValidate$'" {
 		t.Errorf("TestValidate = %+v", got)
 	}
-	if !slices.Contains(r.TestCommands, "go test ./...") || !slices.Contains(r.BuildCommands, "go build ./...") {
+	if !slices.Contains(r.TestCommands, "go test ./...") || !slices.Contains(r.BuildCommands, "go vet ./...") || slices.Contains(r.BuildCommands, "go build ./...") {
 		t.Errorf("commands = %v / %v", r.TestCommands, r.BuildCommands)
 	}
 	if len(r.Docs) != 0 {

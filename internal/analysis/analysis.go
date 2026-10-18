@@ -271,7 +271,9 @@ func commands(rp *repo, res *Result) (tests, builds []string) {
 		switch path.Base(f) {
 		case "go.mod":
 			tests = append(tests, inDir(dir, "go test ./..."))
-			builds = append(builds, inDir(dir, "go build ./..."), inDir(dir, "go vet ./..."))
+			// go vet compiles every package; go build ./... would write a binary into the
+			// worktree for a single main package and invalidate the evidence it produced.
+			builds = append(builds, inDir(dir, "go vet ./..."))
 		case "package.json":
 			scripts := packageScripts(rp, f)
 			if scripts["test"] {
