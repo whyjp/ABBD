@@ -116,6 +116,14 @@ def main():
     load = lambda n: json.load(open(os.path.join(SRC, n), encoding="utf-8"))
     manifest = {"rules": RULES, "terminal_bench_2": tb2(load("tb2_tasks.json")),
                 "swe_milestone": swe_milestone(load("swe_milestone.json")), "slop_code_bench": scb(load("scb_problems.json"))}
+    # Hand-maintained run pins are not derived from sources/; keep them across rebuilds.
+    out = os.path.join(HERE, "frozen_task_manifest.json")
+    if os.path.exists(out):
+        old = json.load(open(out, encoding="utf-8"))
+        if "run_pin" in old.get("terminal_bench_2", {}):
+            manifest["terminal_bench_2"]["run_pin"] = old["terminal_bench_2"]["run_pin"]
+        if "cross_harness_arms" in old:
+            manifest["cross_harness_arms"] = old["cross_harness_arms"]
     json.dump(manifest, open(os.path.join(HERE, "frozen_task_manifest.json"), "w", encoding="utf-8"), indent=2)
     open(os.path.join(os.path.dirname(HERE), "configs", "selected_tasks.yaml"), "w", encoding="utf-8", newline="\n").write(selected_tasks_yaml(manifest))
     print(json.dumps({"tb2_pilot": [t["id"] for t in manifest["terminal_bench_2"]["pilot"]],

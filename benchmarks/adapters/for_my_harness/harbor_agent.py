@@ -47,6 +47,80 @@ class PstackClaudeCode(PluginClaudeCode):
         return "claude-code-pstack"
 
 
+class SuperpowersClaudeCode(PluginClaudeCode):
+    """ABBD_PLUGIN = obra/superpowers checkout (prepare_cross_harness.sh). Its SessionStart hook is bash only."""
+
+    @staticmethod
+    def name() -> str:
+        return "claude-code-superpowers"
+
+
+GSTACK_ROOT = "/opt/gstack"
+GSTACK_SETTINGS = "/opt/gstack-claude-settings.json"
+# The section gstack asks for in CLAUDE.md: README Install step 1, exact wording from bin/gstack-doctor at the pin.
+GSTACK_CLAUDE_MD = """## gstack
+
+Use /browse from gstack for all web browsing. Never use mcp__claude-in-chrome__* tools.
+"""
+
+
+class GstackClaudeCode(ClaudeCode):
+    """gstack installed the way its README says: checkout + `./setup` (Bun build, skill links, hooks).
+
+    Host env: GSTACK_SRC (pinned clean checkout), GSTACK_BUN (Bun binary whose archive hash matches
+    gstack's bin/gstack-bun-version.sh). Both come from runners/terminal_bench/prepare_cross_harness.sh.
+
+    Harbor runs Claude with CLAUDE_CONFIG_DIR=<logs>/agent/sessions and copies only ~/.claude/skills
+    into it, so two things `./setup` writes under ~/.claude would be lost: the hooks it registers in
+    ~/.claude/settings.json (passed back with --settings) and the CLAUDE.md section (written into
+    the per-run config dir). The checkout lives at /opt/gstack and ./setup links
+    ~/.claude/skills/gstack to it (its documented "checkout outside skills/" path), so Harbor's
+    per-run skill copy is ~0.5 MB of links and stubs, not the 1.7 GB built tree (measured 2026-10-19).
+    """
+
+    # ./setup runs `bun install` and downloads Chromium; the stock 360 s is too tight. Setup time is not
+    # agent time: the task's agent timeout is unchanged.
+    DEFAULT_SETUP_TIMEOUT_SEC = 1200.0
+
+    @staticmethod
+    def name() -> str:
+        return "claude-code-gstack"
+
+    async def install(self, environment: BaseEnvironment) -> None:
+        await super().install(environment)
+        await self.ensure_system_dependencies(environment, ("git", "tar"))
+        await environment.upload_file(os.environ["GSTACK_BUN"], "/usr/local/bin/bun")
+        await environment.upload_dir(os.environ["GSTACK_SRC"], GSTACK_ROOT)
+        uid = (await self.exec_as_agent(environment, command="id -u")).stdout.strip()
+        await self.exec_as_root(
+            environment,
+            command=f"chmod 755 /usr/local/bin/bun && ln -sf bun /usr/local/bin/bunx && chown -R {uid} {GSTACK_ROOT}",
+        )
+        # No TTY here, so setup's timed prompts (prefix, plan-tune hooks) take their non-interactive defaults.
+        # update_check=false keeps the pin: no "upgrade available" notices mid-benchmark. Telemetry is off by default.
+        # Setup output and gstack-doctor go to the trial's agent logs: whether the browser came up depends on
+        # the image (see cross_harness.md), so each trial records what it actually got.
+        logs = self.environment_logs_dir.as_posix()
+        sessions = (self.environment_logs_dir / "sessions").as_posix()
+        await self.exec_as_agent(
+            environment,
+            command=(
+                'export PATH="$HOME/.local/bin:$PATH"; '  # as in Harbor's run step, so doctor finds claude
+                f"mkdir -p {logs} && (cd {GSTACK_ROOT} && ./setup) 2>&1 | tee {logs}/gstack-setup.txt && "
+                f"{GSTACK_ROOT}/bin/gstack-config set update_check false && "
+                f"(cat ~/.claude/settings.json 2>/dev/null || echo '{{}}') > {GSTACK_SETTINGS} && "
+                f"mkdir -p {sessions} && printf %s {shlex.quote(GSTACK_CLAUDE_MD)} > {sessions}/CLAUDE.md && "
+                # From the task workdir with the run's config dir, so its CLAUDE.md check sees what Claude will see.
+                f"{{ CLAUDE_CONFIG_DIR={sessions} {GSTACK_ROOT}/bin/gstack-doctor > {logs}/gstack-doctor.txt 2>&1 || true; }}"
+            ),
+            timeout_sec=int(self.DEFAULT_SETUP_TIMEOUT_SEC) - 120,
+        )
+
+    def build_cli_flags(self) -> str:
+        base = super().build_cli_flags()
+        return f"{base} --settings {shlex.quote(GSTACK_SETTINGS)}".strip()
+
+
 class AbbdClaudeCode(PluginClaudeCode):
     """Groups C, D, E. C skips `abbd init`; D and E run it in the task's working directory."""
 

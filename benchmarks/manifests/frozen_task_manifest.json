@@ -459,5 +459,55 @@
       "agent_step_limit": 100,
       "reason": "One stock configuration for every group; only binary, extra_args and env differ between agent-group-A..E.yaml."
     }
+  },
+  "cross_harness_arms": {
+    "decided": "2026-10-19",
+    "doc": "benchmarks/runners/terminal_bench/cross_harness.md",
+    "common": {
+      "claude_code_version": "2.1.302",
+      "model": "anthropic/claude-sonnet-5-5",
+      "dataset": "terminal-bench@2.0",
+      "tasks": "terminal_bench_2.pilot",
+      "reps": 3,
+      "job_name": "xh-tb2-<arm>-r<rep>-4ec437c"
+    },
+    "arms": {
+      "A": {
+        "harness": "none",
+        "agent": "claude-code"
+      },
+      "B": {
+        "harness": "pstack",
+        "version": "0.9.93",
+        "source": "~/.claude/plugins/cache/pstack-claude/pstack/0.9.93",
+        "agent": "benchmarks.adapters.for_my_harness.harbor_agent:PstackClaudeCode"
+      },
+      "E": {
+        "harness": "abbd",
+        "commit": "4ec437c",
+        "plugin_dir": "abbd-bench-pub/arms/E",
+        "binary": "abbd-bench-pub/abbd-linux",
+        "agent": "benchmarks.adapters.for_my_harness.harbor_agent:AbbdClaudeCode"
+      },
+      "superpowers": {
+        "harness": "superpowers",
+        "repo": "https://github.com/obra/superpowers",
+        "version": "7.0.0",
+        "commit": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
+        "agent": "benchmarks.adapters.for_my_harness.harbor_agent:SuperpowersClaudeCode"
+      },
+      "gstack": {
+        "harness": "gstack",
+        "repo": "https://github.com/garrytan/gstack",
+        "version": "1.91.139.0",
+        "commit": "3a64ab8a1f6bfa613546a99522f144ac724771b5",
+        "bun": "1.4.2",
+        "agent": "benchmarks.adapters.for_my_harness.harbor_agent:GstackClaudeCode"
+      },
+      "omc": {
+        "status": "not_run",
+        "reason": "see cross_harness.md"
+      }
+    }
   }
 }
