@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"sort"
@@ -116,6 +117,9 @@ type State struct {
 	// ones that raised user-only provenance, held until `abbd check --accept-edits` (marks.go).
 	Marks     map[string]Mark `yaml:"marks,omitempty"`
 	HeldEdits map[string]Mark `yaml:"held_edits,omitempty"`
+	// Drivers are the drivers as the engine last wrote them to project.yaml: their provenance
+	// (set_in, prompt) is the engine's to write, and project.yaml is open to hand edits (marks.go).
+	Drivers map[string]Driver `yaml:"drivers,omitempty"`
 	// TurnGraphQueries counts knowledge queries of the active turn until verify or sync folds it into the CHG.
 	TurnGraphQueries int `yaml:"turn_graph_queries,omitempty"`
 	// Commits maps a CHG to the local commit `sync --commit` made for it.
@@ -206,6 +210,7 @@ func Load(root string) (*Snapshot, error) {
 		return nil, fmt.Errorf("load project.yaml: %w", err)
 	}
 	_ = readYAML(Path(root, "state.yaml"), &s.State)
+	s.holdDriverEdits()
 	defer func() {
 		if s.State.EngineHash != "" && Hash(root) != s.State.EngineHash {
 			s.HandEdited = true
@@ -276,6 +281,7 @@ func (s *Snapshot) Save() error {
 	}
 	s.State.EngineHash = Hash(s.Root)
 	s.recordMarks()
+	s.State.Drivers = maps.Clone(s.Project.Drivers)
 	return s.SaveState()
 }
 

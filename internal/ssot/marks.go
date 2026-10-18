@@ -89,6 +89,16 @@ func (s *Snapshot) marks() map[string]markRef {
 		out[id+".statement"] = semanticRef(&r.Statement)
 	}
 	for _, c := range s.Changes {
+		for p := range c.ModuleIntents {
+			out[c.ID+".module_intents["+p+"]"] = markRef{
+				get: func() Mark { sem := c.ModuleIntents[p]; return Mark{sem.Value, sem.Origin, sem.Confirmation} },
+				set: func(m Mark) {
+					sem := c.ModuleIntents[p]
+					sem.Value, sem.Origin, sem.Confirmation = m.Value, m.Origin, m.Confirmation
+					c.ModuleIntents[p] = sem
+				},
+			}
+		}
 		for i := range c.StructuralDeltas {
 			d := &c.StructuralDeltas[i]
 			if d.Tier != model.TierC {
@@ -170,4 +180,26 @@ func (s *Snapshot) AcceptHeldEdits(byUser bool) {
 		}
 	}
 	s.State.HeldEdits = nil
+}
+
+// holdDriverEdits runs on load. project.yaml is open to hand edits, but a driver's provenance is
+// the engine's to write: a driver whose command or expected text differs from what the engine
+// last wrote counts as set now, as `abbd driver set` would record it, and one that only lost or
+// changed its set_in or prompt gets back what the engine recorded.
+func (s *Snapshot) holdDriverEdits() {
+	if s.State.EngineHash == "" {
+		return // nothing written by the engine yet
+	}
+	for id, d := range s.Project.Drivers {
+		rec, known := s.State.Drivers[id]
+		switch {
+		case known && d == rec:
+			continue
+		case known && d.Run == rec.Run && d.Expect == rec.Expect:
+			d.SetIn, d.Prompt = rec.SetIn, rec.Prompt
+		default:
+			d.SetIn, d.Prompt = s.State.ActiveTurn, s.State.LastPrompt
+		}
+		s.Project.Drivers[id] = d
+	}
 }
