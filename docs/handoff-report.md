@@ -1,88 +1,75 @@
-# 첫 회차 결과 보고 (PRD 16장 템플릿)
+# 인계 보고 (PRD 16장 템플릿) · v1.5 기준
 
-작성 2026-10-18 · 브랜치 `fmh-phase1-draft` · 범위 Phase 1 초안 (HITL 없이 문서 충실 구현)
+2026-10-18 · 저장소 `github.com/whyjp/ABBD` (main) · PRD `basedoc/abbd_prd_v1_5.html`
 
 ## [Goal]
 
-내 개발 방식에 맞춘 개인용 하네스다. 준비물 없이 시작하고, 표준 구조(SSOT Architecture Map + Feature Map, md 원본 + 생성 HTML)를 하네스가 직접 만들고 유지한다. 이번 회차의 목표는 PRD 14장 Phase 1 완료 기준이다. code-only E2E를 통과하고, greenfield를 합격 테스트로 통과하고, 사람이 문서를 쓰지 않으며, bootstrap 질문은 0회여야 한다.
+ABBD (Active Blueprint-Based Development). 에이전트가 하네스가 만들고 유지하는 설계도(Blueprint)를 기준으로 개발하고, 그 설계도가 검증된 변경과 함께 갱신된다. 이번 범위는 Phase 1과 v1.4 리뷰 화면, v1.5 이름 확정이다.
 
 ## [Bootstrap Modes]
 
-- **greenfield.** 소스가 없으면 자동 선택된다. 빈 지식으로 시작하고, 첫 `abbd run` 요청이 REQ와 FEAT 초안(USER_STATED)이 된다.
-- **code-only.** 소스가 있으면 자동 선택된다. Discover → Observe(`--verify-available`일 때만 실행, 아니면 NOT_RUN으로 명시) → Infer(진입점마다 INFERRED FEAT 후보) → Seed → BootstrapReport.
-- **adopt.** `--from` 문서(md/html 표, yaml/json)에서 의미 필드만 ADOPTED로 가져오고 구조는 코드에서 다시 추출한다. 충돌과 매칭 실패는 보고서에 남는다. 입력이 깨져도 기본 경로는 계속된다.
-- 세 모드 모두 입력을 읽지 않는다. 불확실한 항목은 확인 대기 목록(`confirm-queue.html`, `abbd confirm --list`)에 올라간다.
+모드는 greenfield, code-only, adopt 세 가지다. 어느 모드도 질문하지 않는다. 자세한 동작은 `README.md`와 `docs/cli.md`에 있다. adopt는 의미 필드만 ADOPTED로 가져오고 구조는 코드에서 다시 추출한다.
 
 ## [Contract View]
 
-Phase 1 추출 범위는 Go AST 기준이다 (`internal/analysis`).
+Go AST 기준으로 다음을 추출한다.
 
-- HTTP 라우트(`HandleFunc`, `GET/POST/...`, Go 1.22 패턴)는 IF.
-- Kafka 토픽(`Topic` 필드·상수, reader/writer 생성자, 방향은 이름으로 판정)은 EVT.
-- SQL 마이그레이션 `CREATE TABLE`은 DATA. 소유 모듈은 테이블명을 참조하는 Go 코드다.
-- `os.Getenv`/`LookupEnv`는 CFG. main 패키지는 CLI 명령(IF)이다.
-- Dockerfile, compose, k8s Deployment는 서빙 구조(배포 단위 → 모듈)다.
-- Python/JS/TS는 정규식 분석기로 라우트와 심볼만 다룬다.
-- 런타임에 조립되는 토픽은 `origin: UNKNOWN`으로 남기고, 없다고 단정하지 않는다.
-- 브로커·DB·환경 변수 계약은 로컬 실행으로 확인할 수 없어 `UNVERIFIABLE`과 이유를 함께 적는다.
+- HTTP 라우트는 IF, Kafka 토픽은 EVT, SQL 테이블은 DATA, 환경 변수는 CFG, main 패키지는 CLI(IF)다.
+- Dockerfile, compose, k8s는 배포 단위가 된다.
+- Python/JS/TS는 정규식 분석기로 처리한다.
+- 런타임에 조립되는 토픽은 UNKNOWN으로 남긴다. 실서비스 계약은 UNVERIFIABLE과 이유를 함께 적는다.
+- `NewWriter` 같은 생성자는 메시징 패키지에서 불렀을 때만 토픽으로 본다(벤치마크 중 발견한 오탐).
 
-## [Approval Tiers]
+## [Approval Tiers / Review Surface]
 
-- **A.** 읽기, 로컬 수정, 맵 동기화, 렌더, 로컬 검증, 로컬 commit(`project.yaml`로 변경 가능)은 자동이다.
-- **B.** `abbd decide`는 선택지 2~3개와 기본값을 받는다. 턴당 3회까지만 묻고, 넘치면 묻지 않고 기본값으로 진행한다. 같은 질문은 ADR에서 찾아 다시 묻지 않는다. 답이 없으면 UNCONFIRMED ADR이 남고 턴은 NEEDS_USER로 끝난다. sync는 소비자 미상 계약의 breaking change를 자동으로 B로 기록한다.
-- **C.** external_consumers: true 계약의 breaking change가 있으면 sync가 BLOCKED + exit 2로 멈춘다. `decide --tier C --subject ID --answer approve`가 있어야 진행한다. push/deploy 등은 `abbd policy classify`가 C로 분류한다.
-- **지연 확인.** bootstrap 항목은 묻지 않는다. `run`이 이번 턴의 대상 중 의미가 미확인인 항목을 `confirm_if_purpose_used`로 알려 주고, 결과가 그 의미에 의존할 때만 에이전트가 등급 B로 묻는다.
+- **등급 A/B/C 판정.** 등급은 구조 변경(StructuralDelta) 항목마다 따로 매긴다. 표는 PRD 08B를 따른다. 외부 소비자가 있는 계약의 추가·삭제·breaking 변경은 C다.
+- **사본 기반 sync.** sync는 턴을 SSOT 사본에 먼저 적용한다. 승인되지 않은 C 항목이 있으면 사본을 버린다. 그래서 승인 전에는 설계도에 반영되지 않는다.
+- **결정의 범위.** 결정은 자기가 본 변경에만 유효하다. 같은 턴 안에서 같은 항목이 다시 바뀌면 새 카드가 생긴다.
+- **결정 통로.** `abbd serve`(loopback 전용, 세션 토큰, Host 검사), 결정 파일(`abbd review --apply`), MCP(`decide_structural_change`, `answer_decision`), CLI(`review --decide`, `decide --adr`)가 있다. 어느 통로든 같은 레코드를 쓴다.
+- **거부 처리.** 거부와 되돌리기 요청은 다음 `abbd run`의 IntentDelta(`rework`)로 정확히 한 번 들어간다. C 카드가 모두 거부된 턴은 다음 run이 닫는다.
+- **화면.** 토폴로지는 SSOT에서 결정적으로 렌더링한다(SVG, 시스템/모듈/기능 경로). 배치는 `generated/layout.json`에 고정된다.
+- **진입 강제.** 플러그인 SessionStart가 모든 코드 변경에 턴을 의무로 명시한다. Stop 훅은 설계도가 작업 트리와 맞지 않으면 세션을 한 번 되돌린다.
 
 ## [pstack Source Review]
 
-이 세션에서 설치본 pstack 0.9.93(pstack-claude 포트)의 poteto-mode와 원칙 스킬은 직접 읽었다. how, why, architect, blast-radius, correct, reflect의 로컬 원문은 스킬 작성 위임 에이전트에게 참고하라고 지시했다. 차용은 아이디어 수준이고, 파일과 문장은 복사하지 않았다 (`THIRD_PARTY_NOTICES.md`). 재사용한 절차는 작업 유형별 라우팅, 구현 전 타입·경계 설계, 증거 중심 영향 분석, 교정 순서(아키텍처 → 타입 → 린트 → 테스트 → 문서), 검증 가능한 작은 단위다. 재구현한 엔진은 턴 상태 기계, 완료 게이트, SSOT 동기화, 앵커 ID, 계약 추출이다.
-
-**미확인.** GitHub 원문(R01-R14)과 Graphify, GitNexus, CodeGraphContext의 README·LICENSE는 이번 회차에 열어 보지 않았다. 라이선스 표기는 PRD가 적은 내용을 옮긴 것이다. PriorArtMatrix(02A)는 다음 회차 작업이다.
+설치본 pstack 0.9.93의 아이디어만 빌려 왔다. 별도 모델(fable)의 원본 비교에서 초기 스킬 일부(약 60~70줄)가 pstack 문장을 가깝게 번역한 수준이라는 지적이 나왔다. 그 구간은 ABBD 엔진 동작 기준으로 다시 썼다. 경위는 `THIRD_PARTY_NOTICES.md`에 있다. 같은 비교에서 엔진이 강제하는 규칙은 54개(그중 33개는 테스트로 고정), 산문뿐인 규칙은 26개였다. 산문 규칙 일부는 이후 명령이나 테스트로 옮겼다.
 
 ## [Proposed Architecture]
 
 ```
 cmd/abbd → internal/cli ─┐
-internal/mcp ─────────────────┴→ internal/workflow   턴 엔진 + Project Intelligence API
-                                   ├ bootstrap   greenfield/code-only/adopt
-                                   ├ intent      라우팅(표) + 의도 해석
-                                   ├ impact      계약 먼저 → 모듈 → 역의존 → 기능 → 테스트
-                                   ├ verify      실행 증거, UNVERIFIABLE 구분, redaction
-                                   ├ policy      등급 표
-                                   └ knowledge   EXTRACTED 층 갱신(Apply/Seed) + Publish
-                                        ├ analysis  Go AST / regex / SQL / manifests
-                                        ├ identity  앵커 매칭
-                                        ├ ssot      md 원본 저장소
-                                        ├ graph     파생 그래프 + bounded query
-                                        └ html      Explorer + 확인 대기 페이지
+internal/mcp ────────────┼→ internal/workflow   턴 엔진, 게이트, 결정, Project Intelligence API
+internal/serve ──────────┘     ├ bootstrap · intent · impact · verify · policy
+                               ├ knowledge (EXTRACTED 갱신 + Publish)
+                               └ review (StructuralDelta, layout, SVG 렌더)
+                                    └ analysis · identity · ssot · graph · html
+plugins/abbd   Claude Code 플러그인 (skills 8, .mcp.json, SessionStart/Stop 훅)
+plugins/install.sh|ps1  Codex · Antigravity 설치
+benchmark/     부록 A 실행기, 숨김 테스트, 기준 구현
 ```
 
-## [Open Decisions] (등급 B: 아래 기본값으로 진행함)
+## [Open Decisions] (기본값으로 진행함)
 
 | 결정 | 진행한 기본값 | 바꾸려면 |
 |---|---|---|
-| 그래프 저장소 (PRD는 SQLite 가설) | `generated/graph.json`. 의존성 하나, 재생성 가능 | 그래프가 커지면 SQLite 어댑터로 교체 |
-| 최신성 기준 | git HEAD + 파일별 내용 fingerprint | 큰 저장소에서 비용이 문제면 git 기반 증분 |
-| 첫 언어 / 호스트 (Q2, Q3) | Go 정적 분석 / Claude Code 어댑터 + Codex 안내 | 다른 언어 분석기 추가 |
-| 로컬 commit (Q18) | A, 단 `sync --commit`을 줄 때만 | `project.yaml` `policy.local_commit_tier` |
-| 의미 필드 자동 생성 문구 | `(추정) ...` 기계적 문장, INFERRED | 에이전트가 `abbd intent ...`로 INFERRED 재작성 |
-| 외부 소비자 기본값 | 미상(nil) → breaking이면 B | `abbd confirm IF-x --external-consumers true` |
-
-## [Implemented Prototype]
-
-init → run → (에이전트 구현) → verify → sync가 code-only와 greenfield 양쪽에서 동작한다. 실패 경로(FAILED, 검증 후 편집, 등급 C)는 DRAFT로 남고 exit 2를 낸다. 외부 변경은 run이나 reconcile에서 질문 없이 재조정되고, 확정 계약과 충돌하면 등급 B ADR이 남는다.
+| 그래프 저장소 | `generated/graph.json` | 커지면 SQLite 어댑터 |
+| 최신성 | git HEAD + 파일별 fingerprint (대형 저장소 비용은 측정하지 않음) | git 기반 증분 |
+| Go 모듈 경로 | `github.com/whyjp/abbd` (GitHub 저장소 이름은 ABBD) | 대문자 경로로 바꾸면 `go install` 문구도 바꾼다 |
+| 배포 | `fmh-phase1-draft`를 main에 직접 push (사용자가 push를 지시함, PR 리뷰 없음) | 이후 작업은 PR로 받는다 |
+| Q20 / Q21 | 서버 SVG + 최소 JS / A 등급은 카드 없이 적용 목록 | `internal/review/render.go` |
+| Stop 훅 강도 | 한 번만 되돌림 (두 번째 stop은 통과) | `plugins/abbd/scripts/stop-gate.sh` |
 
 ## [Evidence]
 
-- `go vet ./...`, `go test ./...` (단위 + `tests/` E2E)
-- `tests/codeonly_test.go` `TestCodeOnlyE2E`: PRD 12장 첫 시나리오 1~7 단계와 AC-BOOT-02/03/04/06, 등급 B/C
-- `tests/greenfield_test.go` `TestGreenfieldE2E` (AC-BOOT-01, 두 번째 시나리오), `TestAdoptMode` (FR-17, AC-BOOT-05)
-- `tests/surface_test.go`: MCP와 CLI 일치(FR-10), 스킬이 미등록 명령을 쓰면 실패, Agent Skills frontmatter, 도메인 층 예약
-- 결정 기록: `.audit/fmh-phase1.tsv` (커밋하지 않음)
+- `go vet ./...`, `go test ./...`: 단위 테스트와 `tests/`의 E2E, 수용 기준(AC-BOOT, AC-REV-01~06), 회귀 테스트. 리뷰가 찾은 결함마다 고정 테스트가 있고, 대부분은 수정 전 커밋에서 실패하는 것을 확인했다.
+- `claude plugin validate`가 통과한다. 격리된 설정에서 GitHub 마켓플레이스로 설치되고, GitHub에서 `go install`도 된다. 둘 다 a743a65 시점에 확인했고, 이후 커밋에서는 다시 확인하지 않았다.
+- 리뷰 화면은 `abbd serve`와 Playwright로 시각 확인하고 승인 클릭까지 해 봤다(1d947f5 시점).
+- 벤치마크 파일럿 결과는 `docs/benchmark-pilot.md`에 있다.
 
 ## [Next Step]
 
-1. 02A PriorArtMatrix를 만든다. R01-R14, R30, R33, R35 원문과 라이선스를 직접 연다. 실패 기준은 원문 없이 쓴 행이 하나라도 남는 것이다.
-2. FR-14 멀티 호스트를 확인한다. Claude Code와 Codex에서 같은 code-only 시나리오를 스킬로 끝까지 돌린다. 지금은 설치 스크립트만 검증했다.
-3. 사용자 저장소에서 cold-start grounding을 잰다. 사용자의 기존 SSOT를 정답으로 두고 bootstrap 결과를 비교한다(부록 A). 실패 기준은 모듈 recall < 0.8이다.
-4. 비 Go 언어의 분석 정확도를 측정하거나, LSP/SCIP 어댑터를 붙인다 (Phase 3).
+1. **천장을 깨는 벤치마크 과제.** 이전 결정과 충돌하는 요청, 외부 소비자 계약 변경, 여러 턴 전 불변조건을 깨기 쉬운 리팩터링이 필요하다. 3회 반복해 분산을 재고, 두 arm을 같은 커밋에서 돌린다.
+2. **멀티 호스트(FR-14).** Codex와 Antigravity에서 설치 스크립트 실행을 넘어, 실제 에이전트로 code-only 시나리오를 끝까지 돌린다.
+3. **PriorArtMatrix(02A).** Graphify, GitNexus, CodeGraphContext의 원문과 라이선스를 직접 연다.
+4. **serve 동시 쓰기.** serve와 CLI가 동시에 SSOT를 쓸 때 잠금이 없다(리뷰에서 추정으로 지적, 미재현).
+5. **T3 사용자 수준 실행 계층(driver)** 은 아직 없다.
