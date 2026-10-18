@@ -5,6 +5,7 @@ package policy
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/whyjp/for-my-harness/internal/model"
 	"github.com/whyjp/for-my-harness/internal/ssot"
@@ -59,6 +60,20 @@ func ActionNames() []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// externalEffects are command fragments that act outside the workspace. A verification command
+// containing one is a tier C action, not a check (PRD ch.10).
+var externalEffects = []string{"git push", "deploy", "kubectl apply", "kubectl delete", "terraform apply", "helm upgrade", "helm install", "docker push", "rm -rf /", "drop table", "npm publish"}
+
+func CommandTier(command string) (model.Tier, string) {
+	low := strings.ToLower(command)
+	for _, f := range externalEffects {
+		if strings.Contains(low, f) {
+			return model.TierC, "외부 효과가 있는 명령: " + f
+		}
+	}
+	return model.TierA, "로컬 검증"
 }
 
 // ContractChange is one external contract touched by a diff.

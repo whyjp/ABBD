@@ -70,12 +70,16 @@ type PolicyCfg struct {
 
 // State is the sync watermark: what revision and file contents the maps were last synced to.
 type State struct {
-	Revision    string            `yaml:"revision"`
-	Fingerprint string            `yaml:"fingerprint"`
-	SSOTHash    string            `yaml:"ssot_hash"`
-	SyncedAt    string            `yaml:"synced_at"`
-	ActiveTurn  string            `yaml:"active_turn,omitempty"`
-	Files       map[string]string `yaml:"files"`
+	Revision    string `yaml:"revision"`
+	Fingerprint string `yaml:"fingerprint"`
+	SSOTHash    string `yaml:"ssot_hash"`
+	SyncedAt    string `yaml:"synced_at"`
+	ActiveTurn  string `yaml:"active_turn,omitempty"`
+	// TurnGraphQueries counts knowledge queries of the active turn until verify or sync folds it into the CHG.
+	TurnGraphQueries int `yaml:"turn_graph_queries,omitempty"`
+	// Commits maps a CHG to the local commit `sync --commit` made for it.
+	Commits map[string]string `yaml:"commits,omitempty"`
+	Files   map[string]string `yaml:"files"`
 }
 
 func DefaultProject(name, mode string) Project {

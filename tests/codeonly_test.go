@@ -96,9 +96,9 @@ func TestCodeOnlyE2E(t *testing.T) {
 	p.write("internal/api/count_test.go", countTest)
 
 	// A failing verification never completes and never overwrites the confirmed contract.
-	ev := p.ok("verify")
-	if str(ev, "overall") != "FAILED" {
-		t.Fatalf("broken test must FAIL verification: %v", get(ev, "ran"))
+	ev, code, _ := p.run("verify")
+	if code != 2 || str(ev, "overall") != "FAILED" {
+		t.Fatalf("broken test must FAIL verification with exit 2: exit %d %v", code, get(ev, "ran"))
 	}
 	if _, code, _ := p.run("sync"); code != 2 {
 		t.Fatalf("sync after FAILED verification exited %d, want 2 (gate)", code)

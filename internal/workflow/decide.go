@@ -9,10 +9,10 @@ import (
 	"github.com/whyjp/for-my-harness/internal/model"
 	"github.com/whyjp/for-my-harness/internal/policy"
 	"github.com/whyjp/for-my-harness/internal/ssot"
-	"gopkg.in/yaml.v3"
 )
 
 type DecideInput struct {
+	ADR             string
 	Title           string
 	Tier            model.Tier
 	Question        string
@@ -71,9 +71,12 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	if in.ADR != "" {
+		return e.answerADR(w, in)
+	}
 	chg := w.s.ActiveChange()
 	if chg == nil {
-		return nil, fmt.Errorf("decisions belong to a turn; start one with `myharness run` (bootstrap never asks)")
+		return nil, fmt.Errorf("decisions belong to a turn; start one with `myharness run` (bootstrap never asks); an open ADR is answered with --adr ADR-x --answer KEY")
 	}
 	if in.Tier == "" {
 		in.Tier = model.TierB
@@ -128,6 +131,31 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 		res.Message = fmt.Sprintf("턴당 질문 상한 초과: 묻지 않고 기본값 %q로 진행 (%s, UNCONFIRMED)", d.Default, d.ID)
 	}
 	return res, w.s.Save()
+}
+
+// answerADR answers a decision recorded earlier (by sync, reconcile or a past turn) without
+// retyping its question, inside or outside a turn.
+func (e *Engine) answerADR(w *world, in DecideInput) (*DecideResult, error) {
+	d := w.s.Decisions[in.ADR]
+	if d == nil {
+		return nil, fmt.Errorf("%s not found", in.ADR)
+	}
+	if in.Answer == "" {
+		return &DecideResult{Decision: d, Ask: !d.Answered, Message: "현재 상태"}, nil
+	}
+	valid := d.Tier == model.TierC && in.Answer == "approve"
+	for _, o := range d.Options {
+		valid = valid || o.Key == in.Answer
+	}
+	if !valid {
+		return nil, fmt.Errorf("%s has no option %q", d.ID, in.Answer)
+	}
+	chg := w.s.Changes[d.Change]
+	if chg == nil {
+		chg = &model.Change{}
+	}
+	answer(d, in.Answer, chg)
+	return &DecideResult{Decision: d, Message: "답변 반영: " + d.ID}, e.republish(w, "결정 반영 "+d.ID)
 }
 
 func decisionIDs(chg *model.Change) []string {
@@ -262,6 +290,10 @@ func confirmOne(s *ssot.Snapshot, id, fieldName, value string, reject bool, wher
 	return nil
 }
 
+// resolveCandidate settles a one-anchor match. Merge keeps the old ID (that is what a stable ID
+// is for): the fresh facts move under it and its anchors are refreshed so the next re-run
+// matches exactly. Split rejects the pair; the fresh object keeps its own new ID, and a
+// rejected feature pair is seeded as a new INFERRED feature on the next sync.
 func (e *Engine) resolveCandidate(w *world, id string, merge bool) error {
 	for i := range w.s.Candidates {
 		c := &w.s.Candidates[i]
@@ -271,44 +303,83 @@ func (e *Engine) resolveCandidate(w *world, id string, merge bool) error {
 		if c.Confirmation != model.Unconfirmed {
 			return fmt.Errorf("%s already resolved (%s)", id, c.Confirmation)
 		}
-		if merge {
-			c.Confirmation = model.Confirmed
+		if !merge {
+			c.Confirmation = model.Rejected
 			return nil
 		}
-		// Split: restore the pre-merge object under its ID, give the merged facts a new ID.
 		switch c.Kind {
 		case model.KindFeature:
-			cur := w.s.Features[c.CandidateOf]
-			var old model.Feature
-			if err := yaml.Unmarshal([]byte(c.Payload), &old); err != nil {
-				return err
+			f := w.s.Features[c.CandidateOf]
+			if f == nil {
+				return fmt.Errorf("feature %s not found", c.CandidateOf)
 			}
-			fresh := *cur
-			fresh.ID = w.s.NextID(model.KindFeature)
-			fresh.Intent = model.Intent{Purpose: model.MustSemantic("(추정) 분리된 기능", model.Inferred)}
-			w.s.Features[fresh.ID] = &fresh
-			old.Status = model.ItemRemoved
-			w.s.Features[old.ID] = &old
+			f.ExternalContracts = uniqStrings(append(f.ExternalContracts, c.Target))
+			f.Anchors = append(f.Anchors, c.Anchors...)
+			f.Status = model.ItemCurrent
 		case model.KindModule:
-			cur := w.s.Modules[c.CandidateOf]
-			var old model.Module
-			if err := yaml.Unmarshal([]byte(c.Payload), &old); err != nil {
-				return err
+			old, fresh := w.s.Modules[c.CandidateOf], w.s.Modules[c.Target]
+			if old == nil || fresh == nil {
+				return fmt.Errorf("candidate %s refers to a missing module", id)
 			}
-			fresh := *cur
-			fresh.ID = w.s.NextID(model.KindModule)
-			fresh.Responsibility = model.MustSemantic("(추정) 분리된 모듈", model.Inferred)
-			w.s.Modules[fresh.ID] = &fresh
-			old.Status = model.ItemRemoved
-			old.ExternalContracts = nil
-			w.s.Modules[old.ID] = &old
+			old.Name, old.Path, old.Language, old.Analyzer, old.Status = fresh.Name, fresh.Path, fresh.Language, fresh.Analyzer, model.ItemCurrent
+			old.Anchors, old.Symbols, old.Tests, old.DependsOn, old.Serving = fresh.Anchors, fresh.Symbols, fresh.Tests, fresh.DependsOn, fresh.Serving
+			old.ExternalContracts = append(old.ExternalContracts, fresh.ExternalContracts...)
+			delete(w.s.Modules, fresh.ID)
+			repoint(w.s, fresh.ID, old.ID)
 		default:
-			return fmt.Errorf("split is supported for features and modules; contract %s stays merged", c.CandidateOf)
+			fresh, freshOwner := w.s.Contract(c.Target)
+			old, oldOwner := w.s.Contract(c.CandidateOf)
+			if fresh == nil || old == nil {
+				return fmt.Errorf("candidate %s refers to a missing contract", id)
+			}
+			merged := *fresh
+			merged.ID, merged.Compatibility, merged.ExternalConsumers, merged.ConsumersOrigin = old.ID, old.Compatibility, old.ExternalConsumers, old.ConsumersOrigin
+			oldOwner.ExternalContracts = dropContract(oldOwner.ExternalContracts, old.ID)
+			freshOwner.ExternalContracts = append(dropContract(freshOwner.ExternalContracts, fresh.ID), merged)
+			repoint(w.s, c.Target, c.CandidateOf)
 		}
-		c.Confirmation = model.Rejected
+		c.Confirmation = model.Confirmed
 		return nil
 	}
 	return fmt.Errorf("candidate %s not found", id)
+}
+
+func dropContract(cs []model.Contract, id string) []model.Contract {
+	var out []model.Contract
+	for _, c := range cs {
+		if c.ID != id {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+// repoint rewrites references from one ID to another after a merge.
+func repoint(s *ssot.Snapshot, from, to string) {
+	swap := func(xs []string) []string {
+		for i := range xs {
+			if xs[i] == from {
+				xs[i] = to
+			}
+		}
+		return uniqStrings(xs)
+	}
+	for _, f := range s.Features {
+		f.OwnedBy, f.ExternalContracts = swap(f.OwnedBy), swap(f.ExternalContracts)
+		for i := range f.EntryPoints {
+			if f.EntryPoints[i].Contract == from {
+				f.EntryPoints[i].Contract = to
+			}
+		}
+	}
+	for _, m := range s.Modules {
+		m.DependsOn = swap(m.DependsOn)
+	}
+	for _, t := range s.Tests {
+		if t.Module == from {
+			t.Module = to
+		}
+	}
 }
 
 func (e *Engine) republish(w *world, note string) error {
@@ -349,7 +420,7 @@ func (e *Engine) IntentFeature(in IntentFeatureInput) (*model.Feature, error) {
 		f.Name = in.Name
 	}
 	if in.Purpose != "" {
-		if confirmed(f.Intent.Purpose) && origin != model.UserStated && f.Intent.Purpose.Value != in.Purpose && f.Intent.Purpose.ConfirmedIn != chg.ID {
+		if confirmed(f.Intent.Purpose) && origin != model.UserStated && f.Intent.Purpose.Value != in.Purpose {
 			return nil, fmt.Errorf("%s purpose is CONFIRMED (%q); changing it is a tier B decision: `myharness decide --subject %s`", f.ID, f.Intent.Purpose.Value, f.ID)
 		}
 		sem, err := model.NewSemantic(in.Purpose, origin)
@@ -405,9 +476,9 @@ func (e *Engine) IntentInvariant(in IntentInvariantInput) (*model.Feature, error
 }
 
 type IntentModuleInput struct {
-	ID, Responsibility string
-	Allowed, Forbidden []string
-	Origin             model.Origin
+	ID, Path, Responsibility string
+	Allowed, Forbidden       []string
+	Origin                   model.Origin
 }
 
 func (e *Engine) IntentModule(in IntentModuleInput) (*model.Module, error) {
@@ -415,13 +486,31 @@ func (e *Engine) IntentModule(in IntentModuleInput) (*model.Module, error) {
 	if err != nil {
 		return nil, err
 	}
-	m := w.s.Modules[in.ID]
-	if m == nil {
-		return nil, fmt.Errorf("module %s not found", in.ID)
-	}
 	origin := in.Origin
 	if origin == "" {
 		origin = model.Inferred
+	}
+	if !origin.SemanticAllowed() {
+		return nil, fmt.Errorf("module meaning fields are USER_STATED, ADOPTED or INFERRED, not %s", origin)
+	}
+	m := w.s.Modules[in.ID]
+	if m == nil && in.Path != "" {
+		m = w.s.ModuleByPath(in.Path)
+	}
+	if m == nil {
+		if in.Path == "" {
+			return nil, fmt.Errorf("module %s not found (a module this turn creates is addressed by --path)", in.ID)
+		}
+		// The module gets its ID at sync; its meaning waits on the turn until then.
+		sem, err := model.NewSemantic(in.Responsibility, origin)
+		if err != nil {
+			return nil, err
+		}
+		if chg.ModuleIntents == nil {
+			chg.ModuleIntents = map[string]model.Semantic{}
+		}
+		chg.ModuleIntents[in.Path] = sem
+		return &model.Module{Path: in.Path, Responsibility: sem, Status: model.ItemDraft}, w.s.Save()
 	}
 	if in.Responsibility != "" {
 		if confirmed(m.Responsibility) && origin != model.UserStated && m.Responsibility.Value != in.Responsibility {
@@ -458,7 +547,13 @@ func (e *Engine) IntentContract(in IntentContractInput) (*model.Contract, error)
 	if origin == "" {
 		origin = model.Inferred
 	}
+	if !origin.SemanticAllowed() {
+		return nil, fmt.Errorf("contract attributes are USER_STATED or INFERRED, not %s (PRD 08A)", origin)
+	}
 	if in.Compatibility != "" {
+		if confirmed(c.Compatibility) && origin != model.UserStated && c.Compatibility.Value != in.Compatibility {
+			return nil, fmt.Errorf("%s compatibility is CONFIRMED (%q); changing it is a tier B decision: `myharness decide --subject %s`", c.ID, c.Compatibility.Value, c.ID)
+		}
 		sem, err := model.NewSemantic(in.Compatibility, origin)
 		if err != nil {
 			return nil, err
@@ -466,6 +561,12 @@ func (e *Engine) IntentContract(in IntentContractInput) (*model.Contract, error)
 		c.Compatibility = sem
 	}
 	if in.ExternalConsumers != "" {
+		if in.ExternalConsumers != "true" && in.ExternalConsumers != "false" {
+			return nil, fmt.Errorf("--external-consumers must be true or false")
+		}
+		if c.ConsumersOrigin == model.UserStated && origin != model.UserStated {
+			return nil, fmt.Errorf("%s external_consumers was stated by the user; changing it is a tier B decision", c.ID)
+		}
 		v := in.ExternalConsumers == "true"
 		c.ExternalConsumers, c.ConsumersOrigin = &v, origin
 	}

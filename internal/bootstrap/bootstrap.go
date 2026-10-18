@@ -94,6 +94,10 @@ func Run(root string, opt Options) (*Report, error) {
 		if s, err = ssot.Load(root); err != nil {
 			return nil, err
 		}
+		// Re-seeding mid-turn would move the sync watermark under unverified edits.
+		if s.State.ActiveTurn != "" {
+			return nil, fmt.Errorf("turn %s is active; finish it with sync or turn abort before re-running bootstrap", s.State.ActiveTurn)
+		}
 	} else {
 		s = ssot.NewSnapshot(root)
 		s.Project = ssot.DefaultProject(filepath.Base(root), mode)

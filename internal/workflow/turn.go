@@ -254,8 +254,7 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 			ID: "", Command: o.Unverifiable, Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint,
 			Verification: model.Unverifiable, Reason: o.Reason, Change: changeID, StartedAt: now(), ExitCode: -1,
 		}
-		ev.ID = verify.Run(e.Root, "", "", "", "").ID
-		if err := verify.Save(e.Root, ev); err != nil {
+		if err := verify.Record(e.Root, &ev); err != nil {
 			return nil, err
 		}
 		rep.Runs = append(rep.Runs, ev)
@@ -263,6 +262,11 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 		cmds, err := e.verificationCommands(w, o)
 		if err != nil {
 			return nil, err
+		}
+		for _, cmd := range cmds {
+			if tier, why := policy.CommandTier(cmd); tier == model.TierC {
+				return nil, fmt.Errorf("refusing to run %q as verification: %s (tier C)", cmd, why)
+			}
 		}
 		for _, cmd := range cmds {
 			ev := verify.Run(e.Root, cmd, w.ws.Revision, w.ws.Fingerprint, changeID)
@@ -300,12 +304,28 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 			chg.ResultFingerprint = w.ws.Fingerprint
 		}
 		chg.State = model.StateVerifying
+		chg.Telemetry.GraphQueries += w.s.State.TurnGraphQueries
+		w.s.State.TurnGraphQueries = 0
 		if b, ok := w.s.Project.Budgets[chg.Plan.VerificationTier]; ok && b.TestRuns > 0 && chg.Telemetry.TestRuns > b.TestRuns {
 			rep.Warnings = append(rep.Warnings, fmt.Sprintf("테스트 실행 %d회가 %s 예산 %d회를 넘음", chg.Telemetry.TestRuns, chg.Plan.VerificationTier, b.TestRuns))
 		}
 	}
-	return rep, w.s.Save()
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+	settle := chg == nil && w.s.State.Fingerprint == w.ws.Fingerprint
+	if _, err := knowledge.Publish(w.s, res, w.ws, settle, "검증 반영"); err != nil {
+		return nil, err
+	}
+	if rep.Overall == model.Failed {
+		return rep, ErrFailed
+	}
+	return rep, nil
 }
+
+// ErrFailed is returned when verification ran and failed; the CLI exits 2 like a refused gate.
+var ErrFailed = errors.New("verification FAILED")
 
 func aggregate(runs []model.Evidence) model.Verification {
 	out := model.Unverifiable
@@ -337,7 +357,12 @@ func (e *Engine) verificationCommands(w *world, o VerifyOptions) ([]string, erro
 		p.BuildCommands = res.BuildCommands
 	}
 	w.s.Project.Verification = p
-	if o.All {
+	tier := ""
+	if c := w.s.ActiveChange(); c != nil {
+		tier = c.Plan.VerificationTier
+	}
+	// T2 and T3 widen to the whole regression suite (PRD ch.04 verification tiers).
+	if o.All || tier == "T2" || tier == "T3" {
 		return append(append([]string{}, p.BuildCommands...), p.TestCommands...), nil
 	}
 	imp := impact.Analyze(w.s, res, w.changedSinceSync())
@@ -407,14 +432,28 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		return nil, err
 	}
 
-	if docsOnly(changed) {
-		// T0: documents only. The verification is the consistency check of the generated views.
-		if chg.Verification != model.Passed {
-			chg.Verification = model.Passed
-			chg.ResultFingerprint = w.ws.Fingerprint
-			chg.Risks = append(chg.Risks, "T0 문서 변경: 코드 검증 대신 myharness check 로 확인")
+	switch {
+	case len(changed) == 0:
+		// Nothing changed: there is nothing to prove, so nothing is claimed PASSED.
+		chg.Risks = uniqStrings(append(chg.Risks, "작업 트리 변경 없음: 검증 주장 없이 종료"))
+	case docsOnly(changed):
+		// T0: documents only. The proof is the consistency check, recorded as evidence.
+		if chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint {
+			cons := checkSnapshot(w.s)
+			ev := model.Evidence{Command: "myharness check", Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Change: chg.ID, StartedAt: now(), Verification: model.Passed}
+			if !cons.OK {
+				ev.Verification, ev.OutputTail = model.Failed, strings.Join(cons.Errors, "\n")
+			}
+			if err := verify.Record(e.Root, &ev); err != nil {
+				return nil, err
+			}
+			chg.VerificationEvidence = append(chg.VerificationEvidence, ev.ID)
+			chg.Verification, chg.ResultFingerprint = ev.Verification, w.ws.Fingerprint
+			if ev.Verification != model.Passed {
+				return e.draft(w, chg, res, "T0 검사 실패")
+			}
 		}
-	} else if chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint {
+	case chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint:
 		reason := fmt.Sprintf("검증 %s", chg.Verification)
 		if chg.Verification == model.Passed {
 			reason = "검증 이후 작업 트리가 바뀜: 다시 `myharness verify`"
@@ -429,10 +468,16 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		chg.Blocked = append(chg.Blocked, blocked...)
 		return e.draft(w, chg, res, "등급 C: 명시적 승인 필요 — "+strings.Join(blocked, "; "))
 	}
+	chg.Blocked = openTierC(w.s, chg)
 
 	w.s.Project.Languages = res.Languages
 	opt := knowledge.Options{Revision: w.ws.Revision, Renames: w.renames()}
 	krep := knowledge.Apply(w.s, res, opt)
+	for p, sem := range chg.ModuleIntents {
+		if m := w.s.ModuleByPath(p); m != nil && !confirmed(m.Responsibility) {
+			m.Responsibility = sem
+		}
+	}
 	delivered := e.bindDelivered(w, chg, krep, changed, res)
 	seed := knowledge.Seed(w.s, res, opt)
 	krep.New = append(krep.New, seed.New...)
@@ -466,40 +511,75 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		return e.draft(w, chg, res, "스키마/계약 검사 실패: "+strings.Join(cons.Errors, "; "))
 	}
 
-	before := chg.NewUnconfirmed
+	prevState := w.s.State
 	chg.State = model.StateCompleted
 	for _, d := range chg.Decisions {
 		if d.Tier == model.TierB && !d.Answered {
 			chg.State = model.StateNeedsUser
 		}
 	}
+	w.s.State.TurnGraphQueries, chg.Telemetry.GraphQueries = 0, chg.Telemetry.GraphQueries+w.s.State.TurnGraphQueries
 	finish(chg)
 	chg.SyncState = model.SyncState{FeatureMap: model.Current, ArchitectureMap: model.Current, Graph: model.Current, HTML: model.Current}
 	w.s.State.ActiveTurn = ""
-	chg.NewUnconfirmed = before + len(krep.Candidates) + countNewPending(w.s, krep.New)
-	if _, err := knowledge.Publish(w.s, res, w.ws, true, "동기화 완료: "+chg.ID); err != nil {
-		return nil, err
-	}
+	chg.NewUnconfirmed += len(krep.Candidates) + countNewPending(w.s, krep.New)
 
-	result := &SyncResult{Receipt: chg, Knowledge: krep, Impact: &imp, Freshness: e.freshnessNow()}
-	cons, err := e.Check()
-	if err != nil {
-		return nil, err
+	result := &SyncResult{Receipt: chg, Knowledge: krep, Impact: &imp}
+	_, err = knowledge.Publish(w.s, res, w.ws, true, "동기화 완료: "+chg.ID)
+	if err == nil {
+		result.Freshness = e.freshnessNow()
+		result.Consistency, err = e.Check()
 	}
-	result.Consistency = cons
-	if !result.Freshness.AllCurrent() || !cons.OK {
-		// Never claim success when a published artifact disagrees (PRD ch.07 failure modes).
-		result.Reason = "동기화 후 산출물 불일치"
-		return result, ErrGate
+	if err != nil || !result.Freshness.AllCurrent() || !result.Consistency.OK {
+		// Never leave a COMPLETED receipt behind a failed or inconsistent publish (PRD ch.07).
+		reason := "동기화 후 산출물 불일치"
+		if err != nil {
+			reason = "산출물 게시 실패: " + err.Error()
+		}
+		chg.State, w.s.State = model.StateImplementing, prevState
+		w.s.State.ActiveTurn = chg.ID
+		res2, derr := e.draft(w, chg, res, reason)
+		if res2 != nil {
+			res2.Consistency = result.Consistency
+		}
+		if derr == ErrGate && err != nil {
+			return res2, fmt.Errorf("%w: %v", ErrGate, err)
+		}
+		return res2, derr
 	}
 	result.Completed = true
 	if o.Commit {
 		result.Commit, err = e.commit(w, chg)
 		if err != nil {
 			result.Reason = err.Error()
+		} else {
+			// The receipt keeps the verified revision; the commit that records it lives in state.
+			w.s.State.Commits = mapSet(w.s.State.Commits, chg.ID, result.Commit)
+			err = w.s.SaveState()
 		}
 	}
-	return result, nil
+	return result, err
+}
+
+func mapSet(m map[string]string, k, v string) map[string]string {
+	if m == nil {
+		m = map[string]string{}
+	}
+	m[k] = v
+	return m
+}
+
+// openTierC keeps only tier C stops that are still unapproved; contract stops that passed the
+// gate in this sync are gone.
+func openTierC(s *ssot.Snapshot, chg *model.Change) []string {
+	var out []string
+	for _, ref := range chg.Decisions {
+		d := s.Decisions[ref.ADR]
+		if d != nil && d.Tier == model.TierC && !(d.Answered && d.Chosen == "approve") {
+			out = append(out, d.ID+": "+d.Question)
+		}
+	}
+	return out
 }
 
 func finish(chg *model.Change) {
@@ -758,13 +838,17 @@ func (e *Engine) TurnAbort(reason string) (*model.Change, error) {
 	if c == nil {
 		return nil, fmt.Errorf("no active turn")
 	}
+	var kept []string
 	for _, fid := range c.Delivers {
 		if f := w.s.Features[fid]; f != nil && f.Status == model.ItemDraft {
 			delete(w.s.Features, fid)
+			continue
 		}
+		kept = append(kept, fid)
 	}
+	c.Delivers = kept
 	c.State = model.StateBlocked
-	c.Blocked = append(c.Blocked, "aborted: "+reason)
+	c.Blocked = uniqStrings(append(c.Blocked, "aborted: "+reason))
 	finish(c)
 	w.s.State.ActiveTurn = ""
 	res, err := w.analyze()

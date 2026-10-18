@@ -32,14 +32,16 @@ func Run(root, command, revision, fingerprint, change string) model.Evidence {
 		ev.Verification, ev.Reason = model.Unverifiable, "empty command"
 		return ev
 	}
-	if _, err := exec.LookPath(fields[0]); err != nil {
-		ev.Verification, ev.Reason = model.Unverifiable, fmt.Sprintf("%s not available in this environment", fields[0])
+	prefix, tool := splitCd(command)
+	tf := strings.Fields(tool)
+	if _, err := exec.LookPath(tf[0]); err != nil {
+		ev.Verification, ev.Reason = model.Unverifiable, fmt.Sprintf("%s not available in this environment", tf[0])
 		return ev
 	}
-	goTest := len(fields) >= 2 && fields[0] == "go" && fields[1] == "test"
+	goTest := len(tf) >= 2 && tf[0] == "go" && tf[1] == "test"
 	run := command
 	if goTest && !strings.Contains(command, "-json") {
-		run = "go test -json " + strings.Join(fields[2:], " ")
+		run = prefix + "go test -json " + strings.Join(tf[2:], " ")
 	}
 	cmd := shell(run)
 	cmd.Dir = root
@@ -65,6 +67,17 @@ func Run(root, command, revision, fingerprint, change string) model.Evidence {
 		ev.Reason = "no test files"
 	}
 	return ev
+}
+
+// splitCd separates a leading "cd DIR && " (the analyzer's form for nested modules) so the
+// tool after it is the one checked for availability.
+func splitCd(command string) (prefix, tool string) {
+	if strings.HasPrefix(command, "cd ") {
+		if i := strings.Index(command, "&&"); i > 0 {
+			return command[:i+2] + " ", strings.TrimSpace(command[i+2:])
+		}
+	}
+	return "", command
 }
 
 func shell(command string) *exec.Cmd {
@@ -137,6 +150,13 @@ func nextRunID(root string) string {
 	return fmt.Sprintf("run-%s-%03d", day, len(files)+1)
 }
 
+// Record assigns the next run ID to an evidence produced without running a command (a check,
+// or a check that cannot run here) and saves it.
+func Record(root string, ev *model.Evidence) error {
+	ev.ID = nextRunID(root)
+	return Save(root, *ev)
+}
+
 func Save(root string, ev model.Evidence) error {
 	return ssot.WriteYAMLFile(root, filepath.Join(runsDir, ev.ID+".yaml"), ev)
 }
@@ -205,37 +225,47 @@ var runtimeKinds = map[string]string{
 	"env-var":     "배포 환경의 설정값: 로컬에서 확인 불가",
 }
 
+// applyContractVerification judges a route only by the tests that name it, and only by
+// their outcome in this run: a sibling test passing proves nothing about this contract.
 func applyContractVerification(s *ssot.Snapshot, ev model.Evidence) {
 	if len(ev.Tests) == 0 {
 		return
 	}
 	for _, m := range s.Modules {
-		passed := false
-		for _, tid := range m.Tests {
-			if t := s.Tests[tid]; t != nil && t.Evidence == ev.ID && t.Verification == model.Passed {
-				passed = true
-			}
-		}
 		for i := range m.ExternalContracts {
 			c := &m.ExternalContracts[i]
 			if reason, ok := runtimeKinds[c.Kind]; ok {
 				c.Verification, c.VerificationNote = model.Unverifiable, reason
 				continue
 			}
-			if passed && testsMention(s, m, c.Selector) {
+			ran, failed := 0, 0
+			for _, t := range testsMentioning(s, m, c.Selector) {
+				if t.Evidence != ev.ID {
+					continue
+				}
+				ran++
+				if t.Verification == model.Failed {
+					failed++
+				}
+			}
+			switch {
+			case failed > 0:
+				c.Verification, c.VerificationNote = model.Failed, ev.ID
+			case ran > 0 && ev.Verification == model.Passed:
 				c.Verification, c.VerificationNote = model.Passed, ev.ID
 			}
 		}
 	}
 }
 
-// testsMention is the deterministic link between a route and a test: the test file of the
-// owning module names the selector literally.
-func testsMention(s *ssot.Snapshot, m *model.Module, selector string) bool {
+// testsMentioning is the deterministic link between a route and its tests: the test's file
+// names the selector's path literally.
+func testsMentioning(s *ssot.Snapshot, m *model.Module, selector string) []*model.Test {
 	path := strings.TrimSpace(selector)
 	if i := strings.Index(path, " "); i >= 0 {
 		path = path[i+1:]
 	}
+	var out []*model.Test
 	for _, tid := range m.Tests {
 		t := s.Tests[tid]
 		if t == nil {
@@ -247,8 +277,8 @@ func testsMention(s *ssot.Snapshot, m *model.Module, selector string) bool {
 		}
 		b, err := os.ReadFile(filepath.Join(s.Root, filepath.FromSlash(file)))
 		if err == nil && strings.Contains(string(b), path) {
-			return true
+			out = append(out, t)
 		}
 	}
-	return false
+	return out
 }

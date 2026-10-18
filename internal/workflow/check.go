@@ -78,6 +78,9 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 	for _, mid := range model.SortedKeys(s.Modules) {
 		m := s.Modules[mid]
 		sem(mid, "responsibility", m.Responsibility)
+		if o := m.DependencyPolicy.Origin; o != "" && !o.SemanticAllowed() {
+			errf("%s.dependency_policy: origin %s not allowed", mid, o)
+		}
 		for _, d := range m.DependsOn {
 			ref(mid, d, s.Modules[d] != nil)
 			if contains(m.DependencyPolicy.Forbidden, d) {
@@ -96,6 +99,9 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 				errf("%s: invalid origin %q", c.ID, c.Origin)
 			}
 			sem(c.ID, "compatibility", c.Compatibility)
+			if o := c.ConsumersOrigin; o != "" && o != model.UserStated && o != model.Inferred {
+				errf("%s.external_consumers: origin %s not allowed (USER_STATED|INFERRED)", c.ID, o)
+			}
 			var ev []string
 			if c.Verification == model.Passed {
 				ev = []string{c.VerificationNote}
@@ -152,6 +158,9 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 	}
 	for _, cid := range model.SortedKeys(s.Changes) {
 		c := s.Changes[cid]
+		if c.Verification == model.Passed {
+			evidence(cid, c.Verification, c.VerificationEvidence)
+		}
 		for _, id := range c.Intends {
 			ref(cid, id, s.Requirements[id] != nil)
 		}

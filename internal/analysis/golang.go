@@ -393,6 +393,7 @@ func (x *goExtractor) extractPackage(p *goPkg) {
 	}
 
 	m := ModuleFacts{Path: p.dir, Name: p.name, Language: "go", IsMain: p.name == "main", Analyzer: "go/ast"}
+	m.TestCommand = strings.TrimSuffix(goTestCommand(p, ""), " -run '^$'")
 	if p.modRoot != "" {
 		m.ImportPath = p.key
 	}

@@ -342,7 +342,10 @@ type Change struct {
 	Risks                []string       `yaml:"risks,omitempty" json:"risks,omitempty"`
 	NextSteps            []string       `yaml:"next_steps,omitempty" json:"next_steps,omitempty"`
 	NewUnconfirmed       int            `yaml:"new_unconfirmed" json:"new_unconfirmed"`
-	Time                 string         `yaml:"time" json:"time"`
+	// ModuleIntents holds meaning for modules this turn creates, keyed by path until sync gives them an ID.
+	ModuleIntents map[string]Semantic `yaml:"module_intents,omitempty" json:"module_intents,omitempty"`
+	Commit        string              `yaml:"commit,omitempty" json:"commit,omitempty"`
+	Time          string              `yaml:"time" json:"time"`
 }
 
 // Evidence is one verification run (PRD FR-07).
@@ -377,7 +380,9 @@ type Candidate struct {
 	Anchors      []Anchor     `yaml:"anchors" json:"anchors"`
 	Matched      []Anchor     `yaml:"matched" json:"matched"`
 	Confirmation Confirmation `yaml:"confirmation" json:"confirmation"`
-	Payload      string       `yaml:"payload" json:"payload"`
+	// Target holds the fresh facts while the candidate is open: the new module or contract,
+	// or, for a feature, the entry contract it would absorb.
+	Target string `yaml:"target" json:"target"`
 }
 
 func SortedKeys[V any](m map[string]V) []string {

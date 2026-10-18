@@ -80,10 +80,12 @@ func (w *world) changedSinceSync() []string {
 func now() string { return time.Now().UTC().Format(time.RFC3339) }
 
 // countGraphQuery attributes a graph/knowledge query to the active turn (FR-28 telemetry).
+// The counter lives in state.yaml, not in the CHG markdown, so a query does not make the
+// derived graph and HTML look stale; verify and sync fold it into the receipt.
 func (w *world) countGraphQuery() {
-	if c := w.s.ActiveChange(); c != nil {
-		c.Telemetry.GraphQueries++
-		_ = w.s.Save()
+	if w.s.ActiveChange() != nil {
+		w.s.State.TurnGraphQueries++
+		_ = w.s.SaveState()
 	}
 }
 

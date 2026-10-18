@@ -55,9 +55,9 @@ func Analyze(s *ssot.Snapshot, res *analysis.Result, changed []string) Report {
 			fileModule[f] = m.Path
 		}
 	}
-	language := map[string]string{}
+	testCmd := map[string]string{}
 	for _, m := range res.Modules {
-		language[m.Path] = m.Language
+		testCmd[m.Path] = m.TestCommand
 	}
 	direct := map[string]bool{}
 	newMods := map[string]bool{}
@@ -139,8 +139,8 @@ func Analyze(s *ssot.Snapshot, res *analysis.Result, changed []string) Report {
 		for _, t := range m.Tests {
 			tests[t] = true
 		}
-		if m.Language == "go" {
-			cmds[goTestCmd(m.Path)] = true
+		if c := testCmd[m.Path]; c != "" {
+			cmds[c] = true
 		}
 		if m.Responsibility.Pending() {
 			rep.UnconfirmedIn = append(rep.UnconfirmedIn, id)
@@ -163,8 +163,8 @@ func Analyze(s *ssot.Snapshot, res *analysis.Result, changed []string) Report {
 	}
 	rep.NewModules = model.SortedKeys(newMods)
 	for _, p := range rep.NewModules {
-		if language[p] == "go" {
-			cmds[goTestCmd(p)] = true
+		if c := testCmd[p]; c != "" {
+			cmds[c] = true
 		}
 	}
 	rep.Tests = model.SortedKeys(tests)
@@ -229,13 +229,6 @@ func ContractDiff(s *ssot.Snapshot, res *analysis.Result) []policy.ContractChang
 		return out[i].Selector < out[j].Selector
 	})
 	return out
-}
-
-func goTestCmd(p string) string {
-	if p == "." {
-		return "go test ."
-	}
-	return "go test ./" + p
 }
 
 func maxTier(a, b model.Tier) model.Tier {

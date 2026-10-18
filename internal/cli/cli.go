@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/whyjp/for-my-harness/internal/bootstrap"
+	"github.com/whyjp/for-my-harness/internal/intent"
 	"github.com/whyjp/for-my-harness/internal/mcp"
 	"github.com/whyjp/for-my-harness/internal/model"
 	"github.com/whyjp/for-my-harness/internal/ssot"
@@ -33,13 +34,13 @@ type command struct {
 var Commands = map[string]command{
 	"init":      {"init [DIR] [--mode M] [--from PATH] [--verify-available] [--preview]", runInit},
 	"bootstrap": {"bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]", runBootstrap},
-	"status":    {"status [--knowledge]", func(e *workflow.Engine, a []string) (any, error) { return e.Status() }},
+	"status":    {"status [--knowledge]", runStatus},
 	"reconcile": {"reconcile", func(e *workflow.Engine, a []string) (any, error) { return e.Reconcile() }},
 	"run":       {`run "REQUEST" [--type T] [--tier T0..T3]`, runRun},
 	"plan":      {`plan "REQUEST"`, func(e *workflow.Engine, a []string) (any, error) { return e.Plan(strings.Join(a, " ")) }},
 	"inspect":   {"inspect ID", runInspect},
-	"intent":    {"intent feature|invariant|module|contract|delta ...", runIntent},
-	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID] [--tier B|C]", runDecide},
+	"intent":    {"intent feature|invariant|module|contract|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)", runIntent},
+	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY", runDecide},
 	"decisions": {"decisions [QUERY]", func(e *workflow.Engine, a []string) (any, error) { return e.Decisions(strings.Join(a, " ")) }},
 	"impact":    {"impact", func(e *workflow.Engine, a []string) (any, error) { return e.Impact() }},
 	"contracts": {"contracts list [--module MOD-x] | contracts impact [--diff]", runContracts},
@@ -104,14 +105,17 @@ func Main(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 	out, err := cmd.run(e, rest[1:])
-	if out != nil {
+	// A refused gate or a failed verification still returns the receipt that explains it;
+	// any other error returns nothing worth printing.
+	gate := errors.Is(err, workflow.ErrGate) || errors.Is(err, workflow.ErrFailed)
+	if out != nil && (err == nil || gate) {
 		emit(stdout, rest[0], out, asJSON)
 	}
 	switch {
 	case errors.Is(err, errUsage):
 		fmt.Fprintf(stderr, "usage: myharness %s\n", cmd.usage)
 		return 1
-	case errors.Is(err, workflow.ErrGate):
+	case gate:
 		fmt.Fprintf(stderr, "BLOCKED: %v\n", err)
 		return 2
 	case err != nil:
@@ -210,6 +214,19 @@ func runBootstrap(e *workflow.Engine, args []string) (any, error) {
 	return bootstrap.Run(e.Root, o)
 }
 
+func runStatus(e *workflow.Engine, args []string) (any, error) {
+	fs := newFlags("status")
+	knowledge := fs.Bool("knowledge", false, "include knowledge counts")
+	if _, err := parse(fs, args); err != nil {
+		return nil, err
+	}
+	st, err := e.Status()
+	if err == nil && !*knowledge {
+		st.Knowledge = nil
+	}
+	return st, err
+}
+
 func runRun(e *workflow.Engine, args []string) (any, error) {
 	fs := newFlags("run")
 	var o workflow.RunOptions
@@ -218,6 +235,12 @@ func runRun(e *workflow.Engine, args []string) (any, error) {
 	pos, err := parse(fs, args)
 	if err != nil || len(pos) == 0 {
 		return nil, errUsage
+	}
+	if o.TaskType != "" && !knownType(o.TaskType) {
+		return nil, fmt.Errorf("%w: --type must be one of %v", errUsage, typeNames())
+	}
+	if o.Tier != "" && !strings.Contains("T0 T1 T2 T3", o.Tier) {
+		return nil, fmt.Errorf("%w: --tier must be T0..T3", errUsage)
 	}
 	return e.Run(strings.Join(pos, " "), o)
 }
@@ -271,10 +294,11 @@ func runIntent(e *workflow.Engine, args []string) (any, error) {
 		var in workflow.IntentModuleInput
 		var allowed, forbidden multi
 		fs.StringVar(&in.ID, "id", "", "")
+		fs.StringVar(&in.Path, "path", "", "directory of a module this turn creates")
 		fs.StringVar(&in.Responsibility, "responsibility", "", "")
 		fs.Var(&allowed, "allow", "MOD-x")
 		fs.Var(&forbidden, "forbid", "MOD-x")
-		if _, err := parse(fs, args[1:]); err != nil || in.ID == "" {
+		if _, err := parse(fs, args[1:]); err != nil || (in.ID == "" && in.Path == "") {
 			return nil, errUsage
 		}
 		in.Allowed, in.Forbidden, in.Origin = allowed, forbidden, originFlag(*origin)
@@ -312,10 +336,14 @@ func runDecide(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Default, "default", "", "")
 	fs.StringVar(&in.Answer, "answer", "", "")
 	fs.StringVar(&in.ProceedsWithout, "proceeds-without", "", "scope that proceeds without an answer")
+	fs.StringVar(&in.ADR, "adr", "", "answer an existing ADR")
 	fs.Var(&options, "option", "key=label[=effect]")
 	fs.Var(&subjects, "subject", "ID")
-	if _, err := parse(fs, args); err != nil || in.Question == "" {
+	if _, err := parse(fs, args); err != nil || (in.Question == "" && in.ADR == "") {
 		return nil, errUsage
+	}
+	if in.ADR != "" {
+		return e.Decide(in)
 	}
 	for _, o := range options {
 		parts := strings.SplitN(o, "=", 3)
@@ -332,7 +360,12 @@ func runDecide(e *workflow.Engine, args []string) (any, error) {
 	if in.Tier == model.TierB && len(in.Options) < 2 {
 		return nil, fmt.Errorf("%w: a tier B question needs 2-3 options", errUsage)
 	}
-	return e.Decide(in)
+	res, err := e.Decide(in)
+	if err == nil && res.Blocked {
+		// An unapproved tier C stop is not success: the caller must not proceed.
+		return res, fmt.Errorf("%w: tier C stop %s waits for explicit approval", workflow.ErrGate, res.Decision.ID)
+	}
+	return res, err
 }
 
 func runContracts(e *workflow.Engine, args []string) (any, error) {
@@ -488,6 +521,23 @@ func runCheck(e *workflow.Engine, args []string) (any, error) {
 		return r, fmt.Errorf("%d consistency errors", len(r.Errors))
 	}
 	return r, err
+}
+
+func knownType(t string) bool {
+	for _, n := range typeNames() {
+		if n == t {
+			return true
+		}
+	}
+	return false
+}
+
+func typeNames() []string {
+	var out []string
+	for _, t := range intent.Types {
+		out = append(out, t.Name)
+	}
+	return out
 }
 
 func runMCP(e *workflow.Engine, args []string) (any, error) {

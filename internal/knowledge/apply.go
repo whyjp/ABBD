@@ -13,7 +13,6 @@ import (
 	"github.com/whyjp/for-my-harness/internal/identity"
 	"github.com/whyjp/for-my-harness/internal/model"
 	"github.com/whyjp/for-my-harness/internal/ssot"
-	"gopkg.in/yaml.v3"
 )
 
 type Options struct {
@@ -43,24 +42,37 @@ type item struct {
 	name    string
 }
 
+// matcher holds what identity resolution needs beyond anchors: renames, which existing objects
+// are removed, and which candidate pairs the user already rejected.
+type matcher struct {
+	s       *ssot.Snapshot
+	renames map[string]string
+	removed map[string]bool
+}
+
 // reconcile matches fresh items to existing IDs in two passes: exact (>=2 anchors) first so a
-// one-anchor candidate can never steal an object that has a better match.
-func reconcile(kind model.Kind, fresh []item, existing []identity.Existing, renames map[string]string) []identity.Match {
+// one-anchor candidate can never steal an object that has a better match. A removed object can
+// only come back on an exact match; one shared anchor with a dead object is not identity.
+// A candidate the user already split is New, so the same question is not asked again.
+func (mt matcher) reconcile(fresh []item, existing []identity.Existing) []identity.Match {
 	out := make([]identity.Match, len(fresh))
 	taken := map[string]bool{}
 	for i, f := range fresh {
-		m := identity.Resolve(f.anchors, existing, renames, taken)
+		m := identity.Resolve(f.anchors, existing, mt.renames, taken)
 		if m.Verdict == identity.Same {
 			out[i] = m
 			taken[m.ID] = true
 		}
 	}
+	for id := range mt.removed {
+		taken[id] = true
+	}
 	for i, f := range fresh {
 		if out[i].Verdict == identity.Same {
 			continue
 		}
-		m := identity.Resolve(f.anchors, existing, renames, taken)
-		if m.Verdict == identity.Candidate {
+		m := identity.Resolve(f.anchors, existing, mt.renames, taken)
+		if m.Verdict == identity.Candidate && !rejectedPair(mt.s, m.ID, f.anchors) {
 			taken[m.ID] = true
 			out[i] = m
 		} else {
@@ -70,9 +82,18 @@ func reconcile(kind model.Kind, fresh []item, existing []identity.Existing, rena
 	return out
 }
 
+func rejectedPair(s *ssot.Snapshot, of string, anchors []model.Anchor) bool {
+	for _, c := range s.Candidates {
+		if c.CandidateOf == of && c.Confirmation == model.Rejected && sameAnchors(c.Anchors, anchors) {
+			return true
+		}
+	}
+	return false
+}
+
 // reconcileByKind matches each fresh contract only against existing contracts of the same ID
 // kind, so a new route can never inherit the ID of a topic that shares its file.
-func reconcileByKind(fresh []item, existing []identity.Existing, renames map[string]string, kindOf func(int) model.Kind) []identity.Match {
+func (mt matcher) reconcileByKind(fresh []item, existing []identity.Existing, kindOf func(int) model.Kind) []identity.Match {
 	groups := map[model.Kind][]int{}
 	for i := range fresh {
 		groups[kindOf(i)] = append(groups[kindOf(i)], i)
@@ -89,7 +110,7 @@ func reconcileByKind(fresh []item, existing []identity.Existing, renames map[str
 		for j, i := range idx {
 			sub[j] = fresh[i]
 		}
-		for j, m := range reconcile(k, sub, ex, renames) {
+		for j, m := range mt.reconcile(sub, ex) {
 			out[idx[j]] = m
 		}
 	}
@@ -136,33 +157,37 @@ func moduleAnchors(m analysis.ModuleFacts) []model.Anchor {
 	}
 }
 
-func candidate(s *ssot.Snapshot, kind model.Kind, of, name string, anchors, matched []model.Anchor, before any, rep *Report) {
+// candidate presents a one-anchor match instead of applying it (AC-BOOT-03). target is the
+// object the fresh facts live in until the user decides: a new module or contract, or for a
+// feature the entry contract it would absorb. Nothing semantic moves until confirm --merge.
+func candidate(s *ssot.Snapshot, kind model.Kind, of, target, name string, anchors, matched []model.Anchor, rep *Report) {
 	for _, c := range s.Candidates {
-		if c.CandidateOf == of && c.Confirmation == model.Unconfirmed && sameAnchors(c.Anchors, anchors) {
+		if c.CandidateOf == of && sameAnchors(c.Anchors, anchors) {
 			return
 		}
 	}
-	payload, _ := yaml.Marshal(before)
 	id := s.NextID(model.KindCandidate)
 	s.Candidates = append(s.Candidates, model.Candidate{
-		ID: id, Kind: kind, CandidateOf: of, Name: name, Anchors: anchors, Matched: matched,
-		Confirmation: model.Unconfirmed, Payload: string(payload),
+		ID: id, Kind: kind, CandidateOf: of, Target: target, Name: name, Anchors: anchors, Matched: matched,
+		Confirmation: model.Unconfirmed,
 	})
 	rep.Candidates = append(rep.Candidates, id)
 }
 
 func applyModules(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *Report) map[string]*model.Module {
 	var existing []identity.Existing
+	mt := matcher{s: s, renames: opt.Renames, removed: map[string]bool{}}
 	for _, id := range model.SortedKeys(s.Modules) {
-		if s.Modules[id].Status != model.ItemRemoved {
-			existing = append(existing, identity.Existing{ID: id, Anchors: s.Modules[id].Anchors})
+		existing = append(existing, identity.Existing{ID: id, Anchors: s.Modules[id].Anchors})
+		if s.Modules[id].Status == model.ItemRemoved {
+			mt.removed[id] = true
 		}
 	}
 	fresh := make([]item, len(res.Modules))
 	for i, m := range res.Modules {
 		fresh[i] = item{anchors: moduleAnchors(m), name: m.Name}
 	}
-	matches := reconcile(model.KindModule, fresh, existing, opt.Renames)
+	matches := mt.reconcile(fresh, existing)
 	byPath := map[string]*model.Module{}
 	seen := map[string]bool{}
 	for i, f := range res.Modules {
@@ -171,16 +196,14 @@ func applyModules(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *Repo
 		case identity.Same:
 			mod = s.Modules[matches[i].ID]
 			rep.Updated = append(rep.Updated, mod.ID)
-		case identity.Candidate:
-			mod = s.Modules[matches[i].ID]
-			before := *mod
-			candidate(s, model.KindModule, mod.ID, f.Path, fresh[i].anchors, matches[i].Matched, before, rep)
-			rep.Updated = append(rep.Updated, mod.ID)
 		default:
 			id := s.NextID(model.KindModule)
 			mod = &model.Module{ID: id, Responsibility: model.MustSemantic(inferResponsibility(f), model.Inferred)}
 			s.Modules[id] = mod
 			rep.New = append(rep.New, id)
+			if matches[i].Verdict == identity.Candidate {
+				candidate(s, model.KindModule, matches[i].ID, id, f.Path, fresh[i].anchors, matches[i].Matched, rep)
+			}
 		}
 		seen[mod.ID] = true
 		mod.Name, mod.Path, mod.Language, mod.Analyzer = f.Name, f.Path, f.Language, f.Analyzer
@@ -192,7 +215,7 @@ func applyModules(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *Repo
 		byPath[f.Path] = mod
 	}
 	for _, e := range existing {
-		if !seen[e.ID] {
+		if !seen[e.ID] && !mt.removed[e.ID] {
 			s.Modules[e.ID].Status = model.ItemRemoved
 			rep.Removed = append(rep.Removed, e.ID)
 		}
@@ -260,11 +283,15 @@ func applyContracts(s *ssot.Snapshot, res *analysis.Result, opt Options, byPath 
 	old := map[string]model.Contract{}
 	oldOwner := map[string]*model.Module{}
 	reserved := map[string]bool{}
+	mt := matcher{s: s, renames: opt.Renames, removed: map[string]bool{}}
 	var existing []identity.Existing
 	for _, mid := range model.SortedKeys(s.Modules) {
 		for _, c := range s.Modules[mid].ExternalContracts {
-			// Removed contracts take part in matching so a contract that comes back gets its ID back.
+			// Removed contracts take part in exact matching so a contract that comes back gets its ID back.
 			reserved[c.ID] = true
+			if c.Status == model.ItemRemoved {
+				mt.removed[c.ID] = true
+			}
 			old[c.ID] = c
 			oldOwner[c.ID] = s.Modules[mid]
 			existing = append(existing, identity.Existing{ID: c.ID, Anchors: c.Anchors})
@@ -275,7 +302,7 @@ func applyContracts(s *ssot.Snapshot, res *analysis.Result, opt Options, byPath 
 	for i, c := range res.Contracts {
 		fresh[i] = item{anchors: contractAnchors(c), name: c.Selector}
 	}
-	matches := reconcileByKind(fresh, existing, opt.Renames, func(i int) model.Kind { return ContractKind(res.Contracts[i].Kind) })
+	matches := mt.reconcileByKind(fresh, existing, func(i int) model.Kind { return ContractKind(res.Contracts[i].Kind) })
 	seen := map[string]bool{}
 	for i, f := range res.Contracts {
 		owner := byPath[f.OwnerPath]
@@ -284,11 +311,8 @@ func applyContracts(s *ssot.Snapshot, res *analysis.Result, opt Options, byPath 
 		}
 		var c model.Contract
 		switch matches[i].Verdict {
-		case identity.Same, identity.Candidate:
+		case identity.Same:
 			c = old[matches[i].ID]
-			if matches[i].Verdict == identity.Candidate {
-				candidate(s, ContractKind(f.Kind), c.ID, f.Selector, fresh[i].anchors, matches[i].Matched, c, rep)
-			}
 			rep.Updated = append(rep.Updated, c.ID)
 		default:
 			c = model.Contract{
@@ -297,6 +321,9 @@ func applyContracts(s *ssot.Snapshot, res *analysis.Result, opt Options, byPath 
 				Compatibility: model.MustSemantic("backward-compatible (추정)", model.Inferred),
 			}
 			rep.New = append(rep.New, c.ID)
+			if matches[i].Verdict == identity.Candidate {
+				candidate(s, ContractKind(f.Kind), matches[i].ID, c.ID, f.Selector, fresh[i].anchors, matches[i].Matched, rep)
+			}
 		}
 		seen[c.ID] = true
 		c.Kind, c.Direction, c.Selector, c.Location, c.Symbol = f.Kind, f.Direction, f.Selector, f.Location, f.Symbol
@@ -356,14 +383,14 @@ func applyTests(s *ssot.Snapshot, res *analysis.Result, opt Options, byPath map[
 	for i, t := range res.Tests {
 		fresh[i] = item{anchors: testAnchors(t), name: t.Name}
 	}
-	matches := reconcile(model.KindTest, fresh, existing, opt.Renames)
+	matches := matcher{s: s, renames: opt.Renames}.reconcile(fresh, existing)
 	seen := map[string]bool{}
 	for _, m := range s.Modules {
 		m.Tests = nil
 	}
 	for i, f := range res.Tests {
 		var t *model.Test
-		if matches[i].Verdict == identity.New {
+		if matches[i].Verdict != identity.Same {
 			id := s.NextID(model.KindTest)
 			t = &model.Test{ID: id, Verification: model.NotRun}
 			s.Tests[id] = t
@@ -425,15 +452,22 @@ func entryPoints(s *ssot.Snapshot) []entryFacts {
 	return out
 }
 
-func featureExisting(s *ssot.Snapshot) []identity.Existing {
+// featureMatcher includes removed features so a route that comes back finds its old, possibly
+// CONFIRMED, feature again, but only on an exact match.
+func featureMatcher(s *ssot.Snapshot, opt Options) (matcher, []identity.Existing) {
+	mt := matcher{s: s, renames: opt.Renames, removed: map[string]bool{}}
 	var existing []identity.Existing
 	for _, id := range model.SortedKeys(s.Features) {
 		f := s.Features[id]
-		if f.Status != model.ItemRemoved && len(f.Anchors) > 0 {
-			existing = append(existing, identity.Existing{ID: id, Anchors: f.Anchors})
+		if len(f.Anchors) == 0 {
+			continue
+		}
+		existing = append(existing, identity.Existing{ID: id, Anchors: f.Anchors})
+		if f.Status == model.ItemRemoved {
+			mt.removed[id] = true
 		}
 	}
-	return existing
+	return mt, existing
 }
 
 func seedFeatures(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *Report) {
@@ -442,7 +476,8 @@ func seedFeatures(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *Repo
 	for i, e := range entries {
 		fresh[i] = item{anchors: e.anchors}
 	}
-	matches := reconcile(model.KindFeature, fresh, featureExisting(s), opt.Renames)
+	mt, existing := featureMatcher(s, opt)
+	matches := mt.reconcile(fresh, existing)
 	for i, e := range entries {
 		if matches[i].Verdict != identity.New {
 			continue
@@ -497,17 +532,18 @@ func refreshFeatures(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *R
 	for i, e := range entries {
 		fresh[i] = item{anchors: e.anchors}
 	}
-	existing := featureExisting(s)
-	matches := reconcile(model.KindFeature, fresh, existing, opt.Renames)
+	mt, existing := featureMatcher(s, opt)
+	matches := mt.reconcile(fresh, existing)
 	bound := map[string][]entryFacts{}
+	held := map[string]bool{}
 	for i, e := range entries {
 		switch matches[i].Verdict {
 		case identity.Same:
 			bound[matches[i].ID] = append(bound[matches[i].ID], e)
 		case identity.Candidate:
-			f := s.Features[matches[i].ID]
-			candidate(s, model.KindFeature, f.ID, featureName(e.contract), e.anchors, matches[i].Matched, *f, rep)
-			bound[f.ID] = append(bound[f.ID], e)
+			// Presented, not applied: the feature keeps its last facts until the user decides.
+			candidate(s, model.KindFeature, matches[i].ID, e.contract.ID, featureName(e.contract), e.anchors, matches[i].Matched, rep)
+			held[matches[i].ID] = true
 		default:
 			if id := claimedBy(s, e.contract.ID); id != "" {
 				bound[id] = append(bound[id], e)
@@ -519,7 +555,7 @@ func refreshFeatures(s *ssot.Snapshot, res *analysis.Result, opt Options, rep *R
 		f := s.Features[ex.ID]
 		es := bound[ex.ID]
 		if len(es) == 0 {
-			if hasEntryAnchor(f) {
+			if hasEntryAnchor(f) && !held[f.ID] && f.Status != model.ItemRemoved {
 				f.Status = model.ItemRemoved
 				rep.Removed = append(rep.Removed, f.ID)
 			}

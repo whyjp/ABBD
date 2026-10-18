@@ -41,6 +41,8 @@ type ModuleFacts struct {
 	Calls      []CallEdge
 	Analyzer   string
 	Files      []string
+	// TestCommand runs this package's tests from the right module root; empty when unknown.
+	TestCommand string
 }
 
 type CallEdge struct {
