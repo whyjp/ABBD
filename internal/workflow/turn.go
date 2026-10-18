@@ -1,0 +1,798 @@
+package workflow
+
+import (
+	"errors"
+	"fmt"
+	"path"
+	"strings"
+	"time"
+
+	"github.com/whyjp/for-my-harness/internal/bootstrap"
+	"github.com/whyjp/for-my-harness/internal/impact"
+	"github.com/whyjp/for-my-harness/internal/intent"
+	"github.com/whyjp/for-my-harness/internal/knowledge"
+	"github.com/whyjp/for-my-harness/internal/model"
+	"github.com/whyjp/for-my-harness/internal/policy"
+	"github.com/whyjp/for-my-harness/internal/ssot"
+	"github.com/whyjp/for-my-harness/internal/verify"
+	"github.com/whyjp/for-my-harness/internal/workspace"
+)
+
+// ErrGate is returned when a completion gate refuses to close the turn.
+var ErrGate = errors.New("completion gate refused")
+
+type RunOptions struct {
+	TaskType string
+	Tier     string
+}
+
+type WorkflowPlan struct {
+	Change          string            `json:"change"`
+	TaskType        string            `json:"task_type"`
+	Tier            string            `json:"verification_tier"`
+	Steps           []string          `json:"steps"`
+	ContextStrategy string            `json:"context_strategy"`
+	ContextReason   string            `json:"context_reason"`
+	Matches         []intent.Match    `json:"matches"`
+	Context         []any             `json:"context"`
+	Ambiguous       bool              `json:"ambiguous"`
+	AmbiguityHint   string            `json:"ambiguity_hint,omitempty"`
+	NewFeature      string            `json:"new_feature,omitempty"`
+	Requirement     string            `json:"requirement,omitempty"`
+	ConfirmIfUsed   []string          `json:"confirm_if_purpose_used"`
+	Budget          ssot.Budget       `json:"budget"`
+	Bootstrap       *bootstrap.Report `json:"bootstrap,omitempty"`
+	Reconciled      *ReconcileResult  `json:"reconciled,omitempty"`
+}
+
+// Run starts a turn: step 0 session bootstrap, 1 route, 2 understand, 3 resolve intent.
+func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
+	plan := &WorkflowPlan{}
+	if !ssot.Exists(e.Root) {
+		rep, err := bootstrap.Run(e.Root, bootstrap.Options{})
+		if err != nil {
+			return nil, err
+		}
+		plan.Bootstrap = rep
+	}
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	if c := w.s.ActiveChange(); c != nil && c.State != model.StateCompleted {
+		return nil, fmt.Errorf("turn %s is active (%s); finish it with `myharness sync` or `myharness turn abort`", c.ID, c.State)
+	}
+	if len(w.changedSinceSync()) > 0 {
+		rec, err := e.reconcile(w)
+		if err != nil {
+			return nil, err
+		}
+		plan.Reconciled = rec
+		if w, err = e.load(); err != nil {
+			return nil, err
+		}
+	}
+
+	r := intent.Resolve(request, w.s)
+	if o.TaskType != "" {
+		r.TaskType = o.TaskType
+		for _, t := range intent.Types {
+			if t.Name == o.TaskType {
+				r.Steps = t.Steps
+			}
+		}
+	}
+	if o.Tier != "" {
+		r.Tier = o.Tier
+	}
+	strategy, reason := e.contextStrategy(w, r)
+	targets := topTargets(r.Matches)
+
+	chg := &model.Change{
+		ID: w.s.NextID(model.KindChange), RequestSummary: request, IntentSource: "user", ChangedBy: "harness",
+		State: model.StateIntentResolved, BaseRevision: w.ws.Revision, BaseFingerprint: w.ws.Fingerprint,
+		Plan:         model.Plan{TaskType: r.TaskType, VerificationTier: r.Tier, Steps: r.Steps, ContextStrategy: strategy, ContextReason: reason, Targets: targets, Ambiguous: r.Ambiguous},
+		IntentDelta:  model.IntentDelta{Additions: []string{request}},
+		Impacted:     targets,
+		Verification: model.NotRun,
+		Telemetry:    model.Telemetry{StartedAt: now(), ModelCallsNote: "host reports with `myharness turn note --model-calls N`"},
+		SyncState:    model.SyncState{FeatureMap: model.Draft, ArchitectureMap: model.Draft, Graph: model.Draft, HTML: model.Draft},
+		Time:         now(),
+	}
+	w.s.Changes[chg.ID] = chg
+	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID}
+	w.s.Requirements[req.ID] = req
+	chg.Intends = []string{req.ID}
+	plan.Requirement = req.ID
+
+	if r.NewFeature {
+		f := &model.Feature{
+			ID: w.s.NextID(model.KindFeature), Name: shortName(request), Status: model.ItemDraft,
+			Intent:       model.Intent{Purpose: model.MustSemantic(request, model.UserStated)},
+			Requirements: []string{req.ID}, Changes: []string{chg.ID},
+		}
+		f.Intent.Purpose.ConfirmedIn = chg.ID
+		w.s.Features[f.ID] = f
+		chg.Delivers = []string{f.ID}
+		plan.NewFeature = f.ID
+	}
+	for _, id := range targets {
+		if ctx, err := inspectIn(w, id); err == nil {
+			plan.Context = append(plan.Context, ctx)
+		}
+		if pendingPurpose(w.s, id) {
+			plan.ConfirmIfUsed = append(plan.ConfirmIfUsed, id)
+		}
+	}
+	if r.Ambiguous {
+		plan.AmbiguityHint = "요청이 둘 이상의 기능과 같은 정도로 맞는다: `myharness decide`로 등급 B 질문(선택지 2~3개 + 기본값)을 남기고 기본값으로 진행"
+	}
+	w.s.State.ActiveTurn = chg.ID
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+	if _, err := knowledge.Publish(w.s, res, w.ws, false, "턴 시작: "+chg.ID); err != nil {
+		return nil, err
+	}
+	plan.Change, plan.TaskType, plan.Tier, plan.Steps = chg.ID, r.TaskType, r.Tier, r.Steps
+	plan.ContextStrategy, plan.ContextReason, plan.Matches, plan.Ambiguous = strategy, reason, r.Matches, r.Ambiguous
+	plan.Budget = w.s.Project.Budgets[r.Tier]
+	return plan, nil
+}
+
+func shortName(request string) string {
+	r := []rune(strings.TrimSpace(request))
+	if len(r) > 40 {
+		return string(r[:40]) + "…"
+	}
+	return string(r)
+}
+
+func topTargets(ms []intent.Match) []string {
+	var out []string
+	for _, m := range ms {
+		if len(out) >= 5 || m.Score < ms[0].Score {
+			break
+		}
+		out = append(out, m.ID)
+	}
+	return out
+}
+
+func pendingPurpose(s *ssot.Snapshot, id string) bool {
+	if f := s.Features[id]; f != nil {
+		return f.Intent.Purpose.Pending()
+	}
+	if m := s.Modules[id]; m != nil {
+		return m.Responsibility.Pending()
+	}
+	return false
+}
+
+// contextStrategy is the Graph-on-demand router of PRD appendix B, as a simple heuristic.
+// The chosen strategy and its reason are recorded on the CHG (FR-21).
+func (e *Engine) contextStrategy(w *world, r intent.Resolution) (string, string) {
+	_, fresh, err := e.queryGraph(w)
+	if err != nil || fresh != model.Current {
+		return "lsp-source", fmt.Sprintf("graph %s: LSP·원본 소스·테스트로 대체하고 불확실성을 표시", fresh)
+	}
+	modules, contracts, history := 0, 0, 0
+	for _, m := range r.Matches {
+		switch m.Kind {
+		case "module":
+			modules++
+		case "contract":
+			contracts++
+		case "feature":
+			if f := w.s.Features[m.ID]; f != nil && len(f.Changes) >= 3 {
+				history++
+			}
+		}
+	}
+	switch {
+	case r.TaskType == "interface-change" || contracts > 0:
+		return "contract-view", "외부 계약 변경 가능: 계약 뷰 + 소비자 + 호환성"
+	case history > 0:
+		return "graph+history", "반복 변경 대상: 영속 그래프 + 결정 + 과거 증거"
+	case (r.Tier == "T0" || r.Tier == "T1") && modules <= 1:
+		return "lsp-source", "국소 저위험 변경: LSP + 관련 소스 + 단위 테스트"
+	default:
+		return "graph", "교차 모듈 변경: Architecture + callers + 계약 영향"
+	}
+}
+
+// Plan is a dry run of route + intent + impact. It writes nothing.
+func (e *Engine) Plan(request string) (map[string]any, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+	r := intent.Resolve(request, w.s)
+	strategy, reason := e.contextStrategy(w, r)
+	imp := impact.Analyze(w.s, res, w.changedSinceSync())
+	return map[string]any{"resolution": r, "context_strategy": strategy, "context_reason": reason, "impact": imp,
+		"verification_commands": imp.TestCommands, "budget": w.s.Project.Budgets[r.Tier]}, nil
+}
+
+type VerifyOptions struct {
+	All          bool
+	Commands     []string
+	Unverifiable string
+	Reason       string
+}
+
+type EvidenceReport struct {
+	Change      string             `json:"change,omitempty"`
+	Overall     model.Verification `json:"overall"`
+	Runs        []model.Evidence   `json:"runs"`
+	Ran         []string           `json:"ran"`
+	CouldNotRun []string           `json:"could_not_run"`
+	FailedTests []string           `json:"failed_tests"`
+	Warnings    []string           `json:"warnings,omitempty"`
+}
+
+// Verify is step 6. "Ran and failed" and "could not run" stay distinct (PRD ch.04).
+func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	chg := w.s.ActiveChange()
+	rep := &EvidenceReport{}
+	changeID := ""
+	if chg != nil {
+		changeID = chg.ID
+		rep.Change = chg.ID
+	}
+	if o.Unverifiable != "" {
+		ev := model.Evidence{
+			ID: "", Command: o.Unverifiable, Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint,
+			Verification: model.Unverifiable, Reason: o.Reason, Change: changeID, StartedAt: now(), ExitCode: -1,
+		}
+		ev.ID = verify.Run(e.Root, "", "", "", "").ID
+		if err := verify.Save(e.Root, ev); err != nil {
+			return nil, err
+		}
+		rep.Runs = append(rep.Runs, ev)
+	} else {
+		cmds, err := e.verificationCommands(w, o)
+		if err != nil {
+			return nil, err
+		}
+		for _, cmd := range cmds {
+			ev := verify.Run(e.Root, cmd, w.ws.Revision, w.ws.Fingerprint, changeID)
+			if err := verify.Save(e.Root, ev); err != nil {
+				return nil, err
+			}
+			verify.ApplyResults(w.s, ev)
+			rep.Runs = append(rep.Runs, ev)
+		}
+	}
+	rep.Overall = aggregate(rep.Runs)
+	for _, ev := range rep.Runs {
+		switch ev.Verification {
+		case model.Unverifiable:
+			rep.CouldNotRun = append(rep.CouldNotRun, ev.Command+": "+ev.Reason)
+		default:
+			rep.Ran = append(rep.Ran, fmt.Sprintf("%s → %s (%s)", ev.Command, ev.Verification, ev.ID))
+		}
+		for _, t := range ev.Tests {
+			if t.Result == model.Failed {
+				rep.FailedTests = append(rep.FailedTests, t.Package+"."+t.Name)
+			}
+		}
+	}
+	if chg != nil {
+		for _, ev := range rep.Runs {
+			chg.VerificationEvidence = append(chg.VerificationEvidence, ev.ID)
+			if ev.Verification != model.Unverifiable {
+				chg.Telemetry.TestRuns++
+			}
+		}
+		// An UNVERIFIABLE-only record does not override an earlier PASSED or FAILED run.
+		if rep.Overall != model.Unverifiable || chg.Verification == model.NotRun {
+			chg.Verification = rep.Overall
+			chg.ResultFingerprint = w.ws.Fingerprint
+		}
+		chg.State = model.StateVerifying
+		if b, ok := w.s.Project.Budgets[chg.Plan.VerificationTier]; ok && b.TestRuns > 0 && chg.Telemetry.TestRuns > b.TestRuns {
+			rep.Warnings = append(rep.Warnings, fmt.Sprintf("테스트 실행 %d회가 %s 예산 %d회를 넘음", chg.Telemetry.TestRuns, chg.Plan.VerificationTier, b.TestRuns))
+		}
+	}
+	return rep, w.s.Save()
+}
+
+func aggregate(runs []model.Evidence) model.Verification {
+	out := model.Unverifiable
+	for _, r := range runs {
+		switch r.Verification {
+		case model.Failed:
+			return model.Failed
+		case model.Passed:
+			out = model.Passed
+		}
+	}
+	return out
+}
+
+func (e *Engine) verificationCommands(w *world, o VerifyOptions) ([]string, error) {
+	if len(o.Commands) > 0 {
+		return o.Commands, nil
+	}
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+	// A greenfield project learns its build and test commands from the code its first turn wrote.
+	p := w.s.Project.Verification
+	if len(p.TestCommands) == 0 {
+		p.TestCommands = res.TestCommands
+	}
+	if len(p.BuildCommands) == 0 {
+		p.BuildCommands = res.BuildCommands
+	}
+	w.s.Project.Verification = p
+	if o.All {
+		return append(append([]string{}, p.BuildCommands...), p.TestCommands...), nil
+	}
+	imp := impact.Analyze(w.s, res, w.changedSinceSync())
+	cmds := imp.TestCommands
+	if len(cmds) == 0 {
+		cmds = p.TestCommands
+	}
+	return append(append([]string{}, p.BuildCommands...), cmds...), nil
+}
+
+type SyncOptions struct {
+	Commit bool
+}
+
+type SyncResult struct {
+	Completed   bool               `json:"completed"`
+	Reason      string             `json:"reason,omitempty"`
+	Receipt     *model.Change      `json:"receipt,omitempty"`
+	Knowledge   knowledge.Report   `json:"knowledge"`
+	Impact      *impact.Report     `json:"impact,omitempty"`
+	Consistency *ConsistencyReport `json:"consistency,omitempty"`
+	Freshness   Freshness          `json:"freshness"`
+	Commit      string             `json:"commit,omitempty"`
+	Reconciled  *ReconcileResult   `json:"reconciled,omitempty"`
+}
+
+var docExts = map[string]bool{".md": true, ".markdown": true, ".txt": true, ".rst": true, ".adoc": true}
+
+func docsOnly(files []string) bool {
+	for _, f := range files {
+		if !docExts[strings.ToLower(path.Ext(f))] {
+			return false
+		}
+	}
+	return true
+}
+
+// Sync is step 7, the completion gate of PRD ch.07 on_verified_change. It refuses to complete
+// unless the latest verification PASSED on exactly the current workspace, and it only reports
+// completion after re-reading the published artifacts and finding them all CURRENT.
+func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	chg := w.s.ActiveChange()
+	if chg == nil {
+		if len(w.changedSinceSync()) > 0 {
+			rec, err := e.reconcile(w)
+			if err != nil {
+				return nil, err
+			}
+			return &SyncResult{Completed: true, Reason: "활성 턴 없음: 외부 변경으로 재조정", Reconciled: rec, Freshness: e.freshnessNow()}, nil
+		}
+		res, err := w.analyze()
+		if err != nil {
+			return nil, err
+		}
+		if _, err := knowledge.Publish(w.s, res, w.ws, true, "render"); err != nil {
+			return nil, err
+		}
+		return &SyncResult{Completed: true, Reason: "변경 없음: 생성물만 재생성", Freshness: e.freshnessNow()}, nil
+	}
+	changed := w.changedSinceSync()
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+
+	if docsOnly(changed) {
+		// T0: documents only. The verification is the consistency check of the generated views.
+		if chg.Verification != model.Passed {
+			chg.Verification = model.Passed
+			chg.ResultFingerprint = w.ws.Fingerprint
+			chg.Risks = append(chg.Risks, "T0 문서 변경: 코드 검증 대신 myharness check 로 확인")
+		}
+	} else if chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint {
+		reason := fmt.Sprintf("검증 %s", chg.Verification)
+		if chg.Verification == model.Passed {
+			reason = "검증 이후 작업 트리가 바뀜: 다시 `myharness verify`"
+		}
+		return e.draft(w, chg, res, reason)
+	}
+
+	chg.State = model.StateSynchronizing
+	imp := impact.Analyze(w.s, res, changed)
+	if blocked := e.gateContracts(w, chg, imp); len(blocked) > 0 {
+		chg.State = model.StateBlocked
+		chg.Blocked = append(chg.Blocked, blocked...)
+		return e.draft(w, chg, res, "등급 C: 명시적 승인 필요 — "+strings.Join(blocked, "; "))
+	}
+
+	w.s.Project.Languages = res.Languages
+	opt := knowledge.Options{Revision: w.ws.Revision, Renames: w.renames()}
+	krep := knowledge.Apply(w.s, res, opt)
+	delivered := e.bindDelivered(w, chg, krep, changed, res)
+	seed := knowledge.Seed(w.s, res, opt)
+	krep.New = append(krep.New, seed.New...)
+	krep.Candidates = append(krep.Candidates, seed.Candidates...)
+	for _, id := range chg.VerificationEvidence {
+		if ev, err := verify.Load(e.Root, id); err == nil {
+			verify.ApplyResults(w.s, ev)
+		}
+	}
+	last := ""
+	if n := len(chg.VerificationEvidence); n > 0 {
+		last = chg.VerificationEvidence[n-1]
+	}
+	impacted := append(imp.Affected(), delivered...)
+	for _, id := range impacted {
+		if f := w.s.Features[id]; f != nil && f.Status != model.ItemRemoved {
+			if !contains(f.Changes, chg.ID) {
+				f.Changes = append(f.Changes, chg.ID)
+			}
+			f.LastSynced = model.SyncMark{Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Evidence: last, Change: chg.ID}
+		}
+	}
+	chg.Impacted = uniqStrings(append(chg.Impacted, impacted...))
+	chg.FilesChanged = changed
+	chg.ResultRevision = w.ws.Revision
+	chg.IntentFidelity = fidelity(w.s, chg)
+	chg.NextSteps = append(chg.NextSteps, imp.Unknowns...)
+	chg.Risks = uniqStrings(append(chg.Risks, imp.Risks...))
+
+	if cons := checkSnapshot(w.s); !cons.OK {
+		return e.draft(w, chg, res, "스키마/계약 검사 실패: "+strings.Join(cons.Errors, "; "))
+	}
+
+	before := chg.NewUnconfirmed
+	chg.State = model.StateCompleted
+	for _, d := range chg.Decisions {
+		if d.Tier == model.TierB && !d.Answered {
+			chg.State = model.StateNeedsUser
+		}
+	}
+	finish(chg)
+	chg.SyncState = model.SyncState{FeatureMap: model.Current, ArchitectureMap: model.Current, Graph: model.Current, HTML: model.Current}
+	w.s.State.ActiveTurn = ""
+	chg.NewUnconfirmed = before + len(krep.Candidates) + countNewPending(w.s, krep.New)
+	if _, err := knowledge.Publish(w.s, res, w.ws, true, "동기화 완료: "+chg.ID); err != nil {
+		return nil, err
+	}
+
+	result := &SyncResult{Receipt: chg, Knowledge: krep, Impact: &imp, Freshness: e.freshnessNow()}
+	cons, err := e.Check()
+	if err != nil {
+		return nil, err
+	}
+	result.Consistency = cons
+	if !result.Freshness.AllCurrent() || !cons.OK {
+		// Never claim success when a published artifact disagrees (PRD ch.07 failure modes).
+		result.Reason = "동기화 후 산출물 불일치"
+		return result, ErrGate
+	}
+	result.Completed = true
+	if o.Commit {
+		result.Commit, err = e.commit(w, chg)
+		if err != nil {
+			result.Reason = err.Error()
+		}
+	}
+	return result, nil
+}
+
+func finish(chg *model.Change) {
+	chg.Telemetry.FinishedAt = now()
+	if t, err := time.Parse(time.RFC3339, chg.Telemetry.StartedAt); err == nil {
+		chg.Telemetry.DurationSec = int64(time.Since(t).Seconds())
+	}
+}
+
+// draft keeps the turn open: work-in-progress is saved and rendered as DRAFT, the sync
+// watermark does not move, and confirmed contracts are not overwritten by failing behavior.
+func (e *Engine) draft(w *world, chg *model.Change, res *analysisResult, reason string) (*SyncResult, error) {
+	chg.SyncState = model.SyncState{FeatureMap: model.Draft, ArchitectureMap: model.Draft, Graph: model.Draft, HTML: model.Draft}
+	if chg.State == model.StateSynchronizing || chg.State == model.StateIntentResolved {
+		chg.State = model.StateImplementing
+	}
+	if _, err := knowledge.Publish(w.s, res, w.ws, false, "초안: "+reason); err != nil {
+		return nil, err
+	}
+	return &SyncResult{Completed: false, Reason: reason, Receipt: chg, Freshness: e.freshnessNow()}, ErrGate
+}
+
+// gateContracts turns contract changes into tier B records and tier C stops.
+func (e *Engine) gateContracts(w *world, chg *model.Change, imp impact.Report) []string {
+	var blocked []string
+	for _, c := range imp.Contracts {
+		switch c.Tier {
+		case model.TierC:
+			if !approved(w.s, chg, c.ID, model.TierC) {
+				blocked = append(blocked, fmt.Sprintf("%s %s (%s)", c.ID, c.Selector, c.Reason))
+			}
+		case model.TierB:
+			if !decided(w.s, chg, c.ID) {
+				d := recordDecision(w.s, chg, DecideInput{
+					Title: "외부 계약 변경 " + c.ID, Tier: model.TierB,
+					Question: fmt.Sprintf("%s `%s` %s: %s. 호환성을 어떻게 다룰까?", c.ID, c.Selector, c.Change, c.Reason),
+					Options: []model.Option{
+						{Key: "proceed", Label: "변경 그대로 진행", Effect: "외부 소비자가 있으면 깨질 수 있음"},
+						{Key: "compat", Label: "호환 경로 유지", Effect: "이전 selector를 함께 유지하는 후속 작업"},
+					},
+					Default: "proceed", Subjects: []string{c.ID},
+					ProceedsWithout: "현재 변경과 맵 동기화. 호환 경로 결정만 보류",
+				}, false)
+				chg.Risks = append(chg.Risks, d.ID+": 등급 B 기본값으로 진행 ("+c.Selector+")")
+			}
+		}
+	}
+	return blocked
+}
+
+func approved(s *ssot.Snapshot, chg *model.Change, subject string, tier model.Tier) bool {
+	for _, ref := range chg.Decisions {
+		d := s.Decisions[ref.ADR]
+		if d != nil && d.Tier == tier && d.Answered && d.Chosen == "approve" && contains(d.Subjects, subject) {
+			return true
+		}
+	}
+	return false
+}
+
+func decided(s *ssot.Snapshot, chg *model.Change, subject string) bool {
+	for _, ref := range chg.Decisions {
+		if d := s.Decisions[ref.ADR]; d != nil && contains(d.Subjects, subject) {
+			return true
+		}
+	}
+	return false
+}
+
+// bindDelivered turns the turn's draft features into current ones, attached to the entry
+// contracts that appeared in the changed files, or to the changed modules when there are none.
+func (e *Engine) bindDelivered(w *world, chg *model.Change, krep knowledge.Report, changed []string, res *analysisResult) []string {
+	changedSet := map[string]bool{}
+	for _, f := range changed {
+		changedSet[f] = true
+	}
+	newSet := map[string]bool{}
+	for _, id := range krep.New {
+		newSet[id] = true
+	}
+	// Entry points that appeared in this turn bind first; entry points merely living in a
+	// changed file are the fallback, since an edited file also holds older, claimed routes.
+	var fresh, inChanged []string
+	for _, mid := range model.SortedKeys(w.s.Modules) {
+		for _, c := range w.s.Modules[mid].ExternalContracts {
+			if c.Status == model.ItemRemoved || (c.Direction != "exposes" && c.Direction != "consumes") || claimedByOther(w.s, c.ID, chg.Delivers) != "" {
+				continue
+			}
+			file := c.Location
+			if i := strings.LastIndex(file, ":"); i > 0 {
+				file = file[:i]
+			}
+			switch {
+			case newSet[c.ID]:
+				fresh = append(fresh, c.ID)
+			case changedSet[file]:
+				inChanged = append(inChanged, c.ID)
+			}
+		}
+	}
+	entryIDs := fresh
+	if len(entryIDs) == 0 {
+		entryIDs = inChanged
+	}
+	var out []string
+	for _, fid := range chg.Delivers {
+		f := w.s.Features[fid]
+		if f == nil {
+			continue
+		}
+		knowledge.BindEntries(w.s, res, f, entryIDs, w.ws.Revision)
+		if len(f.Anchors) == 0 {
+			bindToModules(w.s, f, changed)
+		}
+		f.Status = model.ItemCurrent
+		out = append(out, fid)
+	}
+	return out
+}
+
+func claimedByOther(s *ssot.Snapshot, contractID string, mine []string) string {
+	for _, id := range model.SortedKeys(s.Features) {
+		if contains(mine, id) || s.Features[id].Status == model.ItemRemoved {
+			continue
+		}
+		if contains(s.Features[id].ExternalContracts, contractID) {
+			return id
+		}
+	}
+	return ""
+}
+
+// bindToModules anchors a feature without entry points (a library capability) to the source
+// files and tests it changed.
+func bindToModules(s *ssot.Snapshot, f *model.Feature, changed []string) {
+	mods := map[string]bool{}
+	for _, file := range changed {
+		if m := s.ModuleByPath(path.Dir(file)); m != nil {
+			mods[m.ID] = true
+			f.Anchors = append(f.Anchors, model.Anchor{Kind: model.AnchorPath, Ref: file})
+		}
+	}
+	f.OwnedBy = model.SortedKeys(mods)
+	for _, mid := range f.OwnedBy {
+		for _, tid := range s.Modules[mid].Tests {
+			t := s.Tests[tid]
+			f.Verification = append(f.Verification, model.TestRef{TestID: tid, Command: t.Command, Verification: t.Verification, Evidence: t.Evidence})
+			f.Anchors = append(f.Anchors, model.Anchor{Kind: model.AnchorTest, Ref: tid})
+		}
+	}
+}
+
+// fidelity is the intent-fidelity proxy of appendix A: delta items, items covered by a
+// PASSED test, items the user stated or confirmed.
+func fidelity(s *ssot.Snapshot, chg *model.Change) model.IntentFidelity {
+	fi := model.IntentFidelity{DeltaItems: len(chg.IntentDelta.Additions) + len(chg.IntentDelta.Removals)}
+	covered := false
+	for _, id := range append(append([]string{}, chg.Delivers...), chg.Impacted...) {
+		if f := s.Features[id]; f != nil {
+			for _, t := range f.Verification {
+				if t.Verification == model.Passed {
+					covered = true
+				}
+			}
+		}
+	}
+	if covered && chg.Verification == model.Passed {
+		fi.CoveredByPassedTests = fi.DeltaItems
+	}
+	fi.UserConfirmed = 1 // the request itself is USER_STATED
+	for _, ref := range chg.Decisions {
+		if ref.Answered {
+			fi.UserConfirmed++
+		}
+	}
+	if fi.UserConfirmed > fi.DeltaItems {
+		fi.UserConfirmed = fi.DeltaItems
+	}
+	return fi
+}
+
+func countNewPending(s *ssot.Snapshot, ids []string) int {
+	n := 0
+	for _, id := range ids {
+		if pendingPurpose(s, id) {
+			n++
+		}
+	}
+	return n
+}
+
+func (e *Engine) freshnessNow() Freshness {
+	w, err := e.load()
+	if err != nil {
+		return Freshness{model.UnknownFresh, model.UnknownFresh, model.UnknownFresh, model.UnknownFresh}
+	}
+	return w.freshness()
+}
+
+// commit records the turn as one local Git change when policy puts local commits in tier A.
+func (e *Engine) commit(w *world, chg *model.Change) (string, error) {
+	rule, err := policy.Classify(w.s.Project, "local-commit")
+	if err != nil {
+		return "", err
+	}
+	if rule.Tier != model.TierA {
+		return "", fmt.Errorf("local commit is tier %s in project.yaml; not committing", rule.Tier)
+	}
+	if _, err := workspace.Git(e.Root, "add", "-A"); err != nil {
+		return "", fmt.Errorf("git add: %w", err)
+	}
+	if _, err := workspace.Git(e.Root, "commit", "-m", chg.ID+": "+chg.RequestSummary); err != nil {
+		return "", fmt.Errorf("git commit: %w", err)
+	}
+	return workspace.Git(e.Root, "rev-parse", "--short", "HEAD")
+}
+
+// TurnShow returns the active turn, or the latest receipt when none is active.
+func (e *Engine) TurnShow() (*model.Change, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	if c := w.s.ActiveChange(); c != nil {
+		return c, nil
+	}
+	ids := model.SortedKeys(w.s.Changes)
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("no turns yet")
+	}
+	return w.s.Changes[ids[len(ids)-1]], nil
+}
+
+func (e *Engine) TurnNote(modelCalls int) (*model.Change, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	c := w.s.ActiveChange()
+	if c == nil {
+		return nil, fmt.Errorf("no active turn")
+	}
+	c.Telemetry.ModelCalls += modelCalls
+	c.Telemetry.ModelCallsNote = "host-reported"
+	return c, w.s.Save()
+}
+
+// TurnAbort abandons the active turn. Draft features it created are dropped; the CHG stays
+// as a BLOCKED record so the attempt is not lost.
+func (e *Engine) TurnAbort(reason string) (*model.Change, error) {
+	w, err := e.load()
+	if err != nil {
+		return nil, err
+	}
+	c := w.s.ActiveChange()
+	if c == nil {
+		return nil, fmt.Errorf("no active turn")
+	}
+	for _, fid := range c.Delivers {
+		if f := w.s.Features[fid]; f != nil && f.Status == model.ItemDraft {
+			delete(w.s.Features, fid)
+		}
+	}
+	c.State = model.StateBlocked
+	c.Blocked = append(c.Blocked, "aborted: "+reason)
+	finish(c)
+	w.s.State.ActiveTurn = ""
+	res, err := w.analyze()
+	if err != nil {
+		return nil, err
+	}
+	settle := len(w.changedSinceSync()) == 0
+	_, err = knowledge.Publish(w.s, res, w.ws, settle, "턴 중단: "+c.ID)
+	return c, err
+}
+
+func contains(xs []string, x string) bool {
+	for _, y := range xs {
+		if y == x {
+			return true
+		}
+	}
+	return false
+}
+
+func uniqStrings(in []string) []string {
+	seen := map[string]bool{}
+	var out []string
+	for _, s := range in {
+		if s != "" && !seen[s] {
+			seen[s] = true
+			out = append(out, s)
+		}
+	}
+	return out
+}
