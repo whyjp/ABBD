@@ -94,7 +94,7 @@ Measured (anonymous Docker Hub pulls worked; no `docker login`):
 | container setup per trial (go-zero) | about 10 min, once per repo | |
 | `abbd init` (go-zero, D and E) | about 100 s, once per repo | `.abbd/` 20 MB, 2130 files |
 | evaluator, one go-zero milestone | 111 s to 4.5 min | |
-| evaluator, one Element Web milestone (Playwright) | over 95 min, not finished at writing | |
+| evaluator, one Element Web milestone (Playwright) | 9710 s (initial state of `maintenance_ui_ux`) | |
 
 The pulled images are the environment; the harness builds nothing locally (`--pull=never`).
 
@@ -109,11 +109,12 @@ Official evaluator, go-zero M001 (`python -m harness.e2e.evaluator ... --allow-l
 
 Element Web, first graded milestone in topological order with an image (`maintenance_ui_ux`, 29 F2P,
 5237 P2P), same CLI on the initial state (`git archive milestone-maintenance_ui_ux-start`, 1965 entries):
-the evaluator built the app and was still in its Playwright suite (`playwright/e2e/right-panel/`, headless
-Firefox, 120 s per-test timeout) after 95 min, making progress. The reference END state is queued behind
-it in the same script; results land in `~/bench/swe-milestone/gold/ew-maintenance_ui_ux-{start,end}/`.
-Consequence for the pilot: Element Web milestones with Playwright suites cost well over an hour of
-evaluation each on this host, and with early unblock several can run at once beside the agent container.
+not resolved, F2P 0/29, P2P 5234/5237 (3 failed), 5462 tests run, 9710 s. Most of that time is the
+Playwright suite (`playwright/e2e/right-panel/`, headless Firefox, 120 s per-test timeout). The
+reference END state was still evaluating at writing; results land in
+`~/bench/swe-milestone/gold/ew-maintenance_ui_ux-end/`.
+Consequence for the pilot: an Element Web milestone with a Playwright suite costs up to about 2.7 h of
+evaluation on this host, and with early unblock several can run at once beside the agent container.
 Run Element Web only after go-zero, and never next to the TB2 pilot.
 
 Dry runs: `run_group.py <G> go-zero --milestones 2 --dry-run --wait --force`, which installs
