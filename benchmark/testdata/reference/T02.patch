@@ -1,0 +1,95 @@
+diff --git a/cmd/heartbeat-worker/main.go b/cmd/heartbeat-worker/main.go
+index 9630547..75e9d47 100644
+--- a/cmd/heartbeat-worker/main.go
++++ b/cmd/heartbeat-worker/main.go
+@@ -24,7 +24,7 @@ func main() {
+ 		if !ok {
+ 			addr = ":8080"
+ 		}
+-		log.Fatal(http.ListenAndServe(addr, api.NewServer(api.NewKafkaWriter(brokers))))
++		log.Fatal(http.ListenAndServe(addr, api.NewServer(api.NewKafkaWriter(brokers), store)))
+ 	}()
+ 
+ 	if err := heartbeat.NewConsumer(reader, store).Run(context.Background()); err != nil {
+diff --git a/internal/api/api.go b/internal/api/api.go
+index c39099a..3b18e2c 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -10,18 +10,20 @@ import (
+ const TopicMessages = "message-events"
+ 
+ type Server struct {
+-	writer kafka.Writer
+-	mux    *http.ServeMux
++	writer  kafka.Writer
++	counter interface{ Count() int }
++	mux     *http.ServeMux
+ }
+ 
+ func NewKafkaWriter(brokers []string) kafka.Writer {
+ 	return kafka.NewWriter(kafka.WriterConfig{Brokers: brokers, Topic: TopicMessages})
+ }
+ 
+-func NewServer(w kafka.Writer) *Server {
+-	s := &Server{writer: w, mux: http.NewServeMux()}
++func NewServer(w kafka.Writer, counter interface{ Count() int }) *Server {
++	s := &Server{writer: w, counter: counter, mux: http.NewServeMux()}
+ 	s.mux.HandleFunc("POST /messages", s.handlePostMessage)
+ 	s.mux.HandleFunc("GET /health", s.handleHealth)
++	s.mux.HandleFunc("GET /heartbeats/count", s.handleCount)
+ 	return s
+ }
+ 
+@@ -48,3 +50,8 @@ func (s *Server) handlePostMessage(w http.ResponseWriter, r *http.Request) {
+ func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
+ 	w.Write([]byte("ok"))
+ }
++
++func (s *Server) handleCount(w http.ResponseWriter, _ *http.Request) {
++	w.Header().Set("Content-Type", "application/json")
++	json.NewEncoder(w).Encode(map[string]int{"count": s.counter.Count()})
++}
+diff --git a/internal/api/api_test.go b/internal/api/api_test.go
+index 05667ab..3949524 100644
+--- a/internal/api/api_test.go
++++ b/internal/api/api_test.go
+@@ -10,7 +10,7 @@ import (
+ )
+ 
+ func TestPostMessagePublishes(t *testing.T) {
+-	srv := NewServer(NewKafkaWriter(nil))
++	srv := NewServer(NewKafkaWriter(nil), nil)
+ 	before := len(kafka.Default.Messages(TopicMessages))
+ 	rec := httptest.NewRecorder()
+ 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(`{"key":"k","body":"hi"}`)))
+@@ -23,7 +23,7 @@ func TestPostMessagePublishes(t *testing.T) {
+ }
+ 
+ func TestPostMessageRejectsEmptyBody(t *testing.T) {
+-	srv := NewServer(NewKafkaWriter(nil))
++	srv := NewServer(NewKafkaWriter(nil), nil)
+ 	rec := httptest.NewRecorder()
+ 	srv.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/messages", strings.NewReader(`{}`)))
+ 	if rec.Code != http.StatusBadRequest {
+@@ -33,8 +33,20 @@ func TestPostMessageRejectsEmptyBody(t *testing.T) {
+ 
+ func TestHealth(t *testing.T) {
+ 	rec := httptest.NewRecorder()
+-	NewServer(nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
++	NewServer(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
+ 	if rec.Code != http.StatusOK || rec.Body.String() != "ok" {
+ 		t.Fatalf("health = %d %q", rec.Code, rec.Body.String())
+ 	}
+ }
++
++type fixedCount int
++
++func (f fixedCount) Count() int { return int(f) }
++
++func TestCount(t *testing.T) {
++	rec := httptest.NewRecorder()
++	NewServer(nil, fixedCount(3)).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/heartbeats/count", nil))
++	if rec.Code != http.StatusOK || strings.TrimSpace(rec.Body.String()) != `{"count":3}` {
++		t.Fatalf("count = %d %q", rec.Code, rec.Body.String())
++	}
++}

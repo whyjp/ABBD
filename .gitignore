@@ -3,3 +3,4 @@
 /abbd.exe
 /bin/
 .playwright-mcp/
+benchmark/results/

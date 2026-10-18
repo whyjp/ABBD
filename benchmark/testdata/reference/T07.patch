@@ -1,0 +1,111 @@
+diff --git a/internal/dedupe/dedupe.go b/internal/dedupe/dedupe.go
+new file mode 100644
+index 0000000..09479f7
+--- /dev/null
++++ b/internal/dedupe/dedupe.go
+@@ -0,0 +1,29 @@
++// Package dedupe tracks which ids have already been processed.
++package dedupe
++
++import "sync"
++
++type Set struct {
++	mu   sync.Mutex
++	seen map[string]struct{}
++}
++
++func New() *Set { return &Set{seen: map[string]struct{}{}} }
++
++// FirstSeen reports whether id is new, and records it.
++func (s *Set) FirstSeen(id string) bool {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	if _, ok := s.seen[id]; ok {
++		return false
++	}
++	s.seen[id] = struct{}{}
++	return true
++}
++
++// Forget removes id so a later FirstSeen reports it as new again.
++func (s *Set) Forget(id string) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	delete(s.seen, id)
++}
+diff --git a/internal/heartbeat/consumer.go b/internal/heartbeat/consumer.go
+index 9d96da0..b6ec7e1 100644
+--- a/internal/heartbeat/consumer.go
++++ b/internal/heartbeat/consumer.go
+@@ -6,6 +6,7 @@ import (
+ 	"fmt"
+ 	"time"
+ 
++	"example.com/heartbeat/internal/dedupe"
+ 	"example.com/heartbeat/internal/kafka"
+ )
+ 
+@@ -16,7 +17,7 @@ type Store interface {
+ type Consumer struct {
+ 	reader kafka.Reader
+ 	store  Store
+-	seen   *dedupe
++	seen   *dedupe.Set
+ 
+ 	// Backoff is the wait between Save attempts.
+ 	Backoff time.Duration
+@@ -25,7 +26,7 @@ type Consumer struct {
+ const maxSaveAttempts = 3
+ 
+ func NewConsumer(r kafka.Reader, s Store) *Consumer {
+-	return &Consumer{reader: r, store: s, seen: newDedupe(), Backoff: 100 * time.Millisecond}
++	return &Consumer{reader: r, store: s, seen: dedupe.New(), Backoff: 100 * time.Millisecond}
+ }
+ 
+ // Run drains the reader until it reports no more messages or the context ends.
+@@ -52,11 +53,11 @@ func (c *Consumer) Handle(ctx context.Context, msg kafka.Message) error {
+ 	if err := Validate(h); err != nil {
+ 		return err
+ 	}
+-	if !c.seen.firstSeen(h.ID) {
++	if !c.seen.FirstSeen(h.ID) {
+ 		return nil
+ 	}
+ 	if err := c.save(ctx, h); err != nil {
+-		c.seen.forget(h.ID)
++		c.seen.Forget(h.ID)
+ 		return err
+ 	}
+ 	return nil
+diff --git a/internal/heartbeat/dedupe.go b/internal/heartbeat/dedupe.go
+deleted file mode 100644
+index 2d8224e..0000000
+--- a/internal/heartbeat/dedupe.go
++++ /dev/null
+@@ -1,26 +0,0 @@
+-package heartbeat
+-
+-import "sync"
+-
+-type dedupe struct {
+-	mu   sync.Mutex
+-	seen map[string]struct{}
+-}
+-
+-func newDedupe() *dedupe { return &dedupe{seen: map[string]struct{}{}} }
+-
+-func (d *dedupe) firstSeen(id string) bool {
+-	d.mu.Lock()
+-	defer d.mu.Unlock()
+-	if _, ok := d.seen[id]; ok {
+-		return false
+-	}
+-	d.seen[id] = struct{}{}
+-	return true
+-}
+-
+-func (d *dedupe) forget(id string) {
+-	d.mu.Lock()
+-	defer d.mu.Unlock()
+-	delete(d.seen, id)
+-}

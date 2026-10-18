@@ -1,0 +1,55 @@
+diff --git a/internal/heartbeat/consumer.go b/internal/heartbeat/consumer.go
+index 0437d34..9d96da0 100644
+--- a/internal/heartbeat/consumer.go
++++ b/internal/heartbeat/consumer.go
+@@ -52,13 +52,13 @@ func (c *Consumer) Handle(ctx context.Context, msg kafka.Message) error {
+ 	if err := Validate(h); err != nil {
+ 		return err
+ 	}
+-	if c.seen.has(h.ID) {
++	if !c.seen.firstSeen(h.ID) {
+ 		return nil
+ 	}
+ 	if err := c.save(ctx, h); err != nil {
++		c.seen.forget(h.ID)
+ 		return err
+ 	}
+-	c.seen.add(h.ID)
+ 	return nil
+ }
+ 
+diff --git a/internal/heartbeat/dedupe.go b/internal/heartbeat/dedupe.go
+index be71134..2d8224e 100644
+--- a/internal/heartbeat/dedupe.go
++++ b/internal/heartbeat/dedupe.go
+@@ -1,14 +1,26 @@
+ package heartbeat
+ 
++import "sync"
++
+ type dedupe struct {
++	mu   sync.Mutex
+ 	seen map[string]struct{}
+ }
+ 
+ func newDedupe() *dedupe { return &dedupe{seen: map[string]struct{}{}} }
+ 
+-func (d *dedupe) has(id string) bool {
+-	_, ok := d.seen[id]
+-	return ok
++func (d *dedupe) firstSeen(id string) bool {
++	d.mu.Lock()
++	defer d.mu.Unlock()
++	if _, ok := d.seen[id]; ok {
++		return false
++	}
++	d.seen[id] = struct{}{}
++	return true
+ }
+ 
+-func (d *dedupe) add(id string) { d.seen[id] = struct{}{} }
++func (d *dedupe) forget(id string) {
++	d.mu.Lock()
++	defer d.mu.Unlock()
++	delete(d.seen, id)
++}

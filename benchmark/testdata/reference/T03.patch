@@ -1,0 +1,23 @@
+diff --git a/internal/heartbeat/heartbeat.go b/internal/heartbeat/heartbeat.go
+index d6c9d85..95a27e4 100644
+--- a/internal/heartbeat/heartbeat.go
++++ b/internal/heartbeat/heartbeat.go
+@@ -11,13 +11,15 @@ const TopicHeartbeat = "heartbeat-events"
+ const maxClockSkew = 5 * time.Minute
+ 
+ type Heartbeat struct {
+-	ID     string    `json:"id"`
+-	Source string    `json:"source"`
+-	At     time.Time `json:"at"`
++	ID      string    `json:"id"`
++	Source  string    `json:"source"`
++	At      time.Time `json:"at"`
++	Version int       `json:"version"`
+ }
+ 
+ func Parse(data []byte) (Heartbeat, error) {
+ 	var h Heartbeat
++	h.Version = 1
+ 	err := json.Unmarshal(data, &h)
+ 	return h, err
+ }

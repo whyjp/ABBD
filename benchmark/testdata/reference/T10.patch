@@ -1,0 +1,14 @@
+diff --git a/internal/heartbeat/consumer.go b/internal/heartbeat/consumer.go
+index b6ec7e1..273a9f1 100644
+--- a/internal/heartbeat/consumer.go
++++ b/internal/heartbeat/consumer.go
+@@ -32,6 +32,9 @@ func NewConsumer(r kafka.Reader, s Store) *Consumer {
+ // Run drains the reader until it reports no more messages or the context ends.
+ func (c *Consumer) Run(ctx context.Context) error {
+ 	for {
++		if err := ctx.Err(); err != nil {
++			return err
++		}
+ 		msg, err := c.reader.ReadMessage(ctx)
+ 		if errors.Is(err, kafka.ErrNoMessages) {
+ 			return nil

@@ -1,0 +1,34 @@
+diff --git a/internal/api/api.go b/internal/api/api.go
+index 3b18e2c..31ff9b4 100644
+--- a/internal/api/api.go
++++ b/internal/api/api.go
+@@ -2,6 +2,7 @@ package api
+ 
+ import (
+ 	"encoding/json"
++	"fmt"
+ 	"net/http"
+ 
+ 	"example.com/heartbeat/internal/kafka"
+@@ -32,15 +33,19 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.mux.Serve
+ type message struct {
+ 	Key  string `json:"key"`
+ 	Body string `json:"body"`
++
++	// Priority is 0-9; absent means 0.
++	Priority int `json:"priority"`
+ }
+ 
+ func (s *Server) handlePostMessage(w http.ResponseWriter, r *http.Request) {
+ 	var m message
+-	if err := json.NewDecoder(r.Body).Decode(&m); err != nil || m.Body == "" {
++	if err := json.NewDecoder(r.Body).Decode(&m); err != nil || m.Body == "" || m.Priority < 0 || m.Priority > 9 {
+ 		http.Error(w, "invalid message", http.StatusBadRequest)
+ 		return
+ 	}
+-	if err := s.writer.WriteMessages(r.Context(), kafka.Message{Key: []byte(m.Key), Value: []byte(m.Body)}); err != nil {
++	key := fmt.Sprintf("%d:%s", m.Priority, m.Key)
++	if err := s.writer.WriteMessages(r.Context(), kafka.Message{Key: []byte(key), Value: []byte(m.Body)}); err != nil {
+ 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+ 		return
+ 	}

@@ -1,0 +1,82 @@
+diff --git a/internal/heartbeat/consumer.go b/internal/heartbeat/consumer.go
+index d03e0f0..0437d34 100644
+--- a/internal/heartbeat/consumer.go
++++ b/internal/heartbeat/consumer.go
+@@ -4,6 +4,7 @@ import (
+ 	"context"
+ 	"errors"
+ 	"fmt"
++	"time"
+ 
+ 	"example.com/heartbeat/internal/kafka"
+ )
+@@ -16,10 +17,15 @@ type Consumer struct {
+ 	reader kafka.Reader
+ 	store  Store
+ 	seen   *dedupe
++
++	// Backoff is the wait between Save attempts.
++	Backoff time.Duration
+ }
+ 
++const maxSaveAttempts = 3
++
+ func NewConsumer(r kafka.Reader, s Store) *Consumer {
+-	return &Consumer{reader: r, store: s, seen: newDedupe()}
++	return &Consumer{reader: r, store: s, seen: newDedupe(), Backoff: 100 * time.Millisecond}
+ }
+ 
+ // Run drains the reader until it reports no more messages or the context ends.
+@@ -46,8 +52,30 @@ func (c *Consumer) Handle(ctx context.Context, msg kafka.Message) error {
+ 	if err := Validate(h); err != nil {
+ 		return err
+ 	}
+-	if !c.seen.firstSeen(h.ID) {
++	if c.seen.has(h.ID) {
+ 		return nil
+ 	}
+-	return c.store.Save(ctx, h)
++	if err := c.save(ctx, h); err != nil {
++		return err
++	}
++	c.seen.add(h.ID)
++	return nil
++}
++
++func (c *Consumer) save(ctx context.Context, h Heartbeat) error {
++	var err error
++	for attempt := 1; attempt <= maxSaveAttempts; attempt++ {
++		if err = c.store.Save(ctx, h); err == nil {
++			return nil
++		}
++		if attempt == maxSaveAttempts {
++			break
++		}
++		select {
++		case <-time.After(c.Backoff):
++		case <-ctx.Done():
++			return ctx.Err()
++		}
++	}
++	return fmt.Errorf("save heartbeat %s after %d attempts: %w", h.ID, maxSaveAttempts, err)
+ }
+diff --git a/internal/heartbeat/dedupe.go b/internal/heartbeat/dedupe.go
+index e8cb6a2..be71134 100644
+--- a/internal/heartbeat/dedupe.go
++++ b/internal/heartbeat/dedupe.go
+@@ -6,10 +6,9 @@ type dedupe struct {
+ 
+ func newDedupe() *dedupe { return &dedupe{seen: map[string]struct{}{}} }
+ 
+-func (d *dedupe) firstSeen(id string) bool {
+-	if _, ok := d.seen[id]; ok {
+-		return false
+-	}
+-	d.seen[id] = struct{}{}
+-	return true
++func (d *dedupe) has(id string) bool {
++	_, ok := d.seen[id]
++	return ok
+ }
++
++func (d *dedupe) add(id string) { d.seen[id] = struct{}{} }

@@ -1,0 +1,45 @@
+diff --git a/cmd/heartbeat-worker/main.go b/cmd/heartbeat-worker/main.go
+index 75e9d47..aa92d57 100644
+--- a/cmd/heartbeat-worker/main.go
++++ b/cmd/heartbeat-worker/main.go
+@@ -8,6 +8,7 @@ import (
+ 	"strings"
+ 
+ 	"example.com/heartbeat/internal/api"
++	"example.com/heartbeat/internal/config"
+ 	"example.com/heartbeat/internal/heartbeat"
+ 	"example.com/heartbeat/internal/kafka"
+ 	"example.com/heartbeat/internal/storage"
+@@ -20,11 +21,7 @@ func main() {
+ 	defer reader.Close()
+ 
+ 	go func() {
+-		addr, ok := os.LookupEnv("HEARTBEAT_HTTP_ADDR")
+-		if !ok {
+-			addr = ":8080"
+-		}
+-		log.Fatal(http.ListenAndServe(addr, api.NewServer(api.NewKafkaWriter(brokers), store)))
++		log.Fatal(http.ListenAndServe(config.HTTPAddr(), api.NewServer(api.NewKafkaWriter(brokers), store)))
+ 	}()
+ 
+ 	if err := heartbeat.NewConsumer(reader, store).Run(context.Background()); err != nil {
+diff --git a/internal/config/config.go b/internal/config/config.go
+new file mode 100644
+index 0000000..fff5916
+--- /dev/null
++++ b/internal/config/config.go
+@@ -0,0 +1,14 @@
++// Package config reads process configuration from the environment.
++package config
++
++import "os"
++
++// HTTPAddr returns HTTP_ADDR, then the legacy HEARTBEAT_HTTP_ADDR, then ":8080".
++func HTTPAddr() string {
++	for _, name := range []string{"HTTP_ADDR", "HEARTBEAT_HTTP_ADDR"} {
++		if v := os.Getenv(name); v != "" {
++			return v
++		}
++	}
++	return ":8080"
++}

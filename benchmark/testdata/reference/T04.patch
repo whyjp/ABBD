@@ -1,0 +1,31 @@
+diff --git a/internal/storage/storage.go b/internal/storage/storage.go
+index 237772b..7f3eeb1 100644
+--- a/internal/storage/storage.go
++++ b/internal/storage/storage.go
+@@ -7,7 +7,7 @@ import (
+ 	"example.com/heartbeat/internal/heartbeat"
+ )
+ 
+-const insertHeartbeat = "INSERT INTO heartbeats (id, source, at) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING"
++const insertHeartbeat = "INSERT INTO heartbeats (id, source, at, version) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING"
+ 
+ // Writer keeps rows in memory. Statements records what a SQL driver would have executed.
+ type Writer struct {
+@@ -39,3 +39,10 @@ func (w *Writer) Count() int {
+ 	defer w.mu.Unlock()
+ 	return len(w.rows)
+ }
++
++func (w *Writer) Get(id string) (heartbeat.Heartbeat, bool) {
++	w.mu.Lock()
++	defer w.mu.Unlock()
++	h, ok := w.rows[id]
++	return h, ok
++}
+diff --git a/migrations/002_version.sql b/migrations/002_version.sql
+new file mode 100644
+index 0000000..e844439
+--- /dev/null
++++ b/migrations/002_version.sql
+@@ -0,0 +1 @@
++ALTER TABLE heartbeats ADD COLUMN IF NOT EXISTS version INTEGER NOT NULL DEFAULT 1;

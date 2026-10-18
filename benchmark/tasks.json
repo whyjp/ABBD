@@ -1,0 +1,56 @@
+{
+  "base": "samples/code-only",
+  "note": "Ten cumulative tasks on the heartbeat service (PRD appendix A pilot). Each arm keeps the repository its own earlier tasks produced. Hidden tests live in benchmark/hidden/<task>/ and are never shown to the agent.",
+  "tasks": [
+    {
+      "id": "T01",
+      "type": "bug",
+      "prompt": "Bug: heartbeat.Validate accepts timestamps far in the future. It must reject a heartbeat whose At is more than 5 minutes after time.Now(); the error message must contain the word \"future\". Heartbeats at or before now+5m stay valid."
+    },
+    {
+      "id": "T02",
+      "type": "feature/interface",
+      "prompt": "Add an HTTP endpoint GET /heartbeats/count that returns JSON {\"count\": N}, where N is the number of stored heartbeats. Change the constructor to api.NewServer(w kafka.Writer, counter interface{ Count() int }) and have cmd/heartbeat-worker pass the storage writer. Keep existing endpoints working."
+    },
+    {
+      "id": "T03",
+      "type": "interface-extension",
+      "prompt": "Heartbeat payloads gain an optional integer field \"version\". Add `Version int` with JSON tag `version` to heartbeat.Heartbeat. heartbeat.Parse must set Version to 1 when the field is absent from the JSON."
+    },
+    {
+      "id": "T04",
+      "type": "cross-module-data",
+      "prompt": "storage.Writer must keep the full heartbeat including Version, and expose `func (w *Writer) Get(id string) (heartbeat.Heartbeat, bool)` returning the stored heartbeat. The INSERT statement must include the version column."
+    },
+    {
+      "id": "T05",
+      "type": "retry",
+      "prompt": "heartbeat.Consumer must retry store.Save on error, up to 3 attempts in total, waiting Consumer.Backoff between attempts (exported field `Backoff time.Duration`, default 100ms set by NewConsumer; tests set it to 0). After the third failure Handle returns an error that wraps the last Save error (errors.Is must work). A heartbeat saved after a retry is not deduplicated away on a later delivery of the same id... unless it was saved: an id counts as seen only after Save succeeded."
+    },
+    {
+      "id": "T06",
+      "type": "concurrency",
+      "prompt": "heartbeat.Consumer.Handle must be safe to call from many goroutines at once: when 100 goroutines deliver the same heartbeat id concurrently, the store must receive exactly one Save for it."
+    },
+    {
+      "id": "T07",
+      "type": "refactor",
+      "prompt": "Refactor: move duplicate detection into a new package internal/dedupe with `type Set` and `func New() *Set` and method `func (s *Set) FirstSeen(id string) bool` (safe for concurrent use). heartbeat.Consumer must use it. Observable behavior of the consumer must not change."
+    },
+    {
+      "id": "T08",
+      "type": "interface-change",
+      "prompt": "POST /messages accepts an optional JSON integer field \"priority\" (0-9, default 0). A priority outside 0-9 is rejected with HTTP 400. The published Kafka message key becomes \"<priority>:<key>\" (for example \"3:k\")."
+    },
+    {
+      "id": "T09",
+      "type": "config",
+      "prompt": "Create package internal/config with `func HTTPAddr() string`: it returns env HTTP_ADDR, falling back to the old HEARTBEAT_HTTP_ADDR, falling back to \":8080\". cmd/heartbeat-worker must use it instead of reading the environment itself."
+    },
+    {
+      "id": "T10",
+      "type": "bug",
+      "prompt": "Bug: heartbeat.Consumer.Run ignores context cancellation while the reader keeps returning messages. Run must return ctx.Err() promptly once the context is cancelled, even if messages are still available."
+    }
+  ]
+}

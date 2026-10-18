@@ -1,0 +1,22 @@
+diff --git a/internal/heartbeat/heartbeat.go b/internal/heartbeat/heartbeat.go
+index f381e47..d6c9d85 100644
+--- a/internal/heartbeat/heartbeat.go
++++ b/internal/heartbeat/heartbeat.go
+@@ -8,6 +8,8 @@ import (
+ 
+ const TopicHeartbeat = "heartbeat-events"
+ 
++const maxClockSkew = 5 * time.Minute
++
+ type Heartbeat struct {
+ 	ID     string    `json:"id"`
+ 	Source string    `json:"source"`
+@@ -28,6 +30,8 @@ func Validate(h Heartbeat) error {
+ 		return errors.New("heartbeat: missing source")
+ 	case h.At.IsZero():
+ 		return errors.New("heartbeat: missing timestamp")
++	case h.At.After(time.Now().Add(maxClockSkew)):
++		return errors.New("heartbeat: timestamp is in the future")
+ 	}
+ 	return nil
+ }
