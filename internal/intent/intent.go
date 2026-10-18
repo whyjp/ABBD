@@ -144,6 +144,12 @@ func Resolve(request string, s *ssot.Snapshot) Resolution {
 	return r
 }
 
+// ruleWords mark a request that sets a rule for the whole project rather than one change.
+var ruleWords = []string{"항상", "모든 ", "어떤 경로", "어디서든", "어떤 경우에도", "절대", "앞으로", "always", "every ", "everywhere", "never", "any path", "all http", "all endpoints", "from now on", "must not"}
+
+// IsProjectRule reports whether a request reads as a standing rule.
+func IsProjectRule(request string) bool { return hasAny(strings.ToLower(request), ruleWords) }
+
 var (
 	modificationWords = []string{"변경", "수정", "개선", "바꿔", "change", "update", "modify", "improve"}
 	addWords          = []string{"추가", "만들", "생성", "신규", "add", "new", "create", "implement", "구현", "지원"}

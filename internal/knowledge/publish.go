@@ -20,6 +20,9 @@ func Publish(s *ssot.Snapshot, res *analysis.Result, ws workspace.Snapshot, sett
 	if err := s.Save(); err != nil {
 		return nil, err
 	}
+	if err := writeBlueprint(s); err != nil {
+		return nil, err
+	}
 	hash := ssot.Hash(s.Root)
 	g := graph.Build(s, res, ws.Revision, ws.Fingerprint)
 	g.SSOTHash = hash

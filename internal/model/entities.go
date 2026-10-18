@@ -216,10 +216,20 @@ type Test struct {
 	Status       ItemStatus   `yaml:"status" json:"status"`
 }
 
+// RequirementScope separates a request for one change from a rule the user wants kept on every
+// path from now on (PRD ch.03 Current Intent). Project-scope requirements are standing rules.
+type RequirementScope string
+
+const (
+	ScopeChange  RequirementScope = "change"
+	ScopeProject RequirementScope = "project"
+)
+
 type Requirement struct {
-	ID        string   `yaml:"id" json:"id"`
-	Statement Semantic `yaml:"statement" json:"statement"`
-	Change    string   `yaml:"change" json:"change"`
+	ID        string           `yaml:"id" json:"id"`
+	Statement Semantic         `yaml:"statement" json:"statement"`
+	Change    string           `yaml:"change" json:"change"`
+	Scope     RequirementScope `yaml:"scope,omitempty" json:"scope,omitempty"`
 }
 
 // Tier is the approval grade of PRD ch.10.

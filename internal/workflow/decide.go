@@ -608,6 +608,41 @@ func (e *Engine) IntentContract(in IntentContractInput) (*model.Contract, error)
 	return c, w.s.Save()
 }
 
+type IntentRuleInput struct {
+	Claim, Req string
+	Retire     bool
+}
+
+// IntentRule records a standing rule the user stated, promotes an existing requirement to project
+// scope, or retires one. A rule's text is the user's: origin USER_STATED.
+func (e *Engine) IntentRule(in IntentRuleInput) (*model.Requirement, error) {
+	w, chg, err := e.activeTurn()
+	if err != nil {
+		return nil, err
+	}
+	var r *model.Requirement
+	switch {
+	case in.Req != "":
+		if r = w.s.Requirements[in.Req]; r == nil {
+			return nil, fmt.Errorf("%s not found", in.Req)
+		}
+	case in.Claim != "":
+		r = &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(in.Claim, model.UserStated), Change: chg.ID}
+		w.s.Requirements[r.ID] = r
+		chg.Intends = append(chg.Intends, r.ID)
+	default:
+		return nil, fmt.Errorf("give --claim TEXT or --req REQ-x")
+	}
+	r.Scope = model.ScopeProject
+	if in.Retire {
+		r.Scope = model.ScopeChange
+		chg.IntentDelta.Removals = append(chg.IntentDelta.Removals, "rule retired: "+r.ID+" "+r.Statement.Value)
+	} else {
+		chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, "standing rule: "+r.ID+" "+r.Statement.Value)
+	}
+	return r, w.s.Save()
+}
+
 func (e *Engine) IntentDelta(add, remove, preserve []string) (*model.Change, error) {
 	w, chg, err := e.activeTurn()
 	if err != nil {

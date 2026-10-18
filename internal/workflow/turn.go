@@ -28,23 +28,27 @@ type RunOptions struct {
 }
 
 type WorkflowPlan struct {
-	Change          string            `json:"change"`
-	TaskType        string            `json:"task_type"`
-	Tier            string            `json:"verification_tier"`
-	Steps           []string          `json:"steps"`
-	ContextStrategy string            `json:"context_strategy"`
-	ContextReason   string            `json:"context_reason"`
-	Matches         []intent.Match    `json:"matches"`
-	Context         []any             `json:"context"`
-	Ambiguous       bool              `json:"ambiguous"`
-	AmbiguityHint   string            `json:"ambiguity_hint,omitempty"`
-	NewFeature      string            `json:"new_feature,omitempty"`
-	Requirement     string            `json:"requirement,omitempty"`
-	ConfirmIfUsed   []string          `json:"confirm_if_purpose_used"`
-	Budget          ssot.Budget       `json:"budget"`
-	Rework          []string          `json:"rework,omitempty"`
-	Bootstrap       *bootstrap.Report `json:"bootstrap,omitempty"`
-	Reconciled      *ReconcileResult  `json:"reconciled,omitempty"`
+	Change          string         `json:"change"`
+	TaskType        string         `json:"task_type"`
+	Tier            string         `json:"verification_tier"`
+	Steps           []string       `json:"steps"`
+	ContextStrategy string         `json:"context_strategy"`
+	ContextReason   string         `json:"context_reason"`
+	Matches         []intent.Match `json:"matches"`
+	Context         []any          `json:"context"`
+	Ambiguous       bool           `json:"ambiguous"`
+	AmbiguityHint   string         `json:"ambiguity_hint,omitempty"`
+	NewFeature      string         `json:"new_feature,omitempty"`
+	Requirement     string         `json:"requirement,omitempty"`
+	ConfirmIfUsed   []string       `json:"confirm_if_purpose_used"`
+	Budget          ssot.Budget    `json:"budget"`
+	Rework          []string       `json:"rework,omitempty"`
+	// ReadFirst is the current blueprint the agent reads before changing code; history is not on it.
+	ReadFirst []string `json:"read_first"`
+	// StandingRules are project-wide rules in force; they apply to new paths too.
+	StandingRules []string          `json:"standing_rules"`
+	Bootstrap     *bootstrap.Report `json:"bootstrap,omitempty"`
+	Reconciled    *ReconcileResult  `json:"reconciled,omitempty"`
 }
 
 // Run starts a turn: step 0 session bootstrap, 1 route, 2 understand, 3 resolve intent.
@@ -121,7 +125,10 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		Time:         now(),
 	}
 	w.s.Changes[chg.ID] = chg
-	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID}
+	req := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(request, model.UserStated), Change: chg.ID, Scope: model.ScopeChange}
+	if intent.IsProjectRule(request) {
+		req.Scope = model.ScopeProject
+	}
 	w.s.Requirements[req.ID] = req
 	chg.Intends = []string{req.ID}
 	chg.IntentDelta.Additions = append(chg.IntentDelta.Additions, rework.IntentDelta.Additions...)
@@ -164,7 +171,29 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	plan.Change, plan.TaskType, plan.Tier, plan.Steps = chg.ID, r.TaskType, r.Tier, r.Steps
 	plan.ContextStrategy, plan.ContextReason, plan.Matches, plan.Ambiguous = strategy, reason, r.Matches, r.Ambiguous
 	plan.Budget = w.s.Project.Budgets[r.Tier]
+	plan.ReadFirst = readFirst(w.s, targets)
+	for _, rule := range knowledge.StandingRules(w.s) {
+		plan.StandingRules = append(plan.StandingRules, rule.ID+": "+rule.Statement.Value)
+	}
 	return plan, nil
+}
+
+// readFirst: the blueprint page, then the md originals of the matched targets.
+func readFirst(s *ssot.Snapshot, targets []string) []string {
+	out := []string{ssot.Dir + "/" + knowledge.BlueprintFile}
+	for _, id := range targets {
+		switch model.KindOf(id) {
+		case model.KindFeature:
+			out = append(out, ssot.Dir+"/features/"+id+".md")
+		case model.KindModule:
+			out = append(out, ssot.Dir+"/architecture/"+id+".md")
+		default:
+			if _, owner := s.Contract(id); owner != nil {
+				out = append(out, ssot.Dir+"/architecture/"+owner.ID+".md")
+			}
+		}
+	}
+	return uniqStrings(out)
 }
 
 func shortName(request string) string {

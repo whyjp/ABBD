@@ -41,7 +41,7 @@ var Commands = map[string]command{
 	"run":       {`run "REQUEST" [--type T] [--tier T0..T3]`, runRun},
 	"plan":      {`plan "REQUEST"`, func(e *workflow.Engine, a []string) (any, error) { return e.Plan(strings.Join(a, " ")) }},
 	"inspect":   {"inspect ID", runInspect},
-	"intent":    {"intent feature|invariant|module|contract|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)", runIntent},
+	"intent":    {"intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)", runIntent},
 	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY [--reason TEXT]", runDecide},
 	"decisions": {"decisions [QUERY]", func(e *workflow.Engine, a []string) (any, error) { return e.Decisions(strings.Join(a, " ")) }},
 	"impact":    {"impact", func(e *workflow.Engine, a []string) (any, error) { return e.Impact() }},
@@ -320,6 +320,15 @@ func runIntent(e *workflow.Engine, args []string) (any, error) {
 		}
 		in.Origin = originFlag(*origin)
 		return e.IntentContract(in)
+	case "rule":
+		var in workflow.IntentRuleInput
+		fs.StringVar(&in.Claim, "claim", "", "the user's rule, verbatim")
+		fs.StringVar(&in.Req, "req", "", "promote an existing requirement")
+		fs.BoolVar(&in.Retire, "retire", false, "the user withdrew the rule")
+		if _, err := parse(fs, args[1:]); err != nil {
+			return nil, err
+		}
+		return e.IntentRule(in)
 	case "delta":
 		var add, remove, preserve multi
 		fs.Var(&add, "add", "")

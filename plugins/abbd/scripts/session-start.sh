@@ -18,8 +18,17 @@ Every request that changes code, tests or configuration runs the ABBD turn, howe
 A small fix runs the turn lightly; it does not skip it. Exit code 2 from verify or sync means
 not done: fix and repeat. Never describe structure in chat; if sync returns `review`, give the
 user the review link (abbd serve) and leave decisions to them. Skills: abbd:session-bootstrap first.
+
+Context comes from the CURRENT blueprint: read .abbd/BLUEPRINT.md first (standing rules, modules,
+contracts, features, open decisions), then the md of the items `abbd run` lists in read_first.
+.abbd/changes, requirements, decisions, verification and generated are history: do not read them
+as context (search skips them; direct reads are refused). Standing rules apply to every new path.
+When the user states a rule for the whole project, record it: abbd intent rule --claim "<their words>".
 </ABBD>
 EOF
+if [ -f .abbd/BLUEPRINT.md ]; then
+  sed -n '/^## Standing rules/,/^## Modules/p' .abbd/BLUEPRINT.md | sed '$d'
+fi
 if [ -d .abbd ] || [ -d .cccv ] || [ -d .myharness ]; then
   abbd status 2>&1 | grep -E '^(notice:| +(feature_map|graph|html):|external_change: true|unconfirmed:|active_turn:)' | head -7
 else
