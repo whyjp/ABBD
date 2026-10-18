@@ -136,3 +136,25 @@ func TestDriverDeletedAfterItsRunStillCountsAsThisTurns(t *testing.T) {
 		t.Fatal("the run recorded who set its driver; deleting the driver afterwards must not turn it into proof")
 	}
 }
+
+func TestReproDriverLoosenedInTheFixTurnIsNotProof(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	// A driver on the contract covers any turn whose feature exposes it.
+	feat := p.findContract("GET /health")
+	probe := `grep -c "ok!" internal/api/api.go; true`
+	p.ok("run", "사용자 수준 점검 명령 등록")
+	p.ok("driver", "set", feat, "--run", probe, "--expect", "1")
+	p.ok("sync")
+	p.ok("run", "health 응답 버그 고쳐줘")
+	if r, code, _ := p.run("verify", "--drive"); code != 2 || str(r, "overall") != "FAILED" {
+		t.Fatalf("setup: the earlier driver must fail before the fix: exit %d %v", code, r)
+	}
+	p.ok("driver", "set", feat, "--run", probe, "--expect", "0")
+	p.replace("internal/api/api.go", `w.Write([]byte("ok"))`, `w.Write([]byte("ok")) // fixed`)
+	p.ok("verify")
+	p.ok("verify", "--drive")
+	if v, code, _ := p.run("sync"); code != 2 {
+		t.Fatalf("a repro and its fix must be the same unchanged driver, not one re-set to expect less: %v", get(v, "reason"))
+	}
+}

@@ -781,8 +781,8 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 					passedAtEnd["test "+t.Package+"."+t.Name] = true
 				}
 			}
-			if ev.Level == model.LevelUser && ev.Verification == model.Passed {
-				passedAtEnd["driver "+ev.Command] = true
+			if ev.Level == model.LevelUser && ev.Verification == model.Passed && !driverOfThisRequest(w.s, ev, chg) {
+				passedAtEnd[driverKey(ev)] = true
 			}
 		}
 		failedFirst := false
@@ -795,7 +795,7 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 					failedFirst = true
 				}
 			}
-			if ev.Level == model.LevelUser && passedAtEnd["driver "+ev.Command] && !driverOfThisRequest(w.s, ev, chg) {
+			if ev.Level == model.LevelUser && passedAtEnd[driverKey(ev)] && !driverOfThisRequest(w.s, ev, chg) {
 				failedFirst = true
 			}
 		}
@@ -820,6 +820,16 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 		return "T3 턴에 사용자 수준 실행 증거가 없음: 앞선 완료된 턴에서 `abbd driver set ID --run CMD --expect TEXT`로 등록한 driver로 `abbd verify --drive`, 또는 `abbd verify --unverifiable user-level --reason`"
 	}
 	return ""
+}
+
+// driverKey names one unchanged driver: a repro and its fix must be judged by the same check,
+// not by a driver re-set with a looser expectation under the same command.
+func driverKey(ev model.Evidence) string {
+	if ev.Driver == nil {
+		return ""
+	}
+	d := ev.Driver
+	return "driver " + d.ID + "|" + d.SetIn + "|" + d.Prompt + "|" + d.Expect + "|" + ev.Command
 }
 
 // driverOfThisRequest: a driver registered or changed for the work it would prove could be shaped

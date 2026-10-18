@@ -398,6 +398,7 @@ type Evidence struct {
 
 type DriverOrigin struct {
 	ID     string `yaml:"id" json:"id"`
+	Expect string `yaml:"expect,omitempty" json:"expect,omitempty"`
 	SetIn  string `yaml:"set_in,omitempty" json:"set_in,omitempty"`
 	Prompt string `yaml:"prompt,omitempty" json:"prompt,omitempty"`
 }
