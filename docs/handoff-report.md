@@ -140,6 +140,7 @@ benchmark/     실행기, v1·v2 과제, 숨김 테스트, 기준 구현
 
 ## [Next Step]
 
+0. **후속 결함 처리 현황.** N1~N3과 그 수정에서 나온 두 회귀(driver 블록 삭제, 재현 driver의 기대값 완화)는 8c57387, 16cced0, 5e5eb43에서 고쳤고 독립 재검증이 PUSH 가능으로 판정했다. 남은 것: 진행 중인 턴에서 업그레이드 후 abort하면 기존 driver가 계속 불신된다(`internal/ssot/marks.go` holdDriverEdits, `State.Drivers`가 비었을 때 project.yaml에서 한 번 채우면 해결). history-guard는 디렉터리 이름을 쓰지 않는 와일드카드(`find . -path "*/changes/*"`, Grep `glob: **/changes/*.md`)와 변수 간접 참조를 못 잡고, `ls .c*`·`.m*`를 오탐한다. 실행 증거 파일과 `state.yaml`은 여전히 신뢰한다.
 0. **fabc15a 재검증 후속.** N1 손으로 적은 `module_intents`가 sync에서 USER_STATED로 모듈에 복사된다(`internal/ssot/marks.go` 보호 목록에 없음). N2 `project.yaml`이 손편집 해시 대상이 아니라 driver의 `set_in`을 지워 T3 증명을 세탁할 수 있다. N3 history-guard가 `.abbd/./changes`와 `git stash show -p`를 통과시킨다. N4 불변조건을 목록 위치로 추적해 손 삭제 후 하나를 잃을 수 있다(코드 읽기 추정). N5 규칙 감지·명령 등급의 오탐과 누락(`cargo publish`, `gh release create`, `rm -rf "$HOME"` 등). 모든 `--user`는 에이전트도 칠 수 있으므로 이 게이트들은 실수를 막을 뿐 정직하지 않은 에이전트를 막지는 못한다.
 1. **공개 벤치마크 v3.** 자체 과제 대신 Terminal-Bench 2.0(Harbor), SWE-Milestone, SlopCodeBench로 간다. 설계·선정 기준·어댑터·비용 추정은 `benchmarks/`에 있다. 환경(WSL Docker 29.4.1, Harbor 0.24.0)은 oracle 2/2로 확인했다. 실행은 구독 인증(`CLAUDE_FORCE_OAUTH`)으로 하고 사용량 한도로 멈춘 과제는 `limit_stopped`로 기록한다. 군 F(Domain State Graph)는 `abbd domain`이 미구현이라 실행 불가다. 공식 점수와 자체 지표는 분리해 보고한다.
 2. **밀도 3차.** 보강 후 상태로 독립 평가를 다시 돌린다. 산문뿐인 규칙 30개 중 엔진으로 옮길 것을 고른다.
