@@ -109,3 +109,30 @@ func TestProjectSettingsStayHandEditable(t *testing.T) {
 		t.Fatal("the edited setting is kept")
 	}
 }
+
+func TestDriverDeletedAfterItsRunStillCountsAsThisTurns(t *testing.T) {
+	p := newProject(t, "code-only")
+	p.ok("init")
+	feat := p.featureFor("POST /messages")
+	p.ok("run", "POST /messages 재시도 시 중복 발행 방지")
+	dedupeChange(p)
+	p.ok("verify")
+	p.ok("driver", "set", feat, "--run", t3Driver, "--expect", "PASS: TestPostMessagePublishes")
+	p.ok("verify", "--drive")
+	yaml := p.read(".abbd/project.yaml")
+	start := strings.Index(yaml, "drivers:")
+	if start < 0 {
+		t.Fatal("setup: no drivers block in project.yaml")
+	}
+	end := start + len("drivers:")
+	for _, line := range strings.SplitAfter(yaml[end:], "\n")[1:] {
+		if line != "" && line[0] != ' ' {
+			break
+		}
+		end += len(line)
+	}
+	p.write(".abbd/project.yaml", yaml[:start]+yaml[end+1:])
+	if _, code, _ := p.run("sync"); code != 2 {
+		t.Fatal("the run recorded who set its driver; deleting the driver afterwards must not turn it into proof")
+	}
+}

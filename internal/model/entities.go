@@ -391,6 +391,15 @@ type Evidence struct {
 	OutputTail   string       `yaml:"output_tail,omitempty" json:"output_tail,omitempty"`
 	StartedAt    string       `yaml:"started_at" json:"started_at"`
 	DurationMs   int64        `yaml:"duration_ms" json:"duration_ms"`
+	// Driver is who set the driver this run executed, copied when it ran, so deleting or editing
+	// the driver in project.yaml afterwards cannot change what the run proves.
+	Driver *DriverOrigin `yaml:"driver,omitempty" json:"driver,omitempty"`
+}
+
+type DriverOrigin struct {
+	ID     string `yaml:"id" json:"id"`
+	SetIn  string `yaml:"set_in,omitempty" json:"set_in,omitempty"`
+	Prompt string `yaml:"prompt,omitempty" json:"prompt,omitempty"`
 }
 
 type TestResult struct {

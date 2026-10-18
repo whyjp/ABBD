@@ -795,7 +795,7 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 					failedFirst = true
 				}
 			}
-			if ev.Level == model.LevelUser && passedAtEnd["driver "+ev.Command] && !driverOfThisRequest(w.s, ev.Command, chg) {
+			if ev.Level == model.LevelUser && passedAtEnd["driver "+ev.Command] && !driverOfThisRequest(w.s, ev, chg) {
 				failedFirst = true
 			}
 		}
@@ -813,7 +813,7 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 				chg.UserLevelWaived = true
 				return ""
 			}
-			if ev.Verification == model.Passed && !driverOfThisRequest(w.s, ev.Command, chg) {
+			if ev.Verification == model.Passed && !driverOfThisRequest(w.s, ev, chg) {
 				return ""
 			}
 		}
@@ -825,19 +825,18 @@ func (e *Engine) proofGaps(w *world, chg *model.Change) string {
 // driverOfThisRequest: a driver registered or changed for the work it would prove could be shaped
 // to give the wanted answer. That is one set in this turn, in a turn that never completed (an
 // aborted attempt, re-run to launder it), or in answer to the same user message as this turn.
-func driverOfThisRequest(s *ssot.Snapshot, command string, chg *model.Change) bool {
-	for _, d := range s.Project.Drivers {
-		if d.Run != command {
-			continue
-		}
-		if d.SetIn == chg.ID || d.Prompt != "" && d.Prompt == chg.Prompt {
-			return true
-		}
-		if c := s.Changes[d.SetIn]; d.SetIn != "" && (c == nil || c.State != model.StateCompleted && c.State != model.StateNeedsUser) {
-			return true
-		}
+// It is judged from the origin the run recorded, not from project.yaml as it stands now; a run
+// without that record is not trusted.
+func driverOfThisRequest(s *ssot.Snapshot, ev model.Evidence, chg *model.Change) bool {
+	d := ev.Driver
+	if d == nil {
+		return true
 	}
-	return false
+	if d.SetIn == chg.ID || d.Prompt != "" && d.Prompt == chg.Prompt {
+		return true
+	}
+	c := s.Changes[d.SetIn]
+	return d.SetIn != "" && (c == nil || c.State != model.StateCompleted && c.State != model.StateNeedsUser)
 }
 
 // untestedNewPaths: a route added in this turn that no test names leaves every standing rule

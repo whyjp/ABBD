@@ -93,7 +93,8 @@ func (e *Engine) drive(w *world, chg *model.Change, rep *EvidenceReport) (*Evide
 	}
 	for _, id := range ids {
 		d := w.s.Project.Drivers[id]
-		ev := model.Evidence{Command: d.Run, Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Change: changeID, StartedAt: now(), Level: model.LevelUser}
+		ev := model.Evidence{Command: d.Run, Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Change: changeID, StartedAt: now(), Level: model.LevelUser,
+			Driver: &model.DriverOrigin{ID: id, SetIn: d.SetIn, Prompt: d.Prompt}}
 		start := time.Now()
 		cmd := shellCmd(d.Run)
 		cmd.Dir = e.Root
