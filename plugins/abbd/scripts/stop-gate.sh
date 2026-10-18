@@ -9,9 +9,10 @@ esac
 command -v abbd >/dev/null 2>&1 || exit 0
 [ -d .abbd ] || exit 0
 status=$(abbd --json status 2>/dev/null) || exit 0
-case "$status" in
-  *'"feature_map": "CURRENT"'*) exit 0 ;;
-esac
+# Match the field, not its exact spacing, so a formatting change in the JSON cannot flip the gate.
+if printf '%s' "$status" | grep -Eq '"feature_map"[[:space:]]*:[[:space:]]*"CURRENT"'; then
+  exit 0
+fi
 cat <<'EOF'
 {"decision":"block","reason":"ABBD: the blueprint does not match the working tree (an open turn or unsynced changes). Finish the turn: abbd verify until PASSED, then abbd sync until it exits 0. If the edits were not meant to stay, abbd turn abort --reason \"...\". Report a gate you cannot pass instead of claiming done."}
 EOF

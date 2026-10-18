@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -173,5 +175,53 @@ func TestCLIDocMatchesHelp(t *testing.T) {
 		if strings.HasPrefix(strings.TrimSpace(line), "abbd ") && !strings.Contains(string(doc), strings.TrimSpace(line)) {
 			t.Errorf("docs/cli.md lacks help line: %s", strings.TrimSpace(line))
 		}
+	}
+}
+
+// TestShellScriptsAreLF: a CRLF shell script fails on Linux and macOS (`set: Illegal option -`).
+func TestShellScriptsAreLF(t *testing.T) {
+	filepath.WalkDir("../plugins", func(p string, d fs.DirEntry, err error) error {
+		if err == nil && strings.HasSuffix(p, ".sh") {
+			if b, _ := os.ReadFile(p); bytes.Contains(b, []byte("\r")) {
+				t.Errorf("%s has CRLF line endings", p)
+			}
+		}
+		return nil
+	})
+}
+
+// TestStopGateBlocksOnlyAStaleBlueprint runs the plugin's Stop hook against a real project.
+func TestStopGateBlocksOnlyAStaleBlueprint(t *testing.T) {
+	sh, err := exec.LookPath("sh")
+	if err != nil {
+		t.Skip("no sh")
+	}
+	bin := filepath.Join(t.TempDir(), "abbd")
+	if runtime.GOOS == "windows" {
+		bin += ".exe"
+	}
+	if out, err := exec.Command("go", "build", "-o", bin, "../cmd/abbd").CombinedOutput(); err != nil {
+		t.Fatalf("build: %v %s", err, out)
+	}
+	p := newProject(t, "code-only")
+	p.ok("init")
+	gate, _ := filepath.Abs("../plugins/abbd/scripts/stop-gate.sh")
+	run := func(input string) string {
+		cmd := exec.Command(sh, gate)
+		cmd.Dir = p.dir
+		cmd.Env = append(os.Environ(), "PATH="+filepath.Dir(bin)+string(os.PathListSeparator)+os.Getenv("PATH"))
+		cmd.Stdin = strings.NewReader(input)
+		out, _ := cmd.Output()
+		return string(out)
+	}
+	if out := run(`{"stop_hook_active":false}`); out != "" {
+		t.Fatalf("a CURRENT blueprint must let the session stop: %q", out)
+	}
+	p.write("internal/api/extra.go", "package api\n")
+	if out := run(`{"stop_hook_active":false}`); !strings.Contains(out, `"decision":"block"`) {
+		t.Fatalf("unsynced edits must block once: %q", out)
+	}
+	if out := run(`{"stop_hook_active":true}`); out != "" {
+		t.Fatalf("the second stop must pass: %q", out)
 	}
 }
