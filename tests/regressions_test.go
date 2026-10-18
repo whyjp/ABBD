@@ -101,6 +101,18 @@ func TestOneSharedAnchorNeverMovesConfirmedMeaning(t *testing.T) {
 	test := p.read("internal/api/api_test.go")
 	p.write("internal/api/api_test.go", test[:strings.Index(test, "func TestHealth")])
 	p.commit("external: health -> stats")
+	// Removing a contract with outside consumers is tier C: held until someone approves it.
+	if _, code, _ := p.run("reconcile"); code != 2 {
+		t.Fatal("an outside tier C change must wait for approval")
+	}
+	if sel := str(p.ok("inspect", health), "contract", "selector"); sel != "GET /health" {
+		t.Fatalf("the blueprint keeps the confirmed contract until approval, selector %q", sel)
+	}
+	for _, d := range list(p.ok("review"), "deltas") {
+		if str(d, "tier") == "C" {
+			p.ok("review", "--decide", str(d, "id"), "--decision", "approve", "--user")
+		}
+	}
 	p.ok("reconcile")
 	stats := p.ok("inspect", p.findContract("GET /stats"))
 	if str(stats, "contract", "id") == health || get(stats, "contract", "external_consumers") == true {

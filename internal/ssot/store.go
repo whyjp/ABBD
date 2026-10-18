@@ -67,6 +67,8 @@ type Project struct {
 type Driver struct {
 	Run    string `yaml:"run" json:"run"`
 	Expect string `yaml:"expect" json:"expect"`
+	// SetIn is the turn that registered the driver; it cannot prove that same turn.
+	SetIn string `yaml:"set_in,omitempty" json:"set_in,omitempty"`
 }
 
 type VerificationCfg struct {
@@ -88,6 +90,12 @@ type State struct {
 	SSOTHash    string `yaml:"ssot_hash"`
 	SyncedAt    string `yaml:"synced_at"`
 	ActiveTurn  string `yaml:"active_turn,omitempty"`
+	// AgentEdits are files the agent edited in this workspace (from the host's edit hook) that no
+	// completed turn has verified yet. They go through a turn, never through reconcile.
+	AgentEdits []string `yaml:"agent_edits,omitempty"`
+	// HandEdits is set once the md originals were found edited outside abbd and stays set until
+	// someone accepts them (`abbd check --accept-edits`); later saves do not wash it out.
+	HandEdits bool `yaml:"hand_edits,omitempty"`
 	// UserPrompt is the user's last message, verbatim, captured by the host's prompt hook. The
 	// next `abbd run` takes it as the USER_STATED requirement instead of the agent's summary.
 	UserPrompt   string `yaml:"user_prompt,omitempty"`
@@ -248,6 +256,9 @@ func (s *Snapshot) save() error {
 func (s *Snapshot) Save() error {
 	if err := s.save(); err != nil {
 		return err
+	}
+	if s.HandEdited {
+		s.State.HandEdits = true
 	}
 	s.State.EngineHash = Hash(s.Root)
 	return s.SaveState()

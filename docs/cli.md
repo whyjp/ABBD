@@ -16,7 +16,7 @@ global flags: --root DIR, --json
 
 commands:
   abbd bootstrap --mode M [--scan] [--verify-available] [--from PATH] [--preview]
-  abbd check
+  abbd check [--accept-edits]
   abbd confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]
   abbd contracts list [--module MOD-x] | contracts impact [--diff]
   abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY [--user]] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY --user [--reason TEXT]
@@ -31,6 +31,7 @@ commands:
   abbd intent feature|invariant|module|contract|rule|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)
   abbd learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts
   abbd mcp (stdio MCP server)
+  abbd note-edit < hook-json (host PostToolUse hook: records a file the agent edited, so it is verified in a turn)
   abbd note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)
   abbd open-docs
   abbd plan "REQUEST"

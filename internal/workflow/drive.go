@@ -30,7 +30,12 @@ func (e *Engine) SetDriver(id, run, expect string) (map[string]ssot.Driver, erro
 	if w.s.Project.Drivers == nil {
 		w.s.Project.Drivers = map[string]ssot.Driver{}
 	}
-	w.s.Project.Drivers[id] = ssot.Driver{Run: run, Expect: expect}
+	setIn := ""
+	if c := w.s.ActiveChange(); c != nil {
+		setIn = c.ID
+		c.Risks = uniqStrings(append(c.Risks, "driver "+id+" registered in this turn: it proves later turns, not this one"))
+	}
+	w.s.Project.Drivers[id] = ssot.Driver{Run: run, Expect: expect, SetIn: setIn}
 	return w.s.Project.Drivers, w.s.Save()
 }
 

@@ -65,12 +65,20 @@ func TestT3NeedsAUserLevelRun(t *testing.T) {
 	if v, code, _ := p.run("sync"); code != 2 || !strings.Contains(str(v, "reason"), "사용자 수준") {
 		t.Fatalf("T3 must not sync without user-level evidence: exit %d %v", code, get(v, "reason"))
 	}
+	// A driver written in the same turn could be shaped to pass; it proves later turns only.
 	p.ok("driver", "set", feat, "--run", "go test ./internal/api -run TestPostMessagePublishes -v", "--expect", "PASS: TestPostMessagePublishes")
 	if r := p.ok("verify", "--drive"); str(r, "overall") != "PASSED" || str(list(r, "runs")[0], "level") != "user" {
 		t.Fatalf("the driver run is user-level evidence: %v", r)
 	}
+	if _, code, _ := p.run("sync"); code != 2 {
+		t.Fatal("a driver set in this turn must not satisfy this turn's T3 gate")
+	}
+	p.ok("turn", "abort")
+	p.ok("run", "POST /messages 재시도 시 중복 발행 방지")
+	p.ok("verify")
+	p.ok("verify", "--drive")
 	if s := p.ok("sync"); get(s, "completed") != true {
-		t.Fatalf("T3 with a user-level run completes: %v", get(s, "reason"))
+		t.Fatalf("T3 with a driver from an earlier turn completes: %v", get(s, "reason"))
 	}
 }
 

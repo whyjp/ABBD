@@ -54,13 +54,14 @@ var Commands = map[string]command{
 	"confirm":   {`confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]`, runConfirm},
 	"learn":     {`learn --kind architecture|type|lint|test|doc|skill --proposal TEXT | learn --preference key=value | learn --from-receipts`, runLearn},
 	"render":    {"render", func(e *workflow.Engine, a []string) (any, error) { return e.Render() }},
-	"check":     {"check", runCheck},
+	"check":     {"check [--accept-edits]", runCheck},
 	"open-docs": {"open-docs", func(e *workflow.Engine, a []string) (any, error) {
 		return ssot.Path(e.Root, "generated", "explorer.html"), nil
 	}},
 	"verification-plan": {"verification-plan", func(e *workflow.Engine, a []string) (any, error) { return e.VerificationPlan() }},
 	"mcp":               {"mcp (stdio MCP server)", runMCP},
 	"driver":            {"driver set FEAT-x|IF-x --run CMD --expect TEXT | driver list (user-level checks per entry point)", runDriver},
+	"note-edit":         {"note-edit < hook-json (host PostToolUse hook: records a file the agent edited, so it is verified in a turn)", runNoteEdit},
 	"note-prompt":       {"note-prompt < hook-json (host UserPromptSubmit hook: keeps the user's message verbatim for the next run)", runNotePrompt},
 	"serve":             {"serve [--addr 127.0.0.1:7787] (local review screen: topology, structural diff, approve/reject)", runServe},
 	"review":            {"review [CHG-ID] [--apply FILE] [--decide CHG-x#n --decision approve|reject|revert|option:KEY --reason TEXT --user] [--relayout]", runReview},
@@ -538,6 +539,16 @@ func runLearn(e *workflow.Engine, args []string) (any, error) {
 }
 
 func runCheck(e *workflow.Engine, args []string) (any, error) {
+	fs := newFlags("check")
+	accept := fs.Bool("accept-edits", false, "acknowledge md originals edited outside abbd")
+	if _, err := parse(fs, args); err != nil {
+		return nil, err
+	}
+	if *accept {
+		if err := e.AcceptHandEdits(); err != nil {
+			return nil, err
+		}
+	}
 	r, err := e.Check()
 	if err == nil && !r.OK {
 		// The report is the point of check: print it and exit 2 like any refused gate.
@@ -581,6 +592,22 @@ func runDriver(e *workflow.Engine, args []string) (any, error) {
 		return e.SetDriver(pos[0], *run, *expect)
 	}
 	return nil, errUsage
+}
+
+func runNoteEdit(e *workflow.Engine, args []string) (any, error) {
+	var in struct {
+		ToolInput struct {
+			FilePath     string `json:"file_path"`
+			NotebookPath string `json:"notebook_path"`
+		} `json:"tool_input"`
+	}
+	b, _ := io.ReadAll(io.LimitReader(os.Stdin, 1<<20))
+	_ = json.Unmarshal(b, &in)
+	path := in.ToolInput.FilePath
+	if path == "" {
+		path = in.ToolInput.NotebookPath
+	}
+	return nil, e.NoteEdit(path)
 }
 
 func runNotePrompt(e *workflow.Engine, args []string) (any, error) {

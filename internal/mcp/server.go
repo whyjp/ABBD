@@ -108,7 +108,7 @@ var Tools = map[string]tool{
 		map[string]string{"question": str("question"), "options": "array of key=label=effect", "default": str("default option key"), "answer": str("answer key if the user replied"), "subjects": "array"},
 		[]string{"question", "options"},
 		func(e *workflow.Engine, a args) (any, error) {
-			in := workflow.DecideInput{Tier: model.TierB, Question: a.str("question"), Default: a.str("default"), Answer: a.str("answer"), Subjects: a.strs("subjects"), ByUser: a.str("answer") != ""}
+			in := workflow.DecideInput{Tier: model.TierB, Question: a.str("question"), Default: a.str("default"), Answer: a.str("answer"), Subjects: a.strs("subjects")}
 			for _, o := range a.strs("options") {
 				in.Options = append(in.Options, ParseOption(o))
 			}
@@ -117,7 +117,7 @@ var Tools = map[string]tool{
 	"answer_decision": {"Record the user's answer to an open ADR (tier B option key, or approve/reject for tier C). An ADR behind a structural change card is decided on the card.",
 		map[string]string{"adr": str("ADR-*"), "answer": str("option key"), "reason": str("the user's reason")}, []string{"adr", "answer"},
 		func(e *workflow.Engine, a args) (any, error) {
-			return e.Decide(workflow.DecideInput{ADR: a.str("adr"), Answer: a.str("answer"), Reason: a.str("reason"), ByUser: true})
+			return e.Decide(workflow.DecideInput{ADR: a.str("adr"), Answer: a.str("answer"), Reason: a.str("reason")})
 		}},
 	"record_tier_c_stop": {"Record a tier C stop (push, deploy, external deletion, secrets, breaking change with external consumers). Nothing runs until the user approves.",
 		map[string]string{"question": str("what would run"), "subjects": "array"}, []string{"question"},

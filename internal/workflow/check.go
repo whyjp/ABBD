@@ -210,7 +210,7 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 			errf("%s: invalid verification %q", tid, s.Tests[tid].Verification)
 		}
 	}
-	if s.HandEdited {
+	if s.HandEdited || s.State.HandEdits {
 		errf(".abbd md originals were edited outside abbd; change meaning through abbd intent/confirm/decide, then abbd render")
 	}
 	for _, m := range s.Misnamed {

@@ -4,6 +4,7 @@
 package intent
 
 import (
+	"regexp"
 	"sort"
 	"strings"
 	"unicode"
@@ -145,10 +146,20 @@ func Resolve(request string, s *ssot.Snapshot) Resolution {
 }
 
 // ruleWords mark a request that sets a rule for the whole project rather than one change.
-var ruleWords = []string{"항상", "모든 ", "어떤 경로", "어디서든", "어떤 경우에도", "절대", "앞으로", "always", "every ", "everywhere", "never", "any path", "all http", "all endpoints", "from now on", "must not"}
+// A standing rule has a scope beyond this change AND an obligation. Either alone is ordinary
+// wording ("절대 경로", "always_on 플래그", "모든 테스트가 통과하도록").
+var (
+	ruleScope = regexp.MustCompile(`(항상|모든\s|어떤 경로|어디서든|어떤 경우에도|앞으로|\balways\b|\bevery\b|\beverywhere\b|\bany (path|endpoint|route)\b|\ball (http|endpoints|routes|paths|errors)\b|\bfrom now on\b|\btoday or in anything\b|\bcurrent and future\b|\bincluding ones added later\b)`)
+	// A scope this strong states a rule on its own ("ids are case-insensitive everywhere").
+	ruleStrong = regexp.MustCompile(`(어디서든|어떤 경우에도|\beverywhere\b|\bfrom now on\b|\bincluding ones added later\b|\bcurrent and future\b)`)
+	ruleDuty   = regexp.MustCompile(`(해야|하여야|돼야|되어야|어야 한|아야 한|하지 않|않는다|안 된다|금지|반드시|\bmust\b|\bshould\b|\bnever\b|\bshall\b|\bare the same\b|\bis rejected\b|\bmust not\b|\bonly\b)`)
+)
 
-// IsProjectRule reports whether a request reads as a standing rule.
-func IsProjectRule(request string) bool { return hasAny(strings.ToLower(request), ruleWords) }
+// IsProjectRule reports whether a sentence reads as a standing rule.
+func IsProjectRule(request string) bool {
+	low := strings.ToLower(request)
+	return ruleStrong.MatchString(low) || ruleScope.MatchString(low) && ruleDuty.MatchString(low)
+}
 
 // RuleSentences returns the sentences of a message that state a project-wide rule, so one
 // message with several rules records each, and a rule buried in a feature request is kept.

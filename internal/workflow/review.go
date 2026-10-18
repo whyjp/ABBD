@@ -178,7 +178,9 @@ func (e *Engine) decideIn(w *world, in DeltaDecisionInput) (*model.StructuralDel
 	if in.Channel == "" {
 		in.Channel = "cli"
 	}
-	if in.Channel == "cli" && !in.ByUser && d.Tier != model.TierA {
+	// The plugin's own MCP server is called by the agent, so it is an agent channel like the CLI
+	// without --user; the user's channels are the served review page and the decision file.
+	if (in.Channel == "cli" || in.Channel == "mcp") && !in.ByUser && d.Tier != model.TierA {
 		return nil, nil, fmt.Errorf("deciding %s records the user's decision; pass --user only with the user's own answer, or let the user decide on the review page", d.ID)
 	}
 	d.Decision = &model.ItemDecision{Decision: decision, Reason: in.Reason, At: now(), Revision: w.ws.Fingerprint, Channel: in.Channel}

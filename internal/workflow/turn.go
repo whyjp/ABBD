@@ -68,6 +68,8 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Files of a turn closed on rejected tier C cards are the new turn's rework, not outside change.
+	var rejectedFiles []string
 	if c := w.s.ActiveChange(); c != nil && c.State != model.StateCompleted {
 		if !rejectedOnly(c) {
 			return nil, fmt.Errorf("turn %s is active (%s); finish it with `abbd sync` or `abbd turn abort`", c.ID, c.State)
@@ -75,6 +77,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		c.State = model.StateBlocked
 		c.Blocked = uniqStrings(append(c.Blocked, "closed: its tier C changes were rejected; the next turn reverts them"))
 		finish(c)
+		rejectedFiles = c.FilesChanged
 		w.s.State.ActiveTurn = ""
 		if err := w.s.Save(); err != nil {
 			return nil, err
@@ -90,10 +93,13 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 			return nil, err
 		}
 	}
-	if len(w.changedSinceSync()) > 0 {
+	if changed := w.changedSinceSync(); len(changed) > 0 && len(w.agentEdited(changed)) == 0 && !subset(changed, rejectedFiles) {
 		rec, err := e.reconcile(w)
-		if err != nil {
+		if err != nil && !errors.Is(err, ErrGate) {
 			return nil, err
+		}
+		if err != nil {
+			return nil, fmt.Errorf("an outside change waits for a tier C approval (%s): decide it on the review page first", rec.Change)
 		}
 		plan.Reconciled = rec
 		if w, err = e.load(); err != nil {
@@ -145,7 +151,11 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		if hasRule(w.s, sentence) {
 			continue
 		}
-		rule := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: model.MustSemantic(sentence, model.UserStated), Change: chg.ID, Scope: model.ScopeProject, Auto: true}
+		// The words are the user's, but reading them as a standing rule is the harness's guess:
+		// in force, flagged for confirmation.
+		stmt := model.MustSemantic(sentence, model.UserStated)
+		stmt.Confirmation = model.Unconfirmed
+		rule := &model.Requirement{ID: w.s.NextID(model.KindRequirement), Statement: stmt, Change: chg.ID, Scope: model.ScopeProject, Auto: true}
 		w.s.Requirements[rule.ID] = rule
 		chg.Intends = append(chg.Intends, rule.ID)
 	}
@@ -341,8 +351,8 @@ func (e *Engine) Verify(o VerifyOptions) (*EvidenceReport, error) {
 		rep.Change = chg.ID
 	}
 	if o.NoRepro {
-		if chg == nil || strings.TrimSpace(o.Reason) == "" {
-			return nil, fmt.Errorf("--no-repro needs an active turn and --reason")
+		if chg == nil || len([]rune(strings.TrimSpace(o.Reason))) < 10 {
+			return nil, fmt.Errorf("--no-repro needs an active turn and a --reason that says why the bug cannot be reproduced (10+ characters)")
 		}
 		chg.ReproWaiver = o.Reason
 		return rep, w.s.Save()
@@ -526,6 +536,9 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 	if chg == nil {
 		if len(w.changedSinceSync()) > 0 {
 			rec, err := e.reconcile(w)
+			if errors.Is(err, ErrGate) {
+				return &SyncResult{Completed: false, Reason: "외부 변경이 등급 C 승인을 기다림", Reconciled: rec, Freshness: e.freshnessNow()}, err
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -640,6 +653,7 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 			}
 		}
 		origChg.StructuralDeltas = deltas
+		origChg.FilesChanged = changed
 		origChg.State = model.StateBlocked
 		origChg.Blocked = uniqStrings(append(origChg.Blocked, blocked...))
 		return e.draft(orig, origChg, res, "등급 C: 명시적 승인 필요 — "+strings.Join(blocked, "; "))
@@ -658,6 +672,10 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 			chg.State = model.StateNeedsUser
 		}
 	}
+	if chg.UserLevelWaived {
+		chg.State = model.StateNeedsUser
+	}
+	chg.Risks = uniqStrings(append(chg.Risks, untestedNewPaths(w.s, chg)...))
 	w.s.State.TurnGraphQueries, chg.Telemetry.GraphQueries = 0, chg.Telemetry.GraphQueries+w.s.State.TurnGraphQueries
 	chg.Risks = uniqStrings(append(chg.Risks, budgetWarnings(w.s, chg)...))
 	finish(chg)
@@ -689,6 +707,12 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		return res2, derr
 	}
 	result.Completed = true
+	if len(w.s.State.AgentEdits) > 0 {
+		w.s.State.AgentEdits = nil
+		if err := w.s.SaveState(); err != nil {
+			return result, err
+		}
+	}
 	if len(chg.StructuralDeltas) > 0 {
 		result.Review = summarize(e.Root, chg)
 	}
@@ -742,7 +766,15 @@ func (e *Engine) proofGaps(chg *model.Change) string {
 		// the failure was seen before the fix.
 		failedFirst := false
 		for _, ev := range runs {
-			if ev.Verification == model.Failed && ev.Fingerprint != chg.ResultFingerprint {
+			if ev.Verification != model.Failed || ev.Fingerprint == chg.ResultFingerprint {
+				continue
+			}
+			for _, t := range ev.Tests {
+				if t.Result == model.Failed {
+					failedFirst = true
+				}
+			}
+			if ev.Level == model.LevelUser {
 				failedFirst = true
 			}
 		}
@@ -752,13 +784,57 @@ func (e *Engine) proofGaps(chg *model.Change) string {
 	}
 	if chg.Plan.VerificationTier == "T3" {
 		for _, ev := range runs {
-			if ev.Level == model.LevelUser && (ev.Verification == model.Passed || ev.Verification == model.Unverifiable) {
+			if ev.Level != model.LevelUser {
+				continue
+			}
+			if ev.Verification == model.Unverifiable {
+				chg.Risks = uniqStrings(append(chg.Risks, "T3 사용자 수준 실행 없이 진행: "+ev.Reason))
+				chg.UserLevelWaived = true
+				return ""
+			}
+			if ev.Verification == model.Passed && !e.driverSetIn(ev.Command, chg.ID) {
 				return ""
 			}
 		}
 		return "T3 턴에 사용자 수준 실행 증거가 없음: `abbd driver set ID --run CMD --expect TEXT` 후 `abbd verify --drive`, 또는 `abbd verify --unverifiable user-level --reason`"
 	}
 	return ""
+}
+
+// driverSetIn: a driver registered or changed inside the turn it is meant to prove.
+func (e *Engine) driverSetIn(command, chgID string) bool {
+	w, err := e.load()
+	if err != nil {
+		return false
+	}
+	for _, d := range w.s.Project.Drivers {
+		if d.Run == command && d.SetIn == chgID {
+			return true
+		}
+	}
+	return false
+}
+
+// untestedNewPaths: a route added in this turn that no test names leaves every standing rule
+// unchecked there (the rule applies to new paths, but nothing shows it does).
+func untestedNewPaths(s *ssot.Snapshot, chg *model.Change) []string {
+	if len(knowledge.StandingRules(s)) == 0 {
+		return nil
+	}
+	var out []string
+	for _, d := range chg.StructuralDeltas {
+		if d.Kind != model.ContractAdded {
+			continue
+		}
+		c, owner := s.Contract(d.Subject)
+		if c == nil || c.Kind != "http-route" {
+			continue
+		}
+		if !verify.TestsMention(s, owner, c.Selector) {
+			out = append(out, fmt.Sprintf("새 경로 %s `%s`에 테스트가 없음: 상시 규칙 %d개가 이 경로에서 검증되지 않음", c.ID, c.Selector, len(knowledge.StandingRules(s))))
+		}
+	}
+	return out
 }
 
 func budgetWarnings(s *ssot.Snapshot, chg *model.Change) []string {
@@ -1045,4 +1121,17 @@ func uniqStrings(in []string) []string {
 		}
 	}
 	return out
+}
+
+func subset(xs, of []string) bool {
+	in := map[string]bool{}
+	for _, x := range of {
+		in[x] = true
+	}
+	for _, x := range xs {
+		if !in[x] {
+			return false
+		}
+	}
+	return true
 }

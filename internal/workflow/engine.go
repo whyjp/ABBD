@@ -110,6 +110,53 @@ func (e *Engine) NotePrompt(prompt string) error {
 	return s.SaveState()
 }
 
+// NoteEdit records a file the agent edited (host PostToolUse hook). Edits under .abbd are the
+// engine's own business and are not recorded.
+func (e *Engine) NoteEdit(path string) error {
+	if !ssot.Exists(e.Root) || strings.TrimSpace(path) == "" {
+		return nil
+	}
+	rel := path
+	if filepath.IsAbs(path) {
+		if r, err := filepath.Rel(e.Root, path); err == nil {
+			rel = r
+		}
+	}
+	rel = filepath.ToSlash(rel)
+	if strings.HasPrefix(rel, "..") || strings.HasPrefix(rel, ssot.Dir+"/") || rel == ssot.Dir {
+		return nil
+	}
+	s, err := ssot.Load(e.Root)
+	if err != nil {
+		return nil
+	}
+	if !contains(s.State.AgentEdits, rel) {
+		s.State.AgentEdits = append(s.State.AgentEdits, rel)
+	}
+	return s.SaveState()
+}
+
+// agentEdited returns the changed files the agent edited without a completed turn.
+func (w *world) agentEdited(changed []string) []string {
+	var out []string
+	for _, f := range changed {
+		if contains(w.s.State.AgentEdits, f) {
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
+// AcceptHandEdits acknowledges md originals edited outside abbd.
+func (e *Engine) AcceptHandEdits() error {
+	w, err := e.load()
+	if err != nil {
+		return err
+	}
+	w.s.HandEdited, w.s.State.HandEdits = false, false
+	return w.s.Save()
+}
+
 // Init is `abbd init`: bootstrap when there is no knowledge, otherwise a session start.
 func (e *Engine) Init(opt bootstrap.Options) (any, error) {
 	if ssot.Exists(e.Root) && opt.Mode == "" && opt.From == "" {

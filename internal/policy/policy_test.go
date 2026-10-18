@@ -51,3 +51,19 @@ func TestQuestionBudget(t *testing.T) {
 		t.Fatal("at most 3 questions per turn")
 	}
 }
+
+func TestCommandTiersMatchCommandsNotWords(t *testing.T) {
+	for cmd, want := range map[string]model.Tier{
+		"git -c core.x=y push origin main": model.TierC,
+		"rtk git push":                     model.TierC,
+		"kubectl apply -f k8s.yaml":        model.TierC,
+		"deploy --prod":                    model.TierC,
+		"go vet ./internal/deploy/...":     model.TierA,
+		"go test ./internal/push/...":      model.TierA,
+		"grep -rn 'terraform' docs":        model.TierA,
+	} {
+		if got, _ := CommandTier(cmd); got != want {
+			t.Errorf("%q: %s, want %s", cmd, got, want)
+		}
+	}
+}

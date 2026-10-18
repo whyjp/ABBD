@@ -59,7 +59,11 @@ func renderBlueprint(s *ssot.Snapshot) string {
 		b.WriteString("- none recorded\n")
 	}
 	for _, r := range rules {
-		fmt.Fprintf(&b, "- %s: %s (%s)\n", r.ID, r.Statement.Value, r.Statement.Origin)
+		mark := "user stated"
+		if r.Auto && r.Statement.Confirmation == model.Unconfirmed {
+			mark = "user's words, detected as a rule, unconfirmed"
+		}
+		fmt.Fprintf(&b, "- %s: %s (%s)\n", r.ID, r.Statement.Value, mark)
 	}
 
 	b.WriteString("\n## Modules\n\n")

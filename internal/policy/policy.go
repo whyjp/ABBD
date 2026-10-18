@@ -4,6 +4,7 @@ package policy
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -64,13 +65,24 @@ func ActionNames() []string {
 
 // externalEffects are command fragments that act outside the workspace. A verification command
 // containing one is a tier C action, not a check (PRD ch.10).
-var externalEffects = []string{"git push", "deploy", "kubectl apply", "kubectl delete", "terraform apply", "helm upgrade", "helm install", "docker push", "rm -rf /", "drop table", "npm publish"}
+var externalEffects = []*regexp.Regexp{
+	regexp.MustCompile(`\bgit\b[^;&|]*\bpush\b`),
+	regexp.MustCompile(`\bdocker\s+(\S+\s+)*push\b`),
+	regexp.MustCompile(`\bnpm\s+publish\b`),
+	regexp.MustCompile(`\bkubectl\b[^;&|]*\b(apply|delete|rollout|scale|patch)\b`),
+	regexp.MustCompile(`\bterraform\b[^;&|]*\b(apply|destroy)\b`),
+	regexp.MustCompile(`\bhelm\b[^;&|]*\b(install|upgrade|uninstall|rollback)\b`),
+	regexp.MustCompile(`\brm\s+-[a-z]*r[a-z]*f?[a-z]*\s+/(\s|$)`),
+	regexp.MustCompile(`\bdrop\s+(table|database)\b`),
+	// a deploy script or tool as the command itself, not a path segment such as ./internal/deploy/...
+	regexp.MustCompile(`(^|[;&|]\s*)(\S*/)?deploy(\.sh|\.ps1)?(\s|$)`),
+}
 
 func CommandTier(command string) (model.Tier, string) {
-	low := strings.ToLower(command)
-	for _, f := range externalEffects {
-		if strings.Contains(low, f) {
-			return model.TierC, "외부 효과가 있는 명령: " + f
+	low := strings.Join(strings.Fields(strings.ToLower(command)), " ")
+	for _, re := range externalEffects {
+		if m := re.FindString(low); m != "" {
+			return model.TierC, "외부 효과가 있는 명령: " + strings.TrimSpace(m)
 		}
 	}
 	return model.TierA, "로컬 검증"

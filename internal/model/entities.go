@@ -364,7 +364,9 @@ type Change struct {
 	Commit           string            `yaml:"commit,omitempty" json:"commit,omitempty"`
 	// ReproWaiver is why a bug-fix turn has no failing-first evidence; empty means it must have one.
 	ReproWaiver string `yaml:"repro_waiver,omitempty" json:"repro_waiver,omitempty"`
-	Time        string `yaml:"time" json:"time"`
+	// UserLevelWaived: a T3 turn went ahead without a user-level run; the user is told (NEEDS_USER).
+	UserLevelWaived bool   `yaml:"user_level_waived,omitempty" json:"user_level_waived,omitempty"`
+	Time            string `yaml:"time" json:"time"`
 }
 
 // Evidence is one verification run (PRD FR-07).

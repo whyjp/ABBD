@@ -37,3 +37,24 @@ func TestTokensTrimKoreanParticles(t *testing.T) {
 		t.Fatalf("tokens %v missing %v", got, want)
 	}
 }
+
+func TestRuleSentencesNeedScopeAndDuty(t *testing.T) {
+	for _, s := range []string{
+		"절대 경로로 바꿔줘",
+		"always_on 플래그 추가",
+		"모든 테스트가 통과하도록 고쳐줘",
+	} {
+		if IsProjectRule(s) {
+			t.Errorf("not a standing rule: %q", s)
+		}
+	}
+	for _, s := range []string{
+		"앞으로 모든 HTTP 에러 응답은 JSON 형식이어야 한다",
+		"Every route must appear in GET /routes.",
+		"ids are case-insensitive everywhere in the service.",
+	} {
+		if !IsProjectRule(s) {
+			t.Errorf("a standing rule: %q", s)
+		}
+	}
+}

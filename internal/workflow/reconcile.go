@@ -1,13 +1,16 @@
 package workflow
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/analysis"
 	"github.com/whyjp/abbd/internal/impact"
 	"github.com/whyjp/abbd/internal/knowledge"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/review"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 type analysisResult = analysis.Result
@@ -39,12 +42,24 @@ func (e *Engine) Reconcile() (*ReconcileResult, error) {
 // intent_source external, EXTRACTED facts refreshed, meaning fields untouched, no questions.
 // The only tier B record is a clear conflict with a CONFIRMED contract, and even that
 // proceeds with its default instead of waiting.
+// ErrAgentEdits: the agent's own edits are verified in a turn, not absorbed as external change.
+var ErrAgentEdits = errors.New("edited by the agent without a turn")
+
 func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 	files := w.changedSinceSync()
+	if mine := w.agentEdited(files); len(mine) > 0 {
+		return nil, fmt.Errorf("%w: %s. Open a turn (abbd run \"<request>\"), then abbd verify and abbd sync; or revert them", ErrAgentEdits, strings.Join(mine, ", "))
+	}
 	res, err := w.analyze()
 	if err != nil {
 		return nil, err
 	}
+	orig := w
+	trial, err := w.s.Clone()
+	if err != nil {
+		return nil, err
+	}
+	w = &world{s: trial, ws: w.ws, res: res}
 	diff := impact.ContractDiff(w.s, res)
 	chg := &model.Change{
 		ID: w.s.NextID(model.KindChange), RequestSummary: "external change reconciled", IntentSource: "external", ChangedBy: "external",
@@ -54,12 +69,36 @@ func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 		Telemetry: model.Telemetry{StartedAt: now()},
 		Time:      now(),
 	}
+	prev := lastBlockedReconcile(orig.s)
+	if prev != nil {
+		chg.ID = prev.ID
+	}
 	w.s.Changes[chg.ID] = chg
 	before := review.Project(w.s)
 	krep := knowledge.Apply(w.s, res, knowledge.Options{Revision: w.ws.Revision, Renames: w.renames()})
 	// The code already changed outside the harness, so nothing is held back; the cards show
 	// what changed structurally and a rejection becomes the next turn's work.
-	chg.StructuralDeltas = review.Diff(before, review.Project(w.s), chg.ID)
+	var prevDeltas []model.StructuralDelta
+	if prev != nil {
+		prevDeltas = prev.StructuralDeltas
+	}
+	chg.StructuralDeltas = carryDecisions(review.Diff(before, review.Project(w.s), chg.ID), prevDeltas)
+	// An external change can't be stopped, but an unapproved tier C change is not taken into the
+	// blueprint either: the record waits BLOCKED on the original until someone approves it.
+	if blocked := pendingTierC(w.s, chg, prevDeltas, chg.StructuralDeltas); len(blocked) > 0 {
+		for i := range chg.StructuralDeltas {
+			if chg.StructuralDeltas[i].Status == model.DeltaApplied || chg.StructuralDeltas[i].Status == model.DeltaDefaultApplied {
+				chg.StructuralDeltas[i].Status = model.DeltaPending
+			}
+		}
+		chg.State, chg.Blocked = model.StateBlocked, blocked
+		chg.Impacted = nil
+		orig.s.Changes[chg.ID] = chg
+		if _, err := knowledge.Publish(orig.s, res, orig.ws, false, "외부 변경 대기 (등급 C): "+chg.ID); err != nil {
+			return nil, err
+		}
+		return &ReconcileResult{Change: chg.ID, Files: files, State: model.StateBlocked, Conflicts: blocked}, ErrGate
+	}
 	recordDeltaDecisions(w.s, chg)
 	rr := &ReconcileResult{Change: chg.ID, Files: files, Knowledge: krep}
 
@@ -100,6 +139,20 @@ func (e *Engine) reconcile(w *world) (*ReconcileResult, error) {
 	}
 	rr.State = chg.State
 	return rr, nil
+}
+
+func lastBlockedReconcile(s *ssot.Snapshot) *model.Change {
+	ids := model.SortedKeys(s.Changes)
+	for i := len(ids) - 1; i >= 0; i-- {
+		c := s.Changes[ids[i]]
+		if c.IntentSource == "external" && c.State == model.StateBlocked {
+			return c
+		}
+		if c.IntentSource != "external" {
+			return nil
+		}
+	}
+	return nil
 }
 
 func confirmed(s model.Semantic) bool {

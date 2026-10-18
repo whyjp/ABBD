@@ -272,6 +272,11 @@ func applyContractVerification(s *ssot.Snapshot, ev model.Evidence) {
 
 // testsMentioning is the deterministic link between a route and its tests: the test's file
 // names the selector's path literally.
+// TestsMention reports whether any test of the module names the selector's path.
+func TestsMention(s *ssot.Snapshot, m *model.Module, selector string) bool {
+	return len(testsMentioning(s, m, selector)) > 0
+}
+
 func testsMentioning(s *ssot.Snapshot, m *model.Module, selector string) []*model.Test {
 	path := strings.TrimSpace(selector)
 	if i := strings.Index(path, " "); i >= 0 {
