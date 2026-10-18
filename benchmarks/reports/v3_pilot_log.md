@@ -15,6 +15,16 @@
 - 실행 `-n 2`, 그룹당 1회. 그룹 순서 A, B, C, D, E.
 - 2026-10-19 00:16 KST 그룹 A 시작. 01:36 기준 15개 중 12개 완료.
 - 그룹 A의 `path-tracing`은 `AgentSetupTimeoutError`로 끝났다. 에이전트 설치 단계의 시간 초과라 에이전트 실패가 아니다. 사용자 지시에 따라 A~E가 모두 끝난 뒤 같은 예외로 끝난 시행을 그룹별로 다시 돌린다(job 이름 `pilot-tb2-<G>-4ec437c-infra-rerun`). 집계는 재실행 결과로 대체하고, 대체했다는 사실을 표에 적는다.
+- 그룹 A 종료 01:44, 사용량 한도 흔적 0. 결과(재실행 전): 통과 10, 실패 2(make-doom-for-mips, sam-cell-seg), 에이전트 시간 초과 1(extract-moves-from-video), 설치 시간 초과 2(path-tracing, sparql-university). 그룹 B 01:44 시작.
+- 교란 요인: 그룹 A와 B가 도는 동안 SWE-Milestone 준비 단계의 Element Web 평가 컨테이너(브라우저 테스트)와 SCB 파일럿이 같은 Docker에서 돌았다. 03:13 기준 load average 4.5(16코어), 메모리 여유 12 GB로 과부하는 아니었다. 설치 시간 초과의 원인은 확인하지 않았다.
+
+- 그룹 B(pstack) 종료 03:24, 사용량 한도 흔적 0. 통과 10, 실패 3(install-windows-3.11, make-doom-for-mips, sam-cell-seg), 에이전트 시간 초과 2(extract-moves-from-video, feal-linear-cryptanalysis), 설치 시간 초과 0. 그룹 C 03:24 시작.
+- 토큰(입력/출력, 캐시 포함 여부는 Harbor 집계 기준 그대로): A 35.9M/215k, 환산 $19.32. B 7.4M/131k, 환산 $3.58. 차이의 원인은 아직 과제별로 보지 않았다.
+
+## Track C. SlopCodeBench 파일럿 (2문제)
+
+- 범위를 2문제로 줄였다: `file_backup`(4 체크포인트), `execution_server`(6). 8문제 전체는 그룹당 수 시간이 걸릴 수 있어서다. 문제마다 그룹 A, E, B, C, D 순서, 동시 실행 1.
+- 그룹 A `file_backup` 완료 03:12. 체크포인트별 strict pass rate 0.656, 0.680, 0.676, 0.708. 체크포인트당 에이전트 비용 표기 $0.09~0.26(러너가 계산한 API 환산값이며 실제 과금은 구독).
 
 ## Track C. SlopCodeBench 준비 (모델 호출 없음, 2026-10-19 완료)
 
@@ -38,3 +48,5 @@
 - 어댑터는 하네스의 `claude-code` 에이전트 항목을 대체한다. 이 이름일 때만 하네스가 사용량 한도 대기, 비용, 로그 파싱을 하기 때문이다. 모든 그룹에서 보조 모델 슬롯까지 `claude-sonnet-5-5`로 고정했다(B의 pstack 서브에이전트가 Opus로 가지 않게).
 - 마일스톤당 에이전트 시간은 측정하지 않았다. 10~40분이면(추정) go-zero 23개 마일스톤에 그룹당 5~15시간이다.
 - 디스크: WSL 802 GB 여유, 호스트 C: 약 87 GB 여유(2026-10-19 02시 측정). WSL 디스크 파일이 C:에 있으므로 Element Web까지 받으면 여유가 줄어든다.
+- 그룹 E `file_backup` 완료 03:18. 통과 테스트 수가 체크포인트마다 A와 같았다(21/32, 34/50, 46/68, 63/89). 비용 표기는 E가 체크포인트마다 더 높았다(E $0.18~0.34, A $0.09~0.26). 최종 loc는 E 319, A 363.
+- E에서 ABBD가 실제로 쓰였다. 체크포인트마다 CHG가 하나씩 생겼고(CHG-001~004), 최종 상태는 COMPLETED 3, NEEDS_USER 1이다. 에이전트 출력에 `abbd run`, `verify`, `sync` 호출이 체크포인트마다 있다.
