@@ -11,7 +11,7 @@ description: Turns a user request plus the current project state into an IntentD
 
 - 요청이 기능의 동작·계약·불변조건을 추가·변경·삭제할 때.
 - 요청이 CONFIRMED 계약과 충돌하거나, 해석이 둘 이상일 때.
-- reconcile에서 외부 변경이 CONFIRMED 계약과 충돌한다고 넘어왔을 때.
+- reconcile이나 sync가 기본값으로 남긴 등급 B ADR(외부 변경과 확정 계약의 충돌, 외부 계약 변경)에 사용자가 답할 때. decide는 진행 중인 turn 안에서만 동작하므로 답은 다음 turn에서 기록한다. `myharness decisions ID`로 그 ADR의 question과 options를 읽고, question을 글자 그대로, options를 다시 붙여 `myharness decide --question "..." --option K1=L1 --option K2=L2 --answer KEY`로 부른다.
 - 의도 변화가 없는 단순 버그 수정이나 문서 갱신이면 건너뛴다.
 
 ## 입력
@@ -39,6 +39,15 @@ description: Turns a user request plus the current project state into an IntentD
 - changes/removals: 바뀌거나 사라지는 동작·계약. 각각 영향받는 FEAT/IF ID를 붙인다.
 - preserved_invariants: 이번 변경이 지켜야 하는 기존 불변조건. CONFIRMED 또는 USER_STATED인 것만 확정 제약으로 쓴다.
 
+초안은 CHG에 바로 기록한다. 요청 원문은 `run`이 이미 additions에 넣었다. 플래그는 여러 번 쓸 수 있고, 부를 때마다 목록에 덧붙는다.
+
+```sh
+myharness intent delta \
+  --add "설정 키 HEARTBEAT_MAX_RETRY" \
+  --remove "FEAT-001: 재시도 3회 고정" \
+  --preserve "FEAT-001: 중복 수신 시 중복 저장되지 않는다"
+```
+
 ### 2. 질문 전에 스스로 확인
 
 질문하기 전에 다음 순서로 조사한다. 이미 답이 있으면 묻지 않는다.
@@ -47,7 +56,7 @@ description: Turns a user request plus the current project state into an IntentD
 2. 관련 FEAT/MOD/IF와 ADR-*을 조회한다(`myharness inspect ID`).
 3. 코드와 테스트를 확인한다.
 4. Git 이력을 확인한다.
-5. 같은 질문에 답한 ADR이 있는지 확인한다. 있으면 그 답을 따른다.
+5. 같은 질문에 답한 ADR이 있는지 확인한다(`myharness decisions QUERY`, 질문·제목·subject를 검색). 있으면 그 답을 따른다.
 6. 기본값을 정한다.
 
 ### 3. 등급 B 질문이 필요한지 판단
@@ -58,7 +67,6 @@ description: Turns a user request plus the current project state into an IntentD
 - 변경이 CONFIRMED 계약·불변조건과 충돌한다.
 - 외부 인터페이스의 호환성 정책을 건드린다.
 - 데이터 보존, 비용, 의존성 추가 같은 가치 판단이다.
-- 외부 변경이 CONFIRMED 계약과 명백히 충돌한다(reconcile에서 넘어온 경우).
 
 bootstrap 중에는 절대 묻지 않는다. 동작으로 관찰해서 알 수 있는 사실(실행 결과, 성능, 출력)은 질문하지 말고 직접 실행해서 확인한다.
 
@@ -75,9 +83,10 @@ myharness decide \
 
 - 선택지는 2~3개다. 각 선택지의 effect에 그 선택이 바꾸는 범위를 적는다.
 - 질문 본문이나 기본값 effect에 "답하지 않아도 진행되는 범위"를 적는다.
-- 사용자가 답하면 `--answer KEY`를 붙여 다시 기록한다. 답이 없으면 기본값으로 진행하고 ADR은 origin INFERRED, confirmation UNCONFIRMED로 남는다. 턴 상태는 NEEDS_USER다.
-- 턴당 질문은 최대 3개다. 넘치면 결과를 가장 크게 바꾸는 것부터 묻고, 나머지는 질문 없이 기본값으로 decide를 기록한다.
-- 호스트에 구조화된 질문 도구가 있으면 그것으로 사용자에게 보여 주고, 결과는 반드시 decide로 기록한다.
+- 결과의 `ask`가 true일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 결과는 반드시 decide로 기록한다.
+- 사용자가 답하면 같은 `--question`과 `--option`에 `--answer KEY`를 붙여 다시 부른다. 기존 ADR이 CONFIRMED로 바뀐다. 답이 없으면 기본값으로 진행하고 ADR의 rationale은 origin INFERRED, confirmation UNCONFIRMED로 남는다. 답 없는 등급 B ADR이 있으면 sync 후 턴 상태는 NEEDS_USER다.
+- 이미 답한 질문을 다시 decide하면 하네스가 묻지 않고 `reused: true`와 기존 답을 돌려준다. 그 답을 따른다.
+- 턴당 질문은 최대 3개다(`project.yaml`의 `policy.max_questions_per_turn`). 하네스가 센다. 한도를 넘긴 decide는 `ask: false`로 기본값을 기록하므로, 결과를 가장 크게 바꾸는 질문부터 decide한다.
 
 ### 5. 지연 확인 (lazy confirmation)
 
@@ -90,12 +99,15 @@ INFERRED ∧ UNCONFIRMED 항목은 다음 두 조건이 모두 맞을 때만 묻
 
 ```sh
 myharness confirm --list
-myharness confirm FEAT-003 --purpose "heartbeat를 검증해 저장한다"      # CONFIRMED
-myharness confirm FEAT-003 --reject --value "heartbeat를 집계만 한다"    # REJECTED, 대체 값 보존
-myharness confirm --merge CAND-7                                        # 앵커 1개 일치 병합 후보
+myharness confirm FEAT-003                                              # 추정 문장 그대로 수락: CONFIRMED, origin INFERRED 유지
+myharness confirm FEAT-003 --purpose "heartbeat를 검증해 저장한다"      # 사용자 문장: USER_STATED, CONFIRMED
+myharness confirm FEAT-003 --reject                                     # REJECTED
+myharness confirm FEAT-003 --reject --value "heartbeat를 집계만 한다"    # 새 문장 USER_STATED·CONFIRMED, 옛 문장은 rejected_value로 보존
+myharness confirm IF-002 --external-consumers true                      # 외부 소비자 여부, USER_STATED
+myharness confirm --merge CAND-7                                        # 앵커 1개 일치 병합 후보 (--split CAND-7은 분리)
 ```
 
-사용자가 명시적으로 요청하지 않는 한, 이번 턴과 무관한 확인 대기 목록을 한꺼번에 처리하지 않는다.
+`confirm`은 사용자가 본 문장을 기록하는 명령이다. 사용자가 확인하지 않은 항목에 에이전트가 부르지 않는다. 사용자가 명시적으로 요청하지 않는 한, 이번 턴과 무관한 확인 대기 목록을 한꺼번에 처리하지 않는다(`confirm --all`은 그 요청이 있을 때만).
 
 ### 6. 의도 기록
 
@@ -107,14 +119,24 @@ myharness intent invariant --feature FEAT-001 \
   --claim "중복 수신 시 중복 저장되지 않는다" --origin USER_STATED --test TEST-019
 ```
 
-- 사용자가 말한 것은 USER_STATED, 에이전트가 해석한 것은 INFERRED다.
-- 새 기능은 `--id`를 생략해 새 ID를 받는다. 앵커는 symbol, path, test, entry 중 2종 이상을 준다.
+모듈 책임·의존 정책과 계약의 호환성·외부 소비자 여부가 바뀌는 요청이면 같이 기록한다.
+
+```sh
+myharness intent module --id MOD-002 --responsibility "heartbeat 수신과 저장" \
+  --allow MOD-005 --forbid MOD-003
+myharness intent contract --id IF-002 --compatibility "필드 추가만 허용" \
+  --external-consumers true --origin USER_STATED
+```
+
+- `--origin`을 생략하면 INFERRED다. 사용자가 이번 턴에 말한 것만 `--origin USER_STATED`로 쓴다.
+- `run`이 새 기능을 판단했으면 WorkflowPlan의 `new_feature` ID를 `--id`로 준다. `--id` 없이 부르면 새 FEAT를 만든다. 앵커(`--anchor kind:ref`, kind는 symbol, path, test, entry)는 2종 이상을 준다.
+- 의미 필드를 바꾸기 전에 `myharness inspect ID`로 현재 값의 origin과 confirmation을 본다. CONFIRMED 또는 USER_STATED이면 INFERRED 문장으로 덮지 않고 `myharness decide --subject ID`로 등급 B 질문을 만든다. 하네스도 CONFIRMED purpose·responsibility를 INFERRED로 바꾸는 intent 호출을 거부한다. 거부되면 우회하지 말고 decide로 간다.
 
 ## 게이트와 출력
 
 - IntentDelta: additions, changes/removals, preserved_invariants, 관련 ID, 각 항목의 origin.
 - 질문 기록: 묻은 질문과 ADR ID, 답 여부, 기본값으로 진행한 항목.
-- 상태 전이: INTENT_RESOLVED. 기본값으로 진행한 등급 B 결정이 있으면 NEEDS_USER를 함께 보고한다.
+- 상태 전이: `run`이 CHG를 INTENT_RESOLVED로 연다. `intent delta`를 기록하면 IMPLEMENTING으로 넘어간다. 기본값으로 진행한 등급 B 결정이 있으면 NEEDS_USER가 될 것을 함께 보고한다.
 
 다음 단계는 architect-change와 impact-review다.
 

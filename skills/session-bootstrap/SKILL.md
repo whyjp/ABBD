@@ -38,7 +38,9 @@ myharness init --mode greenfield       # 빈 저장소. 첫 요청이 요구사�
 myharness init --mode adopt --from PATH   # 비슷한 기존 문서가 있을 때
 ```
 
+- 무엇이 생길지 먼저 보려면 `--preview`를 붙인다. BootstrapReport만 출력하고 `.myharness/`를 쓰지 않는다.
 - 빌드·테스트를 돌릴 수 있는 환경이면 `--verify-available`을 붙여 OBSERVED 근거를 확보한다.
+- `.myharness/`가 이미 있는데 `--mode`와 `--from` 없이 `init`을 부르면 bootstrap 대신 `status` 결과를 돌려준다.
 - bootstrap 중에는 사용자에게 아무것도 묻지 않는다. 의도·책임·호환 정책이 불확실한 항목은 INFERRED ∧ UNCONFIRMED로 남고 `generated/confirm-queue.html`에 올라간다.
 - adopt 입력이 실패해도 기본 bootstrap 경로는 그대로 진행한다.
 - 다시 스캔해야 하면 `myharness bootstrap --mode M --scan`을 쓴다. 앵커 2개 이상이 일치하는 항목은 기존 안정 ID와 확인된 의도를 유지한다.
@@ -47,7 +49,7 @@ myharness init --mode adopt --from PATH   # 비슷한 기존 문서가 있을 �
 
 ### 3. 외부 변경 재조정
 
-status가 대기 중인 외부 변경을 보고하면 실행한다.
+turn을 열 요청이면 이 단계를 따로 하지 않는다. `myharness run`이 대기 중인 외부 변경을 먼저 재조정하고, 결과를 WorkflowPlan의 `reconciled`에 담는다. turn을 열지 않는 질문인데 status가 대기 중인 외부 변경(`pending_changes`)을 보고하면 직접 실행한다.
 
 ```sh
 myharness reconcile
@@ -55,7 +57,8 @@ myharness reconcile
 
 - `intent_source: external`인 CHG가 생기고 EXTRACTED 사실(심볼·호출·바인딩)만 갱신된다.
 - purpose, responsibility, invariant 같은 의미 필드는 건드리지 않는다. 질문도 하지 않는다.
-- 유일한 예외는 외부 변경이 CONFIRMED 계약과 명백히 충돌할 때다. 그때만 change-intent skill로 넘겨 등급 B로 묻는다.
+- 외부 변경이 CONFIRMED 계약이나 확정된 기능과 충돌하면 reconcile이 등급 B ADR을 기본값 `accept`로 남기고 상태를 NEEDS_USER로 둔다. 결과의 `conflicts`가 비어 있지 않으면 사용자 보고에 그 ADR을 적는다.
+- 진행 중인 turn이 있으면 reconcile은 거부된다. 그 turn의 변경은 `myharness sync`가 처리한다.
 
 ### 4. STALE 처리
 
@@ -67,9 +70,15 @@ myharness reconcile
 
 ```sh
 myharness run "REQUEST"
+myharness run "REQUEST" --type bug-fix --tier T1   # 라우팅을 바로잡을 때만
 ```
 
-`run`은 bootstrap 점검, 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. 진행 중인 turn이 이미 있으면 이어서 쓸지 판단하고, 버릴 때만 `myharness turn abort`를 쓴다.
+`run`은 `.myharness/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산이 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
+
+- `--type`은 docs, bug-fix, perf, interface-change, refactor, feature 중 하나다. CLI는 다른 값도 받지만 단계 목록이 바뀌지 않으므로 이 여섯 개만 쓴다.
+- `--tier`는 T0~T3다. 요청에 재시도·동시성·중복 같은 위험어가 있으면 `run`이 T3로 올린다. 낮출 때는 이유를 EvidenceReport에 적는다.
+- `ambiguous: true`이면 change-intent에서 등급 B 질문을 남긴다.
+- 진행 중인 turn이 있으면 `run`은 거부된다. 이어서 쓸지 판단하고, 버릴 때만 `myharness turn abort --reason TEXT`를 쓴다.
 
 코드를 바꾸지 않는 질문("X는 어떻게 동작해?", "이렇게 바꾸면 영향이 어디까지야?")이면 turn을 열지 않는다. 아무것도 쓰지 않는 dry run을 쓴다.
 

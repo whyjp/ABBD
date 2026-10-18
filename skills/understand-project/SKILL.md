@@ -47,6 +47,8 @@ myharness contracts list --module MOD-002
 ```
 
 - `inspect` 결과의 파일 경로와 라인을 직접 열어 읽는다. 결과만 믿고 넘어가지 않는다.
+- graph 답에는 `freshness`가 붙는다. STALE이면 위 표대로 소스로 확인한다. 정적 그래프에 경로가 없다는 답(`found: false`)은 관계가 없다는 뜻이 아니다.
+- turn이 열려 있으면 inspect, graph, contracts, impact 호출은 하네스가 `graph_queries`로 센다. 턴 예산(`project.yaml`의 `budgets`)을 넘기지 않게 필요한 ID만 조회한다.
 - 진입점, 데이터 흐름, 소유 모듈, 외부 계약(IF/EVT/DATA, 설정 키, 배포 단위)을 정리한다.
 - 정적 분석으로 알 수 없는 동적 디스패치, 런타임에 조립되는 토픽·라우트는 "없음"이 아니라 UNKNOWN으로 적는다.
 
@@ -54,7 +56,7 @@ myharness contracts list --module MOD-002
 
 다음 순서로 근거를 찾는다.
 
-1. 해당 FEAT-*.intent와 관련 ADR-*. origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다.
+1. 해당 FEAT-*.intent와 관련 ADR-*(`myharness decisions FEAT-001`처럼 ID나 낱말로 검색). origin이 USER_STATED 또는 ADOPTED면 의도의 근거로 쓴다. 답한 ADR(`answered: true`)은 사용자가 이미 정한 것이다.
 2. confirmation이 CONFIRMED인 불변조건.
 3. Git 이력. `git log --follow -- PATH`, `git blame -L a,b PATH`로 변경 커밋과 PR 설명을 읽는다.
 4. 코드의 방어 로직(재시도, 타임아웃, 중복 제거)은 과거 장애의 흔적일 수 있다. 근거를 찾으면 링크하고, 못 찾으면 추정이라고 적는다.

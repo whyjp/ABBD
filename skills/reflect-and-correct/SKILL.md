@@ -34,17 +34,18 @@ receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff�
 | 동기화 | map / graph / html revision 상태. 모두 CURRENT인가 |
 | 결정 | 등급 A 자동 적용 / 등급 B 기본값 진행(UNCONFIRMED ADR) / 등급 C 대기 |
 | 의도 충실도 | Requested Delta 항목 수 / 테스트 PASSED로 덮인 수 / 사용자 CONFIRMED 수 |
-| 계측 | 모델 호출, 그래프 조회, 테스트 실행, 질문 횟수, 소요 시간 |
+| 계측 | `telemetry`의 model_calls(호스트 보고, `turn note`), graph_queries, test_runs, questions_asked, duration_sec(하네스가 셈) |
 | 후속 | 잔여 리스크, 권장 다음 작업, 새로 쌓인 UNCONFIRMED 수 |
 
 코드/문서 diff는 직접 읽는다. 서브에이전트가 쓴 부분도 마찬가지다. 같은 맥락에서 쓴 사람이 스스로 승인하지 않는다. 독립 리뷰가 필요한 변경인데 리뷰어를 돌릴 수 없으면 그 사실을 보고한다.
 
 ## 2. 반영과 보고
 
-- 등급 A 행동(로컬 검증, 맵 동기화, 설정에 따라 로컬 commit)은 진행하고 보고한다. 로컬 commit의 등급은 `myharness policy classify --action local-commit`으로 확인한다.
+- 등급 A 행동(로컬 검증, 맵 동기화, 설정에 따라 로컬 commit)은 진행하고 보고한다. 로컬 commit의 등급은 `myharness policy classify --action local-commit`으로 확인한다. 등급 A이면 `myharness sync --commit`이 sync와 함께 commit을 만든다.
 - 등급 C 행동(push, 배포 등)은 실행하지 않는다. 준비된 변경과 승인 요청을 보고한다.
 - 사용자 보고는 receipt의 요지로 쓴다. 목적, 바뀐 것, 검증 결과(실행함/실행 못함), 동기화 상태, 기본값으로 진행한 결정과 뒤집는 방법, 등급 C 대기 항목, 새 UNCONFIRMED 수.
-- 턴을 버려야 하면 `myharness turn abort`를 쓴다.
+- 등급 C 대기 항목은 receipt의 `blocked`와 `myharness decisions`의 답 없는 등급 C ADR로 확인한다.
+- 턴을 버려야 하면 `myharness turn abort --reason TEXT`를 쓴다. 그 turn이 만든 초안 FEAT는 지워지고, CHG는 BLOCKED 기록으로 남는다. 작업 트리의 코드는 되돌리지 않으므로, 버린 코드가 남아 있으면 다음 `run`이 외부 변경으로 재조정한다.
 
 여기까지 끝나야 턴이 COMPLETED다.
 
@@ -66,6 +67,12 @@ receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff�
 
 "한 번 더 주의하라"는 문장만 추가하는 것은 교정이 아니다.
 
+고른 단계를 제안으로 기록한다. `--kind`는 위 순서의 architecture, type, lint, test, doc, skill 중 하나다. 진행 중인 turn이 있으면 그 CHG의 next_steps에도 붙는다. 기록은 `.myharness/learning.yaml`에 `status: proposed`로 쌓인다.
+
+```sh
+myharness learn --kind lint --proposal "재시도 횟수 상수 하드코딩을 금지하고 RetryPolicy를 쓰게 한다"
+```
+
 ## 5. 증명
 
 - 새 검사마다 실제 과거 실수에 대해 실패하는지 돌려서 확인한다. 실패하지 않으면 그 검사는 막지 못한다.
@@ -75,7 +82,8 @@ receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff�
 
 ## 6. Skill과 정책 변경
 
-- 반복되는 사용자 선호는 `.myharness/project.yaml` 정책 후보로 제안한다. 한 번 답한 질문은 ADR로 남아 있으므로 다시 묻지 않는다.
+- 반복되는 사용자 선호는 사용자가 동의하면 `myharness learn --preference key=value`로 `project.yaml`의 `preferences`에 쓴다. 한 번 답한 질문은 ADR로 남아 있고 decide가 `reused`로 돌려주므로 다시 묻지 않는다.
+- 스킬 변경 제안은 `myharness learn --kind skill --proposal TEXT`로 남긴다.
 - 이 skills/ 디렉터리나 전역 Skill을 바꾸는 제안은 다른 프로젝트에도 영향을 준다. 로컬에서 평가한 뒤 사용자 승인을 받고 적용한다. 자동 적용하지 않는다.
 - 규칙마다 무엇이 그것을 강제하는지 짝지은 표를 프로젝트의 에이전트 지침 파일에 유지한다. 규칙이 이미 있는데 강제 수단이 없어서 반복됐다면, 같은 변경에서 더 높은 단계로 올린다. 실수가 더 이상 불가능해지면 규칙을 지운다.
 

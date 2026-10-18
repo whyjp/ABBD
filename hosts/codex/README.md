@@ -34,8 +34,9 @@ Codex에는 세션 시작 훅으로 skill 진입을 강제하는 장치가 기�
 
 - 모든 요청은 session-bootstrap skill로 시작한다. 첫 명령은 `myharness status --json`이다.
 - 코드를 바꾸는 요청은 `myharness run "REQUEST"`로 turn을 열고, skills/README.md의 순서를 따른다.
-- 필수 검증이 PASSED가 아니면 `myharness sync`를 하지 않는다. maps/graph/HTML이 CURRENT가 아니면 완료라고 보고하지 않는다.
-- 등급 B 질문은 일반 텍스트로 묻고 `myharness decide`로 기록한다. 턴당 3개까지, bootstrap 중에는 묻지 않는다.
+- 필수 검증이 PASSED가 아니면 `myharness sync`를 하지 않는다. sync가 종료 코드 2를 내면 완료가 아니다. maps/graph/HTML이 CURRENT가 아니면 완료라고 보고하지 않는다.
+- 등급 B 질문은 먼저 `myharness decide`로 기록하고, 결과가 `ask: true`일 때만 일반 텍스트로 묻는다. 턴당 3개 한도와 이미 답한 질문의 재사용은 하네스가 처리한다. bootstrap 중에는 묻지 않는다.
+- turn이 끝나기 전에 이번 turn의 모델 호출 수를 `myharness turn note --model-calls N`으로 보고한다.
 - 등급 C 행동(공유 브랜치 push, 배포, 외부 리소스 삭제, 비밀정보 변경)은 명시적 승인 없이 하지 않는다.
 ```
 

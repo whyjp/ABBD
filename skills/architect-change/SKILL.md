@@ -23,12 +23,15 @@ description: Designs a change before code is written. Picks the owning module, c
 ### 1. 책임 모듈 정하기
 
 - IntentDelta의 각 항목을 소유할 MOD-*를 정한다. 기존 모듈의 responsibility에 맞으면 그 모듈에 둔다.
-- 그 모듈의 `dependency_policy`(allowed, forbidden)를 확인한다. 새 의존이 forbidden에 걸리면 설계를 바꾸거나, 정책 변경 자체를 등급 B 질문으로 넘긴다.
-- 새 모듈이 필요하면 responsibility 초안을 쓴다. 이것은 에이전트 판단이므로 origin INFERRED, confirmation UNCONFIRMED다.
+- 그 모듈의 `dependency_policy`(allowed, forbidden)와 `dependency_violations`를 확인한다. 새 의존이 forbidden에 걸리면 설계를 바꾸거나, 정책 변경 자체를 등급 B 질문으로 넘긴다.
+- 기존 모듈의 책임이나 의존 정책을 바꾸는 설계면 `intent module`로 기록한다. 에이전트 판단이므로 origin INFERRED, confirmation UNCONFIRMED다. CONFIRMED 책임은 바꾸지 않고 decide로 묻는다.
+- 새 모듈이 필요하면 responsibility 초안을 ChangePlan과 `intent delta --add`에 쓴다. MOD ID는 sync가 새 패키지를 발견할 때 생기고 responsibility는 INFERRED 자리표시로 시작한다. `intent module`은 이미 있는 모듈만 받으므로, 초안 문장은 다음 turn에서 `intent module --id MOD-new`로 옮기거나 사용자가 `confirm MOD-new --value`로 확정한다.
 
 ```sh
 myharness inspect MOD-002
 myharness graph neighbors MOD-002 --depth 1
+myharness intent module --id MOD-002 --allow MOD-005 --forbid MOD-003
+myharness intent delta --add "새 모듈 internal/retrypolicy: 재시도 정책을 소유한다 (INFERRED)"
 ```
 
 ### 2. 타입과 경계 스케치
@@ -51,7 +54,7 @@ myharness graph neighbors MOD-002 --depth 1
 - 기존 불변조건(preserved_invariants)을 타입이나 구조로 지킬 수 있는가.
 - 외부 계약의 호환성을 유지하는가. 유지하지 못하면 impact-review의 등급 판정으로 넘긴다.
 
-선택 이유를 두세 문장으로 남긴다. 사용자 가치 판단이 필요한 선택이면 change-intent의 decide로 등급 B 질문을 만든다(턴당 3개 한도에 포함).
+선택 이유를 두세 문장으로 남긴다. 사용자 가치 판단이 필요한 선택이면 change-intent의 decide로 등급 B 질문을 만든다(턴당 3개 한도에 포함). `--answer`는 사용자의 답만 기록한다. 하네스가 그 ADR을 USER_STATED·CONFIRMED로 저장하므로 에이전트가 고른 후보를 `--answer`로 남기지 않는다.
 
 ### 4. 검증 계약
 
@@ -63,7 +66,8 @@ IntentDelta의 각 항목마다 무엇이 그것을 증명하는지 정한다.
 | FEAT-001 중복 저장 금지 유지 | TEST-019 재실행 | T2 |
 
 - 증명은 사용자가 관찰할 수 있는 동작을 단언한다. 내부 구현을 단언하는 테스트는 리팩터링마다 깨진다.
-- 실행할 수 없는 증명(실서비스 토픽 등)은 미리 UNVERIFIABLE 후보로 표시하고 이유를 적는다.
+- 실행할 수 없는 증명(실서비스 토픽 등)은 미리 UNVERIFIABLE 후보로 표시하고 이유를 적는다. implement-and-prove가 `myharness verify --unverifiable "CHECK" --reason TEXT`로 기록한다.
+- 하네스가 영향 범위에서 뽑은 명령·테스트는 `myharness verification-plan`으로 본다. 검증 계약이 그보다 좁으면 빠진 이유를 적는다.
 
 ## 출력: ChangePlan
 

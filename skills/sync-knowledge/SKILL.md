@@ -38,7 +38,14 @@ myharness intent invariant --feature FEAT-001 \
 - 테스트 PASSED는 verification만 PASSED로 바꾼다. origin과 confirmation은 그대로다.
 - purpose는 테스트, 커버리지, 실행 결과 어떤 것으로도 승격하지 않는다. CONFIRMED는 사용자 확인(`myharness confirm`)으로만 생긴다.
 - 확정된 계약을 실패한 동작으로 덮어쓰지 않는다.
-- 외부 계약(IF/EVT/DATA, 설정 키, 배포 단위)을 바꿨으면 Architecture Map의 외부 계약 뷰를 같은 턴에 갱신한다. 실행 검증하지 못한 계약은 verification UNVERIFIABLE과 이유를 남긴다.
+- 외부 계약(IF/EVT/DATA, 설정 키, 배포 단위)을 바꿨으면 Architecture Map의 외부 계약 뷰를 같은 턴에 갱신한다. selector·위치 같은 EXTRACTED 사실은 sync가 갱신한다. 호환성 정책과 외부 소비자 여부가 바뀌었으면 `intent contract`로, 모듈 책임이나 의존 정책이 바뀌었으면 `intent module`로 기록한다. 실행 검증하지 못한 계약은 `myharness verify --unverifiable "CHECK" --reason TEXT`로 이유를 남긴다.
+
+```sh
+myharness intent contract --id IF-002 --compatibility "필드 추가만 허용"
+myharness intent module --id MOD-002 --responsibility "heartbeat 수신과 저장"
+```
+
+- `.myharness/` 아래 md를 손으로 고쳐 의미 필드를 바꾸지 않는다. intent, confirm, decide 명령이 origin과 confirmation 규칙을 지킨다.
 
 ### 2. sync 게이트
 
@@ -46,8 +53,19 @@ myharness intent invariant --feature FEAT-001 \
 myharness sync
 ```
 
-- sync는 PASSED 검증 뒤에만 동작한다. maps, graph, HTML을 한 revision으로 갱신하고 ChangeReceipt를 쓴다.
-- 실패하면 산출물은 DRAFT로 남는다. 실패 원인을 고치고 다시 sync한다. 같은 명령을 다시 돌려도 같은 상태로 수렴한다.
+- sync는 현재 작업 트리 그대로에서 마지막 verify가 PASSED일 때만 완료한다. 문서 파일만 바뀐 turn은 T0로 보고 코드 검증 없이 진행하며 receipt의 risks에 그 사실을 적는다. maps, graph, HTML을 한 revision으로 갱신하고 ChangeReceipt를 쓴 뒤 check를 스스로 돌린다.
+- 종료 코드: 0은 완료, 2는 게이트 거부(산출물은 DRAFT로 남고 turn은 열린 채), 1은 오류다. 2이면 결과의 `reason`을 읽는다.
+
+| `reason` | 할 일 |
+|---|---|
+| 검증 NOT_RUN / FAILED / UNVERIFIABLE | implement-and-prove로 돌아가 verify |
+| 검증 이후 작업 트리가 바뀜 | 다시 verify |
+| 등급 C: 명시적 승인 필요 | external_consumers: true 계약의 breaking change. 상태 BLOCKED. 사용자 승인이 있으면 `myharness decide --tier C --question Q --subject IF-x --answer approve`를 기록하고 다시 sync |
+| 스키마/계약 검사 실패, 동기화 후 산출물 불일치 | 원인을 고치고 다시 sync |
+
+- 이번 turn에 decide하지 않은 등급 B 계약 변경(외부 소비자 미상의 breaking change, 호환성 변경)이 있으면 sync가 그 계약을 subject로 한 UNCONFIRMED ADR을 기본값 `proceed`로 남기고 완료한다. 답 없는 등급 B ADR이 하나라도 있으면 receipt의 상태는 NEEDS_USER다.
+- 같은 명령을 다시 돌려도 같은 상태로 수렴한다. 진행 중인 turn이 없으면 sync는 외부 변경을 재조정하거나 생성물만 다시 만든다.
+- `myharness sync --commit`은 완료 뒤 로컬 commit을 하나 만든다(`CHG-x: 요청`). `project.yaml`에서 local-commit이 등급 A일 때만 하고, 아니면 결과의 `reason`에 이유를 남긴다. push는 하지 않는다.
 
 ### 3. 정합성 확인
 
@@ -59,14 +77,14 @@ myharness status --json
 - check는 스키마, provenance 규칙, 참조 무결성, md/html/graph revision 일치를 본다.
 - status에서 maps, graph, HTML이 모두 CURRENT인지 확인한다.
 - HTML만 STALE이면 `myharness render`로 다시 만들고 check를 다시 돌린다.
-- md 원본과 HTML의 revision이 다르면 STALE이다. HTML을 손으로 고치지 않는다. 원본 md를 고치고 render한다.
+- md 원본과 HTML의 revision이 다르면 STALE이다. HTML을 손으로 고치지 않는다. `myharness render`로 원본에서 다시 만든다.
 
 ### 4. 문서만 갱신하는 턴
 
-1. 고칠 대상이 원본 SSOT(`.myharness/features/`, `.myharness/architecture/`, `.myharness/decisions/`의 md)인지 생성물(`generated/`)인지 구분한다. 생성물은 직접 고치지 않는다.
-2. 원본 md를 고친다.
-3. `myharness render`, `myharness check`를 돌린다.
-4. 고친 문장이 코드·계약의 증거와 맞는지 확인한다. 증거가 없으면 INFERRED로 둔다.
+1. `myharness run "REQUEST" --type docs`로 turn을 연다(검증 수준 T0).
+2. 고칠 대상을 구분한다. 프로젝트 문서(README, docs/ 등)는 그대로 고친다. 하네스 지식(Feature purpose, Module responsibility, 불변조건, 계약 호환성)은 `intent feature|invariant|module|contract`로 고친다. `.myharness/generated/`는 생성물이므로 고치지 않는다.
+3. `myharness sync`로 닫는다. 바뀐 파일이 모두 문서면 코드 검증 없이 통과한다.
+4. `myharness check`로 확인한다. 고친 문장이 코드·계약의 증거와 맞는지 확인하고, 증거가 없으면 INFERRED로 둔다.
 
 ## 완료 금지 조건
 

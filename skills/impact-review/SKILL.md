@@ -24,13 +24,15 @@ description: Finds what a change can break outside its diff. Checks external con
 호출 그래프보다 먼저 본다.
 
 ```sh
-myharness contracts impact --json
+myharness contracts impact --diff --json
 myharness contracts list --module MOD-002
 ```
 
+`contracts impact`는 작업 트리와 마지막 동기화를 비교해 바뀐 계약마다 `change`(added, removed, modified), `breaking`, `tier`, `reason`을 주고 `highest_tier`를 붙인다. `--diff`는 기본 동작이며 생략해도 같다. 구현 전에는 비어 있는 것이 정상이다. 구현 후 실제 diff로 다시 돈다.
+
 - 변경이 건드리는 IF-*, EVT-*, DATA-*, 설정 키, 배포 단위를 나열한다.
 - 각 계약의 compatibility 정책과 external_consumers 값을 확인한다.
-- 호환성 정책을 건드리면 등급 B다. change-intent의 decide로 넘긴다.
+- 호환성 정책을 건드리면 등급 B다. change-intent의 decide로 넘긴다. sync 전에 decide하지 않으면 sync가 그 계약을 subject로 한 등급 B ADR을 기본값 `proceed`로 직접 남기고 턴은 NEEDS_USER로 끝난다. 사용자에게 보여 줄 선택지가 있으면 그 전에 decide한다.
 - external_consumers: true인 계약의 breaking change는 등급 C다. 아래 4단계에서 멈춘다.
 - external_consumers 값이 INFERRED ∧ UNCONFIRMED이면 지연 확인 조건에 해당하므로 change-intent에서 묻는다.
 
@@ -73,6 +75,8 @@ myharness policy classify --action secret
 myharness policy classify --action local-commit
 ```
 
+모르는 action이면 오류에 하네스가 아는 action 목록이 나온다(push, force-push, deploy, delete-external, secret, production-data, breaking-external, compatibility-change, add-dependency, local-commit 등).
+
 등급 C 정지 목록:
 
 - 공유 브랜치 push, force-push
@@ -82,7 +86,15 @@ myharness policy classify --action local-commit
 - external_consumers: true인 인터페이스의 breaking change
 - 실서비스 데이터 변경
 
-등급 C이면 명시적 승인 없이 실행하지 않는다. 가역적 준비(로컬 브랜치의 코드, 마이그레이션 초안, 테스트)까지만 하고 상태를 BLOCKED로 보고한다. 보고에는 승인 요청과 준비된 변경을 함께 적는다.
+등급 C이면 명시적 승인 없이 실행하지 않는다. 가역적 준비(로컬 브랜치의 코드, 마이그레이션 초안, 테스트)까지만 하고 상태를 BLOCKED로 보고한다. 보고에는 승인 요청과 준비된 변경을 함께 적는다. 정지를 turn에 기록한다.
+
+```sh
+myharness decide --tier C --question "IF-003 POST /messages 경로를 /v2/messages로 바꿔도 되나?" --subject IF-003
+```
+
+- 등급 C는 선택지가 필요 없다. 결과는 `blocked: true`, `ask: true`이고 CHG의 `blocked`에 들어간다. 종료 코드는 0이므로 `blocked` 필드로 판단한다.
+- 사용자가 명시적으로 승인했을 때만 같은 질문에 `--answer approve`를 붙여 다시 부른다. 에이전트가 승인을 대신 기록하지 않는다.
+- external_consumers: true 계약의 breaking change는 decide를 잊어도 막힌다. sync가 종료 코드 2, 상태 BLOCKED로 멈추고, 그 계약을 `--subject`로 둔 등급 C 결정이 `--answer approve`로 기록될 때까지 산출물을 DRAFT로 둔다.
 
 ### 5. 테스트 범위 결정
 

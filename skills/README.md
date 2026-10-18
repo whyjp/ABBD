@@ -8,15 +8,17 @@
 
 | 턴 단계 (PRD 04장) | skill | 주요 CLI 명령 | 산출물 / 게이트 |
 |---|---|---|---|
-| 0. Session bootstrap | session-bootstrap | `myharness status`, `myharness init`, `myharness bootstrap`, `myharness reconcile` | ProjectStateSnapshot |
-| 1. Route | session-bootstrap | `myharness run "REQUEST"`, `myharness plan "REQUEST"` | WorkflowPlan + 검증 수준 |
-| 2. Understand current | understand-project | `myharness inspect ID`, `myharness graph neighbors ID`, `myharness graph trace`, `myharness contracts list` | 근거 링크 있는 현재 상태 |
-| 3. Resolve intent | change-intent | `myharness decide`, `myharness confirm`, `myharness intent feature`, `myharness intent invariant` | IntentDelta / 등급 B 질문 |
-| 4. Design | architect-change | `myharness inspect ID`, `myharness graph neighbors ID` | ChangePlan + 검증 계약 |
-| 4. Impact | impact-review | `myharness contracts impact`, `myharness impact`, `myharness policy classify` | ChangePlan의 영향 범위, 등급 판정 |
-| 5. Implement / 6. Prove | implement-and-prove | `myharness verify`, `myharness turn note` | diff + EvidenceReport |
-| 7. Synchronize | sync-knowledge | `myharness sync`, `myharness check`, `myharness render`, `myharness status` | ConsistencyReport, ChangeReceipt |
-| 8. Review / ship, 9. Learn | reflect-and-correct | `myharness turn show`, `myharness policy classify`, `myharness turn abort` | 검토된 ChangeReceipt, 규칙/Skill 변경 제안 |
+| 0. Session bootstrap | session-bootstrap | `myharness status`, `myharness init [--preview]`, `myharness bootstrap`, `myharness reconcile` | ProjectStateSnapshot |
+| 1. Route | session-bootstrap | `myharness run "REQUEST" [--type T] [--tier T0..T3]`, `myharness plan "REQUEST"` | WorkflowPlan + 검증 수준. `run`은 bootstrap과 외부 변경 재조정을 먼저 한다 |
+| 2. Understand current | understand-project | `myharness inspect ID`, `myharness graph neighbors ID`, `myharness graph trace`, `myharness contracts list`, `myharness decisions [QUERY]` | 근거 링크 있는 현재 상태 |
+| 3. Resolve intent | change-intent | `myharness intent delta`, `myharness intent feature`, `myharness intent invariant`, `myharness intent module`, `myharness intent contract`, `myharness decide`, `myharness decisions`, `myharness confirm` | IntentDelta / 등급 B 질문(턴당 3개, 답한 질문은 재사용) |
+| 4. Design | architect-change | `myharness inspect ID`, `myharness graph neighbors ID`, `myharness intent module`, `myharness verification-plan` | ChangePlan + 검증 계약 |
+| 4. Impact | impact-review | `myharness contracts impact [--diff]`, `myharness impact`, `myharness policy classify`, `myharness decide --tier C` | ChangePlan의 영향 범위, 등급 판정, 등급 C 정지 기록 |
+| 5. Implement / 6. Prove | implement-and-prove | `myharness verification-plan`, `myharness verify`, `myharness verify --unverifiable "CHECK" --reason TEXT`, `myharness turn note --model-calls N` | diff + EvidenceReport(실행함 / 실행 못함) |
+| 7. Synchronize | sync-knowledge | `myharness intent contract`, `myharness intent module`, `myharness sync [--commit]`, `myharness check`, `myharness render`, `myharness status` | ConsistencyReport, ChangeReceipt. sync 종료 코드 2는 게이트 거부 |
+| 8. Review / ship, 9. Learn | reflect-and-correct | `myharness turn show`, `myharness policy classify`, `myharness turn abort [--reason TEXT]`, `myharness learn --kind K --proposal TEXT`, `myharness learn --preference key=value` | 검토된 ChangeReceipt, `.myharness/learning.yaml`의 교정 제안 |
+
+계측은 하네스가 센다. 그래프 조회(inspect, contracts, impact, graph), 테스트 실행(verify), 질문 수(decide), 소요 시간(sync)은 자동이고, 모델 호출 수만 호스트가 `myharness turn note --model-calls N`으로 보고한다.
 
 ## 실행 순서
 
@@ -31,7 +33,7 @@ session-bootstrap → understand-project → change-intent → architect-change
 작은 작업일수록 가볍게 돈다. 단계의 행위는 지키되 모든 단계에 별도 에이전트나 도구 호출을 둘 필요는 없다.
 
 - 단순 함수 버그: session-bootstrap → understand-project → implement-and-prove → sync-knowledge → reflect-and-correct(receipt 확인만).
-- 문서만 갱신: session-bootstrap → sync-knowledge(원본 md 수정, render, check).
+- 문서만 갱신: session-bootstrap(`run --type docs`) → sync-knowledge(문서 수정, 의미 필드는 intent 명령, sync, check).
 - 코드 변경 없는 질문: session-bootstrap(`plan`, turn 열지 않음) → understand-project.
 
 어느 경로든 두 게이트는 생략하지 않는다. 필수 검증이 PASSED가 아니면 sync하지 않고, maps/graph/HTML이 CURRENT가 아니면 완료라고 보고하지 않는다.

@@ -52,12 +52,15 @@ ChangePlan을 각각 검사 하나로 끝나는 단위로 나눈다. 앞 단위�
 ### 4. verify로 증거 남기기
 
 ```sh
-myharness verify --affected                   # impact 기준 영향 범위
-myharness verify --all                        # 전체 회귀가 필요할 때(T3 등)
-myharness verify --cmd "go test ./service/heartbeat/..."
+myharness verification-plan                   # 하네스가 고른 명령·테스트·UNKNOWN을 먼저 본다
+myharness verify --affected                   # 기본값. build 명령 + impact 기준 영향 테스트
+myharness verify --all                        # build + 전체 test 명령(T3 등)
+myharness verify --cmd "go test ./service/heartbeat/..." --cmd "go vet ./..."
 ```
 
-- verify는 명령, revision, 통과/실패를 Evidence로 저장하고 turn을 갱신한다.
+- verify는 명령, revision, fingerprint, 통과/실패를 Evidence(`.myharness/verification/runs/`)로 저장하고 turn을 갱신한다.
+- 종료 코드는 FAILED여도 0이다. 결과의 `overall`과 `failed_tests`로 판단한다.
+- verify 뒤에 작업 트리를 바꾸면 그 PASSED는 sync에서 무효다. 마지막 수정 뒤에 다시 verify한다.
 - 검증 계약의 각 항목이 어느 Evidence로 덮였는지 연결한다.
 - 증거 없이 PASSED라고 쓰지 않는다. "컴파일된다"는 T1 이상의 증거가 아니다.
 
@@ -66,7 +69,14 @@ myharness verify --cmd "go test ./service/heartbeat/..."
 EvidenceReport에는 두 목록을 따로 둔다.
 
 - 실행함: 명령, 결과(PASSED / FAILED), evidence ID.
-- 실행 못함: 항목, 이유(환경 없음, 실서비스 의존, 권한 없음 등). 이 항목의 verification은 UNVERIFIABLE이고, 이유가 없으면 NOT_RUN으로 남는다.
+- 실행 못함: 항목, 이유(환경 없음, 실서비스 의존, 권한 없음 등). 이 항목의 verification은 UNVERIFIABLE이다. 이유 없이는 기록되지 않는다.
+
+```sh
+myharness verify --unverifiable "운영 heartbeat-events 토픽 소비" --reason "이 환경에 브로커 없음"
+```
+
+- 결과의 `could_not_run`에 들어가고 Evidence로 남는다. `test_runs`는 늘지 않는다.
+- UNVERIFIABLE 기록은 앞선 PASSED나 FAILED를 덮지 않는다. UNVERIFIABLE만 있으면 turn의 verification은 UNVERIFIABLE이고 sync는 통과하지 않는다. 실행 가능한 필수 검증은 따로 PASSED가 있어야 한다.
 
 실행 못한 검증을 실행한 것처럼 요약하지 않는다.
 
@@ -78,7 +88,9 @@ EvidenceReport에는 두 목록을 따로 둔다.
 
 ### 7. 예산과 계측
 
-T0/T1 작업은 경량 루프로 돈다. 모델 호출, 그래프 조회, 테스트 실행 각각의 상한은 `project.yaml`을 따른다. 호스트가 모델 호출 수를 알려 주면 기록한다.
+T0/T1 작업은 경량 루프로 돈다. 모델 호출, 그래프 조회, 테스트 실행 각각의 상한은 `project.yaml`의 `budgets`를 따른다. 테스트 실행이 예산을 넘으면 verify 결과의 `warnings`에 나온다.
+
+계측은 하네스가 대부분 직접 센다. 그래프 조회는 inspect, contracts, impact, graph 명령이, 테스트 실행은 verify가, 질문 수는 decide가, 소요 시간은 sync가 기록한다. 하네스가 볼 수 없는 것은 모델 호출 수뿐이다. 호스트가 그 수를 알려 주면 누적해서 기록한다(부를 때마다 더해진다).
 
 ```sh
 myharness turn note --model-calls 7
