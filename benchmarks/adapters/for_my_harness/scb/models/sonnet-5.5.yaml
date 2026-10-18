@@ -1,0 +1,18 @@
+# Copied into slop-code-bench configs/models/ by runners/slop_code_bench/setup.sh. The runner @ 31ceea3 ships
+# sonnet-5 but no sonnet-5.5. Same shape as its sonnet-5.yaml. Runs use subscription auth
+# (--model claude_code_oauth/sonnet-5.5), so `pricing` only feeds the runner's cost column; it is the
+# sonnet-5 sticker rate, not a measured price for 5.5.
+internal_name: claude-sonnet-5-5
+provider: anthropic
+pricing:
+  input: 3
+  output: 15
+  cache_read: 0.30
+  cache_write: 3.75
+thinking_style: effort
+aliases:
+  - claude-sonnet-5-5
+  - sonnet-5.5
+agent_specific:
+  claude_code:
+    endpoint: anthropic

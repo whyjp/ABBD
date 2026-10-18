@@ -32,7 +32,7 @@ score from our runs. External scores are in `results/external_leaderboard/` with
 | track | benchmark | state |
 |---|---|---|
 | A | Terminal-Bench 2.0 via Harbor 0.24.0 | adapter sketched; needs a Linux container runtime |
-| B | SWE-Milestone v1.0.2 | adapter sketched; needs Docker on Linux; pilot go-zero and Element Web |
+| B | SWE-Milestone v1.0.2 | environment and adapter proven without a model (WSL Docker); pilot go-zero and Element Web ready to launch |
 | C | SlopCodeBench (problems in gabeorlanski/scb-problems) | configs sketched; needs Docker |
 | D | SWE-CI, SkillsBench | facts recorded; not adapted (no Claude Code adapter in SWE-CI; SkillsBench tests a different claim) |
 

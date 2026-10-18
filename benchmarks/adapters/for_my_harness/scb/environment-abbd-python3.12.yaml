@@ -1,9 +1,15 @@
-# UNTESTED. Copy of configs/environments/docker-python3.12-uv.yaml from slop-code-bench @ 31ceea3 with only
-# the image changed. Use it for every group, including A.
+# Template. runners/slop_code_bench/setup.sh renders it to ~/bench/scb/configs/ with @TAG@ set to a hash of
+# the staged image context (abbd binary, launcher, plugin dirs). slop-code names its derived images after
+# `name` and reuses them by name, so a changed binary or plugin must change the name or a stale image runs.
+# Otherwise a copy of configs/environments/docker-python3.12-uv.yaml from slop-code-bench @ 31ceea3 with only
+# name and image changed. Use it for every group, including A.
+# The snapshot ignore_globs stay at the runner default on purpose: `.abbd/` stays in each checkpoint snapshot
+# because --resume restores the workspace from the last snapshot, and D/E need `.abbd/` back after a resume.
+# The quality metrics only read *.py files and `.abbd/` holds none (see runners/slop_code_bench/README.md).
 type: docker
-name: python3.12-abbd
+name: python3.12-abbd-@TAG@
 docker:
-  image: abbd-bench/scb-python3.12:${ABBD_COMMIT}
+  image: abbd-bench/scb-python3.12:@TAG@
   workdir: /workspace
   mount_workspace: true
 environment:

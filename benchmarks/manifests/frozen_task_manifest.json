@@ -277,7 +277,14 @@
       "vulnerable-secret",
       "winning-avg-corewars",
       "write-compressor"
-    ]
+    ],
+    "run_pin": {
+      "decided": "2026-10-19",
+      "harbor_dataset": "terminal-bench@2.0",
+      "resolved_repo": "https://github.com/laude-institute/terminal-bench-2 (301 -> harbor-framework/terminal-bench-2)",
+      "resolved_commit": "69671fbaac6d67a7ef0dfec016cc38a64ef7a77c",
+      "reason": "Every group runs the dataset exactly as Harbor's registry resolves terminal-bench@2.0, the same pin the public 2.0 leaderboard uses. Selection metadata was read at 2fd12b8; per-task task_checksum from each trial result.json is the identity check."
+    }
   },
   "swe_milestone": {
     "repo": "https://github.com/DeepCommit-ai/SWE-Milestone",
@@ -363,7 +370,15 @@
         "end_tag": "v0.58.0",
         "graded_milestones": 9
       }
-    ]
+    ],
+    "run_pin": {
+      "decided": "2026-10-19",
+      "harness_checkout": "DeepCommit-ai/SWE-Milestone @ 17a8f1593e172e26b36cea15e2b30fb9536c93f5, unedited; uv sync --extra dev (ast-grep is required at launch)",
+      "dataset_checkout": "SWE-Milestone-data tag v1.0.2 = 3500478e740d42583277c2658aa7729eb36e10f4 (pull_data.sh: OK)",
+      "images": "pulled by content digest from manifests/digests-v1.0.2.tsv via scripts/pull_images.sh --repo go-zero / element-web; agent base is base-offline (quarantine auto-on)",
+      "agent": "claude-code @ 2.1.302, model claude-sonnet-5-5, parameters in configs/swe_milestone.yaml",
+      "reason": "Every group runs the same pinned harness, data and image digests; ABBD arms differ only in what adapters/for_my_harness/swe_milestone_agent.py appends."
+    }
   },
   "slop_code_bench": {
     "runner": "https://github.com/SprocketLab/slop-code-bench",
@@ -432,6 +447,17 @@
         "difficulty": "Easy",
         "spec_named": true
       }
-    ]
+    ],
+    "run_pin": {
+      "decided": "2026-10-19",
+      "verified": "runner and problems commits checked out; 36 problems / 196 checkpoints and every pilot checkpoint count re-counted from config.yaml by runners/slop_code_bench/check_problems.py",
+      "claude_code_version": "2.1.302",
+      "model": "claude_code_oauth/sonnet-5.5 (internal_name claude-sonnet-5-5, adapters/for_my_harness/scb/models/sonnet-5.5.yaml)",
+      "thinking": "none (Claude Code default effort, same as the TB2 smoke)",
+      "prompt": "configs/prompts/just-solve.jinja",
+      "pass_policy": "any (runner default; no early stop on failed tests)",
+      "agent_step_limit": 100,
+      "reason": "One stock configuration for every group; only binary, extra_args and env differ between agent-group-A..E.yaml."
+    }
   }
 }

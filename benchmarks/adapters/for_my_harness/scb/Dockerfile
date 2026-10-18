@@ -1,10 +1,11 @@
-# UNTESTED. One environment image for every SlopCodeBench group, so the base never differs between groups.
-# ABBD is present for all groups but on PATH only for C, D, E (via the agent config's env).
-# Build context: a staging dir holding abbd-linux and plugins/{pstack,C,D,E}.
-# Open item: slop-code-bench's claude_code docker.j2 switches to `USER agent`; confirm whether the runner
-# creates that user in an intermediate image or expects it in the base.
+# Environment base image for every SlopCodeBench group (A to E), so the base never differs between groups.
+# slop-code-bench builds two layers on top of it: setup_base.docker.j2 (apt tools, node, rust, user `agent`,
+# HOME=/tmp/agent_home) and claude_code/docker.j2 (npm install of the pinned Claude Code).
+# ABBD is present for every group but reaches only C/D/E: their agent config sets `binary` to claude-abbd,
+# which puts /opt/abbd/bin on PATH. A and B call `claude` directly and never see it on PATH.
+# Build context: the staging dir that runners/slop_code_bench/setup.sh assembles.
 FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim
-RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY abbd-linux /opt/abbd/bin/abbd
+COPY claude-abbd /opt/abbd/launch/claude-abbd
 COPY plugins/ /opt/bench-plugins/
-RUN chmod 755 /opt/abbd/bin/abbd && chmod -R a+rX /opt/bench-plugins
+RUN chmod 755 /opt/abbd/bin/abbd /opt/abbd/launch/claude-abbd && chmod -R a+rX /opt/bench-plugins /opt/abbd

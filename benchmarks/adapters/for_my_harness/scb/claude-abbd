@@ -1,0 +1,10 @@
+#!/bin/sh
+# Launcher the C/D/E agent configs name as `binary`. The runner calls it in the problem workspace with the
+# same arguments it would give `claude`. The workspace persists across checkpoints (and is restored from the
+# last snapshot on --resume), so `.abbd/` exists from checkpoint 2 on and init runs once per problem.
+export PATH="/opt/abbd/bin:$PATH"
+if [ "${ABBD_INIT:-0}" = 1 ] && [ ! -d .abbd ]; then
+  echo "claude-abbd: abbd init in $(pwd)" >&2
+  abbd init >&2 || { echo "claude-abbd: abbd init failed" >&2; exit 97; }
+fi
+exec "${ABBD_CLAUDE_BIN:-claude}" "$@"

@@ -1,13 +1,12 @@
-# UNTESTED. Group C. Same fields as slop-code-bench configs/agents/claude_code.yaml @ 31ceea3 except
-# extra_args and env. Pin version to one Claude Code release for every group.
+# Group C: ABBD arm C (skills only), abbd on PATH, no init.
+# Same fields and values as slop-code-bench configs/agents/claude_code.yaml @ 31ceea3 except version (one
+# pinned release for every group), binary, extra_args and env. Image layout: see Dockerfile in this dir.
 type: claude_code
-binary: claude
+binary: /opt/abbd/launch/claude-abbd
 permission_mode: bypassPermissions
-version: ${CLAUDE_CODE_VERSION}
+version: 2.1.302
 extra_args: [--plugin-dir, /opt/bench-plugins/C]
-# Open item: confirm the agent HOME (docker.j2 puts claude in $HOME/.npm-global/bin) and whether env
-# replaces or merges PATH. No `abbd init` here: checkpoint 1 starts empty and `abbd run` bootstraps lazily.
-env: {PATH: "/home/agent/.npm-global/bin:/opt/abbd/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"}
+env: {}
 cost_limits:
   cost_limit: 0
   step_limit: 100

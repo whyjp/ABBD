@@ -1,6 +1,7 @@
 # ABBD adapter (For My Harness)
 
-Status: design plus code sketches. Nothing here has been run. Every file is marked UNTESTED.
+Status: the Harbor and SWE-Milestone adapters have run (TB2 smoke with a model; SWE-Milestone dry run without one).
+The SCB configs are untested.
 
 The adapter does one thing on every benchmark. It runs the benchmark's own built-in Claude Code
 agent and adds ABBD around it. It does not change the prompt, the task, the tests, the timeouts or the
@@ -26,7 +27,7 @@ a static ELF x86-64 binary). The sandbox also needs `git`, `sh`, `grep` and `sed
 | benchmark | built-in Claude Code agent | where ABBD plugs in | file |
 |---|---|---|---|
 | Terminal-Bench 2.0 (Harbor 0.24.0) | `harbor.agents.installed.claude_code.ClaudeCode` | subclass: `install()` uploads `abbd` and the plugin dir; `build_cli_flags()` appends `--plugin-dir`. Run with `-a benchmarks.adapters.for_my_harness.harbor_agent:AbbdClaudeCode` | `harbor_agent.py` |
-| SWE-Milestone v1.0.2 | `harness.e2e.agents.claude_code.ClaudeCodeFramework` (`@register_framework("claude-code")`) | subclass registered as `claude-code-abbd`: extra `-v` mounts, init script that puts `abbd` on PATH and runs `abbd init` in `/testbed`, run command with `--plugin-dir` | `swe_milestone_agent.py` |
+| SWE-Milestone v1.0.2 | `harness.e2e.agents.claude_code.ClaudeCodeFramework` (`@register_framework("claude-code")`) | subclass that replaces the `claude-code` registry entry (the harness keys limit handling on that name), loaded by `swe_milestone_site/sitecustomize.py` when `ABBD_GROUP` is set: read-only mounts, `abbd` on PATH, `--plugin-dir`, one `abbd init` per repo inside the first turn (D, E), subscription token by name for every group. Dry-run tested for A and E; see `runners/swe_milestone/README.md` | `swe_milestone_agent.py` |
 | SlopCodeBench | `claude_code` agent config | agent YAML with `extra_args: [--plugin-dir, ...]` and an environment image that has `abbd` and the plugin dirs baked in (same image for every group; PATH set only for C/D/E via `env`) | `scb/` |
 | SWE-CI | none (iflow, opencode only) | not adapted in phase 1 | |
 
@@ -41,7 +42,8 @@ These are reported, not worked around by changing the benchmark.
 - **History guard paths.** `history-guard.sh` refuses reads of `.abbd/` history. It does not touch
   `/e2e_workspace`, task files or tests.
 - **Blueprint files in the scored workspace.** `.abbd/` is created inside the repo or workspace. SWE-Milestone
-  scores only `src_dirs` and root build manifests, so `.abbd/` is outside its scope. SlopCodeBench's
+  scores only `src_dirs` and build manifests, so `.abbd/` is outside its scope (go-zero dry run: 0 `.abbd/`
+  paths in either snapshot after a `git add -A` that committed all 2130 blueprint files). SlopCodeBench's
   code-quality metrics must be checked to confirm they ignore `.abbd/` (open item).
 - **Language coverage.** The code graph is full only for Go. Java, Rust and shell repos get no graph; TS and
   Python get a regex-only one. See `configs/harnesses.yaml`.

@@ -1,9 +1,10 @@
-# UNTESTED. Group B. Same fields as slop-code-bench configs/agents/claude_code.yaml @ 31ceea3 except
-# extra_args and env. Pin version to one Claude Code release for every group.
+# Group B: pstack plugin.
+# Same fields and values as slop-code-bench configs/agents/claude_code.yaml @ 31ceea3 except version (one
+# pinned release for every group), binary, extra_args and env. Image layout: see Dockerfile in this dir.
 type: claude_code
 binary: claude
 permission_mode: bypassPermissions
-version: ${CLAUDE_CODE_VERSION}
+version: 2.1.302
 extra_args: [--plugin-dir, /opt/bench-plugins/pstack]
 env: {}
 cost_limits:

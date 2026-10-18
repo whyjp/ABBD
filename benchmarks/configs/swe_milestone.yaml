@@ -1,0 +1,22 @@
+# Track B run parameters. One source for every group; runners/swe_milestone/run_group.py reads it and
+# writes the harness's trial_config.yaml from it. Change a value here, never per group.
+harness_commit: 17a8f1593e172e26b36cea15e2b30fb9536c93f5
+dataset_tag: v1.0.2                    # SWE-Milestone-data @ 3500478e740d42583277c2658aa7729eb36e10f4
+model: claude-sonnet-5-5
+default_agent_model: claude-sonnet-5-5 # pins haiku/opus/fable/subagent slots too, so every call is this model
+agent_version: 2.1.302                 # same Claude Code as the TB2 smoke; exact pin disables auto-update
+timeout: 18000                         # per agent invocation, the harness default
+auto_compact_window: 200000            # the harness's 200K regime (trial names carry no -1m)
+reasoning_effort: null                 # model default for every group
+abbd_init_args: --mode code-only --verify-available   # D and E, once per repo; same as the TB2 adapter
+
+paths:                                 # inside WSL
+  bench: ~/bench/swe-milestone
+  harness: ~/bench/swe-milestone/SWE-Milestone
+  data_root: ~/bench/swe-milestone/SWE-Milestone-data
+  env_file: ~/bench/.env               # CLAUDE_CODE_OAUTH_TOKEN; read, never printed
+  assets: ~/bench/swe-milestone/assets # abbd-linux, plugins/{B,C,D,E}; staged by stage_assets.sh
+
+pilot_repos:                           # run_all --repos substrings, in run order
+  - go-zero
+  - element-web
