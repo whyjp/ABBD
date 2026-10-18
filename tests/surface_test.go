@@ -159,3 +159,19 @@ func TestReservedDomainLayer(t *testing.T) {
 		t.Fatal("DOM-* IDs are reserved, not resolvable")
 	}
 }
+
+// TestCLIDocMatchesHelp keeps docs/cli.md honest: every usage line of `abbd help` must appear
+// in it verbatim, so a flag added to the CLI fails the build until the doc says so.
+func TestCLIDocMatchesHelp(t *testing.T) {
+	var out bytes.Buffer
+	cli.Main([]string{"help"}, &out, &out)
+	doc, err := os.ReadFile(filepath.Join("..", "docs", "cli.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, line := range strings.Split(out.String(), "\n") {
+		if strings.HasPrefix(strings.TrimSpace(line), "abbd ") && !strings.Contains(string(doc), strings.TrimSpace(line)) {
+			t.Errorf("docs/cli.md lacks help line: %s", strings.TrimSpace(line))
+		}
+	}
+}

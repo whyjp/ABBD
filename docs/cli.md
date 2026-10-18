@@ -19,7 +19,7 @@ commands:
   abbd check
   abbd confirm [--list] [ID [--value TEXT|--purpose TEXT] [--reject] [--external-consumers true|false]] [--merge CAND-x|--split CAND-x] [--all]
   abbd contracts list [--module MOD-x] | contracts impact [--diff]
-  abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY
+  abbd decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY [--reason TEXT]
   abbd decisions [QUERY]
   abbd domain ... (reserved for Phase 3)
   abbd eval run (optional appendix A benchmark)
