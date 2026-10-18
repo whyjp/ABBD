@@ -23,7 +23,22 @@
 
 - 그룹 C(스킬만) 종료 04:49, 한도 0. 통과 11, 실패 2(make-doom-for-mips, sam-cell-seg), 에이전트 시간 초과 2(extract-moves-from-video, feal-linear-cryptanalysis). 입력 6.4M, 환산 $3.10.
 - 그룹 D(스킬+훅) 종료 05:47, 한도 0. 통과 12, 실패 2(password-recovery, sam-cell-seg), 설치 시간 초과 1(extract-moves-from-video, 재실행 대상). 입력 7.7M, 환산 $3.25.
-- 그룹 E 05:47 시작.
+- 그룹 E(전체 플러그인) 종료 06:58, 한도 0. 통과 12, 실패 2(make-doom-for-mips, sam-cell-seg), 에이전트 시간 초과 1(extract-moves-from-video). 입력 8.4M, 환산 $3.58.
+- 06:59 설치 시간 초과 시행 재실행 시작(A: path-tracing, sparql-university. D: extract-moves-from-video).
+- 재실행 완료 07:42: A path-tracing 1.0, A sparql-university 1.0, D extract-moves-from-video 0.0(이번에는 에이전트 시간 초과). 설치 시간 초과로 남은 시행은 0.
+- 최종 집계(재실행 반영, `results/normalized/tb2_pilot15_4ec437c.csv`). pilot15 부분집합, 과제당 1회. TB 2.0 공식 점수가 아니다.
+
+| 그룹 | 통과/15 | 입력 토큰 | 비용 표기(API 환산) |
+|---|---|---|---|
+| A 순정 | 12 | 36.6M | $19.66 |
+| B pstack | 10 | 7.4M | $3.58 |
+| C 스킬만 | 11 | 6.4M | $3.10 |
+| D 스킬+훅 | 12 | 8.4M | $3.53 |
+| E 전체 | 12 | 8.4M | $3.58 |
+
+  - A의 토큰과 비용은 시행 하나가 거의 전부다. `extract-moves-from-video`가 입력 30.6M(캐시 25.4M), $16.85를 쓰고 시간 초과로 실패했다. 이 시행을 빼면 A는 약 $2.81이다.
+  - 1회 실행에서 통과 수 차이는 최대 2개다. 과제당 통과 확률이 0과 1 사이인 과제가 여럿이라(make-doom-for-mips, feal-linear-cryptanalysis, install-windows-3.11, password-recovery가 그룹마다 갈렸다) 이 차이는 반복 없이 해석할 수 없다. 방법론의 3회 이상 반복이 필요하다.
+  - 모든 그룹이 놓친 과제: sam-cell-seg. 모든 그룹이 시간 초과 또는 실패한 과제: extract-moves-from-video.
 
 ## Track C. SlopCodeBench 파일럿 (2문제)
 
@@ -96,3 +111,7 @@
 
   - 관찰(1회): D만 체크포인트 3에서 101/101을 맞췄고 이후 체크포인트도 4개씩 앞섰다. E는 비용과 loc가 가장 컸다.
 - `circuit_eval`(8 체크포인트): A와 E 모두 전 체크포인트 만점(마지막 566/566). 비용 표기 A $3.23, E $3.27. loc A 2227, E 2471. B, C, D 진행 중(06:35).
+
+## Track B. SWE-Milestone 파일럿 (go-zero)
+
+- 07:45 시작. 그룹 A, E, B, C, D 순서, 한 번에 시행 하나. SCB 나머지 문제와 같은 시간에 돈다(사용량 예산 공유).
