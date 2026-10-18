@@ -1,0 +1,13 @@
+{
+  "name": "cccv",
+  "owner": { "name": "whyjp" },
+  "description": "cccv: personal development harness. Zero-map bootstrap, per-turn implement/verify/sync loop, SSOT Architecture/Feature Map with generated graph and HTML.",
+  "plugins": [
+    {
+      "name": "cccv",
+      "source": "./plugins/cccv",
+      "description": "Eight host-neutral skills for the cccv turn loop plus the cccv MCP server.",
+      "category": "development"
+    }
+  ]
+}

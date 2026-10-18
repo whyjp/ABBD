@@ -5,7 +5,7 @@ For My Harness PRD v1.3(`for_my_harness_prd_v1_3.html`)의 Phase 1 구현 초안
 구성은 두 층이다.
 
 - **Core CLI `cccv`** (Go, 의존성은 `gopkg.in/yaml.v3` 하나). 상태 전이와 완료 게이트는 모델의 기억이 아니라 이 CLI가 소유한다. `cccv mcp`는 같은 기능을 MCP stdio 서버로 노출한다.
-- **호스트 중립 Agent Skills** (`skills/`). 턴 루프의 단계마다 하나씩, 모두 8개다. 각 단계에서 어떤 CLI 명령을 부르는지 적혀 있다. 호스트별 설치는 `hosts/`에 있다.
+- **호스트 중립 Agent Skills** (`plugins/cccv/skills/`). 턴 루프의 단계마다 하나씩, 모두 8개다. 각 단계에서 어떤 CLI 명령을 부르는지 적혀 있다. Claude Code 플러그인으로 GitHub에서 바로 설치하고, Codex와 Antigravity는 같은 원본을 설치 스크립트로 받는다 (`plugins/README.md`).
 
 ## 빠른 시작
 
@@ -26,7 +26,19 @@ cccv sync                      # PASSED일 때만 완료. 아니면 DRAFT로 남
 cccv open-docs                 # .cccv/generated/explorer.html
 ```
 
-Claude Code에서 쓰려면 `hosts/claude-code/install.sh <project>`(또는 `.ps1`)로 스킬을 설치하고 `.mcp.json`에 `cccv mcp`를 등록한다. 전체 명령은 `docs/cli.md`와 `cccv help`에 있다.
+설치:
+
+```sh
+go install github.com/whyjp/cccv/cmd/cccv@latest
+# Claude Code (플러그인: 스킬 8개 + MCP 서버 + SessionStart 훅)
+/plugin marketplace add whyjp/cccv
+/plugin install cccv@cccv
+# Codex / Antigravity (같은 스킬 원본을 호스트 경로로 복사, MCP 설정 생성)
+sh plugins/install.sh --host codex /path/to/project
+sh plugins/install.sh --host antigravity /path/to/workspace
+```
+
+전체 명령은 `docs/cli.md`와 `cccv help`에 있다.
 
 ## 대상 프로젝트에 생기는 것
 

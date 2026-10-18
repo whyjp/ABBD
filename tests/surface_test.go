@@ -88,13 +88,15 @@ func TestMCPMatchesCLI(t *testing.T) {
 	}
 }
 
-var cmdRe = regexp.MustCompile("cccv ([a-z][a-z-]+)")
+// cmdRe matches cccv where a command starts: line start, inside backticks, after a prompt,
+// a shell operator or "--". Prose such as "cccv skills" is not a command.
+var cmdRe = regexp.MustCompile("(?m)(?:^\\s*|`|\\$ |&& |\\| |\\(|-- )cccv ([a-z][a-z-]+)")
 
 // TestSkillsUseRegisteredCommands encodes the agreement between the skills and the CLI: a
 // skill that names a command the CLI does not register fails the build.
 func TestSkillsUseRegisteredCommands(t *testing.T) {
 	var files []string
-	for _, root := range []string{"../skills", "../hosts", "../docs"} {
+	for _, root := range []string{"../plugins", "../docs"} {
 		filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
 			if err == nil && !d.IsDir() && (strings.HasSuffix(p, ".md") || strings.HasSuffix(p, ".sh") || strings.HasSuffix(p, ".ps1")) {
 				files = append(files, p)
@@ -121,7 +123,7 @@ func TestSkillsFollowAgentSkillsSpec(t *testing.T) {
 		"implement-and-prove", "impact-review", "sync-knowledge", "reflect-and-correct"}
 	nameRe := regexp.MustCompile(`^[a-z0-9]+(-[a-z0-9]+)*$`)
 	for _, name := range want {
-		b, err := os.ReadFile(filepath.Join("..", "skills", name, "SKILL.md"))
+		b, err := os.ReadFile(filepath.Join("..", "plugins", "cccv", "skills", name, "SKILL.md"))
 		if err != nil {
 			t.Fatalf("PRD ch.09 skill %s: %v", name, err)
 		}
