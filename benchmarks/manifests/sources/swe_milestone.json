@@ -1,0 +1,211 @@
+{
+ "fetched": "2026-10-18",
+ "repo": {
+  "url": "https://github.com/DeepCommit-ai/SWE-Milestone",
+  "head_sha": "17a8f1593e172e26b36cea15e2b30fb9536c93f5",
+  "head_date": "2026-08-24",
+  "license": "MIT",
+  "benchmark_version": "v1.0.2",
+  "pushed_at": "2026-09-27T06:16:52Z"
+ },
+ "site": "https://swe-milestone.com",
+ "paper": {
+  "url": "https://arxiv.org/abs/2603.13428",
+  "venue": "ICML 2026 (PMLR v306)",
+  "versions": "v1 2026-03-13 .. v4 2026-07-21"
+ },
+ "dataset": {
+  "url": "https://huggingface.co/datasets/DeepCommit-ai/SWE-Milestone-data",
+  "head_sha": "3500478e740d42583277c2658aa7729eb36e10f4",
+  "tags": {
+   "v1.0.2": "3500478e740d42583277c2658aa7729eb36e10f4",
+   "v1.0.1": "72bac1048e716e79227df5a96b875ac08ce0180f",
+   "v1.0": "9e09325e16ff0a135c203d468230ccb9942f9937",
+   "v0.9": "844ce186de394d22216375d6c1dd3bf884100d2f"
+  },
+  "license": "MIT",
+  "format": "git-lfs repo, per-repo dir with metadata.json, dependencies.csv, milestones.csv, additional_dependencies.csv, srs/<id>/SRS.md, test_results/<id>/<id>_classification.json"
+ },
+ "trajectories": "https://huggingface.co/datasets/DeepCommit-ai/SWE-Milestone-log",
+ "repos": [
+  {
+   "name": "go-zero",
+   "github": "zeromicro/go-zero",
+   "language": "Go",
+   "base_tag": "v1.6.0",
+   "end_tag": "v1.9.3",
+   "graded_milestones": 23,
+   "catalog_rows_milestones_csv": 30,
+   "active_deps": 24,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "Element Web",
+   "github": "element-hq/element-web",
+   "language": "TypeScript",
+   "base_tag": "v1.11.95",
+   "end_tag": "v1.11.97",
+   "graded_milestones": 18,
+   "catalog_rows_milestones_csv": 19,
+   "active_deps": 12,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "Apache Dubbo",
+   "github": "apache/dubbo",
+   "language": "Java",
+   "base_tag": "dubbo-3.3.3",
+   "end_tag": "dubbo-3.3.6",
+   "graded_milestones": 12,
+   "catalog_rows_milestones_csv": 26,
+   "active_deps": 6,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "Nushell",
+   "github": "nushell/nushell",
+   "language": "Rust",
+   "base_tag": "0.106.0",
+   "end_tag": "0.108.0",
+   "graded_milestones": 13,
+   "catalog_rows_milestones_csv": 23,
+   "active_deps": 29,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "ripgrep",
+   "github": "BurntSushi/ripgrep",
+   "language": "Rust",
+   "base_tag": "14.1.1",
+   "end_tag": "15.0.0",
+   "graded_milestones": 11,
+   "catalog_rows_milestones_csv": 18,
+   "active_deps": 16,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "scikit-learn",
+   "github": "scikit-learn/scikit-learn",
+   "language": "Python",
+   "base_tag": "1.5.2",
+   "end_tag": "1.6.0",
+   "graded_milestones": 12,
+   "catalog_rows_milestones_csv": 12,
+   "active_deps": 14,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  },
+  {
+   "name": "Navidrome",
+   "github": "navidrome/navidrome",
+   "language": "Go",
+   "base_tag": "v0.57.0",
+   "end_tag": "v0.58.0",
+   "graded_milestones": 9,
+   "catalog_rows_milestones_csv": 11,
+   "active_deps": 9,
+   "base_commit": "not listed at repo level; only base_tag in metadata.json (per-milestone base_commit values exist)"
+  }
+ ],
+ "totals": {
+  "repos": 7,
+  "graded_milestones": 98,
+  "non_graded": 3,
+  "active_dep_edges": 110,
+  "paper_dep_count": 109
+ },
+ "dag": {
+  "file": "dependencies.csv (+ optional additional_dependencies.csv)",
+  "schema": "source_id,target_id,type,strength,rationale,confidence_score",
+  "strength": [
+   "Strong",
+   "Weak"
+  ],
+  "order_fixed": "No fixed order. Partial order via DAG; e2e_config.yaml dag_unlock.early_unblock=true, ignore_weak_dependencies=true; strong deps block, downstream unlocks on submission",
+  "code": "harness/e2e/dag.py"
+ },
+ "evaluator": {
+  "setup": [
+   "uv sync",
+   "git lfs clone HF data; ./scripts/pull_data.sh",
+   "./scripts/pull_images.sh (docker login first, ~115 images)",
+   "cp trial_config.example.yaml trial_config.yaml",
+   "python scripts/run_all.py --config trial_config.yaml",
+   "./scripts/monitor.sh [trial] [--detail|--full]",
+   "python -m harness.e2e.run_e2e ... ; python -m harness.e2e.run_milestone ...; python -m harness.e2e.collect_results --workspace-root ... --trials T --trial-type e2e; python -m harness.e2e.evaluator ..."
+  ],
+  "agents": [
+   "claude-code",
+   "codex",
+   "gemini-cli",
+   "openhands"
+  ],
+  "adapter": "harness/e2e/agents/base.py AgentFramework ABC",
+  "submission": "agent creates git tags agent-impl-milestone_NNN in persistent container /testbed; watcher snapshots and runs tests in a separate one-time evaluation container",
+  "workspace_carryover": "yes, single persistent container, no reset",
+  "images": "DockerHub hyd2apse/swe-milestone__<repo>__<milestone>:<version>; navidrome base amd64 linux compressed 795013205 bytes",
+  "network": "iptables outbound whitelist in agent container; GitHub/GitLab blocked; --pull=never",
+  "resources": "eval container --cpus default 16, no --memory limit; no disk/RAM requirement stated",
+  "os": "Linux docker amd64 images; Windows not documented"
+ },
+ "metrics": {
+  "per_milestone": "Recall=N_fixed/N_target (F2P+N2P); Precision=(N_fixed+1)/(N_fixed+N_broken+1), N_broken=P2P failed+missing; Score=2PR/(P+R) (harness/e2e/collect_results.py calculate_score_reliable); infra-invalid/build fail=0; aggregate mean over graded milestones",
+  "site_text": {
+   "scored": "Each milestone is scored on a precision-recall structure over its own tests: recall credits the fail-to-pass tests (F2P) the agent gets passing, precision credits the previously-passing tests (P2P) it keeps intact. A milestone counts as fully resolved only when every F2P passes and no P2P regresses, penalizing both under-building and regressions."
+  },
+  "paper_5_1": {
+   "score": "the harmonic mean of Recall and Precision",
+   "resolve": "a milestone is considered resolved only if the agent passes all associated F2P and P2P tests"
+  }
+ },
+ "leaderboard_current_v1.0.2_top": [
+  [
+   "Claude Code",
+   "GLM-5.3",
+   58.75,
+   60.3,
+   75.07,
+   29.75
+  ],
+  [
+   "Claude Code",
+   "Claude Opus 4.8 max 1M",
+   58.05,
+   56.98,
+   74.54,
+   25.49
+  ],
+  [
+   "Codex CLI",
+   "GPT 5.6 Sol max",
+   55.58,
+   53.71,
+   76.23,
+   26.88
+  ],
+  [
+   "Claude Code",
+   "Kimi K3",
+   51.8,
+   51.93,
+   72.84,
+   27.21
+  ],
+  [
+   "Claude Code",
+   "Claude Opus 4.7 xhigh",
+   49.56,
+   48.07,
+   68.12,
+   21.61
+  ]
+ ],
+ "leaderboard_columns": "score,precision,recall,resolve (percent)",
+ "sources": [
+  "https://github.com/DeepCommit-ai/SWE-Milestone",
+  "https://swe-milestone.com",
+  "https://arxiv.org/abs/2603.13428",
+  "https://arxiv.org/html/2603.13428v4",
+  "https://huggingface.co/datasets/DeepCommit-ai/SWE-Milestone-data",
+  "https://hub.docker.com/v2/repositories/hyd2apse/swe-milestone__navidrome_navidrome_v0.57.0_v0.58.0__base/tags/v1.0.2"
+ ]
+}

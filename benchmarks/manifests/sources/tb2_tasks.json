@@ -1,0 +1,1645 @@
+{
+ "source": "https://github.com/harbor-framework/terminal-bench-2",
+ "commit": "2fd12b88aafdd04a52c298e3940bcb189f9766d6",
+ "fetched": "2026-10-18",
+ "tasks": [
+  {
+   "id": "adaptive-rejection-sampler",
+   "difficulty": "medium",
+   "category": "scientific-computing",
+   "tags": [
+    "applied-statistics",
+    "adaptive-rejection-sampling",
+    "Bayesian-inference",
+    "simulation"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 180.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "bn-fit-modify",
+   "difficulty": "hard",
+   "category": "scientific-computing",
+   "tags": [
+    "bayesian-network",
+    "stats"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 480.0,
+   "junior_time_estimate_min": 1000.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "break-filter-js-from-html",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "security"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "build-cython-ext",
+   "difficulty": "medium",
+   "category": "debugging",
+   "tags": [
+    "coding",
+    "dependency",
+    "compilation"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "build-pmars",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "build-tools",
+    "compilation",
+    "debian",
+    "gaming",
+    "pmars",
+    "corewars"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 90.0,
+   "junior_time_estimate_min": 270.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "build-pov-ray",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "build-tools",
+    "compilation",
+    "graphics",
+    "ray-tracing",
+    "legacy-software",
+    "research"
+   ],
+   "agent_timeout_sec": 12000.0,
+   "verifier_timeout_sec": 12000.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "caffe-cifar-10",
+   "difficulty": "medium",
+   "category": "machine-learning",
+   "tags": [
+    "cnn",
+    "caffe"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": null,
+   "junior_time_estimate_min": null,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "cancel-async-tasks",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "async",
+    "concurrency",
+    "python"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 600.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "chess-best-move",
+   "difficulty": "medium",
+   "category": "games",
+   "tags": [],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 45.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "circuit-fibsqrt",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 960.0,
+   "junior_time_estimate_min": 2400.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "cobol-modernization",
+   "difficulty": "easy",
+   "category": "software-engineering",
+   "tags": [
+    "coding"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 70.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "code-from-image",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "ocr"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "compile-compcert",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "compilation",
+    "compilers"
+   ],
+   "agent_timeout_sec": 2400.0,
+   "verifier_timeout_sec": 2400.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 2,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "configure-git-webserver",
+   "difficulty": "hard",
+   "category": "system-administration",
+   "tags": [
+    "system",
+    "version-control",
+    "web"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 15.0,
+   "junior_time_estimate_min": 60.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "constraints-scheduling",
+   "difficulty": "medium",
+   "category": "personal-assistant",
+   "tags": [
+    "calendar",
+    "scheduling",
+    "constraint-satisfaction",
+    "ics-parsing",
+    "temporal-reasoning"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 15.0,
+   "junior_time_estimate_min": 30.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "count-dataset-tokens",
+   "difficulty": "medium",
+   "category": "model-training",
+   "tags": [
+    "machine-learning",
+    "data",
+    "datasets",
+    "tokenization",
+    "huggingface"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30,
+   "junior_time_estimate_min": 120,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "crack-7z-hash",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "decrypt",
+    "security",
+    "file-operations"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 5.0,
+   "junior_time_estimate_min": 10.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "custom-memory-heap-crash",
+   "difficulty": "medium",
+   "category": "debugging",
+   "tags": [
+    "cpp",
+    "memory-management",
+    "debugging"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 1200.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "db-wal-recovery",
+   "difficulty": "medium",
+   "category": "file-operations",
+   "tags": [
+    "database",
+    "encryption",
+    "recovery"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 45.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "distribution-search",
+   "difficulty": "medium",
+   "category": "machine-learning",
+   "tags": [
+    "coding",
+    "statistics",
+    "machine-learning"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "dna-assembly",
+   "difficulty": "hard",
+   "category": "scientific-computing",
+   "tags": [
+    "biology",
+    "cloning"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "dna-insert",
+   "difficulty": "medium",
+   "category": "scientific-computing",
+   "tags": [
+    "biology",
+    "cloning"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "extract-elf",
+   "difficulty": "medium",
+   "category": "file-operations",
+   "tags": [],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "extract-moves-from-video",
+   "difficulty": "hard",
+   "category": "file-operations",
+   "tags": [
+    "file-operations",
+    "web",
+    "video-processing"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "feal-differential-cryptanalysis",
+   "difficulty": "hard",
+   "category": "mathematics",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 480.0,
+   "junior_time_estimate_min": 19200.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "feal-linear-cryptanalysis",
+   "difficulty": "hard",
+   "category": "mathematics",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 960.0,
+   "junior_time_estimate_min": 19200.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "filter-js-from-html",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "security"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 45.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "financial-document-processor",
+   "difficulty": "medium",
+   "category": "data-processing",
+   "tags": [
+    "ocr",
+    "image-processing",
+    "financial",
+    "file-operations"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 60.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "fix-code-vulnerability",
+   "difficulty": "hard",
+   "category": "security",
+   "tags": [
+    "security",
+    "code-vulnerability",
+    "common-weakness-enumeration"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "fix-git",
+   "difficulty": "easy",
+   "category": "software-engineering",
+   "tags": [
+    "coding",
+    "version-control"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 5.0,
+   "junior_time_estimate_min": 20.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "fix-ocaml-gc",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "troubleshooting"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 1440.0,
+   "junior_time_estimate_min": 14400.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "gcode-to-text",
+   "difficulty": "medium",
+   "category": "file-operations",
+   "tags": [
+    "file-operations"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 300.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "git-leak-recovery",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "git",
+    "security"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 60.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "git-multibranch",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "system",
+    "version-control",
+    "web"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 180.0,
+   "junior_time_estimate_min": 360.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "gpt2-codegolf",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 2400.0,
+   "junior_time_estimate_min": 9600.0,
+   "cpus": 1,
+   "memory_mb": 8192,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "headless-terminal",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "bash",
+    "terminal"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "hf-model-inference",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "api",
+    "coding",
+    "data-processing",
+    "data-science"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "install-windows-3.11",
+   "difficulty": "hard",
+   "category": "system-administration",
+   "tags": [
+    "virtualization",
+    "qemu",
+    "windows-3.11",
+    "vnc",
+    "sys-admin",
+    "retro-computing"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 300.0,
+   "junior_time_estimate_min": 600.0,
+   "cpus": 2,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "kv-store-grpc",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "coding",
+    "file-operations",
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 15.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "large-scale-text-editing",
+   "difficulty": "medium",
+   "category": "file-operations",
+   "tags": [
+    "text-editing",
+    "large-scale-text-manipulation",
+    "vim",
+    "vim-macros"
+   ],
+   "agent_timeout_sec": 1200.0,
+   "verifier_timeout_sec": 1200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 40.0,
+   "junior_time_estimate_min": 90.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "largest-eigenval",
+   "difficulty": "medium",
+   "category": "mathematics",
+   "tags": [
+    "coding",
+    "optimization",
+    "constraint",
+    "numerical-approximation"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "llm-inference-batching-scheduler",
+   "difficulty": "hard",
+   "category": "machine-learning",
+   "tags": [
+    "batching",
+    "inference",
+    "performance-optimization",
+    "scheduling"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 45.0,
+   "junior_time_estimate_min": 450.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "log-summary-date-ranges",
+   "difficulty": "medium",
+   "category": "data-processing",
+   "tags": [
+    "log-analysis",
+    "report-generation",
+    "data-processing"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 75.0,
+   "junior_time_estimate_min": 150.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "mailman",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "email-server",
+    "mailing-list"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "make-doom-for-mips",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 480.0,
+   "junior_time_estimate_min": 1920.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "make-mips-interpreter",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 480.0,
+   "junior_time_estimate_min": 3600.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "mcmc-sampling-stan",
+   "difficulty": "hard",
+   "category": "data-science",
+   "tags": [
+    "R",
+    "stan",
+    "bayesian-statistics",
+    "mcmc"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 180.0,
+   "junior_time_estimate_min": 2880.0,
+   "cpus": 4,
+   "memory_mb": 8192,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "merge-diff-arc-agi-task",
+   "difficulty": "medium",
+   "category": "debugging",
+   "tags": [
+    "git",
+    "coding"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 40.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "model-extraction-relu-logits",
+   "difficulty": "hard",
+   "category": "mathematics",
+   "tags": [
+    "security"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 480.0,
+   "junior_time_estimate_min": 2400.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "modernize-scientific-stack",
+   "difficulty": "medium",
+   "category": "scientific-computing",
+   "tags": [
+    "python-migration",
+    "scientific-computing",
+    "legacy-modernization",
+    "climate-science",
+    "data-processing"
+   ],
+   "agent_timeout_sec": 600.0,
+   "verifier_timeout_sec": 600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "mteb-leaderboard",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "retrieval",
+    "mteb"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 5.0,
+   "junior_time_estimate_min": 10.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "mteb-retrieve",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "data-processing",
+    "data-science",
+    "mteb"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 15.0,
+   "junior_time_estimate_min": 45.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "multi-source-data-merger",
+   "difficulty": "medium",
+   "category": "data-processing",
+   "tags": [
+    "data-processing",
+    "etl",
+    "schema-mapping",
+    "conflict-resolution",
+    "pandas",
+    "parquet"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "nginx-request-logging",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "web-server"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "openssl-selfsigned-cert",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "coding",
+    "file-operations",
+    "security",
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "overfull-hbox",
+   "difficulty": "easy",
+   "category": "debugging",
+   "tags": [
+    "latex",
+    "document-processing",
+    "combinatorial-optimization"
+   ],
+   "agent_timeout_sec": 750.0,
+   "verifier_timeout_sec": 360.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 60.0,
+   "cpus": 2,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "password-recovery",
+   "difficulty": "hard",
+   "category": "security",
+   "tags": [
+    "system",
+    "file-operations",
+    "troubleshooting"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 100.0,
+   "junior_time_estimate_min": 300.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "path-tracing-reverse",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "images"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 1440.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "path-tracing",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "images"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 360.0,
+   "junior_time_estimate_min": 2400.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "polyglot-c-py",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "coding"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "polyglot-rust-c",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "coding",
+    "no-verified-solution"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 180.0,
+   "junior_time_estimate_min": 720.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "portfolio-optimization",
+   "difficulty": "medium",
+   "category": "optimization",
+   "tags": [
+    "c-programming",
+    "python-extension",
+    "optimization"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 120.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "protein-assembly",
+   "difficulty": "hard",
+   "category": "scientific-computing",
+   "tags": [
+    "biology",
+    "cloning",
+    "proteins"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 300.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "prove-plus-comm",
+   "difficulty": "easy",
+   "category": "software-engineering",
+   "tags": [
+    "coding"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 5.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "pypi-server",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "coding",
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "pytorch-model-cli",
+   "difficulty": "medium",
+   "category": "model-training",
+   "tags": [
+    "coding",
+    "C",
+    "pytorch"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "pytorch-model-recovery",
+   "difficulty": "medium",
+   "category": "model-training",
+   "tags": [
+    "coding",
+    "pytorch",
+    "machine-learning"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 15.0,
+   "junior_time_estimate_min": 70.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "qemu-alpine-ssh",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "sys-admin"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "qemu-startup",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "sys-admin"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "query-optimize",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "query-optimization",
+    "sql-query"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 480.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "raman-fitting",
+   "difficulty": "medium",
+   "category": "scientific-computing",
+   "tags": [
+    "coding",
+    "fitting",
+    "analysis",
+    "physics"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 5.0,
+   "junior_time_estimate_min": 30.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "regex-chess",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 1440.0,
+   "junior_time_estimate_min": 4800.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "regex-log",
+   "difficulty": "medium",
+   "category": "data-processing",
+   "tags": [
+    "regex",
+    "string-parsing",
+    "log-analysis"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 45.0,
+   "junior_time_estimate_min": 180.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "reshard-c4-data",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "coding",
+    "data-processing",
+    "file-operations"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30,
+   "junior_time_estimate_min": 60,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "rstan-to-pystan",
+   "difficulty": "medium",
+   "category": "data-science",
+   "tags": [
+    "pystan",
+    "rstan",
+    "gaussian-process"
+   ],
+   "agent_timeout_sec": 1800.0,
+   "verifier_timeout_sec": 1800.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 180.0,
+   "junior_time_estimate_min": 2880.0,
+   "cpus": 4,
+   "memory_mb": 8192,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "sam-cell-seg",
+   "difficulty": "hard",
+   "category": "data-science",
+   "tags": [
+    "image-processing",
+    "machine-learning",
+    "histopathology"
+   ],
+   "agent_timeout_sec": 7200.0,
+   "verifier_timeout_sec": 7200.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 600.0,
+   "junior_time_estimate_min": 1200.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "sanitize-git-repo",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "security",
+    "system",
+    "version-control"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 60.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "schemelike-metacircular-eval",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "software-engineering"
+   ],
+   "agent_timeout_sec": 2400.0,
+   "verifier_timeout_sec": 2400.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 300.0,
+   "junior_time_estimate_min": 2440.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "sparql-university",
+   "difficulty": "hard",
+   "category": "data-querying",
+   "tags": [
+    "knowledge-graph",
+    "sparql-query",
+    "information-retrieval"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 800.0,
+   "junior_time_estimate_min": 10000.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "sqlite-db-truncate",
+   "difficulty": "medium",
+   "category": "debugging",
+   "tags": [
+    "file-operations"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "sqlite-with-gcov",
+   "difficulty": "medium",
+   "category": "system-administration",
+   "tags": [
+    "software-installation",
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "torch-pipeline-parallelism",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 240.0,
+   "junior_time_estimate_min": 1200.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "torch-tensor-parallelism",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "system"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 240.0,
+   "junior_time_estimate_min": 1200.0,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "train-fasttext",
+   "difficulty": "hard",
+   "category": "model-training",
+   "tags": [
+    "data-processing",
+    "data-science"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30,
+   "junior_time_estimate_min": 90,
+   "cpus": 1,
+   "memory_mb": 4096,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "tune-mjcf",
+   "difficulty": "medium",
+   "category": "scientific-computing",
+   "tags": [
+    "mujoco",
+    "physics",
+    "simulation",
+    "numerical-optimization"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 30.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "video-processing",
+   "difficulty": "hard",
+   "category": "video-processing",
+   "tags": [
+    "video-processing"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 400.0,
+   "junior_time_estimate_min": 1000.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "vulnerable-secret",
+   "difficulty": "medium",
+   "category": "security",
+   "tags": [
+    "security",
+    "file-operations"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 20.0,
+   "junior_time_estimate_min": 120.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "winning-avg-corewars",
+   "difficulty": "medium",
+   "category": "software-engineering",
+   "tags": [
+    "pmars",
+    "corewars",
+    "gaming"
+   ],
+   "agent_timeout_sec": 3600.0,
+   "verifier_timeout_sec": 3600.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 60.0,
+   "junior_time_estimate_min": 240.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  },
+  {
+   "id": "write-compressor",
+   "difficulty": "hard",
+   "category": "software-engineering",
+   "tags": [
+    "coding"
+   ],
+   "agent_timeout_sec": 900.0,
+   "verifier_timeout_sec": 900.0,
+   "build_timeout_sec": 600.0,
+   "expert_time_estimate_min": 1440.0,
+   "junior_time_estimate_min": 4800.0,
+   "cpus": 1,
+   "memory_mb": 2048,
+   "gpus": 0,
+   "allow_internet": true
+  }
+ ]
+}

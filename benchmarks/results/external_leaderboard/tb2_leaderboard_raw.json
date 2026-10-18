@@ -1,0 +1,2719 @@
+{
+ "source": "POST https://ofhuhcpkvzjlejydnvyd.supabase.co/functions/v1/leaderboard-read body {package:terminal-bench/terminal-bench-2,name:2-0}; the data feed used by https://www.tbench.ai/?version=2.0 (chunk 2x3i9ic-9g7br.js)",
+ "page_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0",
+ "fetched": "2026-10-18",
+ "leaderboard_updated_at": "2026-08-28T23:12:18.836648+00:00",
+ "entries": [
+  {
+   "rank": 1,
+   "agent": "NexAU-AHE",
+   "agent_url": "https://github.com/china-qijizhifeng/agentic-harness-engineering.git",
+   "agent_version": "unknown",
+   "model": "GPT-5.5",
+   "model_names": [
+    "gpt-5.5"
+   ],
+   "date": "2026-04-23",
+   "verified": false,
+   "accuracy": 84.7191011236,
+   "ci95_half_width": 2.0892351283,
+   "key": "nexau-ahe__gpt-5.5",
+   "integration_method": "API",
+   "agent_org": "china-qijizhifeng",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 2,
+   "agent": "LemonHarness",
+   "agent_url": "https://github.com/Open-Lemon/LemonAgent",
+   "agent_version": "1.0.0",
+   "model": "Multiple",
+   "model_names": [
+    "gemini-3.1-pro-preview",
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-05-14",
+   "verified": false,
+   "accuracy": 84.4943820225,
+   "ci95_half_width": 2.5682394863,
+   "key": "lemonharness__gemini 3.1 pro preview,gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "LR AILab of Lenovo CTO Org",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 3,
+   "agent": "Capy",
+   "agent_url": "https://capy.ai",
+   "agent_version": "unknown",
+   "model": "GPT-5.5",
+   "model_names": [
+    "gpt-5.5"
+   ],
+   "date": "2026-04-23",
+   "verified": false,
+   "accuracy": 83.1460674157,
+   "ci95_half_width": 2.1123213002,
+   "key": "capy__gpt-5.5",
+   "integration_method": "API",
+   "agent_org": "Capy",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 4,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli",
+   "agent_version": "0.121.0",
+   "model": "GPT-5.5",
+   "model_names": [
+    "gpt-5.5"
+   ],
+   "date": "2026-04-23",
+   "verified": true,
+   "accuracy": 82.2471910112,
+   "ci95_half_width": 2.2241606381,
+   "key": "codex cli__gpt-5.5",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 5,
+   "agent": "Polaris",
+   "agent_url": "https://polarops.ai",
+   "agent_version": "2.2.0 (Polaris)",
+   "model": "Multiple",
+   "model_names": [
+    "claude-opus-4-7",
+    "gemini-3.1-pro-preview",
+    "gpt-5.5"
+   ],
+   "date": "2026-05-14",
+   "verified": false,
+   "accuracy": 82.191011236,
+   "ci95_half_width": 2.7878222749,
+   "key": "polaris__claude opus 4.7,gemini 3.1 pro preview,gpt-5.5",
+   "integration_method": "API",
+   "agent_org": "PolarisOps",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 6,
+   "agent": "TongAgents",
+   "agent_url": "https://www.bigai.ai/",
+   "agent_version": "0.8.0",
+   "model": "Gemini 3.1 Pro",
+   "model_names": [
+    "gemini-3.1-pro-preview"
+   ],
+   "date": "2026-02-19",
+   "verified": false,
+   "accuracy": 80.2247191011,
+   "ci95_half_width": 2.6242804005,
+   "key": "tongagents__gemini 3.1 pro",
+   "integration_method": "API",
+   "agent_org": "BIGAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 6,
+   "agent": "WOZCODE",
+   "agent_url": "https://github.com/WithWoz/wozcode-plugin",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.7",
+   "model_names": [
+    "claude-opus-4-7"
+   ],
+   "date": "2026-04-16",
+   "verified": false,
+   "accuracy": 80.2247191011,
+   "ci95_half_width": 2.1123213002,
+   "key": "wozcode__claude opus 4.7",
+   "integration_method": "API",
+   "agent_org": "WOZCODE",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 8,
+   "agent": "LemonHarness",
+   "agent_url": "https://github.com/Open-Lemon/LemonAgent",
+   "agent_version": "1.0.0",
+   "model": "Multiple",
+   "model_names": [
+    "gemini-3.1-pro-preview",
+    "gpt-3.5-codex"
+   ],
+   "date": "2026-05-14",
+   "verified": false,
+   "accuracy": 79.925093633,
+   "ci95_half_width": 3.0284791487,
+   "key": "lemonharness__gemini 3.1 pro preview,gpt-5.3 codex",
+   "integration_method": "API",
+   "agent_org": "LR AILab of Lenovo CTO Org",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 9,
+   "agent": "SageAgent",
+   "agent_url": "https://github.com/opensage-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 78.4269662921,
+   "ci95_half_width": 2.202247191,
+   "key": "sageagent__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "OpenSage",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 10,
+   "agent": "Droid",
+   "agent_url": "https://factory.ai/",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 77.3033707865,
+   "ci95_half_width": 2.1577527622,
+   "key": "droid__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "Factory",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 11,
+   "agent": "Meta-Harness",
+   "agent_url": "https://github.com/stanford-iris-lab/meta-harness-tbench2-artifact",
+   "agent_version": "1.1.0",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 76.404494382,
+   "ci95_half_width": 2.4324615274,
+   "key": "meta-harness__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Stanford IRIS",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 12,
+   "agent": "CodeBrain-1.5",
+   "agent_url": "https://feeling-ai.com",
+   "agent_version": "1.0.0",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 75.8426966292,
+   "ci95_half_width": 2.0303715883,
+   "key": "codebrain-1.5__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "Feeling AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 13,
+   "agent": "Codelia",
+   "agent_url": "https://github.com/kousw/codelia",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 75.7303370787,
+   "ci95_half_width": 2.1577527622,
+   "key": "codelia__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "kousw",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 14,
+   "agent": "Capy",
+   "agent_url": "https://capy.ai",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 75.2808988764,
+   "ci95_half_width": 2.3922527823,
+   "key": "capy__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Capy",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 15,
+   "agent": "Simple Codex",
+   "agent_url": "https://openai.com/codex",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": true,
+   "accuracy": 75.0561797753,
+   "ci95_half_width": 2.3922527823,
+   "key": "simple codex__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 16,
+   "agent": "Terminus-KIRA",
+   "agent_url": "https://www.krafton.ai/en/",
+   "agent_version": "3.3.0",
+   "model": "Gemini 3.1 Pro",
+   "model_names": [
+    "gemini-3.1-pro-preview"
+   ],
+   "date": "2026-02-19",
+   "verified": false,
+   "accuracy": 74.8314606742,
+   "ci95_half_width": 2.5682394863,
+   "key": "terminus-kira__gemini 3.1 pro",
+   "integration_method": "API",
+   "agent_org": "KRAFTON AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 17,
+   "agent": "Terminus-KIRA",
+   "agent_url": "https://www.krafton.ai/en/",
+   "agent_version": "3.3.0",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 74.7191011236,
+   "ci95_half_width": 2.5964111461,
+   "key": "terminus-kira__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "KRAFTON AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 18,
+   "agent": "Mux",
+   "agent_url": "https://github.com/coder/mux",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 74.606741573,
+   "ci95_half_width": 2.5109481272,
+   "key": "mux__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "Coder",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 19,
+   "agent": "MAYA-V2",
+   "agent_url": "https://adya.ai/maya",
+   "agent_version": "1.5-official",
+   "model": "Claude 4.6 Opus",
+   "model_names": [
+    "claude-4.6-opus"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 72.0786516854,
+   "ci95_half_width": 2.208661072,
+   "key": "maya-v2__claude 4.6 opus",
+   "integration_method": "API",
+   "agent_org": "ADYA",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 20,
+   "agent": "TongAgents",
+   "agent_url": "https://www.bigai.ai/",
+   "agent_version": "0.7.0",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4.6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 71.9101123596,
+   "ci95_half_width": 2.6791493392,
+   "key": "tongagents__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Bigai",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 21,
+   "agent": "spoox-o-m",
+   "agent_url": "https://github.com/plaume8/spoox",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 71.4606741573,
+   "ci95_half_width": 2.4915582762,
+   "key": "spoox-o-m__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "TUM",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 22,
+   "agent": "Junie CLI",
+   "agent_url": "https://junie.jetbrains.com",
+   "agent_version": "507.2",
+   "model": "Multiple",
+   "model_names": [
+    "claude-opus-4-6",
+    "gemini-3-flash-preview",
+    "gemini-3.1-pro-preview",
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-03-07",
+   "verified": false,
+   "accuracy": 71.0112359551,
+   "ci95_half_width": 2.8713790369,
+   "key": "junie cli__claude opus 4.6,gemini 3 flash,gemini 3.1 pro,gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "JetBrains",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 23,
+   "agent": "Droid",
+   "agent_url": "https://factory.ai/",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 69.8876404494,
+   "ci95_half_width": 2.4720163409,
+   "key": "droid__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Factory",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 24,
+   "agent": "Ante",
+   "agent_url": "https://antigma.ai",
+   "agent_version": "unknown",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": true,
+   "accuracy": 69.4257178527,
+   "ci95_half_width": 2.0886618713,
+   "key": "ante__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Antigma Labs",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 25,
+   "agent": "IndusAGI Coding Agent",
+   "agent_url": "https://github.com/varun-israni/indusagi-coding-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 69.138576779,
+   "ci95_half_width": 2.2792046745,
+   "key": "indusagi coding agent__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "Varun Israni (SoloVpx)",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 26,
+   "agent": "Crux",
+   "agent_url": "https://github.com/0xDarkMatter/crux-agent",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 66.872659176,
+   "ci95_half_width": null,
+   "key": "crux__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Roam",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 27,
+   "agent": "Deep Agents",
+   "agent_url": "https://github.com/langchain-ai/deepagents",
+   "agent_version": "0.0.1",
+   "model": "GPT-5.2-Codex",
+   "model_names": [
+    "gpt-5.2-codex"
+   ],
+   "date": "2026-01-14",
+   "verified": false,
+   "accuracy": 66.5168539326,
+   "ci95_half_width": 3.0621004558,
+   "key": "deep agents__gpt-5.2-codex",
+   "integration_method": "API",
+   "agent_org": "LangChain",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 27,
+   "agent": "Mux",
+   "agent_url": "https://github.com/coder/mux",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": false,
+   "accuracy": 66.5168539326,
+   "ci95_half_width": 2.5301893904,
+   "key": "mux__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Coder",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 29,
+   "agent": "clnkr",
+   "agent_url": "https://github.com/clnkr-ai/clnkr",
+   "agent_version": "0.3.11",
+   "model": "GPT-5.5",
+   "model_names": [
+    "gpt-5.5"
+   ],
+   "date": "2026-04-23",
+   "verified": false,
+   "accuracy": 66.0674157303,
+   "ci95_half_width": 2.4915582762,
+   "key": "clnkr__gpt-5.5",
+   "integration_method": "API",
+   "agent_org": "clnkr",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 30,
+   "agent": "SageAgent",
+   "agent_url": "https://github.com/opensage-agent",
+   "agent_version": "unknown",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": false,
+   "accuracy": 65.1685393258,
+   "ci95_half_width": 2.0658909863,
+   "key": "sageagent__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "OpenSage",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 31,
+   "agent": "Droid",
+   "agent_url": "https://factory.ai/",
+   "agent_version": "unknown",
+   "model": "GPT-5.2",
+   "model_names": [
+    "gpt-5.2"
+   ],
+   "date": "2025-12-11",
+   "verified": false,
+   "accuracy": 64.9438202247,
+   "ci95_half_width": 2.7681817951,
+   "key": "droid__gpt-5.2",
+   "integration_method": "API",
+   "agent_org": "Factory",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 32,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5.3-Codex",
+   "model_names": [
+    "gpt-5.3-codex"
+   ],
+   "date": "2026-02-05",
+   "verified": true,
+   "accuracy": 64.7191011236,
+   "ci95_half_width": 2.7151126845,
+   "key": "terminus 2__gpt-5.3-codex",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 33,
+   "agent": "Junie CLI",
+   "agent_url": "https://junie.jetbrains.com",
+   "agent_version": "507.2",
+   "model": "Gemini 3 Flash",
+   "model_names": [
+    "gemini-3-flash-preview"
+   ],
+   "date": "2025-12-17",
+   "verified": false,
+   "accuracy": 64.2696629213,
+   "ci95_half_width": 2.7856468377,
+   "key": "junie cli__gemini 3 flash",
+   "integration_method": "API",
+   "agent_org": "JetBrains",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 34,
+   "agent": "Droid",
+   "agent_url": "https://factory.ai/",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5-20251101"
+   ],
+   "date": "2025-11-24",
+   "verified": false,
+   "accuracy": 63.1460674157,
+   "ci95_half_width": 2.6971909527,
+   "key": "droid__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Factory",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 35,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.73.0",
+   "model": "GPT-5.2",
+   "model_names": [
+    "gpt-5.2"
+   ],
+   "date": "2025-12-11",
+   "verified": true,
+   "accuracy": 62.9213483146,
+   "ci95_half_width": 3.0034647333,
+   "key": "codex cli__gpt-5.2",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 35,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": true,
+   "accuracy": 62.9213483146,
+   "ci95_half_width": 2.6609854054,
+   "key": "terminus 2__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 37,
+   "agent": "CodeBrain-1.5",
+   "agent_url": "https://feeling-ai.com",
+   "agent_version": "1.0.0",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": false,
+   "accuracy": 62.2471910112,
+   "ci95_half_width": 2.6057340168,
+   "key": "codebrain-1.5__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Feeling AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 38,
+   "agent": "II-Agent",
+   "agent_url": "https://agent.ii.inc/",
+   "agent_version": "unknown",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": false,
+   "accuracy": 61.797752809,
+   "ci95_half_width": 2.8202524731,
+   "key": "ii-agent__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Intelligent Internet",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 39,
+   "agent": "hookele",
+   "agent_url": "https://github.com/sady4850/hookele_coding_agent",
+   "agent_version": "0.0.1",
+   "model": "GPT-5.1-Codex-Mini",
+   "model_names": [
+    "gpt-5.1-codex-mini"
+   ],
+   "date": "2025-11-12",
+   "verified": false,
+   "accuracy": 61.5730337079,
+   "ci95_half_width": 1.8944446656,
+   "key": "hookele__gpt-5.1-codex-mini",
+   "integration_method": "API",
+   "agent_org": "Dmitry Barakhov",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 40,
+   "agent": "Gemini CLI",
+   "agent_url": "https://github.com/google-gemini/gemini-cli",
+   "agent_version": "0.35.0",
+   "model": "Gemini 3.1 Pro",
+   "model_names": [
+    "gemini-3.1-pro-preview"
+   ],
+   "date": "2026-02-19",
+   "verified": false,
+   "accuracy": 61.4232209738,
+   "ci95_half_width": 4.1200272349,
+   "key": "gemini cli__gemini 3.1 pro",
+   "integration_method": "API",
+   "agent_org": "Google",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 41,
+   "agent": "Warp",
+   "agent_url": "https://www.warp.dev/",
+   "agent_version": "unknown",
+   "model": "Multiple",
+   "model_names": [
+    "claude-haiku-4-5",
+    "gpt-5.2"
+   ],
+   "date": "2025-12-12",
+   "verified": false,
+   "accuracy": 61.2359550562,
+   "ci95_half_width": 3.0222449548,
+   "key": "warp__claude haiku 4.5,gpt-5.2",
+   "integration_method": "API",
+   "agent_org": "Warp",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 42,
+   "agent": "Droid",
+   "agent_url": "https://factory.ai/",
+   "agent_version": "unknown",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": false,
+   "accuracy": 61.1235955056,
+   "ci95_half_width": 2.7856468377,
+   "key": "droid__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Factory",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 43,
+   "agent": "Mux",
+   "agent_url": "https://github.com/coder/mux",
+   "agent_version": "unknown",
+   "model": "GPT-5.2",
+   "model_names": [
+    "gpt-5.2"
+   ],
+   "date": "2025-12-11",
+   "verified": false,
+   "accuracy": 60.6741573034,
+   "ci95_half_width": null,
+   "key": "mux__gpt-5.2",
+   "integration_method": "API",
+   "agent_org": "Coder",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 44,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.63.0",
+   "model": "GPT-5.1-Codex-Max",
+   "model_names": [
+    "gpt-5.1-codex-max"
+   ],
+   "date": "2025-11-19",
+   "verified": true,
+   "accuracy": 60.4494382022,
+   "ci95_half_width": 2.6609854054,
+   "key": "codex cli__gpt-5.1-codex-max",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 45,
+   "agent": "Gemini CLI",
+   "agent_url": "https://github.com/google-gemini/gemini-cli",
+   "agent_version": "0.34.0",
+   "model": "Gemini 3.1 Pro",
+   "model_names": [
+    "gemini-3.1-pro-preview"
+   ],
+   "date": "2026-02-19",
+   "verified": false,
+   "accuracy": 59.3632958801,
+   "ci95_half_width": 4.2009785316,
+   "key": "gemini cli__gemini 3.1 pro",
+   "integration_method": "API",
+   "agent_org": "Google",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 46,
+   "agent": "Letta Code",
+   "agent_url": "https://www.letta.com/",
+   "agent_version": "latest",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5"
+   ],
+   "date": "2025-11-24",
+   "verified": false,
+   "accuracy": 59.1011235955,
+   "ci95_half_width": 2.4124409274,
+   "key": "letta code__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Letta",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 46,
+   "agent": "Warp",
+   "agent_url": "https://www.warp.dev/",
+   "agent_version": "unknown",
+   "model": "Multiple",
+   "model_names": [
+    "claude-haiku-4-5-20251001",
+    "gemini-3-pro-preview",
+    "gpt-5-nano"
+   ],
+   "date": "2025-11-20",
+   "verified": false,
+   "accuracy": 59.1011235955,
+   "ci95_half_width": 2.75060586,
+   "key": "warp__claude haiku 4.5,gemini 3 pro,gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "Warp",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 48,
+   "agent": "Mux",
+   "agent_url": "https://github.com/coder/mux",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5"
+   ],
+   "date": "2025-11-24",
+   "verified": false,
+   "accuracy": 58.4269662921,
+   "ci95_half_width": null,
+   "key": "mux__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Coder",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 48,
+   "agent": "Abacus AI Desktop",
+   "agent_url": "https://deepagent-desktop.abacus.ai/",
+   "agent_version": "1.106.24701",
+   "model": "Multiple",
+   "model_names": [
+    "claude-haiku-4-5",
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-12-11",
+   "verified": false,
+   "accuracy": 58.4269662921,
+   "ci95_half_width": 2.75060586,
+   "key": "abacus ai desktop__claude haiku 4.5,gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Abacus.AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 50,
+   "agent": "Claude Code",
+   "agent_url": "https://www.claude.com/product/claude-code",
+   "agent_version": "2.1.34",
+   "model": "Claude Opus 4.6",
+   "model_names": [
+    "claude-opus-4-6"
+   ],
+   "date": "2026-02-05",
+   "verified": true,
+   "accuracy": 57.9775280899,
+   "ci95_half_width": 2.9049635593,
+   "key": "claude code__claude opus 4.6",
+   "integration_method": "API",
+   "agent_org": "Anthropic",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 51,
+   "agent": "Crux",
+   "agent_url": "https://github.com/0xDarkMatter/crux-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5.1-Codex",
+   "model_names": [
+    "gpt-5.1-codex"
+   ],
+   "date": "2025-11-12",
+   "verified": true,
+   "accuracy": 57.7528089888,
+   "ci95_half_width": 2.9381642209,
+   "key": "crux__gpt-5.1-codex",
+   "integration_method": "API",
+   "agent_org": "Roam",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 51,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5-20251101"
+   ],
+   "date": "2025-11-24",
+   "verified": true,
+   "accuracy": 57.7528089888,
+   "ci95_half_width": 2.5301893904,
+   "key": "terminus 2__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 53,
+   "agent": "Grok CLI",
+   "agent_url": "https://github.com/superagent-ai/grok-cli",
+   "agent_version": "1.1.1",
+   "model": "Grok 4.20 Reasoning",
+   "model_names": [
+    "grok-4.20-0309-reasoning"
+   ],
+   "date": "2026-03-10",
+   "verified": false,
+   "accuracy": 57.3033707865,
+   "ci95_half_width": null,
+   "key": "grok cli__grok 4.20 reasoning",
+   "integration_method": "API",
+   "agent_org": "Superagent",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 54,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": true,
+   "accuracy": 56.8539325843,
+   "ci95_half_width": 2.4720163409,
+   "key": "terminus 2__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 55,
+   "agent": "Letta Code",
+   "agent_url": "https://www.letta.com/",
+   "agent_version": "latest",
+   "model": "Gemini 3 Pro",
+   "model_names": [
+    "gemini-3-pro-preview"
+   ],
+   "date": "2025-11-18",
+   "verified": false,
+   "accuracy": 55.9550561798,
+   "ci95_half_width": 2.9709938903,
+   "key": "letta code__gemini 3 pro",
+   "integration_method": "API",
+   "agent_org": "Letta",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 56,
+   "agent": "Goose",
+   "agent_url": "https://block.github.io/goose/",
+   "agent_version": "stable",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5"
+   ],
+   "date": "2025-11-24",
+   "verified": false,
+   "accuracy": 54.3258426966,
+   "ci95_half_width": 2.6265894906,
+   "key": "goose__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Block",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 57,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5.2",
+   "model_names": [
+    "gpt-5.2"
+   ],
+   "date": "2025-12-11",
+   "verified": true,
+   "accuracy": 54.0449438202,
+   "ci95_half_width": 2.8910174223,
+   "key": "terminus 2__gpt-5.2",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 58,
+   "agent": "Letta Code",
+   "agent_url": "https://www.letta.com/",
+   "agent_version": "latest",
+   "model": "GPT-5.1-Codex",
+   "model_names": [
+    "gpt-5.1-codex"
+   ],
+   "date": "2025-11-12",
+   "verified": false,
+   "accuracy": 53.4831460674,
+   "ci95_half_width": 2.837397023,
+   "key": "letta code__gpt-5.1-codex",
+   "integration_method": "API",
+   "agent_org": "Letta",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 59,
+   "agent": "Simplai Agent",
+   "agent_url": "https://simplai.ai",
+   "agent_version": "0.3.0",
+   "model": "Claude Sonnet 4.6",
+   "model_names": [
+    "claude-sonnet-4-6"
+   ],
+   "date": "2026-02-17",
+   "verified": false,
+   "accuracy": 53.4269662921,
+   "ci95_half_width": 2.8300280743,
+   "key": "simplai agent__claude sonnet 4.6",
+   "integration_method": "API",
+   "agent_org": "SimplAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 60,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GLM 5",
+   "model_names": [
+    "glm-5"
+   ],
+   "date": "2026-02-11",
+   "verified": false,
+   "accuracy": 52.4157303371,
+   "ci95_half_width": 2.6265894906,
+   "key": "terminus 2__glm 5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 61,
+   "agent": "Claude Code",
+   "agent_url": "https://www.claude.com/product/claude-code",
+   "agent_version": "2.0.72",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5-20251101"
+   ],
+   "date": "2025-11-24",
+   "verified": true,
+   "accuracy": 52.1348314607,
+   "ci95_half_width": 2.5301893904,
+   "key": "claude code__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Anthropic",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 62,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "1.1.0",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5-20251101"
+   ],
+   "date": "2025-11-24",
+   "verified": true,
+   "accuracy": 51.9101123596,
+   "ci95_half_width": 2.8882201141,
+   "key": "openhands__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 63,
+   "agent": "OpenCode",
+   "agent_url": "https://opencode.ai",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.5",
+   "model_names": [
+    "claude-opus-4-5"
+   ],
+   "date": "2025-11-24",
+   "verified": false,
+   "accuracy": 51.6853932584,
+   "ci95_half_width": null,
+   "key": "opencode__claude opus 4.5",
+   "integration_method": "API",
+   "agent_org": "Anomaly Innovations",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 63,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Gemini 3 Flash",
+   "model_names": [
+    "gemini-3-flash-preview"
+   ],
+   "date": "2025-12-17",
+   "verified": true,
+   "accuracy": 51.6853932584,
+   "ci95_half_width": 3.1299813473,
+   "key": "terminus 2__gemini 3 flash",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 65,
+   "agent": "Warp",
+   "agent_url": "https://www.warp.dev/",
+   "agent_version": "unknown",
+   "model": "Multiple",
+   "model_names": [
+    "claude-haiku-4-5-20251001",
+    "claude-sonnet-4-5-20250929",
+    "gpt-5-nano"
+   ],
+   "date": "2025-11-11",
+   "verified": false,
+   "accuracy": 50.1123595506,
+   "ci95_half_width": 2.6609854054,
+   "key": "warp__claude haiku 4.5,claude sonnet 4.5,gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "Warp",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 66,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.53.0",
+   "model": "GPT-5",
+   "model_names": [
+    "gpt-5"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 49.606741573,
+   "ci95_half_width": 2.8973014913,
+   "key": "codex cli__gpt-5",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 67,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5.1",
+   "model_names": [
+    "gpt-5.1"
+   ],
+   "date": "2025-11-12",
+   "verified": true,
+   "accuracy": 47.5842696629,
+   "ci95_half_width": 2.7616039281,
+   "key": "terminus 2__gpt-5.1",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 68,
+   "agent": "Gemini CLI",
+   "agent_url": "https://github.com/google-gemini/gemini-cli",
+   "agent_version": "unknown",
+   "model": "Gemini 3 Flash",
+   "model_names": [
+    "gemini-3-flash-preview"
+   ],
+   "date": "2025-12-17",
+   "verified": false,
+   "accuracy": 47.4157303371,
+   "ci95_half_width": 3.0355882645,
+   "key": "gemini cli__gemini 3 flash",
+   "integration_method": "API",
+   "agent_org": "Google",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 69,
+   "agent": "CAMEL-AI",
+   "agent_url": "https://www.camel-ai.org/",
+   "agent_version": "1.0",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5"
+   ],
+   "date": "2025-09-29",
+   "verified": false,
+   "accuracy": 46.5168539326,
+   "ci95_half_width": 2.3513565589,
+   "key": "camel-ai__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "CAMEL-AI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 70,
+   "agent": "IndusAGI Coding Agent",
+   "agent_url": "https://github.com/varun-israni/indusagi-coding-agent",
+   "agent_version": "unknown",
+   "model": "MiniMax M2.7",
+   "model_names": [
+    "minimax/MiniMax-M2.7"
+   ],
+   "date": "2026-03-18",
+   "verified": false,
+   "accuracy": 45.0561797753,
+   "ci95_half_width": null,
+   "key": "indusagi coding agent__minimax m2.7",
+   "integration_method": "API",
+   "agent_org": "Varun Israni (SoloVpx)",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 71,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.53.0",
+   "model": "GPT-5-Codex",
+   "model_names": [
+    "gpt-5-codex"
+   ],
+   "date": "2025-09-15",
+   "verified": true,
+   "accuracy": 44.3258426966,
+   "ci95_half_width": 2.7054198168,
+   "key": "codex cli__gpt-5-codex",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 72,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "GPT-5",
+   "model_names": [
+    "gpt-5"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 43.8202247191,
+   "ci95_half_width": 2.9872734308,
+   "key": "openhands__gpt-5",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 73,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5-Codex",
+   "model_names": [
+    "gpt-5-codex"
+   ],
+   "date": "2025-09-15",
+   "verified": true,
+   "accuracy": 43.4269662921,
+   "ci95_half_width": 2.8734895694,
+   "key": "terminus 2__gpt-5-codex",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 74,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Kimi K2.5",
+   "model_names": [
+    "kimi-k2.5"
+   ],
+   "date": "2026-01-27",
+   "verified": true,
+   "accuracy": 43.202247191,
+   "ci95_half_width": 2.8777059907,
+   "key": "terminus 2__kimi k2.5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 75,
+   "agent": "Goose",
+   "agent_url": "https://block.github.io/goose/",
+   "agent_version": "stable",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5"
+   ],
+   "date": "2025-09-29",
+   "verified": false,
+   "accuracy": 43.1460674157,
+   "ci95_half_width": 2.5870546791,
+   "key": "goose__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "Block",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 75,
+   "agent": "Crux",
+   "agent_url": "https://github.com/0xDarkMatter/crux-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5.1-Codex-Mini",
+   "model_names": [
+    "gpt-5.1-codex-mini"
+   ],
+   "date": "2025-11-12",
+   "verified": true,
+   "accuracy": 43.1460674157,
+   "ci95_half_width": 3.0034647333,
+   "key": "crux__gpt-5.1-codex-mini",
+   "integration_method": "API",
+   "agent_org": "Roam",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 77,
+   "agent": "Harness Agent",
+   "agent_url": "https://github.com/lazyFrogLOL/Harness_Engineering",
+   "agent_version": "unknown",
+   "model": "MiniMax M2.7 Highspeed",
+   "model_names": [
+    "MiniMax-M2.7-highspeed"
+   ],
+   "date": "2026-03-18",
+   "verified": false,
+   "accuracy": 42.9213483146,
+   "ci95_half_width": 2.9381642209,
+   "key": "harness agent__minimax m2.7 highspeed",
+   "integration_method": "API",
+   "agent_org": "lazyFrogLOL",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 78,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5-20250929"
+   ],
+   "date": "2025-09-29",
+   "verified": true,
+   "accuracy": 42.808988764,
+   "ci95_half_width": 2.7885470434,
+   "key": "terminus 2__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 79,
+   "agent": "MAYA-V2",
+   "agent_url": "https://adya.ai/maya",
+   "agent_version": "1.5-official",
+   "model": "Claude 4.5 Sonnet",
+   "model_names": [
+    "claude-4.5-sonnet"
+   ],
+   "date": "2025-09-29",
+   "verified": false,
+   "accuracy": 42.6966292135,
+   "ci95_half_width": null,
+   "key": "maya-v2__claude 4.5 sonnet",
+   "integration_method": "API",
+   "agent_org": "ADYA",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 79,
+   "agent": "cchuter",
+   "agent_url": "https://github.com/cchuter/blobfish",
+   "agent_version": "unknown",
+   "model": "minimax-m2.5",
+   "model_names": [
+    "minimax-m2.5"
+   ],
+   "date": "2026-02-12",
+   "verified": false,
+   "accuracy": 42.6966292135,
+   "ci95_half_width": 2.8245483667,
+   "key": "cchuter__minimax-m2.5",
+   "integration_method": "API",
+   "agent_org": "teamblobfish.com",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 81,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5-20250929"
+   ],
+   "date": "2025-09-29",
+   "verified": true,
+   "accuracy": 42.5842696629,
+   "ci95_half_width": 2.7711002796,
+   "key": "openhands__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 82,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5-20250929"
+   ],
+   "date": "2025-09-29",
+   "verified": true,
+   "accuracy": 42.5280898876,
+   "ci95_half_width": 2.8051650379,
+   "key": "mini-swe-agent__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 83,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Minimax m2.5",
+   "model_names": [
+    "minimax-m2.5"
+   ],
+   "date": "2026-02-12",
+   "verified": false,
+   "accuracy": 42.2471910112,
+   "ci95_half_width": 2.6242804005,
+   "key": "terminus 2__minimax m2.5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 84,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5-Codex",
+   "model_names": [
+    "gpt-5-codex"
+   ],
+   "date": "2025-09-15",
+   "verified": true,
+   "accuracy": 41.3483146067,
+   "ci95_half_width": 2.7681817951,
+   "key": "mini-swe-agent__gpt-5-codex",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 85,
+   "agent": "Claude Code",
+   "agent_url": "https://www.claude.com/product/claude-code",
+   "agent_version": "2.0.31",
+   "model": "Claude Sonnet 4.5",
+   "model_names": [
+    "claude-sonnet-4-5-20250929"
+   ],
+   "date": "2025-09-29",
+   "verified": true,
+   "accuracy": 40.0561797753,
+   "ci95_half_width": 2.9153793818,
+   "key": "claude code__claude sonnet 4.5",
+   "integration_method": "API",
+   "agent_org": "Anthropic",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 86,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "DeepSeek-V3.2",
+   "model_names": [
+    "deepseek-v3.2"
+   ],
+   "date": "2025-12-01",
+   "verified": false,
+   "accuracy": 39.5505617978,
+   "ci95_half_width": 2.75060586,
+   "key": "terminus 2__deepseek-v3.2",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 87,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Claude Opus 4.1",
+   "model_names": [
+    "claude-opus-4-1-20250805"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 37.9775280899,
+   "ci95_half_width": 2.6242804005,
+   "key": "terminus 2__claude opus 4.1",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 88,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Claude Opus 4.1",
+   "model_names": [
+    "claude-opus-4-1-20250805"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 36.8539325843,
+   "ci95_half_width": 2.6971909527,
+   "key": "openhands__claude opus 4.1",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 88,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5.1-Codex",
+   "model_names": [
+    "gpt-5.1-codex"
+   ],
+   "date": "2025-11-12",
+   "verified": true,
+   "accuracy": 36.8539325843,
+   "ci95_half_width": 3.2366291433,
+   "key": "terminus 2__gpt-5.1-codex",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 90,
+   "agent": "Crux",
+   "agent_url": "https://github.com/0xDarkMatter/crux-agent",
+   "agent_version": "unknown",
+   "model": "MiniMax M2.1",
+   "model_names": [
+    "minimax-m2.1"
+   ],
+   "date": "2025-12-23",
+   "verified": true,
+   "accuracy": 36.6292134831,
+   "ci95_half_width": 2.8882201141,
+   "key": "crux__minimax m2.1",
+   "integration_method": "API",
+   "agent_org": "Roam",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 91,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Kimi K2 Thinking",
+   "model_names": [
+    "moonshotai/Kimi-K2-Thinking"
+   ],
+   "date": "2025-11-06",
+   "verified": true,
+   "accuracy": 35.7303370787,
+   "ci95_half_width": 2.8202524731,
+   "key": "terminus 2__kimi k2 thinking",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 92,
+   "agent": "Goose",
+   "agent_url": "https://block.github.io/goose/",
+   "agent_version": "stable",
+   "model": "Claude Haiku 4.5",
+   "model_names": [
+    "claude-haiku-4-5"
+   ],
+   "date": "2025-10-15",
+   "verified": false,
+   "accuracy": 35.5056179775,
+   "ci95_half_width": 2.8882201141,
+   "key": "goose__claude haiku 4.5",
+   "integration_method": "API",
+   "agent_org": "Block",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 93,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5",
+   "model_names": [
+    "gpt-5"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 35.1685393258,
+   "ci95_half_width": 3.0554939746,
+   "key": "terminus 2__gpt-5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 94,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Claude Opus 4.1",
+   "model_names": [
+    "claude-opus-4-1-20250805"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 35.0561797753,
+   "ci95_half_width": 2.5109481272,
+   "key": "mini-swe-agent__claude opus 4.1",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 95,
+   "agent": "Claude Code",
+   "agent_url": "https://www.claude.com/product/claude-code",
+   "agent_version": "2.0.31",
+   "model": "Claude Opus 4.1",
+   "model_names": [
+    "claude-opus-4-1-20250805"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 34.8314606742,
+   "ci95_half_width": 2.8993931543,
+   "key": "claude code__claude opus 4.1",
+   "integration_method": "API",
+   "agent_org": "Anthropic",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 95,
+   "agent": "spoox-o-m",
+   "agent_url": "https://github.com/plaume8/spoox",
+   "agent_version": "unknown",
+   "model": "GPT-5-Mini",
+   "model_names": [
+    "gpt-5-mini"
+   ],
+   "date": "2025-08-07",
+   "verified": false,
+   "accuracy": 34.8314606742,
+   "ci95_half_width": 2.7151126845,
+   "key": "spoox-o-m__gpt-5-mini",
+   "integration_method": "API",
+   "agent_org": "TUM",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 97,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5",
+   "model_names": [
+    "gpt-5"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 33.9325842697,
+   "ci95_half_width": 2.9049635593,
+   "key": "mini-swe-agent__gpt-5",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 98,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GLM 4.7",
+   "model_names": [
+    "glm-4.7"
+   ],
+   "date": "2025-12-22",
+   "verified": true,
+   "accuracy": 33.3895131086,
+   "ci95_half_width": 2.8414299458,
+   "key": "terminus 2__glm 4.7",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 99,
+   "agent": "Crux",
+   "agent_url": "https://github.com/0xDarkMatter/crux-agent",
+   "agent_version": "unknown",
+   "model": "GLM 4.7",
+   "model_names": [
+    "GLM-4.7"
+   ],
+   "date": "2025-12-22",
+   "verified": false,
+   "accuracy": 33.2584269663,
+   "ci95_half_width": 2.4523186857,
+   "key": "crux__glm 4.7",
+   "integration_method": "API",
+   "agent_org": "Roam",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 100,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Gemini 2.5 Pro",
+   "model_names": [
+    "gemini-2.5-pro"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 32.6404494382,
+   "ci95_half_width": 3.0215762425,
+   "key": "terminus 2__gemini 2.5 pro",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 101,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.53.0",
+   "model": "GPT-5-Mini",
+   "model_names": [
+    "gpt-5-mini"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 31.8539325843,
+   "ci95_half_width": 2.9987513007,
+   "key": "codex cli__gpt-5-mini",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 102,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "MiniMax M2",
+   "model_names": [
+    "accounts/fireworks/models/minimax-m2"
+   ],
+   "date": "2025-10-27",
+   "verified": true,
+   "accuracy": 30.0374531835,
+   "ci95_half_width": 2.7407927503,
+   "key": "terminus 2__minimax m2",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 103,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Claude Haiku 4.5",
+   "model_names": [
+    "claude-haiku-4-5-20251001"
+   ],
+   "date": "2025-10-15",
+   "verified": true,
+   "accuracy": 29.8314606742,
+   "ci95_half_width": 2.5133613407,
+   "key": "mini-swe-agent__claude haiku 4.5",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 104,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "MiniMax M2.1",
+   "model_names": [
+    "minimax-m2.1"
+   ],
+   "date": "2025-12-23",
+   "verified": true,
+   "accuracy": 29.2134831461,
+   "ci95_half_width": 2.9049635593,
+   "key": "terminus 2__minimax m2.1",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 104,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "GPT-5-Mini",
+   "model_names": [
+    "gpt-5-mini"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 29.2134831461,
+   "ci95_half_width": 2.75060586,
+   "key": "openhands__gpt-5-mini",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 106,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Claude Haiku 4.5",
+   "model_names": [
+    "claude-haiku-4-5-20251001"
+   ],
+   "date": "2025-10-15",
+   "verified": true,
+   "accuracy": 28.3146067416,
+   "ci95_half_width": 2.8755985528,
+   "key": "terminus 2__claude haiku 4.5",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 107,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Kimi K2 Instruct",
+   "model_names": [
+    "moonshotai/Kimi-K2-Instruct-0905"
+   ],
+   "date": "2025-07-11",
+   "verified": true,
+   "accuracy": 27.7902621723,
+   "ci95_half_width": 2.5216558437,
+   "key": "terminus 2__kimi k2 instruct",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 108,
+   "agent": "Claude Code",
+   "agent_url": "https://www.claude.com/product/claude-code",
+   "agent_version": "2.0.31",
+   "model": "Claude Haiku 4.5",
+   "model_names": [
+    "claude-haiku-4-5-20251001"
+   ],
+   "date": "2025-10-15",
+   "verified": true,
+   "accuracy": 27.5280898876,
+   "ci95_half_width": 2.7754722523,
+   "key": "claude code__claude haiku 4.5",
+   "integration_method": "API",
+   "agent_org": "Anthropic",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 109,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Grok 4",
+   "model_names": [
+    "grok-4-0709"
+   ],
+   "date": "2025-07-09",
+   "verified": true,
+   "accuracy": 27.191011236,
+   "ci95_half_width": 3.0515232205,
+   "key": "openhands__grok 4",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 109,
+   "agent": "Dakou Agent",
+   "agent_url": "https://dakou.iflow.cn/",
+   "agent_version": "1.18.72-pre",
+   "model": "Qwen 3 Coder 480B",
+   "model_names": [
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
+   ],
+   "date": "2025-07-22",
+   "verified": false,
+   "accuracy": 27.191011236,
+   "ci95_half_width": 2.5682394863,
+   "key": "dakou agent__qwen 3 coder 480b",
+   "integration_method": "API",
+   "agent_org": "iflow",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 111,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Kimi K2 Instruct",
+   "model_names": [
+    "moonshotai/Kimi-K2-Instruct-0905"
+   ],
+   "date": "2025-07-11",
+   "verified": true,
+   "accuracy": 26.7415730337,
+   "ci95_half_width": 2.6971909527,
+   "key": "openhands__kimi k2 instruct",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 112,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Gemini 2.5 Pro",
+   "model_names": [
+    "gemini-2.5-pro"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 26.0674157303,
+   "ci95_half_width": 2.5492854303,
+   "key": "mini-swe-agent__gemini 2.5 pro",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 113,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Grok Code Fast 1",
+   "model_names": [
+    "grok-code-fast-1"
+   ],
+   "date": "2025-08-28",
+   "verified": true,
+   "accuracy": 25.8426966292,
+   "ci95_half_width": 2.6242804005,
+   "key": "mini-swe-agent__grok code fast 1",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 114,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Grok 4",
+   "model_names": [
+    "grok-4-0709"
+   ],
+   "date": "2025-07-09",
+   "verified": true,
+   "accuracy": 25.393258427,
+   "ci95_half_width": 2.9216110513,
+   "key": "mini-swe-agent__grok 4",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 114,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Qwen 3 Coder 480B",
+   "model_names": [
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
+   ],
+   "date": "2025-07-22",
+   "verified": true,
+   "accuracy": 25.393258427,
+   "ci95_half_width": 2.5870546791,
+   "key": "openhands__qwen 3 coder 480b",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 116,
+   "agent": "little-coder",
+   "agent_url": "https://github.com/itayinbarr/little-coder",
+   "agent_version": "0.1.14",
+   "model": "Qwen3.6-35B-A3B",
+   "model_names": [
+    "Qwen/Qwen3.6-35B-A3B"
+   ],
+   "date": "2026-04-16",
+   "verified": false,
+   "accuracy": 24.6254681648,
+   "ci95_half_width": 3.205049478,
+   "key": "little-coder__qwen3.6-35b-a3b",
+   "integration_method": "API",
+   "agent_org": "Itay Inbar",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 117,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GLM 4.6",
+   "model_names": [
+    "accounts/fireworks/models/glm-4p6"
+   ],
+   "date": "2025-09-30",
+   "verified": true,
+   "accuracy": 24.531835206,
+   "ci95_half_width": 2.4446156239,
+   "key": "terminus 2__glm 4.6",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 118,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5-Mini",
+   "model_names": [
+    "gpt-5-mini"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 24.0449438202,
+   "ci95_half_width": 2.5301893904,
+   "key": "terminus 2__gpt-5-mini",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 119,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Qwen 3 Coder 480B",
+   "model_names": [
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
+   ],
+   "date": "2025-07-22",
+   "verified": true,
+   "accuracy": 23.8951310861,
+   "ci95_half_width": 2.8010799023,
+   "key": "terminus 2__qwen 3 coder 480b",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 120,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Grok 4",
+   "model_names": [
+    "grok-4-0709"
+   ],
+   "date": "2025-07-09",
+   "verified": true,
+   "accuracy": 23.1460674157,
+   "ci95_half_width": 2.9049635593,
+   "key": "terminus 2__grok 4",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 121,
+   "agent": "little-coder",
+   "agent_url": "https://github.com/itayinbarr/little-coder",
+   "agent_version": "0.1.13",
+   "model": "Qwen3.6-35B-A3B",
+   "model_names": [
+    "Qwen/Qwen3.6-35B-A3B"
+   ],
+   "date": "2026-04-16",
+   "verified": false,
+   "accuracy": 23.0337078652,
+   "ci95_half_width": null,
+   "key": "little-coder__qwen3.6-35b-a3b",
+   "integration_method": "API",
+   "agent_org": "Itay Inbar",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 122,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5-Mini",
+   "model_names": [
+    "gpt-5-mini"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 22.2471910112,
+   "ci95_half_width": 2.6242804005,
+   "key": "mini-swe-agent__gpt-5-mini",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 123,
+   "agent": "spoox-o-m",
+   "agent_url": "https://github.com/plaume8/spoox",
+   "agent_version": "unknown",
+   "model": "GPT-5-Nano",
+   "model_names": [
+    "gpt-5-nano"
+   ],
+   "date": "2025-08-07",
+   "verified": false,
+   "accuracy": 21.797752809,
+   "ci95_half_width": 2.8030030607,
+   "key": "spoox-o-m__gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "TUM",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 124,
+   "agent": "Gemini CLI",
+   "agent_url": "https://github.com/google-gemini/gemini-cli",
+   "agent_version": "0.11.3",
+   "model": "Gemini 2.5 Pro",
+   "model_names": [
+    "gemini-2.5-pro"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 19.5505617978,
+   "ci95_half_width": 2.8586831205,
+   "key": "gemini cli__gemini 2.5 pro",
+   "integration_method": "API",
+   "agent_org": "Google",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 125,
+   "agent": "Bash Agent",
+   "agent_url": "https://huggingface.co/UCSB-SURFI/TermiGen-32B",
+   "agent_version": "1.0.0",
+   "model": "TermiGen-32B",
+   "model_names": [
+    "UCSB-SURFI/TermiGen-32B"
+   ],
+   "date": "2026-05-14",
+   "verified": false,
+   "accuracy": 19.3258426966,
+   "ci95_half_width": 1.9942196484,
+   "key": "bash agent__termigen-32b",
+   "integration_method": "API",
+   "agent_org": "UCSB-SURFI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 126,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-OSS-120B",
+   "model_names": [
+    "openai/gpt-oss-120b"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 18.6891385768,
+   "ci95_half_width": 2.6599726612,
+   "key": "terminus 2__gpt-oss-120b",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 127,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "Gemini 2.5 Flash",
+   "model_names": [
+    "gemini-2.5-flash"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 17.0786516854,
+   "ci95_half_width": 2.4915582762,
+   "key": "mini-swe-agent__gemini 2.5 flash",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 128,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "AfterQuery-GPT-OSS-20B",
+   "model_names": [
+    "gpt-oss-20b-rl"
+   ],
+   "date": "2026-03-31",
+   "verified": false,
+   "accuracy": 17.0224719101,
+   "ci95_half_width": 2.4547895363,
+   "key": "terminus 2__afterquery-gpt-oss-20b",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 129,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Gemini 2.5 Flash",
+   "model_names": [
+    "gemini-2.5-flash"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 16.8539325843,
+   "ci95_half_width": 2.3718928139,
+   "key": "terminus 2__gemini 2.5 flash",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 130,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Gemini 2.5 Pro",
+   "model_names": [
+    "gemini-2.5-pro"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 16.404494382,
+   "ci95_half_width": 2.75060586,
+   "key": "openhands__gemini 2.5 pro",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 130,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Gemini 2.5 Flash",
+   "model_names": [
+    "gemini-2.5-flash"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 16.404494382,
+   "ci95_half_width": 2.3922527823,
+   "key": "openhands__gemini 2.5 flash",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 132,
+   "agent": "Gemini CLI",
+   "agent_url": "https://github.com/google-gemini/gemini-cli",
+   "agent_version": "0.11.3",
+   "model": "Gemini 2.5 Flash",
+   "model_names": [
+    "gemini-2.5-flash"
+   ],
+   "date": "2025-06-17",
+   "verified": true,
+   "accuracy": 15.4494382022,
+   "ci95_half_width": 2.3158525428,
+   "key": "gemini cli__gemini 2.5 flash",
+   "integration_method": "API",
+   "agent_org": "Google",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 133,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "Grok Code Fast 1",
+   "model_names": [
+    "grok-code-fast-1"
+   ],
+   "date": "2025-08-28",
+   "verified": true,
+   "accuracy": 14.1573033708,
+   "ci95_half_width": 2.5492854303,
+   "key": "terminus 2__grok code fast 1",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 133,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-OSS-120B",
+   "model_names": [
+    "openai/gpt-oss-120b"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 14.1573033708,
+   "ci95_half_width": 2.2673522558,
+   "key": "mini-swe-agent__gpt-oss-120b",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 135,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "Claude Haiku 4.5",
+   "model_names": [
+    "claude-haiku-4-5-20251001"
+   ],
+   "date": "2025-10-15",
+   "verified": true,
+   "accuracy": 13.9325842697,
+   "ci95_half_width": 2.7329168928,
+   "key": "openhands__claude haiku 4.5",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 136,
+   "agent": "Codex CLI",
+   "agent_url": "https://developers.openai.com/codex/cli/",
+   "agent_version": "0.53.0",
+   "model": "GPT-5-Nano",
+   "model_names": [
+    "gpt-5-nano"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 11.4606741573,
+   "ci95_half_width": 2.2673522558,
+   "key": "codex cli__gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "OpenAI",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 137,
+   "agent": "OpenHands",
+   "agent_url": "https://github.com/OpenHands/OpenHands",
+   "agent_version": "0.60.0",
+   "model": "GPT-5-Nano",
+   "model_names": [
+    "gpt-5-nano"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 9.8876404494,
+   "ci95_half_width": 2.1123213002,
+   "key": "openhands__gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "OpenHands",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 138,
+   "agent": "little-coder",
+   "agent_url": "https://github.com/itayinbarr/little-coder",
+   "agent_version": "0.1.24",
+   "model": "Qwen3.5-9B",
+   "model_names": [
+    "Qwen/Qwen3.5-9B"
+   ],
+   "date": "2026-03-02",
+   "verified": false,
+   "accuracy": 9.2134831461,
+   "ci95_half_width": 2.3513565589,
+   "key": "little-coder__qwen3.5-9b",
+   "integration_method": "API",
+   "agent_org": "Itay Inbar",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 139,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-5-Nano",
+   "model_names": [
+    "gpt-5-nano"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 7.8651685393,
+   "ci95_half_width": 1.8686687071,
+   "key": "terminus 2__gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 140,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-5-Nano",
+   "model_names": [
+    "gpt-5-nano"
+   ],
+   "date": "2025-08-07",
+   "verified": true,
+   "accuracy": 6.9662921348,
+   "ci95_half_width": 1.9198745909,
+   "key": "mini-swe-agent__gpt-5-nano",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 141,
+   "agent": "Mini-SWE-Agent",
+   "agent_url": "https://github.com/SWE-agent/mini-swe-agent",
+   "agent_version": "unknown",
+   "model": "GPT-OSS-20B",
+   "model_names": [
+    "openai/gpt-oss-20b"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 3.3707865169,
+   "ci95_half_width": 1.3575563422,
+   "key": "mini-swe-agent__gpt-oss-20b",
+   "integration_method": "API",
+   "agent_org": "Princeton",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  },
+  {
+   "rank": 142,
+   "agent": "Terminus 2",
+   "agent_url": "https://www.tbench.ai/terminus",
+   "agent_version": "2.0.0",
+   "model": "GPT-OSS-20B",
+   "model_names": [
+    "openai/gpt-oss-20b"
+   ],
+   "date": "2025-08-05",
+   "verified": true,
+   "accuracy": 3.0711610487,
+   "ci95_half_width": 1.5186814718,
+   "key": "terminus 2__gpt-oss-20b",
+   "integration_method": "API",
+   "agent_org": "Terminal-Bench",
+   "status": "display",
+   "row_source_url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0"
+  }
+ ]
+}

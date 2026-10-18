@@ -1,0 +1,290 @@
+[
+ {
+  "problem": "circuit_eval",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "simulation",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/circuit_eval"
+ },
+ {
+  "problem": "forge",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "web",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/forge"
+ },
+ {
+  "problem": "meshctl",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "cli-tools",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/meshctl"
+ },
+ {
+  "problem": "mocked_http",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "web",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/mocked_http"
+ },
+ {
+  "problem": "recli",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/recli"
+ },
+ {
+  "problem": "test_translator",
+  "checkpoints": 8,
+  "checkpoint_md_files": 8,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/test_translator"
+ },
+ {
+  "problem": "datagate",
+  "checkpoints": 7,
+  "checkpoint_md_files": 7,
+  "language/category if stated": "web",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/datagate"
+ },
+ {
+  "problem": "sheeteval",
+  "checkpoints": 7,
+  "checkpoint_md_files": 7,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/sheeteval"
+ },
+ {
+  "problem": "cfgpipe",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "configuration-management",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/cfgpipe"
+ },
+ {
+  "problem": "eve_industry",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "data-processing",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/eve_industry"
+ },
+ {
+  "problem": "execution_server",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "networking",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/execution_server"
+ },
+ {
+  "problem": "mvvault",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "cli-tools",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/mvvault"
+ },
+ {
+  "problem": "sith",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/sith"
+ },
+ {
+  "problem": "textdrop",
+  "checkpoints": 6,
+  "checkpoint_md_files": 6,
+  "language/category if stated": "web",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/textdrop"
+ },
+ {
+  "problem": "code_search",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/code_search"
+ },
+ {
+  "problem": "database_migration",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "databases",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/database_migration"
+ },
+ {
+  "problem": "env_manager",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "cli-tools",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/env_manager"
+ },
+ {
+  "problem": "etl_pipeline",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "data-processing",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/etl_pipeline"
+ },
+ {
+  "problem": "file_query_tool",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "data-processing",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/file_query_tool"
+ },
+ {
+  "problem": "l2m",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/l2m"
+ },
+ {
+  "problem": "log_query",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/log_query"
+ },
+ {
+  "problem": "metric_transform_lang",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "dsl",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/metric_transform_lang"
+ },
+ {
+  "problem": "migrate_configs",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "cli-tools",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/migrate_configs"
+ },
+ {
+  "problem": "pwd_manager",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "cli-tools",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/pwd_manager"
+ },
+ {
+  "problem": "rejector",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "data-processing",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/rejector"
+ },
+ {
+  "problem": "trajectory_api",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "web",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/trajectory_api"
+ },
+ {
+  "problem": "xjq",
+  "checkpoints": 5,
+  "checkpoint_md_files": 5,
+  "language/category if stated": "developer-tools",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/xjq"
+ },
+ {
+  "problem": "dynamic_buffer",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "data-processing",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/dynamic_buffer"
+ },
+ {
+  "problem": "dynamic_config_service_api",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "web",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/dynamic_config_service_api"
+ },
+ {
+  "problem": "eve_market_tools",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "web",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/eve_market_tools"
+ },
+ {
+  "problem": "file_backup",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "file-systems",
+  "difficulty": "Easy",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/file_backup"
+ },
+ {
+  "problem": "file_merger",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "data-processing",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/file_merger"
+ },
+ {
+  "problem": "layered_config_synthesizer",
+  "checkpoints": 4,
+  "checkpoint_md_files": 4,
+  "language/category if stated": "configuration-management",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/layered_config_synthesizer"
+ },
+ {
+  "problem": "dag_execution",
+  "checkpoints": 3,
+  "checkpoint_md_files": 3,
+  "language/category if stated": "dsl",
+  "difficulty": "Hard",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/dag_execution"
+ },
+ {
+  "problem": "eve_jump_planner",
+  "checkpoints": 3,
+  "checkpoint_md_files": 3,
+  "language/category if stated": "algorithms",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/eve_jump_planner"
+ },
+ {
+  "problem": "eve_route_planner",
+  "checkpoints": 3,
+  "checkpoint_md_files": 3,
+  "language/category if stated": "algorithms",
+  "difficulty": "Medium",
+  "path": "https://github.com/gabeorlanski/scb-problems/tree/HEAD/eve_route_planner"
+ }
+]

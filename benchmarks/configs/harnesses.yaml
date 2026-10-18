@@ -1,0 +1,81 @@
+# Experimental groups (spec section 7) mapped to what can actually be toggled in ABBD.
+# Source of every verdict: a code read of internal/ and plugins/abbd at commit 94e0495 (2026-10-18).
+# The host agent is Claude Code in every group. ABBD components:
+#   skills   plugins/abbd/skills/ (8 skills; every one calls the abbd CLI: run, verify, sync, graph, inspect)
+#   hooks    plugins/abbd/hooks/hooks.json (SessionStart, UserPromptSubmit, PreToolUse history-guard,
+#            PostToolUse note-edit, Stop gate); scripts exit silently when abbd is not on PATH
+#   mcp      plugins/abbd/.mcp.json -> `abbd mcp` (20 tools, same engine functions as the CLI)
+#   engine   abbd CLI: SSOT md + Feature Map + graph.json + HTML, all written by one Publish; no flag skips the graph
+
+abbd:
+  repo: github.com/whyjp/ABBD
+  commit: 94e0495d2e53db667cf5d14a418c646ab1131056   # re-pin at run time; the working tree is being edited
+  binary_for_containers: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o abbd-linux ./cmd/abbd  # verified to build a static ELF
+  needs_in_sandbox: [git, sh, grep, sed]   # hooks are POSIX sh; revision falls back to "nogit" without git
+pstack:
+  version: 0.9.93
+  path: ~/.claude/plugins/cache/pstack-claude/pstack/0.9.93
+claude_code:
+  host_version_seen: 2.1.302    # `claude --version` on this host, 2026-10-18; pin one version for all groups
+
+groups:
+  A:
+    name: base agent
+    plugin_dirs: []
+    abbd_on_path: false
+    status: runnable
+  B:
+    name: + pstack
+    plugin_dirs: [pstack]
+    abbd_on_path: false
+    status: runnable
+  C:
+    name: + ABBD skills only
+    plugin_dirs: [arms/C]          # .claude-plugin/plugin.json + skills/ ; no hooks/, no .mcp.json
+    abbd_on_path: true             # without the CLI every skill step fails
+    abbd_init: false
+    status: runnable_with_caveat
+    caveat: >
+      Not separable from D. The skills call `abbd run`, which bootstraps .abbd/ (SSOT, Feature Map, graph.json)
+      on first use. C therefore measures "skills + lazily-created blueprint, no hooks, no MCP".
+  D:
+    name: C + Architecture SSOT + Feature Map
+    plugin_dirs: [arms/D]          # skills/ + hooks/ + scripts/ ; no .mcp.json
+    abbd_on_path: true
+    abbd_init: "abbd init --mode code-only --verify-available"   # before the first task; its time counts
+    deny_tools_regex: '^abbd\s+(graph|inspect|impact)\b'           # arm-only PreToolUse deny to hide the graph
+    status: runnable_with_caveat
+    caveat: >
+      graph.json is still built on every publish and still feeds `abbd run` read_first and impact tiering
+      internally. A clean D needs an engine flag to skip the graph; that is an engine change and is out of
+      scope for phase 1. Report D as "graph queries hidden", not "no graph".
+  E:
+    name: D + Code/Module KG MCP
+    plugin_dirs: [plugins/abbd]    # the shipped plugin, unchanged
+    abbd_on_path: true
+    abbd_init: "abbd init --mode code-only --verify-available"
+    status: runnable
+    note: This equals the in-house `abbd` arm. No skill names an MCP tool, so the MCP mostly duplicates the CLI.
+  F:
+    name: E + Domain Entity/State/Transition graph + full auto-update/verify loop
+    status: not_runnable
+    reason: >
+      `abbd domain` is a stub that exits 1 ("reserved for Phase 3"). No code extracts entities, states or
+      transitions. PRD v1.5 ch.06 and 08A defer DOM/STATE/TRN/INV to Phase 3; FR-18..20 are marked deferred.
+      The map/graph auto-update loop itself exists and is part of E.
+
+language_coverage:   # what the KG can see in each benchmark's code
+  go: full (go/ast: packages, imports, exported symbols, calls, routes, env, tests)
+  typescript: regex only (top-level symbols, Express-style routes, process.env); no imports or calls
+  python: regex only (symbols, Flask/FastAPI routes, os.getenv, test_* with pytest)
+  java: none (silently invisible)
+  rust: none (silently invisible)
+  shell: none
+implication: >
+  On SWE-Milestone, groups D/E have a working code graph only on go-zero and Navidrome. On Element Web it is
+  shallow, and on Dubbo, Nushell and ripgrep it is empty. On SlopCodeBench (Python problems) it is shallow.
+  This is reported per repo, never averaged away.
+
+pstack_plus_abbd:
+  status: needs_runner_change
+  reason: benchmark/run.py passes one --plugin-dir per arm; Claude Code accepts the flag repeatedly, run.py does not.

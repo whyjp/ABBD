@@ -17,6 +17,7 @@ ABBD (Active Blueprint-Based Development). 에이전트는 하네스가 만들�
 | 설계도 우선 | `BLUEPRINT.md`, `.abbd/.ignore`, history-guard, `read_first`, 상시 규칙 | d0a1f01, 86fe734 |
 | 사용자 원문 | UserPromptSubmit 훅이 사용자 메시지를 그대로 REQ로, 규칙 문장마다 상시 규칙 하나, 중복 제거 | dd066fa |
 | 밀도 2차 보강 | 아래 [Density] B1~B9 수정 | 019fead 이후 |
+| 적대적 재검증 1·2차 | 019fead를 독립 검증자가 두드려 12건 발견, fabc15a에서 수정. 재검증 결과 PUSH 가능, 후속 N1~N5 | fabc15a |
 
 ## [Bootstrap Modes]
 
@@ -81,6 +82,8 @@ history-guard는 밀도 2차에서 `cd .abbd && cat changes/…`, `cat .abbd/ch*
 | B8 Stop 훅 두 번째 통과 | 설계 선택 | 유지 |
 | B9 상시 규칙의 새 경로 | 검사 없음 | 상시 규칙이 있고 새 라우트에 테스트가 없으면 `risks` 경고 |
 
+019fead를 독립 검증자가 다시 두드리자 옆문이 더 나왔다. 가장 심각한 것은 driver 명령이 등급 검사 없이 실행돼 실제 `git push`가 일어난 것과, `review --apply`·`confirm`·`check --accept-edits`가 `--user` 없이 사용자 결정을 대신한 것이었다. fabc15a가 12건을 고쳤다. driver는 등급 C 명령을 등록·실행 모두에서 거부한다. 세 통로는 `--user`를 요구한다. 손으로 올린 출처는 `state.marks`로 붙잡아 두고 `--user` 없이 받아들이면 INFERRED로 낮춘다. 에이전트 세션이 열려 있으면 Bash 편집을 포함한 미동기 변경을 재조정하지 않는다. 각 수정에는 수정 전 실패를 확인한 회귀 테스트가 있다(`tests/regressions4_test.go`). 2차 재검증은 12건 중 7건 CLOSED, 5건 PARTIAL로 판정했고 차단 결함은 없다고 봤다.
+
 규칙 감지(M11)도 바꿨다. substring 대신 문장마다 범위어와 의무어를 함께 요구한다("everywhere" 같은 강한 범위어는 단독 인정). "절대 경로로 바꿔줘", "always_on 플래그", "모든 테스트가 통과하도록 고쳐줘"는 규칙이 되지 않는다. 자동 감지 규칙은 UNCONFIRMED로 BLUEPRINT에 표시한다. skill·문서가 엔진과 어긋난 13건(M1~M13)은 같은 커밋 묶음에서 엔진 기준으로 고쳤다. 보강 후 밀도 평가는 다시 돌리지 않았다. 위 "지금" 열은 회귀 테스트(`tests/bypass_test.go`, `tests/rules_test.go`, 단위 테스트)와 guard 15건 실행으로 확인한 것이다.
 
 ## [Benchmark]
@@ -120,7 +123,7 @@ benchmark/     실행기, v1·v2 과제, 숨김 테스트, 기준 구현
 
 | 결정 | 진행한 기본값 | 바꾸려면 |
 |---|---|---|
-| 그래프 저장소 | `generated/graph.json` | 커지면 SQLite 어댑터 |
+| 그래프 저장소 | `generated/graph.json`, publish마다 전체 재빌드 (PRD의 SQLite·증분 재빌드는 생략). 사용자 결정으로 유지: `internal/graph`는 analysis·model·ssot만 import하고 저장 방식은 `Save`/`Load` 두 함수에 갇혀 있다 | SQLite 어댑터는 `Save`/`Load`만 바꾼다. DB에서 직접 질의하려면 `Nodes`/`Edges`를 직접 읽는 `internal/html/render.go`와 workflow 3곳도 바꾼다 |
 | 최신성 | git HEAD + 파일별 fingerprint (대형 저장소 비용은 측정 안 함) | git 기반 증분 |
 | Go 모듈 경로 | `github.com/whyjp/abbd` (저장소 이름은 ABBD) | 바꾸면 `go install` 문구도 바꾼다 |
 | 배포 | main에 직접 push (사용자 지시, PR 리뷰 없음) | 이후 작업은 PR로 |
@@ -130,14 +133,15 @@ benchmark/     실행기, v1·v2 과제, 숨김 테스트, 기준 구현
 
 ## [Evidence]
 
-- `go vet ./...`, `go test ./...` 종료 코드 0 (019fead 이후 작업 트리). E2E, AC-BOOT, AC-REV-01~06, 회귀, 우회 고정 테스트를 포함한다.
+- `go vet ./...`, `go test -count=1 ./...` 종료 코드 0 (fabc15a, 독립 검증자도 자기 worktree에서 확인). E2E, AC-BOOT, AC-REV-01~06, 회귀, 우회 고정 테스트를 포함한다.
 - history-guard 15건(거부 8, 허용 7) 직접 실행 통과.
 - `claude plugin validate`, GitHub 마켓플레이스 설치, `go install`은 a743a65 시점에 확인했다. 리뷰 화면 Playwright 확인은 1d947f5 시점이다.
 - 벤치마크 원자료는 `docs/benchmark-results/`(v1), `docs/benchmark-results-v2/`(v2)에 있다.
 
 ## [Next Step]
 
-1. **천장을 깨는 벤치마크 v3.** 규칙이 코드 한 곳에 모이지 않는 과제(경로마다 따로 구현되는 불변조건, 이전 결정과 충돌하는 요청, 외부 소비자 계약 변경). 3회 이상 반복하고 모든 arm을 같은 커밋에서 돌린다. dd066fa 이후 abbd를 다시 잰다.
+0. **fabc15a 재검증 후속.** N1 손으로 적은 `module_intents`가 sync에서 USER_STATED로 모듈에 복사된다(`internal/ssot/marks.go` 보호 목록에 없음). N2 `project.yaml`이 손편집 해시 대상이 아니라 driver의 `set_in`을 지워 T3 증명을 세탁할 수 있다. N3 history-guard가 `.abbd/./changes`와 `git stash show -p`를 통과시킨다. N4 불변조건을 목록 위치로 추적해 손 삭제 후 하나를 잃을 수 있다(코드 읽기 추정). N5 규칙 감지·명령 등급의 오탐과 누락(`cargo publish`, `gh release create`, `rm -rf "$HOME"` 등). 모든 `--user`는 에이전트도 칠 수 있으므로 이 게이트들은 실수를 막을 뿐 정직하지 않은 에이전트를 막지는 못한다.
+1. **공개 벤치마크 v3.** 자체 과제 대신 Terminal-Bench 2.0(Harbor), SWE-Milestone, SlopCodeBench로 간다. 설계·선정 기준·어댑터·비용 추정은 `benchmarks/`에 있다. 환경(WSL Docker 29.4.1, Harbor 0.24.0)은 oracle 2/2로 확인했다. 실행은 구독 인증(`CLAUDE_FORCE_OAUTH`)으로 하고 사용량 한도로 멈춘 과제는 `limit_stopped`로 기록한다. 군 F(Domain State Graph)는 `abbd domain`이 미구현이라 실행 불가다. 공식 점수와 자체 지표는 분리해 보고한다.
 2. **밀도 3차.** 보강 후 상태로 독립 평가를 다시 돌린다. 산문뿐인 규칙 30개 중 엔진으로 옮길 것을 고른다.
 3. **Bash 편집 추적.** PostToolUse는 Edit/Write 도구만 본다. `sed -i`나 리다이렉션 편집은 외부 변경으로 보인다. Codex·Antigravity에는 이 훅이 없다.
 4. **멀티 호스트(FR-14).** Codex와 Antigravity에서 실제 에이전트로 code-only 시나리오를 끝까지 돌린다.
