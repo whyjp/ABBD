@@ -39,4 +39,5 @@ trigger: always_on
 이 워크스페이스는 abbd 턴 루프를 쓴다. 코드를 바꾸는 요청은 abbd-session-bootstrap skill로 시작하고 `abbd run "REQUEST"`로 turn을 연다.
 필수 검증이 PASSED가 아니면 `abbd sync`를 하지 않는다. sync가 종료 코드 2를 내면 완료가 아니다.
 등급 B 질문은 `abbd decide`가 `ask: true`를 줄 때만 묻는다. 등급 C 행동은 명시적 승인 없이 하지 않는다.
+sync 결과에 `review`가 있으면 `abbd serve`의 리뷰 화면 링크와 대기 카드 수만 알리고, 카드는 사용자가 결정한다.
 ```

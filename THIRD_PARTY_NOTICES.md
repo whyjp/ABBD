@@ -1,8 +1,10 @@
 # Third-party notices
 
-## 복사한 파일
+## 복사한 파일과 번역
 
-이 저장소는 pstack, Graphify, GitNexus, CodeGraphContext의 파일이나 코드, 문장을 복사하지 않았다. 아래 프로젝트는 아이디어와 작동 원리만 참고했고, 구현과 문서는 독립적으로 작성했다. 앞으로 실제 파일이나 표현을 재사용하면 이 파일에 출처 링크, 재사용 범위, 원본 저작권 표시와 라이선스 전문을 추가한다.
+이 저장소는 pstack, Graphify, GitNexus, CodeGraphContext의 파일, 코드, 원문 문장을 복사하지 않았다. 아래 프로젝트에서는 아이디어와 작동 원리만 가져왔다. 앞으로 실제 파일이나 표현을 재사용하면 이 파일에 출처 링크, 재사용 범위, 원본 저작권 표시와 라이선스 전문을 추가한다.
+
+pstack에 대해서는 정정이 있다. 이전 판의 skill 일부는 pstack 문단을 한국어로 거의 그대로 옮긴 번역이었다. 해당 부분은 impact-review의 원칙·"한 가지 사실" 5단계·검색이 놓치는 경로 목록·출력 절(blast-radius에서), reflect-and-correct의 4단계 교정 순서·예외 규칙·규칙 표(correct에서), architect-change의 후보 비교 기준 일부와 구현 중 이탈 규칙(architect에서), implement-and-prove와 change-intent의 몇 문장(principle-test-behavior-not-implementation, principle-attack-the-premise, principle-boundary-discipline, poteto-mode의 질문 분류에서)이었고, 분량은 약 60~70줄이었다. 이번 판에서 이 부분을 지우고 ABBD 엔진이 실제로 계산하는 것(impact 보고서 필드, 계약 diff, 구조 변경 카드와 등급, `learn --kind` 순서, verify의 실패 출력과 Evidence)에서 다시 썼다. 번역문은 남아 있지 않다. 생각 자체가 같은 곳은 아래 "가져온 아이디어"에 적었다.
 
 라이선스 표기는 PRD v1.3(02장, 02A장, 18장)이 확인한 내용을 따른다. 이 문서는 법률 자문이 아니다. 배포 방식을 정할 때 각 원본의 라이선스를 다시 확인한다.
 
@@ -11,7 +13,13 @@
 ### pstack
 
 - 라이선스: MIT License, Copyright (c) 2026 Lauren Tan.
-- 참고한 아이디어: poteto-mode의 작업 라우팅과 playbook 선택, how/why 조사, architect의 타입·경계 우선 설계, blast-radius의 증거 중심 영향 분석, correct의 아키텍처 → 타입 → 린트 → 테스트 → 문서 순 교정, reflect의 교훈 환류, 검증 가능한 작은 단위와 실제 실행 증명. `skills/`의 여덟 개 skill이 이 아이디어를 독립적으로 구현한다.
+- 가져온 아이디어(문장은 가져오지 않음). 어느 skill이 그 생각을 쓰는지 함께 적는다.
+  - poteto-mode의 작업 유형별 경로 선택과, 실행해서 알 수 있는 사실은 묻지 않는다는 원칙: session-bootstrap, change-intent.
+  - how/why의 "무엇을 하나"와 "왜 이런 모양인가" 분리, 주장마다 근거를 밝히고 찾아본 곳을 적는 습관: understand-project. 근거 수준 다섯 가지(실행 확인, 코드 확인, 기록 확인, 추정, 모름)는 ABBD의 origin 축에 맞춰 새로 정했다.
+  - architect의 타입·경계 먼저, 호출하는 쪽 사용 예에서 타입 끌어내기, 구조가 다른 후보 둘 이상, 구현 중 계획 이탈을 신호로 다루기: architect-change. 비교 기준, 구조 냄새 목록, ChangePlan 템플릿은 ABBD의 구조 변경 카드와 의존 정책에서 새로 만들었다.
+  - blast-radius의 "diff 밖에서 깨지는 것"을 찾고 안전 주장을 실행으로 뒷받침하기: impact-review. 단계와 목록은 엔진 출력(contracts impact, impact의 unknowns, 카드 종류)과 계약 종류별 표로 대체했다.
+  - correct의 "같은 실수는 구조로 막고, 문서는 마지막"과 새 검사가 과거 실수에 실패하는지 확인하기: reflect-and-correct. 교정 순서는 ABBD의 `learn --kind` 값(PRD 02장이 정한 순서)을 따른다.
+  - reflect의 교훈 환류, principle-prove-it-works의 실패 내용 확인, principle-sequence-verifiable-units의 작은 검증 단위, poteto-mode bug-fix playbook의 실패 테스트 먼저와 단위 테스트 통과가 버그 부재가 아니라는 구분: reflect-and-correct, implement-and-prove.
 - 링크:
   - R01 README: https://github.com/cursor/plugins/blob/main/pstack/README.md
   - R02 poteto-mode: https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/SKILL.md

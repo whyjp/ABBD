@@ -34,7 +34,8 @@ Codex에는 세션 시작 훅으로 skill 진입을 강제하는 장치가 없�
 - 필수 검증이 PASSED가 아니면 `abbd sync`를 하지 않는다. sync가 종료 코드 2를 내면 완료가 아니다. maps/graph/HTML이 CURRENT가 아니면 완료라고 보고하지 않는다.
 - 등급 B 질문은 먼저 `abbd decide`로 기록하고, 결과가 `ask: true`일 때만 일반 텍스트로 묻는다. 턴당 3개 한도와 이미 답한 질문의 재사용은 하네스가 처리한다. bootstrap 중에는 묻지 않는다.
 - turn이 끝나기 전에 이번 turn의 모델 호출 수를 `abbd turn note --model-calls N`으로 보고한다.
-- 등급 C 행동(공유 브랜치 push, 배포, 외부 리소스 삭제, 비밀정보 변경)은 명시적 승인 없이 하지 않는다.
+- 등급 C 행동(공유 브랜치 push, 배포, 외부 리소스 삭제, 비밀정보 변경)은 명시적 승인 없이 하지 않는다. `abbd verify`, `abbd check`, `abbd decide --tier C`의 종료 코드 2는 오류가 아니라 정지다. 결과를 읽는다.
+- sync 결과에 `review`가 있으면 구조를 채팅에 풀어 쓰지 않고 `abbd serve`의 리뷰 화면 링크와 대기 카드 수만 알린다. 카드는 사용자가 결정한다.
 ```
 
 ## 호스트 차이

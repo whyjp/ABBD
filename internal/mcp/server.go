@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/ssot"
@@ -104,14 +105,24 @@ var Tools = map[string]tool{
 	"check_consistency": {"Schema, provenance rules, references, evidence links and stale views.", nil, nil,
 		func(e *workflow.Engine, a args) (any, error) { return e.Check() }},
 	"ask_user_decision": {"Record a tier B question (2-3 options + default). The host asks the user (prefer MCP elicitation); without an answer the default proceeds as an UNCONFIRMED ADR.",
-		map[string]string{"question": str("question"), "options": "array", "default": str("default option key"), "answer": str("answer key if the user replied"), "subjects": "array"},
+		map[string]string{"question": str("question"), "options": "array of key=label=effect", "default": str("default option key"), "answer": str("answer key if the user replied"), "subjects": "array"},
 		[]string{"question", "options"},
 		func(e *workflow.Engine, a args) (any, error) {
 			in := workflow.DecideInput{Tier: model.TierB, Question: a.str("question"), Default: a.str("default"), Answer: a.str("answer"), Subjects: a.strs("subjects")}
 			for _, o := range a.strs("options") {
-				in.Options = append(in.Options, model.Option{Key: o, Label: o})
+				in.Options = append(in.Options, ParseOption(o))
 			}
 			return e.Decide(in)
+		}},
+	"answer_decision": {"Record the user's answer to an open ADR (tier B option key, or approve/reject for tier C). An ADR behind a structural change card is decided on the card.",
+		map[string]string{"adr": str("ADR-*"), "answer": str("option key"), "reason": str("the user's reason")}, []string{"adr", "answer"},
+		func(e *workflow.Engine, a args) (any, error) {
+			return e.Decide(workflow.DecideInput{ADR: a.str("adr"), Answer: a.str("answer"), Reason: a.str("reason")})
+		}},
+	"record_tier_c_stop": {"Record a tier C stop (push, deploy, external deletion, secrets, breaking change with external consumers). Nothing runs until the user approves.",
+		map[string]string{"question": str("what would run"), "subjects": "array"}, []string{"question"},
+		func(e *workflow.Engine, a args) (any, error) {
+			return e.Decide(workflow.DecideInput{Tier: model.TierC, Question: a.str("question"), Subjects: a.strs("subjects")})
 		}},
 	"get_external_contracts": {"External contract view (IF/EVT/DATA/CFG with owner, origin, verification).",
 		map[string]string{"module": str("optional MOD-*")}, nil,
@@ -140,7 +151,7 @@ func (t tool) schema() map[string]any {
 	props := map[string]any{}
 	for k, d := range t.Props {
 		switch d {
-		case "array":
+		case "array", "array of key=label=effect":
 			props[k] = map[string]any{"type": "array", "items": map[string]any{"type": "string"}}
 		case "boolean":
 			props[k] = map[string]any{"type": "boolean"}
@@ -213,9 +224,9 @@ func handle(e *workflow.Engine, req request) (any, *rpcError) {
 		return toolResult(v, err), nil
 	case "resources/list":
 		return map[string]any{"resources": []map[string]any{
-			{"uri": "fmh://status", "name": "project status", "mimeType": "application/json"},
-			{"uri": "fmh://explorer", "name": "HTML Explorer", "mimeType": "text/html"},
-			{"uri": "fmh://confirm-queue", "name": "confirm queue", "mimeType": "application/json"},
+			{"uri": "abbd://status", "name": "project status", "mimeType": "application/json"},
+			{"uri": "abbd://explorer", "name": "HTML Explorer", "mimeType": "text/html"},
+			{"uri": "abbd://confirm-queue", "name": "confirm queue", "mimeType": "application/json"},
 		}}, nil
 	case "resources/read":
 		var p struct {
@@ -225,6 +236,19 @@ func handle(e *workflow.Engine, req request) (any, *rpcError) {
 		return readResource(e, p.URI)
 	}
 	return nil, &rpcError{-32601, "method not found: " + req.Method}
+}
+
+// ParseOption reads "key=label=effect" so every option says what it changes (PRD ch.10).
+func ParseOption(s string) model.Option {
+	parts := strings.SplitN(s, "=", 3)
+	op := model.Option{Key: parts[0], Label: parts[0]}
+	if len(parts) > 1 {
+		op.Label = parts[1]
+	}
+	if len(parts) > 2 {
+		op.Effect = parts[2]
+	}
+	return op
 }
 
 func toolResult(v any, err error) map[string]any {
@@ -239,21 +263,21 @@ func toolResult(v any, err error) map[string]any {
 func readResource(e *workflow.Engine, uri string) (any, *rpcError) {
 	var text, mime string
 	switch uri {
-	case "fmh://status":
+	case "abbd://status":
 		st, err := e.Status()
 		if err != nil {
 			return nil, &rpcError{-32603, err.Error()}
 		}
 		b, _ := json.MarshalIndent(st, "", "  ")
 		text, mime = string(b), "application/json"
-	case "fmh://confirm-queue":
+	case "abbd://confirm-queue":
 		p, err := e.Pending()
 		if err != nil {
 			return nil, &rpcError{-32603, err.Error()}
 		}
 		b, _ := json.MarshalIndent(p, "", "  ")
 		text, mime = string(b), "application/json"
-	case "fmh://explorer":
+	case "abbd://explorer":
 		b, err := os.ReadFile(ssot.Path(e.Root, "generated", "explorer.html"))
 		if err != nil {
 			return nil, &rpcError{-32603, err.Error()}

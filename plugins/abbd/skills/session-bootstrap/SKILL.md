@@ -27,6 +27,8 @@ abbd status --json
 
 결과에서 revision, fingerprint, maps/graph/HTML 각각의 최신성(CURRENT / STALE / DRAFT / UNKNOWN), 진행 중인 turn, 대기 중인 외부 변경을 읽는다. 이것이 ProjectStateSnapshot이다.
 
+지난 턴의 구조 변경 카드가 결정을 기다리는지는 `abbd review --json`의 `open`으로 본다. 0이 아니면 사용자 보고에 대기 수와 리뷰 화면 링크(sync-knowledge 4절)만 적는다. 카드를 대신 결정하지 않는다.
+
 ### 2. 지식이 없으면 bootstrap
 
 `.abbd/`가 없으면 질문 없이 바로 초기화한다. 맵이 없는 것은 오류가 아니라 첫 턴의 정상 상태다.
@@ -75,9 +77,10 @@ abbd run "REQUEST" --type bug-fix --tier T1   # 라우팅을 바로잡을 때만
 
 `run`은 `.abbd/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산이 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
 
-- `--type`은 docs, bug-fix, perf, interface-change, refactor, feature 중 하나다. CLI는 다른 값도 받지만 단계 목록이 바뀌지 않으므로 이 여섯 개만 쓴다.
+- `--type`은 docs, bug-fix, perf, interface-change, refactor, feature 중 하나다. 다른 값은 usage 오류(종료 코드 1)다.
 - `--tier`는 T0~T3다. 요청에 재시도·동시성·중복 같은 위험어가 있으면 `run`이 T3로 올린다. 낮출 때는 이유를 EvidenceReport에 적는다.
 - `ambiguous: true`이면 change-intent에서 등급 B 질문을 남긴다.
+- `rework`가 있으면 리뷰 화면에서 거부되거나 되돌리기를 요청받은 구조 변경 카드다. 줄마다 카드 ID, kind, 대상, 사용자가 적은 사유가 있고, 엔진이 이미 이번 CHG의 IntentDelta additions에 넣었다. 새 요청보다 먼저 다룬다. change-intent의 "거부된 카드 다루기"로 간다. 사용자 보고 첫머리에 rework 건수를 적는다.
 - 진행 중인 turn이 있으면 `run`은 거부된다. 이어서 쓸지 판단하고, 버릴 때만 `abbd turn abort --reason TEXT`를 쓴다.
 
 코드를 바꾸지 않는 질문("X는 어떻게 동작해?", "이렇게 바꾸면 영향이 어디까지야?")이면 turn을 열지 않는다. 아무것도 쓰지 않는 dry run을 쓴다.
@@ -88,7 +91,7 @@ abbd plan "REQUEST"
 
 ## 작업 타입별 경로
 
-WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. 작은 작업일수록 가볍게 돈다. 단계의 행위는 지키되 모든 단계에 별도 에이전트나 도구 호출을 둘 필요는 없다.
+WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. `rework`가 있는 턴은 작업 타입과 상관없이 change-intent를 거친다.
 
 | 작업 타입 | 경로 | 기본 검증 수준 |
 |---|---|---|
@@ -105,12 +108,12 @@ WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. 작은 작업
 ## 게이트와 출력
 
 - ProjectStateSnapshot: revision, 최신성 4종, 외부 변경 처리 결과, UNCONFIRMED 수.
-- WorkflowPlan: 작업 타입, 난도/위험도, 검증 수준 T0~T3, 실행할 skill 순서.
+- WorkflowPlan: 작업 타입, 난도/위험도, 검증 수준 T0~T3, 실행할 skill 순서, `rework` 건수.
 - 상태 전이: DISCOVERING에서 시작한다. bootstrap이나 reconcile이 실패하면 BLOCKED로 보고하고 원인을 적는다.
 
 다음 단계는 understand-project다.
 
-## 공통 어휘 (PRD 06장·10장, 모든 skill에서 동일)
+## 공통 어휘 (PRD 06장·08B장·10장, 모든 skill에서 동일)
 
 - origin: USER_STATED | ADOPTED | EXTRACTED | OBSERVED | INFERRED. 모든 사실·간선에 필수다. "왜" 필드(purpose, responsibility, rationale)에는 USER_STATED, ADOPTED, INFERRED만 쓴다. EXTRACTED와 OBSERVED는 "무엇을 하는가"에만 쓴다.
 - verification: NOT_RUN | PASSED | FAILED | UNVERIFIABLE. 동작·계약·불변조건에 적용한다. PASSED에는 evidence 링크가 있어야 하고, UNVERIFIABLE에는 이유를 적는다.
@@ -119,3 +122,5 @@ WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. 작은 작업
 - 승인 등급 A: 자동 실행하고 ChangeReceipt에 사후 보고한다. 읽기·탐색, 가역적 코드/테스트 수정, 맵 동기화, 그래프·HTML 재생성, bootstrap 후보 생성, 로컬 검증.
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
+- 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

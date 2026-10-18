@@ -186,6 +186,9 @@ func checkSnapshot(s *ssot.Snapshot) *ConsistencyReport {
 			errf("%s: domain layer object exists, but Phase 1 only reserves the prefix", id)
 		}
 	}
+	for _, m := range s.Misnamed {
+		errf("%s: the id must match the file name", m)
+	}
 	r.OK = len(r.Errors) == 0
 	return r
 }

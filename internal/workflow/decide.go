@@ -13,6 +13,7 @@ import (
 
 type DecideInput struct {
 	ADR             string
+	Reason          string
 	Title           string
 	Tier            model.Tier
 	Question        string
@@ -81,6 +82,9 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 	if in.Tier == "" {
 		in.Tier = model.TierB
 	}
+	if in.Tier == model.TierB && (len(in.Options) < 2 || len(in.Options) > 3) {
+		return nil, fmt.Errorf("a tier B question offers 2 or 3 options, got %d", len(in.Options))
+	}
 	if in.Default == "" && len(in.Options) > 0 {
 		in.Default = in.Options[0].Key
 	}
@@ -99,6 +103,9 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 		if in.Answer != "" {
 			answer(d, in.Answer, chg)
 			return &DecideResult{Decision: d, Message: "답변 반영: " + d.ID}, w.s.Save()
+		}
+		if d.Tier == model.TierC {
+			return &DecideResult{Decision: d, Blocked: true, Message: "등급 C: 아직 승인되지 않음 (" + d.ID + ")"}, nil
 		}
 		return &DecideResult{Decision: d, Message: "같은 질문이 이미 기본값으로 진행 중: " + d.ID}, nil
 	}
@@ -143,12 +150,28 @@ func (e *Engine) answerADR(w *world, in DecideInput) (*DecideResult, error) {
 	if in.Answer == "" {
 		return &DecideResult{Decision: d, Ask: !d.Answered, Message: "현재 상태"}, nil
 	}
-	valid := d.Tier == model.TierC && in.Answer == "approve"
+	valid := d.Tier == model.TierC && (in.Answer == "approve" || in.Answer == "reject")
 	for _, o := range d.Options {
 		valid = valid || o.Key == in.Answer
 	}
 	if !valid {
 		return nil, fmt.Errorf("%s has no option %q", d.ID, in.Answer)
+	}
+	// Every channel writes the same record: an ADR that belongs to a structural change card is
+	// decided on the card, so the card status, rework and invalidation all follow (08B §6).
+	if delta := deltaForADR(w.s, d.ID); delta != "" {
+		decision := in.Answer
+		if decision != "approve" && decision != "reject" {
+			decision = "option:" + decision
+		}
+		reason := in.Reason
+		if reason == "" {
+			reason = "decide --adr " + d.ID
+		}
+		if _, _, err := e.decideIn(w, DeltaDecisionInput{Delta: delta, Decision: decision, Reason: reason, Channel: "cli"}); err != nil {
+			return nil, err
+		}
+		return &DecideResult{Decision: d, Message: "카드 결정 반영: " + delta}, e.republish(w, "결정 반영 "+d.ID)
 	}
 	chg := w.s.Changes[d.Change]
 	if chg == nil {
@@ -156,6 +179,17 @@ func (e *Engine) answerADR(w *world, in DecideInput) (*DecideResult, error) {
 	}
 	answer(d, in.Answer, chg)
 	return &DecideResult{Decision: d, Message: "답변 반영: " + d.ID}, e.republish(w, "결정 반영 "+d.ID)
+}
+
+func deltaForADR(s *ssot.Snapshot, adr string) string {
+	for _, c := range s.Changes {
+		for _, d := range c.StructuralDeltas {
+			if d.ADR == adr {
+				return d.ID
+			}
+		}
+	}
+	return ""
 }
 
 func decisionIDs(chg *model.Change) []string {

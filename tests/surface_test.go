@@ -33,7 +33,7 @@ func TestMCPMatchesCLI(t *testing.T) {
 		`{"jsonrpc":"2.0","id":2,"method":"tools/list"}`,
 		`{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"project_status","arguments":{}}}`,
 		`{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"get_feature_context","arguments":{"id":"FEAT-001"}}}`,
-		`{"jsonrpc":"2.0","id":5,"method":"resources/read","params":{"uri":"fmh://confirm-queue"}}`,
+		`{"jsonrpc":"2.0","id":5,"method":"resources/read","params":{"uri":"abbd://confirm-queue"}}`,
 		`{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"ask_user_decision","arguments":{"question":"q","options":["a","b"]}}}`,
 	}, "\n") + "\n"
 	var out bytes.Buffer

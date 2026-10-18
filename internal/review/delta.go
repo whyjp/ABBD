@@ -225,7 +225,7 @@ func Diff(before, after Structure, chg string) []model.StructuralDelta {
 		f := after.Features[id]
 		old, existed := before.Features[id]
 		switch {
-		case existed && old.Owners != f.Owners:
+		case existed && old.Owners != "" && old.Owners != f.Owners:
 			add(model.StructuralDelta{Kind: model.OwnershipMoved, Subject: id, Nodes: append([]string{id}, split(f.Owners)...), Before: old.Owners, After: f.Owners, Reason: "기능 소유 모듈 이동"})
 		case !existed || old.Path != f.Path:
 			add(model.StructuralDelta{Kind: model.FeaturePathChanged, Subject: id, Nodes: append([]string{id}, split(f.Path)...), Before: old.Path, After: f.Path, Inferred: f.Inferred, Reason: "기능 경로 변경"})

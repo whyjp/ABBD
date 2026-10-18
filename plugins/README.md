@@ -17,7 +17,11 @@ Claude Code 플러그인은 SessionStart 훅(`abbd/hooks/hooks.json`)으로 세�
 
 ## 등급 B 질문의 호스트 차이
 
-change-intent skill은 질문을 먼저 `abbd decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 답은 같은 질문에 `--answer KEY`를 붙인 decide로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
+change-intent skill은 질문을 먼저 `abbd decide`로 기록하고, 결과가 `ask: true`일 때만 사용자에게 묻는다. 호스트에 구조화된 질문 도구가 있으면 그것으로 보여 주고, 없으면 일반 텍스트로 묻는다. 어느 쪽이든 답은 `abbd decide --adr ADR-x --answer KEY`(또는 같은 질문에 `--answer KEY`)로 기록하고, 같은 턴 안에 답이 없으면 기본값으로 진행한다. 턴당 3개 한도와 답한 질문의 재사용은 하네스가 처리하므로 호스트 기능이 달라도 같다.
+
+## 리뷰 화면의 호스트 차이
+
+구조 변경 카드의 결정은 호스트와 상관없이 `abbd serve`의 리뷰 화면이 기본 경로다. 서버를 띄울 수 없는 호스트에서는 `generated/review.html` 파일을 열어 결정 파일을 내려받고 `abbd review --apply FILE`로 반영한다. MCP를 쓰는 호스트는 `list_review_cards`로 카드 요약과 화면 경로를 받고, 사용자가 호스트 화면(MCP elicitation 등)에서 고른 결정을 `decide_structural_change`로 기록할 수 있다. 어느 통로든 같은 결정 레코드가 남는다. 그림은 리뷰 화면에만 있으므로 채팅에는 링크와 대기 카드 수만 보인다.
 
 ## 계측의 호스트 차이
 

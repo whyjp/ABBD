@@ -1,6 +1,6 @@
 ---
 name: understand-project
-description: Builds an evidence-linked picture of the current project before a change. Answers how the relevant code works (from source, LSP, graph) and why it is shaped that way (from decisions, git history, user-stated intent), keeping observed facts separate from inferred purpose. Use after session-bootstrap for any request that touches existing code, and for read-only "how does X work" or "why is X like this" questions.
+description: Builds an evidence-linked picture of the current project before a change. Answers how the relevant code works (from source, LSP, graph) and why it is shaped that way (from decisions, git history, user-stated intent), labels every claim with its evidence level (ran, read in code, recorded, inferred, unknown), and lists the sources consulted and what was not found. Use after session-bootstrap for any request that touches existing code, and for read-only "how does X work" or "why is X like this" questions.
 ---
 
 # understand-project
@@ -19,7 +19,7 @@ description: Builds an evidence-linked picture of the current project before a c
 
 ## 원칙
 
-- 기존 맵을 무조건 믿지 않는다. 맵의 주장은 최신 코드와 비교해 확인한다.
+- 맵의 주장은 확인 전까지 맵의 주장일 뿐이다. `inspect`가 준 `file:line`을 열어 지금 코드와 맞는지 본 뒤에 코드 확인 수준으로 올린다.
 - 그래프 전체를 컨텍스트에 넣지 않는다. 필요한 관계만 bounded query로 펼친다.
 - 코드에서 관찰한 동작은 의도의 증거가 아니다. 코드가 무엇을 하는지는 확정할 수 있어도, 왜 그렇게 하도록 의도했는지는 확정할 수 없다.
 
@@ -67,23 +67,54 @@ origin이 INFERRED ∧ UNCONFIRMED인 purpose는 "추정"으로만 인용한다.
 
 맵이 말하는 것과 코드가 하는 것이 다르면 차이 목록을 만든다. 이 차이는 이 단계에서 고치지 않는다. 변경 범위에 들어오면 sync-knowledge에서 반영하고, 범위 밖이면 보고에만 남긴다.
 
+## 근거 수준
+
+보고의 모든 주장에 다음 표시 중 하나를 붙인다. 표시는 주장이 어디서 왔는지로 정한다. 확신의 정도를 말로 조절하지 않는다.
+
+| 표시 | 근거 | ABBD에서의 모습 |
+|---|---|---|
+| 실행 확인 | 이번 조사에서 돌린 명령이나 테스트의 출력 | evidence ID(`abbd verify --cmd` 실행), OBSERVED 사실 |
+| 코드 확인 | 직접 연 소스의 `file:line` | EXTRACTED 사실을 열어 지금 코드와 대조함 |
+| 기록 확인 | 사람이 남긴 기록 | USER_STATED·ADOPTED 또는 CONFIRMED 필드, 답한 ADR, 커밋 메시지, PR 설명 |
+| 추정 | 위 근거 없이 정황에서 끌어낸 판단 | INFERRED ∧ UNCONFIRMED 필드, 또는 에이전트의 해석. 기댄 정황을 같이 적는다 |
+| 모름 | 찾아봤지만 근거가 없음 | UNKNOWN 간선, `found: false`, 비어 있는 ADR 검색 |
+
+- "왜"에 대한 주장(purpose, responsibility, 설계 이유)은 실행 확인이나 코드 확인이 될 수 없다. 코드는 무엇을 하는지만 보여 준다. "왜"는 기록 확인, 추정, 모름 중 하나다.
+- 추정이 여러 정황에 기대면 정황을 모두 적는다. 정황이 하나뿐이면 그렇다고 적는다.
+- 모름은 실패가 아니라 결과다. 어디까지 찾았는지와 함께 보고한다.
+- "찾아본 곳"에는 실제로 실행한 조회를 적는다(`inspect FEAT-001`, `decisions retry`, `git log --follow -- internal/heartbeat/consumer.go`). "못 찾은 것"에는 찾았지만 없었던 근거를 적는다(재시도 횟수 3을 정한 ADR이나 커밋 설명).
+
+## "X는 어떻게 동작해?"에 답할 때
+
+읽기 전용 질문이면 다음 순서로 쓴다. 각 줄에 근거 수준을 붙인다.
+
+1. 진입점: 사용자가 동작을 일으키는 곳(IF/EVT, CLI, 배포 단위의 진입점).
+2. 흐름: 진입점에서 저장이나 외부 효과까지 지나는 모듈과 계약. `graph trace` 결과를 그대로 옮기지 않고 필요한 칸만.
+3. 소유: 각 칸의 MOD와 그 responsibility(origin 함께).
+4. 지켜지는 것: 관련 불변조건과 그것을 확인하는 테스트, 마지막 verification.
+5. 모르는 것: UNKNOWN 간선, 런타임에 조립되는 이름, 확인 대기 항목.
+
 ## 출력: 현재 상태 요약
 
 각 주장 옆에 근거와 축 상태를 붙인다.
 
 ```
-- MOD-002는 heartbeat-events 토픽을 소비한다. [service/heartbeat/consumer.go:42, origin EXTRACTED]
-- 중복 수신은 저장하지 않는다. [FEAT-001 invariant, USER_STATED, verification PASSED (TEST-019)]
-- 재시도 횟수 3의 이유는 찾지 못했다. [추정, 근거 없음]
+- MOD-002는 heartbeat-events 토픽을 소비한다. [코드 확인, service/heartbeat/consumer.go:42, origin EXTRACTED]
+- 중복 수신은 저장하지 않는다. [기록 확인, FEAT-001 invariant USER_STATED; 실행 확인, TEST-019 PASSED run-2026-10-18-002]
+- 재시도는 브로커 일시 장애 대응으로 보인다. [추정, 정황은 consumer.go:57의 지수 백오프 하나]
+- 재시도 횟수 3의 이유. [모름]
 - 그래프 STALE, 호출자 목록은 소스 검색으로 확인함.
+찾아본 곳: inspect FEAT-001, decisions retry, git log --follow -- service/heartbeat/consumer.go
+못 찾은 것: 재시도 횟수를 정한 ADR, 커밋 설명
 ```
 
 - 근거 없는 문장은 쓰지 않거나 "추정"이라고 적는다.
+- 보고 끝에 "찾아본 곳"과 "못 찾은 것" 줄을 둔다(아래 근거 수준).
 - 읽기 전용 질문이었다면 이 요약이 최종 답이다. turn을 열지 않았으므로 동기화는 필요 없다.
 
 다음 단계는 change-intent다. 단순 버그처럼 의도 변화가 없으면 implement-and-prove로 바로 간다.
 
-## 공통 어휘 (PRD 06장·10장, 모든 skill에서 동일)
+## 공통 어휘 (PRD 06장·08B장·10장, 모든 skill에서 동일)
 
 - origin: USER_STATED | ADOPTED | EXTRACTED | OBSERVED | INFERRED. 모든 사실·간선에 필수다. "왜" 필드(purpose, responsibility, rationale)에는 USER_STATED, ADOPTED, INFERRED만 쓴다. EXTRACTED와 OBSERVED는 "무엇을 하는가"에만 쓴다.
 - verification: NOT_RUN | PASSED | FAILED | UNVERIFIABLE. 동작·계약·불변조건에 적용한다. PASSED에는 evidence 링크가 있어야 하고, UNVERIFIABLE에는 이유를 적는다.
@@ -92,3 +123,5 @@ origin이 INFERRED ∧ UNCONFIRMED인 purpose는 "추정"으로만 인용한다.
 - 승인 등급 A: 자동 실행하고 ChangeReceipt에 사후 보고한다. 읽기·탐색, 가역적 코드/테스트 수정, 맵 동기화, 그래프·HTML 재생성, bootstrap 후보 생성, 로컬 검증.
 - 승인 등급 B: 선택지 2~3개, 추천 기본값, 각 선택이 바꾸는 범위를 제시한다. 같은 턴 안에 답이 없으면 기본값으로 진행하고 UNCONFIRMED ADR을 남긴다(상태 NEEDS_USER). 턴당 질문은 3개까지다.
 - 승인 등급 C: 명시적 승인 없이는 실행하지 않는다. 공유 브랜치 push/force-push, 배포, 외부 리소스 삭제, 비밀정보·권한 변경, external_consumers: true인 인터페이스의 breaking change, 실서비스 데이터 변경. 가역적 준비까지만 하고 BLOCKED로 보고한다.
+- 결정을 받는 곳: 구조 변경(모듈, 의존, 계약, 소유, 배포 단위, 기능 경로)의 등급 B·C 결정은 사람이 리뷰 화면(`abbd serve`)의 카드에서 한다. 구조와 무관한 의미 선택만 `abbd decide` 질문으로 묻는다. 채팅에는 구조를 글로 풀지 않고 화면 링크와 대기 카드 수만 남긴다.
+- 종료 코드: 0 성공, 1 오류, 2 게이트 거부(sync, check 불일치, 검증 FAILED, 승인 안 된 등급 C decide). 2일 때도 결과가 출력되므로 결과 필드를 읽고 판단한다.

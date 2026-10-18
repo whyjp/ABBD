@@ -37,6 +37,8 @@ type Snapshot struct {
 	Changes      map[string]*model.Change
 	Requirements map[string]*model.Requirement
 	Candidates   []model.Candidate
+	// Misnamed lists files whose frontmatter id differs from their file name (hand edits).
+	Misnamed []string
 }
 
 type Budget struct {
@@ -175,6 +177,11 @@ func Load(root string) (*Snapshot, error) {
 			}
 			if err := c.load(s, front); err != nil {
 				return nil, fmt.Errorf("%s: %w", f, err)
+			}
+			var head struct{ ID string }
+			_ = yaml.Unmarshal(front, &head)
+			if name := strings.TrimSuffix(filepath.Base(f), ".md"); head.ID != name {
+				s.Misnamed = append(s.Misnamed, fmt.Sprintf("%s/%s.md has id %q", c.dir, name, head.ID))
 			}
 		}
 	}

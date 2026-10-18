@@ -42,7 +42,7 @@ var Commands = map[string]command{
 	"plan":      {`plan "REQUEST"`, func(e *workflow.Engine, a []string) (any, error) { return e.Plan(strings.Join(a, " ")) }},
 	"inspect":   {"inspect ID", runInspect},
 	"intent":    {"intent feature|invariant|module|contract|delta ... (module: --id MOD-x | --path DIR for a module this turn creates)", runIntent},
-	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY", runDecide},
+	"decide":    {"decide --question Q --option key=label[=effect]... --default KEY [--answer KEY] [--subject ID]... [--tier B|C] [--title T] [--proceeds-without SCOPE] | decide --adr ADR-x --answer KEY [--reason TEXT]", runDecide},
 	"decisions": {"decisions [QUERY]", func(e *workflow.Engine, a []string) (any, error) { return e.Decisions(strings.Join(a, " ")) }},
 	"impact":    {"impact", func(e *workflow.Engine, a []string) (any, error) { return e.Impact() }},
 	"contracts": {"contracts list [--module MOD-x] | contracts impact [--diff]", runContracts},
@@ -344,6 +344,7 @@ func runDecide(e *workflow.Engine, args []string) (any, error) {
 	fs.StringVar(&in.Answer, "answer", "", "")
 	fs.StringVar(&in.ProceedsWithout, "proceeds-without", "", "scope that proceeds without an answer")
 	fs.StringVar(&in.ADR, "adr", "", "answer an existing ADR")
+	fs.StringVar(&in.Reason, "reason", "", "the user's reason (with --adr)")
 	fs.Var(&options, "option", "key=label[=effect]")
 	fs.Var(&subjects, "subject", "ID")
 	if _, err := parse(fs, args); err != nil || (in.Question == "" && in.ADR == "") {
@@ -353,19 +354,11 @@ func runDecide(e *workflow.Engine, args []string) (any, error) {
 		return e.Decide(in)
 	}
 	for _, o := range options {
-		parts := strings.SplitN(o, "=", 3)
-		op := model.Option{Key: parts[0], Label: parts[0]}
-		if len(parts) > 1 {
-			op.Label = parts[1]
-		}
-		if len(parts) > 2 {
-			op.Effect = parts[2]
-		}
-		in.Options = append(in.Options, op)
+		in.Options = append(in.Options, mcp.ParseOption(o))
 	}
 	in.Subjects, in.Tier = subjects, model.Tier(strings.ToUpper(*tier))
-	if in.Tier == model.TierB && len(in.Options) < 2 {
-		return nil, fmt.Errorf("%w: a tier B question needs 2-3 options", errUsage)
+	if in.Tier == model.TierB && (len(in.Options) < 2 || len(in.Options) > 3) {
+		return nil, fmt.Errorf("%w: a tier B question needs 2 or 3 options", errUsage)
 	}
 	res, err := e.Decide(in)
 	if err == nil && res.Blocked {
