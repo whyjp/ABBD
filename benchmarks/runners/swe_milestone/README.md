@@ -111,8 +111,14 @@ Element Web, first graded milestone in topological order with an image (`mainten
 5237 P2P), same CLI on the initial state (`git archive milestone-maintenance_ui_ux-start`, 1965 entries):
 not resolved, F2P 0/29, P2P 5234/5237 (3 failed), 5462 tests run, 9710 s. Most of that time is the
 Playwright suite (`playwright/e2e/right-panel/`, headless Firefox, 120 s per-test timeout). The
-reference END state was still evaluating at writing; results land in
-`~/bench/swe-milestone/gold/ew-maintenance_ui_ux-end/`.
+reference END state (`milestone-maintenance_ui_ux-end`): F2P 29/29 but still not resolved, because the
+same 3 P2P tests fail in both states, 9553 s. They are one Jest test
+(`SessionManagerTab-test.tsx` > MSC4108 QR code login > enters qr code login section) and two Playwright
+tests (`notification-panel.spec.ts` > should render empty state, Pinecone and Dendrite). Since they fail
+on the reference solution too, they are environment failures on this host, not agent regressions: every
+group loses them equally, so Fully Resolved for this milestone is unreachable here and Score is capped.
+Report this per milestone; do not "fix" the evaluator. Results are in
+`~/bench/swe-milestone/gold/ew-maintenance_ui_ux-{start,end}/`.
 Consequence for the pilot: an Element Web milestone with a Playwright suite costs up to about 2.7 h of
 evaluation on this host, and with early unblock several can run at once beside the agent container.
 Run Element Web only after go-zero, and never next to the TB2 pilot.
