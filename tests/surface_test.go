@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/whyjp/cccv/internal/cli"
-	"github.com/whyjp/cccv/internal/mcp"
-	"github.com/whyjp/cccv/internal/workflow"
+	"github.com/whyjp/abbd/internal/cli"
+	"github.com/whyjp/abbd/internal/mcp"
+	"github.com/whyjp/abbd/internal/workflow"
 	"gopkg.in/yaml.v3"
 )
 
@@ -88,9 +88,9 @@ func TestMCPMatchesCLI(t *testing.T) {
 	}
 }
 
-// cmdRe matches cccv where a command starts: line start, inside backticks, after a prompt,
-// a shell operator or "--". Prose such as "cccv skills" is not a command.
-var cmdRe = regexp.MustCompile("(?m)(?:^\\s*|`|\\$ |&& |\\| |\\(|-- )cccv ([a-z][a-z-]+)")
+// cmdRe matches abbd where a command starts: line start, inside backticks, after a prompt,
+// a shell operator or "--". Prose such as "abbd skills" is not a command.
+var cmdRe = regexp.MustCompile("(?m)(?:^\\s*|`|\\$ |&& |\\| |\\(|-- )abbd ([a-z][a-z-]+)")
 
 // TestSkillsUseRegisteredCommands encodes the agreement between the skills and the CLI: a
 // skill that names a command the CLI does not register fails the build.
@@ -111,7 +111,7 @@ func TestSkillsUseRegisteredCommands(t *testing.T) {
 		b, _ := os.ReadFile(f)
 		for _, m := range cmdRe.FindAllStringSubmatch(string(b), -1) {
 			if _, ok := cli.Commands[m[1]]; !ok {
-				t.Errorf("%s names `cccv %s`, which the CLI does not register", f, m[1])
+				t.Errorf("%s names `abbd %s`, which the CLI does not register", f, m[1])
 			}
 		}
 	}
@@ -123,7 +123,7 @@ func TestSkillsFollowAgentSkillsSpec(t *testing.T) {
 		"implement-and-prove", "impact-review", "sync-knowledge", "reflect-and-correct"}
 	nameRe := regexp.MustCompile(`^[a-z0-9]+(-[a-z0-9]+)*$`)
 	for _, name := range want {
-		b, err := os.ReadFile(filepath.Join("..", "plugins", "cccv", "skills", name, "SKILL.md"))
+		b, err := os.ReadFile(filepath.Join("..", "plugins", "abbd", "skills", name, "SKILL.md"))
 		if err != nil {
 			t.Fatalf("PRD ch.09 skill %s: %v", name, err)
 		}

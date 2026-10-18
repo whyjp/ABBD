@@ -344,8 +344,10 @@ type Change struct {
 	NewUnconfirmed       int            `yaml:"new_unconfirmed" json:"new_unconfirmed"`
 	// ModuleIntents holds meaning for modules this turn creates, keyed by path until sync gives them an ID.
 	ModuleIntents map[string]Semantic `yaml:"module_intents,omitempty" json:"module_intents,omitempty"`
-	Commit        string              `yaml:"commit,omitempty" json:"commit,omitempty"`
-	Time          string              `yaml:"time" json:"time"`
+	// StructuralDeltas are the turn's structural changes, each with its own tier and decision (v1.4 CR-3).
+	StructuralDeltas []StructuralDelta `yaml:"structural_deltas,omitempty" json:"structural_deltas,omitempty"`
+	Commit           string            `yaml:"commit,omitempty" json:"commit,omitempty"`
+	Time             string            `yaml:"time" json:"time"`
 }
 
 // Evidence is one verification run (PRD FR-07).
@@ -392,4 +394,62 @@ func SortedKeys[V any](m map[string]V) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// DeltaKind is a structural change kind of PRD v1.4 08B. Internal code edits are not deltas.
+type DeltaKind string
+
+const (
+	ModuleAdded          DeltaKind = "module_added"
+	ModuleRemoved        DeltaKind = "module_removed"
+	ModuleSplit          DeltaKind = "module_split"
+	ModuleMerged         DeltaKind = "module_merged"
+	DependencyAdded      DeltaKind = "dependency_added"
+	DependencyRemoved    DeltaKind = "dependency_removed"
+	ForbiddenDependency  DeltaKind = "forbidden_dependency"
+	ContractAdded        DeltaKind = "contract_added"
+	ContractRemoved      DeltaKind = "contract_removed"
+	ContractCompatChange DeltaKind = "contract_compat_changed"
+	OwnershipMoved       DeltaKind = "ownership_moved"
+	DeployMappingChanged DeltaKind = "deploy_mapping_changed"
+	FeaturePathChanged   DeltaKind = "feature_path_changed"
+)
+
+// DeltaStatus is the card state of PRD v1.4 08B section 5.
+type DeltaStatus string
+
+const (
+	DeltaApplied        DeltaStatus = "applied"         // tier A: applied, can be reverted
+	DeltaDefaultApplied DeltaStatus = "default_applied" // tier B: default taken, decision open
+	DeltaPending        DeltaStatus = "pending"         // tier C: not executed until approved
+	DeltaApproved       DeltaStatus = "approved"
+	DeltaRejected       DeltaStatus = "rejected"
+	DeltaRevertAsked    DeltaStatus = "revert_requested"
+	DeltaSuperseded     DeltaStatus = "superseded" // the item changed again after the decision
+)
+
+type StructuralDelta struct {
+	ID       string        `yaml:"id" json:"id"` // CHG-x#n
+	Kind     DeltaKind     `yaml:"kind" json:"kind"`
+	Subject  string        `yaml:"subject" json:"subject"` // node or edge key, e.g. MOD-002, MOD-001->MOD-003
+	Nodes    []string      `yaml:"nodes" json:"nodes"`     // nodes to highlight on the topology
+	Before   string        `yaml:"before,omitempty" json:"before,omitempty"`
+	After    string        `yaml:"after,omitempty" json:"after,omitempty"`
+	Tier     Tier          `yaml:"tier" json:"tier"`
+	Reason   string        `yaml:"reason" json:"reason"`
+	Inferred bool          `yaml:"inferred,omitempty" json:"inferred,omitempty"` // new INFERRED item: drawn dashed
+	Status   DeltaStatus   `yaml:"status" json:"status"`
+	Decision *ItemDecision `yaml:"decision,omitempty" json:"decision,omitempty"`
+}
+
+// ItemDecision is the one decision record every channel (serve, decision file, MCP) writes.
+type ItemDecision struct {
+	Decision    string `yaml:"decision" json:"decision"` // approve | reject | option:<key> | revert
+	Reason      string `yaml:"reason,omitempty" json:"reason,omitempty"`
+	At          string `yaml:"at" json:"at"`
+	Revision    string `yaml:"revision" json:"revision"` // workspace fingerprint the decision saw
+	Channel     string `yaml:"channel" json:"channel"`   // serve | file | mcp | cli
+	ADR         string `yaml:"adr,omitempty" json:"adr,omitempty"`
+	Consumed    string `yaml:"consumed_by,omitempty" json:"consumed_by,omitempty"` // turn that took a rejection as IntentDelta
+	Invalidated string `yaml:"invalidated_by,omitempty" json:"invalidated_by,omitempty"`
 }

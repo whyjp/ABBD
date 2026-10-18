@@ -24,8 +24,8 @@ description: Finds what a change can break outside its diff. Checks external con
 호출 그래프보다 먼저 본다.
 
 ```sh
-cccv contracts impact --diff --json
-cccv contracts list --module MOD-002
+abbd contracts impact --diff --json
+abbd contracts list --module MOD-002
 ```
 
 `contracts impact`는 작업 트리와 마지막 동기화를 비교해 바뀐 계약마다 `change`(added, removed, modified), `breaking`, `tier`, `reason`을 주고 `highest_tier`를 붙인다. `--diff`는 기본 동작이며 생략해도 같다. 구현 전에는 비어 있는 것이 정상이다. 구현 후 실제 diff로 다시 돈다.
@@ -39,9 +39,9 @@ cccv contracts list --module MOD-002
 ### 2. 모듈, 기능, 테스트
 
 ```sh
-cccv impact --json
-cccv graph neighbors IF-002 --depth 2
-cccv graph trace --from FEAT-003 --to IF-002
+abbd impact --json
+abbd graph neighbors IF-002 --depth 2
+abbd graph trace --from FEAT-003 --to IF-002
 ```
 
 `impact`는 contracts, modules, features, tests, unknowns 순으로 돌려준다. 이어서 다음을 확인한다.
@@ -68,11 +68,11 @@ cccv graph trace --from FEAT-003 --to IF-002
 변경이나 후속 행동이 외부 효과를 가지면 등급을 확인한다.
 
 ```sh
-cccv policy classify --action push
-cccv policy classify --action deploy
-cccv policy classify --action delete-external
-cccv policy classify --action secret
-cccv policy classify --action local-commit
+abbd policy classify --action push
+abbd policy classify --action deploy
+abbd policy classify --action delete-external
+abbd policy classify --action secret
+abbd policy classify --action local-commit
 ```
 
 모르는 action이면 오류에 하네스가 아는 action 목록이 나온다(push, force-push, deploy, delete-external, secret, production-data, breaking-external, compatibility-change, add-dependency, local-commit 등).
@@ -89,7 +89,7 @@ cccv policy classify --action local-commit
 등급 C이면 명시적 승인 없이 실행하지 않는다. 가역적 준비(로컬 브랜치의 코드, 마이그레이션 초안, 테스트)까지만 하고 상태를 BLOCKED로 보고한다. 보고에는 승인 요청과 준비된 변경을 함께 적는다. 정지를 turn에 기록한다.
 
 ```sh
-cccv decide --tier C --question "IF-003 POST /messages 경로를 /v2/messages로 바꿔도 되나?" --subject IF-003
+abbd decide --tier C --question "IF-003 POST /messages 경로를 /v2/messages로 바꿔도 되나?" --subject IF-003
 ```
 
 - 등급 C는 선택지가 필요 없다. 결과는 `blocked: true`, `ask: true`이고 CHG의 `blocked`에 들어간다. 종료 코드는 0이므로 `blocked` 필드로 판단한다.

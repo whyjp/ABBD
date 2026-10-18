@@ -1,4 +1,4 @@
-module github.com/whyjp/cccv
+module github.com/whyjp/abbd
 
 go 1.26.3
 

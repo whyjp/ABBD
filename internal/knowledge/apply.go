@@ -9,10 +9,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/analysis"
-	"github.com/whyjp/cccv/internal/identity"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/abbd/internal/analysis"
+	"github.com/whyjp/abbd/internal/identity"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 type Options struct {

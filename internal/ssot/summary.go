@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // Summary renders the human-readable block of a Markdown original. It is derived from the

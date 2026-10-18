@@ -49,13 +49,13 @@ func TestCodeOnlyE2E(t *testing.T) {
 	if n := get(boot, "unconfirmed_count").(float64); n == 0 || int(n) != len(list(boot, "unconfirmed")) {
 		t.Fatalf("AC-BOOT-06: unconfirmed_count %v vs list %d", n, len(list(boot, "unconfirmed")))
 	}
-	queue := p.read(".cccv/generated/confirm-queue.html")
+	queue := p.read(".abbd/generated/confirm-queue.html")
 	for _, item := range list(boot, "unconfirmed") {
 		if !strings.Contains(queue, str(item, "id")) {
 			t.Fatalf("AC-BOOT-06: %s missing from the HTML confirm queue", str(item, "id"))
 		}
 	}
-	explorer := p.read(".cccv/generated/explorer.html")
+	explorer := p.read(".abbd/generated/explorer.html")
 	for _, want := range []string{"fmh-watermark", "확인 대기", "Architecture View", "외부 계약 뷰", "Feature View", "heartbeat-events", "POST /messages"} {
 		if !strings.Contains(explorer, want) {
 			t.Fatalf("AC-BOOT-04: explorer.html lacks %q", want)
@@ -107,7 +107,7 @@ func TestCodeOnlyE2E(t *testing.T) {
 	if str(st, "freshness", "feature_map") != "DRAFT" || str(st, "freshness", "html") != "DRAFT" {
 		t.Fatalf("a failed turn shows DRAFT, got %v", get(st, "freshness"))
 	}
-	if !strings.Contains(p.read(".cccv/generated/explorer.html"), "작업 중 초안 DRAFT") {
+	if !strings.Contains(p.read(".abbd/generated/explorer.html"), "작업 중 초안 DRAFT") {
 		t.Fatal("HTML must distinguish the draft from the last confirmed version")
 	}
 	if str(p.ok("inspect", postFeat), "feature", "intent", "purpose", "value") != "메시지를 받아 message-events 토픽에 발행한다" {

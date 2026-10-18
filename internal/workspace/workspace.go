@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-var skipDirs = map[string]bool{".git": true, ".cccv": true, "node_modules": true, "vendor": true}
+var skipDirs = map[string]bool{".git": true, ".abbd": true, "node_modules": true, "vendor": true}
 
 type Snapshot struct {
 	Revision    string            `json:"revision"`
@@ -96,7 +96,7 @@ func gitRevision(root string) (string, bool) {
 	if err != nil {
 		return "nogit", false
 	}
-	status, _ := Git(root, "status", "--porcelain", "--", ".", ":(exclude).cccv")
+	status, _ := Git(root, "status", "--porcelain", "--", ".", ":(exclude).abbd")
 	return out, status != ""
 }
 

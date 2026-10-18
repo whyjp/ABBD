@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/whyjp/cccv/internal/cli"
+	"github.com/whyjp/abbd/internal/cli"
 )
 
 // project is a scratch target repository driven through the real CLI entry point.
@@ -62,11 +62,11 @@ func (p *project) git(args ...string) string {
 }
 
 func (p *project) commit(msg string) {
-	p.git("add", "-A", "--", ".", ":(exclude).cccv")
+	p.git("add", "-A", "--", ".", ":(exclude).abbd")
 	p.git("commit", "-q", "--allow-empty", "-m", msg)
 }
 
-// run executes `cccv --root DIR --json ARGS...` in-process and decodes the result.
+// run executes `abbd --root DIR --json ARGS...` in-process and decodes the result.
 func (p *project) run(args ...string) (map[string]any, int, string) {
 	p.t.Helper()
 	var out, errb bytes.Buffer
@@ -75,7 +75,7 @@ func (p *project) run(args ...string) (map[string]any, int, string) {
 	if out.Len() > 0 {
 		var decoded any
 		if err := json.Unmarshal(out.Bytes(), &decoded); err != nil {
-			p.t.Fatalf("cccv %v: output is not JSON: %v\n%s", args, err, out.String())
+			p.t.Fatalf("abbd %v: output is not JSON: %v\n%s", args, err, out.String())
 		}
 		if m, ok := decoded.(map[string]any); ok {
 			v = m
@@ -91,7 +91,7 @@ func (p *project) ok(args ...string) map[string]any {
 	p.t.Helper()
 	v, code, stderr := p.run(args...)
 	if code != 0 {
-		p.t.Fatalf("cccv %v exited %d: %s\n%v", args, code, stderr, v)
+		p.t.Fatalf("abbd %v exited %d: %s\n%v", args, code, stderr, v)
 	}
 	return v
 }

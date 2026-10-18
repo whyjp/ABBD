@@ -1,49 +1,49 @@
-# For My Harness (Phase 1 draft)
+# ABBD — Active Blueprint-Based Development
 
-For My Harness PRD v1.3(`for_my_harness_prd_v1_3.html`)의 Phase 1 구현 초안이다. 개인용 개발 하네스로, SSOT Architecture Map과 Feature Map을 표준 문서 구조로 삼는다. 에이전트는 매 턴 구현, 실행 검증, 문서·그래프 갱신을 하나의 완료 단위로 끝낸다. 빈 저장소든 코드만 있는 저장소든, 그 구조는 하네스가 직접 만든다.
+ABBD PRD v1.5(`basedoc/abbd_prd_v1_5.html`, 이전 판은 같은 폴더)의 Phase 1 구현이다. 에이전트가 하네스가 만들고 유지하는 설계도(Blueprint)를 기준으로 개발하고, 그 설계도가 검증된 변경과 함께 자동으로 갱신(Active)된다. 설계도는 SSOT Architecture Map, Feature Map, 외부 계약 뷰, 리뷰 화면의 토폴로지다. 매 턴 구현, 실행 검증, 문서·그래프 갱신을 하나의 완료 단위로 끝낸다. 빈 저장소든 코드만 있는 저장소든, 그 구조는 하네스가 직접 만든다.
 
 구성은 두 층이다.
 
-- **Core CLI `cccv`** (Go, 의존성은 `gopkg.in/yaml.v3` 하나). 상태 전이와 완료 게이트는 모델의 기억이 아니라 이 CLI가 소유한다. `cccv mcp`는 같은 기능을 MCP stdio 서버로 노출한다.
-- **호스트 중립 Agent Skills** (`plugins/cccv/skills/`). 턴 루프의 단계마다 하나씩, 모두 8개다. 각 단계에서 어떤 CLI 명령을 부르는지 적혀 있다. Claude Code 플러그인으로 GitHub에서 바로 설치하고, Codex와 Antigravity는 같은 원본을 설치 스크립트로 받는다 (`plugins/README.md`).
+- **Core CLI `abbd`** (Go, 의존성은 `gopkg.in/yaml.v3` 하나). 상태 전이와 완료 게이트는 모델의 기억이 아니라 이 CLI가 소유한다. `abbd mcp`는 같은 기능을 MCP stdio 서버로 노출한다.
+- **호스트 중립 Agent Skills** (`plugins/abbd/skills/`). 턴 루프의 단계마다 하나씩, 모두 8개다. 각 단계에서 어떤 CLI 명령을 부르는지 적혀 있다. Claude Code 플러그인으로 GitHub에서 바로 설치하고, Codex와 Antigravity는 같은 원본을 설치 스크립트로 받는다 (`plugins/README.md`).
 
 ## 빠른 시작
 
 ```sh
-go build -o bin/cccv ./cmd/cccv
+go build -o bin/abbd ./cmd/abbd
 
 # code-only: 코드만 있는 저장소. 질문 없이 맵·그래프·HTML을 만든다
 cd your-repo
-cccv init . --mode code-only --verify-available
-cccv status
-cccv confirm --list            # 추정 항목. 틈날 때 정리한다
+abbd init . --mode code-only --verify-available
+abbd status
+abbd confirm --list            # 추정 항목. 틈날 때 정리한다
 
 # 개발 턴
-cccv run "메시지 개수를 돌려주는 GET /messages/count API 추가"
+abbd run "메시지 개수를 돌려주는 GET /messages/count API 추가"
 #   ... 에이전트가 코드와 테스트를 고친다 ...
-cccv verify                    # 영향 범위 검증. 증거를 저장한다
-cccv sync                      # PASSED일 때만 완료. 아니면 DRAFT로 남고 exit 2
-cccv open-docs                 # .cccv/generated/explorer.html
+abbd verify                    # 영향 범위 검증. 증거를 저장한다
+abbd sync                      # PASSED일 때만 완료. 아니면 DRAFT로 남고 exit 2
+abbd open-docs                 # .abbd/generated/explorer.html
 ```
 
 설치:
 
 ```sh
-go install github.com/whyjp/cccv/cmd/cccv@latest
+go install github.com/whyjp/abbd/cmd/abbd@latest
 # Claude Code (플러그인: 스킬 8개 + MCP 서버 + SessionStart 훅)
-/plugin marketplace add whyjp/cccv
-/plugin install cccv@cccv
+/plugin marketplace add whyjp/ABBD
+/plugin install abbd@abbd
 # Codex / Antigravity (같은 스킬 원본을 호스트 경로로 복사, MCP 설정 생성)
 sh plugins/install.sh --host codex /path/to/project
 sh plugins/install.sh --host antigravity /path/to/workspace
 ```
 
-전체 명령은 `docs/cli.md`와 `cccv help`에 있다.
+전체 명령은 `docs/cli.md`와 `abbd help`에 있다.
 
 ## 대상 프로젝트에 생기는 것
 
 ```
-.cccv/
+.abbd/
 ├── project.yaml            언어, 검증 명령, 승인 정책, 턴당 예산, 선호
 ├── architecture/MOD-*.md   모듈 + 외부 계약 뷰(IF/EVT/DATA/CFG) + 서빙 구조
 ├── features/FEAT-*.md      기능: 목적(why) / 관찰(what) / 진입점 / 검증
@@ -63,7 +63,7 @@ Markdown이 원본이다. YAML frontmatter가 구조화 데이터이고, 자동 
 
 | PRD 규칙 | 강제 지점 |
 |---|---|
-| 세 축 근거 어휘, "why" 필드는 USER_STATED/ADOPTED/INFERRED만 (06장) | `internal/model/provenance.go` `NewSemantic`, `cccv check` |
+| 세 축 근거 어휘, "why" 필드는 USER_STATED/ADOPTED/INFERRED만 (06장) | `internal/model/provenance.go` `NewSemantic`, `abbd check` |
 | purpose는 사용자 확인으로만 승격, 테스트는 verification만 바꿈 | `internal/verify` `ApplyResults`, `workflow.Confirm` |
 | 앵커 ≥2 일치는 같은 ID, 1개는 병합 후보, git rename 반영 (FR-27) | `internal/identity`, `internal/knowledge/apply.go` |
 | bootstrap은 묻지 않는다 (AC-BOOT-06) | `internal/bootstrap`는 입력을 읽지 않는다. `decide`는 턴 밖에서 거부된다 |
@@ -72,7 +72,7 @@ Markdown이 원본이다. YAML frontmatter가 구조화 데이터이고, 자동 
 | 외부 계약 뷰는 Phase 1의 1급 항목 (08A) | `internal/analysis` 추출기, `MOD-*.external_contracts` |
 | 외부 변경은 EXTRACTED만 갱신, 질문 없음 (03장 Reconcile) | `workflow.reconcile` |
 | Graph-on-demand와 폴백 이유 기록 (FR-21) | `workflow.contextStrategy` → `CHG.plan.context_*` |
-| 도메인 층은 ID 접두사만 예약 (08A) | `model.ReservedKinds`, `cccv domain`은 reserved |
+| 도메인 층은 ID 접두사만 예약 (08A) | `model.ReservedKinds`, `abbd domain`은 reserved |
 
 ## 검증
 

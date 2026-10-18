@@ -1,5 +1,0 @@
-{
-  "mcpServers": {
-    "cccv": { "command": "cccv", "args": ["mcp"] }
-  }
-}

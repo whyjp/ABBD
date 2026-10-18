@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/abbd/internal/model"
 )
 
 const sampleRoot = "../../samples/code-only"

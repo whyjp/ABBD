@@ -8,14 +8,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/whyjp/cccv/internal/analysis"
-	"github.com/whyjp/cccv/internal/bootstrap"
-	"github.com/whyjp/cccv/internal/graph"
-	"github.com/whyjp/cccv/internal/html"
-	"github.com/whyjp/cccv/internal/identity"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
-	"github.com/whyjp/cccv/internal/workspace"
+	"github.com/whyjp/abbd/internal/analysis"
+	"github.com/whyjp/abbd/internal/bootstrap"
+	"github.com/whyjp/abbd/internal/graph"
+	"github.com/whyjp/abbd/internal/html"
+	"github.com/whyjp/abbd/internal/identity"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
+	"github.com/whyjp/abbd/internal/workspace"
 )
 
 type Engine struct {
@@ -45,7 +45,7 @@ type world struct {
 
 func (e *Engine) load() (*world, error) {
 	if !ssot.Exists(e.Root) {
-		return nil, fmt.Errorf("no project knowledge in %s; run `cccv init`", e.Root)
+		return nil, fmt.Errorf("no project knowledge in %s; run `abbd init`", e.Root)
 	}
 	s, err := ssot.Load(e.Root)
 	if err != nil {
@@ -95,7 +95,7 @@ func (w *world) countGraphQuery() {
 	}
 }
 
-// Init is `cccv init`: bootstrap when there is no knowledge, otherwise a session start.
+// Init is `abbd init`: bootstrap when there is no knowledge, otherwise a session start.
 func (e *Engine) Init(opt bootstrap.Options) (any, error) {
 	if ssot.Exists(e.Root) && opt.Mode == "" && opt.From == "" {
 		return e.Status()

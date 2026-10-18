@@ -1,10 +1,10 @@
-// Command cccv is the For My Harness Core CLI.
+// Command abbd is the ABBD Core CLI.
 package main
 
 import (
 	"os"
 
-	"github.com/whyjp/cccv/internal/cli"
+	"github.com/whyjp/abbd/internal/cli"
 )
 
 func main() {

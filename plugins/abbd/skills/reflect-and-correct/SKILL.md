@@ -1,6 +1,6 @@
 ---
 name: reflect-and-correct
-description: Ends a For My Harness turn. Reviews the ChangeReceipt against the code and doc diff, reports cost, side effects, pending tier C items, and residual risk, then turns repeated mistakes into enforced constraints in the order architecture, types, lint, tests, docs, proving each new check fails on a real past mistake. Use after sync-knowledge on every turn for the review, and for the learning part when the user corrects the same mistake again or a turn repeats a known failure.
+description: Ends a ABBD turn. Reviews the ChangeReceipt against the code and doc diff, reports cost, side effects, pending tier C items, and residual risk, then turns repeated mistakes into enforced constraints in the order architecture, types, lint, tests, docs, proving each new check fails on a real past mistake. Use after sync-knowledge on every turn for the review, and for the learning part when the user corrects the same mistake again or a turn repeats a known failure.
 ---
 
 # reflect-and-correct
@@ -20,7 +20,7 @@ description: Ends a For My Harness turn. Reviews the ChangeReceipt against the c
 ## 1. ChangeReceipt 검토
 
 ```sh
-cccv turn show --json
+abbd turn show --json
 ```
 
 receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff와 맞는지 확인한다.
@@ -41,11 +41,11 @@ receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff�
 
 ## 2. 반영과 보고
 
-- 등급 A 행동(로컬 검증, 맵 동기화, 설정에 따라 로컬 commit)은 진행하고 보고한다. 로컬 commit의 등급은 `cccv policy classify --action local-commit`으로 확인한다. 등급 A이면 `cccv sync --commit`이 sync와 함께 commit을 만든다.
+- 등급 A 행동(로컬 검증, 맵 동기화, 설정에 따라 로컬 commit)은 진행하고 보고한다. 로컬 commit의 등급은 `abbd policy classify --action local-commit`으로 확인한다. 등급 A이면 `abbd sync --commit`이 sync와 함께 commit을 만든다.
 - 등급 C 행동(push, 배포 등)은 실행하지 않는다. 준비된 변경과 승인 요청을 보고한다.
 - 사용자 보고는 receipt의 요지로 쓴다. 목적, 바뀐 것, 검증 결과(실행함/실행 못함), 동기화 상태, 기본값으로 진행한 결정과 뒤집는 방법, 등급 C 대기 항목, 새 UNCONFIRMED 수.
-- 등급 C 대기 항목은 receipt의 `blocked`와 `cccv decisions`의 답 없는 등급 C ADR로 확인한다.
-- 턴을 버려야 하면 `cccv turn abort --reason TEXT`를 쓴다. 그 turn이 만든 초안 FEAT는 지워지고, CHG는 BLOCKED 기록으로 남는다. 작업 트리의 코드는 되돌리지 않으므로, 버린 코드가 남아 있으면 다음 `run`이 외부 변경으로 재조정한다.
+- 등급 C 대기 항목은 receipt의 `blocked`와 `abbd decisions`의 답 없는 등급 C ADR로 확인한다.
+- 턴을 버려야 하면 `abbd turn abort --reason TEXT`를 쓴다. 그 turn이 만든 초안 FEAT는 지워지고, CHG는 BLOCKED 기록으로 남는다. 작업 트리의 코드는 되돌리지 않으므로, 버린 코드가 남아 있으면 다음 `run`이 외부 변경으로 재조정한다.
 
 여기까지 끝나야 턴이 COMPLETED다.
 
@@ -67,10 +67,10 @@ receipt가 다음 항목을 모두 담고 있는지, 각 항목이 실제 diff�
 
 "한 번 더 주의하라"는 문장만 추가하는 것은 교정이 아니다.
 
-고른 단계를 제안으로 기록한다. `--kind`는 위 순서의 architecture, type, lint, test, doc, skill 중 하나다. 진행 중인 turn이 있으면 그 CHG의 next_steps에도 붙는다. 기록은 `.cccv/learning.yaml`에 `status: proposed`로 쌓인다.
+고른 단계를 제안으로 기록한다. `--kind`는 위 순서의 architecture, type, lint, test, doc, skill 중 하나다. 진행 중인 turn이 있으면 그 CHG의 next_steps에도 붙는다. 기록은 `.abbd/learning.yaml`에 `status: proposed`로 쌓인다.
 
 ```sh
-cccv learn --kind lint --proposal "재시도 횟수 상수 하드코딩을 금지하고 RetryPolicy를 쓰게 한다"
+abbd learn --kind lint --proposal "재시도 횟수 상수 하드코딩을 금지하고 RetryPolicy를 쓰게 한다"
 ```
 
 ## 5. 증명
@@ -82,8 +82,8 @@ cccv learn --kind lint --proposal "재시도 횟수 상수 하드코딩을 금�
 
 ## 6. Skill과 정책 변경
 
-- 반복되는 사용자 선호는 사용자가 동의하면 `cccv learn --preference key=value`로 `project.yaml`의 `preferences`에 쓴다. 한 번 답한 질문은 ADR로 남아 있고 decide가 `reused`로 돌려주므로 다시 묻지 않는다.
-- 스킬 변경 제안은 `cccv learn --kind skill --proposal TEXT`로 남긴다.
+- 반복되는 사용자 선호는 사용자가 동의하면 `abbd learn --preference key=value`로 `project.yaml`의 `preferences`에 쓴다. 한 번 답한 질문은 ADR로 남아 있고 decide가 `reused`로 돌려주므로 다시 묻지 않는다.
+- 스킬 변경 제안은 `abbd learn --kind skill --proposal TEXT`로 남긴다.
 - 이 skills/ 디렉터리나 전역 Skill을 바꾸는 제안은 다른 프로젝트에도 영향을 준다. 로컬에서 평가한 뒤 사용자 승인을 받고 적용한다. 자동 적용하지 않는다.
 - 규칙마다 무엇이 그것을 강제하는지 짝지은 표를 프로젝트의 에이전트 지침 파일에 유지한다. 규칙이 이미 있는데 강제 수단이 없어서 반복됐다면, 같은 변경에서 더 높은 단계로 올린다. 실수가 더 이상 불가능해지면 규칙을 지운다.
 

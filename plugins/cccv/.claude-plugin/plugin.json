@@ -1,9 +1,0 @@
-{
-  "name": "cccv",
-  "version": "0.1.0",
-  "description": "cccv turn loop: session-bootstrap, understand-project, change-intent, architect-change, impact-review, implement-and-prove, sync-knowledge, reflect-and-correct. Requires the cccv CLI on PATH (go install github.com/whyjp/cccv/cmd/cccv@latest).",
-  "author": { "name": "whyjp" },
-  "homepage": "https://github.com/whyjp/cccv",
-  "repository": "https://github.com/whyjp/cccv",
-  "keywords": ["harness", "ssot", "architecture-map", "feature-map", "mcp"]
-}

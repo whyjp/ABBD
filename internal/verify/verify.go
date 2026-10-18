@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 const runsDir = "verification/runs"

@@ -1,6 +1,6 @@
-# Install the cccv skills for a host that has no plugin install from a GitHub subfolder.
+# Install the abbd skills for a host that has no plugin install from a GitHub subfolder.
 # Usage: powershell -ExecutionPolicy Bypass -File plugins/install.ps1 -HostName codex|antigravity|claude-code [-Scope project|user] [-Project DIR]
-# Same behavior as install.sh: copies plugins/cccv/skills/*, replaces only cccv skill directories,
+# Same behavior as install.sh: copies plugins/abbd/skills/*, replaces only abbd skill directories,
 # writes the MCP config only when the file does not exist, otherwise prints the snippet to merge.
 param(
     [Parameter(Mandatory = $true)][ValidateSet('codex', 'antigravity', 'claude-code')][string]$HostName,
@@ -8,7 +8,7 @@ param(
     [string]$Project = '.'
 )
 $ErrorActionPreference = 'Stop'
-$src = Join-Path $PSScriptRoot 'cccv/skills'
+$src = Join-Path $PSScriptRoot 'abbd/skills'
 $home_ = [Environment]::GetFolderPath('UserProfile')
 
 $targets = @{
@@ -28,23 +28,28 @@ New-Item -ItemType Directory -Force $skills | Out-Null
 $count = 0
 foreach ($dir in Get-ChildItem $src -Directory) {
     if (-not (Test-Path (Join-Path $dir.FullName 'SKILL.md'))) { continue }
-    $dest = Join-Path $skills $dir.Name
+    # Without a plugin namespace the skill names carry the abbd prefix (PRD v1.5 CR-13).
+    $name = "abbd-$($dir.Name)"
+    $dest = Join-Path $skills $name
     if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
     Copy-Item -Recurse $dir.FullName $dest
+    $skillFile = Join-Path $dest 'SKILL.md'
+    $text = [IO.File]::ReadAllText($skillFile) -replace '(?m)^name: .*$', "name: $name"
+    [IO.File]::WriteAllText($skillFile, $text)
     $count++
 }
 if ($count -eq 0) { Write-Error "no skills under $src" }
-Write-Output "installed $count cccv skills into $skills"
+Write-Output "installed $count abbd skills into $skills"
 
 $snippet = switch ($fmt) {
-    'toml' { "[mcp_servers.cccv]`ncommand = `"cccv`"`nargs = [`"mcp`"]" }
-    'json' { "{`n  `"mcpServers`": {`n    `"cccv`": { `"command`": `"cccv`", `"args`": [`"mcp`"] }`n  }`n}" }
+    'toml' { "[mcp_servers.abbd]`ncommand = `"abbd`"`nargs = [`"mcp`"]" }
+    'json' { "{`n  `"mcpServers`": {`n    `"abbd`": { `"command`": `"abbd`", `"args`": [`"mcp`"] }`n  }`n}" }
     default { '' }
 }
 if ($mcp) {
     if (Test-Path $mcp) {
-        if (Select-String -Path $mcp -Pattern 'cccv' -Quiet) {
-            Write-Output "MCP: $mcp already mentions cccv; left unchanged"
+        if (Select-String -Path $mcp -Pattern 'abbd' -Quiet) {
+            Write-Output "MCP: $mcp already mentions abbd; left unchanged"
         } else {
             Write-Output "MCP: $mcp exists; merge this entry yourself:`n`n$snippet"
         }
@@ -55,6 +60,6 @@ if ($mcp) {
         Write-Output "MCP: wrote $mcp"
     }
 }
-if (-not (Get-Command cccv -ErrorAction SilentlyContinue)) {
-    Write-Output 'next: go install github.com/whyjp/cccv/cmd/cccv@latest (the skills and the MCP server call it)'
+if (-not (Get-Command abbd -ErrorAction SilentlyContinue)) {
+    Write-Output 'next: go install github.com/whyjp/abbd/cmd/abbd@latest (the skills and the MCP server call it)'
 }

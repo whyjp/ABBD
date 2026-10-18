@@ -3,12 +3,12 @@ package knowledge
 import (
 	"time"
 
-	"github.com/whyjp/cccv/internal/analysis"
-	"github.com/whyjp/cccv/internal/graph"
-	"github.com/whyjp/cccv/internal/html"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
-	"github.com/whyjp/cccv/internal/workspace"
+	"github.com/whyjp/abbd/internal/analysis"
+	"github.com/whyjp/abbd/internal/graph"
+	"github.com/whyjp/abbd/internal/html"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
+	"github.com/whyjp/abbd/internal/workspace"
 )
 
 // Publish writes the md originals, then derives graph and HTML from them with one watermark.

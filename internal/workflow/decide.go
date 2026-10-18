@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/html"
-	"github.com/whyjp/cccv/internal/knowledge"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/policy"
-	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/abbd/internal/html"
+	"github.com/whyjp/abbd/internal/knowledge"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/policy"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 type DecideInput struct {
@@ -76,7 +76,7 @@ func (e *Engine) Decide(in DecideInput) (*DecideResult, error) {
 	}
 	chg := w.s.ActiveChange()
 	if chg == nil {
-		return nil, fmt.Errorf("decisions belong to a turn; start one with `cccv run` (bootstrap never asks); an open ADR is answered with --adr ADR-x --answer KEY")
+		return nil, fmt.Errorf("decisions belong to a turn; start one with `abbd run` (bootstrap never asks); an open ADR is answered with --adr ADR-x --answer KEY")
 	}
 	if in.Tier == "" {
 		in.Tier = model.TierB
@@ -421,7 +421,7 @@ func (e *Engine) IntentFeature(in IntentFeatureInput) (*model.Feature, error) {
 	}
 	if in.Purpose != "" {
 		if confirmed(f.Intent.Purpose) && origin != model.UserStated && f.Intent.Purpose.Value != in.Purpose {
-			return nil, fmt.Errorf("%s purpose is CONFIRMED (%q); changing it is a tier B decision: `cccv decide --subject %s`", f.ID, f.Intent.Purpose.Value, f.ID)
+			return nil, fmt.Errorf("%s purpose is CONFIRMED (%q); changing it is a tier B decision: `abbd decide --subject %s`", f.ID, f.Intent.Purpose.Value, f.ID)
 		}
 		sem, err := model.NewSemantic(in.Purpose, origin)
 		if err != nil {
@@ -552,7 +552,7 @@ func (e *Engine) IntentContract(in IntentContractInput) (*model.Contract, error)
 	}
 	if in.Compatibility != "" {
 		if confirmed(c.Compatibility) && origin != model.UserStated && c.Compatibility.Value != in.Compatibility {
-			return nil, fmt.Errorf("%s compatibility is CONFIRMED (%q); changing it is a tier B decision: `cccv decide --subject %s`", c.ID, c.Compatibility.Value, c.ID)
+			return nil, fmt.Errorf("%s compatibility is CONFIRMED (%q); changing it is a tier B decision: `abbd decide --subject %s`", c.ID, c.Compatibility.Value, c.ID)
 		}
 		sem, err := model.NewSemantic(in.Compatibility, origin)
 		if err != nil {
@@ -595,7 +595,7 @@ func (e *Engine) activeTurn() (*world, *model.Change, error) {
 	}
 	chg := w.s.ActiveChange()
 	if chg == nil {
-		return nil, nil, fmt.Errorf("no active turn; start one with `cccv run`")
+		return nil, nil, fmt.Errorf("no active turn; start one with `abbd run`")
 	}
 	return w, chg, nil
 }
@@ -652,7 +652,7 @@ func (e *Engine) Learn(in LearnInput) (any, error) {
 	return l, ssot.WriteYAMLFile(e.Root, "learning.yaml", log)
 }
 
-// Pending is the confirm queue (`cccv confirm --list`, MCP list_unconfirmed).
+// Pending is the confirm queue (`abbd confirm --list`, MCP list_unconfirmed).
 func (e *Engine) Pending() ([]html.PendingItem, error) {
 	w, err := e.load()
 	if err != nil {
@@ -661,7 +661,7 @@ func (e *Engine) Pending() ([]html.PendingItem, error) {
 	return html.Pending(w.s), nil
 }
 
-// Render regenerates graph and HTML from the md originals (`cccv render`).
+// Render regenerates graph and HTML from the md originals (`abbd render`).
 func (e *Engine) Render() (*Freshness, error) {
 	w, err := e.load()
 	if err != nil {

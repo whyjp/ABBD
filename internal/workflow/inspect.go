@@ -3,11 +3,11 @@ package workflow
 import (
 	"fmt"
 
-	"github.com/whyjp/cccv/internal/graph"
-	"github.com/whyjp/cccv/internal/impact"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/policy"
-	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/abbd/internal/graph"
+	"github.com/whyjp/abbd/internal/impact"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/policy"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 type FeatureContext struct {

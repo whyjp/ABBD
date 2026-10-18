@@ -1,6 +1,6 @@
 ---
 name: session-bootstrap
-description: Opens every For My Harness turn. Checks whether project knowledge exists, runs Zero-Map Bootstrap without asking questions when it does not, reconciles external code changes, reports map/graph/HTML freshness, then routes the request to a work type and verification tier. Use at the start of every session and every user request in a repository that has a .cccv/ directory or should get one, before reading code to change it.
+description: Opens every ABBD turn. Checks whether project knowledge exists, runs Zero-Map Bootstrap without asking questions when it does not, reconciles external code changes, reports map/graph/HTML freshness, then routes the request to a work type and verification tier. Use at the start of every session and every user request in a repository that has a .abbd/ directory or should get one, before reading code to change it.
 ---
 
 # session-bootstrap
@@ -22,43 +22,43 @@ description: Opens every For My Harness turn. Checks whether project knowledge e
 ### 1. 현재 상태 읽기
 
 ```sh
-cccv status --json
+abbd status --json
 ```
 
 결과에서 revision, fingerprint, maps/graph/HTML 각각의 최신성(CURRENT / STALE / DRAFT / UNKNOWN), 진행 중인 turn, 대기 중인 외부 변경을 읽는다. 이것이 ProjectStateSnapshot이다.
 
 ### 2. 지식이 없으면 bootstrap
 
-`.cccv/`가 없으면 질문 없이 바로 초기화한다. 맵이 없는 것은 오류가 아니라 첫 턴의 정상 상태다.
+`.abbd/`가 없으면 질문 없이 바로 초기화한다. 맵이 없는 것은 오류가 아니라 첫 턴의 정상 상태다.
 
 ```sh
-cccv init                         # 모드 자동 감지
-cccv init --mode code-only        # 코드만 있는 저장소
-cccv init --mode greenfield       # 빈 저장소. 첫 요청이 요구사항이 된다
-cccv init --mode adopt --from PATH   # 비슷한 기존 문서가 있을 때
+abbd init                         # 모드 자동 감지
+abbd init --mode code-only        # 코드만 있는 저장소
+abbd init --mode greenfield       # 빈 저장소. 첫 요청이 요구사항이 된다
+abbd init --mode adopt --from PATH   # 비슷한 기존 문서가 있을 때
 ```
 
-- 무엇이 생길지 먼저 보려면 `--preview`를 붙인다. BootstrapReport만 출력하고 `.cccv/`를 쓰지 않는다.
+- 무엇이 생길지 먼저 보려면 `--preview`를 붙인다. BootstrapReport만 출력하고 `.abbd/`를 쓰지 않는다.
 - 빌드·테스트를 돌릴 수 있는 환경이면 `--verify-available`을 붙여 OBSERVED 근거를 확보한다.
-- `.cccv/`가 이미 있는데 `--mode`와 `--from` 없이 `init`을 부르면 bootstrap 대신 `status` 결과를 돌려준다.
+- `.abbd/`가 이미 있는데 `--mode`와 `--from` 없이 `init`을 부르면 bootstrap 대신 `status` 결과를 돌려준다.
 - bootstrap 중에는 사용자에게 아무것도 묻지 않는다. 의도·책임·호환 정책이 불확실한 항목은 INFERRED ∧ UNCONFIRMED로 남고 `generated/confirm-queue.html`에 올라간다.
 - adopt 입력이 실패해도 기본 bootstrap 경로는 그대로 진행한다.
-- 다시 스캔해야 하면 `cccv bootstrap --mode M --scan`을 쓴다. 앵커 2개 이상이 일치하는 항목은 기존 안정 ID와 확인된 의도를 유지한다.
+- 다시 스캔해야 하면 `abbd bootstrap --mode M --scan`을 쓴다. 앵커 2개 이상이 일치하는 항목은 기존 안정 ID와 확인된 의도를 유지한다.
 
-사용자에게는 BootstrapReport의 요지만 알린다. 생성된 Feature/Module 수, UNCONFIRMED 항목 수, 검증 범위, Explorer 경로(`cccv open-docs`).
+사용자에게는 BootstrapReport의 요지만 알린다. 생성된 Feature/Module 수, UNCONFIRMED 항목 수, 검증 범위, Explorer 경로(`abbd open-docs`).
 
 ### 3. 외부 변경 재조정
 
-turn을 열 요청이면 이 단계를 따로 하지 않는다. `cccv run`이 대기 중인 외부 변경을 먼저 재조정하고, 결과를 WorkflowPlan의 `reconciled`에 담는다. turn을 열지 않는 질문인데 status가 대기 중인 외부 변경(`pending_changes`)을 보고하면 직접 실행한다.
+turn을 열 요청이면 이 단계를 따로 하지 않는다. `abbd run`이 대기 중인 외부 변경을 먼저 재조정하고, 결과를 WorkflowPlan의 `reconciled`에 담는다. turn을 열지 않는 질문인데 status가 대기 중인 외부 변경(`pending_changes`)을 보고하면 직접 실행한다.
 
 ```sh
-cccv reconcile
+abbd reconcile
 ```
 
 - `intent_source: external`인 CHG가 생기고 EXTRACTED 사실(심볼·호출·바인딩)만 갱신된다.
 - purpose, responsibility, invariant 같은 의미 필드는 건드리지 않는다. 질문도 하지 않는다.
 - 외부 변경이 CONFIRMED 계약이나 확정된 기능과 충돌하면 reconcile이 등급 B ADR을 기본값 `accept`로 남기고 상태를 NEEDS_USER로 둔다. 결과의 `conflicts`가 비어 있지 않으면 사용자 보고에 그 ADR을 적는다.
-- 진행 중인 turn이 있으면 reconcile은 거부된다. 그 turn의 변경은 `cccv sync`가 처리한다.
+- 진행 중인 turn이 있으면 reconcile은 거부된다. 그 turn의 변경은 `abbd sync`가 처리한다.
 
 ### 4. STALE 처리
 
@@ -69,21 +69,21 @@ cccv reconcile
 작업을 시작하려면 turn을 연다.
 
 ```sh
-cccv run "REQUEST"
-cccv run "REQUEST" --type bug-fix --tier T1   # 라우팅을 바로잡을 때만
+abbd run "REQUEST"
+abbd run "REQUEST" --type bug-fix --tier T1   # 라우팅을 바로잡을 때만
 ```
 
-`run`은 `.cccv/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산이 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
+`run`은 `.abbd/`가 없으면 질문 없이 bootstrap부터 하고(WorkflowPlan의 `bootstrap`), 외부 변경을 재조정한 뒤 라우팅, 컨텍스트 선택, 의도 해석, 초안 CHG 작성을 하고 WorkflowPlan을 출력한다. WorkflowPlan에는 CHG ID, 작업 타입, 검증 수준, 단계, 컨텍스트 전략과 이유, 턴 예산이 있다. 새 기능이면 `new_feature`에 초안 FEAT ID가 있다.
 
 - `--type`은 docs, bug-fix, perf, interface-change, refactor, feature 중 하나다. CLI는 다른 값도 받지만 단계 목록이 바뀌지 않으므로 이 여섯 개만 쓴다.
 - `--tier`는 T0~T3다. 요청에 재시도·동시성·중복 같은 위험어가 있으면 `run`이 T3로 올린다. 낮출 때는 이유를 EvidenceReport에 적는다.
 - `ambiguous: true`이면 change-intent에서 등급 B 질문을 남긴다.
-- 진행 중인 turn이 있으면 `run`은 거부된다. 이어서 쓸지 판단하고, 버릴 때만 `cccv turn abort --reason TEXT`를 쓴다.
+- 진행 중인 turn이 있으면 `run`은 거부된다. 이어서 쓸지 판단하고, 버릴 때만 `abbd turn abort --reason TEXT`를 쓴다.
 
 코드를 바꾸지 않는 질문("X는 어떻게 동작해?", "이렇게 바꾸면 영향이 어디까지야?")이면 turn을 열지 않는다. 아무것도 쓰지 않는 dry run을 쓴다.
 
 ```sh
-cccv plan "REQUEST"
+abbd plan "REQUEST"
 ```
 
 ## 작업 타입별 경로
@@ -100,7 +100,7 @@ WorkflowPlan의 작업 타입에 맞춰 다음 skill을 고른다. 작은 작업
 | 성능 개선 | understand-project(기준 환경·불변조건) → architect-change → implement-and-prove(동일 조건 실측 비교) → sync-knowledge | T2 |
 | 상태·동시성·데이터 고위험 | 전체 루프 + 확대된 회귀 범위 | T3 |
 
-단순 버그에서는 다중 후보 설계와 다중 모델 검토를 생략한다. 턴당 예산(모델 호출·그래프 조회·테스트 실행 상한)은 `.cccv/project.yaml`을 따른다.
+단순 버그에서는 다중 후보 설계와 다중 모델 검토를 생략한다. 턴당 예산(모델 호출·그래프 조회·테스트 실행 상한)은 `.abbd/project.yaml`을 따른다.
 
 ## 게이트와 출력
 

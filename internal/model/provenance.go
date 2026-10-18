@@ -1,4 +1,4 @@
-// Package model holds the For My Harness data model (PRD ch.06).
+// Package model holds the ABBD data model (PRD ch.06).
 // The three provenance axes are defined here and nowhere else.
 package model
 

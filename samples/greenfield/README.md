@@ -5,12 +5,12 @@
 
 ```sh
 mkdir new-service && cd new-service
-cccv init .
-cccv run "$(cat ../request.txt)"
+abbd init .
+abbd run "$(cat ../request.txt)"
 # 에이전트가 코드와 테스트를 쓴다
-cccv verify
-cccv sync
-cccv status
+abbd verify
+abbd sync
+abbd status
 ```
 
 같은 흐름을 자동으로 검증하는 테스트는 `tests/greenfield_test.go`의 `TestGreenfieldE2E`다.

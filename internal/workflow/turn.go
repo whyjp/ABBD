@@ -7,15 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/whyjp/cccv/internal/bootstrap"
-	"github.com/whyjp/cccv/internal/impact"
-	"github.com/whyjp/cccv/internal/intent"
-	"github.com/whyjp/cccv/internal/knowledge"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/policy"
-	"github.com/whyjp/cccv/internal/ssot"
-	"github.com/whyjp/cccv/internal/verify"
-	"github.com/whyjp/cccv/internal/workspace"
+	"github.com/whyjp/abbd/internal/bootstrap"
+	"github.com/whyjp/abbd/internal/impact"
+	"github.com/whyjp/abbd/internal/intent"
+	"github.com/whyjp/abbd/internal/knowledge"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/policy"
+	"github.com/whyjp/abbd/internal/ssot"
+	"github.com/whyjp/abbd/internal/verify"
+	"github.com/whyjp/abbd/internal/workspace"
 )
 
 // ErrGate is returned when a completion gate refuses to close the turn.
@@ -60,7 +60,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		return nil, err
 	}
 	if c := w.s.ActiveChange(); c != nil && c.State != model.StateCompleted {
-		return nil, fmt.Errorf("turn %s is active (%s); finish it with `cccv sync` or `cccv turn abort`", c.ID, c.State)
+		return nil, fmt.Errorf("turn %s is active (%s); finish it with `abbd sync` or `abbd turn abort`", c.ID, c.State)
 	}
 	if len(w.changedSinceSync()) > 0 {
 		rec, err := e.reconcile(w)
@@ -95,7 +95,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		IntentDelta:  model.IntentDelta{Additions: []string{request}},
 		Impacted:     targets,
 		Verification: model.NotRun,
-		Telemetry:    model.Telemetry{StartedAt: now(), ModelCallsNote: "host reports with `cccv turn note --model-calls N`"},
+		Telemetry:    model.Telemetry{StartedAt: now(), ModelCallsNote: "host reports with `abbd turn note --model-calls N`"},
 		SyncState:    model.SyncState{FeatureMap: model.Draft, ArchitectureMap: model.Draft, Graph: model.Draft, HTML: model.Draft},
 		Time:         now(),
 	}
@@ -125,7 +125,7 @@ func (e *Engine) Run(request string, o RunOptions) (*WorkflowPlan, error) {
 		}
 	}
 	if r.Ambiguous {
-		plan.AmbiguityHint = "요청이 둘 이상의 기능과 같은 정도로 맞는다: `cccv decide`로 등급 B 질문(선택지 2~3개 + 기본값)을 남기고 기본값으로 진행"
+		plan.AmbiguityHint = "요청이 둘 이상의 기능과 같은 정도로 맞는다: `abbd decide`로 등급 B 질문(선택지 2~3개 + 기본값)을 남기고 기본값으로 진행"
 	}
 	w.s.State.ActiveTurn = chg.ID
 	res, err := w.analyze()
@@ -440,7 +440,7 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 		// T0: documents only. The proof is the consistency check, recorded as evidence.
 		if chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint {
 			cons := checkSnapshot(w.s)
-			ev := model.Evidence{Command: "cccv check", Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Change: chg.ID, StartedAt: now(), Verification: model.Passed}
+			ev := model.Evidence{Command: "abbd check", Dir: ".", Revision: w.ws.Revision, Fingerprint: w.ws.Fingerprint, Change: chg.ID, StartedAt: now(), Verification: model.Passed}
 			if !cons.OK {
 				ev.Verification, ev.OutputTail = model.Failed, strings.Join(cons.Errors, "\n")
 			}
@@ -456,7 +456,7 @@ func (e *Engine) Sync(o SyncOptions) (*SyncResult, error) {
 	case chg.Verification != model.Passed || chg.ResultFingerprint != w.ws.Fingerprint:
 		reason := fmt.Sprintf("검증 %s", chg.Verification)
 		if chg.Verification == model.Passed {
-			reason = "검증 이후 작업 트리가 바뀜: 다시 `cccv verify`"
+			reason = "검증 이후 작업 트리가 바뀜: 다시 `abbd verify`"
 		}
 		return e.draft(w, chg, res, reason)
 	}

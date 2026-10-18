@@ -8,8 +8,8 @@ adopt 입력이 없거나 깨져도 기본 bootstrap은 그대로 진행된다 (
 ```sh
 cp -r samples/code-only /tmp/adopt-demo && cp -r samples/adopt/legacy /tmp/adopt-demo/
 cd /tmp/adopt-demo && git init -q && git add -A && git commit -qm v0
-cccv init . --mode adopt --from legacy --preview   # 쓰지 않고 결과만 본다
-cccv init . --mode adopt --from legacy
+abbd init . --mode adopt --from legacy --preview   # 쓰지 않고 결과만 본다
+abbd init . --mode adopt --from legacy
 ```
 
 자동 검증은 `tests/greenfield_test.go`의 `TestAdoptMode`다.

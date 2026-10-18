@@ -1,12 +1,14 @@
 {
-  "name": "cccv",
-  "owner": { "name": "whyjp" },
-  "description": "cccv: personal development harness. Zero-map bootstrap, per-turn implement/verify/sync loop, SSOT Architecture/Feature Map with generated graph and HTML.",
+  "name": "abbd",
+  "owner": {
+    "name": "whyjp"
+  },
+  "description": "ABBD — Active Blueprint-Based Development. The agent works from a blueprint it builds and keeps current: Architecture/Feature Map, external contract view and review topology, synced with every verified change.",
   "plugins": [
     {
-      "name": "cccv",
-      "source": "./plugins/cccv",
-      "description": "Eight host-neutral skills for the cccv turn loop plus the cccv MCP server.",
+      "name": "abbd",
+      "source": "./plugins/abbd",
+      "description": "Eight host-neutral skills for the ABBD turn loop plus the abbd MCP server.",
       "category": "development"
     }
   ]

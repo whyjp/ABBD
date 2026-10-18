@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/model"
+	"github.com/whyjp/abbd/internal/model"
 )
 
 type symbolPattern struct {

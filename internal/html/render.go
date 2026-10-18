@@ -10,9 +10,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/graph"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
+	"github.com/whyjp/abbd/internal/graph"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
 )
 
 const (
@@ -112,7 +112,7 @@ func Pending(s *ssot.Snapshot) []PendingItem {
 func Render(s *ssot.Snapshot, g *graph.Graph, meta Meta) error {
 	pending := Pending(s)
 	var b strings.Builder
-	page(&b, "For My Harness Explorer · "+s.Project.Name, meta, func() {
+	page(&b, "ABBD Explorer · "+s.Project.Name, meta, func() {
 		nav(&b)
 		banner(&b, s, meta, len(pending))
 		section(&b, "pending", "확인 대기 (UNCONFIRMED)", func() { pendingTable(&b, pending) })
@@ -126,7 +126,7 @@ func Render(s *ssot.Snapshot, g *graph.Graph, meta Meta) error {
 	var q strings.Builder
 	page(&q, "확인 대기 · "+s.Project.Name, meta, func() {
 		banner(&q, s, meta, len(pending))
-		fmt.Fprintf(&q, "<p>틈날 때 <code>cccv confirm ID</code> 또는 <code>cccv confirm ID --value \"...\"</code>로 정리한다. 건드리지 않는 추정은 묻지 않는다.</p>")
+		fmt.Fprintf(&q, "<p>틈날 때 <code>abbd confirm ID</code> 또는 <code>abbd confirm ID --value \"...\"</code>로 정리한다. 건드리지 않는 추정은 묻지 않는다.</p>")
 		pendingTable(&q, pending)
 	})
 	if err := write(s.Root, ExplorerFile, b.String()); err != nil {
@@ -249,7 +249,7 @@ func pendingTable(b *strings.Builder, items []PendingItem) {
 	}
 	b.WriteString("<table><tr><th>ID</th><th>필드</th><th>값</th><th>origin</th><th>확인 명령</th></tr>\n")
 	for _, p := range items {
-		fmt.Fprintf(b, "<tr data-s><td><code>%s</code></td><td>%s</td><td>%s</td><td>%s</td><td><code>cccv confirm %s</code></td></tr>\n", e(p.ID), e(p.Field), e(p.Value), e(p.Origin), e(p.ID))
+		fmt.Fprintf(b, "<tr data-s><td><code>%s</code></td><td>%s</td><td>%s</td><td>%s</td><td><code>abbd confirm %s</code></td></tr>\n", e(p.ID), e(p.Field), e(p.Value), e(p.Origin), e(p.ID))
 	}
 	b.WriteString("</table>\n")
 }
@@ -345,7 +345,7 @@ func changes(b *strings.Builder, s *ssot.Snapshot) {
 // graphView shows only the bounded neighborhood of each feature, never the whole graph.
 func graphView(b *strings.Builder, s *ssot.Snapshot, g *graph.Graph) {
 	if g == nil {
-		b.WriteString("<p class=\"bad\">그래프 없음 (UNKNOWN). <code>cccv sync</code>로 생성.</p>\n")
+		b.WriteString("<p class=\"bad\">그래프 없음 (UNKNOWN). <code>abbd sync</code>로 생성.</p>\n")
 		return
 	}
 	fmt.Fprintf(b, "<p class=\"muted\">노드 %d · 간선 %d · graph revision <code>%s</code>. 기능별 2단계 이웃만 펼친다.</p>\n", len(g.Nodes), len(g.Edges), e(g.Revision))
@@ -356,7 +356,7 @@ func graphView(b *strings.Builder, s *ssot.Snapshot, g *graph.Graph) {
 			fmt.Fprintf(b, "<tr><td><code>%s</code></td><td>%s</td><td><code>%s</code></td><td>%s</td><td>%s</td><td><code>%s</code></td></tr>", e(ed.From), e(ed.Type), e(ed.To), originBadge(ed.Origin), e(ed.Confidence), e(ed.SourceLocation))
 		}
 		if sub.Truncated {
-			b.WriteString("<tr><td colspan=6 class=\"muted\">… 생략 (cccv graph neighbors로 조회)</td></tr>")
+			b.WriteString("<tr><td colspan=6 class=\"muted\">… 생략 (abbd graph neighbors로 조회)</td></tr>")
 		}
 		b.WriteString("</table></details>\n")
 	}

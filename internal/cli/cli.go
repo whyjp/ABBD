@@ -1,4 +1,4 @@
-// Package cli is the For My Harness Core CLI (PRD ch.09). Every command is a thin adapter
+// Package cli is the ABBD Core CLI (PRD ch.09). Every command is a thin adapter
 // over internal/workflow; the MCP server exposes the same functions.
 package cli
 
@@ -11,12 +11,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/whyjp/cccv/internal/bootstrap"
-	"github.com/whyjp/cccv/internal/intent"
-	"github.com/whyjp/cccv/internal/mcp"
-	"github.com/whyjp/cccv/internal/model"
-	"github.com/whyjp/cccv/internal/ssot"
-	"github.com/whyjp/cccv/internal/workflow"
+	"github.com/whyjp/abbd/internal/bootstrap"
+	"github.com/whyjp/abbd/internal/intent"
+	"github.com/whyjp/abbd/internal/mcp"
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/ssot"
+	"github.com/whyjp/abbd/internal/workflow"
 	"gopkg.in/yaml.v3"
 )
 
@@ -116,7 +116,7 @@ func Main(args []string, stdout, stderr io.Writer) int {
 	}
 	switch {
 	case errors.Is(err, errUsage):
-		fmt.Fprintf(stderr, "usage: cccv %s\n", cmd.usage)
+		fmt.Fprintf(stderr, "usage: abbd %s\n", cmd.usage)
 		return 1
 	case gate:
 		fmt.Fprintf(stderr, "BLOCKED: %v\n", err)
@@ -129,9 +129,9 @@ func Main(args []string, stdout, stderr io.Writer) int {
 }
 
 func printHelp(w io.Writer) {
-	fmt.Fprintln(w, "cccv — For My Harness Core CLI (Phase 1 draft)\n\nglobal flags: --root DIR, --json\n\ncommands:")
+	fmt.Fprintln(w, "abbd — ABBD Core CLI (Phase 1 draft)\n\nglobal flags: --root DIR, --json\n\ncommands:")
 	for _, name := range model.SortedKeys(Commands) {
-		fmt.Fprintf(w, "  cccv %s\n", Commands[name].usage)
+		fmt.Fprintf(w, "  abbd %s\n", Commands[name].usage)
 	}
 }
 
@@ -151,7 +151,7 @@ func emit(w io.Writer, name string, v any, asJSON bool) {
 		fmt.Fprintf(w, "%v\n", v)
 		return
 	}
-	fmt.Fprintf(w, "# cccv %s\n%s", name, b)
+	fmt.Fprintf(w, "# abbd %s\n%s", name, b)
 }
 
 // toPlain routes text output through JSON so YAML uses the same field names as --json and MCP.
