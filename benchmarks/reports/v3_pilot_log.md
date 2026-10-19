@@ -137,3 +137,4 @@
   - gstack arm만 에이전트 설치 제한 시간이 1200초다(다른 arm 360초). 과제 제한 시간은 같다.
   - oh-my-claudecode는 제외: Node 20 이상이 필요하고(컨테이너는 18), 설치 마지막 단계가 모델을 쓰는 대화형 `/omc-setup`이다.
   - Claude Code 버전을 2.1.302로 고정했다(`--ak version=2.1.302`).
+- 호스트 자원 상한(사용자 결정, 2026-10-19 23:58): 교차검증은 WSL `memory=10GB`, `processors=10`에서 돌린다. 파일럿이 모두 끝난 뒤 `C:\Users\cxx\.wslconfig.pending`을 `.wslconfig`로 옮기고 `wsl --shutdown`으로 적용한다. pilot15 과제의 최대 요구는 cpus=2, memory=4G(install-windows-3.11, sam-cell-seg)라 과제 조건은 바뀌지 않는다. 다섯 arm이 모두 같은 상한에서 돈다. TB2 파일럿(16코어, 15GB)과는 호스트 조건이 다르므로, 교차검증 숫자는 파일럿 숫자와 섞지 않는다.
