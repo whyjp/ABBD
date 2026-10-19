@@ -124,6 +124,8 @@
 - 끊긴 시점 상태: SCB는 forge, circuit_eval, meshctl 5그룹 완료, mocked_http는 A, B, E 완료이고 C는 checkpoint 5 평가 중이었다. SWE-M go-zero B는 18/23 평가(통과 2) 상태였다.
 - 재개 방법: 원래 러너를 그대로 다시 실행했다. SCB는 mocked_http C를 `partial`로 분류하고 남은 산출물에서 checkpoint_6부터 이어 갔다(`invalidated_count=3`). SWE-M B는 `run_all`의 기본 재개로 같은 시행을 이어 간다.
 - 교란 요인으로 기록한다: SCB mocked_http C와 SWE-M go-zero B는 중간에 끊겼다가 이어진 실행이다. 다른 그룹은 한 번에 끝났다.
+- 23:27 SWE-M go-zero B 종료: 23/23 평가, 통과 2, 평가 오류 0. 23:33 SCB mocked_http C 종료.
+- 23:55 자원 정리(결과에 영향 없음): 끝난 B 시행 컨테이너가 남아 1.5GB를 잡고 있어 `docker stop`으로 정지했다(삭제하지 않음). WSL 파일 캐시 9GB를 `drop_caches`로 비웠다. 진행 중인 컨테이너에는 CPU 제한을 걸지 않았다. A와 E가 제한 없이 돌았으므로 중간에 조건을 바꾸지 않는다.
 
 ## 다음 단계: 하네스 교차검증 (계획, 2026-10-19 사용자 요청)
 
