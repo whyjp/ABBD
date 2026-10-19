@@ -127,6 +127,15 @@
 - 23:27 SWE-M go-zero B 종료: 23/23 평가, 통과 2, 평가 오류 0. 23:33 SCB mocked_http C 종료.
 - 23:55 자원 정리(결과에 영향 없음): 끝난 B 시행 컨테이너가 남아 1.5GB를 잡고 있어 `docker stop`으로 정지했다(삭제하지 않음). WSL 파일 캐시 9GB를 `drop_caches`로 비웠다. 진행 중인 컨테이너에는 CPU 제한을 걸지 않았다. A와 E가 제한 없이 돌았으므로 중간에 조건을 바꾸지 않는다.
 
+## SCB 과정 분석: 스킬 호출과 stop-gate (2026-10-20, 모델 호출 없음)
+
+체크포인트별 Claude Code 세션 기록(`checkpoint_*/agent/workspace/projects/-workspace/*.jsonl`)을 6문제 전체에서 셌다. 스크립트는 scratchpad의 gate3.py, gate4.py다.
+
+- `Skill` 도구 호출은 모든 그룹에서 0번이다(A 49세션, B·C·D·E 각 42세션). pstack 스킬도 ABBD 스킬도 본문이 한 번도 로드되지 않았다. B와 C가 A와 다르다면 그 원인은 스킬 본문이 아니라 세션 시작 훅 문구와 스킬 목록 설명이다.
+- C(스킬만): `abbd`가 PATH에 있었지만 `abbd` 명령을 한 번도 실행하지 않았다(0/42).
+- D(스킬+훅): 42세션 모두 `abbd run`, `verify`, `sync`를 Bash로 실행했다. stop-gate는 1세션(forge)에서 1번 막았고, 그 뒤 sync로 마쳤다. 턴 절차를 지키게 만든 것은 SessionStart 지시문이고, 게이트가 나설 일은 거의 없었다.
+- E(전체): 턴을 Bash `abbd run` 23회와 MCP `start_turn` 18회로 섞어서 열었다. stop-gate가 22/42세션에서 막았고, 그중 20세션이 그 뒤 Bash로 sync했다. 1세션은 막힌 뒤 아무것도 하지 않았다. MCP 경로가 턴을 열린 채 남기는 경우가 많다는 뜻이다(추정). E의 추가 비용 일부가 여기서 나왔을 수 있다(추정).
+
 ## 다음 단계: 하네스 교차검증 (계획, 2026-10-19 사용자 요청)
 
 - 기준 벤치마크: Terminal-Bench 2.0. 세 트랙 중 공개 리더보드와 공식 하네스(Harbor)가 있고 외부 결과와 대조할 수 있는 것은 TB2뿐이다. SWE-Milestone은 ABBD 가치에 더 가깝지만 공개 비교 결과가 적고, SCB 2문제는 천장에 걸렸다.
