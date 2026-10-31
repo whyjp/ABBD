@@ -190,12 +190,14 @@ type Model struct {
 	Actual     Freshness
 	Generated  Freshness
 	Registered int
-	Map        Map
-	Extract    []string
-	Verify     []string
-	Watermark  Watermark
-	Synced     store.State
-	Tree       string
+	// Realign offers the short realignment: drift a human acknowledges, outside a live turn.
+	Realign   bool
+	Map       Map
+	Extract   []string
+	Verify    []string
+	Watermark Watermark
+	Synced    store.State
+	Tree      string
 }
 
 // Build derives the screen from the store. It is deterministic: the same
@@ -252,6 +254,7 @@ func Build(in Input) Model {
 			m.Promote = append(m.Promote, r)
 		} else {
 			m.Drift = append(m.Drift, r)
+			m.Realign = m.Realign || (it.Effect == topology.Realign && (m.Turn == nil || !m.Turn.Live))
 		}
 	}
 	for _, a := range in.ADRs {

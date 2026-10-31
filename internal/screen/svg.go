@@ -23,7 +23,7 @@ var columns = []struct {
 
 const (
 	colW, nodeW, nodeH, rowH = 176, 152, 46, 74
-	pad, header              = 16, 30
+	pad, header              = 16, 46
 )
 
 type Map struct {
@@ -187,15 +187,21 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 func route(a, b slot) string {
 	ax, ay := pad+a.col*colW, header+a.row*rowH+nodeH/2
 	bx, by := pad+b.col*colW, header+b.row*rowH+nodeH/2
+	// An edge that skips a column on the same row would run under the nodes
+	// between, so it arcs over them.
+	lift := 0
+	if a.row == b.row && abs(a.col-b.col) > 1 {
+		lift = rowH / 2
+	}
 	switch {
 	case a.col < b.col:
 		sx, ex := ax+nodeW, bx
 		dx := max(28, (ex-sx)/2)
-		return fmt.Sprintf("M%d %d C%d %d %d %d %d %d", sx, ay, sx+dx, ay, ex-dx, by, ex, by)
+		return fmt.Sprintf("M%d %d C%d %d %d %d %d %d", sx, ay, sx+dx, ay-lift, ex-dx, by-lift, ex, by)
 	case a.col > b.col:
 		sx, ex := ax, bx+nodeW
 		dx := max(28, (sx-ex)/2)
-		return fmt.Sprintf("M%d %d C%d %d %d %d %d %d", sx, ay, sx-dx, ay, ex+dx, by, ex, by)
+		return fmt.Sprintf("M%d %d C%d %d %d %d %d %d", sx, ay, sx-dx, ay-lift, ex+dx, by-lift, ex, by)
 	}
 	sx := ax + nodeW
 	bulge := 18 + abs(by-ay)/4

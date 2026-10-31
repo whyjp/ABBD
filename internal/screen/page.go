@@ -15,6 +15,8 @@ var pageHTML string
 var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"join":  strings.Join,
 	"lower": strings.ToLower,
+	// badge is the CSS class of a trust badge: its first word.
+	"badge": func(b string) string { return strings.TrimSuffix(strings.Fields(b + " x")[0], ",") },
 }).Parse(pageHTML))
 
 // Options says how a page is rendered. A static page has no actions.

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <meta name="abbd-watermark" content="md_hash={{.M.Watermark.MDHash}} intended_revision={{.M.Watermark.Intended}}">
 <title>{{if eq .O.Only "queue"}}ABBD confirm queue{{else}}ABBD screen{{end}}</title>
 <style>
@@ -40,9 +41,9 @@ code, .key { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere;
 .muted { color: var(--muted); }
 .pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
-.pill.CURRENT, .pill.SYNCED, .pill.CLOSED, .pill.stated, .pill.confirmed, .pill.aligned { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.CURRENT, .pill.PASSED, .pill.SYNCED, .pill.CLOSED, .pill.stated, .pill.confirmed, .pill.aligned { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
 .pill.STALE, .pill.DRAFT, .pill.drifted, .pill.REALIGN { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
-.pill.BLOCKED, .pill.OPEN { color: var(--block); background: var(--block-bg); border-color: transparent; }
+.pill.BLOCKED, .pill.OPEN, .pill.FAILED { color: var(--block); background: var(--block-bg); border-color: transparent; }
 .pill.inferred, .pill.adopted, .pill.UNCONFIRMED { color: var(--guess); background: var(--guess-bg); border: 1px dashed var(--guess); }
 .pill.PROMOTE { color: var(--accent); }
 .card { border: 1px solid var(--line); border-left: 4px solid var(--block); border-radius: 6px; padding: 10px 12px; margin: 8px 0; }
@@ -117,7 +118,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <strong>First alignment.</strong> Setup found these design unit candidates without asking. Keep the ones you make design decisions about; the rest stay below the line.
     {{if not $static}}<form method="post" action="/act">
       <input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="align">
-      <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{.Badge}}">{{.Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
+      <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{.Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
       <button class="primary" {{if not $tok}}disabled{{end}}>Confirm these design units</button>
     </form>{{else}}<ul class="plain">{{range .M.Align}}<li><span class="key">{{.ID}}</span> {{.Name}}</li>{{end}}</ul>{{end}}
   </div>
@@ -147,7 +148,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>Intended vs actual</h2>
   {{if .M.Drift}}
   <table>{{range .M.Drift}}<tr><td><span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
-  {{if and (eq .M.Phase "drifted") (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="realign"><button {{if not $tok}}disabled{{end}}>Acknowledge the REALIGN rows</button><span class="muted">Short realignment. It refuses while a C change waits above.</span></form>{{end}}
+  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="realign"><button {{if not $tok}}disabled{{end}}>Acknowledge the REALIGN rows</button><span class="muted">Short realignment. It refuses while a C change waits above.</span></form>{{end}}
   {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}The code matches the intended topology.{{else}}No intended topology yet.{{end}}</p>{{end}}
   {{if .M.Promote}}<h3>Promotion candidates</h3><ul class="plain">{{range .M.Promote}}<li><span class="key">{{.Key}}</span> {{.Detail}}</li>{{end}}</ul>{{end}}
 </section>
@@ -178,7 +179,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   <div class="banner"><strong>Blind spot.</strong> The extraction script reads code. Couplings through a shared table, a file, an environment variable or an execution order may exist and not show here. {{.M.Registered}} coupling(s) are registered by a human.</div>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="{{.M.Map.Width}}" height="{{.M.Map.Height}}" viewBox="0 0 {{.M.Map.Width}} {{.M.Map.Height}}" role="img" aria-label="Topology map">
     <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
-    {{range .M.Map.Columns}}<text class="col" x="{{.X}}" y="18">{{.Text}}</text>{{end}}
+    {{range .M.Map.Columns}}<text class="col" x="{{.X}}" y="16">{{.Text}}</text>{{end}}
     {{range .M.Map.Edges}}<path class="{{.Class}}" d="{{.D}}"><title>{{.Title}}</title></path>{{end}}
     {{range .M.Map.Nodes}}<g><title>{{.ID}} {{.Name}}: {{.Title}}</title><rect class="{{.Class}}" x="{{.X}}" y="{{.Y}}" width="152" height="46" rx="{{.R}}"/><text class="id" x="{{.X}}" dx="10" y="{{.Y}}" dy="17">{{.ID}}</text><text x="{{.X}}" dx="10" y="{{.Y}}" dy="35">{{.Name}}</text>{{if .Guess}}<circle class="guess" cx="{{.X}}" cy="{{.Y}}" r="5" transform="translate(140 12)"/>{{end}}</g>{{end}}
   </svg></div>
@@ -193,7 +194,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   </form>
   {{end}}
   <h3>Units</h3>
-  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">design</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{lower .Badge}}">{{.Badge}}</span>{{if .Rejected}} <span class="muted">(rejected: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{lower .Badge}}">{{.Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
+  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">design</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{.Badge}}</span>{{if .Rejected}} <span class="muted">(rejected: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{.Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
   </details>
 </section>
 
