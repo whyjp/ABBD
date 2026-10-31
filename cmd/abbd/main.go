@@ -31,11 +31,24 @@ abbd align (--all | --confirm IDS | --exclude IDS) [--root DIR]
 abbd align [--root DIR]              short realignment of a drifted project
 abbd confirm --list [--root DIR]     the confirm queue, design units first
 abbd confirm ITEM [--value TEXT] [--root DIR]
-abbd approve [--root DIR] ITEM       approve one BLOCKED (grade C) change
+abbd confirm IF-0001.external_consumers --value true|false [--root DIR]
+                                     a human says a contract has consumers the code does not show
+abbd approve [--root DIR] ITEM       approve one grade C change; inside a turn, for that turn only
 abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
 abbd mode on|off --session ID [--root DIR]
 abbd status [--root DIR] [--session ID]
-abbd hook EVENT [--root DIR]         hook entry point; reads the hook JSON on stdin`
+abbd hook EVENT [--root DIR]         hook entry point; reads the hook JSON on stdin
+abbd turn start --session ID --seeds IDS --request TEXT|- [--root DIR]
+                                     open a turn: record the request, compute the impact
+abbd turn impact [--add IDS] [--root DIR]
+                                     list the impact; the agent may only add to it
+abbd turn declare [--units IDS] [--changes KEYS] [--root DIR]
+                                     the IntentDelta; exit 2 while a grade C change waits for a human
+abbd turn diff [--root DIR]          re-extract and compare; exit 2 on a boundary-crossing change
+abbd turn verify [--root DIR] [-- VERIFY-ARGV...]
+                                     run the project verification and record the evidence
+abbd turn end [--root DIR]           gate and conclude: SYNCED, CLOSED, or exit 2 on DRAFT and BLOCKED
+abbd turn show [--root DIR]`
 
 const (
 	exitOK        = 0
@@ -62,6 +75,8 @@ type opts struct {
 	root, session                 string
 	supplement, adopt, greenfield string
 	confirm, exclude, value       string
+	seeds, request, units         string
+	changes, add                  string
 	all, list                     bool
 	argv                          []string
 }
@@ -87,6 +102,19 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"list":  func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.list, "list", false, "list the confirm queue") },
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the value a human states") },
+	"seeds": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.seeds, "seeds", "", "comma-separated design units the request touches")
+	},
+	"request": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.request, "request", "", "the user's request as stated, or - for stdin")
+	},
+	"units": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.units, "units", "", "comma-separated design units the turn will change")
+	},
+	"changes": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.changes, "changes", "", "comma-separated topology changes, as item keys")
+	},
+	"add": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.add, "add", "", "comma-separated units to add") },
 }
 
 // command is one CLI verb. pos is the allowed number of positional arguments.
@@ -108,6 +136,14 @@ var commands = map[string]command{
 	"mode":    {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
 	"status":  {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
 	"hook":    {flags: []string{"root"}, subs: []string{"*"}, pos: []int{0}},
+
+	"turn start":   {flags: []string{"root", "session", "seeds", "request"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnStart() }},
+	"turn impact":  {flags: []string{"root", "add"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnImpact() }},
+	"turn declare": {flags: []string{"root", "units", "changes"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnDeclare() }},
+	"turn diff":    {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnDiff() }},
+	"turn verify":  {flags: []string{"root"}, pos: []int{0}, dashArgv: true, run: func(e env, _ string, _ []string) error { return e.turnVerify() }},
+	"turn end":     {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnEnd() }},
+	"turn show":    {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnShow() }},
 }
 
 type invocation struct {
@@ -122,11 +158,16 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 		return invocation{}, fmt.Errorf("no command")
 	}
 	inv := invocation{name: args[0]}
+	args = args[1:]
+	if len(args) > 0 {
+		if _, ok := commands[inv.name+" "+args[0]]; ok {
+			inv.name, args = inv.name+" "+args[0], args[1:]
+		}
+	}
 	c, ok := commands[inv.name]
 	if !ok {
 		return inv, fmt.Errorf("unknown command %q", inv.name)
 	}
-	args = args[1:]
 	if c.subs != nil {
 		if len(args) == 0 || (c.subs[0] != "*" && !slices.Contains(c.subs, args[0])) {
 			return inv, fmt.Errorf("%s needs one of %v", inv.name, c.subs)
@@ -404,6 +445,9 @@ func (e env) confirmItem(pos []string) error {
 		}
 		return nil
 	}
+	if id, ok := strings.CutSuffix(pos[0], ".external_consumers"); ok {
+		return e.setExternalConsumers(v, model.ID(id))
+	}
 	u, err := confirm.Apply(v.units, pos[0], e.value)
 	if err != nil {
 		return err
@@ -434,6 +478,27 @@ func (e env) confirmItem(pos []string) error {
 	return nil
 }
 
+func (e env) setExternalConsumers(v view, id model.ID) error {
+	if v.intended == nil {
+		return fmt.Errorf("nothing is aligned yet")
+	}
+	if e.value != "true" && e.value != "false" {
+		return fmt.Errorf("%s.external_consumers needs --value true or --value false", id)
+	}
+	next := *v.intended
+	next.Units = slices.Clone(next.Units)
+	i := slices.IndexFunc(next.Units, func(u topology.IntendedUnit) bool { return u.ID == id })
+	if i < 0 || !next.Units[i].Kind.IsContract() {
+		return fmt.Errorf("%s is not an intended contract", id)
+	}
+	next.Units[i].ExternalConsumers = e.value == "true"
+	if err := e.st.SaveIntended(next); err != nil {
+		return err
+	}
+	fmt.Fprintln(e.stdout, "confirmed", string(id)+".external_consumers", e.value)
+	return nil
+}
+
 func (v view) designIDs() map[model.ID]bool {
 	ids := map[model.ID]bool{}
 	if v.intended != nil {
@@ -455,6 +520,13 @@ func blocked(items []topology.Item) []topology.Item {
 }
 
 func (e env) approve(key string) error {
+	t, err := e.st.LatestTurn()
+	if err != nil {
+		return err
+	}
+	if t != nil && t.State.Live() {
+		return e.approveInTurn(t, key)
+	}
 	v, err := e.load()
 	if err != nil {
 		return err
@@ -510,7 +582,7 @@ func (e env) mode(on bool) error {
 	if err := e.st.SetMode(e.session, false); err != nil {
 		return err
 	}
-	if err := e.reextract(); err != nil {
+	if err := e.refresh(); err != nil {
 		return err
 	}
 	v, err := e.load()
@@ -531,6 +603,31 @@ func (e env) mode(on bool) error {
 	}
 	fmt.Fprintln(e.stdout, "active")
 	e.printItems(v.items)
+	return nil
+}
+
+// refresh brings the actual topology up to the working tree. A greenfield
+// project has no script until its first turn adds code, so it may go without
+// one only while there is no code to read.
+func (e env) refresh() error {
+	p, err := e.st.LoadProject()
+	if err != nil {
+		return err
+	}
+	if len(p.Extract) > 0 {
+		return e.reextract()
+	}
+	in, err := e.st.LoadIntended()
+	if err != nil {
+		return err
+	}
+	f, err := firstFile(e.root)
+	if err != nil {
+		return err
+	}
+	if in == nil || f != "" {
+		return fmt.Errorf("project.yaml names no extraction script; register one with abbd setup -- EXTRACT-ARGV")
+	}
 	return nil
 }
 
@@ -638,7 +735,11 @@ func (e env) hook(event string) {
 		return
 	}
 	v, err := e.load()
-	if err != nil || v.phase != topology.Aligned {
+	if err != nil {
+		return
+	}
+	// A turn's own changes drift the project until the turn syncs.
+	if t, err := e.st.LatestTurn(); v.phase != topology.Aligned && (err != nil || t == nil || !t.State.Resumable()) {
 		return
 	}
 	file := in.ToolInput.FilePath

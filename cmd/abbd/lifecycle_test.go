@@ -9,8 +9,18 @@ import (
 	"testing"
 )
 
-// The test binary doubles as the project extraction script.
+// The test binary doubles as the project extraction script and, given the
+// fake-verify argument, as the project verify command.
 func TestMain(m *testing.M) {
+	if len(os.Args) > 1 && os.Args[1] == "fake-verify" {
+		b, _ := os.ReadFile(os.Getenv("ABBD_FAKE_VERIFY"))
+		if strings.TrimSpace(string(b)) != "pass" {
+			fmt.Println("FAIL: 1 test failed")
+			os.Exit(1)
+		}
+		fmt.Println("ok: all tests passed")
+		os.Exit(0)
+	}
 	if p := os.Getenv("ABBD_FAKE_EXTRACT"); p != "" {
 		b, err := os.ReadFile(p)
 		if err != nil {

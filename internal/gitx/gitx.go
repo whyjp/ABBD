@@ -74,3 +74,22 @@ func Renames(dir, oldTree, newTree string) (renames map[string]string, ok bool, 
 	}
 	return renames, true, nil
 }
+
+// Changed lists the paths, relative to dir, that differ between two snapshots.
+// A moved file appears under both names.
+func Changed(dir, oldTree, newTree string) ([]string, error) {
+	if oldTree == newTree {
+		return nil, nil
+	}
+	out, err := run(dir, nil, "diff-tree", "-r", "--no-renames", "--name-only", "-z", "--relative", oldTree, newTree)
+	if err != nil {
+		return nil, err
+	}
+	var paths []string
+	for _, p := range strings.Split(out, "\x00") {
+		if p != "" {
+			paths = append(paths, p)
+		}
+	}
+	return paths, nil
+}

@@ -217,6 +217,9 @@ type Project struct {
 	// Extract is the argv of the project extraction script pstack generated.
 	// It prints an extraction result on stdout.
 	Extract []string `yaml:"extract,omitempty"`
+	// Verify is the argv of the project verification, normally the verify
+	// skill's script. A turn completes only on its PASSED evidence.
+	Verify []string `yaml:"verify,omitempty"`
 }
 
 func (s Store) LoadProject() (Project, error) {
@@ -248,6 +251,11 @@ type ADR struct {
 	Subject  string       `yaml:"subject"`
 	Decision string       `yaml:"decision"`
 	Origin   model.Origin `yaml:"origin"`
+	// Confirmation is UNCONFIRMED on a grade B default no human has seen.
+	Confirmation model.Confirmation `yaml:"confirmation,omitempty"`
+	// Question identifies what a human answered, so it is never asked again.
+	Question string `yaml:"question,omitempty"`
+	Turn     string `yaml:"turn,omitempty"`
 }
 
 func (s Store) WriteADR(a ADR, body string) error {
