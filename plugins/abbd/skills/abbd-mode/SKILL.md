@@ -41,7 +41,8 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    ```
 
    - `active`: go on.
-   - `active: resuming CHG-...`: an unfinished turn is yours now. Run `abbd turn show` and pick it up at the step it reached. Skip to Between steps, or End if the work is done.
+   - `active: resuming CHG-... (OPEN)` or `(BLOCKED)`: an unfinished turn is yours now. Run `abbd turn show` and pick it up at the step it reached. Skip to Between steps, or End if the work is done.
+   - `active: resuming CHG-... (DRAFT)`: finish it the same way when the request continues it. For new work, open a new turn. A DRAFT turn does not block one.
    - Exit 2 (`drifted`, `bootstrapped`, `uninitialized`): show the output to the human and stop. Realigning is theirs.
 2. Find the seeds. Read `.abbd/intended.yaml` for the design units, contract signatures and relations, and `.abbd/architecture/` and `.abbd/features/` for each unit's name and anchors. The seeds are the design units the request touches.
 3. Open the turn with the user's request verbatim on stdin:
