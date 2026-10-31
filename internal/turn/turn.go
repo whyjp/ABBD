@@ -24,10 +24,10 @@ const (
 	Closed State = "CLOSED"
 )
 
-// Live turns take declarations and approvals.
+// Live turns take declarations.
 func (s State) Live() bool { return s == Open || s == Blocked }
 
-// Resumable turns can be verified and ended again.
+// Resumable turns take approvals and can be verified and ended again.
 func (s State) Resumable() bool { return s.Live() || s == Draft }
 
 type Grade string

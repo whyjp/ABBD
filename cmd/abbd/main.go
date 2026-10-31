@@ -528,7 +528,8 @@ func (e env) approve(key string) error {
 	if err != nil {
 		return err
 	}
-	if t != nil && t.State.Live() {
+	// A DRAFT turn can still sync, so its approvals must wait for it as well.
+	if t != nil && t.State.Resumable() {
 		return e.approveInTurn(t, key)
 	}
 	v, err := e.load()

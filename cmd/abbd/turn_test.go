@@ -458,3 +458,26 @@ func TestRemovingAConsumerCannotLaunderAContractChange(t *testing.T) {
 		t.Fatalf("an approved removal should drop the consumer:\n%s", p.intended())
 	}
 }
+
+func TestApproveDuringADraftTurnWaitsForTheTurn(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	p.editCode("billing/charge.go")
+	p.verify("fail", 1, "FAILED")
+	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
+	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
+	p.extract(withLedgerDep)
+	p.want(2, "C BLOCKED "+edge, "turn", "diff", "--session", "s1")
+	p.want(0, "approved "+edge+" for CHG-0001", "approve", edge)
+	if strings.Contains(p.intended(), "depends_on") {
+		t.Fatalf("an approval in a DRAFT turn enters the intended topology only when the turn syncs:\n%s", p.intended())
+	}
+	p.verify("pass", 0, "PASSED")
+	p.want(0, "C APPROVED "+edge, "turn", "end", "--session", "s1")
+	if !strings.Contains(p.intended(), "kind: depends_on") {
+		t.Fatalf("the approved relation should be intended after sync:\n%s", p.intended())
+	}
+}
+
+var withLedgerDep = strings.Replace(topoV1, `{"from":"billing","to":"api","kind":"provides"}`,
+	`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"ledger","kind":"depends_on"}`, 1)
