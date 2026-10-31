@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=3068fa8644d7ee7bc70dcf5afd2bf1bbba130ef5c1549e5e29412b17999d47cc intended_revision=1">
+<meta name="abbd-watermark" content="inputs_hash=70ca84eebf1019bec18ee5876a4b0899c72c01d7e2a73edb9e95f23adfd9f751 intended_revision=1">
 <title>ABBD 확인 대기열</title>
 <style>
 :root {
@@ -118,6 +118,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>확인할 추정</h2>
   
   <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
+  <details class="group" id="qg-CFG-0001"><summary><span class="key">CFG-0001</span> plugin and marketplace manifest <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0001.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.purpose</span> <span class="muted">설계 단위</span></div>
@@ -130,6 +131,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the marketplace and plugin names and the plugin source path</div>
     
   </div>
+  </details><details class="group" id="qg-CFG-0002"><summary><span class="key">CFG-0002</span> project.yaml <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0002.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.purpose</span> <span class="muted">설계 단위</span></div>
@@ -142,6 +144,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes project.yaml, which mode on and turn verify run without asking</div>
     
   </div>
+  </details><details class="group" id="qg-CFG-0003"><summary><span class="key">CFG-0003</span> hook registration <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.purpose</span> <span class="muted">설계 단위</span></div>
@@ -154,6 +157,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes which events and tool matchers call abbd hook</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0001"><summary><span class="key">DATA-0001</span> extraction JSON <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0001.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.purpose</span> <span class="muted">설계 단위</span></div>
@@ -166,6 +170,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the units and relations JSON; unknown fields are rejected</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0002"><summary><span class="key">DATA-0002</span> unit files <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0002.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.purpose</span> <span class="muted">설계 단위</span></div>
@@ -178,6 +183,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the unit file frontmatter: anchors, facts with their evidence, relations</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0003"><summary><span class="key">DATA-0003</span> generated files <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0003.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.purpose</span> <span class="muted">설계 단위</span></div>
@@ -190,6 +196,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0004"><summary><span class="key">DATA-0004</span> decision records <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.purpose</span> <span class="muted">설계 단위</span></div>
@@ -202,6 +209,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes ADR frontmatter: subject, decision, question, reason and turn</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0005"><summary><span class="key">DATA-0005</span> intended topology <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0005.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.purpose</span> <span class="muted">설계 단위</span></div>
@@ -214,6 +222,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes intended.yaml: revision, units with signatures and external consumers, relations</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0006"><summary><span class="key">DATA-0006</span> verification runs <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0006.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.purpose</span> <span class="muted">설계 단위</span></div>
@@ -226,6 +235,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the run record: command, tree, exit code, result and log path</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0007"><summary><span class="key">DATA-0007</span> change records <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0007.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.purpose</span> <span class="muted">설계 단위</span></div>
@@ -238,6 +248,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report</div>
     
   </div>
+  </details><details class="group" id="qg-DATA-0008"><summary><span class="key">DATA-0008</span> requirements <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0008.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.purpose</span> <span class="muted">설계 단위</span></div>
@@ -250,6 +261,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the requirement file a turn points to</div>
     
   </div>
+  </details><details class="group" id="qg-FEAT-0001"><summary><span class="key">FEAT-0001</span> /abbd-mode <span class="pill aligned">설계</span> <span class="muted">7개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.CFG-0001">
     <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.CFG-0001</span> <span class="muted">설계 단위</span></div>
@@ -292,6 +304,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates</div>
     
   </div>
+  </details><details class="group" id="qg-FEAT-0002"><summary><span class="key">FEAT-0002</span> /abbd-setup <span class="pill aligned">설계</span> <span class="muted">3개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.consumes.DATA-0001">
     <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.consumes.DATA-0001</span> <span class="muted">설계 단위</span></div>
@@ -310,6 +323,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human</div>
     
   </div>
+  </details><details class="group" id="qg-IF-0001"><summary><span class="key">IF-0001</span> Claude Code hook protocol <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0001.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">IF-0001.purpose</span> <span class="muted">설계 단위</span></div>
@@ -322,6 +336,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout</div>
     
   </div>
+  </details><details class="group" id="qg-IF-0002"><summary><span class="key">IF-0002</span> abbd command line <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0002.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">IF-0002.purpose</span> <span class="muted">설계 단위</span></div>
@@ -334,6 +349,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64</div>
     
   </div>
+  </details><details class="group" id="qg-IF-0003"><summary><span class="key">IF-0003</span> screen HTTP <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0003.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">IF-0003.purpose</span> <span class="muted">설계 단위</span></div>
@@ -346,6 +362,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the routes and the act form: which decisions exist and which fields each reads</div>
     
   </div>
+  </details><details class="group" id="qg-IF-0004"><summary><span class="key">IF-0004</span> confirm item key <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0004.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">IF-0004.purpose</span> <span class="muted">설계 단위</span></div>
@@ -358,6 +375,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the ID.field and edge syntax a human types to confirm or reject a guess</div>
     
   </div>
+  </details><details class="group" id="qg-IF-0005"><summary><span class="key">IF-0005</span> change item key <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0005.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">IF-0005.purpose</span> <span class="muted">설계 단위</span></div>
@@ -370,6 +388,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0001"><summary><span class="key">MOD-0001</span> abbd CLI <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.purpose</span> <span class="muted">설계 단위</span></div>
@@ -382,6 +401,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0002"><summary><span class="key">MOD-0002</span> PreToolUse guard <span class="pill aligned">설계</span> <span class="muted">5개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.consumes.CFG-0003">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.consumes.CFG-0003</span> <span class="muted">설계 단위</span></div>
@@ -412,6 +432,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0003"><summary><span class="key">MOD-0003</span> screen server <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.purpose</span> <span class="muted">설계 단위</span></div>
@@ -424,6 +445,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0004"><summary><span class="key">MOD-0004</span> internal/bootstrap <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.purpose</span> <span class="muted">설계 단위</span></div>
@@ -436,6 +458,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0005"><summary><span class="key">MOD-0005</span> internal/confirm <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0005.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.purpose</span> <span class="muted">설계 단위</span></div>
@@ -448,6 +471,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0006"><summary><span class="key">MOD-0006</span> internal/extract <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.purpose</span> <span class="muted">설계 단위</span></div>
@@ -460,6 +484,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0007"><summary><span class="key">MOD-0007</span> internal/gitx <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0007.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.purpose</span> <span class="muted">설계 단위</span></div>
@@ -472,6 +497,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0008"><summary><span class="key">MOD-0008</span> internal/identity <span class="pill aligned">설계</span> <span class="muted">3개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.depends_on.MOD-0004">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.depends_on.MOD-0004</span> <span class="muted">설계 단위</span></div>
@@ -490,6 +516,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0009"><summary><span class="key">MOD-0009</span> internal/model <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0009.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.purpose</span> <span class="muted">설계 단위</span></div>
@@ -502,6 +529,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0010"><summary><span class="key">MOD-0010</span> internal/screen <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.purpose</span> <span class="muted">설계 단위</span></div>
@@ -514,6 +542,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0011"><summary><span class="key">MOD-0011</span> internal/store <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.purpose</span> <span class="muted">설계 단위</span></div>
@@ -526,6 +555,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0012"><summary><span class="key">MOD-0012</span> internal/topology <span class="pill aligned">설계</span> <span class="muted">2개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.purpose">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.purpose</span> <span class="muted">설계 단위</span></div>
@@ -538,6 +568,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds</div>
     
   </div>
+  </details><details class="group" id="qg-MOD-0013"><summary><span class="key">MOD-0013</span> internal/turn <span class="pill aligned">설계</span> <span class="muted">3개</span></summary>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.depends_on.MOD-0007">
     <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.depends_on.MOD-0007</span> <span class="muted">설계 단위</span></div>
@@ -556,7 +587,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule</div>
     
   </div>
-  
+  </details>
   
   
 </section>

@@ -572,3 +572,20 @@ func TestTurnCannotEndOnAChangedExtractor(t *testing.T) {
 	}
 	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
 }
+
+func TestSyncedTurnPublishesCurrentFilesForTheNewDesign(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("IF-0001")
+	p.editCode("api/http.go")
+	p.extract(apiV2(topoV1))
+	p.verify("pass", 0, "PASSED")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+	p.want(0, "generated: CURRENT", "status")
+	p.want(0, "actual topology: CURRENT", "status")
+	if !strings.Contains(p.intended(), "revision: 2") || !strings.Contains(p.read("generated/graph.json"), `"intended_revision": 2`) {
+		t.Fatalf("the published files should carry the design the turn synced:\n%s", p.read("generated/graph.json"))
+	}
+	if !strings.Contains(p.read("generated/explorer.html"), "GET /v2/charges") {
+		t.Fatalf("the explorer should show the synced contract")
+	}
+}
