@@ -82,7 +82,7 @@ func TestCodeOnlyRepoReachesActiveByConfirmingDesignUnitsOnly(t *testing.T) {
 	if !strings.Contains(p.read("project.yaml"), filepath.Base(exe)) {
 		t.Fatalf("setup should record the extraction script:\n%s", p.read("project.yaml"))
 	}
-	if r := p.read("bootstrap-report.md"); !strings.Contains(r, "MOD-0001 billing") || !strings.Contains(r, "abbd align --all") {
+	if r := p.read("bootstrap-report.md"); !strings.Contains(r, "MOD-0001 billing") || !strings.Contains(r, "abbd align --all") || !strings.Contains(r, "Three runs") {
 		t.Fatalf("the bootstrap report should list candidates and the next step:\n%s", r)
 	}
 	p.want(2, "bootstrapped: run setup and align", "mode", "on", "--session", "s1")

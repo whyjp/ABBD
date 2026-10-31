@@ -25,7 +25,7 @@ func (r Report) Markdown() []byte {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Bootstrap report\n\nMode: %s.\n", r.Mode)
 	if len(r.Extract) > 0 {
-		fmt.Fprintf(&b, "Extraction script: `%s`. Two runs printed identical output (sha256 %s).\n", strings.Join(r.Extract, " "), r.Digest)
+		fmt.Fprintf(&b, "Extraction script: `%s`. Three runs, the last with reseeded hash seeds, printed identical output (sha256 %s).\n", strings.Join(r.Extract, " "), r.Digest)
 	}
 	fmt.Fprintf(&b, "\n## Design unit candidates\n\n")
 	for _, u := range r.Units {
