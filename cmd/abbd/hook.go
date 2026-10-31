@@ -167,10 +167,14 @@ func (e env) hookPostToolUse(in hookInput) *hookOutput {
 func (e env) hookPreToolUse(in hookInput) *hookOutput {
 	g := e.guard(in.Cwd)
 	reason := ""
-	switch in.ToolName {
-	case "Bash", "PowerShell":
+	switch {
+	// A command can build the screen's address from the port in this file,
+	// and no text check resolves 127.0.0.1:$P, so reading the file is denied.
+	case strings.Contains(strings.ToLower(in.raw), "serve.addr"):
+		reason = screenReason
+	case in.ToolName == "Bash" || in.ToolName == "PowerShell":
 		reason = g.command(in.ToolInput.Command)
-	case "Write", "Edit", "NotebookEdit":
+	case in.ToolName == "Write" || in.ToolName == "Edit" || in.ToolName == "NotebookEdit":
 		file := in.ToolInput.FilePath
 		if file == "" {
 			file = in.ToolInput.NotebookPath

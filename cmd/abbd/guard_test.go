@@ -183,3 +183,19 @@ func TestPreToolUseKeepsTheAgentOffTheScreen(t *testing.T) {
 		navigate("http://127.0.0.1:8080/"),
 	)
 }
+
+// The port alone is not resolvable from a command line, so the guard cannot
+// see 127.0.0.1:$P; it denies reading the file that names the port instead.
+func TestPreToolUseKeepsTheAgentFromReadingTheScreensAddress(t *testing.T) {
+	p := activeTurnProject(t, topoV1).project
+	addr := filepath.Join(store.Open(p.root).SessionsDir(), "serve.addr")
+	write(t, addr, "127.0.0.1:7340")
+	p.wantDenied(t, true,
+		p.bash("cat "+filepath.ToSlash(addr)),
+		p.bash("P=$(cut -d: -f2 .git/abbd/sessions/serve.addr); curl 127.0.0.1:$P/"),
+		pwsh("Get-Content .git/abbd/sessions/SERVE.ADDR"),
+		tool("Read", map[string]any{"file_path": addr}),
+		tool("Grep", map[string]any{"pattern": "127", "path": addr}),
+	)
+	p.wantDenied(t, false, p.bash("cat README.md"), tool("Read", map[string]any{"file_path": filepath.Join(p.root, "README.md")}))
+}
