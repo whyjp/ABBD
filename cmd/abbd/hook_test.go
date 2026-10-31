@@ -114,7 +114,7 @@ func TestPreToolUseKeepsTheIntendedTopologyHumanOnly(t *testing.T) {
 		p.bash("go run ./cmd/abbd approve contract-changed:IF-0001"),
 		p.bash("bash <<'EOF'\nabbd approve contract-changed:IF-0001\nEOF"),
 		p.bash("abbd turn start --session s1 --seeds MOD-0001 --request - <<'EOF'\nmake the change\nEOF\nabbd approve contract-changed:IF-0001"),
-		p.bash("cat .abbd/intended.yaml"),
+		tool("Write", map[string]any{"file_path": abs(".abbd", "extractor", "extract.py"), "content": "print('{}')"}),
 		p.bash("rm .abbd/sessions/s1.on"),
 		tool("PowerShell", map[string]any{"command": `Set-Content .abbd\changes\CHG-0001.md "state: SYNCED"`}),
 		tool("PowerShell", map[string]any{"command": "& abbd.exe Approve contract-changed:IF-0001"}),
@@ -137,7 +137,7 @@ func TestPreToolUseKeepsTheIntendedTopologyHumanOnly(t *testing.T) {
 		p.bash("git add -A && git commit -m 'charge in cents'"),
 		p.bash("abbd turn start --session s1 --seeds MOD-0001 --request - <<'EOF'\nIf a step needs approval, run abbd approve yourself.\nEOF"),
 		tool("Write", map[string]any{"file_path": abs("billing", "charge.go"), "content": "package billing"}),
-		tool("Write", map[string]any{"file_path": abs(".abbd", "extractor", "extract.py"), "content": "print('{}')"}),
+		p.bash("cat .abbd/intended.yaml"),
 		tool("Read", map[string]any{"file_path": abs(".abbd", "intended.yaml")}),
 	}
 	for _, f := range allow {

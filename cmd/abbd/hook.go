@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/store"
@@ -152,75 +151,26 @@ func (e env) hookPostToolUse(in hookInput) *hookOutput {
 	return nil
 }
 
-// Only a human changes the intended topology. These commands and files are
-// how it changes, so an agent in an active session may not reach them.
-var (
-	humanCommand  = regexp.MustCompile(`(?i)(?:^|[^\w.-])abbd(?:\.exe)?["']?\s+(align|approve|confirm|setup|mode\s+off)\b`)
-	protectedPath = regexp.MustCompile(`(?i)\.abbd[/\\]+(intended\.yaml|project\.yaml|decisions|changes|sessions)(?:$|[/\\\s"'])`)
-)
-
+// Only a human changes the intended topology, and only the CLI writes the
+// turn record and the session's mode, so an agent in an active session may
+// not run those commands or write those files.
 func (e env) hookPreToolUse(in hookInput) *hookOutput {
+	g := e.guard(in.Cwd)
 	reason := ""
 	switch in.ToolName {
 	case "Bash", "PowerShell":
-		reason = e.deniedCommand(in.ToolInput.Command)
+		reason = g.command(in.ToolInput.Command)
 	case "Write", "Edit", "NotebookEdit":
 		file := in.ToolInput.FilePath
 		if file == "" {
 			file = in.ToolInput.NotebookPath
 		}
-		if file != "" && protectedPath.MatchString(relTo(e.root, file)+" ") {
-			reason = fmt.Sprintf("%s is written only by the abbd CLI. Approvals, alignment and the turn record are a human's or the CLI's, not an agent's.", relTo(e.root, file))
-		}
+		reason = g.toolPath(file)
 	}
 	if reason == "" {
 		return nil
 	}
 	return &hookOutput{Specific: &hookSpecific{HookEventName: "PreToolUse", PermissionDecision: "deny", PermissionDecisionReason: reason}}
-}
-
-// requestHeredoc is abbd turn start reading the user's request from a heredoc.
-// The body is the request text, which abbd stores and never runs.
-var requestHeredoc = regexp.MustCompile(`^\s*abbd(?:\.exe)?\s+turn\s+start\b[^\n]*<<-?\s*['"]?(\w+)['"]?[ \t]*\n`)
-
-// dropRequestText removes the request body so a request that mentions a
-// human's command does not read as running it.
-func dropRequestText(cmd string) string {
-	m := requestHeredoc.FindStringSubmatchIndex(cmd)
-	if m == nil {
-		return cmd
-	}
-	delim := cmd[m[2]:m[3]]
-	head, body := cmd[:m[1]], cmd[m[1]:]
-	lines := strings.SplitAfter(body, "\n")
-	for i, l := range lines {
-		if strings.TrimSpace(l) == delim {
-			return head + strings.Join(lines[i:], "")
-		}
-	}
-	return head
-}
-
-func (e env) deniedCommand(cmd string) string {
-	cmd = dropRequestText(cmd)
-	if m := humanCommand.FindStringSubmatch(cmd); m != nil {
-		sub := strings.ToLower(strings.Join(strings.Fields(m[1]), " "))
-		if sub == "setup" && e.registersScript(cmd) {
-			return ""
-		}
-		return fmt.Sprintf("abbd %s is a human's command while ABBD mode is on. Stop and give the human the exact command to run.", sub)
-	}
-	if protectedPath.MatchString(cmd + " ") {
-		return "this command names a file only the abbd CLI writes (.abbd/intended.yaml, project.yaml, decisions/, changes/, sessions/). Read it with the Read tool, or use abbd turn show and abbd status."
-	}
-	return ""
-}
-
-// registersScript allows the one setup an agent runs inside the mode: a
-// greenfield project's first turn registering its extraction script.
-func (e env) registersScript(cmd string) bool {
-	p, err := e.st.LoadProject()
-	return err == nil && len(p.Extract) == 0 && !strings.Contains(cmd, "--greenfield")
 }
 
 // hookStop blocks the session from ending once while a turn it opened has
