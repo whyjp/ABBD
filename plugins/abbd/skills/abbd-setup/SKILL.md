@@ -33,7 +33,7 @@ Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is t
    - Exit 1 `extraction script is fixed`: the project is aligned, and its script is the one `project.yaml` records. Rerun setup without `--`.
    - Exit 1 `fix the script`: the supplement names a unit the script did not report. Teach the script that unit, or drop it from the supplement.
 6. Commit `.abbd/` with the code. The extraction script is the lever that `abbd mode on --session <ID>` reruns every time the mode turns on.
-7. Tell the human where the report is (`.abbd/bootstrap-report.md`), how many candidates there are, and the command that finishes alignment. Use `abbd align --all`, `abbd align --confirm <IDS>`, or `abbd align --exclude <IDS>`, with IDs from the report.
+7. Tell the human how many candidates there are and that they finish alignment on the screen: `abbd serve` in their own terminal prints a link, and the page lists the candidates to keep and the confirm queue. Give the terminal form too, for a human who prefers it: `abbd align --all`, `abbd align --confirm <IDS>`, or `abbd align --exclude <IDS>`, with IDs from `.abbd/bootstrap-report.md`.
 
 ## Adopt
 

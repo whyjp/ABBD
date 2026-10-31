@@ -15,7 +15,7 @@ The session ID is `${CLAUDE_SESSION_ID}`. Pass it as `--session` to every comman
 
 ## Commands that are not yours
 
-While the mode is on, a hook denies the abbd commands approve, align, confirm, setup and mode off. It also denies any write or delete under `.abbd/`, of the session state in `<git-dir>/abbd/sessions/`, and of the registered extraction script's files, by a tool or by a shell command such as `rm`, `cp`, a redirect, or `git checkout`, `restore`, `clean`, `stash` or `reset --hard` reaching `.abbd/`. These belong to the human or the CLI. When one is needed, stop and give the human the exact command. Read `.abbd/` files with the Read tool. The hook is a text check, not a boundary, so never look for a way around it.
+While the mode is on, a hook denies the abbd commands approve, reject, align, confirm, couple, setup, serve and mode off, and any request to the running `abbd serve` screen. It also denies any write or delete under `.abbd/`, of the session state in `<git-dir>/abbd/sessions/`, and of the registered extraction script's files, by a tool or by a shell command such as `rm`, `cp`, a redirect, or `git checkout`, `restore`, `clean`, `stash` or `reset --hard` reaching `.abbd/`. These belong to the human or the CLI. When one is needed, stop and send the human to the screen: they run `abbd serve` in their own terminal and decide on the page, or run the exact command you give them. Read `.abbd/` files with the Read tool. The hook is a text check, not a boundary, so never look for a way around it.
 
 The one setup you run is a greenfield project's first script registration, when `abbd turn diff --session ${CLAUDE_SESSION_ID}` says `project.yaml names no extraction script`. Write the script as the abbd-setup skill's code-only step 3 says, then register it with `abbd setup -- <interpreter> .abbd/extractor/extract.<ext>`.
 
@@ -67,7 +67,8 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    Show the declaration and its output to the human in your reply before you work. Do not wait for them unless a line asks.
    - `A KEY` and `B PROCEED KEY`: proceed. B is recorded as an UNCONFIRMED ADR when the turn syncs.
    - `C APPROVED KEY`: a human allowed it for this turn. Proceed.
-   - `C QUESTION KEY`, exit 2: stop before any edit. Give the human each `abbd approve <KEY>` line and end your reply, leaving the turn open. Declare again after they answer.
+   - `C QUESTION KEY`, exit 2: stop before any edit. Tell the human the question waits on the `abbd serve` screen, give each `abbd approve <KEY>` line as the terminal form, and end your reply, leaving the turn open. Declare again after they answer.
+   - `C REJECTED KEY by ADR-...: REASON`, exit 2: the human said no. Declare again without that key and plan around the reason.
 6. Design. When the declaration spans more than one design unit or has any change key, read and follow `<pstack>/skills/architect/SKILL.md`, with the impacted units' boundaries and contract signatures as fixed constraints. Otherwise skip it.
 7. Hand the playbook its context: the impact, the signatures of the impacted contracts, and the declaration. Start the playbook.
 
@@ -80,7 +81,8 @@ abbd turn diff --session ${CLAUDE_SESSION_ID}
 ```
 
 - Exit 0: continue. An `UNEXPECTED KEY` line is a relation change you did not declare. Undo it, or redeclare with it and read the new grade.
-- Exit 2 (`stop:`): a change crosses the intended boundary. Stop the playbook. Run `abbd turn end --session ${CLAUDE_SESSION_ID}` to record the turn as BLOCKED, then give the human the `C BLOCKED` lines and two choices: `abbd approve <KEY>` or undoing the change.
+- Exit 2 (`stop:`): a change crosses the intended boundary. Stop the playbook. Run `abbd turn end --session ${CLAUDE_SESSION_ID}` to record the turn as BLOCKED, then give the human the `C BLOCKED` lines and send them to the `abbd serve` screen, where each one has Approve and Reject. The terminal forms are `abbd approve <KEY>` and `abbd reject <KEY> --reason "<why>"`.
+- A `REJECTED KEY by ADR-...: REASON` line, from turn diff, turn show or turn end: the human refused that change. Undo it as the reason says, then diff again. Never declare it again in this turn.
 
 When the declaration or a diff printed a grade B or C line, read and follow `<pstack>/skills/interrogate/SKILL.md` before verifying, scoped to the contracts and relations those lines name. Skip it otherwise. It is costly.
 
@@ -101,7 +103,7 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
 
    - `SYNCED` or `CLOSED`: done.
    - `DRAFT`, exit 2: verification is missing, failed, or older than the tree. Fix it, verify, and end again. If it cannot pass, report the DRAFT turn.
-   - `BLOCKED`, exit 2: report the `C BLOCKED` lines to the human, each with its `abbd approve <KEY>` line.
+   - `BLOCKED`, exit 2: report the `C BLOCKED` lines and send the human to the `abbd serve` screen to approve or reject each. When a `REJECTED` line comes back, undo that change, verify, and end again.
 3. Ship. Only now run the playbook's **Opening a PR** step, and only when the turn ended `SYNCED` or `CLOSED`. Never open a PR on a `DRAFT` or `BLOCKED` turn. Commit `.abbd/` with the code, so the PR carries the turn record `.abbd/changes/<CHG>.md` and what the sync wrote to `.abbd/intended.yaml` and `.abbd/decisions/`.
 4. Reply as the playbook and poteto-mode say. Add the turn ID and state, the gate lines, and the declared-but-not-done and done-but-not-declared lines from `abbd turn show`.
 
