@@ -359,3 +359,53 @@ func TestGreenfieldRefusesADirectoryThatHoldsCode(t *testing.T) {
 		t.Fatalf("a refused greenfield setup must write nothing")
 	}
 }
+
+func TestAlignedProjectKeepsItsRecordedScript(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "bootstrapped", "--", exe)
+	p.want(0, "aligned", "align", "--all")
+	recorded := p.read("project.yaml")
+
+	p.setup(1, "extraction script is fixed", "--", exe, "frozen-arg")
+	if got := p.read("project.yaml"); got != recorded {
+		t.Fatalf("a refused setup must not replace the recorded script:\n%s", got)
+	}
+	p.setup(0, "aligned", "--", exe)
+	p.setup(0, "aligned")
+}
+
+func greenfield(t *testing.T) (*project, string) {
+	t.Helper()
+	root := t.TempDir()
+	p := &project{t: t, root: root, extraction: filepath.Join(t.TempDir(), "extraction.json")}
+	t.Setenv("ABBD_FAKE_EXTRACT", p.extraction)
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, filepath.Join(root, ".abbd", "extractor", "stated.json"), codeOnly)
+	p.setup(0, "aligned: 3", "--greenfield", ".abbd/extractor/stated.json")
+	write(t, filepath.Join(root, "billing", "charge.go"), "package billing\n\nfunc Charge() {}\n")
+	return p, exe
+}
+
+func TestGreenfieldRegistersItsFirstScriptOnce(t *testing.T) {
+	p, exe := greenfield(t)
+	p.extract(codeOnly)
+	p.setup(0, "registered the extraction script", "--", exe)
+	if !strings.Contains(p.read("project.yaml"), filepath.Base(exe)) {
+		t.Fatalf("the first script of a greenfield project should be recorded:\n%s", p.read("project.yaml"))
+	}
+	p.setup(1, "extraction script is fixed", "--", exe, "other")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+}
+
+func TestGreenfieldRegistrationStillProvesDeterminism(t *testing.T) {
+	p, exe := greenfield(t)
+	p.extract(strings.Replace(codeOnly, `"name":"ledger"`, `"name":"ledger {{RUN}}"`, 1))
+	p.setup(1, "not deterministic", "--", exe)
+	if b, _ := os.ReadFile(filepath.Join(p.root, ".abbd", "project.yaml")); strings.Contains(string(b), filepath.Base(exe)) {
+		t.Fatalf("a refused registration must not record the script")
+	}
+}

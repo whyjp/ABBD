@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/bootstrap"
@@ -31,6 +32,10 @@ func (e env) setup(string, []string) error {
 	if err != nil {
 		return err
 	}
+	intended, err := e.st.LoadIntended()
+	if err != nil {
+		return err
+	}
 	argv := e.argv
 	if len(argv) == 0 {
 		argv = p.Extract
@@ -38,6 +43,15 @@ func (e env) setup(string, []string) error {
 	if len(argv) == 0 {
 		return fmt.Errorf("name the extraction script after --, for example: abbd setup -- python .abbd/extractor/extract.py")
 	}
+	// mode on trusts whatever script project.yaml names. Once a human has
+	// approved a topology, swapping the script could freeze or rewrite the
+	// actual topology the gate compares against it.
+	if intended != nil && len(p.Extract) > 0 && !slices.Equal(argv, p.Extract) {
+		return fmt.Errorf("the project is aligned, so its extraction script is fixed: project.yaml records %q; run abbd setup without -- to rerun it", p.Extract)
+	}
+	// A greenfield project is aligned before it has code. Its first script
+	// is registered here, still under the determinism check.
+	registering := intended != nil && len(p.Extract) == 0
 	out, err := e.deterministic(argv)
 	if err != nil {
 		return err
@@ -92,6 +106,9 @@ func (e env) setup(string, []string) error {
 	}
 	if err := e.st.SaveBootstrapReport(rep.Markdown()); err != nil {
 		return err
+	}
+	if registering {
+		fmt.Fprintf(e.stdout, "registered the extraction script %q\n", argv)
 	}
 	fmt.Fprintf(e.stdout, "%s: %d design unit candidate(s), %d item(s) in the confirm queue, report in .abbd/bootstrap-report.md\n",
 		v.phase, len(rep.Units), len(rep.Queue))
