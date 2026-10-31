@@ -1,0 +1,79 @@
+---
+name: abbd-setup
+description: Bootstrap ABBD on a repository. Extracts the actual topology with pstack, generates the deterministic project extraction script, and runs abbd setup. Use for /abbd-setup, "set up abbd", or a project with no .abbd directory.
+---
+
+# ABBD setup
+
+`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. ABBD is pinned to that version. If `<pstack>/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
+
+Setup never asks the human anything. Make every call yourself and let the bootstrap report show it.
+
+Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is the human's step.
+
+## Choose the mode
+
+- The human described the design units of a project with no code yet: greenfield.
+- The repository holds design documents (architecture notes, ADRs, an old SSOT, YAML or HTML maps): code-only plus adopt.
+- Otherwise: code-only.
+
+## Code-only
+
+1. List design unit candidates from the layout, entry points, manifests and schemas. A design unit is something a human would say "this change must not touch that" about: a responsibility (`MOD`), an external contract (`IF`, `EVT`, `DATA`, `CFG`), a user-facing feature (`FEAT`). Imports, calls and file placement are material for finding units, never units.
+2. Read and follow `<pstack>/skills/swarm/SKILL.md`, partitioned one worker per candidate. Each worker reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes and returns its unit in the extraction format below, with the relations it found by key.
+3. Build the lever. Write `.abbd/extractor/extract.<ext>`, a script that prints the extraction JSON from the code alone: imports, routes, schemas, manifests. It runs from the repository root, sorts its output, and uses no clock, network or model. Run it and diff against the swarm result. Every unit the swarm found must come out of the script with the same kind and anchors. Fix the script until it does.
+4. Write `.abbd/extractor/supplement.json` in the same format with what only reading can tell: `purpose`, `responsibility`, and couplings the script cannot see, such as a shared table or an execution order. Each unit repeats `key`, `kind`, `name` and at least one anchor of the script unit it describes.
+5. Run setup:
+
+   ```
+   abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
+   ```
+
+   - Exit 1 `not deterministic`: the script printed different output on two runs. Remove the source of variation and rerun.
+   - Exit 1 `fix the script`: the supplement names a unit the script did not report. Teach the script that unit, or drop it from the supplement.
+6. Commit `.abbd/` with the code. The extraction script is the lever that `abbd mode on --session <ID>` reruns every time the mode turns on.
+7. Tell the human where the report is (`.abbd/bootstrap-report.md`), how many candidates there are, and the command that finishes alignment. Use `abbd align --all`, `abbd align --confirm <IDS>`, or `abbd align --exclude <IDS>`, with IDs from the report.
+
+## Adopt
+
+Reconstruct the existing documents into the extraction format at `.abbd/extractor/adopt.json`. Take names, purposes, responsibilities, signatures and relations from the documents. Take anchors from the code each documented unit describes. A documented unit with no code gets the anchor where the document says it lives. Then add `--adopt .abbd/extractor/adopt.json` to the setup command in step 5.
+
+ABBD records adopted facts as ADOPTED and lists conflicts and gaps in the report. An unreadable adopt file only adds a warning. The code-only result stands either way.
+
+## Greenfield
+
+Write the units the human stated to `.abbd/extractor/stated.json` in the extraction format. Anchors are the paths where each unit will live. Run:
+
+```
+abbd setup --greenfield .abbd/extractor/stated.json
+```
+
+The project is aligned at once, with every fact USER_STATED. Write the extraction script during the first turn that adds code.
+
+## Extraction format
+
+```json
+{
+  "units": [
+    {"key": "billing", "kind": "MOD", "name": "billing",
+     "anchors": [{"path": "billing/charge.go", "symbol": "Charge"}],
+     "purpose": "takes payments", "responsibility": "owns the charges table"},
+    {"key": "api", "kind": "IF", "name": "http api", "signature": "GET /charges",
+     "anchors": [{"path": "api/http.go", "symbol": "Serve"}]}
+  ],
+  "relations": [
+    {"from": "billing", "to": "api", "kind": "provides"}
+  ]
+}
+```
+
+- `anchors` is required on every unit. A path is relative to the repository root, with forward slashes. Two shared anchors, or an identical anchor set, keep a unit's ID across re-extraction. Prefer two or more anchors per unit.
+- `kind` is one of `MOD`, `IF`, `EVT`, `DATA`, `CFG`, `FEAT`. `DOM`, `STATE`, `TRN` and `INV` are reserved.
+- `signature` is the observable shape of a contract, and only contracts carry one. Changing it later is a grade C change, so make it exact and stable.
+- `relations` name units by `key`. `kind` is `depends_on`, `consumes` or `provides`.
+- The script's output never carries `purpose` or `responsibility`. Those belong in the supplement, where they stay INFERRED until a human confirms them.
+- Unknown fields are rejected.
+
+## After setup
+
+`abbd status` shows the phase and the size of the confirm queue. `abbd confirm --list` lists inferred items, design units first. Neither blocks alignment.
