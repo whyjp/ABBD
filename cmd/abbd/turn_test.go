@@ -481,3 +481,15 @@ func TestApproveDuringADraftTurnWaitsForTheTurn(t *testing.T) {
 
 var withLedgerDep = strings.Replace(topoV1, `{"from":"billing","to":"api","kind":"provides"}`,
 	`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"ledger","kind":"depends_on"}`, 1)
+
+func TestDependsOnIntoAContractIsAConsumer(t *testing.T) {
+	topo := strings.Replace(topoV1, `{"from":"billing","to":"api","kind":"provides"}`,
+		`{"from":"billing","to":"api","kind":"provides"},{"from":"ledger","to":"api","kind":"depends_on"}`, 1)
+	p := activeTurnProject(t, topo)
+	p.start("IF-0001")
+	p.want(2, "C QUESTION contract-changed:IF-0001", "turn", "declare", "--session", "s1", "--changes", "contract-changed:IF-0001")
+	p.editCode("api/http.go")
+	p.extract(apiV2(topo))
+	p.verify("pass", 0, "PASSED")
+	p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s1")
+}

@@ -241,18 +241,20 @@ func (in Intended) Unit(id model.ID) (IntendedUnit, bool) {
 }
 
 // HasConsumers reports whether anything depends on what contract id promises:
-// a consumes relation, intended or actual, or a human's external_consumers flag.
+// a consumes or depends_on relation into it, intended or actual, or a human's
+// external_consumers flag. It counts the same relations the turn impact follows.
 func (in Intended) HasConsumers(units []model.Unit, id model.ID) bool {
 	if u, ok := in.Unit(id); ok && u.ExternalConsumers {
 		return true
 	}
-	for _, e := range in.Relations {
-		if e.To == id && e.Kind == model.Consumes {
-			return true
-		}
+	consumes := func(e Edge) bool {
+		return e.To == id && (e.Kind == model.Consumes || e.Kind == model.DependsOn)
+	}
+	if slices.ContainsFunc(in.Relations, consumes) {
+		return true
 	}
 	for e := range actualEdges(presentUnits(units)) {
-		if e.To == id && e.Kind == model.Consumes {
+		if consumes(e) {
 			return true
 		}
 	}
