@@ -20,7 +20,7 @@ Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is t
 ## Code-only
 
 1. List design unit candidates from the layout, entry points, manifests and schemas. A design unit is something a human would say "this change must not touch that" about: a responsibility (`MOD`), an external contract (`IF`, `EVT`, `DATA`, `CFG`), a user-facing feature (`FEAT`). Imports, calls and file placement are material for finding units, never units.
-2. Read and follow `<pstack>/skills/swarm/SKILL.md`, partitioned one worker per candidate. Each worker reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes and returns its unit in the extraction format below, with the relations it found by key.
+2. Read and follow `<pstack>/skills/swarm/SKILL.md`, partitioned one worker per candidate, with two changes. Run every worker locally, with no worktree isolation, because a worktree checks out the last commit and the worker would not see uncommitted code. Each worker reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes and reports its unit in the extraction format below, with the relations it found by key, instead of `PASS`, `ISSUES` or `BLOCKED`.
 3. Build the lever. Write `.abbd/extractor/extract.<ext>`, a script that prints the extraction JSON from the code alone: imports, routes, schemas, manifests. It runs from the repository root, sorts its output, and uses no clock, network or model. Run it and diff against the swarm result. Every unit the swarm found must come out of the script with the same kind and anchors. Fix the script until it does.
 4. Write `.abbd/extractor/supplement.json` in the same format with what only reading can tell: `purpose`, `responsibility`, and couplings the script cannot see, such as a shared table or an execution order. Each unit repeats `key`, `kind`, `name` and at least one anchor of the script unit it describes.
 5. Run setup:
@@ -29,7 +29,8 @@ Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is t
    abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
    ```
 
-   - Exit 1 `not deterministic`: the script printed different output on two runs. Remove the source of variation and rerun.
+   - Exit 1 `not deterministic`: the script printed different output across runs, one of them with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`. Sort what it prints, remove the source of variation, and rerun.
+   - Exit 1 `extraction script is fixed`: the project is aligned, and its script is the one `project.yaml` records. Rerun setup without `--`.
    - Exit 1 `fix the script`: the supplement names a unit the script did not report. Teach the script that unit, or drop it from the supplement.
 6. Commit `.abbd/` with the code. The extraction script is the lever that `abbd mode on --session <ID>` reruns every time the mode turns on.
 7. Tell the human where the report is (`.abbd/bootstrap-report.md`), how many candidates there are, and the command that finishes alignment. Use `abbd align --all`, `abbd align --confirm <IDS>`, or `abbd align --exclude <IDS>`, with IDs from the report.
@@ -48,7 +49,15 @@ Write the units the human stated to `.abbd/extractor/stated.json` in the extract
 abbd setup --greenfield .abbd/extractor/stated.json
 ```
 
-The project is aligned at once, with every fact USER_STATED. Write the extraction script during the first turn that adds code.
+Setup refuses greenfield when the directory holds any file outside `.abbd/` and `.git/`. Use code-only for a repository that has code.
+
+The project is aligned at once, with every fact USER_STATED. In the first turn that adds code, write the extraction script as in code-only step 3 and register it:
+
+```
+abbd setup -- <interpreter> .abbd/extractor/extract.<ext>
+```
+
+Setup runs it three times and refuses it if the output changes. Registration happens once. After that, setup refuses any other argv, because `abbd mode on --session <ID>` trusts the recorded script.
 
 ## Extraction format
 
@@ -76,4 +85,6 @@ The project is aligned at once, with every fact USER_STATED. Write the extractio
 
 ## After setup
 
-`abbd status` shows the phase and the size of the confirm queue. `abbd confirm --list` lists inferred items, design units first. Neither blocks alignment.
+`abbd status` shows the phase and the size of the confirm queue. `abbd confirm --list` lists inferred items, design units first, named like `MOD-0001.purpose` or `MOD-0002.consumes.MOD-0001`. Neither blocks alignment.
+
+Rerunning setup replaces every guess the last supplement made that no human has confirmed. Put every guess you still stand by in the new supplement.
