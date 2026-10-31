@@ -1,5 +1,0 @@
-{
-  "mcpServers": {
-    "abbd": { "command": "abbd", "args": ["mcp"] }
-  }
-}
