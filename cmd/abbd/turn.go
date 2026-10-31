@@ -419,15 +419,20 @@ func (e env) turnEnd() error {
 		return err
 	}
 	vs := turn.Judge(*v.intended, v.units, t.Approvals)
-	touched, err := e.touched(t.Baseline.Fingerprint, tree, v.units)
+	touched, known, err := e.touched(t.Baseline.Fingerprint, tree, v.units)
 	if err != nil {
-		return err
+		return fmt.Errorf("listing the files the turn changed: %w", err)
 	}
 	rep := &turn.Report{}
 	for _, vd := range vs {
 		rep.Gate = append(rep.Gate, vd.String())
 	}
-	rep.DeclaredNotDone, rep.DoneNotDeclared = turn.Contrast(t.Delta, vs, touched)
+	declared := t.Delta
+	if !known {
+		declared.Units = nil
+		rep.Notes = append(rep.Notes, fmt.Sprintf("the baseline snapshot %s is gone, so which units the turn touched is unknown", t.Baseline.Fingerprint))
+	}
+	rep.DeclaredNotDone, rep.DoneNotDeclared = turn.Contrast(declared, vs, touched)
 	t.Report = rep
 
 	run, err := e.st.LoadRun(t.Run)
@@ -487,20 +492,21 @@ func (e env) sync(t *turn.Turn, in topology.Intended, vs []turn.Verdict) error {
 	return nil
 }
 
-func (e env) touched(from, to string, units []model.Unit) ([]model.ID, error) {
-	paths, err := gitx.Changed(e.root, from, to)
-	if err != nil {
-		return nil, fmt.Errorf("listing the files the turn changed: %w", err)
+// touched lists the units whose anchored files changed. known is false when
+// the baseline snapshot is gone and the changed files cannot be listed.
+func (e env) touched(from, to string, units []model.Unit) (ids []model.ID, known bool, err error) {
+	paths, ok, err := gitx.Changed(e.root, from, to)
+	if err != nil || !ok {
+		return nil, false, err
 	}
-	var out []model.ID
 	for _, u := range units {
 		if slices.ContainsFunc(u.Anchors, func(a model.Anchor) bool {
 			return slices.ContainsFunc(paths, func(p string) bool { return turn.Touches(a, p) })
 		}) {
-			out = append(out, u.ID)
+			ids = append(ids, u.ID)
 		}
 	}
-	return out, nil
+	return ids, true, nil
 }
 
 func (e env) printReport(t turn.Turn) {
@@ -517,6 +523,9 @@ func (e env) printReport(t turn.Turn) {
 	}
 	for _, s := range r.DoneNotDeclared {
 		fmt.Fprintln(e.stdout, "done but not declared:", s)
+	}
+	for _, s := range r.Notes {
+		fmt.Fprintln(e.stdout, "note:", s)
 	}
 	if r.Why != "" {
 		fmt.Fprintln(e.stdout, r.Why)

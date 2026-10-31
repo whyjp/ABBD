@@ -77,6 +77,7 @@ type Report struct {
 	Gate            []string `yaml:"gate,omitempty"`
 	DeclaredNotDone []string `yaml:"declared_not_done,omitempty"`
 	DoneNotDeclared []string `yaml:"done_not_declared,omitempty"`
+	Notes           []string `yaml:"notes,omitempty"`
 	// Why says what kept the turn from completing.
 	Why string `yaml:"why,omitempty"`
 }

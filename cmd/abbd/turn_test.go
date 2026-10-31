@@ -527,3 +527,17 @@ func TestVerifyThatEditsTheTreeFails(t *testing.T) {
 	}
 	p.want(2, "run-0001 FAILED", "turn", "end", "--session", "s1")
 }
+
+func TestPrunedBaselineStillGatesTheTurn(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.editCode("ledger/uncommitted.go")
+	p.start("MOD-0001")
+	p.want(0, "", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
+	p.editCode("billing/charge.go")
+	p.verify("pass", 0, "PASSED")
+	git(t, p.root, "prune", "--expire=now")
+	out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+	if !strings.Contains(out, "baseline snapshot") || strings.Contains(out, "declared but not done: MOD-0001") {
+		t.Fatalf("a lost baseline should be reported, not read as an untouched unit:\n%s", out)
+	}
+}

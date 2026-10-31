@@ -89,6 +89,7 @@ func renderTurn(t turn.Turn) string {
 		list("Gate", r.Gate)
 		list("Declared but not done", r.DeclaredNotDone)
 		list("Done but not declared", r.DoneNotDeclared)
+		list("Notes", r.Notes)
 		if r.Why != "" {
 			fmt.Fprintf(&b, "\n%s\n", r.Why)
 		}
