@@ -179,7 +179,30 @@ func (e env) hookPreToolUse(in hookInput) *hookOutput {
 	return &hookOutput{Specific: &hookSpecific{HookEventName: "PreToolUse", PermissionDecision: "deny", PermissionDecisionReason: reason}}
 }
 
+// requestHeredoc is abbd turn start reading the user's request from a heredoc.
+// The body is the request text, which abbd stores and never runs.
+var requestHeredoc = regexp.MustCompile(`^\s*abbd(?:\.exe)?\s+turn\s+start\b[^\n]*<<-?\s*['"]?(\w+)['"]?[ \t]*\n`)
+
+// dropRequestText removes the request body so a request that mentions a
+// human's command does not read as running it.
+func dropRequestText(cmd string) string {
+	m := requestHeredoc.FindStringSubmatchIndex(cmd)
+	if m == nil {
+		return cmd
+	}
+	delim := cmd[m[2]:m[3]]
+	head, body := cmd[:m[1]], cmd[m[1]:]
+	lines := strings.SplitAfter(body, "\n")
+	for i, l := range lines {
+		if strings.TrimSpace(l) == delim {
+			return head + strings.Join(lines[i:], "")
+		}
+	}
+	return head
+}
+
 func (e env) deniedCommand(cmd string) string {
+	cmd = dropRequestText(cmd)
 	if m := humanCommand.FindStringSubmatch(cmd); m != nil {
 		sub := strings.ToLower(strings.Join(strings.Fields(m[1]), " "))
 		if sub == "setup" && e.registersScript(cmd) {
@@ -201,10 +224,11 @@ func (e env) registersScript(cmd string) bool {
 }
 
 // hookStop blocks the session from ending once while a turn it opened has
-// changed the working tree and never reached abbd turn end.
+// changed the working tree and never reached abbd turn end. A turn whose
+// question waits for a human is meant to stop there.
 func (e env) hookStop(in hookInput) *hookOutput {
 	t := e.openTurn()
-	if in.StopHookActive || t == nil || t.State != turn.Open || t.Session != in.SessionID {
+	if in.StopHookActive || t == nil || t.State != turn.Open || t.Session != in.SessionID || t.Waiting() {
 		return nil
 	}
 	tree, err := e.tree()

@@ -110,6 +110,8 @@ func TestPreToolUseKeepsTheIntendedTopologyHumanOnly(t *testing.T) {
 		p.bash("cd /repo && /usr/local/bin/abbd.exe setup --supplement s.json -- python x.py"),
 		p.bash("abbd mode off --session s1"),
 		p.bash("go run ./cmd/abbd approve contract-changed:IF-0001"),
+		p.bash("bash <<'EOF'\nabbd approve contract-changed:IF-0001\nEOF"),
+		p.bash("abbd turn start --session s1 --seeds MOD-0001 --request - <<'EOF'\nmake the change\nEOF\nabbd approve contract-changed:IF-0001"),
 		p.bash("cat .abbd/intended.yaml"),
 		p.bash("rm .abbd/sessions/s1.on"),
 		tool("PowerShell", map[string]any{"command": `Set-Content .abbd\changes\CHG-0001.md "state: SYNCED"`}),
@@ -131,6 +133,7 @@ func TestPreToolUseKeepsTheIntendedTopologyHumanOnly(t *testing.T) {
 		p.bash("abbd mode on --session s1"),
 		p.bash("go test ./... # abbdapprove is not a command"),
 		p.bash("git add -A && git commit -m 'charge in cents'"),
+		p.bash("abbd turn start --session s1 --seeds MOD-0001 --request - <<'EOF'\nIf a step needs approval, run abbd approve yourself.\nEOF"),
 		tool("Write", map[string]any{"file_path": abs("billing", "charge.go"), "content": "package billing"}),
 		tool("Write", map[string]any{"file_path": abs(".abbd", "extractor", "extract.py"), "content": "print('{}')"}),
 		tool("Read", map[string]any{"file_path": abs(".abbd", "intended.yaml")}),
@@ -260,5 +263,22 @@ func TestPluginHooksRouteToAbbdHook(t *testing.T) {
 		if !strings.Contains("|"+cfg.Hooks["PreToolUse"][0].Matcher+"|", "|"+name+"|") {
 			t.Errorf("PreToolUse must match %s, matcher is %q", name, cfg.Hooks["PreToolUse"][0].Matcher)
 		}
+	}
+}
+
+// A turn that asked a question waits for a human, so its session may stop
+// even though the tree changed, until the question is answered.
+func TestStopLetsATurnWaitForItsQuestion(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
+	p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--units", "MOD-0001", "--changes", edge)
+	p.editCode("billing/charge.go")
+	if o, _ := p.fire("Stop", map[string]any{"stop_hook_active": false}); o.Decision != "" {
+		t.Fatalf("a turn waiting on its question should be allowed to stop: %+v", o)
+	}
+	p.want(0, "approved "+edge+" for CHG-0001", "approve", edge)
+	if o, _ := p.fire("Stop", map[string]any{"stop_hook_active": false}); o.Decision != "block" {
+		t.Fatalf("once answered, the turn must be ended before the session stops: %+v", o)
 	}
 }

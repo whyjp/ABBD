@@ -164,6 +164,11 @@ func (t *Turn) AddImpact(id model.ID) bool {
 	return true
 }
 
+// Waiting reports whether a question of this turn still has no approval.
+func (t *Turn) Waiting() bool {
+	return slices.ContainsFunc(t.Questions, func(q string) bool { return t.Approved(q) == "" })
+}
+
 func (t *Turn) Approved(key string) string {
 	for _, a := range t.Approvals {
 		if a.Item == key {
