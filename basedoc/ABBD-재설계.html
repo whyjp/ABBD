@@ -636,6 +636,9 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><strong>사람 화면.</strong><ul>
 <li>변화 중심 화면, 의도와 실제의 어긋남 뷰, STALE·INFERRED 표시, confirm 큐, 승인·거부 조작.</li>
 <li>끝 기준: 사람이 md를 열지 않고 정렬, 승인, 사후 검토를 화면에서 할 수 있다. 이어서 ABBD 저장소 자신에 setup을 돌려 화면으로 정렬한다(자기 적용 시작).</li>
+<li>자기 적용 시작(5b). 추출 스크립트는 <code>.abbd/extractor/extract.go</code>로, Go 표준 라이브러리(go/parser, go/ast)만 쓰고 <code>go run .abbd/extractor/extract.go</code>로 돈다. 설계 단위 후보는 31개다. 모듈 13개(internal 패키지 10개, cmd/abbd를 CLI, PreToolUse 가드, 화면 서버로 나눈 3개), 계약 16개(CLI, 훅, 화면 HTTP, 변경 키, confirm 키, 추출 JSON, .abbd 파일 형식 7개, project.yaml, hooks.json, 플러그인 매니페스트), 기능 2개(abbd-setup, abbd-mode)다. 시그니처는 코드에서 읽고, 관계는 각 단위가 참조하는 심볼과 스킬이 인용하는 abbd 명령에서 뽑는다. 의미 보완은 pstack swarm 다섯 조각으로 만들었고, 목적과 책임, 스크립트가 못 보는 결합 11개가 INFERRED로 confirm 큐 73개에 남아 있다. setup은 결정성 검사를 통과했다(<code>59caf8f</code>). 정렬은 사람이 위임한 야간 작업 중 Claude가 사람 대신 화면에서 31개 전부를 골라 했고, 따로 커밋했다(<code>dc246dc</code>). 사람이 화면에서 다시 보고, 되돌리려면 그 커밋 하나만 revert한다.</li>
+<li>자기 적용이 찾아 고친 것. setup 스킬이 후보마다 작업자 하나를 두라고 해서 31명이 될 뻔했다. 관련 후보를 묶어 다섯 조각 이하로 나누게 했다. 스킬은 스크립트가 swarm의 앵커를 그대로 내라고 했지만, 작업자가 손으로 고른 심볼은 재현할 수 없고 리팩터링마다 바뀐다. 앵커는 스크립트가 기계적으로 고르고, 비교는 같은 종류와 앵커 하나 공유로 바꿨다(<code>ffe0b73</code>). 검증 명령은 턴 안에서만 등록할 수 있어 사람이 보기 전에 에이전트가 등록하고 썼다. <code>abbd setup --verify</code>로 정렬 전에 등록하게 했다(<code>3c37cc3</code>). 보고서가 스크립트를 두 번 돌렸다고 적었지만 실제로는 세 번이다(<code>81326f9</code>). <code>.abbd/</code>를 커밋한 뒤 모드를 켜면 state.yaml에 새 HEAD를 써서 <code>.abbd/</code>가 다시 바뀌었다. 커밋할 때마다 다음 커밋이 필요한 셈이라, 작업 트리가 같으면 revision을 그대로 둔다. 세션 상태가 git 디렉터리에 있는데도 모드를 켤 때마다 <code>.abbd/.gitignore</code>를 쓰던 것도 고쳤다(<code>078f6d7</code>).</li>
+<li>남은 관찰. 작업 트리 스냅샷은 무시되지 않은 추적 밖 파일도 담는다. 이 저장소의 <code>.claude/</code>와 <code>.playwright-mcp/</code>에 무엇을 쓰면 실제 토폴로지가 STALE이 되고, 턴의 검증 뒤에 쓰면 완료가 막힌다. 화면은 후보 31개와 confirm 큐 73개를 한 페이지에 늘어놓아 데스크톱 폭에서도 2만 픽셀이 넘는다. 6단계에서 실제 사용을 보고 다룬다.</li>
 </ul>
 </li>
 <li><strong>승격과 재정렬, 그리고 평가.</strong><ul>
