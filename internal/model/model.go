@@ -45,6 +45,14 @@ type Fact struct {
 	Confirmation Confirmation `yaml:"confirmation,omitempty"`
 }
 
+// guess reports whether only an agent vouches for a value: INFERRED, and no
+// human has confirmed or rejected it.
+func guess(o Origin, c Confirmation) bool {
+	return o == Inferred && c != Confirmed && c != Rejected
+}
+
+func (f *Fact) Guess() bool { return f != nil && guess(f.Origin, f.Confirmation) }
+
 // A why-field states intent, which code can never prove.
 func (f Fact) validate(why bool) error {
 	if !origins[f.Origin] {
@@ -225,6 +233,8 @@ type Relation struct {
 func (r Relation) Counts() bool {
 	return r.Origin == Extracted || r.Origin == UserStated || r.Confirmation == Confirmed
 }
+
+func (r Relation) Guess() bool { return guess(r.Origin, r.Confirmation) }
 
 func SortRelations(rs []Relation) []Relation {
 	out := append([]Relation(nil), rs...)

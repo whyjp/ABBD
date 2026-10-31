@@ -452,3 +452,33 @@ func TestAdoptRelationAlsoGuessedBySupplementIsAdopted(t *testing.T) {
 		t.Fatalf("the document's relation should carry origin ADOPTED:\n%s", md)
 	}
 }
+
+func TestCorrectedSupplementWithdrawsEarlierGuesses(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
+	corrected := `{"units":[
+ {"key":"b","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}],"responsibility":"owns the refunds table"}
+]}`
+	p.setup(0, "", "--supplement", p.file(t, "sup2.json", corrected))
+	q := p.want(0, `MOD-0001.responsibility "owns the refunds table"`, "confirm", "--list")
+	if strings.Contains(q, "consumes") || strings.Contains(q, "MOD-0002.purpose") {
+		t.Fatalf("guesses the corrected supplement dropped must leave the queue:\n%s", q)
+	}
+	if md := p.read("architecture/MOD-0002.md"); strings.Contains(md, "consumes") || strings.Contains(md, "keeps the books") {
+		t.Fatalf("withdrawn guesses must leave the unit:\n%s", md)
+	}
+}
+
+func TestConfirmedGuessesSurviveALaterSupplement(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
+	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "confirmed", "confirm", "MOD-0002.purpose")
+	p.setup(0, "")
+	md := p.read("architecture/MOD-0002.md")
+	if !strings.Contains(md, "kind: consumes") || !strings.Contains(md, "keeps the books") {
+		t.Fatalf("a human confirmation must outlive the supplement that proposed it:\n%s", md)
+	}
+}

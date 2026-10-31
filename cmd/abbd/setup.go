@@ -14,6 +14,7 @@ import (
 	"github.com/whyjp/abbd/internal/bootstrap"
 	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/extract"
+	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
@@ -92,7 +93,7 @@ func (e env) setup(string, []string) error {
 	if err := e.st.SaveProject(p); err != nil {
 		return err
 	}
-	if _, err := e.syncActual(ex); err != nil {
+	if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {
 		return err
 	}
 	v, err := e.load()
@@ -199,7 +200,7 @@ func (e env) setupGreenfield() error {
 	if len(doc.Units) == 0 {
 		return fmt.Errorf("state at least one design unit")
 	}
-	if _, err := e.syncActual(doc.StatedBy(model.UserStated)); err != nil {
+	if _, err := e.syncActual(doc.StatedBy(model.UserStated), identity.KeepGuesses); err != nil {
 		return err
 	}
 	v, err = e.load()

@@ -31,10 +31,6 @@ func (it Item) String() string {
 	return s
 }
 
-func pending(f *model.Fact) bool {
-	return f != nil && f.Origin == model.Inferred && f.Confirmation != model.Confirmed && f.Confirmation != model.Rejected
-}
-
 func relationKey(from model.ID, r model.Relation) string {
 	return topology.Edge{From: from, To: r.To, Kind: r.Kind}.String()
 }
@@ -49,10 +45,10 @@ func Queue(units []model.Unit, design map[model.ID]bool) []Item {
 		add := func(key, value string, touches bool) {
 			items = append(items, Item{Key: key, Unit: u.ID, Value: value, Design: touches})
 		}
-		if pending(u.Purpose) {
+		if u.Purpose.Guess() {
 			add(string(u.ID)+".purpose", u.Purpose.Value, design[u.ID])
 		}
-		if pending(u.Responsibility) {
+		if u.Responsibility.Guess() {
 			add(string(u.ID)+".responsibility", u.Responsibility.Value, design[u.ID])
 		}
 		for _, r := range u.Relations {

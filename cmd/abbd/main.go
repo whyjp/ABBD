@@ -213,7 +213,7 @@ func (e env) ingest(src string) error {
 	if err != nil {
 		return err
 	}
-	res, err := e.syncActual(ex)
+	res, err := e.syncActual(ex, identity.KeepGuesses)
 	if err != nil {
 		return err
 	}
@@ -230,7 +230,7 @@ func (e env) ingest(src string) error {
 }
 
 // syncActual updates the actual topology. It only ever touches EXTRACTED facts.
-func (e env) syncActual(ex extract.Result) (identity.Result, error) {
+func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.Result, error) {
 	st := e.st
 	stored, err := st.LoadUnits()
 	if err != nil {
@@ -259,7 +259,7 @@ func (e env) syncActual(ex extract.Result) (identity.Result, error) {
 	if len(ex.Units) == 0 && len(stored) > 0 {
 		return identity.Result{}, fmt.Errorf("the extraction reported no units; refusing to mark every unit absent")
 	}
-	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater)
+	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}
@@ -552,7 +552,7 @@ func (e env) reextract() error {
 	if err != nil {
 		return err
 	}
-	_, err = e.syncActual(ex)
+	_, err = e.syncActual(ex, identity.KeepGuesses)
 	return err
 }
 

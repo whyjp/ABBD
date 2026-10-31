@@ -41,6 +41,17 @@ type Result struct {
 	HighWater  map[model.Kind]int
 }
 
+// Guesses says what happens to the stored INFERRED facts no human has decided.
+type Guesses int
+
+const (
+	// KeepGuesses is a re-extraction by the script, which cannot see them.
+	KeepGuesses Guesses = iota
+	// ReplaceGuesses is a setup, whose supplement owns them: a guess the new
+	// supplement no longer makes is withdrawn.
+	ReplaceGuesses
+)
+
 type pair struct {
 	in, st    int
 	identical bool
@@ -50,7 +61,7 @@ type pair struct {
 
 // Reconcile is pure. renames maps old paths to new paths since the last sync.
 // highWater holds the largest number ever minted per kind, so deleted IDs are never reused.
-func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int) Result {
+func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int, guesses Guesses) Result {
 	hw := map[model.Kind]int{}
 	for k, n := range highWater {
 		hw[k] = n
@@ -122,7 +133,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	ids := make([]model.ID, len(input))
 	for i, in := range input {
 		if j, ok := inTo[i]; ok {
-			merge(&units[j], in)
+			merge(&units[j], in, guesses)
 			ids[i] = units[j].ID
 			res.Events = append(res.Events, Event{ids[i], Matched})
 			continue
@@ -162,7 +173,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	}
 	res.Units = append(units, created...)
 	sort.Slice(res.Units, func(i, j int) bool { return res.Units[i].ID < res.Units[j].ID })
-	setRelations(res.Units, input, ids, extraction.Relations)
+	setRelations(res.Units, input, ids, extraction.Relations, guesses)
 	res.Candidates = keepLive(append(prior, fresh...), res.Units)
 	res.HighWater = hw
 	return res
@@ -170,9 +181,10 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 
 // Extraction owns the EXTRACTED relations of every unit it reports; units it
 // did not report keep theirs until a human resolves them. A relation from any
-// other origin survives, because the script cannot see it. When the same edge
-// arrives twice, the extracted one wins, then the stored one.
-func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation) {
+// other origin survives, because the script cannot see it, unless guesses are
+// replaced. When the same edge arrives twice, the extracted one wins, then the
+// stored one.
+func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, guesses Guesses) {
 	byKey := map[string]model.ID{}
 	for i, in := range input {
 		if in.Key != "" {
@@ -205,7 +217,7 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 		}
 		next := extracted[id]
 		for _, r := range units[i].Relations {
-			if r.Origin != model.Extracted {
+			if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {
 				next = append(next, r)
 			}
 		}
@@ -229,8 +241,9 @@ func dedupRelations(rs []model.Relation) []model.Relation {
 	return model.SortRelations(out)
 }
 
-// Extraction owns anchors, signatures and EXTRACTED names. Human-given values survive.
-func merge(u *model.Unit, in extract.Unit) {
+// Extraction owns anchors, signatures and EXTRACTED names. Human-given values
+// and decided guesses survive.
+func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	u.Anchors = in.Anchors
 	u.Signature = in.Signature
 	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
@@ -240,10 +253,11 @@ func merge(u *model.Unit, in extract.Unit) {
 			u.Name.Confirmation = model.Unconfirmed
 		}
 	}
-	if u.Purpose == nil {
+	replace := func(f *model.Fact) bool { return f == nil || (guesses == ReplaceGuesses && f.Guess()) }
+	if replace(u.Purpose) {
 		u.Purpose = in.Purpose
 	}
-	if u.Responsibility == nil {
+	if replace(u.Responsibility) {
 		u.Responsibility = in.Responsibility
 	}
 }
