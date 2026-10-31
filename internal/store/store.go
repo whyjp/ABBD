@@ -363,8 +363,11 @@ func (s Store) SetMode(id string, on bool) error {
 		}
 		return nil
 	}
-	if err := writeFile(s.path(".gitignore"), []byte("sessions/\n")); err != nil {
-		return err
+	// Only sessions kept under .abbd/, outside a git repository, need ignoring.
+	if s.sessions == s.path("sessions") {
+		if err := writeFile(s.path(".gitignore"), []byte("sessions/\n")); err != nil {
+			return err
+		}
 	}
 	return writeFile(p, nil)
 }

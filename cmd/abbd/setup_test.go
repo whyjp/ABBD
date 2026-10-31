@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -529,5 +530,21 @@ func TestSetupRefusesAVerifyCommandThatIsNotOneCommand(t *testing.T) {
 	p.setup(1, "one plain command", "--verify", "go test ./... | tee out", "--", exe)
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "project.yaml")); !os.IsNotExist(err) {
 		t.Fatalf("a refused --verify must record nothing, got %v", err)
+	}
+}
+
+// A project commits .abbd/ with its code. Turning the mode on afterwards
+// must leave that commit clean, or every commit would ask for another.
+func TestCommittedBlueprintStaysCleanWhenTheModeTurnsOn(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "bootstrapped", "--", exe)
+	p.want(0, "aligned", "align", "--all")
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "blueprint")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+	out, err := exec.Command("git", "-C", p.root, "status", "--porcelain").CombinedOutput()
+	if err != nil || len(out) != 0 {
+		t.Fatalf("mode on after committing .abbd/ should change nothing git sees, got %v:\n%s", err, out)
 	}
 }

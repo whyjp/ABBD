@@ -353,7 +353,13 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 	if err != nil {
 		return res, err
 	}
-	state = store.State{Revision: gitx.Head(e.root), Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}
+	// The revision is where this tree was first synced. Committing .abbd/
+	// moves HEAD without changing the tree, and must not dirty .abbd/ again.
+	rev := state.Revision
+	if state.Fingerprint != tree || rev == "" {
+		rev = gitx.Head(e.root)
+	}
+	state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}
 	return res, st.SaveState(state)
 }
 
