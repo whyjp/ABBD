@@ -217,8 +217,8 @@ func (e env) turnDeclare() error {
 			lines = append(lines, "A "+key)
 		case t.Approved(key) != "":
 			lines = append(lines, fmt.Sprintf("C APPROVED %s by %s", key, t.Approved(key)))
-		case answered(turn.Question(it)) != "":
-			adr := answered(turn.Question(it))
+		case answered(turn.Question(*v.intended, it)) != "":
+			adr := answered(turn.Question(*v.intended, it))
 			t.Approvals = append(t.Approvals, turn.Approval{Item: key, ADR: adr})
 			lines = append(lines, fmt.Sprintf("C APPROVED %s by %s, answered before", key, adr))
 		default:
@@ -283,7 +283,7 @@ func (e env) approveInTurn(t *turn.Turn, key string) error {
 	}
 	adr := store.ADR{
 		ID: string(id), Grade: "C", Subject: key, Decision: "approved", Origin: model.UserStated,
-		Question: turn.Question(*item), Turn: t.ID,
+		Question: turn.Question(*v.intended, *item), Turn: t.ID,
 	}
 	if err := e.st.WriteADR(adr, fmt.Sprintf("Approved %s for %s. It enters the intended topology only if the turn syncs.", key, t.ID)); err != nil {
 		return err
@@ -461,7 +461,7 @@ func (e env) sync(t *turn.Turn, in topology.Intended, vs []turn.Verdict) error {
 		}
 		adr := store.ADR{
 			ID: string(id), Grade: "B", Subject: vd.Item.Key(), Decision: "proceeded by default",
-			Origin: model.Inferred, Confirmation: model.Unconfirmed, Question: turn.Question(vd.Item), Turn: t.ID,
+			Origin: model.Inferred, Confirmation: model.Unconfirmed, Question: turn.Question(in, vd.Item), Turn: t.ID,
 		}
 		if err := e.st.WriteADR(adr, fmt.Sprintf("%s proceeded by default in %s: %s. A human can still reverse it.", vd.Item.Key(), t.ID, vd)); err != nil {
 			return err

@@ -15,6 +15,8 @@ import (
 // A relation may end at a unit outside the intended set once a human has
 // acknowledged it, so its later removal is still noticed.
 type Intended struct {
+	// Revision counts the changes a human or a synced turn made to it.
+	Revision  int            `yaml:"revision"`
 	Units     []IntendedUnit `yaml:"units"`
 	Relations []Edge         `yaml:"relations"`
 }

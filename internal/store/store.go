@@ -241,7 +241,22 @@ func (s Store) LoadIntended() (*topology.Intended, error) {
 	return &in, nil
 }
 
+// SaveIntended bumps the revision whenever the content changes, whatever
+// revision the caller carried.
 func (s Store) SaveIntended(in topology.Intended) error {
+	old, err := s.LoadIntended()
+	if err != nil {
+		return err
+	}
+	in.Revision = 1
+	if old != nil {
+		in.Revision = old.Revision
+		was, _ := yaml.Marshal(old)
+		now, _ := yaml.Marshal(in)
+		if !bytes.Equal(was, now) {
+			in.Revision++
+		}
+	}
 	return writeYAML(s.path("intended.yaml"), in)
 }
 

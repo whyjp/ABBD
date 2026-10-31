@@ -206,14 +206,16 @@ func Declared(in topology.Intended, units []model.Unit, key string) (topology.It
 	return it, GradeOf(in, units, it), nil
 }
 
-// Question names the human decision an item asks for. A contract change asks
-// about the signature it starts from, so approving one change of a contract
-// never answers the next.
-func Question(it topology.Item) string {
+// Question names the human decision an item asks for, against the intended
+// topology it starts from. A contract change names the signature it starts
+// from, so approving one change of a contract never answers the next. Any
+// other change names the intended revision, because its key alone stays the
+// same after the change enters the design and leaves it again.
+func Question(in topology.Intended, it topology.Item) string {
 	if it.Change == topology.ContractChanged {
 		return fmt.Sprintf("%s from %q", it.Key(), it.Old)
 	}
-	return it.Key()
+	return fmt.Sprintf("%s at intended revision %d", it.Key(), in.Revision)
 }
 
 // Verdict is the gate's judgment of one difference between intended and actual.

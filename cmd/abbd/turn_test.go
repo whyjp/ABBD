@@ -493,3 +493,26 @@ func TestDependsOnIntoAContractIsAConsumer(t *testing.T) {
 	p.verify("pass", 0, "PASSED")
 	p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s1")
 }
+
+// An answer allows a relation against the design it was given for. Once the
+// edge has entered and left the intended topology, adding it again is a new question.
+func TestRelationAnswerLapsesOnceTheDesignMoves(t *testing.T) {
+	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	p.want(2, "C QUESTION", "turn", "declare", "--session", "s1", "--changes", edge)
+	p.want(0, "approved", "approve", edge)
+	p.editCode("billing/charge.go")
+	p.extract(withLedgerDep)
+	p.verify("pass", 0, "PASSED")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+
+	p.start("MOD-0001")
+	write(t, filepath.Join(p.root, "billing", "charge.go"), "package billing\n// v2\n")
+	p.extract(topoV1)
+	p.verify("pass", 0, "PASSED")
+	p.want(0, "B PROCEED removed-relation:MOD-0001.depends_on.MOD-0002", "turn", "end", "--session", "s1")
+
+	p.start("MOD-0001")
+	p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--changes", edge)
+}
