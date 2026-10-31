@@ -2,14 +2,12 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"slices"
 	"strings"
 
@@ -20,6 +18,7 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
+	"github.com/whyjp/abbd/internal/turn"
 )
 
 const usage = `abbd setup [--supplement FILE] [--adopt FILE] [--root DIR] [-- EXTRACT-ARGV...]
@@ -590,6 +589,11 @@ func (e env) mode(on bool) error {
 	if err := e.refresh(); err != nil {
 		return err
 	}
+	if t, err := e.st.LatestTurn(); err != nil {
+		return err
+	} else if t != nil && t.State.Resumable() {
+		return e.resume(t)
+	}
 	v, err := e.load()
 	if err != nil {
 		return err
@@ -608,6 +612,35 @@ func (e env) mode(on bool) error {
 	}
 	fmt.Fprintln(e.stdout, "active")
 	e.printItems(v.items)
+	return nil
+}
+
+// resume turns the mode on for a session that picks up an unfinished turn. The
+// turn's own changes drift the project until it ends, so they are judged as the
+// turn's work, which its end gate still decides, rather than refused as drift.
+// One turn runs at a time, so the new session takes it over.
+func (e env) resume(t *turn.Turn) error {
+	if t.Session != e.session {
+		if err := e.st.SetMode(t.Session, false); err != nil {
+			return err
+		}
+		fmt.Fprintf(e.stdout, "%s moves from session %s to %s\n", t.ID, t.Session, e.session)
+		t.Session = e.session
+	}
+	v, err := e.impact(t)
+	if err != nil {
+		return err
+	}
+	if err := e.st.SaveTurn(*t); err != nil {
+		return err
+	}
+	if err := e.st.SetMode(e.session, true); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "active: resuming %s (%s)\n", t.ID, t.State)
+	for _, vd := range turn.Judge(*v.intended, v.units, t.Approvals) {
+		fmt.Fprintln(e.stdout, vd)
+	}
 	return nil
 }
 
@@ -683,77 +716,4 @@ func (e env) status() error {
 	}
 	e.printItems(v.items)
 	return nil
-}
-
-type hookInput struct {
-	SessionID string `json:"session_id"`
-	ToolInput struct {
-		FilePath     string `json:"file_path"`
-		NotebookPath string `json:"notebook_path"`
-	} `json:"tool_input"`
-	Cwd string `json:"cwd"`
-}
-
-// hookRoot prefers an explicit --root, then the project dir Claude Code exports,
-// then the nearest ancestor of the hook's cwd that holds .abbd.
-func (e env) hookRoot(cwd string) string {
-	if e.root != "." {
-		return e.root
-	}
-	if d := os.Getenv("CLAUDE_PROJECT_DIR"); d != "" {
-		return d
-	}
-	for d := cwd; d != ""; d = filepath.Dir(d) {
-		if fi, err := os.Stat(filepath.Join(d, store.Dir)); err == nil && fi.IsDir() {
-			return d
-		}
-		if filepath.Dir(d) == d {
-			break
-		}
-	}
-	return e.root
-}
-
-func relTo(root, p string) string {
-	if !filepath.IsAbs(p) {
-		return filepath.ToSlash(p)
-	}
-	abs, err := filepath.Abs(root)
-	if err != nil {
-		return filepath.ToSlash(p)
-	}
-	if r, err := filepath.Rel(abs, p); err == nil && !strings.HasPrefix(r, "..") {
-		return filepath.ToSlash(r)
-	}
-	return filepath.ToSlash(p)
-}
-
-// hook never blocks the host. Outside an active session it does nothing at all.
-func (e env) hook(event string) {
-	var in hookInput
-	if err := json.NewDecoder(e.stdin).Decode(&in); err != nil || in.SessionID == "" {
-		return
-	}
-	e.root = e.hookRoot(in.Cwd)
-	e.st = store.Open(e.root)
-	if !e.st.ModeOn(in.SessionID) {
-		return
-	}
-	v, err := e.load()
-	if err != nil {
-		return
-	}
-	// A turn's own changes drift the project until the turn syncs.
-	if t, err := e.st.LatestTurn(); v.phase != topology.Aligned && (err != nil || t == nil || !t.State.Resumable()) {
-		return
-	}
-	file := in.ToolInput.FilePath
-	if file == "" {
-		file = in.ToolInput.NotebookPath
-	}
-	if event == "PostToolUse" && file != "" {
-		if err := e.st.AppendJournal(in.SessionID, "changed "+relTo(e.root, file)); err != nil {
-			fmt.Fprintln(e.stderr, "abbd hook:", err)
-		}
-	}
 }
