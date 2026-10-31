@@ -50,7 +50,7 @@ type pair struct {
 
 // Reconcile is pure. renames maps old paths to new paths since the last sync.
 // highWater holds the largest number ever minted per kind, so deleted IDs are never reused.
-func Reconcile(stored []model.Unit, renames map[string]string, input []extract.Unit, prior []Candidate, highWater map[model.Kind]int) Result {
+func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int) Result {
 	hw := map[model.Kind]int{}
 	for k, n := range highWater {
 		hw[k] = n
@@ -66,7 +66,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, input []extract.U
 	sort.Slice(units, func(i, j int) bool { return units[i].ID < units[j].ID })
 	prior = keepLive(prior, units)
 
-	input = append([]extract.Unit(nil), input...)
+	input := append([]extract.Unit(nil), extraction.Units...)
 	sort.SliceStable(input, func(i, j int) bool {
 		if input[i].Kind != input[j].Kind {
 			return input[i].Kind < input[j].Kind
@@ -131,6 +131,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, input []extract.U
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			Anchors: in.Anchors, Purpose: in.Purpose, Responsibility: in.Responsibility,
+			Signature: in.Signature,
 		}
 		created = append(created, nu)
 		ids[i] = nu.ID
@@ -153,21 +154,60 @@ func Reconcile(stored []model.Unit, renames map[string]string, input []extract.U
 			}
 		}
 	}
-	for j, u := range units {
+	for j := range units {
+		units[j].Absent = !stTaken[j]
 		if !stTaken[j] {
-			res.Unmatched = append(res.Unmatched, u.ID)
+			res.Unmatched = append(res.Unmatched, units[j].ID)
 		}
 	}
 	res.Units = append(units, created...)
 	sort.Slice(res.Units, func(i, j int) bool { return res.Units[i].ID < res.Units[j].ID })
+	setRelations(res.Units, input, ids, extraction.Relations)
 	res.Candidates = keepLive(append(prior, fresh...), res.Units)
 	res.HighWater = hw
 	return res
 }
 
-// Extraction owns anchors and EXTRACTED names. Human-given values survive.
+// Extraction owns the relations of every unit it reports; units it did not
+// report keep theirs until a human resolves them.
+func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation) {
+	byKey := map[string]model.ID{}
+	for i, in := range input {
+		if in.Key != "" {
+			byKey[in.Key] = ids[i]
+		}
+	}
+	reported := map[model.ID]bool{}
+	for _, id := range ids {
+		reported[id] = true
+	}
+	from := map[model.ID][]model.Relation{}
+	for _, r := range rels {
+		f := byKey[r.From]
+		from[f] = append(from[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: model.Extracted})
+	}
+	for i := range units {
+		if reported[units[i].ID] {
+			units[i].Relations = dedupRelations(from[units[i].ID])
+		}
+	}
+}
+
+func dedupRelations(rs []model.Relation) []model.Relation {
+	rs = model.SortRelations(rs)
+	var out []model.Relation
+	for i, r := range rs {
+		if i == 0 || r != rs[i-1] {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+// Extraction owns anchors, signatures and EXTRACTED names. Human-given values survive.
 func merge(u *model.Unit, in extract.Unit) {
 	u.Anchors = in.Anchors
+	u.Signature = in.Signature
 	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
 		confirmation := u.Name.Confirmation
 		u.Name = in.Name

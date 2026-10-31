@@ -137,6 +137,11 @@ type Unit struct {
 	Anchors        []Anchor `yaml:"anchors"`
 	Purpose        *Fact    `yaml:"purpose,omitempty"`
 	Responsibility *Fact    `yaml:"responsibility,omitempty"`
+	// Signature is the observable shape of an external contract.
+	Signature *Fact      `yaml:"signature,omitempty"`
+	Relations []Relation `yaml:"relations,omitempty"`
+	// Absent marks a unit the latest extraction did not report.
+	Absent bool `yaml:"absent,omitempty"`
 	// Notes is the user-owned "## Notes" section, carried through untouched.
 	Notes string `yaml:"-"`
 }
@@ -165,5 +170,59 @@ func (u Unit) Validate() error {
 			}
 		}
 	}
+	if u.Signature != nil {
+		if !u.Kind.IsContract() {
+			return fmt.Errorf("%s: only contracts carry a signature", u.ID)
+		}
+		if err := u.Signature.validate(false); err != nil {
+			return fmt.Errorf("%s signature: %w", u.ID, err)
+		}
+	}
+	for _, r := range u.Relations {
+		if err := r.Kind.Validate(); err != nil {
+			return fmt.Errorf("%s relation: %w", u.ID, err)
+		}
+		if !origins[r.Origin] {
+			return fmt.Errorf("%s relation: unknown origin %q", u.ID, r.Origin)
+		}
+	}
 	return nil
+}
+
+func (k Kind) IsContract() bool {
+	return k == Interface || k == Event || k == Data || k == Config
+}
+
+type RelationKind string
+
+const (
+	DependsOn RelationKind = "depends_on"
+	Consumes  RelationKind = "consumes"
+	Provides  RelationKind = "provides"
+)
+
+func (k RelationKind) Validate() error {
+	switch k {
+	case DependsOn, Consumes, Provides:
+		return nil
+	}
+	return fmt.Errorf("unknown relation kind %q", k)
+}
+
+// Relation is an edge from the unit that holds it.
+type Relation struct {
+	To     ID           `yaml:"to"`
+	Kind   RelationKind `yaml:"kind"`
+	Origin Origin       `yaml:"origin"`
+}
+
+func SortRelations(rs []Relation) []Relation {
+	out := append([]Relation(nil), rs...)
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].To != out[j].To {
+			return out[i].To < out[j].To
+		}
+		return out[i].Kind < out[j].Kind
+	})
+	return out
 }

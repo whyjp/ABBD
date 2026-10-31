@@ -9,12 +9,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/topology"
 )
 
 const Dir = ".abbd"
@@ -207,4 +210,100 @@ func writeFile(path string, b []byte) error {
 		return err
 	}
 	return os.Rename(tmp, path)
+}
+
+// Project is the per-project configuration in project.yaml.
+type Project struct {
+	// Extract is the argv of the project extraction script pstack generated.
+	// It prints an extraction result on stdout.
+	Extract []string `yaml:"extract,omitempty"`
+}
+
+func (s Store) LoadProject() (Project, error) {
+	var p Project
+	return p, readYAML(s.path("project.yaml"), &p)
+}
+
+func (s Store) SaveProject(p Project) error { return writeYAML(s.path("project.yaml"), p) }
+
+// LoadIntended returns nil before the first alignment.
+func (s Store) LoadIntended() (*topology.Intended, error) {
+	if _, err := os.Stat(s.path("intended.yaml")); os.IsNotExist(err) {
+		return nil, nil
+	}
+	var in topology.Intended
+	if err := readYAML(s.path("intended.yaml"), &in); err != nil {
+		return nil, err
+	}
+	return &in, nil
+}
+
+func (s Store) SaveIntended(in topology.Intended) error {
+	return writeYAML(s.path("intended.yaml"), in)
+}
+
+type ADR struct {
+	ID       string       `yaml:"id"`
+	Grade    string       `yaml:"grade"`
+	Subject  string       `yaml:"subject"`
+	Decision string       `yaml:"decision"`
+	Origin   model.Origin `yaml:"origin"`
+}
+
+func (s Store) WriteADR(a ADR, body string) error {
+	front, err := yaml.Marshal(a)
+	if err != nil {
+		return err
+	}
+	return writeFile(s.path("decisions", a.ID+".md"), []byte("---\n"+string(front)+"---\n\n"+body+"\n"))
+}
+
+var sessionID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
+
+func (s Store) sessionPath(id string) (string, error) {
+	if !sessionID.MatchString(id) {
+		return "", fmt.Errorf("invalid session id %q", id)
+	}
+	return s.path("sessions", id+".on"), nil
+}
+
+// Session state is local to this machine, so sessions/ is kept out of git.
+func (s Store) SetMode(id string, on bool) error {
+	p, err := s.sessionPath(id)
+	if err != nil {
+		return err
+	}
+	if !on {
+		if err := os.Remove(p); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+		return nil
+	}
+	if err := writeFile(s.path(".gitignore"), []byte("sessions/\n")); err != nil {
+		return err
+	}
+	return writeFile(p, nil)
+}
+
+func (s Store) ModeOn(id string) bool {
+	p, err := s.sessionPath(id)
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(p)
+	return err == nil
+}
+
+func (s Store) AppendJournal(id, line string) error {
+	p, err := s.sessionPath(id)
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile(strings.TrimSuffix(p, ".on")+".journal", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = fmt.Fprintln(f, line)
+	return err
 }
