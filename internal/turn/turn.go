@@ -47,6 +47,9 @@ const MaxQuestions = 3
 type Baseline struct {
 	Revision    string `yaml:"revision,omitempty"`
 	Fingerprint string `yaml:"fingerprint"`
+	// Extractor fingerprints the registered extraction script, which the tree
+	// fingerprint leaves out with the rest of .abbd/. It is empty while none is registered.
+	Extractor string `yaml:"extractor,omitempty"`
 }
 
 const (

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -541,4 +542,33 @@ func TestPrunedBaselineStillGatesTheTurn(t *testing.T) {
 	if !strings.Contains(out, "baseline snapshot") || strings.Contains(out, "declared but not done: MOD-0001") {
 		t.Fatalf("a lost baseline should be reported, not read as an untouched unit:\n%s", out)
 	}
+}
+
+// The tree fingerprint leaves .abbd/ out, so the end gate checks the
+// extraction script itself: a turn may not end on a script it changed, in
+// .abbd/extractor/ or wherever project.yaml names it.
+func TestTurnCannotEndOnAChangedExtractor(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	helper := filepath.Join(p.root, ".abbd", "extractor", "helper.txt")
+	rules := filepath.Join(p.root, "tools", "rules.txt")
+	write(t, helper, "strict\n")
+	write(t, rules, "strict\n")
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "rules")
+	write(t, filepath.Join(p.root, ".abbd", "project.yaml"), fmt.Sprintf("extract: [%q, tools/rules.txt]\n", exe))
+	p.start("MOD-0001")
+	p.editCode("billing/charge.go")
+	for _, f := range []string{helper, rules} {
+		write(t, f, "anything goes\n")
+		p.want(1, "the extraction script changed during CHG-0001", "turn", "end", "--session", "s1")
+		if !strings.Contains(p.read("changes/CHG-0001.md"), "state: OPEN") {
+			t.Fatalf("a refused end leaves the turn open:\n%s", p.read("changes/CHG-0001.md"))
+		}
+		write(t, f, "strict\n")
+	}
+	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
 }

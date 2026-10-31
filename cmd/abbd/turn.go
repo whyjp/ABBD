@@ -2,10 +2,15 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -24,6 +29,37 @@ func splitList(s string) []string {
 		}
 	}
 	return out
+}
+
+// extractorHash fingerprints what the gate trusts to read the code: the
+// registered argv, each project file it names, and all of .abbd/extractor/.
+func (e env) extractorHash() (string, error) {
+	p, err := e.st.LoadProject()
+	if err != nil || len(p.Extract) == 0 {
+		return "", err
+	}
+	files := scriptFiles(e.root, p.Extract)
+	err = filepath.WalkDir(filepath.Join(e.root, store.Dir, "extractor"), func(path string, d fs.DirEntry, err error) error {
+		if err == nil && d.Type().IsRegular() {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	slices.Sort(files)
+	h := sha256.New()
+	fmt.Fprintf(h, "%q\n", p.Extract)
+	for _, f := range slices.Compact(files) {
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(h, "%s %d\n", relTo(e.root, f), len(b))
+		h.Write(b)
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 func (e env) tree() (string, error) {
@@ -123,6 +159,10 @@ func (e env) turnStart() error {
 	if err != nil {
 		return err
 	}
+	script, err := e.extractorHash()
+	if err != nil {
+		return err
+	}
 	req, err := e.st.NextID("REQ")
 	if err != nil {
 		return err
@@ -133,7 +173,7 @@ func (e env) turnStart() error {
 	}
 	t := turn.Turn{
 		ID: string(chg), Requirement: string(req), Session: e.session, State: turn.Open,
-		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree},
+		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script},
 		Seeds:    seeds, Impact: turn.ComputeImpact(*v.intended, seeds),
 	}
 	if err := e.st.WriteRequirement(store.Requirement{ID: string(req), Origin: model.UserStated, Turn: t.ID}, text); err != nil {
@@ -411,6 +451,15 @@ func (e env) turnEnd() error {
 		}
 		fmt.Fprintf(e.stdout, "%s CLOSED: the working tree never changed\n", t.ID)
 		return nil
+	}
+	if t.Baseline.Extractor != "" {
+		script, err := e.extractorHash()
+		if err != nil {
+			return err
+		}
+		if script != t.Baseline.Extractor {
+			return fmt.Errorf("the extraction script changed during %s (.abbd/extractor/ or a file project.yaml extract names), so the gate cannot trust it; restore it and end the turn again. Changing the script is a human's step outside the mode", t.ID)
+		}
 	}
 	if err := e.reextract(); err != nil {
 		return err
