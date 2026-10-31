@@ -332,7 +332,13 @@ type Run struct {
 	ExitCode int                `yaml:"exit_code"`
 	Result   model.Verification `yaml:"result"`
 	Output   string             `yaml:"output"`
+	// Why says what failed a run whose exit code alone would have passed.
+	Why string `yaml:"why,omitempty"`
 }
+
+// EditedTree is why a run that changed the working tree fails: what it
+// checked is no longer the tree the turn would complete on.
+const EditedTree = "the verify command changed the working tree, so it cannot prove the current tree; make it read-only"
 
 // Evidence says why run does not let a turn complete on tree, or "" when it does.
 // PASSED counts only for the tree it ran on.
@@ -340,6 +346,8 @@ func Evidence(run *Run, tree string) string {
 	switch {
 	case run == nil:
 		return "no verification ran in this turn; run abbd turn verify"
+	case run.Result != model.Passed && run.Why != "":
+		return fmt.Sprintf("%s %s: %s", run.ID, run.Result, run.Why)
 	case run.Result != model.Passed:
 		return fmt.Sprintf("%s %s (exit %d), output in .abbd/%s", run.ID, run.Result, run.ExitCode, run.Output)
 	case run.Tree != tree:

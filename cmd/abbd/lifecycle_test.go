@@ -14,7 +14,12 @@ import (
 func TestMain(m *testing.M) {
 	if len(os.Args) > 1 && os.Args[1] == "fake-verify" {
 		b, _ := os.ReadFile(os.Getenv("ABBD_FAKE_VERIFY"))
-		if strings.TrimSpace(string(b)) != "pass" {
+		// "pass edit PATH" passes after writing to PATH, as a verify that formats code would.
+		result, edit, _ := strings.Cut(strings.TrimSpace(string(b)), " edit ")
+		if edit != "" {
+			os.WriteFile(edit, []byte("package x\n// formatted\n"), 0o644)
+		}
+		if result != "pass" {
 			fmt.Println("FAIL: 1 test failed")
 			os.Exit(1)
 		}

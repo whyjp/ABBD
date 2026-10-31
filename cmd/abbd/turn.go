@@ -361,13 +361,20 @@ func (e env) turnVerify() error {
 		}
 		code = exit.ExitCode()
 	}
+	after, err := e.tree()
+	if err != nil {
+		return err
+	}
 	n, err := e.st.NextID("RUN")
 	if err != nil {
 		return err
 	}
 	id := "run-" + strings.TrimPrefix(string(n), "RUN-")
 	run := turn.Run{ID: id, Turn: t.ID, Command: p.Verify, Tree: tree, ExitCode: code, Result: model.Passed, Output: "verification/runs/" + id + ".log"}
-	if code != 0 {
+	if after != tree {
+		run.Why = turn.EditedTree
+	}
+	if code != 0 || run.Why != "" {
 		run.Result = model.Failed
 	}
 	if err := e.st.SaveRun(run, out.Bytes()); err != nil {
@@ -377,10 +384,10 @@ func (e env) turnVerify() error {
 	if err := e.st.SaveTurn(*t); err != nil {
 		return err
 	}
-	if code != 0 {
-		return fmt.Errorf("%s FAILED (exit %d), output in .abbd/%s", id, code, run.Output)
+	if run.Result != model.Passed {
+		return errors.New(turn.Evidence(&run, tree))
 	}
-	fmt.Fprintf(e.stdout, "%s PASSED on the current tree\n", id)
+	fmt.Fprintf(e.stdout, "%s PASSED on the current tree; gitignored files are not part of it\n", id)
 	return nil
 }
 

@@ -516,3 +516,14 @@ func TestRelationAnswerLapsesOnceTheDesignMoves(t *testing.T) {
 	p.start("MOD-0001")
 	p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--changes", edge)
 }
+
+func TestVerifyThatEditsTheTreeFails(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	p.editCode("billing/charge.go")
+	p.verify("pass edit "+filepath.Join(p.root, "billing", "charge.go"), 1, "run-0001 FAILED")
+	if run := p.read("verification/runs/run-0001.yaml"); !strings.Contains(run, "result: FAILED") {
+		t.Fatalf("a verify that edits the tree should be recorded FAILED:\n%s", run)
+	}
+	p.want(2, "run-0001 FAILED", "turn", "end", "--session", "s1")
+}
