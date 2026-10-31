@@ -164,9 +164,13 @@ func (t *Turn) AddImpact(id model.ID) bool {
 	return true
 }
 
-// Waiting reports whether a question of this turn still has no approval.
+// Waiting reports whether a key the turn still declares asked a question that
+// has no approval. Questions only grows, because it counts toward the cap, so
+// a key declared away no longer counts here.
 func (t *Turn) Waiting() bool {
-	return slices.ContainsFunc(t.Questions, func(q string) bool { return t.Approved(q) == "" })
+	return slices.ContainsFunc(t.Questions, func(q string) bool {
+		return slices.Contains(t.Delta.Changes, q) && t.Approved(q) == ""
+	})
 }
 
 func (t *Turn) Approved(key string) string {

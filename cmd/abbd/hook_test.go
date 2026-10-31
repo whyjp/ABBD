@@ -282,3 +282,17 @@ func TestStopLetsATurnWaitForItsQuestion(t *testing.T) {
 		t.Fatalf("once answered, the turn must be ended before the session stops: %+v", o)
 	}
 }
+
+// A redeclaration that drops the grade C key leaves nothing to wait for, so
+// the changed tree must still be ended before the session stops.
+func TestStopBlocksOnceTheQuestionIsDeclaredAway(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
+	p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--units", "MOD-0001", "--changes", edge)
+	p.want(0, "", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
+	p.editCode("billing/charge.go")
+	if o, _ := p.fire("Stop", map[string]any{"stop_hook_active": false}); o.Decision != "block" {
+		t.Fatalf("a turn no longer declaring its question waits on nothing: %+v", o)
+	}
+}
