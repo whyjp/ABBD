@@ -4,7 +4,9 @@ package topology
 
 import (
 	"fmt"
+	"slices"
 	"sort"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -21,6 +23,9 @@ type IntendedUnit struct {
 	ID        model.ID   `yaml:"id"`
 	Kind      model.Kind `yaml:"kind"`
 	Signature string     `yaml:"signature,omitempty"`
+	// ExternalConsumers is a human's statement that a contract has consumers
+	// outside the code the extraction script reads.
+	ExternalConsumers bool `yaml:"external_consumers,omitempty"`
 }
 
 type Edge struct {
@@ -115,66 +120,163 @@ func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 }
 
 // Compare lists every difference, sorted by key.
-//
-// Grade C (Blocked) covers anything that changes what an intended contract
-// promises or who depends on it, and any new coupling between two intended
-// units. Other changes that touch an intended unit need a short realignment.
 func Compare(in Intended, units []model.Unit) []Item {
 	actual := presentUnits(units)
-	intended := map[model.ID]IntendedUnit{}
-	for _, u := range in.Units {
-		intended[u.ID] = u
-	}
-	isContract := func(id model.ID) bool { u, ok := intended[id]; return ok && u.Kind.IsContract() }
-
+	intended := in.byID()
 	var items []Item
+	add := func(it Item) {
+		if effect, ok := in.Effect(it); ok {
+			it.Effect = effect
+			items = append(items, it)
+		}
+	}
 	for _, iu := range in.Units {
 		au, ok := actual[iu.ID]
 		switch {
-		case !ok && iu.Kind.IsContract():
-			items = append(items, Item{Change: UnitRemoved, Effect: Blocked, Unit: iu.ID})
 		case !ok:
-			items = append(items, Item{Change: UnitRemoved, Effect: Realign, Unit: iu.ID})
+			add(Item{Change: UnitRemoved, Unit: iu.ID})
 		case signature(au) != iu.Signature:
-			items = append(items, Item{Change: ContractChanged, Effect: Blocked, Unit: iu.ID, Old: iu.Signature, New: signature(au)})
+			add(Item{Change: ContractChanged, Unit: iu.ID, Old: iu.Signature, New: signature(au)})
 		}
 	}
 	for id := range actual {
 		if _, ok := intended[id]; !ok {
-			items = append(items, Item{Change: UnitAdded, Effect: Promote, Unit: id})
+			add(Item{Change: UnitAdded, Unit: id})
 		}
 	}
-
 	edges := actualEdges(actual)
-	want := map[Edge]bool{}
 	for _, e := range in.Relations {
-		want[e] = true
 		_, from := actual[e.From]
 		_, to := actual[e.To]
-		if !from || !to || edges[e] {
-			continue
+		if from && to && !edges[e] {
+			add(Item{Change: RemovedRelation, Edge: e})
 		}
-		effect := Realign
-		if isContract(e.From) || isContract(e.To) {
-			effect = Blocked
-		}
-		items = append(items, Item{Change: RemovedRelation, Effect: effect, Edge: e})
 	}
 	for e := range edges {
-		if want[e] {
-			continue
-		}
-		_, from := intended[e.From]
-		_, to := intended[e.To]
-		switch {
-		case (from && to) || isContract(e.From) || isContract(e.To):
-			items = append(items, Item{Change: NewRelation, Effect: Blocked, Edge: e})
-		case from || to:
-			items = append(items, Item{Change: NewRelation, Effect: Realign, Edge: e})
-		}
+		add(Item{Change: NewRelation, Edge: e})
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].Key() < items[j].Key() })
 	return items
+}
+
+// Effect is the one rule for who must act on a change. ok is false when the
+// change does not touch the intended topology at all.
+//
+// Grade C (Blocked) covers anything that changes what an intended contract
+// promises or who depends on it, and any new coupling between two intended
+// units. Other changes that touch an intended unit need a short realignment.
+func (in Intended) Effect(it Item) (effect Effect, ok bool) {
+	intended := in.byID()
+	_, has := intended[it.Unit]
+	isContract := func(id model.ID) bool { u, ok := intended[id]; return ok && u.Kind.IsContract() }
+	switch it.Change {
+	case UnitRemoved:
+		switch {
+		case !has:
+			return "", false
+		case isContract(it.Unit):
+			return Blocked, true
+		}
+		return Realign, true
+	case ContractChanged:
+		return Blocked, isContract(it.Unit)
+	case UnitAdded:
+		return Promote, !has
+	case RemovedRelation:
+		if !slices.Contains(in.Relations, it.Edge) {
+			return "", false
+		}
+		if isContract(it.Edge.From) || isContract(it.Edge.To) {
+			return Blocked, true
+		}
+		return Realign, true
+	case NewRelation:
+		if slices.Contains(in.Relations, it.Edge) {
+			return "", false
+		}
+		_, from := intended[it.Edge.From]
+		_, to := intended[it.Edge.To]
+		switch {
+		case (from && to) || isContract(it.Edge.From) || isContract(it.Edge.To):
+			return Blocked, true
+		case from || to:
+			return Realign, true
+		}
+	}
+	return "", false
+}
+
+func (in Intended) byID() map[model.ID]IntendedUnit {
+	m := map[model.ID]IntendedUnit{}
+	for _, u := range in.Units {
+		m[u.ID] = u
+	}
+	return m
+}
+
+// Unit returns the intended unit with id.
+func (in Intended) Unit(id model.ID) (IntendedUnit, bool) {
+	u, ok := in.byID()[id]
+	return u, ok
+}
+
+// HasConsumers reports whether anything depends on what contract id promises:
+// a consumes relation, intended or actual, or a human's external_consumers flag.
+func (in Intended) HasConsumers(units []model.Unit, id model.ID) bool {
+	if u, ok := in.Unit(id); ok && u.ExternalConsumers {
+		return true
+	}
+	for _, e := range in.Relations {
+		if e.To == id && e.Kind == model.Consumes {
+			return true
+		}
+	}
+	for e := range actualEdges(presentUnits(units)) {
+		if e.To == id && e.Kind == model.Consumes {
+			return true
+		}
+	}
+	return false
+}
+
+// ParseKey reads an item key as Item.Key prints it. The effect is left empty.
+func ParseKey(key string) (Item, error) {
+	change, rest, ok := strings.Cut(key, ":")
+	if !ok {
+		return Item{}, fmt.Errorf("%q is not a change key such as new-relation:MOD-0001.depends_on.MOD-0002", key)
+	}
+	it := Item{Change: Change(change)}
+	switch it.Change {
+	case NewRelation, RemovedRelation:
+		e, err := ParseEdge(rest)
+		if err != nil {
+			return Item{}, fmt.Errorf("%s: %w", key, err)
+		}
+		it.Edge = e
+	case ContractChanged, UnitRemoved, UnitAdded:
+		if _, _, err := model.ParseID(rest); err != nil {
+			return Item{}, fmt.Errorf("%s: %w", key, err)
+		}
+		it.Unit = model.ID(rest)
+	default:
+		return Item{}, fmt.Errorf("%s: unknown change %q", key, change)
+	}
+	return it, nil
+}
+
+// ParseEdge reads an edge as Edge.String prints it.
+func ParseEdge(s string) (Edge, error) {
+	parts := strings.Split(s, ".")
+	if len(parts) != 3 {
+		return Edge{}, fmt.Errorf("%q is not an edge such as MOD-0001.depends_on.MOD-0002", s)
+	}
+	e := Edge{From: model.ID(parts[0]), Kind: model.RelationKind(parts[1]), To: model.ID(parts[2])}
+	for _, id := range []model.ID{e.From, e.To} {
+		if _, _, err := model.ParseID(string(id)); err != nil {
+			return Edge{}, err
+		}
+	}
+	return e, e.Kind.Validate()
 }
 
 func signature(u model.Unit) string {
@@ -220,7 +322,7 @@ func Select(units []model.Unit, chosen map[model.ID]bool) Intended {
 	var in Intended
 	for id, u := range actual {
 		if chosen[id] {
-			in.Units = append(in.Units, IntendedUnit{id, u.Kind, signature(u)})
+			in.Units = append(in.Units, IntendedUnit{ID: id, Kind: u.Kind, Signature: signature(u)})
 		}
 	}
 	for e := range actualEdges(actual) {
@@ -238,6 +340,10 @@ func Approve(in Intended, it Item) (Intended, error) {
 	}
 	return apply(in, it), nil
 }
+
+// Accept folds an item into the intended topology whatever its effect. Only a
+// turn that syncs calls it, for the changes the turn was allowed to make.
+func Accept(in Intended, it Item) Intended { return apply(in, it) }
 
 // RealignTo acknowledges every REALIGN item. It refuses while any grade C item
 // is pending, because blocked changes come first.
