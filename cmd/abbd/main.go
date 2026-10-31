@@ -412,6 +412,25 @@ func (e env) confirmItem(pos []string) error {
 		return err
 	}
 	fmt.Fprintln(e.stdout, "confirmed", pos[0])
+	if v.intended == nil {
+		return nil
+	}
+	// After alignment a confirmed coupling is a new edge in the actual
+	// topology. The human who confirmed it has approved it, so it must not
+	// surface as drift.
+	after, err := e.load()
+	if err != nil {
+		return err
+	}
+	for _, it := range after.items {
+		if it.Change != topology.NewRelation || it.Edge.String() != pos[0] {
+			continue
+		}
+		if it.Effect == topology.Blocked {
+			return e.approve(it.Key())
+		}
+		fmt.Fprintf(e.stdout, "%s: run abbd align to acknowledge it\n", it)
+	}
 	return nil
 }
 

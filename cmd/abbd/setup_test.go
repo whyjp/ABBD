@@ -141,8 +141,8 @@ func TestSupplementFeedsTheConfirmQueueAndSurvivesReextraction(t *testing.T) {
 	}
 
 	p.want(0, "confirmed MOD-0001.purpose", "confirm", "MOD-0001.purpose")
-	p.want(0, "confirmed MOD-0002.consumes.MOD-0001", "confirm", "MOD-0002.consumes.MOD-0001")
-	p.want(2, "BLOCKED new-relation:MOD-0002.consumes.MOD-0001", "mode", "on", "--session", "s1")
+	p.want(0, "approved new-relation:MOD-0002.consumes.MOD-0001", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "active", "mode", "on", "--session", "s1")
 	if q := p.want(0, "", "confirm", "--list"); strings.TrimSpace(q) != "" {
 		t.Fatalf("every item was confirmed, queue:\n%s", q)
 	}
@@ -319,4 +319,28 @@ func equal(a, b map[string]string) bool {
 		}
 	}
 	return true
+}
+
+func TestConfirmingACouplingAfterAlignmentApprovesIt(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
+	p.want(0, "aligned", "align", "--all")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+	p.want(0, "approved new-relation:MOD-0002.consumes.MOD-0001 as ADR-0001", "confirm", "MOD-0002.consumes.MOD-0001")
+	if !strings.Contains(p.read("intended.yaml"), "kind: consumes") {
+		t.Fatalf("a confirmed coupling between design units should be intended:\n%s", p.read("intended.yaml"))
+	}
+	p.want(0, "phase: aligned", "status")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+}
+
+func TestConfirmingACouplingToABelowTheLineUnitPointsAtRealign(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
+	p.want(0, "aligned", "align", "--exclude", "MOD-0001")
+	p.want(0, "REALIGN new-relation:MOD-0002.consumes.MOD-0001: run abbd align", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "aligned", "align")
+	p.want(0, "active", "mode", "on", "--session", "s1")
 }
