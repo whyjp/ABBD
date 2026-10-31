@@ -57,14 +57,14 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 			f.Gaps = append(f.Gaps, fmt.Sprintf("%s %s: %v", src.Name, label, err))
 			continue
 		}
-		if d.Key != "" {
-			docTo[d.Key] = i
-		}
 		if covered[i] {
 			f.Conflicts = append(f.Conflicts, fmt.Sprintf("%s %s describes the same code as another %s unit", src.Name, label, src.Name))
 			continue
 		}
 		covered[i] = true
+		if d.Key != "" {
+			docTo[d.Key] = i
+		}
 		f.Matched++
 		u := &out.Units[i]
 		if src.Names && d.Name.Value != u.Name.Value {
@@ -91,14 +91,19 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 		}
 	}
 
-	type edge struct{ from, to string }
-	extracted := map[edge]map[model.RelationKind]bool{}
-	for _, r := range base.Relations {
-		e := edge{r.From, r.To}
-		if extracted[e] == nil {
-			extracted[e] = map[model.RelationKind]bool{}
+	type edge struct {
+		from, to string
+		kind     model.RelationKind
+	}
+	extracted := map[edge]bool{}
+	earlier := map[edge]int{}
+	for i, r := range out.Relations {
+		e := edge{r.From, r.To, r.Kind}
+		if r.Origin == model.Extracted {
+			extracted[e] = true
+		} else {
+			earlier[e] = i
 		}
-		extracted[e][r.Kind] = true
 	}
 	baseKey := func(i int) string { return out.Units[i].Key }
 	for _, r := range doc.Relations {
@@ -108,14 +113,19 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 			f.Gaps = append(f.Gaps, fmt.Sprintf("%s relation %s -%s-> %s names a unit that matched no code", src.Name, r.From, r.Kind, r.To))
 			continue
 		}
-		from, to := baseKey(fi), baseKey(ti)
-		if extracted[edge{from, to}][r.Kind] {
+		e := edge{baseKey(fi), baseKey(ti), r.Kind}
+		if extracted[e] {
 			continue
 		}
 		if !src.Strict {
 			f.Conflicts = append(f.Conflicts, fmt.Sprintf("%s relation %s -%s-> %s is not in the code; queued for confirmation", src.Name, r.From, r.Kind, r.To))
 		}
-		out.Relations = append(out.Relations, extract.Relation{From: from, To: to, Kind: r.Kind, Origin: src.Origin})
+		// An earlier overlay guessed the same edge; this document's origin replaces the guess.
+		if i, ok := earlier[e]; ok {
+			out.Relations[i].Origin = src.Origin
+			continue
+		}
+		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: src.Origin})
 	}
 	sort.Strings(f.Conflicts)
 	sort.Strings(f.Gaps)

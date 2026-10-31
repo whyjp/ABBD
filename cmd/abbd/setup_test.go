@@ -419,3 +419,36 @@ func TestScriptThatDependsOnTheHashSeedIsRefused(t *testing.T) {
 		t.Fatalf("a refused setup must write nothing")
 	}
 }
+
+func TestAdoptDuplicateUnitAddsNoSelfLoop(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	adopt := `{"units":[
+ {"key":"a","kind":"MOD","name":"pay","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"b","kind":"MOD","name":"pay2","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}
+],"relations":[{"from":"a","to":"b","kind":"depends_on"}]}`
+	p.setup(0, "bootstrapped", "--adopt", p.file(t, "a.json", adopt), "--", exe)
+	if md := p.read("architecture/MOD-0001.md"); strings.Contains(md, "to: MOD-0001") {
+		t.Fatalf("a duplicate adopt unit must not turn its relation into a self-loop:\n%s", md)
+	}
+	if q := p.want(0, "", "confirm", "--list"); strings.Contains(q, "MOD-0001.depends_on.MOD-0001") {
+		t.Fatalf("a self-loop must never reach the confirm queue:\n%s", q)
+	}
+	r := p.read("bootstrap-report.md")
+	if !strings.Contains(r, "describes the same code") || !strings.Contains(r, "adopt relation a -depends_on-> b names a unit that matched no code") {
+		t.Fatalf("the report should name the duplicate and the relation it orphaned:\n%s", r)
+	}
+}
+
+func TestAdoptRelationAlsoGuessedBySupplementIsAdopted(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	adopt := strings.ReplaceAll(supplement, `"responsibility":"owns the charges table"`, `"purpose":"x"`)
+	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", supplement), "--adopt", p.file(t, "a.json", adopt), "--", exe)
+	if r := p.read("bootstrap-report.md"); !strings.Contains(r, "adopt relation l -consumes-> b is not in the code") {
+		t.Fatalf("an adopted relation the code lacks is a conflict even when the supplement guessed it too:\n%s", r)
+	}
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "kind: consumes\n      origin: ADOPTED") {
+		t.Fatalf("the document's relation should carry origin ADOPTED:\n%s", md)
+	}
+}
