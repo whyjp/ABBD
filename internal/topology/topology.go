@@ -146,10 +146,12 @@ func Compare(in Intended, units []model.Unit) []Item {
 	}
 	edges := actualEdges(actual)
 	for _, e := range in.Relations {
-		_, from := actual[e.From]
-		_, to := actual[e.To]
-		if from && to && !edges[e] {
-			add(Item{Change: RemovedRelation, Edge: e})
+		if edges[e] {
+			continue
+		}
+		it := Item{Change: RemovedRelation, Edge: e}
+		if !in.droppedWithUnit(it, actual) {
+			add(it)
 		}
 	}
 	for e := range edges {
@@ -204,6 +206,24 @@ func (in Intended) Effect(it Item) (effect Effect, ok bool) {
 		}
 	}
 	return "", false
+}
+
+// droppedWithUnit reports whether a removed relation is already gated by the
+// removal of an intended unit at one of its ends, since accepting that removal
+// drops the unit's relations too. A relation that would gate harder than the
+// removal, such as a deleted module's consumes edge into a contract, is reported
+// on its own; otherwise deleting a consumer would pass as a realignment.
+func (in Intended) droppedWithUnit(it Item, actual map[model.ID]model.Unit) bool {
+	edge, _ := in.Effect(it)
+	for _, id := range []model.ID{it.Edge.From, it.Edge.To} {
+		if _, ok := actual[id]; ok {
+			continue
+		}
+		if removal, ok := in.Effect(Item{Change: UnitRemoved, Unit: id}); ok && (removal == Blocked || edge != Blocked) {
+			return true
+		}
+	}
+	return false
 }
 
 func (in Intended) byID() map[model.ID]IntendedUnit {

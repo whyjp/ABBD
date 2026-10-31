@@ -438,3 +438,23 @@ func TestGreenfieldModeOnRefusesCodeWithoutAScript(t *testing.T) {
 	write(t, filepath.Join(root, "billing", "charge.go"), "package billing\n")
 	p.want(1, "names no extraction script", "mode", "on", "--session", "s1")
 }
+
+// Deleting a contract's only consumer must not pass as a realignment, or the
+// next turn changes the contract as if no one had ever consumed it.
+func TestRemovingAConsumerCannotLaunderAContractChange(t *testing.T) {
+	p := activeTurnProject(t, topoConsumed)
+	p.start("MOD-0001")
+	p.editCode("reports/log.go")
+	p.extract(topoV1)
+	p.verify("pass", 0, "PASSED")
+	edge := "removed-relation:MOD-0003.consumes.IF-0001"
+	p.want(2, "C BLOCKED "+edge, "turn", "end", "--session", "s1")
+	if !strings.Contains(p.intended(), "kind: consumes") {
+		t.Fatalf("a blocked turn must keep the consumer intended:\n%s", p.intended())
+	}
+	p.want(0, "approved "+edge, "approve", edge)
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+	if strings.Contains(p.intended(), "kind: consumes") {
+		t.Fatalf("an approved removal should drop the consumer:\n%s", p.intended())
+	}
+}
