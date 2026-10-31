@@ -344,3 +344,10 @@ func TestConfirmingACouplingToABelowTheLineUnitPointsAtRealign(t *testing.T) {
 	p.want(0, "aligned", "align")
 	p.want(0, "active", "mode", "on", "--session", "s1")
 }
+
+func TestSetupResolvesFilesAgainstTheRoot(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	write(t, filepath.Join(p.root, ".abbd", "extractor", "supplement.json"), supplement)
+	p.setup(0, "4 item(s) in the confirm queue", "--supplement", ".abbd/extractor/supplement.json", "--", exe)
+}

@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/bootstrap"
@@ -51,7 +52,7 @@ func (e env) setup(string, []string) error {
 	rep.Digest = hex.EncodeToString(sum[:8])
 
 	if e.supplement != "" {
-		doc, err := readExtraction(e.supplement)
+		doc, err := e.readExtraction(e.supplement)
 		if err != nil {
 			return fmt.Errorf("supplement: %w", err)
 		}
@@ -123,7 +124,7 @@ func firstDiffLine(a, b []byte) int {
 }
 
 func (e env) adoptDoc(ex extract.Result) (extract.Result, bootstrap.Findings, error) {
-	doc, err := readExtraction(e.adopt)
+	doc, err := e.readExtraction(e.adopt)
 	if err != nil {
 		return ex, bootstrap.Findings{}, err
 	}
@@ -138,7 +139,7 @@ func (e env) setupGreenfield() error {
 	if v.phase != topology.Uninitialized {
 		return fmt.Errorf("greenfield setup needs a project with no design units; this one is %s", v.phase)
 	}
-	doc, err := readExtraction(e.greenfield)
+	doc, err := e.readExtraction(e.greenfield)
 	if err != nil {
 		return err
 	}
@@ -168,7 +169,12 @@ func (e env) setupGreenfield() error {
 	return nil
 }
 
-func readExtraction(path string) (extract.Result, error) {
+// readExtraction resolves a relative path against the root, where the
+// extraction script runs, not against the cwd of abbd.
+func (e env) readExtraction(path string) (extract.Result, error) {
+	if !filepath.IsAbs(path) {
+		path = filepath.Join(e.root, path)
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		return extract.Result{}, err
