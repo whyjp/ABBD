@@ -16,7 +16,6 @@ import (
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
 )
 
@@ -223,7 +222,12 @@ func (e env) setupGreenfield() error {
 	return nil
 }
 
-// firstFile returns a file under root outside .abbd and .git, or "".
+// harnessFiles are what a fresh agent project holds before any code.
+var harnessFiles = map[string]bool{"CLAUDE.md": true, "AGENTS.md": true}
+
+// firstFile returns a file under root that counts as code, or "". Dotfiles,
+// dot directories (.git, .abbd, .claude) and the agent instruction files at
+// the root do not count.
 func firstFile(root string) (string, error) {
 	found := ""
 	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
@@ -235,12 +239,14 @@ func firstFile(root string) (string, error) {
 			return err
 		}
 		switch {
-		case rel == store.Dir || rel == ".git":
+		case rel == ".":
+			return nil
+		case strings.HasPrefix(d.Name(), "."):
 			if d.IsDir() {
 				return filepath.SkipDir
 			}
 			return nil
-		case d.IsDir():
+		case d.IsDir(), harnessFiles[rel]:
 			return nil
 		}
 		found = filepath.ToSlash(rel)

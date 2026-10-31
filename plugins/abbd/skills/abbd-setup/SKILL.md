@@ -49,7 +49,7 @@ Write the units the human stated to `.abbd/extractor/stated.json` in the extract
 abbd setup --greenfield .abbd/extractor/stated.json
 ```
 
-Setup refuses greenfield when the directory holds any file outside `.abbd/` and `.git/`. Use code-only for a repository that has code.
+Setup refuses greenfield when the directory holds any file other than dotfiles, dot directories such as `.git/`, `.abbd/` and `.claude/`, and a root `CLAUDE.md` or `AGENTS.md`. Use code-only for a repository that has code.
 
 The project is aligned at once, with every fact USER_STATED. In the first turn that adds code, write the extraction script as in code-only step 3 and register it:
 

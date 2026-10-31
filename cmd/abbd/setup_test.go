@@ -360,6 +360,22 @@ func TestGreenfieldRefusesADirectoryThatHoldsCode(t *testing.T) {
 	}
 }
 
+func TestGreenfieldIgnoresAgentHarnessFiles(t *testing.T) {
+	root := t.TempDir()
+	write(t, filepath.Join(root, ".claude", "settings.json"), "{}")
+	write(t, filepath.Join(root, "CLAUDE.md"), "# notes")
+	write(t, filepath.Join(root, "AGENTS.md"), "# notes")
+	write(t, filepath.Join(root, ".gitignore"), "bin/")
+	p := &project{t: t, root: root}
+	stated := p.file(t, "stated.json", codeOnly)
+	p.setup(0, "aligned: 3", "--greenfield", stated)
+
+	other := t.TempDir()
+	write(t, filepath.Join(other, "docs", "CLAUDE.md"), "# not at the root")
+	q := &project{t: t, root: other}
+	q.setup(1, "docs/CLAUDE.md is already there", "--greenfield", stated)
+}
+
 func TestAlignedProjectKeepsItsRecordedScript(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
