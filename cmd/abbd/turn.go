@@ -233,13 +233,16 @@ func (e env) turnDeclare() error {
 	if err != nil {
 		return err
 	}
-	answered := func(q string) string {
-		for _, a := range adrs {
-			if a.Question == q && a.Decision == "approved" {
-				return a.ID
+	// A question keeps the human's latest answer, so a later rejection
+	// withdraws an earlier approval.
+	answer := func(q string) *store.ADR {
+		var last *store.ADR
+		for i, a := range adrs {
+			if a.Question == q && (a.Decision == "approved" || a.Decision == store.Rejected) {
+				last = &adrs[i]
 			}
 		}
-		return ""
+		return last
 	}
 	t.Delta = turn.Delta{Units: units}
 	var lines []string
@@ -250,6 +253,7 @@ func (e env) turnDeclare() error {
 			return err
 		}
 		t.Delta.Changes = append(t.Delta.Changes, key)
+		prior := answer(turn.Question(*v.intended, it))
 		switch {
 		case grade == turn.B:
 			lines = append(lines, fmt.Sprintf("B PROCEED %s: proceeding by default; recorded as an UNCONFIRMED ADR when the turn syncs", key))
@@ -260,16 +264,19 @@ func (e env) turnDeclare() error {
 		case t.Rejected(key) != nil:
 			waiting = true
 			lines = append(lines, fmt.Sprintf("C %s; undo it or declare without it", t.Rejected(key)))
-		case answered(turn.Question(*v.intended, it)) != "":
-			adr := answered(turn.Question(*v.intended, it))
-			t.Approvals = append(t.Approvals, turn.Approval{Item: key, ADR: adr})
-			lines = append(lines, fmt.Sprintf("C APPROVED %s by %s, answered before", key, adr))
+		case prior != nil && prior.Decision == "approved":
+			t.Approvals = append(t.Approvals, turn.Approval{Item: key, ADR: prior.ID})
+			lines = append(lines, fmt.Sprintf("C APPROVED %s by %s, answered before", key, prior.ID))
 		default:
 			if !slices.Contains(t.Questions, key) {
 				t.Questions = append(t.Questions, key)
 			}
 			waiting = true
-			lines = append(lines, fmt.Sprintf("C QUESTION %s: a human must run abbd approve %s before it is made", key, key))
+			line := fmt.Sprintf("C QUESTION %s: a human must run abbd approve %s before it is made", key, key)
+			if prior != nil {
+				line += fmt.Sprintf("; rejected before by %s: %s", prior.ID, prior.Reason)
+			}
+			lines = append(lines, line)
 		}
 	}
 	if len(t.Questions) > turn.MaxQuestions {
@@ -293,16 +300,18 @@ func (e env) turnDeclare() error {
 	return nil
 }
 
-// pending finds the grade C item key names in a turn: a question it asked or
-// a blocked change the gate sees.
+// pending finds the grade C item key names in a turn: a question it asked, a
+// grade C change it declared, or a blocked change the gate sees.
 func pending(t *turn.Turn, v view, key string) (*topology.Item, error) {
 	var item *topology.Item
-	if slices.Contains(t.Questions, key) {
-		it, _, err := turn.Declared(*v.intended, v.units, key)
+	if slices.Contains(t.Questions, key) || slices.Contains(t.Delta.Changes, key) {
+		it, grade, err := turn.Declared(*v.intended, v.units, key)
 		if err != nil {
 			return nil, err
 		}
-		item = &it
+		if grade == turn.C {
+			item = &it
+		}
 	}
 	for _, vd := range turn.Unallowed(turn.Judge(*v.intended, v.units, t.Approvals)) {
 		if vd.Item.Key() == key {
@@ -356,9 +365,9 @@ func (e env) rejectInTurn(t *turn.Turn, key string) error {
 	if err != nil {
 		return err
 	}
-	if adr := t.Approved(key); adr != "" {
-		return fmt.Errorf("%s is already approved for %s by %s", key, t.ID, adr)
-	}
+	// A human may always say no, so a rejection withdraws an approval this
+	// turn holds and the change is blocked again.
+	t.Approvals = slices.DeleteFunc(t.Approvals, func(a turn.Approval) bool { return a.Item == key })
 	item, err := pending(t, v, key)
 	if err != nil {
 		return err

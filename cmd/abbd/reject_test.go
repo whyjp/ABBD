@@ -107,3 +107,37 @@ func TestCoupleRegistersWhatTheScriptCannotSee(t *testing.T) {
 	}
 	p.want(1, "already part of the actual topology", "couple", edge)
 }
+
+func TestAHumanCanRejectAfterAnApproval(t *testing.T) {
+	p, edge := blockedTurn(t)
+	p.want(0, "as ADR-0001", "approve", edge)
+	p.want(0, "rejected "+edge+" for CHG-0001 as ADR-0002", "reject", edge, "--reason", "changed my mind")
+	out := p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s1")
+	if !strings.Contains(out, "REJECTED "+edge+" by ADR-0002: changed my mind") {
+		t.Fatalf("the later rejection should stand over the approval:\n%s", out)
+	}
+	p.want(0, "as ADR-0003", "approve", edge)
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+}
+
+func TestALaterRejectionOverridesAnEarlierAnswer(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
+	p.start("MOD-0001")
+	p.want(2, "QUESTION", "turn", "declare", "--session", "s1", "--changes", edge)
+	p.want(0, "as ADR-0001", "approve", edge)
+	p.editCode("billing/charge.go")
+	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
+
+	p.want(0, "CHG-0002 OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "again")
+	p.want(0, "answered before", "turn", "declare", "--session", "s1", "--changes", edge)
+	p.want(0, "as ADR-0002", "reject", edge, "--reason", "not any more")
+	p.want(2, "C REJECTED "+edge+" by ADR-0002: not any more", "turn", "declare", "--session", "s1", "--changes", edge)
+	p.want(0, "CHG-0002 CLOSED", "turn", "end", "--session", "s1")
+
+	p.want(0, "CHG-0003 OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "third")
+	out := p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--changes", edge)
+	if !strings.Contains(out, "rejected before by ADR-0002: not any more") || strings.Contains(out, "APPROVED") {
+		t.Fatalf("a standing rejection must be asked again with its reason, never approved:\n%s", out)
+	}
+}
