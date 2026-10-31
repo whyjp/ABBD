@@ -1,0 +1,449 @@
+{
+  "units": [
+    {
+      "key": "cfg-hooks",
+      "kind": "CFG",
+      "name": "hook registration",
+      "anchors": [
+        {
+          "path": "plugins/abbd/hooks/hooks.json"
+        }
+      ],
+      "purpose": "registers ABBD's hooks with Claude Code",
+      "responsibility": "fixes which events and tool matchers call abbd hook"
+    },
+    {
+      "key": "cfg-plugin",
+      "kind": "CFG",
+      "name": "plugin and marketplace manifest",
+      "anchors": [
+        {
+          "path": ".claude-plugin/marketplace.json"
+        }
+      ],
+      "purpose": "publishes ABBD as a Claude Code plugin from this repository",
+      "responsibility": "fixes the marketplace and plugin names and the plugin source path"
+    },
+    {
+      "key": "cfg-project",
+      "kind": "CFG",
+      "name": "project.yaml",
+      "anchors": [
+        {
+          "path": "internal/store/store.go",
+          "symbol": "Project"
+        }
+      ],
+      "purpose": "records the trusted extraction and verify argv",
+      "responsibility": "fixes project.yaml, which mode on and turn verify run without asking"
+    },
+    {
+      "key": "data-changes",
+      "kind": "DATA",
+      "name": "change records",
+      "anchors": [
+        {
+          "path": "internal/store/turn.go",
+          "symbol": "SaveTurn"
+        }
+      ],
+      "purpose": "is the record of each turn",
+      "responsibility": "fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report"
+    },
+    {
+      "key": "data-decisions",
+      "kind": "DATA",
+      "name": "decision records",
+      "anchors": [
+        {
+          "path": "internal/store/store.go",
+          "symbol": "WriteADR"
+        }
+      ],
+      "purpose": "is the record of each human decision on a grade C change",
+      "responsibility": "fixes ADR frontmatter: subject, decision, question, reason and turn"
+    },
+    {
+      "key": "data-extraction",
+      "kind": "DATA",
+      "name": "extraction JSON",
+      "anchors": [
+        {
+          "path": "internal/extract/extract.go",
+          "symbol": "rawResult"
+        }
+      ],
+      "purpose": "is what every project extraction script and supplement must print",
+      "responsibility": "fixes the units and relations JSON; unknown fields are rejected"
+    },
+    {
+      "key": "data-generated",
+      "kind": "DATA",
+      "name": "generated files",
+      "anchors": [
+        {
+          "path": "internal/screen/page.go",
+          "symbol": "Graph"
+        }
+      ],
+      "purpose": "lets tools and humans read the topology without the CLI",
+      "responsibility": "fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE"
+    },
+    {
+      "key": "data-intended",
+      "kind": "DATA",
+      "name": "intended topology",
+      "anchors": [
+        {
+          "path": "internal/store/store.go",
+          "symbol": "SaveIntended"
+        }
+      ],
+      "purpose": "is the human-approved topology every gate compares against",
+      "responsibility": "fixes intended.yaml: revision, units with signatures and external consumers, relations"
+    },
+    {
+      "key": "data-requirements",
+      "kind": "DATA",
+      "name": "requirements",
+      "anchors": [
+        {
+          "path": "internal/store/turn.go",
+          "symbol": "WriteRequirement"
+        }
+      ],
+      "purpose": "keeps each user request verbatim",
+      "responsibility": "fixes the requirement file a turn points to"
+    },
+    {
+      "key": "data-runs",
+      "kind": "DATA",
+      "name": "verification runs",
+      "anchors": [
+        {
+          "path": "internal/store/turn.go",
+          "symbol": "SaveRun"
+        }
+      ],
+      "purpose": "is the evidence that a turn's verification passed on its tree",
+      "responsibility": "fixes the run record: command, tree, exit code, result and log path"
+    },
+    {
+      "key": "data-units",
+      "kind": "DATA",
+      "name": "unit files",
+      "anchors": [
+        {
+          "path": "internal/store/store.go",
+          "symbol": "SaveUnits"
+        }
+      ],
+      "purpose": "is the actual topology as reviewable files",
+      "responsibility": "fixes the unit file frontmatter: anchors, facts with their evidence, relations"
+    },
+    {
+      "key": "feat-abbd-mode",
+      "kind": "FEAT",
+      "name": "/abbd-mode",
+      "anchors": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "symbol": "abbd-mode"
+        }
+      ],
+      "purpose": "runs a pstack playbook inside a gated ABBD turn",
+      "responsibility": "maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates"
+    },
+    {
+      "key": "feat-abbd-setup",
+      "kind": "FEAT",
+      "name": "/abbd-setup",
+      "anchors": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "symbol": "abbd-setup"
+        }
+      ],
+      "purpose": "bootstraps ABBD on a repository without asking the human",
+      "responsibility": "drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human"
+    },
+    {
+      "key": "if-change-key",
+      "kind": "IF",
+      "name": "change item key",
+      "anchors": [
+        {
+          "path": "internal/topology/topology.go",
+          "symbol": "Item"
+        }
+      ],
+      "purpose": "names one topology change so a human can approve or reject it",
+      "responsibility": "fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share"
+    },
+    {
+      "key": "if-cli",
+      "kind": "IF",
+      "name": "abbd command line",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "commands"
+        }
+      ],
+      "purpose": "is the command surface humans, skills and the screen call",
+      "responsibility": "fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64"
+    },
+    {
+      "key": "if-confirm-key",
+      "kind": "IF",
+      "name": "confirm item key",
+      "anchors": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "symbol": "Item"
+        }
+      ],
+      "purpose": "names one guess in the confirm queue",
+      "responsibility": "fixes the ID.field and edge syntax a human types to confirm or reject a guess"
+    },
+    {
+      "key": "if-hook",
+      "kind": "IF",
+      "name": "Claude Code hook protocol",
+      "anchors": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "symbol": "hookInput"
+        }
+      ],
+      "purpose": "is how Claude Code hands ABBD each session event",
+      "responsibility": "fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout"
+    },
+    {
+      "key": "if-serve-http",
+      "kind": "IF",
+      "name": "screen HTTP",
+      "anchors": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "symbol": "ServeHTTP"
+        }
+      ],
+      "purpose": "is what the screen page posts to decide",
+      "responsibility": "fixes the routes and the act form: which decisions exist and which fields each reads"
+    },
+    {
+      "key": "mod-bootstrap",
+      "kind": "MOD",
+      "name": "internal/bootstrap",
+      "anchors": [
+        {
+          "path": "internal/bootstrap"
+        }
+      ],
+      "purpose": "lays the supplement and adopted documents over the script result and writes the setup report",
+      "responsibility": "matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report"
+    },
+    {
+      "key": "mod-cmd-abbd",
+      "kind": "MOD",
+      "name": "abbd CLI",
+      "anchors": [
+        {
+          "path": "cmd/abbd"
+        }
+      ],
+      "purpose": "lets the human and the agent drive ABBD from a terminal and from Claude Code hooks",
+      "responsibility": "parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes"
+    },
+    {
+      "key": "mod-confirm",
+      "kind": "MOD",
+      "name": "internal/confirm",
+      "anchors": [
+        {
+          "path": "internal/confirm"
+        }
+      ],
+      "purpose": "is the queue of agent guesses waiting for a human",
+      "responsibility": "lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject"
+    },
+    {
+      "key": "mod-extract",
+      "kind": "MOD",
+      "name": "internal/extract",
+      "anchors": [
+        {
+          "path": "internal/extract"
+        }
+      ],
+      "purpose": "is the trust boundary where extraction JSON becomes typed units",
+      "responsibility": "validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED"
+    },
+    {
+      "key": "mod-gitx",
+      "kind": "MOD",
+      "name": "internal/gitx",
+      "anchors": [
+        {
+          "path": "internal/gitx"
+        }
+      ],
+      "purpose": "reads the few git facts ABBD needs without touching the user's index",
+      "responsibility": "snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir"
+    },
+    {
+      "key": "mod-guard",
+      "kind": "MOD",
+      "name": "PreToolUse guard",
+      "anchors": [
+        {
+          "path": "cmd/abbd/guard.go"
+        }
+      ],
+      "purpose": "stops an agent in an active session from doing a human's step",
+      "responsibility": "splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen"
+    },
+    {
+      "key": "mod-identity",
+      "kind": "MOD",
+      "name": "internal/identity",
+      "anchors": [
+        {
+          "path": "internal/identity"
+        }
+      ],
+      "purpose": "keeps design unit IDs stable across re-extraction",
+      "responsibility": "matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite"
+    },
+    {
+      "key": "mod-model",
+      "kind": "MOD",
+      "name": "internal/model",
+      "anchors": [
+        {
+          "path": "internal/model"
+        }
+      ],
+      "purpose": "is the shared vocabulary of design units and their evidence",
+      "responsibility": "defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs"
+    },
+    {
+      "key": "mod-screen",
+      "kind": "MOD",
+      "name": "internal/screen",
+      "anchors": [
+        {
+          "path": "internal/screen"
+        }
+      ],
+      "purpose": "shows the human what needs a decision without opening Markdown",
+      "responsibility": "builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files"
+    },
+    {
+      "key": "mod-serve",
+      "kind": "MOD",
+      "name": "screen server",
+      "anchors": [
+        {
+          "path": "cmd/abbd/serve.go"
+        }
+      ],
+      "purpose": "gives the human a browser screen for every decision",
+      "responsibility": "listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process"
+    },
+    {
+      "key": "mod-store",
+      "kind": "MOD",
+      "name": "internal/store",
+      "anchors": [
+        {
+          "path": "internal/store"
+        }
+      ],
+      "purpose": "persists all ABBD state as reviewable files under .abbd/ and the git dir",
+      "responsibility": "is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files"
+    },
+    {
+      "key": "mod-topology",
+      "kind": "MOD",
+      "name": "internal/topology",
+      "anchors": [
+        {
+          "path": "internal/topology"
+        }
+      ],
+      "purpose": "compares the approved intended topology with the actual one",
+      "responsibility": "owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds"
+    },
+    {
+      "key": "mod-turn",
+      "kind": "MOD",
+      "name": "internal/turn",
+      "anchors": [
+        {
+          "path": "internal/turn"
+        }
+      ],
+      "purpose": "models one unit of agent work under abbd mode",
+      "responsibility": "owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule"
+    }
+  ],
+  "relations": [
+    {
+      "from": "mod-guard",
+      "to": "mod-store",
+      "kind": "depends_on"
+    },
+    {
+      "from": "mod-guard",
+      "to": "if-cli",
+      "kind": "consumes"
+    },
+    {
+      "from": "mod-guard",
+      "to": "cfg-hooks",
+      "kind": "consumes"
+    },
+    {
+      "from": "mod-turn",
+      "to": "mod-gitx",
+      "kind": "depends_on"
+    },
+    {
+      "from": "mod-identity",
+      "to": "mod-bootstrap",
+      "kind": "depends_on"
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "mod-guard",
+      "kind": "depends_on"
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "cfg-plugin",
+      "kind": "consumes"
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "cfg-hooks",
+      "kind": "consumes"
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "data-intended",
+      "kind": "consumes"
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "data-changes",
+      "kind": "consumes"
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "data-extraction",
+      "kind": "consumes"
+    }
+  ]
+}

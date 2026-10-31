@@ -1,0 +1,9 @@
+extract:
+    - go
+    - run
+    - .abbd/extractor/extract.go
+verify:
+    - go
+    - test
+    - -count=1
+    - ./...
