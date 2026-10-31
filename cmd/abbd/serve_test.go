@@ -275,17 +275,20 @@ func TestGeneratedFilesCarryTheWatermarkAndStatusSaysStale(t *testing.T) {
 		}
 	}
 	before := p.read("generated/explorer.html")
-	p.want(0, "", "confirm", "--list")
-	if p.read("generated/explorer.html") != before {
-		t.Fatalf("regenerating unchanged Markdown should write the same bytes")
+	e := p.screen().env
+	if err := e.publish(); err != nil || p.read("generated/explorer.html") != before {
+		t.Fatalf("regenerating unchanged inputs should write the same bytes: %v", err)
 	}
 
 	md := filepath.Join(p.root, ".abbd", "architecture", "MOD-0001.md")
 	b, _ := os.ReadFile(md)
 	write(t, md, strings.Replace(string(b), "name:\n    value: billing", "name:\n    value: payments", 1))
 	p.want(0, "generated: STALE", "status")
-	p.want(0, "generated: STALE", "status")
 	p.want(0, "", "confirm", "--list")
+	p.want(0, "", "turn", "show")
+	p.want(1, "", "approve", "new-relation:MOD-0001.depends_on.MOD-0002")
+	p.want(0, "generated: STALE", "status")
+	p.want(0, "", "couple", "MOD-0002.consumes.MOD-0001")
 	p.want(0, "generated: CURRENT", "status")
 	if !strings.Contains(p.read("generated/graph.json"), "payments") {
 		t.Fatalf("the regenerated graph should follow the Markdown")

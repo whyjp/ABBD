@@ -8,9 +8,6 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// readOnly commands never publish, so status can still see a STALE file.
-var readOnly = map[string]bool{"status": true, "turn show": true, "serve": true}
-
 // screenInput loads what the screen shows, with the working tree it needs to
 // say whether the actual topology is current.
 func (e env) screenInput() (screen.Input, error) {

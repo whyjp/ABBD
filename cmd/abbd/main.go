@@ -242,10 +242,15 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		e.hook(inv.sub)
 		return exitOK
 	}
+	// Only a command that changed what the pages render publishes, so a hand
+	// edit stays STALE until a command writes over it.
+	before, _ := e.st.InputsHash()
 	err = commands[inv.name].run(e, inv.sub, inv.pos)
-	if !readOnly[inv.name] {
-		if perr := e.publish(); perr != nil {
-			fmt.Fprintln(stderr, "abbd: warning: regenerating .abbd/generated/:", perr)
+	if err == nil || errors.Is(err, errNeedHuman) {
+		if after, _ := e.st.InputsHash(); after != before {
+			if perr := e.publish(); perr != nil {
+				fmt.Fprintln(stderr, "abbd: warning: regenerating .abbd/generated/:", perr)
+			}
 		}
 	}
 	switch {
