@@ -409,3 +409,13 @@ func TestGreenfieldRegistrationStillProvesDeterminism(t *testing.T) {
 		t.Fatalf("a refused registration must not record the script")
 	}
 }
+
+func TestScriptThatDependsOnTheHashSeedIsRefused(t *testing.T) {
+	t.Setenv("PYTHONHASHSEED", "0")
+	p, exe := bare(t)
+	p.extract(strings.Replace(codeOnly, `"name":"ledger"`, `"name":"ledger{{PYTHONHASHSEED}}"`, 1))
+	p.setup(1, "PYTHONHASHSEED", "--", exe)
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd")); err == nil {
+		t.Fatalf("a refused setup must write nothing")
+	}
+}

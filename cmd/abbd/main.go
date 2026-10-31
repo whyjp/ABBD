@@ -556,10 +556,13 @@ func (e env) reextract() error {
 	return err
 }
 
-func (e env) runScript(argv []string) ([]byte, error) {
+func (e env) runScript(argv []string, env ...string) ([]byte, error) {
 	var out, errb bytes.Buffer
 	cmd := exec.Command(argv[0], argv[1:]...)
 	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
+	if len(env) > 0 {
+		cmd.Env = append(os.Environ(), env...)
+	}
 	if err := cmd.Run(); err != nil {
 		return nil, fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
 	}

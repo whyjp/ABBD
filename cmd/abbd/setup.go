@@ -115,21 +115,45 @@ func (e env) setup(string, []string) error {
 	return nil
 }
 
-// deterministic runs the script twice. A script whose output changes while the
-// code does not would make every later gate decision noise.
+// deterministic runs the script three times. A script whose output changes
+// while the code does not would make every later gate decision noise. The
+// third run changes the hash seeds that interpreters use to randomize iteration
+// order per process, which two runs miss when the environment pins the seed.
 func (e env) deterministic(argv []string) ([]byte, error) {
 	first, err := e.runScript(argv)
 	if err != nil {
 		return nil, err
 	}
-	second, err := e.runScript(argv)
-	if err != nil {
-		return nil, err
+	reseed := reseeded()
+	runs := []struct {
+		env  []string
+		what string
+	}{
+		{nil, "two runs on the same code printed different output"},
+		{reseed, fmt.Sprintf("a run with %s printed different output", strings.Join(reseed, " "))},
 	}
-	if !bytes.Equal(first, second) {
-		return nil, fmt.Errorf("the extraction script is not deterministic: two runs on the same code printed different output (first difference at line %d); sort its output and drop timestamps", firstDiffLine(first, second))
+	for _, r := range runs {
+		out, err := e.runScript(argv, r.env...)
+		if err != nil {
+			return nil, err
+		}
+		if !bytes.Equal(first, out) {
+			return nil, fmt.Errorf("the extraction script is not deterministic: %s (first difference at line %d); sort its output and drop timestamps", r.what, firstDiffLine(first, out))
+		}
 	}
 	return first, nil
+}
+
+func reseeded() []string {
+	var env []string
+	for _, name := range []string{"PYTHONHASHSEED", "PERL_HASH_SEED"} {
+		seed := "1"
+		if os.Getenv(name) == seed {
+			seed = "2"
+		}
+		env = append(env, name+"="+seed)
+	}
+	return env
 }
 
 func firstDiffLine(a, b []byte) int {
