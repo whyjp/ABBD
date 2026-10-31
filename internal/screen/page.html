@@ -118,10 +118,10 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>결정 대기</h2>
   {{if .M.Align}}
   <div class="card">
-    <strong>첫 정렬.</strong> setup이 묻지 않고 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다.
+    <strong>첫 정렬.</strong> setup이 묻지 않고 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다. 후보는 종류별로 접혀 있고 처음에는 모두 골라져 있습니다.
     {{if not $static}}<form method="post" action="/act">
       <input type="hidden" name="do" value="align">
-      <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
+      {{range .M.AlignGroups}}<details class="group"><summary>{{label .Title}} <span class="muted">{{len .Rows}}개</span></summary><ul class="plain">{{range .Rows}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul></details>{{end}}
       <button class="primary" disabled>이 설계 단위로 확정</button>
     </form>{{else}}<ul class="plain">{{range .M.Align}}<li><span class="key">{{.ID}}</span> {{.Name}}</li>{{end}}</ul>{{end}}
   </div>
@@ -170,7 +170,8 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>{{if eq .O.Only "queue"}}확인할 추정{{else}}신뢰: 확인할 추정{{end}}</h2>
   {{if .M.Queue}}
   <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
-  {{range .M.Queue}}
+  {{range .M.QueueGroups}}<details class="group" id="qg-{{.Title}}"><summary><span class="key">{{.Title}}</span> {{(index .Rows 0).Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}} <span class="muted">{{len .Rows}}개</span></summary>
+  {{range .Rows}}
   <div class="card" style="border-left-color: var(--guess)" id="q-{{.Key}}">
     <div><span class="pill inferred">{{if .Field}}{{label "inferred"}}{{else}}{{label (lower .Value)}}{{end}}</span> <span class="key">{{.Key}}</span>{{if .Design}} <span class="muted">설계 단위</span>{{end}}</div>
     {{if .Field}}<div class="why">{{.Value}}</div>{{else}}<div class="why">{{.Name}}: 추출 스크립트가 찾지 못한 결합</div>{{end}}
@@ -179,7 +180,7 @@ svg marker path { fill: var(--muted); stroke: none; }
     <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm-reject"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" required placeholder="실제로는 무엇인지">{{end}}<button class="danger" disabled>틀림</button></form>
     {{end}}
   </div>
-  {{end}}
+  {{end}}</details>{{end}}
   {{else}}<p class="muted">확인 대기열이 비었습니다.</p>{{end}}
   {{if and .M.Defaults (ne .O.Only "queue")}}<h3>기본값으로 진행된 B등급 변경</h3><ul class="plain">{{range .M.Defaults}}<li><span class="pill UNCONFIRMED">UNCONFIRMED</span> <span class="key">{{.Subject}}</span> <span class="muted">{{.ID}}{{if .Turn}}, {{.Turn}}{{end}}</span></li>{{end}}</ul>{{end}}
 </section>

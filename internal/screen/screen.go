@@ -215,19 +215,23 @@ type UnitRow struct {
 }
 
 type Model struct {
-	Phase      topology.Phase
-	Pending    []Card
-	Turn       *TurnView
-	History    []TurnView
-	Drift      []Row
-	Promote    []Group[Promotion]
-	Defaults   []store.ADR
-	Queue      []QueueRow
-	Align      []Candidate
-	Units      []UnitRow
-	Actual     Freshness
-	Generated  Freshness
-	Registered int
+	Phase    topology.Phase
+	Pending  []Card
+	Turn     *TurnView
+	History  []TurnView
+	Drift    []Row
+	Promote  []Group[Promotion]
+	Defaults []store.ADR
+	Queue    []QueueRow
+	// QueueGroups folds the queue by unit, design units first.
+	QueueGroups []Group[QueueRow]
+	Align       []Candidate
+	// AlignGroups folds the first-alignment candidates by kind.
+	AlignGroups []Group[Candidate]
+	Units       []UnitRow
+	Actual      Freshness
+	Generated   Freshness
+	Registered  int
 	// Realign offers the short realignment: drift a human acknowledges, outside a live turn.
 	Realign bool
 	// Waiting is true while a grade C change waits, which realignment must not pass.
@@ -316,6 +320,12 @@ func Build(in Input) Model {
 	for _, it := range confirm.Queue(in.Units, design) {
 		m.Queue = append(m.Queue, QueueRow{Item: it, Name: names[it.Unit], Field: !isRelation(it.Key)})
 	}
+	m.QueueGroups = group(m.Queue, func(r QueueRow) string { return string(r.Unit) }, func(id string) string {
+		return fmt.Sprint(!design[model.ID(id)]) + id
+	})
+	for i := range m.QueueGroups {
+		m.QueueGroups[i].Design = design[model.ID(m.QueueGroups[i].Title)]
+	}
 	present := topology.Present(in.Units)
 	if m.Phase == topology.Bootstrapped {
 		for _, u := range present {
@@ -325,6 +335,7 @@ func Build(in Input) Model {
 			}
 			m.Align = append(m.Align, c)
 		}
+		m.AlignGroups = group(m.Align, func(c Candidate) string { return c.Kind }, byKind)
 	}
 	for _, u := range present {
 		m.Units = append(m.Units, UnitRow{

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=25e51cb75e41fe403a2b95ecf38cb707871b0af7cf6ecc49fbff90f107abbc97 intended_revision=1">
+<meta name="abbd-watermark" content="inputs_hash=3068fa8644d7ee7bc70dcf5afd2bf1bbba130ef5c1549e5e29412b17999d47cc intended_revision=1">
 <title>ABBD 화면</title>
 <style>
 :root {
@@ -121,21 +121,21 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 
 <section id="turn">
-  <h2>이번 턴 CHG-0003 <span class="pill SYNCED">SYNCED</span></h2>
-  <p><span class="muted">요청 REQ-0003:</span> Stage 6a item 2 (doc ch5 짧은 재정렬): let the human pick which REALIGN rows to acknowledge on the screen instead of all or nothing, keeping BLOCKED first; abbd align --confirm KEYS is the terminal form on a drifted project.</p>
+  <h2>이번 턴 CHG-0004 <span class="pill SYNCED">SYNCED</span></h2>
+  <p><span class="muted">요청 REQ-0004:</span> Stage 6a item 3b (doc ch11 남은 관찰): make the screen usable on a 31-unit repo; group and collapse the confirm queue and the candidate list by unit, design units first, so the first screen is short.</p>
   
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
-  <p>단위 <span class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 </span></p>
+  <p>단위 <span class="key">MOD-0010 </span></p>
   
-  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0005</span></li><li>했지만 선언하지 않음: <span class="key">IF-0002</span></li><li>했지만 선언하지 않음: <span class="key">IF-0003</span></li><li>했지만 선언하지 않음: <span class="key">IF-0005</span></li></ul>
-  
-  
+  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">MOD-0001</span></li></ul>
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 IF-0003 DATA-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </p>
-  <p>검증 run-0003 <span class="pill PASSED">PASSED</span></p>
+  
+  
+  <h3>영향 범위</h3><p class="key">MOD-0010 MOD-0001 MOD-0003 DATA-0003 IF-0001 IF-0002 MOD-0002 IF-0003 CFG-0003 FEAT-0001 FEAT-0002 </p>
+  <p>검증 run-0004 <span class="pill PASSED">PASSED</span></p>
 
 </section>
 
@@ -615,7 +615,20 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 <section id="history">
   <details><summary>이전 턴</summary>
-  <h3>CHG-0002 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 1 (doc ch7 승격 절차, ch13 threshold): detect promotion candidates (a new module or contract, or a below-the-line unit that two or more design units relate to), show them on the screen with adopt and reject actions (adopt makes it a design unit in intended, reject keeps it below the line and stops re-proposing it until its relations change), give the human CLI equivalents, and keep adopt and reject on the guard&#39;s deny list.</p>
+  <h3>CHG-0003 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 2 (doc ch5 짧은 재정렬): let the human pick which REALIGN rows to acknowledge on the screen instead of all or nothing, keeping BLOCKED first; abbd align --confirm KEYS is the terminal form on a drifted project.</p>
+  <p class="muted">토폴로지 변경 없음.</p>
+  <h3>선언</h3>
+  <p>단위 <span class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 </span></p>
+  
+  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0005</span></li><li>했지만 선언하지 않음: <span class="key">IF-0002</span></li><li>했지만 선언하지 않음: <span class="key">IF-0003</span></li><li>했지만 선언하지 않음: <span class="key">IF-0005</span></li></ul>
+  
+  
+  
+  
+  
+  <h3>영향 범위</h3><p class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 IF-0003 DATA-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </p>
+  <p>검증 run-0003 <span class="pill PASSED">PASSED</span></p>
+<h3>CHG-0002 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 1 (doc ch7 승격 절차, ch13 threshold): detect promotion candidates (a new module or contract, or a below-the-line unit that two or more design units relate to), show them on the screen with adopt and reject actions (adopt makes it a design unit in intended, reject keeps it below the line and stops re-proposing it until its relations change), give the human CLI equivalents, and keep adopt and reject on the guard&#39;s deny list.</p>
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
   <p>단위 <span class="key">MOD-0012 MOD-0001 MOD-0010 MOD-0003 </span></p>
@@ -646,7 +659,7 @@ svg marker path { fill: var(--muted); stroke: none; }
 </section>
 
 
-<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>25e51cb75e41fe403a2b95ecf38cb707871b0af7cf6ecc49fbff90f107abbc97</code> r1</p>
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>3068fa8644d7ee7bc70dcf5afd2bf1bbba130ef5c1549e5e29412b17999d47cc</code> r1</p>
 
 </main>
 
