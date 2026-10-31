@@ -91,7 +91,7 @@ var actions = map[string]func(f url.Values) ([]string, error){
 	},
 	"align": func(f url.Values) ([]string, error) {
 		if len(f["id"]) == 0 {
-			return nil, fmt.Errorf("choose at least one design unit")
+			return nil, fmt.Errorf("설계 단위를 하나 이상 고르세요")
 		}
 		return []string{"align", "--confirm=" + strings.Join(f["id"], ",")}, nil
 	},
@@ -105,7 +105,7 @@ var actions = map[string]func(f url.Values) ([]string, error){
 func keyed(f url.Values, cmd string, flags ...string) ([]string, error) {
 	key := f.Get("key")
 	if key == "" || strings.HasPrefix(key, "-") {
-		return nil, fmt.Errorf("%q is not an item key", key)
+		return nil, fmt.Errorf("%q는 항목 키가 아닙니다", key)
 	}
 	return append([]string{cmd, key}, flags...), nil
 }
@@ -121,7 +121,7 @@ func (s *screenServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// A page another site loads through a rebound DNS name arrives with that
 	// name as its Host; only the loopback address this launch printed is served.
 	if r.Host != s.addr && r.Host != s.authority() {
-		http.Error(w, "unknown host", http.StatusForbidden)
+		http.Error(w, "알 수 없는 호스트", http.StatusForbidden)
 		return
 	}
 	switch {
@@ -193,14 +193,14 @@ func (s *screenServer) page(w http.ResponseWriter) {
 // that sent it shows that, so a read-only viewer never sees or clears it.
 func (s *screenServer) act(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil || !s.fromScreen(r) || !s.valid(r.PostForm.Get("t")) {
-		http.Error(w, "this decision needs the screen's own page, opened from the link abbd serve printed", http.StatusForbidden)
+		http.Error(w, "이 결정은 abbd serve가 출력한 링크로 연 화면에서만 보낼 수 있습니다", http.StatusForbidden)
 		return
 	}
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	build, ok := actions[r.PostForm.Get("do")]
 	if !ok {
-		http.Error(w, "unknown action", http.StatusBadRequest)
+		http.Error(w, "알 수 없는 동작", http.StatusBadRequest)
 		return
 	}
 	argv, err := build(r.PostForm)

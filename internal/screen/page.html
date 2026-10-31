@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
 <meta name="abbd-watermark" content="inputs_hash={{.M.Watermark.Inputs}} intended_revision={{.M.Watermark.Intended}}">
-<title>{{if eq .O.Only "queue"}}ABBD confirm queue{{else}}ABBD screen{{end}}</title>
+<title>{{if eq .O.Only "queue"}}ABBD 확인 대기열{{else}}ABBD 화면{{end}}</title>
 <style>
 :root {
   --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
@@ -59,6 +59,7 @@ textarea { width: 100%; min-height: 54px; }
 button { font: inherit; font-weight: 600; border-radius: 5px; border: 1px solid var(--line); padding: 5px 12px; background: var(--panel); color: var(--ink); cursor: pointer; }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 button.danger { color: var(--block); border-color: var(--block); }
+button:disabled { opacity: .4; cursor: not-allowed; }
 ul.plain { list-style: none; padding: 0; margin: 4px 0; }
 ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
 ul.plain li:last-child { border-bottom: 0; }
@@ -98,115 +99,115 @@ svg marker path { fill: var(--muted); stroke: none; }
 <main>
 {{$static := .O.Static}}
 <header>
-  <h1>{{if eq .O.Only "queue"}}Confirm queue{{else}}ABBD{{end}}</h1>
+  <h1>{{if eq .O.Only "queue"}}확인 대기열{{else}}ABBD{{end}}</h1>
   <div class="pills">
-    <span class="pill {{.M.Phase}}">{{.M.Phase}}</span>
-    {{if .M.Actual}}<span class="pill {{.M.Actual}}" title="Was the actual topology extracted from the working tree as it is now?">actual topology {{.M.Actual}}</span>{{end}}
-    <span class="pill {{.M.Generated}}" title=".abbd/generated/ against the .abbd files it renders">generated files {{.M.Generated}}</span>
+    <span class="pill {{.M.Phase}}" title="phase: {{.M.Phase}}">{{label (print .M.Phase)}}</span>
+    {{if .M.Actual}}<span class="pill {{.M.Actual}}" title="실제 토폴로지를 지금의 작업 트리에서 추출했는지">실제 토폴로지 {{.M.Actual}}</span>{{end}}
+    <span class="pill {{.M.Generated}}" title=".abbd/generated/가 그리는 .abbd 파일과 맞는지">생성 파일 {{.M.Generated}}</span>
   </div>
 </header>
 {{if not $static}}<div id="flash" class="flash" role="status" hidden></div>
-<div class="banner" id="readonly">Read only. Open the link <code>abbd serve</code> printed in your terminal to approve, reject or confirm.</div>{{end}}
-{{if eq .M.Actual "STALE"}}<div class="banner"><strong>Actual topology is STALE.</strong> It was extracted from tree <code>{{.M.Synced.Fingerprint}}</code>; the working tree is now <code>{{.M.Tree}}</code>. Drift below may miss the newest edits until <code>abbd turn diff</code> or <code>abbd mode on</code> re-extracts.</div>{{end}}
-{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/ is STALE.</strong> Its watermark differs from the .abbd files it renders. This page reads them directly; the files catch up on the next abbd command that writes.</div>{{end}}
+<div class="banner" id="readonly">읽기 전용입니다. 승인, 반려, 확인을 하려면 터미널에 <code>abbd serve</code>가 출력한 링크로 여세요.</div>{{end}}
+{{if eq .M.Actual "STALE"}}<div class="banner"><strong>실제 토폴로지가 STALE입니다.</strong> 트리 <code>{{.M.Synced.Fingerprint}}</code>에서 추출했는데 지금 작업 트리는 <code>{{.M.Tree}}</code>입니다. <code>abbd turn diff</code>나 <code>abbd mode on</code>으로 다시 추출하기 전까지 아래 어긋남에는 최근 편집이 빠져 있을 수 있습니다.</div>{{end}}
+{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/가 STALE입니다.</strong> 워터마크가 그 파일이 그리는 .abbd 파일과 다릅니다. 이 화면은 .abbd를 직접 읽습니다. 생성 파일은 무언가를 기록하는 다음 abbd 명령에서 갱신됩니다.</div>{{end}}
 
 {{if ne .O.Only "queue"}}
 <section class="{{if or .M.Pending .M.Align}}first{{end}}" id="pending">
-  <h2>Waiting for you</h2>
+  <h2>결정 대기</h2>
   {{if .M.Align}}
   <div class="card">
-    <strong>First alignment.</strong> Setup found these design unit candidates without asking. Keep the ones you make design decisions about; the rest stay below the line.
+    <strong>첫 정렬.</strong> setup이 묻지 않고 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다.
     {{if not $static}}<form method="post" action="/act">
       <input type="hidden" name="do" value="align">
-      <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{.Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
-      <button class="primary" disabled>Confirm these design units</button>
+      <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
+      <button class="primary" disabled>이 설계 단위로 확정</button>
     </form>{{else}}<ul class="plain">{{range .M.Align}}<li><span class="key">{{.ID}}</span> {{.Name}}</li>{{end}}</ul>{{end}}
   </div>
   {{end}}
   {{range .M.Pending}}
   <div class="card{{if .Rejection}} rejected{{end}}" id="card-{{.Key}}">
-    <div><span class="pill BLOCKED">C</span> <span class="key">{{.Key}}</span>{{if .Turn}} <span class="muted">in {{.Turn}}</span>{{end}}</div>
-    <div class="why">{{.Detail}}{{if .Question}}. The agent asked before editing.{{end}}</div>
-    {{if .Rejection}}<div class="banner">You rejected this as {{.Rejection.ADR}}: {{.Rejection.Reason}}. The agent reads the reason and should undo it.</div>{{end}}
+    <div><span class="pill BLOCKED">C</span> <span class="key">{{.Key}}</span>{{if .Turn}} <span class="muted">{{.Turn}}</span>{{end}}</div>
+    <div class="why">{{.Detail}}{{if .Question}}. 에이전트가 편집 전에 물었습니다.{{end}}</div>
+    {{if .Rejection}}<div class="banner">{{.Rejection.ADR}}로 반려했습니다: {{.Rejection.Reason}}. 에이전트가 이유를 읽고 되돌려야 합니다.</div>{{end}}
     {{if not $static}}
-    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" disabled>Approve</button></form>
-    {{if not .Rejection}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="Why not? The agent reads this."><button class="danger" disabled>Reject</button></form>{{end}}
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" disabled>승인</button></form>
+    {{if not .Rejection}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="반려 이유 (에이전트가 읽습니다)"><button class="danger" disabled>반려</button></form>{{end}}
     {{end}}
   </div>
-  {{else}}{{if not .M.Align}}<p class="muted">Nothing waits for a decision.</p>{{end}}{{end}}
+  {{else}}{{if not .M.Align}}<p class="muted">결정할 것이 없습니다.</p>{{end}}{{end}}
 </section>
 
 {{with .M.Turn}}
 <section id="turn">
-  <h2>This turn: {{.ID}} <span class="pill {{.State}}">{{.State}}</span></h2>
-  {{if .Request}}<p><span class="muted">Request {{.Requirement}}:</span> {{.Request}}</p>{{end}}
+  <h2>이번 턴 {{.ID}} <span class="pill {{.State}}">{{.State}}</span></h2>
+  {{if .Request}}<p><span class="muted">요청 {{.Requirement}}:</span> {{.Request}}</p>{{end}}
   {{template "turnbody" .}}
 </section>
 {{end}}
 
 <section id="drift">
-  <h2>Intended vs actual</h2>
+  <h2>의도 대 실제</h2>
   {{if .M.Drift}}
   <table>{{range .M.Drift}}<tr><td><span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
-  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="realign"><button disabled>Acknowledge the REALIGN rows</button><span class="muted">Short realignment. It refuses while a C change waits above.</span></form>{{end}}
-  {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}The code matches the intended topology.{{else}}No intended topology yet.{{end}}</p>{{end}}
-  {{if .M.Promote}}<h3>Promotion candidates</h3><ul class="plain">{{range .M.Promote}}<li><span class="key">{{.Key}}</span> {{.Detail}}</li>{{end}}</ul>{{end}}
+  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="realign"><button disabled>REALIGN 행 인정</button><span class="muted">짧은 재정렬입니다. 위에 C 변경이 남아 있으면 거부됩니다.</span></form>{{end}}
+  {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}코드가 의도한 토폴로지와 맞습니다.{{else}}아직 의도한 토폴로지가 없습니다.{{end}}</p>{{end}}
+  {{if .M.Promote}}<h3>승격 후보</h3><ul class="plain">{{range .M.Promote}}<li><span class="key">{{.Key}}</span> {{.Detail}}</li>{{end}}</ul>{{end}}
 </section>
 {{end}}
 
 <section id="trust">
-  <h2>{{if eq .O.Only "queue"}}Guesses waiting for you{{else}}Trust: guesses waiting for you{{end}}</h2>
+  <h2>{{if eq .O.Only "queue"}}확인할 추정{{else}}신뢰: 확인할 추정{{end}}</h2>
   {{if .M.Queue}}
-  <p class="muted">Only an agent vouches for these. They stay out of the intended topology until you decide. Design units first.</p>
+  <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
   {{range .M.Queue}}
   <div class="card" style="border-left-color: var(--guess)" id="q-{{.Key}}">
-    <div><span class="pill inferred">{{if .Field}}inferred{{else}}{{lower .Value}}{{end}}</span> <span class="key">{{.Key}}</span>{{if .Design}} <span class="muted">design unit</span>{{end}}</div>
-    {{if .Field}}<div class="why">{{.Value}}</div>{{else}}<div class="why">{{.Name}}: a coupling the script did not extract</div>{{end}}
+    <div><span class="pill inferred">{{if .Field}}{{label "inferred"}}{{else}}{{label (lower .Value)}}{{end}}</span> <span class="key">{{.Key}}</span>{{if .Design}} <span class="muted">설계 단위</span>{{end}}</div>
+    {{if .Field}}<div class="why">{{.Value}}</div>{{else}}<div class="why">{{.Name}}: 추출 스크립트가 찾지 못한 결합</div>{{end}}
     {{if not $static}}
-    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" placeholder="Leave empty to confirm as written">{{end}}<button class="primary" disabled>Confirm</button></form>
-    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm-reject"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" required placeholder="What it is instead">{{end}}<button class="danger" disabled>Wrong</button></form>
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" placeholder="비워 두면 적힌 그대로 확인">{{end}}<button class="primary" disabled>확인</button></form>
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm-reject"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" required placeholder="실제로는 무엇인지">{{end}}<button class="danger" disabled>틀림</button></form>
     {{end}}
   </div>
   {{end}}
-  {{else}}<p class="muted">The confirm queue is empty.</p>{{end}}
-  {{if and .M.Defaults (ne .O.Only "queue")}}<h3>Grade B changes that proceeded by default</h3><ul class="plain">{{range .M.Defaults}}<li><span class="pill UNCONFIRMED">UNCONFIRMED</span> <span class="key">{{.Subject}}</span> <span class="muted">{{.ID}}{{if .Turn}}, {{.Turn}}{{end}}</span></li>{{end}}</ul>{{end}}
+  {{else}}<p class="muted">확인 대기열이 비었습니다.</p>{{end}}
+  {{if and .M.Defaults (ne .O.Only "queue")}}<h3>기본값으로 진행된 B등급 변경</h3><ul class="plain">{{range .M.Defaults}}<li><span class="pill UNCONFIRMED">UNCONFIRMED</span> <span class="key">{{.Subject}}</span> <span class="muted">{{.ID}}{{if .Turn}}, {{.Turn}}{{end}}</span></li>{{end}}</ul>{{end}}
 </section>
 
 {{if ne .O.Only "queue"}}
 <section id="map">
   <details{{if not .M.Pending}}{{if not .M.Turn}} open{{end}}{{end}}>
-  <summary>Full map</summary>
-  <div class="banner"><strong>Blind spot.</strong> The extraction script reads code. Couplings through a shared table, a file, an environment variable or an execution order may exist and not show here. {{.M.Registered}} coupling(s) are registered by a human.</div>
-  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="{{.M.Map.Width}}" height="{{.M.Map.Height}}" viewBox="0 0 {{.M.Map.Width}} {{.M.Map.Height}}" role="img" aria-label="Topology map">
+  <summary>전체 지도</summary>
+  <div class="banner"><strong>사각지대.</strong> 추출 스크립트는 코드만 읽습니다. 공유 테이블, 파일, 환경 변수, 실행 순서를 거치는 결합은 있어도 여기 나오지 않을 수 있습니다. 사람이 등록한 결합 {{.M.Registered}}개.</div>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="{{.M.Map.Width}}" height="{{.M.Map.Height}}" viewBox="0 0 {{.M.Map.Width}} {{.M.Map.Height}}" role="img" aria-label="토폴로지 지도">
     <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
     {{range .M.Map.Columns}}<text class="col" x="{{.X}}" y="16">{{.Text}}</text>{{end}}
     {{range .M.Map.Edges}}<path class="{{.Class}}" d="{{.D}}"><title>{{.Title}}</title></path>{{end}}
     {{range .M.Map.Nodes}}<g><title>{{.ID}} {{.Name}}: {{.Title}}</title><rect class="{{.Class}}" x="{{.X}}" y="{{.Y}}" width="152" height="46" rx="{{.R}}"/><text class="id" x="{{.X}}" dx="10" y="{{.Y}}" dy="17">{{.ID}}</text><text x="{{.X}}" dx="10" y="{{.Y}}" dy="35">{{.Name}}</text>{{if .Guess}}<circle class="guess" cx="{{.X}}" cy="{{.Y}}" r="5" transform="translate(140 12)"/>{{end}}</g>{{end}}
   </svg></div>
-  <div class="legend"><span>intended</span><span class="l-blocked">new, crosses the boundary</span><span class="l-realign">new, touches a design unit</span><span class="l-removed">intended, gone</span><span class="l-guess">inferred, unconfirmed</span><span class="l-below">below the line</span></div>
+  <div class="legend"><span>의도</span><span class="l-blocked">새 결합, 경계를 넘음</span><span class="l-realign">새 결합, 설계 단위에 닿음</span><span class="l-removed">의도했으나 사라짐</span><span class="l-guess">추정, 미확인</span><span class="l-below">선 아래</span></div>
   {{if not $static}}
-  <h3>Register a coupling the script cannot see</h3>
+  <h3>스크립트가 못 보는 결합 등록</h3>
   <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="couple">
-    <select name="from" aria-label="from">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
-    <select name="kind" aria-label="kind"><option>depends_on</option><option>consumes</option><option>provides</option></select>
-    <select name="to" aria-label="to">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
-    <button disabled>Register</button>
+    <select name="from" aria-label="출발">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
+    <select name="kind" aria-label="종류"><option>depends_on</option><option>consumes</option><option>provides</option></select>
+    <select name="to" aria-label="도착">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
+    <button disabled>등록</button>
   </form>
   {{end}}
-  <h3>Units</h3>
-  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">design</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{.Badge}}</span>{{if .Rejected}} <span class="muted">(rejected: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{.Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
+  <h3>단위</h3>
+  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{if .Rejected}} <span class="muted">(반려된 추정: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
   </details>
 </section>
 
 {{if .M.History}}
 <section id="history">
-  <details><summary>Earlier turns</summary>
+  <details><summary>이전 턴</summary>
   {{range .M.History}}<h3>{{.ID}} <span class="pill {{.State}}">{{.State}}</span></h3>{{if .Request}}<p>{{.Request}}</p>{{end}}{{template "turnbody" .}}{{end}}
   </details>
 </section>
 {{end}}
 
-<p class="muted">Extraction <code>{{join .M.Extract " "}}</code>{{if .M.Verify}} · verify <code>{{join .M.Verify " "}}</code>{{end}} · watermark <code>{{.M.Watermark.Inputs}}</code> r{{.M.Watermark.Intended}}</p>
+<p class="muted">추출 <code>{{join .M.Extract " "}}</code>{{if .M.Verify}} · 검증 <code>{{join .M.Verify " "}}</code>{{end}} · 워터마크 <code>{{.M.Watermark.Inputs}}</code> r{{.M.Watermark.Intended}}</p>
 {{end}}
 </main>
 {{if not $static}}<script nonce="{{.O.Nonce}}">
@@ -218,6 +219,8 @@ svg marker path { fill: var(--muted); stroke: none; }
     set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
     drop(k) { try { sessionStorage.removeItem(k); } catch (e) {} },
   };
+  // Pasting the link into a tab already on the page changes only the hash.
+  addEventListener("hashchange", () => location.reload());
   const m = /^#t=([0-9a-f]+)$/.exec(location.hash);
   if (m) {
     store.set("abbd_t", m[1]);
@@ -259,17 +262,17 @@ svg marker path { fill: var(--muted); stroke: none; }
 </body>
 </html>
 {{define "turnbody"}}
-  {{if .Verdicts}}<h3>Gate now</h3><ul class="plain">{{range .Verdicts}}<li class="key">{{.}}</li>{{end}}</ul>
-  {{else if .Report}}{{if .Report.Gate}}<h3>Gate</h3><ul class="plain">{{range .Report.Gate}}<li class="key">{{.}}</li>{{end}}</ul>{{else}}<p class="muted">No topology change.</p>{{end}}{{end}}
-  <h3>Declared</h3>
-  <p>{{if or .Delta.Units .Delta.Changes}}units <span class="key">{{range .Delta.Units}}{{.}} {{end}}</span>{{if .Delta.Changes}}changes <span class="key">{{join .Delta.Changes ", "}}</span>{{end}}{{else}}<span class="muted">nothing declared</span>{{end}}</p>
+  {{if .Verdicts}}<h3>현재 게이트</h3><ul class="plain">{{range .Verdicts}}<li class="key">{{.}}</li>{{end}}</ul>
+  {{else if .Report}}{{if .Report.Gate}}<h3>게이트</h3><ul class="plain">{{range .Report.Gate}}<li class="key">{{.}}</li>{{end}}</ul>{{else}}<p class="muted">토폴로지 변경 없음.</p>{{end}}{{end}}
+  <h3>선언</h3>
+  <p>{{if or .Delta.Units .Delta.Changes}}단위 <span class="key">{{range .Delta.Units}}{{.}} {{end}}</span>{{if .Delta.Changes}} 변경 <span class="key">{{join .Delta.Changes ", "}}</span>{{end}}{{else}}<span class="muted">선언 없음</span>{{end}}</p>
   {{with .Report}}
-  {{if or .DeclaredNotDone .DoneNotDeclared}}<h3>Declared vs actual</h3><ul class="plain">{{range .DeclaredNotDone}}<li>declared, not done: <span class="key">{{.}}</span></li>{{end}}{{range .DoneNotDeclared}}<li>done, not declared: <span class="key">{{.}}</span></li>{{end}}</ul>{{end}}
+  {{if or .DeclaredNotDone .DoneNotDeclared}}<h3>선언 대 실제</h3><ul class="plain">{{range .DeclaredNotDone}}<li>선언했지만 하지 않음: <span class="key">{{.}}</span></li>{{end}}{{range .DoneNotDeclared}}<li>했지만 선언하지 않음: <span class="key">{{.}}</span></li>{{end}}</ul>{{end}}
   {{range .Notes}}<p class="muted">{{.}}</p>{{end}}
   {{if .Why}}<p><strong>{{.Why}}</strong></p>{{end}}
   {{end}}
-  {{if .Approvals}}<h3>Approved</h3><ul class="plain">{{range .Approvals}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span></li>{{end}}</ul>{{end}}
-  {{if .Standing}}<h3>Rejected</h3><ul class="plain">{{range .Standing}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span>: {{.Reason}}</li>{{end}}</ul>{{end}}
-  <h3>Impact</h3><p class="key">{{range .Impact}}{{.Unit}} {{end}}</p>
-  {{if .Run}}<p>Verification {{.Run}} <span class="pill {{.Verified}}">{{.Verified}}</span></p>{{else}}<p class="muted">Not verified yet.</p>{{end}}
+  {{if .Approvals}}<h3>승인</h3><ul class="plain">{{range .Approvals}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span></li>{{end}}</ul>{{end}}
+  {{if .Standing}}<h3>반려</h3><ul class="plain">{{range .Standing}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span>: {{.Reason}}</li>{{end}}</ul>{{end}}
+  <h3>영향 범위</h3><p class="key">{{range .Impact}}{{.Unit}} {{end}}</p>
+  {{if .Run}}<p>검증 {{.Run}} <span class="pill {{.Verified}}">{{.Verified}}</span></p>{{else}}<p class="muted">아직 검증하지 않았습니다.</p>{{end}}
 {{end}}

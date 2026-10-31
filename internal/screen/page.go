@@ -17,7 +17,21 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"lower": strings.ToLower,
 	// badge is the CSS class of a trust badge: its first word.
 	"badge": func(b string) string { return strings.TrimSuffix(strings.Fields(b + " x")[0], ",") },
+	"label": func(k string) string {
+		if l, ok := labels[k]; ok {
+			return l
+		}
+		return k
+	},
 }).Parse(pageHTML))
+
+// labels are the Korean words the screen shows for a phase or a trust badge.
+// The English key stays the CSS class and the word the CLI prints.
+var labels = map[string]string{
+	"uninitialized": "미초기화", "bootstrapped": "정렬 전", "aligned": "정렬됨", "drifted": "어긋남",
+	"stated": "사람이 명시", "stated, guess rejected": "사람이 명시, 추정 반려", "confirmed": "사람이 확인",
+	"inferred": "추정", "adopted": "문서에서 채택", "extracted": "코드에서 추출",
+}
 
 // Options says how a page is rendered. A static page has no actions and no
 // script; a live page runs only the script that carries Nonce.

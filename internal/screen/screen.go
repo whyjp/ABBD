@@ -318,7 +318,7 @@ func pendingInTurn(t turn.Turn, vs []turn.Verdict) []Card {
 	}
 	for _, q := range t.Questions {
 		if slices.Contains(t.Delta.Changes, q) && t.Approved(q) == "" {
-			add(Card{Key: q, Question: true, Detail: "declared before any edit"})
+			add(Card{Key: q, Question: true, Detail: "편집 전에 선언함"})
 		}
 	}
 	for _, v := range turn.Unallowed(vs) {
@@ -330,13 +330,13 @@ func pendingInTurn(t turn.Turn, vs []turn.Verdict) []Card {
 func detail(it topology.Item) string {
 	switch it.Change {
 	case topology.ContractChanged:
-		return fmt.Sprintf("signature %q becomes %q", it.Old, it.New)
+		return fmt.Sprintf("시그니처 %q → %q", it.Old, it.New)
 	case topology.NewRelation:
-		return fmt.Sprintf("%s now %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
+		return fmt.Sprintf("새 결합: %s %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
 	case topology.RemovedRelation:
-		return fmt.Sprintf("%s no longer %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
+		return fmt.Sprintf("사라진 결합: %s %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
 	case topology.UnitRemoved:
-		return string(it.Unit) + " is gone from the code"
+		return string(it.Unit) + "이(가) 코드에서 사라짐"
 	}
 	return string(it.Unit)
 }

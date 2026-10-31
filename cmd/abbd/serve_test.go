@@ -87,11 +87,11 @@ func TestScreenPutsTheBlockedChangeFirstAndApprovesIt(t *testing.T) {
 	p, edge := blockedTurn(t)
 	s := p.screen()
 	html := s.view(t)
-	waiting, thisTurn, drift, mapAt := strings.Index(html, "Waiting for you"), strings.Index(html, "This turn: CHG-0001"), strings.Index(html, "Intended vs actual"), strings.Index(html, "Full map")
+	waiting, thisTurn, drift, mapAt := strings.Index(html, "결정 대기"), strings.Index(html, "이번 턴 CHG-0001"), strings.Index(html, "의도 대 실제"), strings.Index(html, "전체 지도")
 	if !(waiting < strings.Index(html, edge) && strings.Index(html, edge) < thisTurn && thisTurn < drift && drift < mapAt) {
 		t.Fatalf("the blocked change comes first, then the turn, drift and the map")
 	}
-	if !strings.Contains(html, "make the change") || !strings.Contains(html, "done, not declared: <span class=\"key\">MOD-0001") {
+	if !strings.Contains(html, "make the change") || !strings.Contains(html, "했지만 선언하지 않음: <span class=\"key\">MOD-0001") {
 		t.Fatalf("the turn should show its request and the declared-versus-actual report")
 	}
 
@@ -150,7 +150,7 @@ func TestScreenDecisionsNeedTheTokenFromTheScreensOwnOrigin(t *testing.T) {
 	if rec.Code != http.StatusForbidden {
 		t.Fatalf("a request for another host name should be refused, got %d", rec.Code)
 	}
-	if rec := s.post(t, testToken, "do", "approve", "key", "--root=/elsewhere"); rec.Code != http.StatusUnprocessableEntity || !strings.Contains(rec.Body.String(), "is not an item key") {
+	if rec := s.post(t, testToken, "do", "approve", "key", "--root=/elsewhere"); rec.Code != http.StatusUnprocessableEntity || !strings.Contains(rec.Body.String(), "항목 키가 아닙니다") {
 		t.Fatalf("a key that looks like a flag must not reach the command line, got %d %s", rec.Code, rec.Body.String())
 	}
 
@@ -201,7 +201,7 @@ func TestScreenRejectKeepsTheChangeOutOfTheIntendedTopology(t *testing.T) {
 	if p.intended() != before {
 		t.Fatalf("a rejection from the screen must leave the intended topology alone")
 	}
-	if !strings.Contains(html, "You rejected this as ADR-0001: billing must not read the ledger") {
+	if !strings.Contains(html, "ADR-0001로 반려했습니다: billing must not read the ledger") {
 		t.Fatalf("the card should stay, marked with the rejection:\n%s", html)
 	}
 	p.want(2, "REJECTED "+edge+" by ADR-0001: billing must not read the ledger", "turn", "end", "--session", "s1")
@@ -219,10 +219,10 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
 	s := p.screen()
 	html := s.view(t)
-	if !strings.Contains(html, "First alignment") || !strings.Contains(html, `value="MOD-0002" checked`) {
+	if !strings.Contains(html, "첫 정렬") || !strings.Contains(html, `value="MOD-0002" checked`) {
 		t.Fatalf("a bootstrapped project should offer the first alignment")
 	}
-	if !strings.Contains(html, `<span class="pill inferred">inferred</span> <span class="key">MOD-0002.purpose`) {
+	if !strings.Contains(html, `<span class="pill inferred">추정</span> <span class="key">MOD-0002.purpose`) {
 		t.Fatalf("an inferred purpose should be marked on the page")
 	}
 	s.decide(t, "do", "align", "id", "MOD-0001", "id", "IF-0001")
@@ -249,7 +249,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
 	p := aligned(t)
 	s := p.screen()
 	html := s.decide(t, "do", "couple", "from", "MOD-0002", "kind", "consumes", "to", "MOD-0001")
-	if !strings.Contains(p.intended(), "kind: consumes") || !strings.Contains(html, "1 coupling(s) are registered by a human") {
+	if !strings.Contains(p.intended(), "kind: consumes") || !strings.Contains(html, "사람이 등록한 결합 1개") {
 		t.Fatalf("a coupling registered on the screen between design units should be intended")
 	}
 	p.editCode("ledger/book.go")
@@ -258,7 +258,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
  {"key":"api","kind":"IF","name":"http api","signature":"GET /charges","anchors":[{"path":"api/http.go","symbol":"Serve"}]}
 ],"relations":[{"from":"billing","to":"api","kind":"provides"}]}`)
 	p.want(2, "REALIGN unit-removed:MOD-0002", "mode", "on", "--session", "s1")
-	if html := s.view(t); !strings.Contains(html, "Acknowledge the REALIGN rows") || !strings.Contains(html, `class="removed"`) {
+	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="removed"`) {
 		t.Fatalf("a drifted project should offer the short realignment and draw the removed unit")
 	}
 	s.decide(t, "do", "realign")

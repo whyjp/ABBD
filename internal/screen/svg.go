@@ -113,15 +113,15 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 		n.Guess = u.Purpose.Guess() || u.Responsibility.Guess()
 		switch {
 		case u.Absent:
-			n.Class, n.Title = "removed", "intended, gone from the code"
+			n.Class, n.Title = "removed", "의도했으나 코드에서 사라짐"
 		case effect["contract-changed:"+string(u.ID)] != "":
-			n.Class, n.Title = "changed", "contract signature changed"
+			n.Class, n.Title = "changed", "계약 시그니처 바뀜"
 		case effect["unit-added:"+string(u.ID)] != "":
-			n.Class, n.Title = "added", "new below the line: a promotion candidate"
+			n.Class, n.Title = "added", "선 아래 새 단위: 승격 후보"
 		case design[u.ID]:
-			n.Class, n.Title = "design", "design unit"
+			n.Class, n.Title = "design", "설계 단위"
 		default:
-			n.Class, n.Title = "below", "below the line"
+			n.Class, n.Title = "below", "선 아래"
 		}
 		if n.Guess {
 			n.Title += "; purpose inferred, unconfirmed"
@@ -156,9 +156,9 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 	}
 	for _, e := range intendedEdges {
 		if actual[e] {
-			add(e, "kept", "intended")
+			add(e, "kept", "의도")
 		} else {
-			add(e, "removed", "intended, gone from the code")
+			add(e, "removed", "의도했으나 코드에서 사라짐")
 		}
 	}
 	var fresh []topology.Edge
@@ -171,15 +171,15 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 	for _, e := range fresh {
 		switch effect["new-relation:"+e.String()] {
 		case topology.Blocked:
-			add(e, "blocked", "new, crosses the intended boundary")
+			add(e, "blocked", "새 결합, 의도한 경계를 넘음")
 		case topology.Realign:
-			add(e, "realign", "new, touches a design unit")
+			add(e, "realign", "새 결합, 설계 단위에 닿음")
 		default:
-			add(e, "below", "below the line")
+			add(e, "below", "선 아래")
 		}
 	}
 	for _, e := range guesses {
-		add(e, "guess", "inferred, unconfirmed")
+		add(e, "guess", "추정, 미확인")
 	}
 	return m
 }
@@ -227,7 +227,7 @@ func radius(k model.Kind) int {
 
 func kindLabel(k model.Kind) string {
 	return map[model.Kind]string{
-		model.Feature: "Features", model.Module: "Modules", model.Interface: "Interfaces",
-		model.Event: "Events", model.Data: "Data", model.Config: "Config",
+		model.Feature: "기능", model.Module: "모듈", model.Interface: "인터페이스",
+		model.Event: "이벤트", model.Data: "데이터", model.Config: "설정",
 	}[k]
 }
