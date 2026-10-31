@@ -1,16 +1,16 @@
 {
   "watermark": {
-    "inputs_hash": "e94c0112f927648bbabba84d095434c2d07fe7071fe4d9c11e44c1cf8c120b5c",
-    "intended_revision": 0
+    "inputs_hash": "166df4b4add5b5bbe40d375a69efbecb6369869814d1b4028715560ef0dd33a3",
+    "intended_revision": 1
   },
-  "phase": "bootstrapped",
+  "phase": "aligned",
   "units": [
     {
       "ID": "CFG-0001",
       "Kind": "CFG",
       "Name": "plugin and marketplace manifest",
       "Signature": "marketplace abbd {abbd=./plugins/abbd}; plugin abbd",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "publishes ABBD as a Claude Code plugin from this repository",
         "Badge": "inferred",
@@ -31,7 +31,7 @@
       "Kind": "CFG",
       "Name": "project.yaml",
       "Signature": ".abbd/project.yaml: extract,verify",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records the trusted extraction and verify argv",
         "Badge": "inferred",
@@ -53,7 +53,7 @@
       "Kind": "CFG",
       "Name": "hook registration",
       "Signature": "PostToolUse[Write|Edit|NotebookEdit] -\u003e abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -\u003e abbd hook PreToolUse; SessionStart -\u003e abbd hook SessionStart; Stop -\u003e abbd hook Stop; UserPromptSubmit -\u003e abbd hook UserPromptSubmit",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "registers ABBD's hooks with Claude Code",
         "Badge": "inferred",
@@ -74,7 +74,7 @@
       "Kind": "DATA",
       "Name": "extraction JSON",
       "Signature": "extraction json: relations{from,kind,to},units{anchors{path,symbol},key,kind,name,purpose,responsibility,signature}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is what every project extraction script and supplement must print",
         "Badge": "inferred",
@@ -96,7 +96,7 @@
       "Kind": "DATA",
       "Name": "unit files",
       "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},id,kind,name{confirmation,origin,rejected,value,verification},purpose{confirmation,origin,rejected,value,verification},relations{confirmation,kind,origin,to},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the actual topology as reviewable files",
         "Badge": "inferred",
@@ -118,7 +118,7 @@
       "Kind": "DATA",
       "Name": "generated files",
       "Signature": ".abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,D,Title},nodes{Class,Guess,ID,Kind,Name,R,Title,X,Y},phase,units{Anchors,Design,ID,Kind,Name,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets tools and humans read the topology without the CLI",
         "Badge": "inferred",
@@ -140,7 +140,7 @@
       "Kind": "DATA",
       "Name": "decision records",
       "Signature": ".abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the record of each human decision on a grade C change",
         "Badge": "inferred",
@@ -162,7 +162,7 @@
       "Kind": "DATA",
       "Name": "intended topology",
       "Signature": ".abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the human-approved topology every gate compares against",
         "Badge": "inferred",
@@ -184,7 +184,7 @@
       "Kind": "DATA",
       "Name": "verification runs",
       "Signature": ".abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the evidence that a turn's verification passed on its tree",
         "Badge": "inferred",
@@ -206,7 +206,7 @@
       "Kind": "DATA",
       "Name": "change records",
       "Signature": ".abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,seeds,session,state,verification",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the record of each turn",
         "Badge": "inferred",
@@ -228,7 +228,7 @@
       "Kind": "DATA",
       "Name": "requirements",
       "Signature": ".abbd/requirements/ID.md frontmatter: id,origin,turn",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "keeps each user request verbatim",
         "Badge": "inferred",
@@ -249,7 +249,7 @@
       "Kind": "FEAT",
       "Name": "/abbd-mode",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "runs a pstack playbook inside a gated ABBD turn",
         "Badge": "inferred",
@@ -271,7 +271,7 @@
       "Kind": "FEAT",
       "Name": "/abbd-setup",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "bootstraps ABBD on a repository without asking the human",
         "Badge": "inferred",
@@ -292,7 +292,7 @@
       "Kind": "IF",
       "Name": "Claude Code hook protocol",
       "Signature": "abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is how Claude Code hands ABBD each session event",
         "Badge": "inferred",
@@ -314,7 +314,7 @@
       "Kind": "IF",
       "Name": "abbd command line",
       "Signature": "align[all,confirm,exclude,root] pos{0}; approve[root] pos{1}; confirm[list,reject,root,value] pos{0,1}; couple[root] pos{1}; hook[root] sub{*} pos{0}; ingest[root] pos{1}; mode[root,session] sub{on,off} pos{0} needs-session; reject[reason,root] pos{1}; serve[addr,root] pos{0}; setup[adopt,greenfield,root,supplement,verify] pos{0} --argv; status[root,session] pos{0}; turn declare[changes,root,session,units] pos{0} needs-session; turn diff[root,session] pos{0} needs-session; turn end[root,session] pos{0} needs-session; turn impact[add,root,session] pos{0} needs-session; turn show[root,session] pos{0}; turn start[request,root,seeds,session] pos{0} needs-session; turn verify[root,session] pos{0} --argv needs-session; exit error=1,needhuman=2,ok=0,usage=64",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the command surface humans, skills and the screen call",
         "Badge": "inferred",
@@ -336,7 +336,7 @@
       "Kind": "IF",
       "Name": "screen HTTP",
       "Signature": "GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is what the screen page posts to decide",
         "Badge": "inferred",
@@ -357,7 +357,7 @@
       "Kind": "IF",
       "Name": "confirm item key",
       "Signature": "ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "names one guess in the confirm queue",
         "Badge": "inferred",
@@ -379,7 +379,7 @@
       "Kind": "IF",
       "Name": "change item key",
       "Signature": "{contract-changed,new-relation,removed-relation,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "names one topology change so a human can approve or reject it",
         "Badge": "inferred",
@@ -401,7 +401,7 @@
       "Kind": "MOD",
       "Name": "abbd CLI",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets the human and the agent drive ABBD from a terminal and from Claude Code hooks",
         "Badge": "inferred",
@@ -426,7 +426,7 @@
       "Kind": "MOD",
       "Name": "PreToolUse guard",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "stops an agent in an active session from doing a human's step",
         "Badge": "inferred",
@@ -447,7 +447,7 @@
       "Kind": "MOD",
       "Name": "screen server",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "gives the human a browser screen for every decision",
         "Badge": "inferred",
@@ -468,7 +468,7 @@
       "Kind": "MOD",
       "Name": "internal/bootstrap",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lays the supplement and adopted documents over the script result and writes the setup report",
         "Badge": "inferred",
@@ -490,7 +490,7 @@
       "Kind": "MOD",
       "Name": "internal/confirm",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the queue of agent guesses waiting for a human",
         "Badge": "inferred",
@@ -511,7 +511,7 @@
       "Kind": "MOD",
       "Name": "internal/extract",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the trust boundary where extraction JSON becomes typed units",
         "Badge": "inferred",
@@ -532,7 +532,7 @@
       "Kind": "MOD",
       "Name": "internal/gitx",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "reads the few git facts ABBD needs without touching the user's index",
         "Badge": "inferred",
@@ -553,7 +553,7 @@
       "Kind": "MOD",
       "Name": "internal/identity",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "keeps design unit IDs stable across re-extraction",
         "Badge": "inferred",
@@ -574,7 +574,7 @@
       "Kind": "MOD",
       "Name": "internal/model",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "is the shared vocabulary of design units and their evidence",
         "Badge": "inferred",
@@ -595,7 +595,7 @@
       "Kind": "MOD",
       "Name": "internal/screen",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "shows the human what needs a decision without opening Markdown",
         "Badge": "inferred",
@@ -618,7 +618,7 @@
       "Kind": "MOD",
       "Name": "internal/store",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "persists all ABBD state as reviewable files under .abbd/ and the git dir",
         "Badge": "inferred",
@@ -640,7 +640,7 @@
       "Kind": "MOD",
       "Name": "internal/topology",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "compares the approved intended topology with the actual one",
         "Badge": "inferred",
@@ -661,7 +661,7 @@
       "Kind": "MOD",
       "Name": "internal/turn",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "models one unit of agent work under abbd mode",
         "Badge": "inferred",
@@ -683,8 +683,8 @@
       "ID": "CFG-0001",
       "Name": "plugin and marketplace manifest",
       "Kind": "CFG",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 896,
       "Y": 46,
       "R": 23,
@@ -694,8 +694,8 @@
       "ID": "CFG-0002",
       "Name": "project.yaml",
       "Kind": "CFG",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 896,
       "Y": 120,
       "R": 23,
@@ -705,8 +705,8 @@
       "ID": "CFG-0003",
       "Name": "hook registration",
       "Kind": "CFG",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 896,
       "Y": 194,
       "R": 23,
@@ -716,8 +716,8 @@
       "ID": "DATA-0001",
       "Name": "extraction JSON",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 46,
       "R": 23,
@@ -727,8 +727,8 @@
       "ID": "DATA-0002",
       "Name": "unit files",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 120,
       "R": 23,
@@ -738,8 +738,8 @@
       "ID": "DATA-0003",
       "Name": "generated files",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 194,
       "R": 23,
@@ -749,8 +749,8 @@
       "ID": "DATA-0004",
       "Name": "decision records",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 268,
       "R": 23,
@@ -760,8 +760,8 @@
       "ID": "DATA-0005",
       "Name": "intended topology",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 342,
       "R": 23,
@@ -771,8 +771,8 @@
       "ID": "DATA-0006",
       "Name": "verification runs",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 416,
       "R": 23,
@@ -782,8 +782,8 @@
       "ID": "DATA-0007",
       "Name": "change records",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 490,
       "R": 23,
@@ -793,8 +793,8 @@
       "ID": "DATA-0008",
       "Name": "requirements",
       "Kind": "DATA",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 720,
       "Y": 564,
       "R": 23,
@@ -804,8 +804,8 @@
       "ID": "FEAT-0001",
       "Name": "/abbd-mode",
       "Kind": "FEAT",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 16,
       "Y": 46,
       "R": 12,
@@ -815,8 +815,8 @@
       "ID": "FEAT-0002",
       "Name": "/abbd-setup",
       "Kind": "FEAT",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 16,
       "Y": 120,
       "R": 12,
@@ -826,8 +826,8 @@
       "ID": "IF-0001",
       "Name": "Claude Code hook protocol",
       "Kind": "IF",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 544,
       "Y": 46,
       "R": 23,
@@ -837,8 +837,8 @@
       "ID": "IF-0002",
       "Name": "abbd command line",
       "Kind": "IF",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 544,
       "Y": 120,
       "R": 23,
@@ -848,8 +848,8 @@
       "ID": "IF-0003",
       "Name": "screen HTTP",
       "Kind": "IF",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 544,
       "Y": 194,
       "R": 23,
@@ -859,8 +859,8 @@
       "ID": "IF-0004",
       "Name": "confirm item key",
       "Kind": "IF",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 544,
       "Y": 268,
       "R": 23,
@@ -870,8 +870,8 @@
       "ID": "IF-0005",
       "Name": "change item key",
       "Kind": "IF",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 544,
       "Y": 342,
       "R": 23,
@@ -881,8 +881,8 @@
       "ID": "MOD-0001",
       "Name": "abbd CLI",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 46,
       "R": 4,
@@ -892,8 +892,8 @@
       "ID": "MOD-0002",
       "Name": "PreToolUse guard",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 46,
       "R": 4,
@@ -903,8 +903,8 @@
       "ID": "MOD-0003",
       "Name": "screen server",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 120,
       "R": 4,
@@ -914,8 +914,8 @@
       "ID": "MOD-0004",
       "Name": "internal/bootstrap",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 120,
       "R": 4,
@@ -925,8 +925,8 @@
       "ID": "MOD-0005",
       "Name": "internal/confirm",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 194,
       "R": 4,
@@ -936,8 +936,8 @@
       "ID": "MOD-0006",
       "Name": "internal/extract",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 194,
       "R": 4,
@@ -947,8 +947,8 @@
       "ID": "MOD-0007",
       "Name": "internal/gitx",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 268,
       "R": 4,
@@ -958,8 +958,8 @@
       "ID": "MOD-0008",
       "Name": "internal/identity",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 268,
       "R": 4,
@@ -969,8 +969,8 @@
       "ID": "MOD-0009",
       "Name": "internal/model",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 342,
       "R": 4,
@@ -980,8 +980,8 @@
       "ID": "MOD-0010",
       "Name": "internal/screen",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 342,
       "R": 4,
@@ -991,8 +991,8 @@
       "ID": "MOD-0011",
       "Name": "internal/store",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 416,
       "R": 4,
@@ -1002,8 +1002,8 @@
       "ID": "MOD-0012",
       "Name": "internal/topology",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 368,
       "Y": 416,
       "R": 4,
@@ -1013,8 +1013,8 @@
       "ID": "MOD-0013",
       "Name": "internal/turn",
       "Kind": "MOD",
-      "Class": "below",
-      "Title": "선 아래; purpose inferred, unconfirmed",
+      "Class": "design",
+      "Title": "설계 단위; purpose inferred, unconfirmed",
       "X": 192,
       "Y": 490,
       "R": 4,
@@ -1024,388 +1024,388 @@
   "edges": [
     {
       "D": "M896 217 C796 217 796 69 696 69",
-      "Class": "below",
-      "Title": "CFG-0003.consumes.IF-0001: 선 아래"
+      "Class": "kept",
+      "Title": "CFG-0003.consumes.IF-0001: 의도"
     },
     {
       "D": "M168 69 C356 69 356 143 544 143",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0002: 선 아래"
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0002: 의도"
     },
     {
       "D": "M168 69 C356 69 356 365 544 365",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0005: 의도"
     },
     {
       "D": "M168 143 C356 106 356 106 544 143",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0002: 선 아래"
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0002: 의도"
     },
     {
       "D": "M344 69 C620 69 620 143 896 143",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.CFG-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.CFG-0002: 의도"
     },
     {
       "D": "M344 69 C532 32 532 32 720 69",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0001: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0001: 의도"
     },
     {
       "D": "M344 69 C532 69 532 143 720 143",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0002: 의도"
     },
     {
       "D": "M344 69 C532 69 532 217 720 217",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0003: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0003: 의도"
     },
     {
       "D": "M344 69 C532 69 532 291 720 291",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0004: 의도"
     },
     {
       "D": "M344 69 C532 69 532 365 720 365",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0005: 의도"
     },
     {
       "D": "M344 69 C532 69 532 439 720 439",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0006: 의도"
     },
     {
       "D": "M344 69 C532 69 532 513 720 513",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0007: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0007: 의도"
     },
     {
       "D": "M344 69 C532 69 532 587 720 587",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0008: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0008: 의도"
     },
     {
       "D": "M344 69 C444 69 444 291 544 291",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.IF-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.IF-0004: 의도"
     },
     {
       "D": "M344 69 C444 69 444 365 544 365",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.IF-0005: 의도"
     },
     {
       "D": "M344 69 C372 69 340 69 368 69",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0002: 의도"
     },
     {
       "D": "M344 69 C380 69 380 143 344 143",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0003: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0003: 의도"
     },
     {
       "D": "M344 69 C372 69 340 143 368 143",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0004: 의도"
     },
     {
       "D": "M344 69 C399 69 399 217 344 217",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0005: 의도"
     },
     {
       "D": "M344 69 C372 69 340 217 368 217",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0006: 의도"
     },
     {
       "D": "M344 69 C417 69 417 291 344 291",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0007: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0007: 의도"
     },
     {
       "D": "M344 69 C372 69 340 291 368 291",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0008: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0008: 의도"
     },
     {
       "D": "M344 69 C436 69 436 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M344 69 C372 69 340 365 368 365",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0010: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0010: 의도"
     },
     {
       "D": "M344 69 C454 69 454 439 344 439",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0011: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0011: 의도"
     },
     {
       "D": "M344 69 C372 69 340 439 368 439",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0012: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0012: 의도"
     },
     {
       "D": "M344 69 C473 69 473 513 344 513",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0013: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0013: 의도"
     },
     {
       "D": "M344 69 C444 32 444 32 544 69",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0001: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0001: 의도"
     },
     {
       "D": "M344 69 C444 69 444 143 544 143",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0002: 의도"
     },
     {
       "D": "M368 69 C340 69 372 69 344 69",
-      "Class": "below",
-      "Title": "MOD-0002.depends_on.MOD-0001: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0002.depends_on.MOD-0001: 의도"
     },
     {
       "D": "M344 143 C444 106 444 106 544 143",
-      "Class": "below",
-      "Title": "MOD-0003.consumes.IF-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0002: 의도"
     },
     {
       "D": "M344 143 C380 143 380 69 344 69",
-      "Class": "below",
-      "Title": "MOD-0003.depends_on.MOD-0001: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0003.depends_on.MOD-0001: 의도"
     },
     {
       "D": "M344 143 C372 143 340 365 368 365",
-      "Class": "below",
-      "Title": "MOD-0003.depends_on.MOD-0010: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0003.depends_on.MOD-0010: 의도"
     },
     {
       "D": "M344 143 C444 143 444 217 544 217",
-      "Class": "below",
-      "Title": "MOD-0003.provides.IF-0003: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0003.provides.IF-0003: 의도"
     },
     {
       "D": "M520 143 C548 143 516 291 544 291",
-      "Class": "below",
-      "Title": "MOD-0004.consumes.IF-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0004.consumes.IF-0004: 의도"
     },
     {
       "D": "M368 143 C340 143 372 217 344 217",
-      "Class": "below",
-      "Title": "MOD-0004.depends_on.MOD-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0004.depends_on.MOD-0005: 의도"
     },
     {
       "D": "M520 143 C556 143 556 217 520 217",
-      "Class": "below",
-      "Title": "MOD-0004.depends_on.MOD-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0004.depends_on.MOD-0006: 의도"
     },
     {
       "D": "M368 143 C340 143 372 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0004.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0004.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M344 217 C444 217 444 365 544 365",
-      "Class": "below",
-      "Title": "MOD-0005.consumes.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0005.consumes.IF-0005: 의도"
     },
     {
       "D": "M344 217 C399 217 399 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0005.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0005.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M344 217 C372 217 340 439 368 439",
-      "Class": "below",
-      "Title": "MOD-0005.depends_on.MOD-0012: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0005.depends_on.MOD-0012: 의도"
     },
     {
       "D": "M344 217 C444 217 444 291 544 291",
-      "Class": "below",
-      "Title": "MOD-0005.provides.IF-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0005.provides.IF-0004: 의도"
     },
     {
       "D": "M368 217 C340 217 372 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0006.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0006.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M520 217 C620 217 620 69 720 69",
-      "Class": "below",
-      "Title": "MOD-0006.provides.DATA-0001: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0006.provides.DATA-0001: 의도"
     },
     {
       "D": "M520 291 C556 291 556 217 520 217",
-      "Class": "below",
-      "Title": "MOD-0008.depends_on.MOD-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0008.depends_on.MOD-0006: 의도"
     },
     {
       "D": "M368 291 C340 291 372 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0008.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0008.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M520 365 C708 365 708 143 896 143",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.CFG-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.CFG-0002: 의도"
     },
     {
       "D": "M520 365 C620 365 620 143 720 143",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.DATA-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.DATA-0002: 의도"
     },
     {
       "D": "M520 365 C620 365 620 291 720 291",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.DATA-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.DATA-0004: 의도"
     },
     {
       "D": "M520 365 C620 328 620 328 720 365",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.DATA-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.DATA-0005: 의도"
     },
     {
       "D": "M520 365 C620 365 620 439 720 439",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.DATA-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.DATA-0006: 의도"
     },
     {
       "D": "M520 365 C620 365 620 513 720 513",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.DATA-0007: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.DATA-0007: 의도"
     },
     {
       "D": "M520 365 C548 365 516 291 544 291",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.IF-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.IF-0004: 의도"
     },
     {
       "D": "M520 365 C548 365 516 365 544 365",
-      "Class": "below",
-      "Title": "MOD-0010.consumes.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.consumes.IF-0005: 의도"
     },
     {
       "D": "M368 365 C340 365 372 217 344 217",
-      "Class": "below",
-      "Title": "MOD-0010.depends_on.MOD-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.depends_on.MOD-0005: 의도"
     },
     {
       "D": "M368 365 C340 365 372 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0010.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M368 365 C340 365 372 439 344 439",
-      "Class": "below",
-      "Title": "MOD-0010.depends_on.MOD-0011: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.depends_on.MOD-0011: 의도"
     },
     {
       "D": "M520 365 C556 365 556 439 520 439",
-      "Class": "below",
-      "Title": "MOD-0010.depends_on.MOD-0012: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.depends_on.MOD-0012: 의도"
     },
     {
       "D": "M368 365 C340 365 372 513 344 513",
-      "Class": "below",
-      "Title": "MOD-0010.depends_on.MOD-0013: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.depends_on.MOD-0013: 의도"
     },
     {
       "D": "M520 365 C620 365 620 217 720 217",
-      "Class": "below",
-      "Title": "MOD-0010.provides.DATA-0003: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0010.provides.DATA-0003: 의도"
     },
     {
       "D": "M344 439 C399 439 399 291 344 291",
-      "Class": "below",
-      "Title": "MOD-0011.depends_on.MOD-0007: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.depends_on.MOD-0007: 의도"
     },
     {
       "D": "M344 439 C372 439 340 291 368 291",
-      "Class": "below",
-      "Title": "MOD-0011.depends_on.MOD-0008: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.depends_on.MOD-0008: 의도"
     },
     {
       "D": "M344 439 C380 439 380 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0011.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M344 439 C372 439 340 439 368 439",
-      "Class": "below",
-      "Title": "MOD-0011.depends_on.MOD-0012: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.depends_on.MOD-0012: 의도"
     },
     {
       "D": "M344 439 C380 439 380 513 344 513",
-      "Class": "below",
-      "Title": "MOD-0011.depends_on.MOD-0013: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.depends_on.MOD-0013: 의도"
     },
     {
       "D": "M344 439 C620 439 620 143 896 143",
-      "Class": "below",
-      "Title": "MOD-0011.provides.CFG-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.CFG-0002: 의도"
     },
     {
       "D": "M344 439 C532 439 532 143 720 143",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0002: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0002: 의도"
     },
     {
       "D": "M344 439 C532 439 532 291 720 291",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0004: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0004: 의도"
     },
     {
       "D": "M344 439 C532 439 532 365 720 365",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0005: 의도"
     },
     {
       "D": "M344 439 C532 402 532 402 720 439",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0006: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0006: 의도"
     },
     {
       "D": "M344 439 C532 439 532 513 720 513",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0007: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0007: 의도"
     },
     {
       "D": "M344 439 C532 439 532 587 720 587",
-      "Class": "below",
-      "Title": "MOD-0011.provides.DATA-0008: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0011.provides.DATA-0008: 의도"
     },
     {
       "D": "M368 439 C340 439 372 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0012.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0012.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M520 439 C548 439 516 365 544 365",
-      "Class": "below",
-      "Title": "MOD-0012.provides.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0012.provides.IF-0005: 의도"
     },
     {
       "D": "M344 513 C444 513 444 365 544 365",
-      "Class": "below",
-      "Title": "MOD-0013.consumes.IF-0005: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0013.consumes.IF-0005: 의도"
     },
     {
       "D": "M344 513 C399 513 399 365 344 365",
-      "Class": "below",
-      "Title": "MOD-0013.depends_on.MOD-0009: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0013.depends_on.MOD-0009: 의도"
     },
     {
       "D": "M344 513 C372 513 340 439 368 439",
-      "Class": "below",
-      "Title": "MOD-0013.depends_on.MOD-0012: 선 아래"
+      "Class": "kept",
+      "Title": "MOD-0013.depends_on.MOD-0012: 의도"
     },
     {
       "D": "M520 69 C708 69 708 217 896 217",

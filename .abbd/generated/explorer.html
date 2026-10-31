@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=e94c0112f927648bbabba84d095434c2d07fe7071fe4d9c11e44c1cf8c120b5c intended_revision=0">
+<meta name="abbd-watermark" content="inputs_hash=166df4b4add5b5bbe40d375a69efbecb6369869814d1b4028715560ef0dd33a3 intended_revision=1">
 <title>ABBD 화면</title>
 <style>
 :root {
@@ -101,7 +101,7 @@ svg marker path { fill: var(--muted); stroke: none; }
 <header>
   <h1>ABBD</h1>
   <div class="pills">
-    <span class="pill bootstrapped" title="phase: bootstrapped">정렬 전</span>
+    <span class="pill aligned" title="phase: aligned">정렬됨</span>
     
     <span class="pill CURRENT" title=".abbd/generated/가 그리는 .abbd 파일과 맞는지">생성 파일 CURRENT</span>
   </div>
@@ -111,22 +111,17 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 
 
-<section class="first" id="pending">
+<section class="" id="pending">
   <h2>결정 대기</h2>
   
-  <div class="card">
-    <strong>첫 정렬.</strong> setup이 묻지 않고 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다.
-    <ul class="plain"><li><span class="key">CFG-0001</span> plugin and marketplace manifest</li><li><span class="key">CFG-0002</span> project.yaml</li><li><span class="key">CFG-0003</span> hook registration</li><li><span class="key">DATA-0001</span> extraction JSON</li><li><span class="key">DATA-0002</span> unit files</li><li><span class="key">DATA-0003</span> generated files</li><li><span class="key">DATA-0004</span> decision records</li><li><span class="key">DATA-0005</span> intended topology</li><li><span class="key">DATA-0006</span> verification runs</li><li><span class="key">DATA-0007</span> change records</li><li><span class="key">DATA-0008</span> requirements</li><li><span class="key">FEAT-0001</span> /abbd-mode</li><li><span class="key">FEAT-0002</span> /abbd-setup</li><li><span class="key">IF-0001</span> Claude Code hook protocol</li><li><span class="key">IF-0002</span> abbd command line</li><li><span class="key">IF-0003</span> screen HTTP</li><li><span class="key">IF-0004</span> confirm item key</li><li><span class="key">IF-0005</span> change item key</li><li><span class="key">MOD-0001</span> abbd CLI</li><li><span class="key">MOD-0002</span> PreToolUse guard</li><li><span class="key">MOD-0003</span> screen server</li><li><span class="key">MOD-0004</span> internal/bootstrap</li><li><span class="key">MOD-0005</span> internal/confirm</li><li><span class="key">MOD-0006</span> internal/extract</li><li><span class="key">MOD-0007</span> internal/gitx</li><li><span class="key">MOD-0008</span> internal/identity</li><li><span class="key">MOD-0009</span> internal/model</li><li><span class="key">MOD-0010</span> internal/screen</li><li><span class="key">MOD-0011</span> internal/store</li><li><span class="key">MOD-0012</span> internal/topology</li><li><span class="key">MOD-0013</span> internal/turn</li></ul>
-  </div>
-  
-  
+  <p class="muted">결정할 것이 없습니다.</p>
 </section>
 
 
 
 <section id="drift">
   <h2>의도 대 실제</h2>
-  <p class="muted">아직 의도한 토폴로지가 없습니다.</p>
+  <p class="muted">코드가 의도한 토폴로지와 맞습니다.</p>
   
 </section>
 
@@ -137,439 +132,439 @@ svg marker path { fill: var(--muted); stroke: none; }
   <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0001.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">publishes ABBD as a Claude Code plugin from this repository</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0001.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the marketplace and plugin names and the plugin source path</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0002.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">records the trusted extraction and verify argv</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0002.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes project.yaml, which mode on and turn verify run without asking</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">registers ABBD&#39;s hooks with Claude Code</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes which events and tool matchers call abbd hook</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0001.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is what every project extraction script and supplement must print</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0001.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the units and relations JSON; unknown fields are rejected</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0002.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the actual topology as reviewable files</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0002.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the unit file frontmatter: anchors, facts with their evidence, relations</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0003.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">lets tools and humans read the topology without the CLI</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0003.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the record of each human decision on a grade C change</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes ADR frontmatter: subject, decision, question, reason and turn</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0005.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the human-approved topology every gate compares against</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0005.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes intended.yaml: revision, units with signatures and external consumers, relations</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0006.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the evidence that a turn&#39;s verification passed on its tree</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0006.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the run record: command, tree, exit code, result and log path</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0007.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the record of each turn</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0007.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0008.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">keeps each user request verbatim</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0008.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the requirement file a turn points to</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.CFG-0001">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.CFG-0001</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.CFG-0001</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.CFG-0003">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.CFG-0003</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.CFG-0003</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.DATA-0005">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.DATA-0005</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.DATA-0005</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.DATA-0007">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.DATA-0007</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.consumes.DATA-0007</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0002">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.depends_on.MOD-0002</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.depends_on.MOD-0002</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">runs a pstack playbook inside a gated ABBD turn</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.consumes.DATA-0001">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.consumes.DATA-0001</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.consumes.DATA-0001</span> <span class="muted">설계 단위</span></div>
     <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">bootstraps ABBD on a repository without asking the human</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0001.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is how Claude Code hands ABBD each session event</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0001.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0002.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the command surface humans, skills and the screen call</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0002.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0003.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is what the screen page posts to decide</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0003.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the routes and the act form: which decisions exist and which fields each reads</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0004.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">names one guess in the confirm queue</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0004.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the ID.field and edge syntax a human types to confirm or reject a guess</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0005.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">names one topology change so a human can approve or reject it</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-IF-0005.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">lets the human and the agent drive ABBD from a terminal and from Claude Code hooks</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.consumes.CFG-0003">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.consumes.CFG-0003</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.consumes.CFG-0003</span> <span class="muted">설계 단위</span></div>
     <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.consumes.IF-0002">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.consumes.IF-0002</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.consumes.IF-0002</span> <span class="muted">설계 단위</span></div>
     <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.depends_on.MOD-0011">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.depends_on.MOD-0011</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.depends_on.MOD-0011</span> <span class="muted">설계 단위</span></div>
     <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">stops an agent in an active session from doing a human&#39;s step</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">gives the human a browser screen for every decision</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">lays the supplement and adopted documents over the script result and writes the setup report</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0005.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the queue of agent guesses waiting for a human</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0005.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the trust boundary where extraction JSON becomes typed units</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0007.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">reads the few git facts ABBD needs without touching the user&#39;s index</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0007.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.depends_on.MOD-0004">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.depends_on.MOD-0004</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.depends_on.MOD-0004</span> <span class="muted">설계 단위</span></div>
     <div class="why">internal/identity: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">keeps design unit IDs stable across re-extraction</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0009.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the shared vocabulary of design units and their evidence</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0009.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">shows the human what needs a decision without opening Markdown</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">persists all ABBD state as reviewable files under .abbd/ and the git dir</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">compares the approved intended topology with the actual one</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.depends_on.MOD-0007">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.depends_on.MOD-0007</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.depends_on.MOD-0007</span> <span class="muted">설계 단위</span></div>
     <div class="why">internal/turn: 추출 스크립트가 찾지 못한 결합</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.purpose">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.purpose</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.purpose</span> <span class="muted">설계 단위</span></div>
     <div class="why">models one unit of agent work under abbd mode</div>
     
   </div>
   
   <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.responsibility">
-    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.responsibility</span></div>
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.responsibility</span> <span class="muted">설계 단위</span></div>
     <div class="why">owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule</div>
     
   </div>
@@ -586,19 +581,19 @@ svg marker path { fill: var(--muted); stroke: none; }
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="1064" height="654" viewBox="0 0 1064 654" role="img" aria-label="토폴로지 지도">
     <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
     <text class="col" x="16" y="16">기능</text><text class="col" x="192" y="16">모듈</text><text class="col" x="544" y="16">인터페이스</text><text class="col" x="720" y="16">데이터</text><text class="col" x="896" y="16">설정</text>
-    <path class="below" d="M896 217 C796 217 796 69 696 69"><title>CFG-0003.consumes.IF-0001: 선 아래</title></path><path class="below" d="M168 69 C356 69 356 143 544 143"><title>FEAT-0001.consumes.IF-0002: 선 아래</title></path><path class="below" d="M168 69 C356 69 356 365 544 365"><title>FEAT-0001.consumes.IF-0005: 선 아래</title></path><path class="below" d="M168 143 C356 106 356 106 544 143"><title>FEAT-0002.consumes.IF-0002: 선 아래</title></path><path class="below" d="M344 69 C620 69 620 143 896 143"><title>MOD-0001.consumes.CFG-0002: 선 아래</title></path><path class="below" d="M344 69 C532 32 532 32 720 69"><title>MOD-0001.consumes.DATA-0001: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 143 720 143"><title>MOD-0001.consumes.DATA-0002: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 217 720 217"><title>MOD-0001.consumes.DATA-0003: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 291 720 291"><title>MOD-0001.consumes.DATA-0004: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 365 720 365"><title>MOD-0001.consumes.DATA-0005: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 439 720 439"><title>MOD-0001.consumes.DATA-0006: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 513 720 513"><title>MOD-0001.consumes.DATA-0007: 선 아래</title></path><path class="below" d="M344 69 C532 69 532 587 720 587"><title>MOD-0001.consumes.DATA-0008: 선 아래</title></path><path class="below" d="M344 69 C444 69 444 291 544 291"><title>MOD-0001.consumes.IF-0004: 선 아래</title></path><path class="below" d="M344 69 C444 69 444 365 544 365"><title>MOD-0001.consumes.IF-0005: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 69 368 69"><title>MOD-0001.depends_on.MOD-0002: 선 아래</title></path><path class="below" d="M344 69 C380 69 380 143 344 143"><title>MOD-0001.depends_on.MOD-0003: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 143 368 143"><title>MOD-0001.depends_on.MOD-0004: 선 아래</title></path><path class="below" d="M344 69 C399 69 399 217 344 217"><title>MOD-0001.depends_on.MOD-0005: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 217 368 217"><title>MOD-0001.depends_on.MOD-0006: 선 아래</title></path><path class="below" d="M344 69 C417 69 417 291 344 291"><title>MOD-0001.depends_on.MOD-0007: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 291 368 291"><title>MOD-0001.depends_on.MOD-0008: 선 아래</title></path><path class="below" d="M344 69 C436 69 436 365 344 365"><title>MOD-0001.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 365 368 365"><title>MOD-0001.depends_on.MOD-0010: 선 아래</title></path><path class="below" d="M344 69 C454 69 454 439 344 439"><title>MOD-0001.depends_on.MOD-0011: 선 아래</title></path><path class="below" d="M344 69 C372 69 340 439 368 439"><title>MOD-0001.depends_on.MOD-0012: 선 아래</title></path><path class="below" d="M344 69 C473 69 473 513 344 513"><title>MOD-0001.depends_on.MOD-0013: 선 아래</title></path><path class="below" d="M344 69 C444 32 444 32 544 69"><title>MOD-0001.provides.IF-0001: 선 아래</title></path><path class="below" d="M344 69 C444 69 444 143 544 143"><title>MOD-0001.provides.IF-0002: 선 아래</title></path><path class="below" d="M368 69 C340 69 372 69 344 69"><title>MOD-0002.depends_on.MOD-0001: 선 아래</title></path><path class="below" d="M344 143 C444 106 444 106 544 143"><title>MOD-0003.consumes.IF-0002: 선 아래</title></path><path class="below" d="M344 143 C380 143 380 69 344 69"><title>MOD-0003.depends_on.MOD-0001: 선 아래</title></path><path class="below" d="M344 143 C372 143 340 365 368 365"><title>MOD-0003.depends_on.MOD-0010: 선 아래</title></path><path class="below" d="M344 143 C444 143 444 217 544 217"><title>MOD-0003.provides.IF-0003: 선 아래</title></path><path class="below" d="M520 143 C548 143 516 291 544 291"><title>MOD-0004.consumes.IF-0004: 선 아래</title></path><path class="below" d="M368 143 C340 143 372 217 344 217"><title>MOD-0004.depends_on.MOD-0005: 선 아래</title></path><path class="below" d="M520 143 C556 143 556 217 520 217"><title>MOD-0004.depends_on.MOD-0006: 선 아래</title></path><path class="below" d="M368 143 C340 143 372 365 344 365"><title>MOD-0004.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M344 217 C444 217 444 365 544 365"><title>MOD-0005.consumes.IF-0005: 선 아래</title></path><path class="below" d="M344 217 C399 217 399 365 344 365"><title>MOD-0005.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M344 217 C372 217 340 439 368 439"><title>MOD-0005.depends_on.MOD-0012: 선 아래</title></path><path class="below" d="M344 217 C444 217 444 291 544 291"><title>MOD-0005.provides.IF-0004: 선 아래</title></path><path class="below" d="M368 217 C340 217 372 365 344 365"><title>MOD-0006.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M520 217 C620 217 620 69 720 69"><title>MOD-0006.provides.DATA-0001: 선 아래</title></path><path class="below" d="M520 291 C556 291 556 217 520 217"><title>MOD-0008.depends_on.MOD-0006: 선 아래</title></path><path class="below" d="M368 291 C340 291 372 365 344 365"><title>MOD-0008.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M520 365 C708 365 708 143 896 143"><title>MOD-0010.consumes.CFG-0002: 선 아래</title></path><path class="below" d="M520 365 C620 365 620 143 720 143"><title>MOD-0010.consumes.DATA-0002: 선 아래</title></path><path class="below" d="M520 365 C620 365 620 291 720 291"><title>MOD-0010.consumes.DATA-0004: 선 아래</title></path><path class="below" d="M520 365 C620 328 620 328 720 365"><title>MOD-0010.consumes.DATA-0005: 선 아래</title></path><path class="below" d="M520 365 C620 365 620 439 720 439"><title>MOD-0010.consumes.DATA-0006: 선 아래</title></path><path class="below" d="M520 365 C620 365 620 513 720 513"><title>MOD-0010.consumes.DATA-0007: 선 아래</title></path><path class="below" d="M520 365 C548 365 516 291 544 291"><title>MOD-0010.consumes.IF-0004: 선 아래</title></path><path class="below" d="M520 365 C548 365 516 365 544 365"><title>MOD-0010.consumes.IF-0005: 선 아래</title></path><path class="below" d="M368 365 C340 365 372 217 344 217"><title>MOD-0010.depends_on.MOD-0005: 선 아래</title></path><path class="below" d="M368 365 C340 365 372 365 344 365"><title>MOD-0010.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M368 365 C340 365 372 439 344 439"><title>MOD-0010.depends_on.MOD-0011: 선 아래</title></path><path class="below" d="M520 365 C556 365 556 439 520 439"><title>MOD-0010.depends_on.MOD-0012: 선 아래</title></path><path class="below" d="M368 365 C340 365 372 513 344 513"><title>MOD-0010.depends_on.MOD-0013: 선 아래</title></path><path class="below" d="M520 365 C620 365 620 217 720 217"><title>MOD-0010.provides.DATA-0003: 선 아래</title></path><path class="below" d="M344 439 C399 439 399 291 344 291"><title>MOD-0011.depends_on.MOD-0007: 선 아래</title></path><path class="below" d="M344 439 C372 439 340 291 368 291"><title>MOD-0011.depends_on.MOD-0008: 선 아래</title></path><path class="below" d="M344 439 C380 439 380 365 344 365"><title>MOD-0011.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M344 439 C372 439 340 439 368 439"><title>MOD-0011.depends_on.MOD-0012: 선 아래</title></path><path class="below" d="M344 439 C380 439 380 513 344 513"><title>MOD-0011.depends_on.MOD-0013: 선 아래</title></path><path class="below" d="M344 439 C620 439 620 143 896 143"><title>MOD-0011.provides.CFG-0002: 선 아래</title></path><path class="below" d="M344 439 C532 439 532 143 720 143"><title>MOD-0011.provides.DATA-0002: 선 아래</title></path><path class="below" d="M344 439 C532 439 532 291 720 291"><title>MOD-0011.provides.DATA-0004: 선 아래</title></path><path class="below" d="M344 439 C532 439 532 365 720 365"><title>MOD-0011.provides.DATA-0005: 선 아래</title></path><path class="below" d="M344 439 C532 402 532 402 720 439"><title>MOD-0011.provides.DATA-0006: 선 아래</title></path><path class="below" d="M344 439 C532 439 532 513 720 513"><title>MOD-0011.provides.DATA-0007: 선 아래</title></path><path class="below" d="M344 439 C532 439 532 587 720 587"><title>MOD-0011.provides.DATA-0008: 선 아래</title></path><path class="below" d="M368 439 C340 439 372 365 344 365"><title>MOD-0012.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M520 439 C548 439 516 365 544 365"><title>MOD-0012.provides.IF-0005: 선 아래</title></path><path class="below" d="M344 513 C444 513 444 365 544 365"><title>MOD-0013.consumes.IF-0005: 선 아래</title></path><path class="below" d="M344 513 C399 513 399 365 344 365"><title>MOD-0013.depends_on.MOD-0009: 선 아래</title></path><path class="below" d="M344 513 C372 513 340 439 368 439"><title>MOD-0013.depends_on.MOD-0012: 선 아래</title></path><path class="guess" d="M520 69 C708 69 708 217 896 217"><title>MOD-0002.consumes.CFG-0003: 추정, 미확인</title></path><path class="guess" d="M520 69 C548 69 516 143 544 143"><title>MOD-0002.consumes.IF-0002: 추정, 미확인</title></path><path class="guess" d="M368 69 C340 69 372 439 344 439"><title>MOD-0002.depends_on.MOD-0011: 추정, 미확인</title></path><path class="guess" d="M520 291 C575 291 575 143 520 143"><title>MOD-0008.depends_on.MOD-0004: 추정, 미확인</title></path><path class="guess" d="M344 513 C417 513 417 291 344 291"><title>MOD-0013.depends_on.MOD-0007: 추정, 미확인</title></path><path class="guess" d="M168 69 C532 32 532 32 896 69"><title>FEAT-0001.consumes.CFG-0001: 추정, 미확인</title></path><path class="guess" d="M168 69 C532 69 532 217 896 217"><title>FEAT-0001.consumes.CFG-0003: 추정, 미확인</title></path><path class="guess" d="M168 69 C444 69 444 365 720 365"><title>FEAT-0001.consumes.DATA-0005: 추정, 미확인</title></path><path class="guess" d="M168 69 C444 69 444 513 720 513"><title>FEAT-0001.consumes.DATA-0007: 추정, 미확인</title></path><path class="guess" d="M168 69 C268 32 268 32 368 69"><title>FEAT-0001.depends_on.MOD-0002: 추정, 미확인</title></path><path class="guess" d="M168 143 C444 143 444 69 720 69"><title>FEAT-0002.consumes.DATA-0001: 추정, 미확인</title></path>
-    <g><title>CFG-0001 plugin and marketplace manifest: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="896" y="46" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="46" dy="17">CFG-0001</text><text x="896" dx="10" y="46" dy="35">plugin and marketplace manifest</text><circle class="guess" cx="896" cy="46" r="5" transform="translate(140 12)"/></g><g><title>CFG-0002 project.yaml: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="896" y="120" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="120" dy="17">CFG-0002</text><text x="896" dx="10" y="120" dy="35">project.yaml</text><circle class="guess" cx="896" cy="120" r="5" transform="translate(140 12)"/></g><g><title>CFG-0003 hook registration: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="896" y="194" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="194" dy="17">CFG-0003</text><text x="896" dx="10" y="194" dy="35">hook registration</text><circle class="guess" cx="896" cy="194" r="5" transform="translate(140 12)"/></g><g><title>DATA-0001 extraction JSON: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="46" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="46" dy="17">DATA-0001</text><text x="720" dx="10" y="46" dy="35">extraction JSON</text><circle class="guess" cx="720" cy="46" r="5" transform="translate(140 12)"/></g><g><title>DATA-0002 unit files: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="120" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="120" dy="17">DATA-0002</text><text x="720" dx="10" y="120" dy="35">unit files</text><circle class="guess" cx="720" cy="120" r="5" transform="translate(140 12)"/></g><g><title>DATA-0003 generated files: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="194" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="194" dy="17">DATA-0003</text><text x="720" dx="10" y="194" dy="35">generated files</text><circle class="guess" cx="720" cy="194" r="5" transform="translate(140 12)"/></g><g><title>DATA-0004 decision records: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="268" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="268" dy="17">DATA-0004</text><text x="720" dx="10" y="268" dy="35">decision records</text><circle class="guess" cx="720" cy="268" r="5" transform="translate(140 12)"/></g><g><title>DATA-0005 intended topology: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="342" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="342" dy="17">DATA-0005</text><text x="720" dx="10" y="342" dy="35">intended topology</text><circle class="guess" cx="720" cy="342" r="5" transform="translate(140 12)"/></g><g><title>DATA-0006 verification runs: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="416" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="416" dy="17">DATA-0006</text><text x="720" dx="10" y="416" dy="35">verification runs</text><circle class="guess" cx="720" cy="416" r="5" transform="translate(140 12)"/></g><g><title>DATA-0007 change records: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="490" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="490" dy="17">DATA-0007</text><text x="720" dx="10" y="490" dy="35">change records</text><circle class="guess" cx="720" cy="490" r="5" transform="translate(140 12)"/></g><g><title>DATA-0008 requirements: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="720" y="564" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="564" dy="17">DATA-0008</text><text x="720" dx="10" y="564" dy="35">requirements</text><circle class="guess" cx="720" cy="564" r="5" transform="translate(140 12)"/></g><g><title>FEAT-0001 /abbd-mode: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="16" y="46" width="152" height="46" rx="12"/><text class="id" x="16" dx="10" y="46" dy="17">FEAT-0001</text><text x="16" dx="10" y="46" dy="35">/abbd-mode</text><circle class="guess" cx="16" cy="46" r="5" transform="translate(140 12)"/></g><g><title>FEAT-0002 /abbd-setup: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="16" y="120" width="152" height="46" rx="12"/><text class="id" x="16" dx="10" y="120" dy="17">FEAT-0002</text><text x="16" dx="10" y="120" dy="35">/abbd-setup</text><circle class="guess" cx="16" cy="120" r="5" transform="translate(140 12)"/></g><g><title>IF-0001 Claude Code hook protocol: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="544" y="46" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="46" dy="17">IF-0001</text><text x="544" dx="10" y="46" dy="35">Claude Code hook protocol</text><circle class="guess" cx="544" cy="46" r="5" transform="translate(140 12)"/></g><g><title>IF-0002 abbd command line: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="544" y="120" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="120" dy="17">IF-0002</text><text x="544" dx="10" y="120" dy="35">abbd command line</text><circle class="guess" cx="544" cy="120" r="5" transform="translate(140 12)"/></g><g><title>IF-0003 screen HTTP: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="544" y="194" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="194" dy="17">IF-0003</text><text x="544" dx="10" y="194" dy="35">screen HTTP</text><circle class="guess" cx="544" cy="194" r="5" transform="translate(140 12)"/></g><g><title>IF-0004 confirm item key: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="544" y="268" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="268" dy="17">IF-0004</text><text x="544" dx="10" y="268" dy="35">confirm item key</text><circle class="guess" cx="544" cy="268" r="5" transform="translate(140 12)"/></g><g><title>IF-0005 change item key: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="544" y="342" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="342" dy="17">IF-0005</text><text x="544" dx="10" y="342" dy="35">change item key</text><circle class="guess" cx="544" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0001 abbd CLI: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="46" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="46" dy="17">MOD-0001</text><text x="192" dx="10" y="46" dy="35">abbd CLI</text><circle class="guess" cx="192" cy="46" r="5" transform="translate(140 12)"/></g><g><title>MOD-0002 PreToolUse guard: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="46" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="46" dy="17">MOD-0002</text><text x="368" dx="10" y="46" dy="35">PreToolUse guard</text><circle class="guess" cx="368" cy="46" r="5" transform="translate(140 12)"/></g><g><title>MOD-0003 screen server: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="120" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="120" dy="17">MOD-0003</text><text x="192" dx="10" y="120" dy="35">screen server</text><circle class="guess" cx="192" cy="120" r="5" transform="translate(140 12)"/></g><g><title>MOD-0004 internal/bootstrap: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="120" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="120" dy="17">MOD-0004</text><text x="368" dx="10" y="120" dy="35">internal/bootstrap</text><circle class="guess" cx="368" cy="120" r="5" transform="translate(140 12)"/></g><g><title>MOD-0005 internal/confirm: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="194" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="194" dy="17">MOD-0005</text><text x="192" dx="10" y="194" dy="35">internal/confirm</text><circle class="guess" cx="192" cy="194" r="5" transform="translate(140 12)"/></g><g><title>MOD-0006 internal/extract: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="194" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="194" dy="17">MOD-0006</text><text x="368" dx="10" y="194" dy="35">internal/extract</text><circle class="guess" cx="368" cy="194" r="5" transform="translate(140 12)"/></g><g><title>MOD-0007 internal/gitx: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="268" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="268" dy="17">MOD-0007</text><text x="192" dx="10" y="268" dy="35">internal/gitx</text><circle class="guess" cx="192" cy="268" r="5" transform="translate(140 12)"/></g><g><title>MOD-0008 internal/identity: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="268" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="268" dy="17">MOD-0008</text><text x="368" dx="10" y="268" dy="35">internal/identity</text><circle class="guess" cx="368" cy="268" r="5" transform="translate(140 12)"/></g><g><title>MOD-0009 internal/model: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="342" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="342" dy="17">MOD-0009</text><text x="192" dx="10" y="342" dy="35">internal/model</text><circle class="guess" cx="192" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0010 internal/screen: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="342" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="342" dy="17">MOD-0010</text><text x="368" dx="10" y="342" dy="35">internal/screen</text><circle class="guess" cx="368" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0011 internal/store: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="416" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="416" dy="17">MOD-0011</text><text x="192" dx="10" y="416" dy="35">internal/store</text><circle class="guess" cx="192" cy="416" r="5" transform="translate(140 12)"/></g><g><title>MOD-0012 internal/topology: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="368" y="416" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="416" dy="17">MOD-0012</text><text x="368" dx="10" y="416" dy="35">internal/topology</text><circle class="guess" cx="368" cy="416" r="5" transform="translate(140 12)"/></g><g><title>MOD-0013 internal/turn: 선 아래; purpose inferred, unconfirmed</title><rect class="below" x="192" y="490" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="490" dy="17">MOD-0013</text><text x="192" dx="10" y="490" dy="35">internal/turn</text><circle class="guess" cx="192" cy="490" r="5" transform="translate(140 12)"/></g>
+    <path class="kept" d="M896 217 C796 217 796 69 696 69"><title>CFG-0003.consumes.IF-0001: 의도</title></path><path class="kept" d="M168 69 C356 69 356 143 544 143"><title>FEAT-0001.consumes.IF-0002: 의도</title></path><path class="kept" d="M168 69 C356 69 356 365 544 365"><title>FEAT-0001.consumes.IF-0005: 의도</title></path><path class="kept" d="M168 143 C356 106 356 106 544 143"><title>FEAT-0002.consumes.IF-0002: 의도</title></path><path class="kept" d="M344 69 C620 69 620 143 896 143"><title>MOD-0001.consumes.CFG-0002: 의도</title></path><path class="kept" d="M344 69 C532 32 532 32 720 69"><title>MOD-0001.consumes.DATA-0001: 의도</title></path><path class="kept" d="M344 69 C532 69 532 143 720 143"><title>MOD-0001.consumes.DATA-0002: 의도</title></path><path class="kept" d="M344 69 C532 69 532 217 720 217"><title>MOD-0001.consumes.DATA-0003: 의도</title></path><path class="kept" d="M344 69 C532 69 532 291 720 291"><title>MOD-0001.consumes.DATA-0004: 의도</title></path><path class="kept" d="M344 69 C532 69 532 365 720 365"><title>MOD-0001.consumes.DATA-0005: 의도</title></path><path class="kept" d="M344 69 C532 69 532 439 720 439"><title>MOD-0001.consumes.DATA-0006: 의도</title></path><path class="kept" d="M344 69 C532 69 532 513 720 513"><title>MOD-0001.consumes.DATA-0007: 의도</title></path><path class="kept" d="M344 69 C532 69 532 587 720 587"><title>MOD-0001.consumes.DATA-0008: 의도</title></path><path class="kept" d="M344 69 C444 69 444 291 544 291"><title>MOD-0001.consumes.IF-0004: 의도</title></path><path class="kept" d="M344 69 C444 69 444 365 544 365"><title>MOD-0001.consumes.IF-0005: 의도</title></path><path class="kept" d="M344 69 C372 69 340 69 368 69"><title>MOD-0001.depends_on.MOD-0002: 의도</title></path><path class="kept" d="M344 69 C380 69 380 143 344 143"><title>MOD-0001.depends_on.MOD-0003: 의도</title></path><path class="kept" d="M344 69 C372 69 340 143 368 143"><title>MOD-0001.depends_on.MOD-0004: 의도</title></path><path class="kept" d="M344 69 C399 69 399 217 344 217"><title>MOD-0001.depends_on.MOD-0005: 의도</title></path><path class="kept" d="M344 69 C372 69 340 217 368 217"><title>MOD-0001.depends_on.MOD-0006: 의도</title></path><path class="kept" d="M344 69 C417 69 417 291 344 291"><title>MOD-0001.depends_on.MOD-0007: 의도</title></path><path class="kept" d="M344 69 C372 69 340 291 368 291"><title>MOD-0001.depends_on.MOD-0008: 의도</title></path><path class="kept" d="M344 69 C436 69 436 365 344 365"><title>MOD-0001.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M344 69 C372 69 340 365 368 365"><title>MOD-0001.depends_on.MOD-0010: 의도</title></path><path class="kept" d="M344 69 C454 69 454 439 344 439"><title>MOD-0001.depends_on.MOD-0011: 의도</title></path><path class="kept" d="M344 69 C372 69 340 439 368 439"><title>MOD-0001.depends_on.MOD-0012: 의도</title></path><path class="kept" d="M344 69 C473 69 473 513 344 513"><title>MOD-0001.depends_on.MOD-0013: 의도</title></path><path class="kept" d="M344 69 C444 32 444 32 544 69"><title>MOD-0001.provides.IF-0001: 의도</title></path><path class="kept" d="M344 69 C444 69 444 143 544 143"><title>MOD-0001.provides.IF-0002: 의도</title></path><path class="kept" d="M368 69 C340 69 372 69 344 69"><title>MOD-0002.depends_on.MOD-0001: 의도</title></path><path class="kept" d="M344 143 C444 106 444 106 544 143"><title>MOD-0003.consumes.IF-0002: 의도</title></path><path class="kept" d="M344 143 C380 143 380 69 344 69"><title>MOD-0003.depends_on.MOD-0001: 의도</title></path><path class="kept" d="M344 143 C372 143 340 365 368 365"><title>MOD-0003.depends_on.MOD-0010: 의도</title></path><path class="kept" d="M344 143 C444 143 444 217 544 217"><title>MOD-0003.provides.IF-0003: 의도</title></path><path class="kept" d="M520 143 C548 143 516 291 544 291"><title>MOD-0004.consumes.IF-0004: 의도</title></path><path class="kept" d="M368 143 C340 143 372 217 344 217"><title>MOD-0004.depends_on.MOD-0005: 의도</title></path><path class="kept" d="M520 143 C556 143 556 217 520 217"><title>MOD-0004.depends_on.MOD-0006: 의도</title></path><path class="kept" d="M368 143 C340 143 372 365 344 365"><title>MOD-0004.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M344 217 C444 217 444 365 544 365"><title>MOD-0005.consumes.IF-0005: 의도</title></path><path class="kept" d="M344 217 C399 217 399 365 344 365"><title>MOD-0005.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M344 217 C372 217 340 439 368 439"><title>MOD-0005.depends_on.MOD-0012: 의도</title></path><path class="kept" d="M344 217 C444 217 444 291 544 291"><title>MOD-0005.provides.IF-0004: 의도</title></path><path class="kept" d="M368 217 C340 217 372 365 344 365"><title>MOD-0006.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M520 217 C620 217 620 69 720 69"><title>MOD-0006.provides.DATA-0001: 의도</title></path><path class="kept" d="M520 291 C556 291 556 217 520 217"><title>MOD-0008.depends_on.MOD-0006: 의도</title></path><path class="kept" d="M368 291 C340 291 372 365 344 365"><title>MOD-0008.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M520 365 C708 365 708 143 896 143"><title>MOD-0010.consumes.CFG-0002: 의도</title></path><path class="kept" d="M520 365 C620 365 620 143 720 143"><title>MOD-0010.consumes.DATA-0002: 의도</title></path><path class="kept" d="M520 365 C620 365 620 291 720 291"><title>MOD-0010.consumes.DATA-0004: 의도</title></path><path class="kept" d="M520 365 C620 328 620 328 720 365"><title>MOD-0010.consumes.DATA-0005: 의도</title></path><path class="kept" d="M520 365 C620 365 620 439 720 439"><title>MOD-0010.consumes.DATA-0006: 의도</title></path><path class="kept" d="M520 365 C620 365 620 513 720 513"><title>MOD-0010.consumes.DATA-0007: 의도</title></path><path class="kept" d="M520 365 C548 365 516 291 544 291"><title>MOD-0010.consumes.IF-0004: 의도</title></path><path class="kept" d="M520 365 C548 365 516 365 544 365"><title>MOD-0010.consumes.IF-0005: 의도</title></path><path class="kept" d="M368 365 C340 365 372 217 344 217"><title>MOD-0010.depends_on.MOD-0005: 의도</title></path><path class="kept" d="M368 365 C340 365 372 365 344 365"><title>MOD-0010.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M368 365 C340 365 372 439 344 439"><title>MOD-0010.depends_on.MOD-0011: 의도</title></path><path class="kept" d="M520 365 C556 365 556 439 520 439"><title>MOD-0010.depends_on.MOD-0012: 의도</title></path><path class="kept" d="M368 365 C340 365 372 513 344 513"><title>MOD-0010.depends_on.MOD-0013: 의도</title></path><path class="kept" d="M520 365 C620 365 620 217 720 217"><title>MOD-0010.provides.DATA-0003: 의도</title></path><path class="kept" d="M344 439 C399 439 399 291 344 291"><title>MOD-0011.depends_on.MOD-0007: 의도</title></path><path class="kept" d="M344 439 C372 439 340 291 368 291"><title>MOD-0011.depends_on.MOD-0008: 의도</title></path><path class="kept" d="M344 439 C380 439 380 365 344 365"><title>MOD-0011.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M344 439 C372 439 340 439 368 439"><title>MOD-0011.depends_on.MOD-0012: 의도</title></path><path class="kept" d="M344 439 C380 439 380 513 344 513"><title>MOD-0011.depends_on.MOD-0013: 의도</title></path><path class="kept" d="M344 439 C620 439 620 143 896 143"><title>MOD-0011.provides.CFG-0002: 의도</title></path><path class="kept" d="M344 439 C532 439 532 143 720 143"><title>MOD-0011.provides.DATA-0002: 의도</title></path><path class="kept" d="M344 439 C532 439 532 291 720 291"><title>MOD-0011.provides.DATA-0004: 의도</title></path><path class="kept" d="M344 439 C532 439 532 365 720 365"><title>MOD-0011.provides.DATA-0005: 의도</title></path><path class="kept" d="M344 439 C532 402 532 402 720 439"><title>MOD-0011.provides.DATA-0006: 의도</title></path><path class="kept" d="M344 439 C532 439 532 513 720 513"><title>MOD-0011.provides.DATA-0007: 의도</title></path><path class="kept" d="M344 439 C532 439 532 587 720 587"><title>MOD-0011.provides.DATA-0008: 의도</title></path><path class="kept" d="M368 439 C340 439 372 365 344 365"><title>MOD-0012.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M520 439 C548 439 516 365 544 365"><title>MOD-0012.provides.IF-0005: 의도</title></path><path class="kept" d="M344 513 C444 513 444 365 544 365"><title>MOD-0013.consumes.IF-0005: 의도</title></path><path class="kept" d="M344 513 C399 513 399 365 344 365"><title>MOD-0013.depends_on.MOD-0009: 의도</title></path><path class="kept" d="M344 513 C372 513 340 439 368 439"><title>MOD-0013.depends_on.MOD-0012: 의도</title></path><path class="guess" d="M520 69 C708 69 708 217 896 217"><title>MOD-0002.consumes.CFG-0003: 추정, 미확인</title></path><path class="guess" d="M520 69 C548 69 516 143 544 143"><title>MOD-0002.consumes.IF-0002: 추정, 미확인</title></path><path class="guess" d="M368 69 C340 69 372 439 344 439"><title>MOD-0002.depends_on.MOD-0011: 추정, 미확인</title></path><path class="guess" d="M520 291 C575 291 575 143 520 143"><title>MOD-0008.depends_on.MOD-0004: 추정, 미확인</title></path><path class="guess" d="M344 513 C417 513 417 291 344 291"><title>MOD-0013.depends_on.MOD-0007: 추정, 미확인</title></path><path class="guess" d="M168 69 C532 32 532 32 896 69"><title>FEAT-0001.consumes.CFG-0001: 추정, 미확인</title></path><path class="guess" d="M168 69 C532 69 532 217 896 217"><title>FEAT-0001.consumes.CFG-0003: 추정, 미확인</title></path><path class="guess" d="M168 69 C444 69 444 365 720 365"><title>FEAT-0001.consumes.DATA-0005: 추정, 미확인</title></path><path class="guess" d="M168 69 C444 69 444 513 720 513"><title>FEAT-0001.consumes.DATA-0007: 추정, 미확인</title></path><path class="guess" d="M168 69 C268 32 268 32 368 69"><title>FEAT-0001.depends_on.MOD-0002: 추정, 미확인</title></path><path class="guess" d="M168 143 C444 143 444 69 720 69"><title>FEAT-0002.consumes.DATA-0001: 추정, 미확인</title></path>
+    <g><title>CFG-0001 plugin and marketplace manifest: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="896" y="46" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="46" dy="17">CFG-0001</text><text x="896" dx="10" y="46" dy="35">plugin and marketplace manifest</text><circle class="guess" cx="896" cy="46" r="5" transform="translate(140 12)"/></g><g><title>CFG-0002 project.yaml: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="896" y="120" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="120" dy="17">CFG-0002</text><text x="896" dx="10" y="120" dy="35">project.yaml</text><circle class="guess" cx="896" cy="120" r="5" transform="translate(140 12)"/></g><g><title>CFG-0003 hook registration: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="896" y="194" width="152" height="46" rx="23"/><text class="id" x="896" dx="10" y="194" dy="17">CFG-0003</text><text x="896" dx="10" y="194" dy="35">hook registration</text><circle class="guess" cx="896" cy="194" r="5" transform="translate(140 12)"/></g><g><title>DATA-0001 extraction JSON: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="46" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="46" dy="17">DATA-0001</text><text x="720" dx="10" y="46" dy="35">extraction JSON</text><circle class="guess" cx="720" cy="46" r="5" transform="translate(140 12)"/></g><g><title>DATA-0002 unit files: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="120" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="120" dy="17">DATA-0002</text><text x="720" dx="10" y="120" dy="35">unit files</text><circle class="guess" cx="720" cy="120" r="5" transform="translate(140 12)"/></g><g><title>DATA-0003 generated files: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="194" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="194" dy="17">DATA-0003</text><text x="720" dx="10" y="194" dy="35">generated files</text><circle class="guess" cx="720" cy="194" r="5" transform="translate(140 12)"/></g><g><title>DATA-0004 decision records: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="268" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="268" dy="17">DATA-0004</text><text x="720" dx="10" y="268" dy="35">decision records</text><circle class="guess" cx="720" cy="268" r="5" transform="translate(140 12)"/></g><g><title>DATA-0005 intended topology: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="342" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="342" dy="17">DATA-0005</text><text x="720" dx="10" y="342" dy="35">intended topology</text><circle class="guess" cx="720" cy="342" r="5" transform="translate(140 12)"/></g><g><title>DATA-0006 verification runs: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="416" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="416" dy="17">DATA-0006</text><text x="720" dx="10" y="416" dy="35">verification runs</text><circle class="guess" cx="720" cy="416" r="5" transform="translate(140 12)"/></g><g><title>DATA-0007 change records: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="490" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="490" dy="17">DATA-0007</text><text x="720" dx="10" y="490" dy="35">change records</text><circle class="guess" cx="720" cy="490" r="5" transform="translate(140 12)"/></g><g><title>DATA-0008 requirements: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="720" y="564" width="152" height="46" rx="23"/><text class="id" x="720" dx="10" y="564" dy="17">DATA-0008</text><text x="720" dx="10" y="564" dy="35">requirements</text><circle class="guess" cx="720" cy="564" r="5" transform="translate(140 12)"/></g><g><title>FEAT-0001 /abbd-mode: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="16" y="46" width="152" height="46" rx="12"/><text class="id" x="16" dx="10" y="46" dy="17">FEAT-0001</text><text x="16" dx="10" y="46" dy="35">/abbd-mode</text><circle class="guess" cx="16" cy="46" r="5" transform="translate(140 12)"/></g><g><title>FEAT-0002 /abbd-setup: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="16" y="120" width="152" height="46" rx="12"/><text class="id" x="16" dx="10" y="120" dy="17">FEAT-0002</text><text x="16" dx="10" y="120" dy="35">/abbd-setup</text><circle class="guess" cx="16" cy="120" r="5" transform="translate(140 12)"/></g><g><title>IF-0001 Claude Code hook protocol: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="544" y="46" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="46" dy="17">IF-0001</text><text x="544" dx="10" y="46" dy="35">Claude Code hook protocol</text><circle class="guess" cx="544" cy="46" r="5" transform="translate(140 12)"/></g><g><title>IF-0002 abbd command line: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="544" y="120" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="120" dy="17">IF-0002</text><text x="544" dx="10" y="120" dy="35">abbd command line</text><circle class="guess" cx="544" cy="120" r="5" transform="translate(140 12)"/></g><g><title>IF-0003 screen HTTP: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="544" y="194" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="194" dy="17">IF-0003</text><text x="544" dx="10" y="194" dy="35">screen HTTP</text><circle class="guess" cx="544" cy="194" r="5" transform="translate(140 12)"/></g><g><title>IF-0004 confirm item key: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="544" y="268" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="268" dy="17">IF-0004</text><text x="544" dx="10" y="268" dy="35">confirm item key</text><circle class="guess" cx="544" cy="268" r="5" transform="translate(140 12)"/></g><g><title>IF-0005 change item key: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="544" y="342" width="152" height="46" rx="23"/><text class="id" x="544" dx="10" y="342" dy="17">IF-0005</text><text x="544" dx="10" y="342" dy="35">change item key</text><circle class="guess" cx="544" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0001 abbd CLI: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="46" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="46" dy="17">MOD-0001</text><text x="192" dx="10" y="46" dy="35">abbd CLI</text><circle class="guess" cx="192" cy="46" r="5" transform="translate(140 12)"/></g><g><title>MOD-0002 PreToolUse guard: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="46" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="46" dy="17">MOD-0002</text><text x="368" dx="10" y="46" dy="35">PreToolUse guard</text><circle class="guess" cx="368" cy="46" r="5" transform="translate(140 12)"/></g><g><title>MOD-0003 screen server: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="120" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="120" dy="17">MOD-0003</text><text x="192" dx="10" y="120" dy="35">screen server</text><circle class="guess" cx="192" cy="120" r="5" transform="translate(140 12)"/></g><g><title>MOD-0004 internal/bootstrap: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="120" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="120" dy="17">MOD-0004</text><text x="368" dx="10" y="120" dy="35">internal/bootstrap</text><circle class="guess" cx="368" cy="120" r="5" transform="translate(140 12)"/></g><g><title>MOD-0005 internal/confirm: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="194" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="194" dy="17">MOD-0005</text><text x="192" dx="10" y="194" dy="35">internal/confirm</text><circle class="guess" cx="192" cy="194" r="5" transform="translate(140 12)"/></g><g><title>MOD-0006 internal/extract: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="194" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="194" dy="17">MOD-0006</text><text x="368" dx="10" y="194" dy="35">internal/extract</text><circle class="guess" cx="368" cy="194" r="5" transform="translate(140 12)"/></g><g><title>MOD-0007 internal/gitx: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="268" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="268" dy="17">MOD-0007</text><text x="192" dx="10" y="268" dy="35">internal/gitx</text><circle class="guess" cx="192" cy="268" r="5" transform="translate(140 12)"/></g><g><title>MOD-0008 internal/identity: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="268" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="268" dy="17">MOD-0008</text><text x="368" dx="10" y="268" dy="35">internal/identity</text><circle class="guess" cx="368" cy="268" r="5" transform="translate(140 12)"/></g><g><title>MOD-0009 internal/model: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="342" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="342" dy="17">MOD-0009</text><text x="192" dx="10" y="342" dy="35">internal/model</text><circle class="guess" cx="192" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0010 internal/screen: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="342" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="342" dy="17">MOD-0010</text><text x="368" dx="10" y="342" dy="35">internal/screen</text><circle class="guess" cx="368" cy="342" r="5" transform="translate(140 12)"/></g><g><title>MOD-0011 internal/store: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="416" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="416" dy="17">MOD-0011</text><text x="192" dx="10" y="416" dy="35">internal/store</text><circle class="guess" cx="192" cy="416" r="5" transform="translate(140 12)"/></g><g><title>MOD-0012 internal/topology: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="368" y="416" width="152" height="46" rx="4"/><text class="id" x="368" dx="10" y="416" dy="17">MOD-0012</text><text x="368" dx="10" y="416" dy="35">internal/topology</text><circle class="guess" cx="368" cy="416" r="5" transform="translate(140 12)"/></g><g><title>MOD-0013 internal/turn: 설계 단위; purpose inferred, unconfirmed</title><rect class="design" x="192" y="490" width="152" height="46" rx="4"/><text class="id" x="192" dx="10" y="490" dy="17">MOD-0013</text><text x="192" dx="10" y="490" dy="35">internal/turn</text><circle class="guess" cx="192" cy="490" r="5" transform="translate(140 12)"/></g>
   </svg></div>
   <div class="legend"><span>의도</span><span class="l-blocked">새 결합, 경계를 넘음</span><span class="l-realign">새 결합, 설계 단위에 닿음</span><span class="l-removed">의도했으나 사라짐</span><span class="l-guess">추정, 미확인</span><span class="l-below">선 아래</span></div>
   
   <h3>단위</h3>
-  <table><tr><td class="key">CFG-0001</td><td>plugin and marketplace manifest<div class="key muted">marketplace abbd {abbd=./plugins/abbd}; plugin abbd</div></td><td>publishes ABBD as a Claude Code plugin from this repository <span class="pill inferred">추정</span><div>fixes the marketplace and plugin names and the plugin source path <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">CFG-0002</td><td>project.yaml<div class="key muted">.abbd/project.yaml: extract,verify</div></td><td>records the trusted extraction and verify argv <span class="pill inferred">추정</span><div>fixes project.yaml, which mode on and turn verify run without asking <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">CFG-0003</td><td>hook registration<div class="key muted">PostToolUse[Write|Edit|NotebookEdit] -&gt; abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -&gt; abbd hook PreToolUse; SessionStart -&gt; abbd hook SessionStart; Stop -&gt; abbd hook Stop; UserPromptSubmit -&gt; abbd hook UserPromptSubmit</div></td><td>registers ABBD&#39;s hooks with Claude Code <span class="pill inferred">추정</span><div>fixes which events and tool matchers call abbd hook <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0001</td><td>extraction JSON<div class="key muted">extraction json: relations{from,kind,to},units{anchors{path,symbol},key,kind,name,purpose,responsibility,signature}</div></td><td>is what every project extraction script and supplement must print <span class="pill inferred">추정</span><div>fixes the units and relations JSON; unknown fields are rejected <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0002</td><td>unit files<div class="key muted">.abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},id,kind,name{confirmation,origin,rejected,value,verification},purpose{confirmation,origin,rejected,value,verification},relations{confirmation,kind,origin,to},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}</div></td><td>is the actual topology as reviewable files <span class="pill inferred">추정</span><div>fixes the unit file frontmatter: anchors, facts with their evidence, relations <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0003</td><td>generated files<div class="key muted">.abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,D,Title},nodes{Class,Guess,ID,Kind,Name,R,Title,X,Y},phase,units{Anchors,Design,ID,Kind,Name,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}</div></td><td>lets tools and humans read the topology without the CLI <span class="pill inferred">추정</span><div>fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0004</td><td>decision records<div class="key muted">.abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn</div></td><td>is the record of each human decision on a grade C change <span class="pill inferred">추정</span><div>fixes ADR frontmatter: subject, decision, question, reason and turn <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0005</td><td>intended topology<div class="key muted">.abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}</div></td><td>is the human-approved topology every gate compares against <span class="pill inferred">추정</span><div>fixes intended.yaml: revision, units with signatures and external consumers, relations <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0006</td><td>verification runs<div class="key muted">.abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why</div></td><td>is the evidence that a turn&#39;s verification passed on its tree <span class="pill inferred">추정</span><div>fixes the run record: command, tree, exit code, result and log path <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0007</td><td>change records<div class="key muted">.abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,seeds,session,state,verification</div></td><td>is the record of each turn <span class="pill inferred">추정</span><div>fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0008</td><td>requirements<div class="key muted">.abbd/requirements/ID.md frontmatter: id,origin,turn</div></td><td>keeps each user request verbatim <span class="pill inferred">추정</span><div>fixes the requirement file a turn points to <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">FEAT-0001</td><td>/abbd-mode</td><td>runs a pstack playbook inside a gated ABBD turn <span class="pill inferred">추정</span><div>maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">FEAT-0002</td><td>/abbd-setup</td><td>bootstraps ABBD on a repository without asking the human <span class="pill inferred">추정</span><div>drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0001</td><td>Claude Code hook protocol<div class="key muted">abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}</div></td><td>is how Claude Code hands ABBD each session event <span class="pill inferred">추정</span><div>fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0002</td><td>abbd command line<div class="key muted">align[all,confirm,exclude,root] pos{0}; approve[root] pos{1}; confirm[list,reject,root,value] pos{0,1}; couple[root] pos{1}; hook[root] sub{*} pos{0}; ingest[root] pos{1}; mode[root,session] sub{on,off} pos{0} needs-session; reject[reason,root] pos{1}; serve[addr,root] pos{0}; setup[adopt,greenfield,root,supplement,verify] pos{0} --argv; status[root,session] pos{0}; turn declare[changes,root,session,units] pos{0} needs-session; turn diff[root,session] pos{0} needs-session; turn end[root,session] pos{0} needs-session; turn impact[add,root,session] pos{0} needs-session; turn show[root,session] pos{0}; turn start[request,root,seeds,session] pos{0} needs-session; turn verify[root,session] pos{0} --argv needs-session; exit error=1,needhuman=2,ok=0,usage=64</div></td><td>is the command surface humans, skills and the screen call <span class="pill inferred">추정</span><div>fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64 <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0003</td><td>screen HTTP<div class="key muted">GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}</div></td><td>is what the screen page posts to decide <span class="pill inferred">추정</span><div>fixes the routes and the act form: which decisions exist and which fields each reads <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0004</td><td>confirm item key<div class="key muted">ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID</div></td><td>names one guess in the confirm queue <span class="pill inferred">추정</span><div>fixes the ID.field and edge syntax a human types to confirm or reject a guess <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0005</td><td>change item key<div class="key muted">{contract-changed,new-relation,removed-relation,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID</div></td><td>names one topology change so a human can approve or reject it <span class="pill inferred">추정</span><div>fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0001</td><td>abbd CLI</td><td>lets the human and the agent drive ABBD from a terminal and from Claude Code hooks <span class="pill inferred">추정</span><div>parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0002</td><td>PreToolUse guard</td><td>stops an agent in an active session from doing a human&#39;s step <span class="pill inferred">추정</span><div>splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0003</td><td>screen server</td><td>gives the human a browser screen for every decision <span class="pill inferred">추정</span><div>listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0004</td><td>internal/bootstrap</td><td>lays the supplement and adopted documents over the script result and writes the setup report <span class="pill inferred">추정</span><div>matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0005</td><td>internal/confirm</td><td>is the queue of agent guesses waiting for a human <span class="pill inferred">추정</span><div>lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0006</td><td>internal/extract</td><td>is the trust boundary where extraction JSON becomes typed units <span class="pill inferred">추정</span><div>validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0007</td><td>internal/gitx</td><td>reads the few git facts ABBD needs without touching the user&#39;s index <span class="pill inferred">추정</span><div>snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0008</td><td>internal/identity</td><td>keeps design unit IDs stable across re-extraction <span class="pill inferred">추정</span><div>matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0009</td><td>internal/model</td><td>is the shared vocabulary of design units and their evidence <span class="pill inferred">추정</span><div>defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0010</td><td>internal/screen</td><td>shows the human what needs a decision without opening Markdown <span class="pill inferred">추정</span><div>builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0011</td><td>internal/store</td><td>persists all ABBD state as reviewable files under .abbd/ and the git dir <span class="pill inferred">추정</span><div>is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0012</td><td>internal/topology</td><td>compares the approved intended topology with the actual one <span class="pill inferred">추정</span><div>owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0013</td><td>internal/turn</td><td>models one unit of agent work under abbd mode <span class="pill inferred">추정</span><div>owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule <span class="pill inferred">추정</span></div></td></tr></table>
+  <table><tr><td class="key">CFG-0001</td><td>plugin and marketplace manifest <span class="pill aligned">설계</span><div class="key muted">marketplace abbd {abbd=./plugins/abbd}; plugin abbd</div></td><td>publishes ABBD as a Claude Code plugin from this repository <span class="pill inferred">추정</span><div>fixes the marketplace and plugin names and the plugin source path <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">CFG-0002</td><td>project.yaml <span class="pill aligned">설계</span><div class="key muted">.abbd/project.yaml: extract,verify</div></td><td>records the trusted extraction and verify argv <span class="pill inferred">추정</span><div>fixes project.yaml, which mode on and turn verify run without asking <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">CFG-0003</td><td>hook registration <span class="pill aligned">설계</span><div class="key muted">PostToolUse[Write|Edit|NotebookEdit] -&gt; abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -&gt; abbd hook PreToolUse; SessionStart -&gt; abbd hook SessionStart; Stop -&gt; abbd hook Stop; UserPromptSubmit -&gt; abbd hook UserPromptSubmit</div></td><td>registers ABBD&#39;s hooks with Claude Code <span class="pill inferred">추정</span><div>fixes which events and tool matchers call abbd hook <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0001</td><td>extraction JSON <span class="pill aligned">설계</span><div class="key muted">extraction json: relations{from,kind,to},units{anchors{path,symbol},key,kind,name,purpose,responsibility,signature}</div></td><td>is what every project extraction script and supplement must print <span class="pill inferred">추정</span><div>fixes the units and relations JSON; unknown fields are rejected <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0002</td><td>unit files <span class="pill aligned">설계</span><div class="key muted">.abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},id,kind,name{confirmation,origin,rejected,value,verification},purpose{confirmation,origin,rejected,value,verification},relations{confirmation,kind,origin,to},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}</div></td><td>is the actual topology as reviewable files <span class="pill inferred">추정</span><div>fixes the unit file frontmatter: anchors, facts with their evidence, relations <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0003</td><td>generated files <span class="pill aligned">설계</span><div class="key muted">.abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,D,Title},nodes{Class,Guess,ID,Kind,Name,R,Title,X,Y},phase,units{Anchors,Design,ID,Kind,Name,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}</div></td><td>lets tools and humans read the topology without the CLI <span class="pill inferred">추정</span><div>fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0004</td><td>decision records <span class="pill aligned">설계</span><div class="key muted">.abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn</div></td><td>is the record of each human decision on a grade C change <span class="pill inferred">추정</span><div>fixes ADR frontmatter: subject, decision, question, reason and turn <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0005</td><td>intended topology <span class="pill aligned">설계</span><div class="key muted">.abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}</div></td><td>is the human-approved topology every gate compares against <span class="pill inferred">추정</span><div>fixes intended.yaml: revision, units with signatures and external consumers, relations <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0006</td><td>verification runs <span class="pill aligned">설계</span><div class="key muted">.abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why</div></td><td>is the evidence that a turn&#39;s verification passed on its tree <span class="pill inferred">추정</span><div>fixes the run record: command, tree, exit code, result and log path <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0007</td><td>change records <span class="pill aligned">설계</span><div class="key muted">.abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,seeds,session,state,verification</div></td><td>is the record of each turn <span class="pill inferred">추정</span><div>fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">DATA-0008</td><td>requirements <span class="pill aligned">설계</span><div class="key muted">.abbd/requirements/ID.md frontmatter: id,origin,turn</div></td><td>keeps each user request verbatim <span class="pill inferred">추정</span><div>fixes the requirement file a turn points to <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">FEAT-0001</td><td>/abbd-mode <span class="pill aligned">설계</span></td><td>runs a pstack playbook inside a gated ABBD turn <span class="pill inferred">추정</span><div>maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">FEAT-0002</td><td>/abbd-setup <span class="pill aligned">설계</span></td><td>bootstraps ABBD on a repository without asking the human <span class="pill inferred">추정</span><div>drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0001</td><td>Claude Code hook protocol <span class="pill aligned">설계</span><div class="key muted">abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}</div></td><td>is how Claude Code hands ABBD each session event <span class="pill inferred">추정</span><div>fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0002</td><td>abbd command line <span class="pill aligned">설계</span><div class="key muted">align[all,confirm,exclude,root] pos{0}; approve[root] pos{1}; confirm[list,reject,root,value] pos{0,1}; couple[root] pos{1}; hook[root] sub{*} pos{0}; ingest[root] pos{1}; mode[root,session] sub{on,off} pos{0} needs-session; reject[reason,root] pos{1}; serve[addr,root] pos{0}; setup[adopt,greenfield,root,supplement,verify] pos{0} --argv; status[root,session] pos{0}; turn declare[changes,root,session,units] pos{0} needs-session; turn diff[root,session] pos{0} needs-session; turn end[root,session] pos{0} needs-session; turn impact[add,root,session] pos{0} needs-session; turn show[root,session] pos{0}; turn start[request,root,seeds,session] pos{0} needs-session; turn verify[root,session] pos{0} --argv needs-session; exit error=1,needhuman=2,ok=0,usage=64</div></td><td>is the command surface humans, skills and the screen call <span class="pill inferred">추정</span><div>fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64 <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0003</td><td>screen HTTP <span class="pill aligned">설계</span><div class="key muted">GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}</div></td><td>is what the screen page posts to decide <span class="pill inferred">추정</span><div>fixes the routes and the act form: which decisions exist and which fields each reads <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0004</td><td>confirm item key <span class="pill aligned">설계</span><div class="key muted">ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID</div></td><td>names one guess in the confirm queue <span class="pill inferred">추정</span><div>fixes the ID.field and edge syntax a human types to confirm or reject a guess <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">IF-0005</td><td>change item key <span class="pill aligned">설계</span><div class="key muted">{contract-changed,new-relation,removed-relation,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID</div></td><td>names one topology change so a human can approve or reject it <span class="pill inferred">추정</span><div>fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0001</td><td>abbd CLI <span class="pill aligned">설계</span></td><td>lets the human and the agent drive ABBD from a terminal and from Claude Code hooks <span class="pill inferred">추정</span><div>parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0002</td><td>PreToolUse guard <span class="pill aligned">설계</span></td><td>stops an agent in an active session from doing a human&#39;s step <span class="pill inferred">추정</span><div>splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0003</td><td>screen server <span class="pill aligned">설계</span></td><td>gives the human a browser screen for every decision <span class="pill inferred">추정</span><div>listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0004</td><td>internal/bootstrap <span class="pill aligned">설계</span></td><td>lays the supplement and adopted documents over the script result and writes the setup report <span class="pill inferred">추정</span><div>matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0005</td><td>internal/confirm <span class="pill aligned">설계</span></td><td>is the queue of agent guesses waiting for a human <span class="pill inferred">추정</span><div>lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0006</td><td>internal/extract <span class="pill aligned">설계</span></td><td>is the trust boundary where extraction JSON becomes typed units <span class="pill inferred">추정</span><div>validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0007</td><td>internal/gitx <span class="pill aligned">설계</span></td><td>reads the few git facts ABBD needs without touching the user&#39;s index <span class="pill inferred">추정</span><div>snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0008</td><td>internal/identity <span class="pill aligned">설계</span></td><td>keeps design unit IDs stable across re-extraction <span class="pill inferred">추정</span><div>matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0009</td><td>internal/model <span class="pill aligned">설계</span></td><td>is the shared vocabulary of design units and their evidence <span class="pill inferred">추정</span><div>defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0010</td><td>internal/screen <span class="pill aligned">설계</span></td><td>shows the human what needs a decision without opening Markdown <span class="pill inferred">추정</span><div>builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0011</td><td>internal/store <span class="pill aligned">설계</span></td><td>persists all ABBD state as reviewable files under .abbd/ and the git dir <span class="pill inferred">추정</span><div>is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0012</td><td>internal/topology <span class="pill aligned">설계</span></td><td>compares the approved intended topology with the actual one <span class="pill inferred">추정</span><div>owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds <span class="pill inferred">추정</span></div></td></tr><tr><td class="key">MOD-0013</td><td>internal/turn <span class="pill aligned">설계</span></td><td>models one unit of agent work under abbd mode <span class="pill inferred">추정</span><div>owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule <span class="pill inferred">추정</span></div></td></tr></table>
   </details>
 </section>
 
 
 
-<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>e94c0112f927648bbabba84d095434c2d07fe7071fe4d9c11e44c1cf8c120b5c</code> r0</p>
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>166df4b4add5b5bbe40d375a69efbecb6369869814d1b4028715560ef0dd33a3</code> r1</p>
 
 </main>
 
