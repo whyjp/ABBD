@@ -372,7 +372,8 @@ func (e env) turnVerify() error {
 	id := "run-" + strings.TrimPrefix(string(n), "RUN-")
 	run := turn.Run{ID: id, Turn: t.ID, Command: p.Verify, Tree: tree, ExitCode: code, Result: model.Passed, Output: "verification/runs/" + id + ".log"}
 	if after != tree {
-		run.Why = turn.EditedTree
+		paths, _, _ := gitx.Changed(e.root, tree, after)
+		run.Why = turn.EditedTree(paths)
 	}
 	if code != 0 || run.Why != "" {
 		run.Result = model.Failed

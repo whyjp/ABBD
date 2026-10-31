@@ -111,6 +111,7 @@ func TestTurnCommandsBelongToTheTurnsSession(t *testing.T) {
 		p.want(1, "CHG-0001 belongs to session s1, not s2", "turn", sub, "--session", "s2")
 	}
 	p.want(0, "CHG-0001 OPEN", "turn", "show")
+	p.want(0, "CHG-0001 OPEN", "turn", "show", "--session", "s2")
 }
 
 func TestImpactFollowsConsumersAndCannotShrink(t *testing.T) {
@@ -521,7 +522,7 @@ func TestVerifyThatEditsTheTreeFails(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
 	p.editCode("billing/charge.go")
-	p.verify("pass edit "+filepath.Join(p.root, "billing", "charge.go"), 1, "run-0001 FAILED")
+	p.verify("pass edit "+filepath.Join(p.root, "billing", "charge.go"), 1, "it wrote billing/charge.go")
 	if run := p.read("verification/runs/run-0001.yaml"); !strings.Contains(run, "result: FAILED") {
 		t.Fatalf("a verify that edits the tree should be recorded FAILED:\n%s", run)
 	}

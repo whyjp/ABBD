@@ -51,7 +51,8 @@ abbd turn verify --session ID [--root DIR] [-- VERIFY-ARGV...]
                                      verification must not depend on them
 abbd turn end --session ID [--root DIR]
                                      gate and conclude: SYNCED, CLOSED, or exit 2 on DRAFT and BLOCKED
-abbd turn show [--root DIR]`
+abbd turn show [--root DIR] [--session ID]
+                                     any session may read the latest turn`
 
 const (
 	exitOK        = 0
@@ -146,7 +147,7 @@ var commands = map[string]command{
 	"turn diff":    {flags: []string{"root", "session"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnDiff() }},
 	"turn verify":  {flags: []string{"root", "session"}, pos: []int{0}, dashArgv: true, session: true, run: func(e env, _ string, _ []string) error { return e.turnVerify() }},
 	"turn end":     {flags: []string{"root", "session"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnEnd() }},
-	"turn show":    {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnShow() }},
+	"turn show":    {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnShow() }},
 }
 
 type invocation struct {

@@ -338,8 +338,20 @@ type Run struct {
 }
 
 // EditedTree is why a run that changed the working tree fails: what it
-// checked is no longer the tree the turn would complete on.
-const EditedTree = "the verify command changed the working tree, so it cannot prove the current tree; make it read-only"
+// checked is no longer the tree the turn would complete on. paths are the
+// files it wrote, so a cache directory can be told apart from a formatter.
+func EditedTree(paths []string) string {
+	why := "the verify command changed the working tree, so it cannot prove the current tree; make it read-only"
+	if len(paths) == 0 {
+		return why
+	}
+	const shown = 5
+	list := strings.Join(paths[:min(len(paths), shown)], ", ")
+	if len(paths) > shown {
+		list += fmt.Sprintf(" and %d more", len(paths)-shown)
+	}
+	return why + ", or gitignore what it writes if that is build or cache output (it wrote " + list + ")"
+}
 
 // Evidence says why run does not let a turn complete on tree, or "" when it does.
 // PASSED counts only for the tree it ran on.
