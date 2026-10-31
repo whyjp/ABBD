@@ -188,6 +188,10 @@ func TestStopBlocksOnceUntilTheOpenTurnEnds(t *testing.T) {
 		t.Fatalf("another session's stop is not this turn's to block: %s", out.String())
 	}
 
+	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
+	if o := stop(false); o.Decision != "" {
+		t.Fatalf("a DRAFT turn has been ended once; reporting it is the next step, not another block: %+v", o)
+	}
 	p.verify("pass", 0, "PASSED")
 	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	if o := stop(false); o.Decision != "" {
