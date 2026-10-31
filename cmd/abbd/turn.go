@@ -257,6 +257,9 @@ func (e env) turnDeclare() error {
 			lines = append(lines, "A "+key)
 		case t.Approved(key) != "":
 			lines = append(lines, fmt.Sprintf("C APPROVED %s by %s", key, t.Approved(key)))
+		case t.Rejected(key) != nil:
+			waiting = true
+			lines = append(lines, fmt.Sprintf("C %s; undo it or declare without it", t.Rejected(key)))
 		case answered(turn.Question(*v.intended, it)) != "":
 			adr := answered(turn.Question(*v.intended, it))
 			t.Approvals = append(t.Approvals, turn.Approval{Item: key, ADR: adr})
@@ -290,18 +293,14 @@ func (e env) turnDeclare() error {
 	return nil
 }
 
-// approveInTurn allows one grade C item for this turn only. It leaves an ADR
-// now and enters the intended topology only when the turn syncs.
-func (e env) approveInTurn(t *turn.Turn, key string) error {
-	v, err := e.impact(t)
-	if err != nil {
-		return err
-	}
+// pending finds the grade C item key names in a turn: a question it asked or
+// a blocked change the gate sees.
+func pending(t *turn.Turn, v view, key string) (*topology.Item, error) {
 	var item *topology.Item
 	if slices.Contains(t.Questions, key) {
 		it, _, err := turn.Declared(*v.intended, v.units, key)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		item = &it
 	}
@@ -310,12 +309,26 @@ func (e env) approveInTurn(t *turn.Turn, key string) error {
 			item = &vd.Item
 		}
 	}
+	if item == nil {
+		return nil, fmt.Errorf("%s is neither a question of %s nor a blocked change", key, t.ID)
+	}
+	return item, nil
+}
+
+// approveInTurn allows one grade C item for this turn only. It leaves an ADR
+// now and enters the intended topology only when the turn syncs.
+func (e env) approveInTurn(t *turn.Turn, key string) error {
+	v, err := e.impact(t)
+	if err != nil {
+		return err
+	}
 	if adr := t.Approved(key); adr != "" {
 		fmt.Fprintf(e.stdout, "%s is already approved for %s by %s\n", key, t.ID, adr)
 		return nil
 	}
-	if item == nil {
-		return fmt.Errorf("%s is neither a question of %s nor a blocked change", key, t.ID)
+	item, err := pending(t, v, key)
+	if err != nil {
+		return err
 	}
 	id, err := e.st.NextID("ADR")
 	if err != nil {
@@ -334,6 +347,44 @@ func (e env) approveInTurn(t *turn.Turn, key string) error {
 	}
 	fmt.Fprintf(e.stdout, "approved %s for %s as %s\n", key, t.ID, adr.ID)
 	return nil
+}
+
+// rejectInTurn refuses one grade C item of the turn. The turn stays as it
+// is, and every later turn command shows the reason to the agent.
+func (e env) rejectInTurn(t *turn.Turn, key string) error {
+	v, err := e.impact(t)
+	if err != nil {
+		return err
+	}
+	if adr := t.Approved(key); adr != "" {
+		return fmt.Errorf("%s is already approved for %s by %s", key, t.ID, adr)
+	}
+	item, err := pending(t, v, key)
+	if err != nil {
+		return err
+	}
+	adr, err := e.writeRejection(key, turn.Question(*v.intended, *item), t.ID)
+	if err != nil {
+		return err
+	}
+	t.Rejections = append(t.Rejections, turn.Rejection{Item: key, ADR: adr, Reason: e.reason})
+	if err := e.st.SaveTurn(*t); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "rejected %s for %s as %s; %s stays %s\n", key, t.ID, adr, t.ID, t.State)
+	return nil
+}
+
+func (e env) printRejected(t turn.Turn) {
+	seen := map[string]bool{}
+	for _, r := range t.Rejections {
+		if !seen[r.Item] {
+			seen[r.Item] = true
+			if s := t.Rejected(r.Item); s != nil {
+				fmt.Fprintln(e.stdout, s)
+			}
+		}
+	}
 }
 
 func (e env) turnDiff() error {
@@ -358,6 +409,7 @@ func (e env) turnDiff() error {
 	for _, key := range turn.Unexpected(t.Delta, vs) {
 		fmt.Fprintln(e.stdout, "UNEXPECTED", key)
 	}
+	e.printRejected(*t)
 	if len(turn.Unallowed(vs)) > 0 {
 		fmt.Fprintln(e.stdout, "stop: a change crosses the intended boundary; a human must approve it or the work must be undone")
 		return errNeedHuman
@@ -492,6 +544,9 @@ func (e env) turnEnd() error {
 	switch {
 	case len(turn.Unallowed(vs)) > 0:
 		t.State, rep.Why = turn.Blocked, "a change crosses the intended boundary without approval"
+		if slices.ContainsFunc(turn.Unallowed(vs), func(vd turn.Verdict) bool { return t.Rejected(vd.Item.Key()) != nil }) {
+			rep.Why += "; a human rejected it, so undo it as the reason says"
+		}
 	case turn.Evidence(run, tree) != "":
 		t.State, rep.Why = turn.Draft, turn.Evidence(run, tree)
 	default:
@@ -580,6 +635,7 @@ func (e env) printReport(t turn.Turn) {
 	if r.Why != "" {
 		fmt.Fprintln(e.stdout, r.Why)
 	}
+	e.printRejected(t)
 }
 
 func (e env) turnShow() error {
@@ -607,5 +663,8 @@ func (e env) turnShow() error {
 		fmt.Fprintf(e.stdout, "approved %s by %s\n", a.Item, a.ADR)
 	}
 	e.printReport(*t)
+	if t.Report == nil {
+		e.printRejected(*t)
+	}
 	return nil
 }

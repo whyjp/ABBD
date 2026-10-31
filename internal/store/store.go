@@ -284,6 +284,27 @@ type ADR struct {
 	// Question identifies what a human answered, so it is never asked again.
 	Question string `yaml:"question,omitempty"`
 	Turn     string `yaml:"turn,omitempty"`
+	// Reason is why a human rejected the change.
+	Reason string `yaml:"reason,omitempty"`
+}
+
+// Rejected is the decision of an ADR in which a human refused a change.
+const Rejected = "rejected"
+
+// Rejection returns the standing rejection of question: the latest ADR that
+// rejected it, unless a later one approved it.
+func Rejection(adrs []ADR, question string) *ADR {
+	var out *ADR
+	for i, a := range adrs {
+		switch {
+		case a.Question != question:
+		case a.Decision == Rejected:
+			out = &adrs[i]
+		case a.Decision == "approved":
+			out = nil
+		}
+	}
+	return out
 }
 
 func (s Store) WriteADR(a ADR, body string) error {

@@ -43,6 +43,8 @@ type Fact struct {
 	Origin       Origin       `yaml:"origin"`
 	Verification Verification `yaml:"verification,omitempty"`
 	Confirmation Confirmation `yaml:"confirmation,omitempty"`
+	// Rejected is the guess a human rejected, kept beside the value that replaced it.
+	Rejected string `yaml:"rejected,omitempty"`
 }
 
 // guess reports whether only an agent vouches for a value: INFERRED, and no

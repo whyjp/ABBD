@@ -80,6 +80,12 @@ func renderTurn(t turn.Turn) string {
 	for _, i := range t.Impact {
 		fmt.Fprintf(&b, "- %s: %s (%s)\n", i.Unit, i.Why, i.By)
 	}
+	if len(t.Rejections) > 0 {
+		b.WriteString("\n## Rejected\n\n")
+		for _, r := range t.Rejections {
+			fmt.Fprintf(&b, "- %s by %s: %s\n", r.Item, r.ADR, r.Reason)
+		}
+	}
 	if r := t.Report; r != nil {
 		list := func(title string, items []string) {
 			if len(items) > 0 {

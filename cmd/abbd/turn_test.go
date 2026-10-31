@@ -55,7 +55,7 @@ func (p *turnProject) start(seeds string) string {
 	return p.want(0, "OPEN", "turn", "start", "--session", "s1", "--seeds", seeds, "--request", "make the change")
 }
 
-func (p *turnProject) intended() string { return p.read("intended.yaml") }
+func (p *project) intended() string { return p.read("intended.yaml") }
 
 func TestTurnInsideTheBoundarySyncsWithoutAHuman(t *testing.T) {
 	p := activeTurnProject(t, topoV1)

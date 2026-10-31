@@ -349,7 +349,9 @@ var cds = map[string]bool{"cd": true, "pushd": true, "set-location": true, "sl":
 var gitWriters = map[string]bool{"checkout": true, "restore": true, "rm": true, "mv": true, "apply": true, "clean": true, "stash": true, "reset": true}
 
 // humans are the abbd commands only a human runs while the mode is on.
-var humans = map[string]bool{"align": true, "approve": true, "confirm": true, "setup": true, "mode off": true}
+var humans = map[string]bool{
+	"align": true, "approve": true, "reject": true, "confirm": true, "couple": true, "setup": true, "mode off": true,
+}
 
 // abbdCommand returns the abbd subcommand a segment runs, or "" when it runs
 // none. A reader's arguments are text, but any other command may run abbd

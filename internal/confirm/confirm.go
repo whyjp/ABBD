@@ -69,25 +69,64 @@ func Queue(units []model.Unit, design map[model.ID]bool) []Item {
 // Apply confirms one item. An empty value confirms the guess as written; a
 // value replaces it with what the human said.
 func Apply(units []model.Unit, key, value string) (model.Unit, error) {
-	if id, field, ok := strings.Cut(key, "."); ok && !strings.Contains(field, ".") {
+	return decide(units, key, func(f **model.Fact) error {
+		switch {
+		case value != "":
+			*f = &model.Fact{Value: value, Origin: model.UserStated, Confirmation: model.Confirmed}
+		case *f == nil:
+			return fmt.Errorf("%s has no value to confirm; give one with --value", key)
+		default:
+			c := **f
+			c.Confirmation = model.Confirmed
+			*f = &c
+		}
+		return nil
+	}, func(r *model.Relation) error {
+		if value != "" {
+			return fmt.Errorf("%s: a relation takes no --value", key)
+		}
+		r.Confirmation = model.Confirmed
+		return nil
+	})
+}
+
+// Reject records that a guess is wrong. A why-field takes the value the human
+// gives instead and keeps the rejected guess beside it; a rejected coupling
+// stays on record and never counts.
+func Reject(units []model.Unit, key, value string) (model.Unit, error) {
+	return decide(units, key, func(f **model.Fact) error {
+		switch {
+		case !(*f).Guess():
+			return fmt.Errorf("%s is not a guess waiting in the confirm queue", key)
+		case value == "":
+			return fmt.Errorf("%s: say what it is instead with --value", key)
+		}
+		*f = &model.Fact{Value: value, Origin: model.UserStated, Confirmation: model.Rejected, Rejected: (*f).Value}
+		return nil
+	}, func(r *model.Relation) error {
+		switch {
+		case r.Counts():
+			return fmt.Errorf("%s is part of the actual topology, not a guess waiting in the confirm queue", key)
+		case value != "":
+			return fmt.Errorf("%s: a relation takes no --value", key)
+		}
+		r.Confirmation = model.Rejected
+		return nil
+	})
+}
+
+// decide finds the item key names and lets field or relation change a copy of it.
+func decide(units []model.Unit, key string, field func(**model.Fact) error, relation func(*model.Relation) error) (model.Unit, error) {
+	if id, name, ok := strings.Cut(key, "."); ok && !strings.Contains(name, ".") {
 		for _, u := range units {
 			if string(u.ID) != id || u.Absent {
 				continue
 			}
-			f := map[string]**model.Fact{"purpose": &u.Purpose, "responsibility": &u.Responsibility}[field]
-			switch {
-			case f == nil:
+			f := map[string]**model.Fact{"purpose": &u.Purpose, "responsibility": &u.Responsibility}[name]
+			if f == nil {
 				return u, fmt.Errorf("%s: only purpose and responsibility can be confirmed", key)
-			case value != "":
-				*f = &model.Fact{Value: value, Origin: model.UserStated, Confirmation: model.Confirmed}
-			case *f == nil:
-				return u, fmt.Errorf("%s has no value to confirm; give one with --value", key)
-			default:
-				c := **f
-				c.Confirmation = model.Confirmed
-				*f = &c
 			}
-			return u, nil
+			return u, field(f)
 		}
 		return model.Unit{}, fmt.Errorf("no unit %s", id)
 	}
@@ -96,11 +135,10 @@ func Apply(units []model.Unit, key, value string) (model.Unit, error) {
 			if relationKey(u.ID, r) != key || u.Absent {
 				continue
 			}
-			if value != "" {
-				return u, fmt.Errorf("%s: a relation takes no --value", key)
-			}
 			rels := append([]model.Relation(nil), u.Relations...)
-			rels[i].Confirmation = model.Confirmed
+			if err := relation(&rels[i]); err != nil {
+				return u, err
+			}
 			u.Relations = rels
 			return u, nil
 		}

@@ -30,9 +30,16 @@ abbd align (--all | --confirm IDS | --exclude IDS) [--root DIR]
 abbd align [--root DIR]              short realignment of a drifted project
 abbd confirm --list [--root DIR]     the confirm queue, design units first
 abbd confirm ITEM [--value TEXT] [--root DIR]
+abbd confirm ITEM --reject [--value TEXT] [--root DIR]
+                                     the guess is wrong; a why-field takes --value instead
 abbd confirm IF-0001.external_consumers --value true|false [--root DIR]
                                      a human says a contract has consumers the code does not show
 abbd approve [--root DIR] ITEM       approve one grade C change; inside a turn, for that turn only
+abbd reject ITEM --reason TEXT [--root DIR]
+                                     refuse one grade C change; the turn stays BLOCKED and its
+                                     next work reads the reason
+abbd couple FROM.KIND.TO [--root DIR]
+                                     register a coupling the extraction script cannot see
 abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
 abbd mode on|off --session ID [--root DIR]
 abbd status [--root DIR] [--session ID]
@@ -79,6 +86,8 @@ type opts struct {
 	root, session                 string
 	supplement, adopt, greenfield string
 	confirm, exclude, value       string
+	reason                        string
+	reject                        bool
 	seeds, request, units         string
 	changes, add                  string
 	all, list                     bool
@@ -119,6 +128,10 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.changes, "changes", "", "comma-separated topology changes, as item keys")
 	},
 	"add": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.add, "add", "", "comma-separated units to add") },
+	"reason": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.reason, "reason", "", "why a human refuses the change")
+	},
+	"reject": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.reject, "reject", false, "the guess is wrong") },
 }
 
 // command is one CLI verb. pos is the allowed number of positional arguments.
@@ -134,8 +147,10 @@ type command struct {
 var commands = map[string]command{
 	"setup":   {flags: []string{"root", "supplement", "adopt", "greenfield"}, pos: []int{0}, dashArgv: true, run: env.setup},
 	"align":   {flags: []string{"root", "all", "confirm", "exclude"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.align() }},
-	"confirm": {flags: []string{"root", "list", "value"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
+	"confirm": {flags: []string{"root", "list", "value", "reject"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
 	"approve": {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},
+	"reject":  {flags: []string{"root", "reason"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.rejectChange(pos[0]) }},
+	"couple":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.couple(pos[0]) }},
 	"ingest":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},
 	"mode":    {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
 	"status":  {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
@@ -449,6 +464,20 @@ func (e env) confirmItem(pos []string) error {
 		}
 		return nil
 	}
+	if e.reject {
+		if e.list {
+			return fmt.Errorf("--reject takes one ITEM, not --list")
+		}
+		u, err := confirm.Reject(v.units, pos[0], e.value)
+		if err != nil {
+			return err
+		}
+		if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+			return err
+		}
+		fmt.Fprintln(e.stdout, "rejected", pos[0])
+		return nil
+	}
 	if id, ok := strings.CutSuffix(pos[0], ".external_consumers"); ok {
 		return e.setExternalConsumers(v, model.ID(id))
 	}
@@ -460,18 +489,22 @@ func (e env) confirmItem(pos []string) error {
 		return err
 	}
 	fmt.Fprintln(e.stdout, "confirmed", pos[0])
-	if v.intended == nil {
+	return e.acknowledge(v, pos[0])
+}
+
+// acknowledge follows a coupling a human just put into the actual topology.
+// After alignment it is a new edge, and the human who stated it has approved
+// it, so it must not surface as drift.
+func (e env) acknowledge(before view, edge string) error {
+	if before.intended == nil {
 		return nil
 	}
-	// After alignment a confirmed coupling is a new edge in the actual
-	// topology. The human who confirmed it has approved it, so it must not
-	// surface as drift.
 	after, err := e.load()
 	if err != nil {
 		return err
 	}
 	for _, it := range after.items {
-		if it.Change != topology.NewRelation || it.Edge.String() != pos[0] {
+		if it.Change != topology.NewRelation || it.Edge.String() != edge {
 			continue
 		}
 		if it.Effect == topology.Blocked {
@@ -480,6 +513,39 @@ func (e env) confirmItem(pos []string) error {
 		fmt.Fprintf(e.stdout, "%s: run abbd align to acknowledge it\n", it)
 	}
 	return nil
+}
+
+// couple registers a coupling between two units that the extraction script
+// cannot see, such as a shared table. The human states it, so it counts at once.
+func (e env) couple(key string) error {
+	edge, err := topology.ParseEdge(key)
+	if err != nil {
+		return err
+	}
+	if edge.From == edge.To {
+		return fmt.Errorf("%s couples a unit to itself", key)
+	}
+	v, err := e.load()
+	if err != nil {
+		return err
+	}
+	if _, err := knownUnits(view{units: v.units}, []string{string(edge.From), string(edge.To)}); err != nil {
+		return err
+	}
+	i := slices.IndexFunc(v.units, func(u model.Unit) bool { return u.ID == edge.From })
+	u := v.units[i]
+	rels := slices.DeleteFunc(slices.Clone(u.Relations), func(r model.Relation) bool {
+		return r.To == edge.To && r.Kind == edge.Kind && !r.Counts()
+	})
+	if slices.ContainsFunc(rels, func(r model.Relation) bool { return r.To == edge.To && r.Kind == edge.Kind }) {
+		return fmt.Errorf("%s is already part of the actual topology", key)
+	}
+	u.Relations = model.SortRelations(append(rels, model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.UserStated}))
+	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+		return err
+	}
+	fmt.Fprintln(e.stdout, "registered", key)
+	return e.acknowledge(v, key)
 }
 
 func (e env) setExternalConsumers(v view, id model.ID) error {
@@ -574,6 +640,51 @@ func (e env) approve(key string) error {
 	return fmt.Errorf("no pending change %q", key)
 }
 
+// rejectChange refuses one grade C change. The intended topology stays as it
+// is, so the change stays blocked, and the ADR carries the reason to whoever
+// works next.
+func (e env) rejectChange(key string) error {
+	if strings.TrimSpace(e.reason) == "" {
+		return fmt.Errorf("a rejection needs --reason: the next work reads it")
+	}
+	t, err := e.st.LatestTurn()
+	if err != nil {
+		return err
+	}
+	if t != nil && t.State.Resumable() {
+		return e.rejectInTurn(t, key)
+	}
+	v, err := e.load()
+	if err != nil {
+		return err
+	}
+	if v.intended == nil {
+		return fmt.Errorf("nothing is aligned yet")
+	}
+	i := slices.IndexFunc(v.items, func(it topology.Item) bool { return it.Key() == key && it.Effect == topology.Blocked })
+	if i < 0 {
+		return fmt.Errorf("no pending change %q", key)
+	}
+	adr, err := e.writeRejection(key, turn.Question(*v.intended, v.items[i]), "")
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "rejected %s as %s; the intended topology is unchanged\n", key, adr)
+	return nil
+}
+
+func (e env) writeRejection(key, question, turnID string) (string, error) {
+	id, err := e.st.NextID("ADR")
+	if err != nil {
+		return "", err
+	}
+	adr := store.ADR{
+		ID: string(id), Grade: "C", Subject: key, Decision: store.Rejected, Origin: model.UserStated,
+		Question: question, Turn: turnID, Reason: e.reason,
+	}
+	return adr.ID, e.st.WriteADR(adr, "Rejected "+key+": "+e.reason)
+}
+
 // mode on re-extracts whatever changed while the mode was off, then turns the
 // session on only when the project is aligned.
 func (e env) mode(on bool) error {
@@ -606,7 +717,7 @@ func (e env) mode(on bool) error {
 	case topology.Drifted:
 		fmt.Fprintln(e.stdout, "drifted: changes made outside the mode touch design units")
 		e.printItems(v.items)
-		return errNeedHuman
+		return e.printRejections(v)
 	}
 	if err := e.st.SetMode(e.session, true); err != nil {
 		return err
@@ -704,6 +815,21 @@ func (e env) runScript(argv []string, env ...string) ([]byte, error) {
 		return nil, fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
 	}
 	return out.Bytes(), nil
+}
+
+// printRejections names the blocked changes a human refused outside a turn,
+// with their reasons, so whoever undoes them knows why. It always asks for a human.
+func (e env) printRejections(v view) error {
+	adrs, err := e.st.LoadADRs()
+	if err != nil {
+		return err
+	}
+	for _, it := range blocked(v.items) {
+		if a := store.Rejection(adrs, turn.Question(*v.intended, it)); a != nil {
+			fmt.Fprintf(e.stdout, "REJECTED %s by %s: %s\n", it.Key(), a.ID, a.Reason)
+		}
+	}
+	return errNeedHuman
 }
 
 func (e env) status() error {

@@ -27,6 +27,8 @@ func TestPreToolUseDeniesEverySpellingOfAHumansWrite(t *testing.T) {
 	var calls []map[string]any
 	for _, c := range []string{
 		`abbd approve K`,
+		`abbd reject K --reason x`,
+		`abbd couple MOD-0001.consumes.MOD-0002`,
 		`./abbd approve K`,
 		`C:/bin/abbd.exe approve K`,
 		`FOO=1 abbd approve K`,

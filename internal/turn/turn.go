@@ -76,6 +76,14 @@ type Approval struct {
 	ADR  string `yaml:"adr"`
 }
 
+// Rejection is a human's no to one grade C item, with the reason the next
+// work in the turn reads.
+type Rejection struct {
+	Item   string `yaml:"item"`
+	ADR    string `yaml:"adr"`
+	Reason string `yaml:"reason"`
+}
+
 type Report struct {
 	Gate            []string `yaml:"gate,omitempty"`
 	DeclaredNotDone []string `yaml:"declared_not_done,omitempty"`
@@ -96,6 +104,7 @@ type Turn struct {
 	Delta       Delta        `yaml:"intent_delta"`
 	Questions   []string     `yaml:"questions,omitempty"`
 	Approvals   []Approval   `yaml:"approvals,omitempty"`
+	Rejections  []Rejection  `yaml:"rejections,omitempty"`
 	Run         string       `yaml:"verification,omitempty"`
 	Report      *Report      `yaml:"report,omitempty"`
 }
@@ -167,13 +176,31 @@ func (t *Turn) AddImpact(id model.ID) bool {
 	return true
 }
 
-// Waiting reports whether a key the turn still declares asked a question that
-// has no approval. Questions only grows, because it counts toward the cap, so
-// a key declared away no longer counts here.
+// Waiting reports whether a key the turn still declares asked a question no
+// human has answered. Questions only grows, because it counts toward the cap,
+// so a key declared away no longer counts here.
 func (t *Turn) Waiting() bool {
 	return slices.ContainsFunc(t.Questions, func(q string) bool {
-		return slices.Contains(t.Delta.Changes, q) && t.Approved(q) == ""
+		return slices.Contains(t.Delta.Changes, q) && t.Approved(q) == "" && t.Rejected(q) == nil
 	})
+}
+
+// Rejected returns the standing rejection of key. An approval given after a
+// rejection replaces it.
+func (t *Turn) Rejected(key string) *Rejection {
+	if t.Approved(key) != "" {
+		return nil
+	}
+	for i := len(t.Rejections) - 1; i >= 0; i-- {
+		if t.Rejections[i].Item == key {
+			return &t.Rejections[i]
+		}
+	}
+	return nil
+}
+
+func (r Rejection) String() string {
+	return fmt.Sprintf("REJECTED %s by %s: %s", r.Item, r.ADR, r.Reason)
 }
 
 func (t *Turn) Approved(key string) string {
