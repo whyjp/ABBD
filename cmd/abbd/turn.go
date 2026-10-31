@@ -183,13 +183,18 @@ func (e env) turnStart() error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "%s OPEN, request %s\n", t.ID, req)
-	e.printImpact(t)
+	e.printImpact(t, *v.intended)
 	return nil
 }
 
-func (e env) printImpact(t turn.Turn) {
-	for _, i := range t.Impact {
-		fmt.Fprintf(e.stdout, "impact %s: %s (%s)\n", i.Unit, i.Why, i.By)
+// printImpact lists the direct items first, so the agent reads them closely.
+func (e env) printImpact(t turn.Turn, in topology.Intended) {
+	direct, far := t.Tiers(in)
+	for _, i := range direct {
+		fmt.Fprintln(e.stdout, "impact", i.Line(turn.Direct))
+	}
+	for _, i := range far {
+		fmt.Fprintln(e.stdout, "impact", i.Line(turn.Far))
 	}
 }
 
@@ -212,7 +217,7 @@ func (e env) turnImpact() error {
 	if err := e.st.SaveTurn(*t); err != nil {
 		return err
 	}
-	e.printImpact(*t)
+	e.printImpact(*t, *v.intended)
 	return nil
 }
 
@@ -665,7 +670,14 @@ func (e env) turnShow() error {
 			return err
 		}
 	}
-	e.printImpact(*t)
+	in, err := e.st.LoadIntended()
+	if err != nil {
+		return err
+	}
+	if in == nil {
+		return fmt.Errorf("nothing is aligned yet")
+	}
+	e.printImpact(*t, *in)
 	for _, c := range t.Delta.Changes {
 		fmt.Fprintln(e.stdout, "declared", c)
 	}

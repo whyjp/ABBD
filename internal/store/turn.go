@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/topology"
 	"github.com/whyjp/abbd/internal/turn"
 )
 
@@ -66,19 +67,31 @@ func (s Store) WriteRequirement(r Requirement, text string) error {
 	return writeFile(s.path("requirements", r.ID+".md"), b)
 }
 
+// SaveTurn renders the impact's tiers against the intended topology as it is now.
 func (s Store) SaveTurn(t turn.Turn) error {
-	b, err := frontmatter(t, renderTurn(t))
+	in, err := s.LoadIntended()
+	if err != nil {
+		return err
+	}
+	if in == nil {
+		in = &topology.Intended{}
+	}
+	b, err := frontmatter(t, renderTurn(t, *in))
 	if err != nil {
 		return err
 	}
 	return writeFile(s.path("changes", t.ID+".md"), b)
 }
 
-func renderTurn(t turn.Turn) string {
+func renderTurn(t turn.Turn, in topology.Intended) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s %s\n\nRequest: %s\n\n## Impact\n\n", t.ID, t.State, t.Requirement)
-	for _, i := range t.Impact {
-		fmt.Fprintf(&b, "- %s: %s (%s)\n", i.Unit, i.Why, i.By)
+	direct, far := t.Tiers(in)
+	for _, i := range direct {
+		fmt.Fprintf(&b, "- %s\n", i.Line(turn.Direct))
+	}
+	for _, i := range far {
+		fmt.Fprintf(&b, "- %s\n", i.Line(turn.Far))
 	}
 	if len(t.Rejections) > 0 {
 		b.WriteString("\n## Rejected\n\n")

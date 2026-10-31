@@ -51,8 +51,10 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    abbd turn start --session ${CLAUDE_SESSION_ID} --seeds <IDS> --request -
    ```
 
-   The output lists the computed impact: the seeds, the contracts they provide, and every consumer of those contracts.
-4. Read and follow `<pstack>/skills/blast-radius/SKILL.md` over the request. Add each design unit it finds that the impact lacks. You can only add.
+   The output lists the computed impact, one `impact` line per unit, direct items first. Each line ends with its tier, `direct` or `far`. Direct items are the seeds, the units that share a relation with a seed, and the consumers of a contract that shares one. Far items are the rest of the transitive closure.
+   - Read each direct item closely: its code, its contract signature, and how the change reaches it. The change most likely breaks there.
+   - Check each far item briefly: open its anchor, confirm whether the change still reaches it through the path its line names, and move on. Read one closely only when that check finds the change does reach it.
+4. Read and follow `<pstack>/skills/blast-radius/SKILL.md` over the request. Add each design unit it finds that the impact lacks. You can only add, and an added unit counts as direct.
 
    ```
    abbd turn impact --session ${CLAUDE_SESSION_ID} --add <IDS>
@@ -70,7 +72,7 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    - `C QUESTION KEY`, exit 2: stop before any edit. Tell the human the question waits on the `abbd serve` screen, give each `abbd approve <KEY>` line as the terminal form, and end your reply, leaving the turn open. Declare again after they answer.
    - `C REJECTED KEY by ADR-...: REASON`, exit 2: the human said no. Declare again without that key and plan around the reason.
 6. Design. When the declaration spans more than one design unit or has any change key, read and follow `<pstack>/skills/architect/SKILL.md`, with the impacted units' boundaries and contract signatures as fixed constraints. Otherwise skip it.
-7. Hand the playbook its context: the impact, the signatures of the impacted contracts, and the declaration. Start the playbook.
+7. Hand the playbook its context: the impact with its tiers, the signatures of the impacted contracts, and the declaration. Start the playbook.
 
 ## Between steps
 

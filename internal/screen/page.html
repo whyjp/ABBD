@@ -285,6 +285,8 @@ svg marker path { fill: var(--muted); stroke: none; }
   {{end}}
   {{if .Approvals}}<h3>승인</h3><ul class="plain">{{range .Approvals}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span></li>{{end}}</ul>{{end}}
   {{if .Standing}}<h3>반려</h3><ul class="plain">{{range .Standing}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span>: {{.Reason}}</li>{{end}}</ul>{{end}}
-  <h3>영향 범위</h3><p class="key">{{range .Impact}}{{.Unit}} {{end}}</p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">{{range .Direct}}{{.Unit}} {{end}}</span></p>
+  {{if .Far}}<p class="muted">멀리 <span class="key">{{range .Far}}{{.Unit}} {{end}}</span></p>{{end}}
   {{if .Run}}<p>검증 {{.Run}} <span class="pill {{.Verified}}">{{.Verified}}</span></p>{{else}}<p class="muted">아직 검증하지 않았습니다.</p>{{end}}
 {{end}}

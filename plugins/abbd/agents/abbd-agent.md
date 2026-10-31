@@ -10,7 +10,7 @@ You are a delegate in an `/abbd-mode` run. The chat that runs `/abbd-mode` owns 
 
 Read the ABBD context before any other work:
 
-1. Run `abbd turn show`. It prints the turn's impact, its declaration (`declared KEY`), the approvals a human gave this turn, and its state.
+1. Run `abbd turn show`. It prints the turn's impact, direct items first and each tagged `direct` or `far`, its declaration (`declared KEY`), the approvals a human gave this turn, and its state.
 2. Read `.abbd/intended.yaml` with the Read tool. For each impacted unit, its contract signature and its relations are fixed constraints. Do not change a signature, or add or remove a relation between design units, unless `abbd turn show` lists that key as approved, or as declared and your brief tells you to make it.
 3. Read `<pstack>/agents/poteto-agent.md` and follow it. It sends you to the poteto-mode skill, whose path your parent gave you.
 

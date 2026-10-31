@@ -148,6 +148,8 @@ type TurnView struct {
 	Standing []turn.Rejection
 	// Verified is the result of the turn's last verification run.
 	Verified string
+	// Direct and Far are the impact's tiers against the intended topology.
+	Direct, Far []turn.ImpactItem
 }
 
 type Row struct {
@@ -354,6 +356,9 @@ func Build(in Input) Model {
 
 func view(in Input, t turn.Turn) TurnView {
 	tv := TurnView{Turn: t, Request: in.Requests[t.Requirement], Verified: in.Runs[t.Run]}
+	if in.Intended != nil {
+		tv.Direct, tv.Far = t.Tiers(*in.Intended)
+	}
 	seen := map[string]bool{}
 	for _, r := range t.Rejections {
 		if !seen[r.Item] {

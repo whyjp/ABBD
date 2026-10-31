@@ -123,7 +123,7 @@ func TestImpactFollowsConsumersAndCannotShrink(t *testing.T) {
 			t.Fatalf("impact should reach the contract's consumers; missing %q:\n%s", want, out)
 		}
 	}
-	p.want(0, "impact MOD-0002: added by the agent (agent)", "turn", "impact", "--session", "s1", "--add", "MOD-0002")
+	p.want(0, "impact MOD-0002: added by the agent (agent, direct)", "turn", "impact", "--session", "s1", "--add", "MOD-0002")
 	p.want(64, "flag provided but not defined", "turn", "impact", "--session", "s1", "--remove", "MOD-0003")
 
 	path := filepath.Join(p.root, ".abbd", "changes", "CHG-0001.md")
@@ -133,9 +133,69 @@ func TestImpactFollowsConsumersAndCannotShrink(t *testing.T) {
 		t.Fatalf("test setup: could not remove the impact item from:\n%s", b)
 	}
 	write(t, path, cut)
-	got := p.want(0, "impact MOD-0003: consumes IF-0001 (computed)", "turn", "show")
+	got := p.want(0, "impact MOD-0003: consumes IF-0001 (computed, direct)", "turn", "show")
 	if !strings.Contains(got, "cannot be removed; restored") || !strings.Contains(p.read("changes/CHG-0001.md"), "unit: MOD-0003") {
 		t.Fatalf("a removed computed item should come back:\n%s", got)
+	}
+}
+
+// topoTiered adds a module that leans on the contract's consumer, two hops
+// from the seed billing, and one that depends on billing itself.
+var topoTiered = strings.Replace(strings.Replace(topoConsumed, `"units":[`,
+	`"units":[{"key":"digest","kind":"MOD","name":"digest","anchors":[{"path":"reports/digest.go","symbol":"Mail"}]},`+
+		`{"key":"cron","kind":"MOD","name":"cron","anchors":[{"path":"zcron/run.go","symbol":"Run"}]},`, 1),
+	`{"from":"audit","to":"api","kind":"consumes"}`,
+	`{"from":"audit","to":"api","kind":"consumes"},{"from":"digest","to":"audit","kind":"depends_on"},{"from":"cron","to":"billing","kind":"depends_on"}`, 1)
+
+func TestImpactSplitsIntoDirectAndFarTiers(t *testing.T) {
+	p := activeTurnProject(t, topoTiered)
+	direct := []string{
+		"impact MOD-0001: seed (computed, direct)",
+		"impact IF-0001: provided by MOD-0001 (computed, direct)",
+		"impact MOD-0004: consumes IF-0001 (computed, direct)",
+		"impact MOD-0005: depends_on MOD-0001 (computed, direct)",
+	}
+	far := "impact MOD-0003: depends_on MOD-0004 (computed, far)"
+	readsDirectFirst := func(out string) {
+		t.Helper()
+		for _, d := range direct {
+			if i := strings.Index(out, d); i < 0 || i > strings.Index(out, far) {
+				t.Fatalf("want %q before the far item %q:\n%s", d, far, out)
+			}
+		}
+	}
+	readsDirectFirst(p.start("MOD-0001"))
+	readsDirectFirst(p.want(0, "impact MOD-0002: added by the agent (agent, direct)", "turn", "impact", "--session", "s1", "--add", "MOD-0002"))
+	readsDirectFirst(p.want(0, far, "turn", "show"))
+
+	record := p.read("changes/CHG-0001.md")
+	if !strings.Contains(record, "- MOD-0003: depends_on MOD-0004 (computed, far)") || !strings.Contains(record, "- MOD-0004: consumes IF-0001 (computed, direct)") {
+		t.Fatalf("the change record should show each item's tier:\n%s", record)
+	}
+	if strings.Contains(record, "tier:") {
+		t.Fatalf("the tier is read from the intended graph, so the record's frontmatter keeps its shape:\n%s", record)
+	}
+
+	path := filepath.Join(p.root, ".abbd", "changes", "CHG-0001.md")
+	cut := regexp.MustCompile(`(?m)^ *- unit: MOD-0003\n.*\n.*\n`).ReplaceAllString(record, "")
+	if cut == record {
+		t.Fatalf("test setup: could not remove the far item from:\n%s", record)
+	}
+	write(t, path, cut)
+	if got := p.want(0, far, "turn", "show"); !strings.Contains(got, "MOD-0003 is computed impact and cannot be removed; restored") {
+		t.Fatalf("a far item is still computed impact and comes back:\n%s", got)
+	}
+
+	html := p.screen().view(t)
+	at := func(s string) int {
+		i := strings.Index(html, s)
+		if i < 0 {
+			t.Fatalf("the screen should show %q", s)
+		}
+		return i
+	}
+	if !(at("직접") < at("MOD-0004") && at("MOD-0004") < at("멀리") && at("멀리") < at("MOD-0003")) {
+		t.Fatalf("the screen should list direct items, then far ones")
 	}
 }
 

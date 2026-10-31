@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=70ca84eebf1019bec18ee5876a4b0899c72c01d7e2a73edb9e95f23adfd9f751 intended_revision=1">
+<meta name="abbd-watermark" content="inputs_hash=a5765445ce2a6927123d0f1508c833d76f0a2e3adf03ac9ac236628c3da088d2 intended_revision=1">
 <title>ABBD 화면</title>
 <style>
 :root {
@@ -121,21 +121,21 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 
 <section id="turn">
-  <h2>이번 턴 CHG-0005 <span class="pill SYNCED">SYNCED</span></h2>
-  <p><span class="muted">요청 REQ-0005:</span> Stage 6a item 4 (doc ch12): make sure every chapter 12 acceptance scenario 1-24 maps to a passing test, write the table (scenario, test name, file) into the doc&#39;s chapter 12, add any missing test, and record stage 6a&#39;s decisions (promotion threshold, selective realign, self-application leftovers) in the design doc.</p>
+  <h2>이번 턴 CHG-0006 <span class="pill SYNCED">SYNCED</span></h2>
+  <p><span class="muted">요청 REQ-0006:</span> Split computed impact into tiers. Direct = seeds, units with a relation to a seed, and consumers of contracts a seed provides or touches (one hop through a contract). Far = the rest of the transitive closure. The agent still cannot remove anything (scenario 20 stays). The gate is unchanged. Show tiers in `turn impact`, `turn show`, the screen, and the CHG record. Update the abbd-mode skill so the agent reads direct items closely and checks far ones briefly, and the evaluation can score precision on the direct tier. Doc ch6/ch9/ch12 updated with the evidence pointer to the evaluation. (Marking a far item `checked` with a reason is a separate turn, because it changes the CLI and change-record contracts.)</p>
   
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
-  <p>단위 <span class="key">MOD-0001 </span></p>
+  <p>단위 <span class="key">MOD-0013 MOD-0001 MOD-0011 MOD-0010 FEAT-0001 </span></p>
+  
+  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0004</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0006</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0007</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0008</span></li></ul>
   
   
   
   
   
-  
-  
-  <h3>영향 범위</h3><p class="key">MOD-0001 IF-0001 IF-0002 MOD-0002 MOD-0003 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 </p>
-  <p>검증 run-0005 <span class="pill PASSED">PASSED</span></p>
+  <h3>영향 범위</h3><p class="key">MOD-0013 MOD-0001 MOD-0010 MOD-0011 IF-0001 IF-0002 MOD-0002 MOD-0003 DATA-0003 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 </p>
+  <p>검증 run-0006 <span class="pill PASSED">PASSED</span></p>
 
 </section>
 
@@ -646,7 +646,20 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 <section id="history">
   <details><summary>이전 턴</summary>
-  <h3>CHG-0004 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 3b (doc ch11 남은 관찰): make the screen usable on a 31-unit repo; group and collapse the confirm queue and the candidate list by unit, design units first, so the first screen is short.</p>
+  <h3>CHG-0005 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 4 (doc ch12): make sure every chapter 12 acceptance scenario 1-24 maps to a passing test, write the table (scenario, test name, file) into the doc&#39;s chapter 12, add any missing test, and record stage 6a&#39;s decisions (promotion threshold, selective realign, self-application leftovers) in the design doc.</p>
+  <p class="muted">토폴로지 변경 없음.</p>
+  <h3>선언</h3>
+  <p>단위 <span class="key">MOD-0001 </span></p>
+  
+  
+  
+  
+  
+  
+  
+  <h3>영향 범위</h3><p class="key">MOD-0001 IF-0001 IF-0002 MOD-0002 MOD-0003 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 </p>
+  <p>검증 run-0005 <span class="pill PASSED">PASSED</span></p>
+<h3>CHG-0004 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 3b (doc ch11 남은 관찰): make the screen usable on a 31-unit repo; group and collapse the confirm queue and the candidate list by unit, design units first, so the first screen is short.</p>
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
   <p>단위 <span class="key">MOD-0010 </span></p>
@@ -703,7 +716,7 @@ svg marker path { fill: var(--muted); stroke: none; }
 </section>
 
 
-<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>70ca84eebf1019bec18ee5876a4b0899c72c01d7e2a73edb9e95f23adfd9f751</code> r1</p>
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>a5765445ce2a6927123d0f1508c833d76f0a2e3adf03ac9ac236628c3da088d2</code> r1</p>
 
 </main>
 

@@ -5,6 +5,7 @@ package turn
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 
@@ -145,6 +146,54 @@ func ComputeImpact(in topology.Intended, seeds []model.ID) []ImpactItem {
 		}
 	}
 	return out
+}
+
+// Tier says how closely the agent reads an impact item. It is read from the
+// intended graph each time, so the change record keeps its shape.
+type Tier string
+
+const (
+	// Direct items are read closely.
+	Direct Tier = "direct"
+	// Far items are the rest of the transitive closure, checked briefly.
+	Far Tier = "far"
+)
+
+// Tiers splits the impact, each tier in recorded order. Direct are the seeds,
+// the units that share a relation with a seed, the consumers of a contract that
+// shares one, and the agent's own additions. Far is everything else computed.
+func (t Turn) Tiers(in topology.Intended) (direct, far []ImpactItem) {
+	near := map[model.ID]bool{}
+	for _, s := range t.Seeds {
+		near[s] = true
+	}
+	for _, e := range in.Relations {
+		if slices.Contains(t.Seeds, e.From) {
+			near[e.To] = true
+		}
+		if slices.Contains(t.Seeds, e.To) {
+			near[e.From] = true
+		}
+	}
+	reached := maps.Clone(near)
+	for _, e := range in.Relations {
+		if (e.Kind == model.DependsOn || e.Kind == model.Consumes) && isContract(e.To) && near[e.To] {
+			reached[e.From] = true
+		}
+	}
+	for _, i := range t.Impact {
+		if reached[i.Unit] || i.By == ByAgent {
+			direct = append(direct, i)
+		} else {
+			far = append(far, i)
+		}
+	}
+	return direct, far
+}
+
+// Line is how the CLI and the change record print an item of a tier.
+func (i ImpactItem) Line(tier Tier) string {
+	return fmt.Sprintf("%s: %s (%s, %s)", i.Unit, i.Why, i.By, tier)
 }
 
 func isContract(id model.ID) bool {

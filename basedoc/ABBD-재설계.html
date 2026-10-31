@@ -405,7 +405,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ol>
 <li><strong>상태 확인.</strong> 프로젝트가 active가 아니면 턴을 열지 않는다(5장).</li>
 <li><strong>요청 기록.</strong> 사용자 요청 원문을 REQ로 남긴다.</li>
-<li><strong>영향 범위 계산.</strong> 요청이 닿는 설계 단위에서 계약과 소비자를 따라 그래프로 기계적으로 뽑는다. 에이전트(/blast-radius)는 여기에 더할 수만 있고 뺄 수는 없다.</li>
+<li><strong>영향 범위 계산.</strong> 요청이 닿는 설계 단위에서 계약과 소비자를 따라 그래프로 기계적으로 뽑는다. 에이전트(/blast-radius)는 여기에 더할 수만 있고 뺄 수는 없다. 결과는 두 층으로 나눈다. 직접은 시드, 시드와 관계가 있는 단위, 시드와 관계가 있는 계약의 소비자(계약 하나를 거친 한 홉)다. 멀리는 나머지 전이 폐포다. 에이전트는 직접 항목을 꼼꼼히 읽고 멀리 항목은 짧게 확인한다. 층은 읽는 순서만 바꾸고, 게이트는 층을 보지 않는다. 근거는 9장의 평가다.</li>
 <li><strong>선언.</strong> 에이전트가 이번 턴에 바꿀 설계 단위와 관계를 IntentDelta로 선언한다. 선언에 등급 C 변경이 들어 있으면 실행 전에 사람에게 확인한다(턴당 질문 3개 이하).</li>
 <li><strong>넘기기.</strong> 영향 범위, 계약 제약, 선언을 맥락으로 붙이고, abbd-mode가 플레이북을 골라 시작한다.</li>
 </ol>
@@ -424,9 +424,9 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <h3>4단계 구현: 턴 명령</h3>
 <p>턴은 <code>abbd turn</code> 명령으로 돈다. abbd-mode 스킬은 이 명령을 순서대로 부를 뿐이고, 상태 전이와 게이트 판정은 모두 CLI 안에 있다. 턴 하나는 <code>.abbd/changes/CHG-*.md</code> 하나이고, frontmatter에 상태, 기준 스냅샷(작업 트리의 git tree), 시드, 영향 범위, 선언(intent_delta), 이번 턴의 질문과 승인, 마지막 검증 실행, 보고를 담는다. 요청 원문은 <code>.abbd/requirements/REQ-*.md</code>에 USER_STATED로 남는다.</p>
 <ul>
-<li><code>abbd turn start --session ID --seeds IDS --request TEXT</code>. 세션의 모드가 켜져 있지 않으면 거부한다. 스크립트로 다시 추출한 뒤 aligned가 아니면 exit 2로 거부한다. 영향 범위는 의도된 토폴로지의 관계를 시드에서부터 따라가 계산한다. 영향받은 단위에 depends_on이나 consumes로 기대는 단위, 영향받은 계약을 제공하는 단위, 영향받은 단위가 제공하는 계약을 넣는다. 제공자는 계약을 구현하므로 넣지만, 제공자의 다른 관계는 더 따라가지 않는다.</li>
+<li><code>abbd turn start --session ID --seeds IDS --request TEXT</code>. 세션의 모드가 켜져 있지 않으면 거부한다. 스크립트로 다시 추출한 뒤 aligned가 아니면 exit 2로 거부한다. 영향 범위는 의도된 토폴로지의 관계를 시드에서부터 따라가 계산한다. 영향받은 단위에 depends_on이나 consumes로 기대는 단위, 영향받은 계약을 제공하는 단위, 영향받은 단위가 제공하는 계약을 넣는다. 제공자는 계약을 구현하므로 넣지만, 제공자의 다른 관계는 더 따라가지 않는다. 6c단계부터 출력의 <code>impact</code> 줄마다 층이 붙는다(<code>impact MOD-0003: consumes IF-0001 (computed, direct)</code>). 직접 항목이 먼저 나온다. 층은 기록하지 않고 명령이 돌 때마다 의도된 토폴로지에서 다시 읽는다. 그래서 CHG frontmatter의 모양(DATA-0007)은 그대로다. <code>abbd turn show</code>, CHG 본문의 Impact 절, 화면의 영향 범위도 같은 층으로 나눠 보여 준다.</li>
 <li>시작 뒤의 턴 명령(<code>impact</code>, <code>declare</code>, <code>diff</code>, <code>verify</code>, <code>end</code>)은 모두 <code>--session ID</code>를 받고, 턴을 연 세션이 아니면 거부한다. <code>abbd turn show</code>는 세션 없이 돈다. 계산된 영향 범위를 되살리는 것 말고는 턴을 바꾸지 않는다.</li>
-<li><code>abbd turn impact --session ID --add IDS</code>. 에이전트(/blast-radius)가 더하는 길이다. 빼는 명령은 없다. 파일을 고쳐 계산된 항목을 지워도 턴 명령이 돌 때마다 다시 계산해 되살린다.</li>
+<li><code>abbd turn impact --session ID --add IDS</code>. 에이전트(/blast-radius)가 더하는 길이다. 더한 단위는 직접 층이다. 빼는 명령은 없다. 파일을 고쳐 계산된 항목을 지워도 턴 명령이 돌 때마다 다시 계산해 되살린다. 멀리 항목도 마찬가지다.</li>
 <li><code>abbd turn declare --session ID --units IDS --changes KEYS</code>. 선언이다. 변경은 <code>abbd approve</code>와 같은 항목 키(<code>contract-changed:IF-0001</code>, <code>new-relation:MOD-0001.depends_on.MOD-0002</code>)로 적는다. 등급 C 변경은 질문이 되고 exit 2를 돌려준다. 사람이 <code>abbd approve 항목</code>을 부르면 이번 턴에 한한 승인과 ADR이 생긴다. 열린 턴이나 DRAFT인 턴이 있을 때 <code>abbd approve</code>는 의도된 토폴로지를 고치지 않는다. DRAFT인 턴도 다시 끝내 sync될 수 있으므로 승인은 그 턴을 기다린다.</li>
 <li><code>abbd turn diff --session ID</code>. 플레이북 단계 사이에서 부른다. 스크립트로 다시 추출하고 의도된 토폴로지와 이번 턴 승인으로 판정한다. 승인 없는 등급 C가 보이면 exit 2로 멈추라고 한다. 선언에 없는 관계 변화는 UNEXPECTED로 따로 보여 준다.</li>
 <li><code>abbd turn verify --session ID [-- VERIFY-ARGV]</code>. 검증 명령을 처음 한 번 <code>project.yaml</code>의 verify에 등록하고, 이후 다른 argv는 거부한다. 실행 전 작업 트리 스냅샷, exit code, 결과, 출력 파일 위치를 <code>.abbd/verification/runs/run-*.yaml</code>에 남긴다. 실행 뒤에도 스냅샷을 찍어, 검증 명령이 작업 트리를 바꿨으면 exit code와 상관없이 FAILED로 남기고 이유를 적는다. 파일을 고치는 검증은 지금 트리를 증명하지 못한다.</li>
@@ -599,6 +599,20 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 </tr>
 </tbody></table></div>
 <p>영향 범위 지표는 세 조건을 비교한다. ABBD와 pstack을 함께 쓴 경우, pstack의 /blast-radius만 쓴 경우, 아무것도 쓰지 않은 경우다. 실행마다 편차가 크므로 고정 과제를 여러 번 돌린다.</p>
+<h3>첫 평가와 6c단계의 대응</h3>
+<p>첫 평가 기록은 <code>abbd-eval</code> 브랜치의 <code>eval/RESULTS.md</code>다. 쇼핑 픽스처(Python 약 200줄, 설계 단위 20개)에서 과제 4개를 조건마다 3번씩 돌렸다. 재현율은 세 조건 모두 1.00으로 천장에 붙었다. 정밀도는 ABBD의 계산된 영향 범위가 0.34, /blast-radius 단독이 1.00이었다. 원인은 계산 규칙이다. <code>ComputeImpact</code>는 변경의 종류를 보지 않고 의존자를 끝까지 따라간다. 에이전트는 더하기만 할 수 있으므로, ABBD 조건의 정밀도 상한이 계산 결과에 묶였다.</p>
+<p>6c단계는 영향 범위를 직접과 멀리 두 층으로 나눴다(6장). 뺄 수 없다는 규칙(시나리오 20)과 게이트는 그대로다. 같은 의도된 그래프(<code>eval/runs/intended.yaml</code>)와 정답(<code>eval/tasks.json</code>)에 새 코드의 <code>ComputeImpact</code>와 <code>Turn.Tiers</code>를 직접 돌려 쟀다. 채점은 하네스와 같다(재현율은 must, 정밀도는 must와 ok 기준). 전체 층의 값이 RESULTS.md의 A-computed 행(과제별 정밀도 0.40, 0.46, 0.30, 0.18)과 똑같이 나와, 측정 도구가 같은 것을 재는지 확인했다.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>과제</th><th>전체 항목</th><th>직접 항목</th><th>직접 재현율</th><th>직접 정밀도</th><th>직접에서 빠진 must</th></tr></thead>
+<tbody>
+<tr><td>T1</td><td>10</td><td>7</td><td>1.00</td><td>0.57</td><td>없음</td></tr>
+<tr><td>T2</td><td>13</td><td>5</td><td>0.67</td><td>0.80</td><td>IF-0001, MOD-0001</td></tr>
+<tr><td>T3</td><td>10</td><td>7</td><td>1.00</td><td>0.43</td><td>없음</td></tr>
+<tr><td>T4</td><td>11</td><td>2</td><td>1.00</td><td>1.00</td><td>없음</td></tr>
+<tr><td>평균</td><td>11.0</td><td>5.2</td><td>0.92</td><td>0.70</td><td></td></tr>
+</tbody></table></div>
+<p>직접 층의 값은 RESULTS.md의 A-onehop 행과 같다. 두 층을 합치면 여전히 재현율 1.00, 정밀도 0.34이고 아무것도 빠지지 않는다. T2에서 두 홉 떨어진 실제 파손(api를 거쳐 IF-0001과 admin_cli)은 멀리 층에 남는다. 그래서 멀리 층을 짧게라도 확인하라는 스킬 문구가 필요하다. 직접 층의 정밀도(0.70)는 아직 /blast-radius 단독(1.00)보다 낮다. 남은 헛짚음은 시드와 관계가 있지만 이번 변경이 닿지 않는 단위다. T1에서는 api, DATA-0002, reporting이고, T3에서는 api, EVT-0001과 그 구독자 둘이다. 층은 변경의 종류를 여전히 보지 않는다.</p>
+<p>다음 평가는 직접 층을 따로 채점한다. <code>impact</code> 줄이 <code>, direct)</code>나 <code>, far)</code>로 끝나므로, 하네스의 computed 단계가 줄을 지금처럼 읽은 뒤 이 접미사로 층을 가르면 된다. 재현율 천장은 그대로이므로, 구조를 줄일지는 grep이 놓치는 픽스처로 다시 잰 뒤 정한다. 멀리 항목에 한 줄 근거를 달아 <code>checked</code>로 표시하는 길(직접 항목은 표시할 수 없음)은 CLI 계약(IF-0002)과 변경 기록(DATA-0007)을 바꾸므로 등급 C다. 사람의 승인을 기다린다(11장 6c단계).</p>
 <p>저장된 토폴로지가 즉석 탐색(/blast-radius)을 이기지 못하면, 추출한 구조를 상시 유지하는 비용은 정당화되지 않는다. 그때는 추출한 구조를 줄이고 코드에 없는 정보와 사람 화면에 무게를 더 싣는다. 영향 범위 평가는 필수다. pstack 버전을 올리는 판단(8장)과 6단계의 끝 기준(11장)이 이 평가에 기댄다. 나머지 지표는 완성 뒤 자기 검증용으로 둔다.</p>
 <h2 id="sec-10">10. 하지 않을 것</h2>
 <ul>
@@ -647,6 +661,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>끝 기준: 12장 인수 시나리오가 모두 통과하고, 영향 범위 지표에서 /blast-radius 단독보다 나은지 판단할 수 있는 결과가 나온다. 6단계의 작업 자체가 abbd mode 안에서 끝까지 진행되었어야 한다.</li>
 <li>6a단계(승격, 짧은 재정렬, 자기 적용 잔여, 인수 시나리오 표)는 세션 <code>s6a</code>에서 <code>abbd mode on</code>을 켜고 변경마다 턴 하나로 했다. 턴은 CHG-0001(gitignore), CHG-0002(승격), CHG-0003(선택 재정렬), CHG-0004(화면 접기), CHG-0005(시나리오 표와 이 문서)다. 어느 턴도 토폴로지 변경을 내지 않아 사람의 승인이 필요 없었다. 승격 채택과 거부, 선택 재정렬은 변이 검사를 거쳤다. 일부러 넣은 결함 스무 개(승격 열넷, 재정렬 여섯)를 모두 테스트가 잡았다. 그중 하나는 컴파일 오류로 죽어 다른 변이로 다시 확인했다.</li>
 <li>ABBD로 ABBD를 만들며 걸린 것. (1) <code>.gitignore</code>처럼 어느 설계 단위에도 닿지 않는 변경도 <code>--seeds</code>가 비면 턴이 열리지 않아, 가장 가까운 단위(MOD-0007 gitx)를 시드로 골랐다. (2) CLI와 화면 계약의 시그니처가 명령과 폼 필드에서 뽑히므로, 명령 하나를 더하는 것만으로 등급 C가 된다. 설계가 새 명령 대신 기존 명령의 의미를 넓히는 쪽으로 기울었다. 게이트가 의도한 대로 계약 변경을 비싸게 만든 결과지만, 계약을 넓히는 일이 늘 사람을 기다린다는 뜻이기도 하다. 시그니처가 같으면 의미가 넓어져도 게이트는 보지 못한다. (3) 턴의 게이트는 턴을 열기 전에 빌드한 <code>bin/abbd.exe</code>가 돌린다. 고친 ABBD가 아니라 이전 ABBD가 판정하므로, SYNCED 뒤에만 다시 빌드했다. (4) 끝 보고의 "했지만 선언하지 않음"에 계약 단위가 자주 오른다. 계약의 앵커가 모듈과 같은 파일의 심볼이라, 그 파일을 고치면 계약도 만진 것으로 센다. (5) 검증 한 번이 90초쯤 걸려 턴마다 가장 긴 단계였다.</li>
+<li>6c단계(영향 범위의 층)는 세션 <code>s6c</code>에서 했다. CHG-0006은 시드 MOD-0013(internal/turn)으로 열려 계산된 영향이 20개였다. 새 규칙으로는 직접 5개(MOD-0013, MOD-0001, MOD-0010, MOD-0011, FEAT-0001), 멀리 15개다. 층은 기록하지 않고 매번 다시 읽게 해서 CHG frontmatter(DATA-0007)와 CLI 계약(IF-0002)을 건드리지 않았고, 토폴로지 변경 없이 SYNCED로 끝났다. 변이 검사는 일부러 넣은 결함 아홉 개(에이전트 추가를 멀리로, 계약 한 홉 제거, 시드로 들어오는 관계 무시, 전부 직접, 멀리 먼저 출력, 기록의 층 표기, 화면의 멀리 누락, 계산 항목 미복원, 멀리 항목 미복원)를 모두 테스트가 잡았다. 멀리 항목의 <code>checked</code> 표시는 <code>turn impact</code>에 새 플래그와 CHG frontmatter에 새 필드가 필요해 등급 C다. CHG-0007에서 선언해 질문으로 올려 두고 코드는 쓰지 않았다.</li>
 </ul>
 </li>
 </ol>
@@ -865,7 +880,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td>17</td><td>선언과 실제의 차이가 보고에 표시됨</td><td><code>TestReportShowsDeclaredVersusActual</code></td><td><code>cmd/abbd/turn_test.go</code></td></tr>
 <tr><td>18</td><td>경계 안이고 검증이 통과한 턴은 사람 없이 완료</td><td><code>TestTurnInsideTheBoundarySyncsWithoutAHuman</code></td><td><code>cmd/abbd/turn_test.go</code></td></tr>
 <tr><td>19</td><td>확인받지 않은 경계 넘는 변경은 선언해도 BLOCKED</td><td><code>TestDeclaredBoundaryCrossingIsStillBlockedAtTheEnd</code></td><td><code>cmd/abbd/turn_test.go</code></td></tr>
-<tr><td>20</td><td>영향 범위에서 항목을 뺄 수 없음</td><td><code>TestImpactFollowsConsumersAndCannotShrink</code></td><td><code>cmd/abbd/turn_test.go</code></td></tr>
+<tr><td>20</td><td>영향 범위에서 항목을 뺄 수 없음</td><td><code>TestImpactFollowsConsumersAndCannotShrink</code>, <code>TestImpactSplitsIntoDirectAndFarTiers</code> 뒤의 것은 6c단계에서 더했다. 직접과 멀리 층이 출력, CHG 본문, 화면에 나뉘어 보이고, 지운 멀리 항목도 되살아나는지 본다.</td><td><code>cmd/abbd/turn_test.go</code></td></tr>
 <tr><td>21</td><td>플레이북이 끝나도 검증이 실패하면 DRAFT</td><td><code>TestFailedVerificationLeavesTheTurnDraft</code>, <code>TestMissingVerificationLeavesTheTurnDraft</code></td><td><code>cmd/abbd/turn_test.go</code></td></tr>
 <tr><td>22</td><td>abbd-mode의 서브에이전트가 abbd-agent로 일함</td><td><code>TestAbbdModeSubagentsRunAsTheAbbdAgent</code> 정적 검사다. 실제로 abbd-agent로 뜨는지는 4b단계 headless 실행 기록(run1.jsonl, run2.jsonl)이 근거다.</td><td><code>cmd/abbd/skills_test.go</code></td></tr>
 <tr><td>23</td><td>스킬이 끝을 건너뛰어도 CLI 게이트 없이는 완료되지 않음</td><td><code>TestTurnCompletesOnlyThroughEnd</code>, <code>TestStopBlocksOnceUntilTheOpenTurnEnds</code>, <code>TestAbbdModeEndsTheTurnBeforeAnyPR</code> 게이트와 Stop 훅은 테스트가 고정한다. 모델이 실제로 끝을 거치는지는 4b단계 headless 실행 기록이 근거다.</td><td><code>cmd/abbd/turn_test.go</code>, <code>cmd/abbd/hook_test.go</code>, <code>cmd/abbd/skills_test.go</code></td></tr>
