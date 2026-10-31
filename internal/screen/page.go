@@ -19,14 +19,13 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"badge": func(b string) string { return strings.TrimSuffix(strings.Fields(b + " x")[0], ",") },
 }).Parse(pageHTML))
 
-// Options says how a page is rendered. A static page has no actions.
+// Options says how a page is rendered. A static page has no actions and no
+// script; a live page runs only the script that carries Nonce.
 type Options struct {
-	Token  string
 	Static bool
 	// Only renders one section: "queue" for the confirm queue file.
-	Only    string
-	Flash   string
-	Failure bool
+	Only  string
+	Nonce string
 }
 
 func Render(w io.Writer, m Model, o Options) error {

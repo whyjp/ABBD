@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -27,21 +28,19 @@ func (s *screenServer) do(req *http.Request) *httptest.ResponseRecorder {
 	return rec
 }
 
-// page renders the screen as the human sees it, signed in by the link's cookie.
-func (s *screenServer) view(t *testing.T, signedIn bool) string {
+// view renders the page as anyone on the machine sees it. The token never
+// reaches the server on a GET, so every viewer gets the same page.
+func (s *screenServer) view(t *testing.T) string {
 	t.Helper()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	if signedIn {
-		req.AddCookie(&http.Cookie{Name: tokenCookie, Value: s.token})
-	}
-	rec := s.do(req)
+	rec := s.do(httptest.NewRequest(http.MethodGet, "/", nil))
 	if rec.Code != http.StatusOK {
 		t.Fatalf("GET /: %d %s", rec.Code, rec.Body.String())
 	}
 	return rec.Body.String()
 }
 
-func (s *screenServer) post(t *testing.T, token string, kv ...string) int {
+// send posts a decision the way the page's script does: same origin, token in the body.
+func (s *screenServer) send(t *testing.T, header http.Header, token string, kv ...string) *httptest.ResponseRecorder {
 	t.Helper()
 	f := url.Values{"t": {token}}
 	for i := 0; i < len(kv); i += 2 {
@@ -49,15 +48,29 @@ func (s *screenServer) post(t *testing.T, token string, kv ...string) int {
 	}
 	req := httptest.NewRequest(http.MethodPost, "/act", strings.NewReader(f.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return s.do(req).Code
+	for k, v := range header {
+		req.Header[k] = v
+	}
+	return s.do(req)
 }
 
+func (s *screenServer) sameOrigin() http.Header {
+	return http.Header{"Origin": {"http://" + s.addr}, "Sec-Fetch-Site": {"same-origin"}}
+}
+
+func (s *screenServer) post(t *testing.T, token string, kv ...string) *httptest.ResponseRecorder {
+	t.Helper()
+	return s.send(t, s.sameOrigin(), token, kv...)
+}
+
+// decide returns what the CLI said, then the page as it reloads.
 func (s *screenServer) decide(t *testing.T, kv ...string) string {
 	t.Helper()
-	if code := s.post(t, s.token, kv...); code != http.StatusSeeOther {
-		t.Fatalf("POST %v: want a redirect back to the page, got %d", kv, code)
+	rec := s.post(t, s.token, kv...)
+	if rec.Code != http.StatusOK && rec.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("POST %v: %d %s", kv, rec.Code, rec.Body.String())
 	}
-	return s.view(t, true)
+	return rec.Body.String() + "\n" + s.view(t)
 }
 
 func blockedTurn(t *testing.T) (*turnProject, string) {
@@ -73,7 +86,7 @@ func blockedTurn(t *testing.T) (*turnProject, string) {
 func TestScreenPutsTheBlockedChangeFirstAndApprovesIt(t *testing.T) {
 	p, edge := blockedTurn(t)
 	s := p.screen()
-	html := s.view(t, true)
+	html := s.view(t)
 	waiting, thisTurn, drift, mapAt := strings.Index(html, "Waiting for you"), strings.Index(html, "This turn: CHG-0001"), strings.Index(html, "Intended vs actual"), strings.Index(html, "Full map")
 	if !(waiting < strings.Index(html, edge) && strings.Index(html, edge) < thisTurn && thisTurn < drift && drift < mapAt) {
 		t.Fatalf("the blocked change comes first, then the turn, drift and the map")
@@ -98,38 +111,85 @@ func TestScreenPutsTheBlockedChangeFirstAndApprovesIt(t *testing.T) {
 	}
 }
 
-func TestScreenDecisionsNeedTheLaunchToken(t *testing.T) {
+func TestScreenDecisionsNeedTheTokenFromTheScreensOwnOrigin(t *testing.T) {
 	p, edge := blockedTurn(t)
 	s := p.screen()
 	for _, tok := range []string{"", "wrong", testToken + "x"} {
-		if code := s.post(t, tok, "do", "approve", "key", edge); code != http.StatusForbidden {
+		if code := s.post(t, tok, "do", "approve", "key", edge).Code; code != http.StatusForbidden {
 			t.Fatalf("a POST with token %q should be refused, got %d", tok, code)
+		}
+	}
+	for name, h := range map[string]http.Header{
+		"no origin":         {},
+		"another site":      {"Origin": {"http://evil.example"}},
+		"another port":      {"Origin": {"http://127.0.0.1:9999"}, "Sec-Fetch-Site": {"same-site"}},
+		"a cross-site page": {"Origin": {"http://" + s.addr}, "Sec-Fetch-Site": {"cross-site"}},
+	} {
+		if code := s.send(t, h, s.token, "do", "approve", "key", edge).Code; code != http.StatusForbidden {
+			t.Fatalf("a POST from %s with the right token should be refused, got %d", name, code)
 		}
 	}
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "decisions")); err == nil {
 		t.Fatalf("a refused POST must not record a decision")
 	}
-	if html := s.view(t, false); strings.Contains(html, testToken) || !strings.Contains(html, "Read only") {
-		t.Fatalf("a page opened without the link must not carry the token")
+
+	for _, target := range []string{"/", "/?t=" + testToken} {
+		rec := s.do(httptest.NewRequest(http.MethodGet, target, nil))
+		if rec.Code != http.StatusOK || rec.Header().Get("Set-Cookie") != "" || strings.Contains(rec.Body.String(), testToken) {
+			t.Fatalf("GET %s must not set a cookie or carry the token, got %d %v", target, rec.Code, rec.Header())
+		}
+		if !strings.Contains(rec.Body.String(), `id="readonly"`) {
+			t.Fatalf("the page should say it is read only until the script finds the token")
+		}
 	}
+
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req.AddCookie(&http.Cookie{Name: tokenCookie, Value: "guessed"})
-	if rec := s.do(req); strings.Contains(rec.Body.String(), testToken) {
-		t.Fatalf("a cookie with the wrong token must not sign the page in")
-	}
-	req = httptest.NewRequest(http.MethodGet, "/?t="+testToken, nil)
-	if rec := s.do(req); rec.Code != http.StatusSeeOther || !strings.Contains(rec.Header().Get("Set-Cookie"), "SameSite=Strict") {
-		t.Fatalf("the printed link should sign the browser in with a strict cookie, got %d %v", rec.Code, rec.Header())
-	}
-	req = httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Host = "evil.example:7340"
 	rec := httptest.NewRecorder()
 	s.ServeHTTP(rec, req)
 	if rec.Code != http.StatusForbidden {
 		t.Fatalf("a request for another host name should be refused, got %d", rec.Code)
 	}
-	if code := s.post(t, testToken, "do", "approve", "key", "--root=/elsewhere"); code != http.StatusSeeOther || !strings.Contains(s.view(t, true), "is not an item key") {
-		t.Fatalf("a key that looks like a flag must not reach the command line")
+	if rec := s.post(t, testToken, "do", "approve", "key", "--root=/elsewhere"); rec.Code != http.StatusUnprocessableEntity || !strings.Contains(rec.Body.String(), "is not an item key") {
+		t.Fatalf("a key that looks like a flag must not reach the command line, got %d %s", rec.Code, rec.Body.String())
+	}
+
+	out := s.decide(t, "do", "approve", "key", edge)
+	if !strings.Contains(out, "approved "+edge) || strings.Contains(s.view(t), "approved "+edge+" for") {
+		t.Fatalf("what the CLI said goes back to the page that sent the decision only:\n%s", out)
+	}
+}
+
+func TestScreenRefusesToBeFramed(t *testing.T) {
+	p := aligned(t)
+	rec := p.screen().do(httptest.NewRequest(http.MethodGet, "/", nil))
+	csp := rec.Header().Get("Content-Security-Policy")
+	if rec.Header().Get("X-Frame-Options") != "DENY" || !strings.Contains(csp, "frame-ancestors 'none'") || !strings.Contains(csp, "form-action 'self'") {
+		t.Fatalf("the screen must refuse framing, got %v", rec.Header())
+	}
+	nonce := regexp.MustCompile(`script-src 'nonce-([^']+)'`).FindStringSubmatch(csp)
+	if nonce == nil || !strings.Contains(rec.Body.String(), `<script nonce="`+nonce[1]+`">`) {
+		t.Fatalf("only the page's own script may run, by the nonce the policy names:\n%s", csp)
+	}
+	if again := p.screen().do(httptest.NewRequest(http.MethodGet, "/", nil)).Header().Get("Content-Security-Policy"); again == csp {
+		t.Fatalf("each page needs a fresh nonce")
+	}
+}
+
+func TestScreenOnPort80AcceptsTheBrowsersHostAndOrigin(t *testing.T) {
+	p := aligned(t)
+	s := p.screen()
+	s.addr = "127.0.0.1:80"
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Host = "127.0.0.1"
+	rec := httptest.NewRecorder()
+	s.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("a browser omits :80 from Host, got %d", rec.Code)
+	}
+	h := http.Header{"Origin": {"http://127.0.0.1"}, "Sec-Fetch-Site": {"same-origin"}}
+	if code := s.send(t, h, s.token, "do", "approve", "key", "-x").Code; code != http.StatusUnprocessableEntity {
+		t.Fatalf("a browser omits :80 from Origin, got %d", code)
 	}
 }
 
@@ -158,7 +218,7 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 	p.extract(codeOnly)
 	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
 	s := p.screen()
-	html := s.view(t, true)
+	html := s.view(t)
 	if !strings.Contains(html, "First alignment") || !strings.Contains(html, `value="MOD-0002" checked`) {
 		t.Fatalf("a bootstrapped project should offer the first alignment")
 	}
@@ -198,7 +258,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
  {"key":"api","kind":"IF","name":"http api","signature":"GET /charges","anchors":[{"path":"api/http.go","symbol":"Serve"}]}
 ],"relations":[{"from":"billing","to":"api","kind":"provides"}]}`)
 	p.want(2, "REALIGN unit-removed:MOD-0002", "mode", "on", "--session", "s1")
-	if html := s.view(t, true); !strings.Contains(html, "Acknowledge the REALIGN rows") || !strings.Contains(html, `class="removed"`) {
+	if html := s.view(t); !strings.Contains(html, "Acknowledge the REALIGN rows") || !strings.Contains(html, `class="removed"`) {
 		t.Fatalf("a drifted project should offer the short realignment and draw the removed unit")
 	}
 	s.decide(t, "do", "realign")

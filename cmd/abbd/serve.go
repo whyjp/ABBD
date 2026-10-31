@@ -22,10 +22,11 @@ import (
 
 // serve runs the human screen. Every decision the page sends is a CLI command
 // run in this process, so the screen holds no gate logic of its own. A POST
-// needs the token this launch printed. The token lives only in this process
-// and the terminal that started it; no file holds it, so an agent cannot read
-// it from disk. The address goes to a file so the guard can deny the agent's
-// requests to the screen.
+// needs the token this launch printed and the screen's own origin. The token
+// lives only in this process, the terminal that started it, and the tab's
+// sessionStorage: it travels in the link's fragment, which a browser never
+// sends, so no file, cookie or request line holds it. The address goes to a
+// file so the guard can deny the agent's requests to the screen.
 func (e env) serve() error {
 	host, _, err := net.SplitHostPort(e.addr)
 	if err != nil {
@@ -43,7 +44,7 @@ func (e env) serve() error {
 		return err
 	}
 	s := &screenServer{env: e, token: hex.EncodeToString(raw), addr: ln.Addr().String()}
-	link := fmt.Sprintf("http://%s/?t=%s", s.addr, s.token)
+	link := fmt.Sprintf("http://%s/#t=%s", s.authority(), s.token)
 	file := e.st.ServeFile()
 	if err := os.MkdirAll(filepath.Dir(file), 0o755); err != nil {
 		return err
@@ -71,13 +72,9 @@ type screenServer struct {
 	env   env
 	token string
 	addr  string
-	// mu runs one decision at a time and guards the message the next page shows.
-	mu      sync.Mutex
-	flash   string
-	failure bool
+	// mu runs one decision at a time, and no page reads the store mid-decision.
+	mu sync.Mutex
 }
-
-const tokenCookie = "abbd_t"
 
 // actions turn a form into the CLI command it stands for. A key reaches the
 // command line as a positional argument, so it may not look like a flag.
@@ -123,13 +120,13 @@ func valueFlag(f url.Values) []string {
 func (s *screenServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// A page another site loads through a rebound DNS name arrives with that
 	// name as its Host; only the loopback address this launch printed is served.
-	if r.Host != s.addr {
+	if r.Host != s.addr && r.Host != s.authority() {
 		http.Error(w, "unknown host", http.StatusForbidden)
 		return
 	}
 	switch {
 	case r.URL.Path == "/" && r.Method == http.MethodGet:
-		s.page(w, r)
+		s.page(w)
 	case r.URL.Path == "/act" && r.Method == http.MethodPost:
 		s.act(w, r)
 	default:
@@ -137,25 +134,40 @@ func (s *screenServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// authority is the address as a browser writes it in Host and Origin, which
+// leave out the default port.
+func (s *screenServer) authority() string {
+	if host, port, err := net.SplitHostPort(s.addr); err == nil && port == "80" {
+		if strings.Contains(host, ":") {
+			return "[" + host + "]"
+		}
+		return host
+	}
+	return s.addr
+}
+
 func (s *screenServer) valid(t string) bool {
 	return subtle.ConstantTimeCompare([]byte(t), []byte(s.token)) == 1
 }
 
-func (s *screenServer) page(w http.ResponseWriter, r *http.Request) {
-	if t := r.URL.Query().Get("t"); t != "" {
-		if s.valid(t) {
-			http.SetCookie(w, &http.Cookie{Name: tokenCookie, Value: t, Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode})
-		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+// fromScreen says whether a request came from the screen's own page. Another
+// local server on any port is a different origin, so it can neither read the
+// token from sessionStorage nor pass this check with a token it guessed.
+func (s *screenServer) fromScreen(r *http.Request) bool {
+	if site := r.Header.Get("Sec-Fetch-Site"); site != "" && site != "same-origin" {
+		return false
+	}
+	return r.Header.Get("Origin") == "http://"+s.authority()
+}
+
+func (s *screenServer) page(w http.ResponseWriter) {
+	raw := make([]byte, 16)
+	if _, err := rand.Read(raw); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	o := screen.Options{}
-	if c, err := r.Cookie(tokenCookie); err == nil && s.valid(c.Value) {
-		o.Token = s.token
-	}
+	o := screen.Options{Nonce: hex.EncodeToString(raw)}
 	s.mu.Lock()
-	o.Flash, o.Failure = s.flash, s.failure
-	s.flash, s.failure = "", false
 	in, err := s.env.screenInput()
 	s.mu.Unlock()
 	if err != nil {
@@ -167,31 +179,42 @@ func (s *screenServer) page(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Header().Set("Cache-Control", "no-store")
+	h := w.Header()
+	h.Set("Content-Type", "text/html; charset=utf-8")
+	h.Set("Cache-Control", "no-store")
+	h.Set("X-Frame-Options", "DENY")
+	h.Set("X-Content-Type-Options", "nosniff")
+	h.Set("Referrer-Policy", "no-referrer")
+	h.Set("Content-Security-Policy", fmt.Sprintf("default-src 'self'; script-src 'nonce-%s'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'", o.Nonce))
 	w.Write(b.Bytes())
 }
 
+// act runs one decision and answers with what the CLI printed. Only the page
+// that sent it shows that, so a read-only viewer never sees or clears it.
 func (s *screenServer) act(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil || !s.valid(r.PostForm.Get("t")) {
-		http.Error(w, "this decision needs the token abbd serve printed", http.StatusForbidden)
+	if err := r.ParseForm(); err != nil || !s.fromScreen(r) || !s.valid(r.PostForm.Get("t")) {
+		http.Error(w, "this decision needs the screen's own page, opened from the link abbd serve printed", http.StatusForbidden)
 		return
 	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
 	build, ok := actions[r.PostForm.Get("do")]
 	if !ok {
 		http.Error(w, "unknown action", http.StatusBadRequest)
 		return
 	}
 	argv, err := build(r.PostForm)
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	if err != nil {
-		s.flash, s.failure = err.Error(), true
-	} else {
-		var out bytes.Buffer
-		code := run(append(argv, "--root", s.env.root), strings.NewReader(""), &out, &out)
-		s.flash = "abbd " + strings.Join(argv, " ") + "\n" + strings.TrimSpace(out.String())
-		s.failure = code != exitOK && code != exitNeedHuman
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		fmt.Fprintln(w, err)
+		return
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	s.mu.Lock()
+	var out bytes.Buffer
+	code := run(append(argv, "--root", s.env.root), strings.NewReader(""), &out, &out)
+	s.mu.Unlock()
+	if code != exitOK && code != exitNeedHuman {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+	}
+	fmt.Fprintf(w, "abbd %s\n%s\n", strings.Join(argv, " "), strings.TrimSpace(out.String()))
 }

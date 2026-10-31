@@ -96,7 +96,7 @@ svg marker path { fill: var(--muted); stroke: none; }
 </head>
 <body>
 <main>
-{{$tok := .O.Token}}{{$static := .O.Static}}
+{{$static := .O.Static}}
 <header>
   <h1>{{if eq .O.Only "queue"}}Confirm queue{{else}}ABBD{{end}}</h1>
   <div class="pills">
@@ -105,8 +105,8 @@ svg marker path { fill: var(--muted); stroke: none; }
     <span class="pill {{.M.Generated}}" title=".abbd/generated/ against the unit Markdown">generated files {{.M.Generated}}</span>
   </div>
 </header>
-{{if .O.Flash}}<div class="flash{{if .O.Failure}} fail{{end}}" role="status">{{.O.Flash}}</div>{{end}}
-{{if and (not $static) (not $tok)}}<div class="banner">Read only. Open the link <code>abbd serve</code> printed in your terminal to approve, reject or confirm.</div>{{end}}
+{{if not $static}}<div id="flash" class="flash" role="status" hidden></div>
+<div class="banner" id="readonly">Read only. Open the link <code>abbd serve</code> printed in your terminal to approve, reject or confirm.</div>{{end}}
 {{if eq .M.Actual "STALE"}}<div class="banner"><strong>Actual topology is STALE.</strong> It was extracted from tree <code>{{.M.Synced.Fingerprint}}</code>; the working tree is now <code>{{.M.Tree}}</code>. Drift below may miss the newest edits until <code>abbd turn diff</code> or <code>abbd mode on</code> re-extracts.</div>{{end}}
 {{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/ is STALE.</strong> Its watermark differs from the unit Markdown. This page reads the Markdown directly; the files catch up on the next abbd command that writes.</div>{{end}}
 
@@ -117,9 +117,9 @@ svg marker path { fill: var(--muted); stroke: none; }
   <div class="card">
     <strong>First alignment.</strong> Setup found these design unit candidates without asking. Keep the ones you make design decisions about; the rest stay below the line.
     {{if not $static}}<form method="post" action="/act">
-      <input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="align">
+      <input type="hidden" name="do" value="align">
       <ul class="plain">{{range .M.Align}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{.Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul>
-      <button class="primary" {{if not $tok}}disabled{{end}}>Confirm these design units</button>
+      <button class="primary" disabled>Confirm these design units</button>
     </form>{{else}}<ul class="plain">{{range .M.Align}}<li><span class="key">{{.ID}}</span> {{.Name}}</li>{{end}}</ul>{{end}}
   </div>
   {{end}}
@@ -129,8 +129,8 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div class="why">{{.Detail}}{{if .Question}}. The agent asked before editing.{{end}}</div>
     {{if .Rejection}}<div class="banner">You rejected this as {{.Rejection.ADR}}: {{.Rejection.Reason}}. The agent reads the reason and should undo it.</div>{{end}}
     {{if not $static}}
-    <form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" {{if not $tok}}disabled{{end}}>Approve</button></form>
-    {{if not .Rejection}}<form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="Why not? The agent reads this."><button class="danger" {{if not $tok}}disabled{{end}}>Reject</button></form>{{end}}
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" disabled>Approve</button></form>
+    {{if not .Rejection}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="Why not? The agent reads this."><button class="danger" disabled>Reject</button></form>{{end}}
     {{end}}
   </div>
   {{else}}{{if not .M.Align}}<p class="muted">Nothing waits for a decision.</p>{{end}}{{end}}
@@ -148,7 +148,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>Intended vs actual</h2>
   {{if .M.Drift}}
   <table>{{range .M.Drift}}<tr><td><span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
-  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="realign"><button {{if not $tok}}disabled{{end}}>Acknowledge the REALIGN rows</button><span class="muted">Short realignment. It refuses while a C change waits above.</span></form>{{end}}
+  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="realign"><button disabled>Acknowledge the REALIGN rows</button><span class="muted">Short realignment. It refuses while a C change waits above.</span></form>{{end}}
   {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}The code matches the intended topology.{{else}}No intended topology yet.{{end}}</p>{{end}}
   {{if .M.Promote}}<h3>Promotion candidates</h3><ul class="plain">{{range .M.Promote}}<li><span class="key">{{.Key}}</span> {{.Detail}}</li>{{end}}</ul>{{end}}
 </section>
@@ -163,8 +163,8 @@ svg marker path { fill: var(--muted); stroke: none; }
     <div><span class="pill inferred">{{if .Field}}inferred{{else}}{{lower .Value}}{{end}}</span> <span class="key">{{.Key}}</span>{{if .Design}} <span class="muted">design unit</span>{{end}}</div>
     {{if .Field}}<div class="why">{{.Value}}</div>{{else}}<div class="why">{{.Name}}: a coupling the script did not extract</div>{{end}}
     {{if not $static}}
-    <form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="confirm"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" placeholder="Leave empty to confirm as written">{{end}}<button class="primary" {{if not $tok}}disabled{{end}}>Confirm</button></form>
-    <form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="confirm-reject"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" required placeholder="What it is instead">{{end}}<button class="danger" {{if not $tok}}disabled{{end}}>Wrong</button></form>
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" placeholder="Leave empty to confirm as written">{{end}}<button class="primary" disabled>Confirm</button></form>
+    <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="confirm-reject"><input type="hidden" name="key" value="{{.Key}}">{{if .Field}}<input type="text" name="value" required placeholder="What it is instead">{{end}}<button class="danger" disabled>Wrong</button></form>
     {{end}}
   </div>
   {{end}}
@@ -186,11 +186,11 @@ svg marker path { fill: var(--muted); stroke: none; }
   <div class="legend"><span>intended</span><span class="l-blocked">new, crosses the boundary</span><span class="l-realign">new, touches a design unit</span><span class="l-removed">intended, gone</span><span class="l-guess">inferred, unconfirmed</span><span class="l-below">below the line</span></div>
   {{if not $static}}
   <h3>Register a coupling the script cannot see</h3>
-  <form class="inline" method="post" action="/act"><input type="hidden" name="t" value="{{$tok}}"><input type="hidden" name="do" value="couple">
+  <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="couple">
     <select name="from" aria-label="from">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
     <select name="kind" aria-label="kind"><option>depends_on</option><option>consumes</option><option>provides</option></select>
     <select name="to" aria-label="to">{{range .M.Units}}<option value="{{.ID}}">{{.ID}} {{.Name}}</option>{{end}}</select>
-    <button {{if not $tok}}disabled{{end}}>Register</button>
+    <button disabled>Register</button>
   </form>
   {{end}}
   <h3>Units</h3>
@@ -209,6 +209,53 @@ svg marker path { fill: var(--muted); stroke: none; }
 <p class="muted">Extraction <code>{{join .M.Extract " "}}</code>{{if .M.Verify}} · verify <code>{{join .M.Verify " "}}</code>{{end}} · watermark <code>{{.M.Watermark.MDHash}}</code> r{{.M.Watermark.Intended}}</p>
 {{end}}
 </main>
+{{if not $static}}<script nonce="{{.O.Nonce}}">
+(() => {
+  // The link carries the token in its fragment, which no request sends. The
+  // tab keeps it in sessionStorage, which only this origin and port can read.
+  const store = {
+    get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
+    drop(k) { try { sessionStorage.removeItem(k); } catch (e) {} },
+  };
+  const m = /^#t=([0-9a-f]+)$/.exec(location.hash);
+  if (m) {
+    store.set("abbd_t", m[1]);
+    history.replaceState(null, "", location.pathname);
+  }
+  const token = m ? m[1] : store.get("abbd_t");
+  if (!token) return;
+  document.getElementById("readonly").hidden = true;
+  const said = store.get("abbd_flash");
+  if (said) {
+    store.drop("abbd_flash");
+    const f = JSON.parse(said), box = document.getElementById("flash");
+    box.textContent = f.text;
+    box.classList.toggle("fail", f.failure);
+    box.hidden = false;
+  }
+  for (const form of document.querySelectorAll('form[action="/act"]')) {
+    for (const b of form.querySelectorAll("button")) b.disabled = false;
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const body = new URLSearchParams(new FormData(form));
+      body.set("t", token);
+      for (const b of form.querySelectorAll("button")) b.disabled = true;
+      let text, failure;
+      try {
+        const r = await fetch("/act", { method: "POST", body });
+        text = await r.text();
+        failure = !r.ok;
+      } catch (e) {
+        text = String(e);
+        failure = true;
+      }
+      store.set("abbd_flash", JSON.stringify({ text, failure }));
+      location.reload();
+    });
+  }
+})();
+</script>{{end}}
 </body>
 </html>
 {{define "turnbody"}}
