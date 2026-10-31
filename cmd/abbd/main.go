@@ -40,14 +40,18 @@ abbd status [--root DIR] [--session ID]
 abbd hook EVENT [--root DIR]         hook entry point; reads the hook JSON on stdin
 abbd turn start --session ID --seeds IDS --request TEXT|- [--root DIR]
                                      open a turn: record the request, compute the impact
-abbd turn impact [--add IDS] [--root DIR]
+abbd turn impact --session ID [--add IDS] [--root DIR]
                                      list the impact; the agent may only add to it
-abbd turn declare [--units IDS] [--changes KEYS] [--root DIR]
+abbd turn declare --session ID [--units IDS] [--changes KEYS] [--root DIR]
                                      the IntentDelta; exit 2 while a grade C change waits for a human
-abbd turn diff [--root DIR]          re-extract and compare; exit 2 on a boundary-crossing change
-abbd turn verify [--root DIR] [-- VERIFY-ARGV...]
-                                     run the project verification and record the evidence
-abbd turn end [--root DIR]           gate and conclude: SYNCED, CLOSED, or exit 2 on DRAFT and BLOCKED
+abbd turn diff --session ID [--root DIR]
+                                     re-extract and compare; exit 2 on a boundary-crossing change
+abbd turn verify --session ID [--root DIR] [-- VERIFY-ARGV...]
+                                     run the project verification and record the evidence;
+                                     gitignored files are outside the evidence, so the
+                                     verification must not depend on them
+abbd turn end --session ID [--root DIR]
+                                     gate and conclude: SYNCED, CLOSED, or exit 2 on DRAFT and BLOCKED
 abbd turn show [--root DIR]`
 
 const (
@@ -138,11 +142,11 @@ var commands = map[string]command{
 	"hook":    {flags: []string{"root"}, subs: []string{"*"}, pos: []int{0}},
 
 	"turn start":   {flags: []string{"root", "session", "seeds", "request"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnStart() }},
-	"turn impact":  {flags: []string{"root", "add"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnImpact() }},
-	"turn declare": {flags: []string{"root", "units", "changes"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnDeclare() }},
-	"turn diff":    {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnDiff() }},
-	"turn verify":  {flags: []string{"root"}, pos: []int{0}, dashArgv: true, run: func(e env, _ string, _ []string) error { return e.turnVerify() }},
-	"turn end":     {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnEnd() }},
+	"turn impact":  {flags: []string{"root", "session", "add"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnImpact() }},
+	"turn declare": {flags: []string{"root", "session", "units", "changes"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnDeclare() }},
+	"turn diff":    {flags: []string{"root", "session"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnDiff() }},
+	"turn verify":  {flags: []string{"root", "session"}, pos: []int{0}, dashArgv: true, session: true, run: func(e env, _ string, _ []string) error { return e.turnVerify() }},
+	"turn end":     {flags: []string{"root", "session"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnEnd() }},
 	"turn show":    {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.turnShow() }},
 }
 

@@ -46,6 +46,9 @@ func (e env) current(ok func(turn.State) bool, what string) (*turn.Turn, error) 
 	if t == nil || !ok(t.State) {
 		return nil, fmt.Errorf("no turn to %s; start one with abbd turn start", what)
 	}
+	if t.Session != e.session {
+		return nil, fmt.Errorf("%s belongs to session %s, not %s", t.ID, t.Session, e.session)
+	}
 	return t, nil
 }
 

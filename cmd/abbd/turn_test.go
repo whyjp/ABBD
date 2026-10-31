@@ -43,7 +43,7 @@ func (p *turnProject) verify(result string, want int, contains string) {
 	p.t.Helper()
 	write(p.t, p.verifyFile, result)
 	var out, errb bytes.Buffer
-	code := run([]string{"turn", "verify", "--root", p.root, "--", p.exe, "fake-verify"}, neverRead{p.t}, &out, &errb)
+	code := run([]string{"turn", "verify", "--session", "s1", "--root", p.root, "--", p.exe, "fake-verify"}, neverRead{p.t}, &out, &errb)
 	if got := out.String() + errb.String(); code != want || !strings.Contains(got, contains) {
 		p.t.Fatalf("abbd turn verify: want exit %d containing %q, got %d:\n%s", want, contains, code, got)
 	}
@@ -62,14 +62,14 @@ func TestTurnInsideTheBoundarySyncsWithoutAHuman(t *testing.T) {
 	if req := p.read("requirements/REQ-0001.md"); !strings.Contains(req, "origin: USER_STATED") || !strings.Contains(req, "make the change") {
 		t.Fatalf("the request should be recorded as stated:\n%s", req)
 	}
-	p.want(0, "CHG-0001 declares 1 unit(s) and 0 change(s)", "turn", "declare", "--units", "MOD-0001")
+	p.want(0, "CHG-0001 declares 1 unit(s) and 0 change(s)", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
 	p.editCode("billing/charge.go")
-	p.want(0, "", "turn", "diff")
+	p.want(0, "", "turn", "diff", "--session", "s1")
 	p.verify("pass", 0, "run-0001 PASSED")
 	before := p.intended()
 
 	var out, errb bytes.Buffer
-	if code := run([]string{"turn", "end", "--root", p.root}, neverRead{t}, &out, &errb); code != 0 || !strings.Contains(out.String(), "CHG-0001 SYNCED") {
+	if code := run([]string{"turn", "end", "--session", "s1", "--root", p.root}, neverRead{t}, &out, &errb); code != 0 || !strings.Contains(out.String(), "CHG-0001 SYNCED") {
 		t.Fatalf("a turn inside the boundary should sync on its own, exit %d:\n%s%s", code, out.String(), errb.String())
 	}
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "decisions")); err == nil {
@@ -92,7 +92,7 @@ func TestTurnInsideTheBoundarySyncsWithoutAHuman(t *testing.T) {
 func TestTurnNeedsAnActiveAlignedSession(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.want(1, "not active", "turn", "start", "--session", "s2", "--seeds", "MOD-0001", "--request", "x")
-	p.want(1, "no turn to declare", "turn", "declare", "--units", "MOD-0001")
+	p.want(1, "no turn to declare", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
 
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoV1))
@@ -100,6 +100,17 @@ func TestTurnNeedsAnActiveAlignedSession(t *testing.T) {
 	if !strings.Contains(out, "BLOCKED contract-changed:IF-0001") {
 		t.Fatalf("a change made between turns should be shown:\n%s", out)
 	}
+}
+
+func TestTurnCommandsBelongToTheTurnsSession(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	p.start("MOD-0001")
+	p.editCode("billing/charge.go")
+	for _, sub := range []string{"impact", "declare", "diff", "verify", "end"} {
+		p.want(64, "turn "+sub+" needs --session", "turn", sub)
+		p.want(1, "CHG-0001 belongs to session s1, not s2", "turn", sub, "--session", "s2")
+	}
+	p.want(0, "CHG-0001 OPEN", "turn", "show")
 }
 
 func TestImpactFollowsConsumersAndCannotShrink(t *testing.T) {
@@ -110,8 +121,8 @@ func TestImpactFollowsConsumersAndCannotShrink(t *testing.T) {
 			t.Fatalf("impact should reach the contract's consumers; missing %q:\n%s", want, out)
 		}
 	}
-	p.want(0, "impact MOD-0002: added by the agent (agent)", "turn", "impact", "--add", "MOD-0002")
-	p.want(64, "flag provided but not defined", "turn", "impact", "--remove", "MOD-0003")
+	p.want(0, "impact MOD-0002: added by the agent (agent)", "turn", "impact", "--session", "s1", "--add", "MOD-0002")
+	p.want(64, "flag provided but not defined", "turn", "impact", "--session", "s1", "--remove", "MOD-0003")
 
 	path := filepath.Join(p.root, ".abbd", "changes", "CHG-0001.md")
 	b, _ := os.ReadFile(path)
@@ -130,12 +141,12 @@ func TestDeclaredBoundaryCrossingIsStillBlockedAtTheEnd(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
 	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
-	p.want(2, "C QUESTION "+edge, "turn", "declare", "--units", "MOD-0001", "--changes", edge)
+	p.want(2, "C QUESTION "+edge, "turn", "declare", "--session", "s1", "--units", "MOD-0001", "--changes", edge)
 
 	p.editCode("billing/charge.go")
 	p.extract(strings.Replace(topoV1, `{"from":"billing","to":"api","kind":"provides"}`,
 		`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"ledger","kind":"depends_on"}`, 1))
-	out := p.want(2, "C BLOCKED "+edge, "turn", "diff")
+	out := p.want(2, "C BLOCKED "+edge, "turn", "diff", "--session", "s1")
 	if !strings.Contains(out, "stop:") {
 		t.Fatalf("diff should tell the skill to stop:\n%s", out)
 	}
@@ -144,7 +155,7 @@ func TestDeclaredBoundaryCrossingIsStillBlockedAtTheEnd(t *testing.T) {
 		t.Fatalf("hooks should keep recording while a turn drifts the project")
 	}
 	p.verify("pass", 0, "PASSED")
-	p.want(2, "CHG-0001 BLOCKED", "turn", "end")
+	p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s1")
 	if strings.Contains(p.intended(), "depends_on") {
 		t.Fatalf("a blocked turn must not touch the intended topology:\n%s", p.intended())
 	}
@@ -156,7 +167,7 @@ func TestDeclaredBoundaryCrossingIsStillBlockedAtTheEnd(t *testing.T) {
 	if strings.Contains(p.intended(), "depends_on") {
 		t.Fatalf("a turn approval enters the intended topology only when the turn syncs")
 	}
-	p.want(0, "C APPROVED "+edge+" by ADR-0001", "turn", "end")
+	p.want(0, "C APPROVED "+edge+" by ADR-0001", "turn", "end", "--session", "s1")
 	if !strings.Contains(p.intended(), "kind: depends_on") {
 		t.Fatalf("the approved relation should be intended after sync:\n%s", p.intended())
 	}
@@ -166,18 +177,18 @@ func TestDeclaredBoundaryCrossingIsStillBlockedAtTheEnd(t *testing.T) {
 func TestUndeclaredRelationIsUnexpectedAndRealignIsGradeB(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
-	p.want(0, "", "turn", "declare", "--units", "MOD-0001")
+	p.want(0, "", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
 	p.editCode("audit/log.go")
 	p.extract(strings.Replace(strings.Replace(topoV1, `"units":[`,
 		`"units":[{"key":"audit","kind":"MOD","name":"audit","anchors":[{"path":"audit/log.go","symbol":"Log"}]},`, 1),
 		`{"from":"billing","to":"api","kind":"provides"}`,
 		`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"audit","kind":"depends_on"}`, 1))
-	out := p.want(0, "B PROCEED new-relation:MOD-0001.depends_on.MOD-0003", "turn", "diff")
+	out := p.want(0, "B PROCEED new-relation:MOD-0001.depends_on.MOD-0003", "turn", "diff", "--session", "s1")
 	if !strings.Contains(out, "UNEXPECTED new-relation:MOD-0001.depends_on.MOD-0003") || !strings.Contains(out, "A PROMOTE unit-added:MOD-0003") {
 		t.Fatalf("an undeclared relation should be flagged as unexpected:\n%s", out)
 	}
 	p.verify("pass", 0, "PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	if adr := p.read("decisions/ADR-0001.md"); !strings.Contains(adr, "grade: B") || !strings.Contains(adr, "confirmation: UNCONFIRMED") {
 		t.Fatalf("a grade B default should leave an UNCONFIRMED ADR:\n%s", adr)
 	}
@@ -187,12 +198,12 @@ func TestUndeclaredRelationIsUnexpectedAndRealignIsGradeB(t *testing.T) {
 func TestContractChangeWithoutConsumersIsGradeB(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("IF-0001")
-	p.want(0, "B PROCEED contract-changed:IF-0001", "turn", "declare", "--changes", "contract-changed:IF-0001")
+	p.want(0, "B PROCEED contract-changed:IF-0001", "turn", "declare", "--session", "s1", "--changes", "contract-changed:IF-0001")
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoV1))
-	p.want(0, `B PROCEED contract-changed:IF-0001 ("GET /charges" -> "GET /v2/charges")`, "turn", "diff")
+	p.want(0, `B PROCEED contract-changed:IF-0001 ("GET /charges" -> "GET /v2/charges")`, "turn", "diff", "--session", "s1")
 	p.verify("pass", 0, "PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	adr := p.read("decisions/ADR-0001.md")
 	for _, want := range []string{"grade: B", "origin: INFERRED", "confirmation: UNCONFIRMED", "subject: contract-changed:IF-0001"} {
 		if !strings.Contains(adr, want) {
@@ -208,23 +219,23 @@ func TestContractChangeWithConsumersNeedsApproval(t *testing.T) {
 	p := activeTurnProject(t, topoConsumed)
 	p.start("IF-0001")
 	key := "contract-changed:IF-0001"
-	p.want(2, "C QUESTION "+key, "turn", "declare", "--changes", key)
+	p.want(2, "C QUESTION "+key, "turn", "declare", "--session", "s1", "--changes", key)
 	p.want(0, "approved "+key+" for CHG-0001 as ADR-0001", "approve", key)
-	p.want(0, "C APPROVED "+key+" by ADR-0001", "turn", "declare", "--changes", key)
+	p.want(0, "C APPROVED "+key+" by ADR-0001", "turn", "declare", "--session", "s1", "--changes", key)
 	if adr := p.read("decisions/ADR-0001.md"); !strings.Contains(adr, `question: contract-changed:IF-0001 from "GET /charges"`) {
 		t.Fatalf("the ADR should name the question it answers:\n%s", adr)
 	}
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoConsumed))
-	p.want(0, "C APPROVED "+key, "turn", "diff")
+	p.want(0, "C APPROVED "+key, "turn", "diff", "--session", "s1")
 	p.verify("pass", 0, "PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	if !strings.Contains(p.intended(), "GET /v2/charges") {
 		t.Fatalf("the approved contract should be intended after sync:\n%s", p.intended())
 	}
 
 	p.start("IF-0001")
-	p.want(2, "C QUESTION "+key, "turn", "declare", "--changes", key)
+	p.want(2, "C QUESTION "+key, "turn", "declare", "--session", "s1", "--changes", key)
 }
 
 func TestExternalConsumersMakeAContractChangeGradeC(t *testing.T) {
@@ -232,23 +243,23 @@ func TestExternalConsumersMakeAContractChangeGradeC(t *testing.T) {
 	p.want(1, "not an intended contract", "confirm", "MOD-0001.external_consumers", "--value", "true")
 	p.want(0, "confirmed IF-0001.external_consumers true", "confirm", "IF-0001.external_consumers", "--value", "true")
 	p.start("IF-0001")
-	p.want(2, "C QUESTION contract-changed:IF-0001", "turn", "declare", "--changes", "contract-changed:IF-0001")
+	p.want(2, "C QUESTION contract-changed:IF-0001", "turn", "declare", "--session", "s1", "--changes", "contract-changed:IF-0001")
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoV1))
 	p.verify("pass", 0, "PASSED")
-	p.want(2, "CHG-0001 BLOCKED", "turn", "end")
+	p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s1")
 }
 
 func TestFailedVerificationLeavesTheTurnDraft(t *testing.T) {
 	p := activeTurnProject(t, topoConsumed)
 	p.start("IF-0001")
 	key := "contract-changed:IF-0001"
-	p.want(2, "QUESTION", "turn", "declare", "--changes", key)
+	p.want(2, "QUESTION", "turn", "declare", "--session", "s1", "--changes", key)
 	p.want(0, "as ADR-0001", "approve", key)
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoConsumed))
 	p.verify("fail", 1, "run-0001 FAILED (exit 1)")
-	p.want(2, "run-0001 FAILED", "turn", "end")
+	p.want(2, "run-0001 FAILED", "turn", "end", "--session", "s1")
 	p.want(0, "CHG-0001 DRAFT", "turn", "show")
 	if strings.Contains(p.intended(), "/v2/") {
 		t.Fatalf("a DRAFT turn must not commit its approval to the intended topology:\n%s", p.intended())
@@ -258,7 +269,7 @@ func TestFailedVerificationLeavesTheTurnDraft(t *testing.T) {
 	}
 
 	p.verify("pass", 0, "run-0002 PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	if !strings.Contains(p.intended(), "/v2/") {
 		t.Fatalf("a resumed DRAFT turn that passes should sync:\n%s", p.intended())
 	}
@@ -268,8 +279,8 @@ func TestMissingVerificationLeavesTheTurnDraft(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
 	p.editCode("billing/charge.go")
-	p.want(1, "names no verify command", "turn", "verify")
-	p.want(2, "no verification ran in this turn", "turn", "end")
+	p.want(1, "names no verify command", "turn", "verify", "--session", "s1")
+	p.want(2, "no verification ran in this turn", "turn", "end", "--session", "s1")
 	p.want(0, "CHG-0001 DRAFT", "turn", "show")
 }
 
@@ -279,9 +290,9 @@ func TestEditAfterVerifyBlocksCompletion(t *testing.T) {
 	p.editCode("billing/charge.go")
 	p.verify("pass", 0, "PASSED")
 	write(t, filepath.Join(p.root, "billing", "charge.go"), "package billing\n// edited after verify\n")
-	p.want(2, "the working tree changed after run-0001 passed", "turn", "end")
+	p.want(2, "the working tree changed after run-0001 passed", "turn", "end", "--session", "s1")
 	p.verify("pass", 0, "run-0002 PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 }
 
 func TestVerifyCommandIsFixedOnceRegistered(t *testing.T) {
@@ -289,7 +300,7 @@ func TestVerifyCommandIsFixedOnceRegistered(t *testing.T) {
 	p.start("MOD-0001")
 	p.verify("pass", 0, "registered the verify command")
 	var out, errb bytes.Buffer
-	if code := run([]string{"turn", "verify", "--root", p.root, "--", "true"}, nil, &out, &errb); code != 1 || !strings.Contains(errb.String(), "the verify command is fixed") {
+	if code := run([]string{"turn", "verify", "--session", "s1", "--root", p.root, "--", "true"}, nil, &out, &errb); code != 1 || !strings.Contains(errb.String(), "the verify command is fixed") {
 		t.Fatalf("a second verify command should be refused, exit %d: %s", code, errb.String())
 	}
 	if !strings.Contains(p.read("project.yaml"), "fake-verify") {
@@ -300,10 +311,10 @@ func TestVerifyCommandIsFixedOnceRegistered(t *testing.T) {
 func TestReportShowsDeclaredVersusActual(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
-	p.want(0, "B PROCEED", "turn", "declare", "--units", "MOD-0002", "--changes", "contract-changed:IF-0001")
+	p.want(0, "B PROCEED", "turn", "declare", "--session", "s1", "--units", "MOD-0002", "--changes", "contract-changed:IF-0001")
 	p.editCode("billing/charge.go")
 	p.verify("pass", 0, "PASSED")
-	out := p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	for _, want := range []string{
 		"declared but not done: MOD-0002",
 		"declared but not done: contract-changed:IF-0001",
@@ -321,7 +332,7 @@ func TestReportShowsDeclaredVersusActual(t *testing.T) {
 func TestTurnCompletesOnlyThroughEnd(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("IF-0001")
-	p.want(0, "", "turn", "declare", "--changes", "contract-changed:IF-0001")
+	p.want(0, "", "turn", "declare", "--session", "s1", "--changes", "contract-changed:IF-0001")
 	p.editCode("api/http.go")
 	p.extract(apiV2(topoV1))
 	p.verify("pass", 0, "PASSED")
@@ -331,7 +342,7 @@ func TestTurnCompletesOnlyThroughEnd(t *testing.T) {
 		t.Fatalf("verification alone must not complete the turn")
 	}
 	p.want(1, "CHG-0001 is OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "next")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 	if !strings.Contains(p.intended(), "/v2/") {
 		t.Fatalf("turn end should complete it:\n%s", p.intended())
 	}
@@ -340,8 +351,8 @@ func TestTurnCompletesOnlyThroughEnd(t *testing.T) {
 func TestReadOnlyTurnClosesWithoutAGate(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
-	p.want(0, "", "turn", "declare", "--units", "MOD-0001")
-	p.want(0, "CHG-0001 CLOSED", "turn", "end")
+	p.want(0, "", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
+	p.want(0, "CHG-0001 CLOSED", "turn", "end", "--session", "s1")
 	if chg := p.read("changes/CHG-0001.md"); !strings.Contains(chg, "state: CLOSED") || !strings.Contains(chg, "nothing to gate") {
 		t.Fatalf("a read-only turn should be recorded as CLOSED:\n%s", chg)
 	}
@@ -352,26 +363,26 @@ func TestQuestionsPerTurnAreCapped(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	p.start("MOD-0001")
 	four := "new-relation:MOD-0001.depends_on.MOD-0002,new-relation:MOD-0002.depends_on.MOD-0001,new-relation:MOD-0002.consumes.IF-0001,unit-removed:IF-0001"
-	p.want(1, "at most 3", "turn", "declare", "--changes", four)
+	p.want(1, "at most 3", "turn", "declare", "--session", "s1", "--changes", four)
 	if strings.Contains(p.read("changes/CHG-0001.md"), "questions:") {
 		t.Fatalf("a refused declaration must record nothing")
 	}
-	p.want(2, "QUESTION", "turn", "declare", "--changes", "new-relation:MOD-0001.depends_on.MOD-0002,new-relation:MOD-0002.depends_on.MOD-0001")
-	p.want(1, "at most 3", "turn", "declare", "--changes", "new-relation:MOD-0002.consumes.IF-0001,unit-removed:IF-0001")
-	p.want(1, "does not change the intended topology", "turn", "declare", "--changes", "new-relation:MOD-0001.provides.IF-0001")
+	p.want(2, "QUESTION", "turn", "declare", "--session", "s1", "--changes", "new-relation:MOD-0001.depends_on.MOD-0002,new-relation:MOD-0002.depends_on.MOD-0001")
+	p.want(1, "at most 3", "turn", "declare", "--session", "s1", "--changes", "new-relation:MOD-0002.consumes.IF-0001,unit-removed:IF-0001")
+	p.want(1, "does not change the intended topology", "turn", "declare", "--session", "s1", "--changes", "new-relation:MOD-0001.provides.IF-0001")
 }
 
 func TestAnsweredQuestionIsNotAskedAgain(t *testing.T) {
 	p := activeTurnProject(t, topoV1)
 	edge := "new-relation:MOD-0001.depends_on.MOD-0002"
 	p.start("MOD-0001")
-	p.want(2, "QUESTION", "turn", "declare", "--changes", edge)
+	p.want(2, "QUESTION", "turn", "declare", "--session", "s1", "--changes", edge)
 	p.want(0, "as ADR-0001", "approve", edge)
 	p.editCode("billing/charge.go")
-	p.want(2, "CHG-0001 DRAFT", "turn", "end")
+	p.want(2, "CHG-0001 DRAFT", "turn", "end", "--session", "s1")
 
 	p.want(0, "CHG-0002 OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "again")
-	p.want(0, "C APPROVED "+edge+" by ADR-0001, answered before", "turn", "declare", "--changes", edge)
+	p.want(0, "C APPROVED "+edge+" by ADR-0001, answered before", "turn", "declare", "--session", "s1", "--changes", edge)
 }
 
 // Scenario 10: an empty directory, stated units, then two turns that both sync.
@@ -401,19 +412,19 @@ func TestGreenfieldTwoTurns(t *testing.T) {
 	p.start("MOD-0001")
 	write(t, filepath.Join(root, "billing", "charge.go"), "package billing\n\nfunc Charge() {}\n")
 	write(t, filepath.Join(root, "api", "http.go"), "package api\n\nfunc Serve() {}\n")
-	p.want(1, "names no extraction script", "turn", "diff")
+	p.want(1, "names no extraction script", "turn", "diff", "--session", "s1")
 	p.extract(stated)
 	p.setup(0, "registered the extraction script", "--", exe)
-	p.want(0, "", "turn", "diff")
+	p.want(0, "", "turn", "diff", "--session", "s1")
 	p.verify("pass", 0, "PASSED")
-	p.want(0, "CHG-0001 SYNCED", "turn", "end")
+	p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
 
 	p.start("IF-0001")
-	p.want(0, "B PROCEED", "turn", "declare", "--changes", "contract-changed:IF-0001")
+	p.want(0, "B PROCEED", "turn", "declare", "--session", "s1", "--changes", "contract-changed:IF-0001")
 	write(t, filepath.Join(root, "api", "http.go"), "package api\n\nfunc Serve() {} // v2\n")
 	p.extract(apiV2(stated))
 	p.verify("pass", 0, "PASSED")
-	p.want(0, "CHG-0002 SYNCED", "turn", "end")
+	p.want(0, "CHG-0002 SYNCED", "turn", "end", "--session", "s1")
 	if !strings.Contains(p.intended(), "GET /v2/charges") {
 		t.Fatalf("the second turn's change should be intended:\n%s", p.intended())
 	}
