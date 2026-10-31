@@ -178,6 +178,32 @@ func (s Store) MDHash() (string, error) {
 		}
 		files = append(files, fs...)
 	}
+	return s.hashFiles(files)
+}
+
+// InputsHash fingerprints every file under .abbd that a page can render, so
+// a generated file is STALE whenever any of them changed. The generated files
+// and session state are not inputs.
+func (s Store) InputsHash() (string, error) {
+	var files []string
+	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
+		switch {
+		case err != nil:
+			return err
+		case d.IsDir() && (p == s.path("generated") || p == s.sessions):
+			return filepath.SkipDir
+		case !d.IsDir():
+			files = append(files, p)
+		}
+		return nil
+	})
+	if err != nil && !os.IsNotExist(err) {
+		return "", err
+	}
+	return s.hashFiles(files)
+}
+
+func (s Store) hashFiles(files []string) (string, error) {
 	sort.Strings(files)
 	h := sha256.New()
 	for _, f := range files {

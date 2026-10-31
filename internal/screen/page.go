@@ -53,9 +53,9 @@ type Graph struct {
 }
 
 // Files renders every generated file. Each carries the watermark of the
-// Markdown it came from, so a reader can tell when it is STALE.
+// .abbd inputs it came from, so a reader can tell when it is STALE.
 func Files(m Model) (map[string][]byte, error) {
-	// The files describe the Markdown only, so they are current by
+	// The files describe the .abbd inputs only, so they are current by
 	// construction and say nothing about the working tree.
 	m.Generated, m.Actual, m.Tree = Fresh, "", ""
 	g := Graph{Watermark: m.Watermark, Phase: string(m.Phase), Units: m.Units, Nodes: m.Map.Nodes, Edges: m.Map.Edges, Drift: m.Drift}

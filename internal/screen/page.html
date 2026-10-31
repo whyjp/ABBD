@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="md_hash={{.M.Watermark.MDHash}} intended_revision={{.M.Watermark.Intended}}">
+<meta name="abbd-watermark" content="inputs_hash={{.M.Watermark.Inputs}} intended_revision={{.M.Watermark.Intended}}">
 <title>{{if eq .O.Only "queue"}}ABBD confirm queue{{else}}ABBD screen{{end}}</title>
 <style>
 :root {
@@ -102,13 +102,13 @@ svg marker path { fill: var(--muted); stroke: none; }
   <div class="pills">
     <span class="pill {{.M.Phase}}">{{.M.Phase}}</span>
     {{if .M.Actual}}<span class="pill {{.M.Actual}}" title="Was the actual topology extracted from the working tree as it is now?">actual topology {{.M.Actual}}</span>{{end}}
-    <span class="pill {{.M.Generated}}" title=".abbd/generated/ against the unit Markdown">generated files {{.M.Generated}}</span>
+    <span class="pill {{.M.Generated}}" title=".abbd/generated/ against the .abbd files it renders">generated files {{.M.Generated}}</span>
   </div>
 </header>
 {{if not $static}}<div id="flash" class="flash" role="status" hidden></div>
 <div class="banner" id="readonly">Read only. Open the link <code>abbd serve</code> printed in your terminal to approve, reject or confirm.</div>{{end}}
 {{if eq .M.Actual "STALE"}}<div class="banner"><strong>Actual topology is STALE.</strong> It was extracted from tree <code>{{.M.Synced.Fingerprint}}</code>; the working tree is now <code>{{.M.Tree}}</code>. Drift below may miss the newest edits until <code>abbd turn diff</code> or <code>abbd mode on</code> re-extracts.</div>{{end}}
-{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/ is STALE.</strong> Its watermark differs from the unit Markdown. This page reads the Markdown directly; the files catch up on the next abbd command that writes.</div>{{end}}
+{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/ is STALE.</strong> Its watermark differs from the .abbd files it renders. This page reads them directly; the files catch up on the next abbd command that writes.</div>{{end}}
 
 {{if ne .O.Only "queue"}}
 <section class="{{if or .M.Pending .M.Align}}first{{end}}" id="pending">
@@ -206,7 +206,7 @@ svg marker path { fill: var(--muted); stroke: none; }
 </section>
 {{end}}
 
-<p class="muted">Extraction <code>{{join .M.Extract " "}}</code>{{if .M.Verify}} · verify <code>{{join .M.Verify " "}}</code>{{end}} · watermark <code>{{.M.Watermark.MDHash}}</code> r{{.M.Watermark.Intended}}</p>
+<p class="muted">Extraction <code>{{join .M.Extract " "}}</code>{{if .M.Verify}} · verify <code>{{join .M.Verify " "}}</code>{{end}} · watermark <code>{{.M.Watermark.Inputs}}</code> r{{.M.Watermark.Intended}}</p>
 {{end}}
 </main>
 {{if not $static}}<script nonce="{{.O.Nonce}}">

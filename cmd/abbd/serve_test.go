@@ -270,7 +270,7 @@ func TestGeneratedFilesCarryTheWatermarkAndStatusSaysStale(t *testing.T) {
 	p.want(0, "generated: CURRENT", "status")
 	p.want(0, "actual topology: CURRENT", "status")
 	for _, f := range []string{"graph.json", "explorer.html", "confirm-queue.html"} {
-		if !strings.Contains(p.read("generated/"+f), "md_hash") {
+		if !strings.Contains(p.read("generated/"+f), "inputs_hash") {
 			t.Fatalf("%s should carry the watermark", f)
 		}
 	}
@@ -299,4 +299,20 @@ func TestServeListensOnLoopbackOnly(t *testing.T) {
 	p := aligned(t)
 	p.want(1, "loopback address only", "serve", "--addr", "0.0.0.0:0")
 	p.want(1, "loopback address only", "serve", "--addr", "localhost:0")
+}
+
+func TestWatermarkCoversEveryInputThePagesRender(t *testing.T) {
+	p, edge := blockedTurn(t)
+	p.want(0, "as ADR-0001", "approve", edge)
+	p.want(0, "generated: CURRENT", "status")
+	for _, rel := range []string{"project.yaml", "state.yaml", "intended.yaml", "decisions/ADR-0001.md", "changes/CHG-0001.md", "requirements/REQ-0001.md"} {
+		f := filepath.Join(p.root, ".abbd", filepath.FromSlash(rel))
+		before := p.read(rel)
+		write(t, f, before+"# edited by hand")
+		p.want(0, "generated: STALE", "status")
+		write(t, f, before)
+		p.want(0, "generated: CURRENT", "status")
+	}
+	write(t, filepath.Join(p.root, ".abbd", "generated", "notes.txt"), "x")
+	p.want(0, "generated: CURRENT", "status")
 }

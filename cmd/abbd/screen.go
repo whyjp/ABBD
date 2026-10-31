@@ -22,7 +22,7 @@ func (e env) screenInput() (screen.Input, error) {
 	return in, nil
 }
 
-// publish regenerates .abbd/generated/ from the unit Markdown. graph.json
+// publish regenerates .abbd/generated/ from the .abbd inputs. graph.json
 // carries the watermark, so it is written last.
 func (e env) publish() error {
 	in, err := screen.Load(e.st)

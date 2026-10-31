@@ -29,14 +29,14 @@ type Input struct {
 	// Synced is the watermark of the last extraction; Tree is the working tree now.
 	Synced store.State
 	Tree   string
-	MDHash string
+	Inputs string
 	// Generated is the watermark the files in .abbd/generated/ carry, nil when missing.
 	Generated *Watermark
 }
 
-// Watermark ties a derived file to the Markdown and intended topology it came from.
+// Watermark ties a derived file to the .abbd inputs and intended topology it came from.
 type Watermark struct {
-	MDHash   string `json:"md_hash"`
+	Inputs   string `json:"inputs_hash"`
 	Intended int    `json:"intended_revision"`
 }
 
@@ -72,7 +72,7 @@ func Load(st store.Store) (Input, error) {
 	if in.Synced, err = st.LoadState(); err != nil {
 		return in, err
 	}
-	if in.MDHash, err = st.MDHash(); err != nil {
+	if in.Inputs, err = st.InputsHash(); err != nil {
 		return in, err
 	}
 	b, err := st.ReadGenerated(GraphFile)
@@ -90,7 +90,7 @@ func Load(st store.Store) (Input, error) {
 
 // Current is the watermark the generated files must carry right now.
 func (in Input) Current() Watermark {
-	w := Watermark{MDHash: in.MDHash}
+	w := Watermark{Inputs: in.Inputs}
 	if in.Intended != nil {
 		w.Intended = in.Intended.Revision
 	}
@@ -105,7 +105,7 @@ const (
 	Unknown Freshness = "UNKNOWN"
 )
 
-// GeneratedFreshness compares the generated files with the Markdown they derive from.
+// GeneratedFreshness compares the generated files with the inputs they derive from.
 func (in Input) GeneratedFreshness() Freshness {
 	switch {
 	case in.Generated == nil:
