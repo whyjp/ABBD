@@ -230,6 +230,8 @@ type Model struct {
 	Registered int
 	// Realign offers the short realignment: drift a human acknowledges, outside a live turn.
 	Realign bool
+	// Waiting is true while a grade C change waits, which realignment must not pass.
+	Waiting bool
 	// Idle is true when no unfinished turn waits, so promotion decisions are open.
 	Idle      bool
 	Map       Map
@@ -292,6 +294,7 @@ func Build(in Input) Model {
 		if it.Effect != topology.Promote {
 			m.Drift = append(m.Drift, Row{Key: it.Key(), Effect: string(it.Effect), Detail: detail(it)})
 			m.Realign = m.Realign || (it.Effect == topology.Realign && m.Idle)
+			m.Waiting = m.Waiting || it.Effect == topology.Blocked
 		}
 	}
 	if in.Intended != nil {

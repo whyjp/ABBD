@@ -150,8 +150,11 @@ svg marker path { fill: var(--muted); stroke: none; }
 <section id="drift">
   <h2>의도 대 실제</h2>
   {{if .M.Drift}}
-  <table>{{range .M.Drift}}<tr><td><span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
-  {{if and .M.Realign (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="realign"><button disabled>REALIGN 행 인정</button><span class="muted">짧은 재정렬입니다. 위에 C 변경이 남아 있으면 거부됩니다.</span></form>{{end}}
+  {{$tick := and .M.Realign (not .M.Waiting) (not $static)}}
+  {{if $tick}}<form method="post" action="/act"><input type="hidden" name="do" value="realign">{{end}}
+  <table>{{range .M.Drift}}<tr><td>{{if and $tick (eq .Effect "REALIGN")}}<input type="checkbox" name="key" value="{{.Key}}" checked aria-label="이 행 인정"> {{end}}<span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
+  {{if $tick}}<div class="inline"><button disabled>고른 REALIGN 행 인정</button> <span class="muted">짧은 재정렬입니다. 고른 행만 의도한 토폴로지에 들어가고, 나머지는 어긋남으로 남습니다.</span></div></form>
+  {{else if and .M.Realign .M.Waiting}}<p class="muted">REALIGN 행은 위의 C 변경을 먼저 결정한 뒤에 인정할 수 있습니다.</p>{{end}}
   {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}코드가 의도한 토폴로지와 맞습니다.{{else}}아직 의도한 토폴로지가 없습니다.{{end}}</p>{{end}}
   {{if .M.Promote}}<h3 id="promote">승격 후보</h3>
   <p class="muted">선 아래에서 자란 구조입니다. 채택하면 의도한 토폴로지의 설계 단위가 되고, 거부하면 관계가 바뀔 때까지 다시 올라오지 않습니다.{{if not $idle}} 끝나지 않은 턴이 있어 그 턴이 끝난 뒤에 결정할 수 있습니다.{{end}}</p>

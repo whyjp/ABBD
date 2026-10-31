@@ -95,7 +95,12 @@ var actions = map[string]func(f url.Values) ([]string, error){
 		}
 		return []string{"align", "--confirm=" + strings.Join(f["id"], ",")}, nil
 	},
-	"realign": func(url.Values) ([]string, error) { return []string{"align"}, nil },
+	"realign": func(f url.Values) ([]string, error) {
+		if len(f["key"]) == 0 {
+			return nil, fmt.Errorf("인정할 REALIGN 행을 하나 이상 고르세요")
+		}
+		return []string{"align", "--confirm=" + strings.Join(f["key"], ",")}, nil
+	},
 	"couple": func(f url.Values) ([]string, error) {
 		f.Set("key", f.Get("from")+"."+f.Get("kind")+"."+f.Get("to"))
 		return keyed(f, "couple")

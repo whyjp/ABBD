@@ -1,0 +1,11 @@
+id: run-0003
+turn: CHG-0003
+command:
+    - go
+    - test
+    - -count=1
+    - ./...
+tree: 25001ecafe031d56913a4e36230997e683ab7d1c
+exit_code: 0
+result: PASSED
+output: verification/runs/run-0003.log

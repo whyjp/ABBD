@@ -3,7 +3,9 @@
 package topology
 
 import (
+	"errors"
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -369,19 +371,32 @@ func Approve(in Intended, it Item) (Intended, error) {
 // turn that syncs calls it, for the changes the turn was allowed to make.
 func Accept(in Intended, it Item) Intended { return apply(in, it) }
 
-// RealignTo acknowledges every REALIGN item. It refuses while any grade C item
-// is pending, because blocked changes come first.
-func RealignTo(in Intended, units []model.Unit) (Intended, error) {
+// ErrPending means a grade C change waits for a human, so realignment must wait too.
+var ErrPending = errors.New("pending approval")
+
+// RealignTo acknowledges the REALIGN items a human chose by key, or every one
+// when keys is empty. It refuses while any grade C item is pending, because
+// blocked changes come first.
+func RealignTo(in Intended, units []model.Unit, keys []string) (Intended, error) {
 	items := Compare(in, units)
+	realign := map[string]Item{}
 	for _, it := range items {
-		if it.Effect == Blocked {
-			return in, fmt.Errorf("%s is pending approval; approve it before realigning", it.Key())
+		switch it.Effect {
+		case Blocked:
+			return in, fmt.Errorf("%s is %w; approve it before realigning", it.Key(), ErrPending)
+		case Realign:
+			realign[it.Key()] = it
 		}
 	}
-	for _, it := range items {
-		if it.Effect == Realign {
-			in = apply(in, it)
+	if len(keys) == 0 {
+		keys = slices.Sorted(maps.Keys(realign))
+	}
+	for _, k := range keys {
+		it, ok := realign[k]
+		if !ok {
+			return in, fmt.Errorf("%s is not a REALIGN row of this project", k)
 		}
+		in = apply(in, it)
 	}
 	return in, nil
 }

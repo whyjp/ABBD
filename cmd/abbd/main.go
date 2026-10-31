@@ -28,7 +28,9 @@ abbd setup --greenfield FILE [--root DIR]
                                      a human states the design units of an empty project
 abbd align (--all | --confirm IDS | --exclude IDS) [--root DIR]
                                      first alignment: confirm design units only
-abbd align [--root DIR]              short realignment of a drifted project
+abbd align [--confirm KEYS] [--root DIR]
+                                     short realignment of a drifted project: every REALIGN
+                                     row, or only the rows KEYS names
 abbd confirm --list [--root DIR]     the confirm queue, design units first
 abbd confirm ITEM [--value TEXT] [--root DIR]
 abbd confirm ITEM --reject [--value TEXT] [--root DIR]
@@ -402,7 +404,6 @@ func (e env) align() error {
 	if err != nil {
 		return err
 	}
-	selecting := e.all || e.confirm != "" || e.exclude != ""
 	var next topology.Intended
 	switch {
 	case v.phase == topology.Uninitialized:
@@ -420,20 +421,27 @@ func (e env) align() error {
 			return errNeedHuman
 		}
 		next = topology.Select(v.units, chosen)
-	case selecting:
-		return fmt.Errorf("the project is %s; --all, --confirm and --exclude choose the first design units only", v.phase)
+	case e.all || e.exclude != "":
+		return fmt.Errorf("the project is %s; --all and --exclude choose the first design units only, and --confirm KEYS picks REALIGN rows", v.phase)
 	default:
-		next, err = topology.RealignTo(*v.intended, v.units)
-		if err != nil {
+		next, err = topology.RealignTo(*v.intended, v.units, splitList(e.confirm))
+		if errors.Is(err, topology.ErrPending) {
 			e.printItems(blocked(v.items))
 			fmt.Fprintln(e.stderr, "abbd:", err)
 			return errNeedHuman
+		}
+		if err != nil {
+			return err
 		}
 	}
 	if err := e.st.SaveIntended(next); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "aligned: %d design unit(s)\n", len(next.Units))
+	fmt.Fprintf(e.stdout, "aligned: %d design unit(s)", len(next.Units))
+	if left := len(realignRows(topology.Compare(next, v.units))); left > 0 {
+		fmt.Fprintf(e.stdout, "; %d REALIGN row(s) left", left)
+	}
+	fmt.Fprintln(e.stdout)
 	return nil
 }
 
@@ -643,6 +651,10 @@ func ids(list []model.ID) []string {
 		out[i] = string(id)
 	}
 	return out
+}
+
+func realignRows(items []topology.Item) []topology.Item {
+	return slices.DeleteFunc(slices.Clone(items), func(it topology.Item) bool { return it.Effect != topology.Realign })
 }
 
 func blocked(items []topology.Item) []topology.Item {

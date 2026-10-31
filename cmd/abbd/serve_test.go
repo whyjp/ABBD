@@ -261,7 +261,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
 	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="removed"`) {
 		t.Fatalf("a drifted project should offer the short realignment and draw the removed unit")
 	}
-	s.decide(t, "do", "realign")
+	s.decide(t, "do", "realign", "key", "unit-removed:MOD-0002")
 	p.want(0, "phase: aligned", "status")
 }
 
