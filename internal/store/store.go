@@ -369,3 +369,21 @@ func (s Store) AppendJournal(id, line string) error {
 func (s Store) SaveBootstrapReport(b []byte) error {
 	return writeFile(s.path("bootstrap-report.md"), b)
 }
+
+// Generated files derive from the unit Markdown and are rewritten freely.
+func (s Store) SaveGenerated(name string, b []byte) error {
+	return writeFile(s.path("generated", name), b)
+}
+
+// ReadGenerated returns nil when the file was never generated.
+func (s Store) ReadGenerated(name string) ([]byte, error) {
+	b, err := os.ReadFile(s.path("generated", name))
+	if os.IsNotExist(err) {
+		return nil, nil
+	}
+	return b, err
+}
+
+// ServeFile holds the link, with its token, of the screen abbd serve runs. It
+// sits with the session state, where an agent in an active session may not reach.
+func (s Store) ServeFile() string { return filepath.Join(s.sessions, "serve.url") }

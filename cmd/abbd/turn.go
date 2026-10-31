@@ -566,7 +566,8 @@ func (e env) turnEnd() error {
 }
 
 // sync commits this turn's allowed changes into the intended topology, then
-// rereads it: the turn completes only if the project is aligned again.
+// rereads it: the turn completes only if the project is aligned again and the
+// generated files are CURRENT.
 func (e env) sync(t *turn.Turn, in topology.Intended, vs []turn.Verdict) error {
 	for _, vd := range vs {
 		if vd.Grade != turn.B {
@@ -594,7 +595,7 @@ func (e env) sync(t *turn.Turn, in topology.Intended, vs []turn.Verdict) error {
 	if after.phase != topology.Aligned {
 		return fmt.Errorf("%s did not leave the project aligned (%s)", t.ID, after.phase)
 	}
-	return nil
+	return e.published()
 }
 
 // touched lists the units whose anchored files changed. known is false when

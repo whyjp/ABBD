@@ -40,9 +40,14 @@ abbd reject ITEM --reason TEXT [--root DIR]
                                      next work reads the reason
 abbd couple FROM.KIND.TO [--root DIR]
                                      register a coupling the extraction script cannot see
+abbd serve [--addr 127.0.0.1:PORT] [--root DIR]
+                                     the human screen: approve, reject, confirm and align without
+                                     opening Markdown; loopback only, decisions need its token
 abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
 abbd mode on|off --session ID [--root DIR]
 abbd status [--root DIR] [--session ID]
+                                     phase, queue size, and whether .abbd/generated/ and the
+                                     actual topology are CURRENT or STALE
 abbd hook EVENT [--root DIR]         hook entry point; reads the hook JSON on stdin
 abbd turn start --session ID --seeds IDS --request TEXT|- [--root DIR]
                                      open a turn: record the request, compute the impact
@@ -86,7 +91,7 @@ type opts struct {
 	root, session                 string
 	supplement, adopt, greenfield string
 	confirm, exclude, value       string
-	reason                        string
+	reason, addr                  string
 	reject                        bool
 	seeds, request, units         string
 	changes, add                  string
@@ -132,6 +137,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.reason, "reason", "", "why a human refuses the change")
 	},
 	"reject": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.reject, "reject", false, "the guess is wrong") },
+	"addr": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.addr, "addr", "127.0.0.1:0", "loopback address to listen on; port 0 picks a free one")
+	},
 }
 
 // command is one CLI verb. pos is the allowed number of positional arguments.
@@ -151,6 +159,7 @@ var commands = map[string]command{
 	"approve": {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},
 	"reject":  {flags: []string{"root", "reason"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.rejectChange(pos[0]) }},
 	"couple":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.couple(pos[0]) }},
+	"serve":   {flags: []string{"root", "addr"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.serve() }},
 	"ingest":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},
 	"mode":    {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
 	"status":  {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
@@ -234,6 +243,11 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return exitOK
 	}
 	err = commands[inv.name].run(e, inv.sub, inv.pos)
+	if !readOnly[inv.name] {
+		if perr := e.publish(); perr != nil {
+			fmt.Fprintln(stderr, "abbd: warning: regenerating .abbd/generated/:", perr)
+		}
+	}
 	switch {
 	case errors.Is(err, errNeedHuman):
 		return exitNeedHuman
@@ -839,6 +853,9 @@ func (e env) status() error {
 	}
 	fmt.Fprintln(e.stdout, "phase:", v.phase)
 	fmt.Fprintln(e.stdout, "confirm queue:", len(confirm.Queue(v.units, v.designIDs())))
+	if err := e.printFreshness(); err != nil {
+		return err
+	}
 	if e.session != "" {
 		fmt.Fprintln(e.stdout, "mode:", map[bool]string{true: "on", false: "off"}[e.st.ModeOn(e.session)])
 	}

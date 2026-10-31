@@ -155,3 +155,35 @@ func (s Store) LoadADRs() ([]ADR, error) {
 	}
 	return out, nil
 }
+
+// LoadTurns returns every turn, oldest first.
+func (s Store) LoadTurns() ([]turn.Turn, error) {
+	files, err := filepath.Glob(s.path("changes", "CHG-*.md"))
+	if err != nil {
+		return nil, err
+	}
+	sort.Strings(files)
+	var out []turn.Turn
+	for _, f := range files {
+		var t turn.Turn
+		if err := readFrontmatter(f, &t); err != nil {
+			return nil, err
+		}
+		out = append(out, t)
+	}
+	return out, nil
+}
+
+// Request returns the text of a requirement as the user stated it.
+func (s Store) Request(id string) (string, error) {
+	b, err := os.ReadFile(s.path("requirements", id+".md"))
+	if err != nil {
+		return "", err
+	}
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+	_, body, ok := bytes.Cut(bytes.TrimPrefix(b, []byte("---\n")), []byte("\n---\n"))
+	if !ok {
+		return "", fmt.Errorf("%s: unterminated frontmatter", id)
+	}
+	return strings.TrimSpace(string(body)), nil
+}
