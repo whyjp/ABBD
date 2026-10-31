@@ -94,7 +94,7 @@ func actualEdges(present map[model.ID]model.Unit) map[Edge]bool {
 	edges := map[Edge]bool{}
 	for id, u := range present {
 		for _, r := range u.Relations {
-			if _, ok := present[r.To]; ok {
+			if _, ok := present[r.To]; ok && r.Counts() {
 				edges[Edge{id, r.To, r.Kind}] = true
 			}
 		}
@@ -197,16 +197,34 @@ func DerivePhase(units []model.Unit, in *Intended) Phase {
 	return Aligned
 }
 
-// FromActual is the intended topology a human adopts by aligning: every present
-// unit, its contract signature, and the relations among them.
-func FromActual(units []model.Unit) Intended {
+// Present lists the units the latest extraction reported, sorted by ID.
+func Present(units []model.Unit) []model.Unit {
+	var out []model.Unit
+	for _, u := range units {
+		if !u.Absent {
+			out = append(out, u)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	return out
+}
+
+// Select is the intended topology a human adopts by confirming design units:
+// the chosen units, their contract signatures, and every relation that touches
+// one of them. A relation to an unchosen unit is acknowledged too, so its later
+// removal is noticed and the alignment itself is not drift.
+func Select(units []model.Unit, chosen map[model.ID]bool) Intended {
 	actual := presentUnits(units)
 	var in Intended
 	for id, u := range actual {
-		in.Units = append(in.Units, IntendedUnit{id, u.Kind, signature(u)})
+		if chosen[id] {
+			in.Units = append(in.Units, IntendedUnit{id, u.Kind, signature(u)})
+		}
 	}
 	for e := range actualEdges(actual) {
-		in.Relations = append(in.Relations, e)
+		if chosen[e.From] || chosen[e.To] {
+			in.Relations = append(in.Relations, e)
+		}
 	}
 	return in.normalized()
 }

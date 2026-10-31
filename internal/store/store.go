@@ -307,3 +307,7 @@ func (s Store) AppendJournal(id, line string) error {
 	_, err = fmt.Fprintln(f, line)
 	return err
 }
+
+func (s Store) SaveBootstrapReport(b []byte) error {
+	return writeFile(s.path("bootstrap-report.md"), b)
+}

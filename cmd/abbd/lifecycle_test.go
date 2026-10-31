@@ -17,6 +17,13 @@ func TestMain(m *testing.M) {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		// {{RUN}} plays a script whose output changes on every run.
+		if bytes.Contains(b, []byte("{{RUN}}")) {
+			n, _ := os.ReadFile(p + ".n")
+			n = append(n, 'x')
+			os.WriteFile(p+".n", n, 0o644)
+			b = bytes.ReplaceAll(b, []byte("{{RUN}}"), n)
+		}
 		os.Stdout.Write(b)
 		os.Exit(0)
 	}
@@ -99,7 +106,7 @@ func aligned(t *testing.T) *project {
 	p := newProject(t)
 	p.extract(topoV1)
 	p.want(0, "MOD-0001 new", "ingest", p.extraction)
-	p.want(0, "aligned", "align")
+	p.want(0, "aligned", "align", "--all")
 	return p
 }
 

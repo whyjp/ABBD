@@ -43,6 +43,7 @@ type Result struct {
 type Relation struct {
 	From, To string
 	Kind     model.RelationKind
+	Origin   model.Origin
 }
 
 // Unit is an extracted design unit before it has an ID.
@@ -81,7 +82,7 @@ func Parse(r io.Reader) (Result, error) {
 		if rr.From == rr.To {
 			return Result{}, fmt.Errorf("relation %d: %q relates to itself", i, rr.From)
 		}
-		res.Relations = append(res.Relations, Relation{rr.From, rr.To, rr.Kind})
+		res.Relations = append(res.Relations, Relation{rr.From, rr.To, rr.Kind, model.Extracted})
 	}
 	return res, nil
 }
@@ -154,4 +155,28 @@ func inferred(v string) *model.Fact {
 		return nil
 	}
 	return &model.Fact{Value: v, Origin: model.Inferred, Confirmation: model.Unconfirmed}
+}
+
+// StatedBy marks every fact in r as coming from origin instead of from code,
+// for a topology a human stated or a document ABBD adopted.
+func (r Result) StatedBy(origin model.Origin) Result {
+	restate := func(f *model.Fact) *model.Fact {
+		if f == nil {
+			return nil
+		}
+		return &model.Fact{Value: f.Value, Origin: origin}
+	}
+	out := Result{Units: make([]Unit, len(r.Units))}
+	for i, u := range r.Units {
+		u.Name = *restate(&u.Name)
+		u.Signature = restate(u.Signature)
+		u.Purpose = restate(u.Purpose)
+		u.Responsibility = restate(u.Responsibility)
+		out.Units[i] = u
+	}
+	for _, rel := range r.Relations {
+		rel.Origin = origin
+		out.Relations = append(out.Relations, rel)
+	}
+	return out
 }

@@ -10,8 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
@@ -20,9 +22,17 @@ import (
 	"github.com/whyjp/abbd/internal/topology"
 )
 
-const usage = `abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
-abbd align [--root DIR]              confirm design units (first alignment or short realignment)
+const usage = `abbd setup [--supplement FILE] [--adopt FILE] [--root DIR] [-- EXTRACT-ARGV...]
+                                     bootstrap from the project extraction script; never asks
+abbd setup --greenfield FILE [--root DIR]
+                                     a human states the design units of an empty project
+abbd align (--all | --confirm IDS | --exclude IDS) [--root DIR]
+                                     first alignment: confirm design units only
+abbd align [--root DIR]              short realignment of a drifted project
+abbd confirm --list [--root DIR]     the confirm queue, design units first
+abbd confirm ITEM [--value TEXT] [--root DIR]
 abbd approve [--root DIR] ITEM       approve one BLOCKED (grade C) change
+abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
 abbd mode on|off --session ID [--root DIR]
 abbd status [--root DIR] [--session ID]
 abbd hook EVENT [--root DIR]         hook entry point; reads the hook JSON on stdin`
@@ -42,52 +52,128 @@ func main() {
 }
 
 type env struct {
-	root           string
-	session        string
+	opts
 	stdin          io.Reader
 	stdout, stderr io.Writer
 	st             store.Store
 }
 
-func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+type opts struct {
+	root, session                 string
+	supplement, adopt, greenfield string
+	confirm, exclude, value       string
+	all, list                     bool
+	argv                          []string
+}
+
+var flagDefs = map[string]func(*flag.FlagSet, *opts){
+	"root":    func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.root, "root", ".", "project root") },
+	"session": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.session, "session", "", "Claude Code session id") },
+	"supplement": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.supplement, "supplement", "", "semantic supplement from the pstack swarm")
+	},
+	"adopt": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.adopt, "adopt", "", "existing design document, reconstructed as an extraction result")
+	},
+	"greenfield": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.greenfield, "greenfield", "", "design units a human stated")
+	},
+	"all": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.all, "all", false, "confirm every candidate") },
+	"confirm": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.confirm, "confirm", "", "comma-separated IDs to confirm")
+	},
+	"exclude": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.exclude, "exclude", "", "comma-separated IDs to leave below the line")
+	},
+	"list":  func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.list, "list", false, "list the confirm queue") },
+	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the value a human states") },
+}
+
+// command is one CLI verb. pos is the allowed number of positional arguments.
+type command struct {
+	flags    []string
+	subs     []string
+	pos      []int
+	dashArgv bool
+	session  bool
+	run      func(e env, sub string, pos []string) error
+}
+
+var commands = map[string]command{
+	"setup":   {flags: []string{"root", "supplement", "adopt", "greenfield"}, pos: []int{0}, dashArgv: true, run: env.setup},
+	"align":   {flags: []string{"root", "all", "confirm", "exclude"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.align() }},
+	"confirm": {flags: []string{"root", "list", "value"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
+	"approve": {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},
+	"ingest":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},
+	"mode":    {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
+	"status":  {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
+	"hook":    {flags: []string{"root"}, subs: []string{"*"}, pos: []int{0}},
+}
+
+type invocation struct {
+	name, sub string
+	pos       []string
+	o         opts
+}
+
+// parse checks a command line against the command table without running it.
+func parse(args []string, stderr io.Writer) (invocation, error) {
 	if len(args) == 0 {
-		fmt.Fprintln(stderr, usage)
-		return exitUsage
+		return invocation{}, fmt.Errorf("no command")
 	}
-	cmd, args := args[0], args[1:]
-	var sub string
-	if (cmd == "mode" || cmd == "hook") && len(args) > 0 {
-		sub, args = args[0], args[1:]
+	inv := invocation{name: args[0]}
+	c, ok := commands[inv.name]
+	if !ok {
+		return inv, fmt.Errorf("unknown command %q", inv.name)
 	}
-	fs := flag.NewFlagSet(cmd, flag.ContinueOnError)
+	args = args[1:]
+	if c.subs != nil {
+		if len(args) == 0 || (c.subs[0] != "*" && !slices.Contains(c.subs, args[0])) {
+			return inv, fmt.Errorf("%s needs one of %v", inv.name, c.subs)
+		}
+		inv.sub, args = args[0], args[1:]
+	}
+	if i := slices.Index(args, "--"); i >= 0 {
+		if !c.dashArgv {
+			return inv, fmt.Errorf("%s takes no -- arguments", inv.name)
+		}
+		args, inv.o.argv = args[:i], args[i+1:]
+		if len(inv.o.argv) == 0 {
+			return inv, fmt.Errorf("nothing after --")
+		}
+	}
+	fs := flag.NewFlagSet(inv.name, flag.ContinueOnError)
 	fs.SetOutput(stderr)
-	e := env{stdin: stdin, stdout: stdout, stderr: stderr}
-	fs.StringVar(&e.root, "root", ".", "project root")
-	fs.StringVar(&e.session, "session", "", "Claude Code session id")
+	for _, f := range c.flags {
+		flagDefs[f](fs, &inv.o)
+	}
 	pos, err := parseInterspersed(fs, args)
 	if err != nil {
-		return exitUsage
+		return inv, err
 	}
-	e.st = store.Open(e.root)
+	if !slices.Contains(c.pos, len(pos)) {
+		return inv, fmt.Errorf("%s takes %v positional arguments, got %d", inv.name, c.pos, len(pos))
+	}
+	if c.session && inv.o.session == "" {
+		return inv, fmt.Errorf("%s needs --session", inv.name)
+	}
+	inv.pos = pos
+	return inv, nil
+}
 
-	switch {
-	case cmd == "ingest" && len(pos) == 1:
-		err = e.ingest(pos[0])
-	case cmd == "align" && len(pos) == 0:
-		err = e.align()
-	case cmd == "approve" && len(pos) == 1:
-		err = e.approve(pos[0])
-	case cmd == "mode" && (sub == "on" || sub == "off") && e.session != "":
-		err = e.mode(sub == "on")
-	case cmd == "status" && len(pos) == 0:
-		err = e.status()
-	case cmd == "hook" && sub != "":
-		e.hook(sub)
-		return exitOK
-	default:
+func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	inv, err := parse(args, stderr)
+	if err != nil {
+		fmt.Fprintln(stderr, "abbd:", err)
 		fmt.Fprintln(stderr, usage)
 		return exitUsage
 	}
+	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
+	if inv.name == "hook" {
+		e.hook(inv.sub)
+		return exitOK
+	}
+	err = commands[inv.name].run(e, inv.sub, inv.pos)
 	switch {
 	case errors.Is(err, errNeedHuman):
 		return exitNeedHuman
@@ -222,12 +308,26 @@ func (e env) align() error {
 	if err != nil {
 		return err
 	}
+	selecting := e.all || e.confirm != "" || e.exclude != ""
 	var next topology.Intended
-	switch v.phase {
-	case topology.Uninitialized:
+	switch {
+	case v.phase == topology.Uninitialized:
 		return fmt.Errorf("nothing to align: run setup first")
-	case topology.Bootstrapped:
-		next = topology.FromActual(v.units)
+	case v.phase == topology.Bootstrapped:
+		chosen, err := choose(topology.Present(v.units), e.opts)
+		if err != nil {
+			return err
+		}
+		if chosen == nil {
+			fmt.Fprintln(e.stdout, "design unit candidates; confirm with --all, --confirm IDS or --exclude IDS:")
+			for _, u := range topology.Present(v.units) {
+				fmt.Fprintf(e.stdout, "  %s %s\n", u.ID, u.Name.Value)
+			}
+			return errNeedHuman
+		}
+		next = topology.Select(v.units, chosen)
+	case selecting:
+		return fmt.Errorf("the project is %s; --all, --confirm and --exclude choose the first design units only", v.phase)
 	default:
 		next, err = topology.RealignTo(*v.intended, v.units)
 		if err != nil {
@@ -239,8 +339,90 @@ func (e env) align() error {
 	if err := e.st.SaveIntended(next); err != nil {
 		return err
 	}
-	fmt.Fprintln(e.stdout, "aligned")
+	fmt.Fprintf(e.stdout, "aligned: %d design unit(s)\n", len(next.Units))
 	return nil
+}
+
+// choose returns nil when the human has not said which units to confirm.
+func choose(present []model.Unit, o opts) (map[model.ID]bool, error) {
+	set := 0
+	for _, on := range []bool{o.all, o.confirm != "", o.exclude != ""} {
+		if on {
+			set++
+		}
+	}
+	if set == 0 {
+		return nil, nil
+	}
+	if set > 1 {
+		return nil, fmt.Errorf("give one of --all, --confirm and --exclude")
+	}
+	known := map[model.ID]bool{}
+	for _, u := range present {
+		known[u.ID] = true
+	}
+	ids := func(list string) (map[model.ID]bool, error) {
+		out := map[model.ID]bool{}
+		for _, s := range strings.Split(list, ",") {
+			id := model.ID(strings.TrimSpace(s))
+			if !known[id] {
+				return nil, fmt.Errorf("%q is not a design unit candidate", id)
+			}
+			out[id] = true
+		}
+		return out, nil
+	}
+	switch {
+	case o.confirm != "":
+		return ids(o.confirm)
+	case o.exclude != "":
+		drop, err := ids(o.exclude)
+		if err != nil {
+			return nil, err
+		}
+		for id := range drop {
+			delete(known, id)
+		}
+	}
+	if len(known) == 0 {
+		return nil, fmt.Errorf("confirm at least one design unit")
+	}
+	return known, nil
+}
+
+func (e env) confirmItem(pos []string) error {
+	v, err := e.load()
+	if err != nil {
+		return err
+	}
+	if e.list == (len(pos) == 1) {
+		return fmt.Errorf("give either --list or one ITEM")
+	}
+	if e.list {
+		for _, it := range confirm.Queue(v.units, v.designIDs()) {
+			fmt.Fprintln(e.stdout, it)
+		}
+		return nil
+	}
+	u, err := confirm.Apply(v.units, pos[0], e.value)
+	if err != nil {
+		return err
+	}
+	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+		return err
+	}
+	fmt.Fprintln(e.stdout, "confirmed", pos[0])
+	return nil
+}
+
+func (v view) designIDs() map[model.ID]bool {
+	ids := map[model.ID]bool{}
+	if v.intended != nil {
+		for _, u := range v.intended.Units {
+			ids[u.ID] = true
+		}
+	}
+	return ids
 }
 
 func blocked(items []topology.Item) []topology.Item {
@@ -343,18 +525,26 @@ func (e env) reextract() error {
 	if len(p.Extract) == 0 {
 		return fmt.Errorf("project.yaml names no extraction script; run setup first")
 	}
-	var out, errb bytes.Buffer
-	cmd := exec.Command(p.Extract[0], p.Extract[1:]...)
-	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
+	out, err := e.runScript(p.Extract)
+	if err != nil {
+		return err
 	}
-	ex, err := extract.Parse(&out)
+	ex, err := extract.Parse(bytes.NewReader(out))
 	if err != nil {
 		return err
 	}
 	_, err = e.syncActual(ex)
 	return err
+}
+
+func (e env) runScript(argv []string) ([]byte, error) {
+	var out, errb bytes.Buffer
+	cmd := exec.Command(argv[0], argv[1:]...)
+	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("extraction script failed: %w\n%s", err, errb.String())
+	}
+	return out.Bytes(), nil
 }
 
 func (e env) status() error {
@@ -363,6 +553,7 @@ func (e env) status() error {
 		return err
 	}
 	fmt.Fprintln(e.stdout, "phase:", v.phase)
+	fmt.Fprintln(e.stdout, "confirm queue:", len(confirm.Queue(v.units, v.designIDs())))
 	if e.session != "" {
 		fmt.Fprintln(e.stdout, "mode:", map[bool]string{true: "on", false: "off"}[e.st.ModeOn(e.session)])
 	}

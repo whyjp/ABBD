@@ -168,8 +168,10 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	return res
 }
 
-// Extraction owns the relations of every unit it reports; units it did not
-// report keep theirs until a human resolves them.
+// Extraction owns the EXTRACTED relations of every unit it reports; units it
+// did not report keep theirs until a human resolves them. A relation from any
+// other origin survives, because the script cannot see it. When the same edge
+// arrives twice, the extracted one wins, then the stored one.
 func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation) {
 	byKey := map[string]model.ID{}
 	for i, in := range input {
@@ -181,27 +183,50 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 	for _, id := range ids {
 		reported[id] = true
 	}
-	from := map[model.ID][]model.Relation{}
+	extracted := map[model.ID][]model.Relation{}
+	stated := map[model.ID][]model.Relation{}
 	for _, r := range rels {
+		origin := r.Origin
+		if origin == "" {
+			origin = model.Extracted
+		}
+		rel := model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: origin}
 		f := byKey[r.From]
-		from[f] = append(from[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: model.Extracted})
+		if origin == model.Extracted {
+			extracted[f] = append(extracted[f], rel)
+		} else {
+			stated[f] = append(stated[f], rel)
+		}
 	}
 	for i := range units {
-		if reported[units[i].ID] {
-			units[i].Relations = dedupRelations(from[units[i].ID])
+		id := units[i].ID
+		if !reported[id] {
+			continue
 		}
+		next := extracted[id]
+		for _, r := range units[i].Relations {
+			if r.Origin != model.Extracted {
+				next = append(next, r)
+			}
+		}
+		units[i].Relations = dedupRelations(append(next, stated[id]...))
 	}
 }
 
 func dedupRelations(rs []model.Relation) []model.Relation {
-	rs = model.SortRelations(rs)
+	type edge struct {
+		to   model.ID
+		kind model.RelationKind
+	}
+	seen := map[edge]bool{}
 	var out []model.Relation
-	for i, r := range rs {
-		if i == 0 || r != rs[i-1] {
+	for _, r := range rs {
+		if e := (edge{r.To, r.Kind}); !seen[e] {
+			seen[e] = true
 			out = append(out, r)
 		}
 	}
-	return out
+	return model.SortRelations(out)
 }
 
 // Extraction owns anchors, signatures and EXTRACTED names. Human-given values survive.

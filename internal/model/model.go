@@ -185,6 +185,9 @@ func (u Unit) Validate() error {
 		if !origins[r.Origin] {
 			return fmt.Errorf("%s relation: unknown origin %q", u.ID, r.Origin)
 		}
+		if !confirmations[r.Confirmation] {
+			return fmt.Errorf("%s relation: unknown confirmation %q", u.ID, r.Confirmation)
+		}
 	}
 	return nil
 }
@@ -211,9 +214,16 @@ func (k RelationKind) Validate() error {
 
 // Relation is an edge from the unit that holds it.
 type Relation struct {
-	To     ID           `yaml:"to"`
-	Kind   RelationKind `yaml:"kind"`
-	Origin Origin       `yaml:"origin"`
+	To           ID           `yaml:"to"`
+	Kind         RelationKind `yaml:"kind"`
+	Origin       Origin       `yaml:"origin"`
+	Confirmation Confirmation `yaml:"confirmation,omitempty"`
+}
+
+// Counts reports whether the edge is part of the actual topology. A coupling
+// the script cannot see enters it only once a human states or confirms it.
+func (r Relation) Counts() bool {
+	return r.Origin == Extracted || r.Origin == UserStated || r.Confirmation == Confirmed
 }
 
 func SortRelations(rs []Relation) []Relation {
