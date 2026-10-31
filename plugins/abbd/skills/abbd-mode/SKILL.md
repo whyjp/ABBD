@@ -7,7 +7,7 @@ argument-hint: "[request]"
 
 # ABBD mode
 
-`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. ABBD is pinned to that version. If `<pstack>/skills/poteto-mode/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
+`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. ABBD is pinned to that version. Open files under `<pstack>` with the Read tool, because the shell may not reach outside the project. If `<pstack>/skills/poteto-mode/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
 
 This skill is a sibling of poteto-mode. Read `<pstack>/docs/harness/claude-code.md`, then `<pstack>/skills/poteto-mode/SKILL.md` in full, and follow it: its non-negotiables, principles, autonomy, subagent defaults and reply rules all apply. Run the playbook it matches from `<pstack>/skills/poteto-mode/playbooks/` unchanged. Never copy a playbook. This skill only adds the turn around it and one check between its steps.
 
@@ -85,7 +85,7 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
 
 ## End
 
-1. Verify with the project's verify skill (`.claude/skills/verify-*/SKILL.md`). If the project has none, `<pstack>/skills/create-verification-skill/SKILL.md` makes one. Record the run against the current tree. The first run registers the command, which must not edit files:
+1. Verify with the project's verify skill (`.claude/skills/verify-*/SKILL.md`). If the project has none, `<pstack>/skills/create-verification-skill/SKILL.md` makes one. Record the run against the current tree. The first run registers the command. A run that writes any file git does not ignore fails, so gitignore build and cache output first, such as `__pycache__/` for Python:
 
    ```
    abbd turn verify --session ${CLAUDE_SESSION_ID} -- <VERIFY-ARGV>
