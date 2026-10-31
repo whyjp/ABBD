@@ -273,7 +273,7 @@ func TestPluginHooksRouteToAbbdHook(t *testing.T) {
 	if len(cfg.Hooks) != len(hooks) {
 		t.Errorf("hooks.json registers %d events, abbd handles %d", len(cfg.Hooks), len(hooks))
 	}
-	for _, name := range []string{"Bash", "PowerShell", "Write", "Edit", "NotebookEdit"} {
+	for _, name := range []string{"Bash", "PowerShell", "Write", "Edit", "NotebookEdit", "WebFetch", "mcp__.*"} {
 		if !strings.Contains("|"+cfg.Hooks["PreToolUse"][0].Matcher+"|", "|"+name+"|") {
 			t.Errorf("PreToolUse must match %s, matcher is %q", name, cfg.Hooks["PreToolUse"][0].Matcher)
 		}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -351,6 +352,7 @@ var gitWriters = map[string]bool{"checkout": true, "restore": true, "rm": true, 
 // humans are the abbd commands only a human runs while the mode is on.
 var humans = map[string]bool{
 	"align": true, "approve": true, "reject": true, "confirm": true, "couple": true, "setup": true, "mode off": true,
+	"serve": true,
 }
 
 // abbdCommand returns the abbd subcommand a segment runs, or "" when it runs
@@ -390,12 +392,19 @@ type guard struct {
 	setupOpen bool
 	// scripts are the registered script's files, absolute and lower case.
 	scripts []string
+	// screen spells the running screen's address the ways a client would.
+	screen []string
 }
 
 func (e env) guard(cwd string) guard {
 	g := guard{root: absPath(e.root), cwd: absPath(e.root)}
 	if cwd != "" {
 		g.cwd = absPath(cwd)
+	}
+	if _, port, err := net.SplitHostPort(e.st.ScreenAddr()); err == nil {
+		for _, h := range []string{"127.0.0.1", "localhost", "[::1]", "0.0.0.0"} {
+			g.screen = append(g.screen, h+":"+port)
+		}
 	}
 	p, err := e.st.LoadProject()
 	if err != nil {
@@ -407,6 +416,14 @@ func (e env) guard(cwd string) guard {
 	}
 	return g
 }
+
+// reachesScreen says whether text names the running screen, whatever sends it.
+func (g guard) reachesScreen(text string) bool {
+	l := strings.ToLower(text)
+	return slices.ContainsFunc(g.screen, func(a string) bool { return strings.Contains(l, a) })
+}
+
+const screenReason = "the abbd serve screen takes a human's decisions; an agent does not send requests to it. Give the human the decision to make there."
 
 func absPath(p string) string {
 	if a, err := filepath.Abs(p); err == nil {
@@ -570,6 +587,9 @@ func (g guard) check(cmd, cwd string, depth int) string {
 		}
 		name := commandName(s.words[0])
 		args := s.words[1:]
+		if !readers[name] && slices.ContainsFunc(s.words, g.reachesScreen) {
+			return screenReason
+		}
 		switch {
 		case cds[name]:
 			if len(args) > 0 && !strings.ContainsAny(args[len(args)-1], "$~") {

@@ -384,6 +384,15 @@ func (s Store) ReadGenerated(name string) ([]byte, error) {
 	return b, err
 }
 
-// ServeFile holds the link, with its token, of the screen abbd serve runs. It
-// sits with the session state, where an agent in an active session may not reach.
-func (s Store) ServeFile() string { return filepath.Join(s.sessions, "serve.url") }
+// ServeFile holds the address of the screen abbd serve runs, never its
+// token, so the guard can deny an agent's requests to it.
+func (s Store) ServeFile() string { return filepath.Join(s.sessions, "serve.addr") }
+
+// ScreenAddr returns the address of the running screen, or "".
+func (s Store) ScreenAddr() string {
+	b, err := os.ReadFile(s.ServeFile())
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(b))
+}

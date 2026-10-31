@@ -33,7 +33,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|PowerShell|Write|Edit|NotebookEdit",
+        "matcher": "Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*",
         "hooks": [
           {
             "type": "command",

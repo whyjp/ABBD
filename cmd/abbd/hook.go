@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,6 +23,8 @@ type hookInput struct {
 		NotebookPath string `json:"notebook_path"`
 		Command      string `json:"command"`
 	} `json:"tool_input"`
+	// raw is tool_input as sent, for tools whose fields abbd does not know.
+	raw string
 }
 
 // hookOutput is the JSON a hook prints on stdout. Stop blocks through the
@@ -57,8 +60,15 @@ var hooks = map[string]func(e env, in hookInput) *hookOutput{
 // the hooks off, or an agent could lift the guard by drifting the project.
 func (e env) hook(event string) {
 	var in hookInput
-	if err := json.NewDecoder(e.stdin).Decode(&in); err != nil || in.SessionID == "" {
+	b, err := io.ReadAll(e.stdin)
+	if err != nil || json.Unmarshal(b, &in) != nil || in.SessionID == "" {
 		return
+	}
+	var raw struct {
+		ToolInput json.RawMessage `json:"tool_input"`
+	}
+	if json.Unmarshal(b, &raw) == nil {
+		in.raw = string(raw.ToolInput)
 	}
 	e.root = e.hookRoot(in.Cwd)
 	e.st = store.Open(e.root)
@@ -166,6 +176,11 @@ func (e env) hookPreToolUse(in hookInput) *hookOutput {
 			file = in.ToolInput.NotebookPath
 		}
 		reason = g.toolPath(file)
+	default:
+		// A browser or fetch tool could drive the screen as the human would.
+		if g.reachesScreen(in.raw) {
+			reason = screenReason
+		}
 	}
 	if reason == "" {
 		return nil

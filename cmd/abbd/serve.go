@@ -22,8 +22,10 @@ import (
 
 // serve runs the human screen. Every decision the page sends is a CLI command
 // run in this process, so the screen holds no gate logic of its own. A POST
-// needs the token this launch printed, which an agent in a session whose mode
-// is on cannot read (see the guard).
+// needs the token this launch printed. The token lives only in this process
+// and the terminal that started it; no file holds it, so an agent cannot read
+// it from disk. The address goes to a file so the guard can deny the agent's
+// requests to the screen.
 func (e env) serve() error {
 	host, _, err := net.SplitHostPort(e.addr)
 	if err != nil {
@@ -46,7 +48,7 @@ func (e env) serve() error {
 	if err := os.MkdirAll(filepath.Dir(file), 0o755); err != nil {
 		return err
 	}
-	if err := os.WriteFile(file, []byte(link+"\n"), 0o600); err != nil {
+	if err := os.WriteFile(file, []byte(s.addr+"\n"), 0o644); err != nil {
 		return err
 	}
 	defer os.Remove(file)

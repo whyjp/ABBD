@@ -157,3 +157,29 @@ func TestRegisteredScriptOutsideAbbdIsProtected(t *testing.T) {
 		tool("Edit", map[string]any{"file_path": filepath.Join(p.root, "tools", "other.py"), "old_string": "a", "new_string": "b"}),
 	)
 }
+
+// The screen takes a human's decisions, so an agent in an active session may
+// not start it or send it requests by any client the hooks see.
+func TestPreToolUseKeepsTheAgentOffTheScreen(t *testing.T) {
+	p := activeTurnProject(t, topoV1).project
+	navigate := func(u string) map[string]any {
+		return tool("mcp__plugin_playwright_playwright__browser_navigate", map[string]any{"url": u})
+	}
+	p.wantDenied(t, true, p.bash("abbd serve"), p.bash("abbd serve --addr 127.0.0.1:7340 &"))
+	p.wantDenied(t, false, p.bash("curl -s http://127.0.0.1:7340/"), navigate("http://127.0.0.1:7340/"))
+
+	write(t, filepath.Join(store.Open(p.root).SessionsDir(), "serve.addr"), "127.0.0.1:7340\n")
+	p.wantDenied(t, true,
+		p.bash("curl -X POST http://127.0.0.1:7340/act -d do=approve"),
+		p.bash("wget -qO- http://[::1]:7340/"),
+		p.bash(`python -c "import urllib.request as u; u.urlopen('http://localhost:7340/act')"`),
+		pwsh("Invoke-WebRequest -Uri http://127.0.0.1:7340/act -Method Post"),
+		navigate("http://127.0.0.1:7340/?t=x"),
+		tool("WebFetch", map[string]any{"url": "http://localhost:7340/", "prompt": "read it"}),
+	)
+	p.wantDenied(t, false,
+		p.bash("curl -s http://127.0.0.1:8080/health"),
+		p.bash("echo the screen is at http://127.0.0.1:7340"),
+		navigate("http://127.0.0.1:8080/"),
+	)
+}
