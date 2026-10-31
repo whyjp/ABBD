@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
 )
 
@@ -139,6 +141,16 @@ func (e env) setupGreenfield() error {
 	if v.phase != topology.Uninitialized {
 		return fmt.Errorf("greenfield setup needs a project with no design units; this one is %s", v.phase)
 	}
+	// Stated units become USER_STATED and intended at once. On a directory
+	// that already holds code, that would let an agent pass its own reading
+	// of the code off as a human's statement.
+	f, err := firstFile(e.root)
+	if err != nil {
+		return err
+	}
+	if f != "" {
+		return fmt.Errorf("greenfield setup needs an empty directory, but %s is already there; use abbd setup -- EXTRACT-ARGV", f)
+	}
 	doc, err := e.readExtraction(e.greenfield)
 	if err != nil {
 		return err
@@ -167,6 +179,32 @@ func (e env) setupGreenfield() error {
 	}
 	fmt.Fprintf(e.stdout, "aligned: %d design unit(s) stated by a human\n", len(present))
 	return nil
+}
+
+// firstFile returns a file under root outside .abbd and .git, or "".
+func firstFile(root string) (string, error) {
+	found := ""
+	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(root, p)
+		if err != nil {
+			return err
+		}
+		switch {
+		case rel == store.Dir || rel == ".git":
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		case d.IsDir():
+			return nil
+		}
+		found = filepath.ToSlash(rel)
+		return fs.SkipAll
+	})
+	return found, err
 }
 
 // readExtraction resolves a relative path against the root, where the

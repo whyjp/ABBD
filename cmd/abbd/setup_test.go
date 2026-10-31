@@ -351,3 +351,11 @@ func TestSetupResolvesFilesAgainstTheRoot(t *testing.T) {
 	write(t, filepath.Join(p.root, ".abbd", "extractor", "supplement.json"), supplement)
 	p.setup(0, "4 item(s) in the confirm queue", "--supplement", ".abbd/extractor/supplement.json", "--", exe)
 }
+
+func TestGreenfieldRefusesADirectoryThatHoldsCode(t *testing.T) {
+	p, _ := bare(t)
+	p.setup(1, "empty directory", "--greenfield", p.file(t, "stated.json", codeOnly))
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd")); err == nil {
+		t.Fatalf("a refused greenfield setup must write nothing")
+	}
+}
