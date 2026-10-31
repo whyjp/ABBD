@@ -386,6 +386,88 @@ func RealignTo(in Intended, units []model.Unit) (Intended, error) {
 	return in, nil
 }
 
+// Candidate is a below-the-line unit proposed to a human as a design unit.
+type Candidate struct {
+	Unit model.ID
+	Kind model.Kind
+	// Design lists the design units it has a relation with.
+	Design []model.ID
+	// Question names the decision. It lists the unit's relations, so a
+	// rejection holds only until they change.
+	Question string
+}
+
+// Candidates lists the below-the-line units worth a human's decision: every
+// module and contract, and any other unit that two or more design units
+// relate to. A unit whose current question a human rejected is left out.
+func Candidates(in Intended, units []model.Unit, rejected func(question string) bool) []Candidate {
+	actual := presentUnits(units)
+	edges := actualEdges(actual)
+	intended := in.byID()
+	var out []Candidate
+	for _, u := range Present(units) {
+		if _, ok := intended[u.ID]; ok {
+			continue
+		}
+		c := Candidate{Unit: u.ID, Kind: u.Kind, Question: promotionQuestion(u.ID, edges)}
+		for e := range edges {
+			for _, id := range []model.ID{e.From, e.To} {
+				if _, ok := intended[id]; ok && (e.From == u.ID || e.To == u.ID) && !slices.Contains(c.Design, id) {
+					c.Design = append(c.Design, id)
+				}
+			}
+		}
+		slices.Sort(c.Design)
+		if (u.Kind == model.Module || u.Kind.IsContract() || len(c.Design) >= 2) && !rejected(c.Question) {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
+// PromotionQuestion names the decision on a below-the-line unit as it stands now.
+func PromotionQuestion(units []model.Unit, id model.ID) string {
+	return promotionQuestion(id, actualEdges(presentUnits(units)))
+}
+
+func promotionQuestion(id model.ID, edges map[Edge]bool) string {
+	var touching []string
+	for e := range edges {
+		if e.From == id || e.To == id {
+			touching = append(touching, e.String())
+		}
+	}
+	slices.Sort(touching)
+	return fmt.Sprintf("promote %s with relations [%s]", id, strings.Join(touching, " "))
+}
+
+// Adopt makes a below-the-line unit a design unit, with the relations it has
+// now. A grade C change touching it stays pending, so adoption never approves one.
+func Adopt(in Intended, units []model.Unit, id model.ID) (Intended, error) {
+	actual := presentUnits(units)
+	u, ok := actual[id]
+	switch _, design := in.byID()[id]; {
+	case design:
+		return in, fmt.Errorf("%s is already a design unit", id)
+	case !ok:
+		return in, fmt.Errorf("%s is not in the actual topology", id)
+	}
+	waiting := map[Edge]bool{}
+	for _, it := range Compare(in, units) {
+		if it.Effect == Blocked && it.Change == NewRelation {
+			waiting[it.Edge] = true
+		}
+	}
+	in.Units = append(slices.Clone(in.Units), IntendedUnit{ID: id, Kind: u.Kind, Signature: signature(u)})
+	in.Relations = slices.Clone(in.Relations)
+	for e := range actualEdges(actual) {
+		if (e.From == id || e.To == id) && !waiting[e] {
+			in.Relations = append(in.Relations, e)
+		}
+	}
+	return in.normalized(), nil
+}
+
 func apply(in Intended, it Item) Intended {
 	switch it.Change {
 	case NewRelation:

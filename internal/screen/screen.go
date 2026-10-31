@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"sort"
 
 	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/model"
@@ -165,6 +166,43 @@ type Candidate struct {
 	Anchors                        []string
 }
 
+// Group is a run of rows under one heading. The page folds each group, so a
+// large project's first screen stays short.
+type Group[T any] struct {
+	Title  string
+	Design bool
+	Rows   []T
+}
+
+// group gathers rows by title and orders the groups by order(title).
+func group[T any](rows []T, title func(T) string, order func(string) string) []Group[T] {
+	var out []Group[T]
+	at := map[string]int{}
+	for _, r := range rows {
+		t := title(r)
+		i, ok := at[t]
+		if !ok {
+			i, at[t] = len(out), len(out)
+			out = append(out, Group[T]{Title: t})
+		}
+		out[i].Rows = append(out[i].Rows, r)
+	}
+	sort.SliceStable(out, func(i, j int) bool { return order(out[i].Title) < order(out[j].Title) })
+	return out
+}
+
+// byKind orders kinds as a reader meets them: modules, then contracts, then features.
+func byKind(k string) string {
+	return fmt.Sprintf("%d", slices.Index([]model.Kind{model.Module, model.Interface, model.Event, model.Data, model.Config, model.Feature}, model.Kind(k)))
+}
+
+// Promotion is a candidate a human may adopt as a design unit or keep below the line.
+type Promotion struct {
+	Key, ID, Kind, Name string
+	// Design lists the design units it relates to.
+	Design []string
+}
+
 type Fact struct {
 	Value, Badge, Rejected string
 }
@@ -182,7 +220,7 @@ type Model struct {
 	Turn       *TurnView
 	History    []TurnView
 	Drift      []Row
-	Promote    []Row
+	Promote    []Group[Promotion]
 	Defaults   []store.ADR
 	Queue      []QueueRow
 	Align      []Candidate
@@ -191,7 +229,9 @@ type Model struct {
 	Generated  Freshness
 	Registered int
 	// Realign offers the short realignment: drift a human acknowledges, outside a live turn.
-	Realign   bool
+	Realign bool
+	// Idle is true when no unfinished turn waits, so promotion decisions are open.
+	Idle      bool
 	Map       Map
 	Extract   []string
 	Verify    []string
@@ -247,15 +287,23 @@ func Build(in Input) Model {
 			}
 		}
 	}
+	m.Idle = m.Turn == nil || !m.Turn.Live
 	for _, it := range items {
-		r := Row{Key: it.Key(), Effect: string(it.Effect), Detail: detail(it)}
-		if it.Effect == topology.Promote {
-			r.Detail = names[it.Unit]
-			m.Promote = append(m.Promote, r)
-		} else {
-			m.Drift = append(m.Drift, r)
-			m.Realign = m.Realign || (it.Effect == topology.Realign && (m.Turn == nil || !m.Turn.Live))
+		if it.Effect != topology.Promote {
+			m.Drift = append(m.Drift, Row{Key: it.Key(), Effect: string(it.Effect), Detail: detail(it)})
+			m.Realign = m.Realign || (it.Effect == topology.Realign && m.Idle)
 		}
+	}
+	if in.Intended != nil {
+		var rows []Promotion
+		for _, c := range topology.Candidates(*in.Intended, in.Units, func(q string) bool { return store.Rejection(in.ADRs, q) != nil }) {
+			p := Promotion{Key: topology.Item{Change: topology.UnitAdded, Unit: c.Unit}.Key(), ID: string(c.Unit), Kind: string(c.Kind), Name: names[c.Unit]}
+			for _, id := range c.Design {
+				p.Design = append(p.Design, string(id))
+			}
+			rows = append(rows, p)
+		}
+		m.Promote = group(rows, func(p Promotion) string { return p.Kind }, byKind)
 	}
 	for _, a := range in.ADRs {
 		if a.Confirmation == model.Unconfirmed {

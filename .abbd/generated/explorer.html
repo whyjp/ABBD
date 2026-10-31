@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=3dfa41d85d230e5fc5cb1a7f0555a24ab2b51620068f3addb59e699bf36934c2 intended_revision=1">
+<meta name="abbd-watermark" content="inputs_hash=34c1c7245ce12f40403ca67a1875fb704efc3c7f2610e72a0c14f4297b4233e1 intended_revision=1">
 <title>ABBD 화면</title>
 <style>
 :root {
@@ -119,21 +119,21 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 
 <section id="turn">
-  <h2>이번 턴 CHG-0001 <span class="pill SYNCED">SYNCED</span></h2>
-  <p><span class="muted">요청 REQ-0001:</span> Stage 6a item 3a: add .claude/ and .playwright-mcp/ to this repository&#39;s .gitignore so harness files do not make the actual topology STALE or block a turn after verification.</p>
+  <h2>이번 턴 CHG-0002 <span class="pill SYNCED">SYNCED</span></h2>
+  <p><span class="muted">요청 REQ-0002:</span> Stage 6a item 1 (doc ch7 승격 절차, ch13 threshold): detect promotion candidates (a new module or contract, or a below-the-line unit that two or more design units relate to), show them on the screen with adopt and reject actions (adopt makes it a design unit in intended, reject keeps it below the line and stops re-proposing it until its relations change), give the human CLI equivalents, and keep adopt and reject on the guard&#39;s deny list.</p>
   
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
-  <p><span class="muted">선언 없음</span></p>
+  <p>단위 <span class="key">MOD-0012 MOD-0001 MOD-0010 MOD-0003 </span></p>
+  
+  <h3>선언 대 실제</h3><ul class="plain"><li>선언했지만 하지 않음: <span class="key">MOD-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0005</span></li><li>했지만 선언하지 않음: <span class="key">IF-0002</span></li><li>했지만 선언하지 않음: <span class="key">IF-0005</span></li></ul>
   
   
   
   
   
-  
-  
-  <h3>영향 범위</h3><p class="key">MOD-0007 MOD-0001 MOD-0011 IF-0001 IF-0002 MOD-0002 MOD-0003 MOD-0010 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 DATA-0003 </p>
-  <p>검증 run-0001 <span class="pill PASSED">PASSED</span></p>
+  <h3>영향 범위</h3><p class="key">MOD-0012 MOD-0001 MOD-0010 MOD-0003 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 DATA-0003 IF-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </p>
+  <p>검증 run-0002 <span class="pill PASSED">PASSED</span></p>
 
 </section>
 
@@ -611,8 +611,27 @@ svg marker path { fill: var(--muted); stroke: none; }
 </section>
 
 
+<section id="history">
+  <details><summary>이전 턴</summary>
+  <h3>CHG-0001 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 3a: add .claude/ and .playwright-mcp/ to this repository&#39;s .gitignore so harness files do not make the actual topology STALE or block a turn after verification.</p>
+  <p class="muted">토폴로지 변경 없음.</p>
+  <h3>선언</h3>
+  <p><span class="muted">선언 없음</span></p>
+  
+  
+  
+  
+  
+  
+  
+  <h3>영향 범위</h3><p class="key">MOD-0007 MOD-0001 MOD-0011 IF-0001 IF-0002 MOD-0002 MOD-0003 MOD-0010 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 DATA-0003 </p>
+  <p>검증 run-0001 <span class="pill PASSED">PASSED</span></p>
 
-<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>3dfa41d85d230e5fc5cb1a7f0555a24ab2b51620068f3addb59e699bf36934c2</code> r1</p>
+  </details>
+</section>
+
+
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>34c1c7245ce12f40403ca67a1875fb704efc3c7f2610e72a0c14f4297b4233e1</code> r1</p>
 
 </main>
 

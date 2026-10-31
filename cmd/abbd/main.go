@@ -36,9 +36,14 @@ abbd confirm ITEM --reject [--value TEXT] [--root DIR]
 abbd confirm IF-0001.external_consumers --value true|false [--root DIR]
                                      a human says a contract has consumers the code does not show
 abbd approve [--root DIR] ITEM       approve one grade C change; inside a turn, for that turn only
+abbd approve unit-added:ID [--root DIR]
+                                     adopt a promotion candidate as a design unit
 abbd reject ITEM --reason TEXT [--root DIR]
                                      refuse one grade C change; the turn stays BLOCKED and its
                                      next work reads the reason
+abbd reject unit-added:ID --reason TEXT [--root DIR]
+                                     keep a promotion candidate below the line until its
+                                     relations change
 abbd couple FROM.KIND.TO [--root DIR]
                                      register a coupling the extraction script cannot see
 abbd serve [--addr 127.0.0.1:PORT] [--root DIR]
@@ -608,6 +613,38 @@ func (v view) designIDs() map[model.ID]bool {
 	return ids
 }
 
+// printTopology prints the drift, then the promotion candidates no human has rejected.
+func (e env) printTopology(v view) error {
+	for _, it := range v.items {
+		if it.Effect != topology.Promote {
+			fmt.Fprintln(e.stdout, it)
+		}
+	}
+	if v.intended == nil {
+		return nil
+	}
+	adrs, err := e.st.LoadADRs()
+	if err != nil {
+		return err
+	}
+	for _, c := range topology.Candidates(*v.intended, v.units, func(q string) bool { return store.Rejection(adrs, q) != nil }) {
+		line := topology.Item{Change: topology.UnitAdded, Effect: topology.Promote, Unit: c.Unit}.String()
+		if len(c.Design) > 0 {
+			line += fmt.Sprintf(" (relates to %s)", strings.Join(ids(c.Design), ", "))
+		}
+		fmt.Fprintln(e.stdout, line)
+	}
+	return nil
+}
+
+func ids(list []model.ID) []string {
+	out := make([]string, len(list))
+	for i, id := range list {
+		out[i] = string(id)
+	}
+	return out
+}
+
 func blocked(items []topology.Item) []topology.Item {
 	var out []topology.Item
 	for _, it := range items {
@@ -619,6 +656,9 @@ func blocked(items []topology.Item) []topology.Item {
 }
 
 func (e env) approve(key string) error {
+	if id, ok := promotionKey(key); ok {
+		return e.promote(id, true)
+	}
 	t, err := e.st.LatestTurn()
 	if err != nil {
 		return err
@@ -676,6 +716,9 @@ func (e env) rejectChange(key string) error {
 	if strings.TrimSpace(e.reason) == "" {
 		return fmt.Errorf("a rejection needs --reason: the next work reads it")
 	}
+	if id, ok := promotionKey(key); ok {
+		return e.promote(id, false)
+	}
 	t, err := e.st.LatestTurn()
 	if err != nil {
 		return err
@@ -699,6 +742,58 @@ func (e env) rejectChange(key string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "rejected %s as %s; the intended topology is unchanged\n", key, adr)
+	return nil
+}
+
+func promotionKey(key string) (model.ID, bool) {
+	it, err := topology.ParseKey(key)
+	return it.Unit, err == nil && it.Change == topology.UnitAdded
+}
+
+// promote is a human's answer to a promotion candidate. Adopting makes it a
+// design unit; rejecting keeps it below the line, and the ADR's question lists
+// its relations, so it is proposed again once they change. The answer waits
+// for an unfinished turn, because that turn's gate judges against the
+// intended topology it started from.
+func (e env) promote(id model.ID, adopt bool) error {
+	key := topology.Item{Change: topology.UnitAdded, Unit: id}.Key()
+	if t, err := e.st.LatestTurn(); err != nil {
+		return err
+	} else if t != nil && t.State.Resumable() {
+		return fmt.Errorf("%s is %s; adopt or reject %s once it ends", t.ID, t.State, key)
+	}
+	v, err := e.load()
+	if err != nil {
+		return err
+	}
+	if v.intended == nil {
+		return fmt.Errorf("nothing is aligned yet")
+	}
+	next, err := topology.Adopt(*v.intended, v.units, id)
+	if err != nil {
+		return err
+	}
+	adrID, err := e.st.NextID("ADR")
+	if err != nil {
+		return err
+	}
+	adr := store.ADR{ID: string(adrID), Grade: "C", Subject: key, Origin: model.UserStated, Question: topology.PromotionQuestion(v.units, id)}
+	if !adopt {
+		adr.Decision, adr.Reason = store.Rejected, e.reason
+		if err := e.st.WriteADR(adr, "Kept "+string(id)+" below the line: "+e.reason); err != nil {
+			return err
+		}
+		fmt.Fprintf(e.stdout, "rejected %s as %s; %s stays below the line until its relations change\n", key, adr.ID, id)
+		return nil
+	}
+	adr.Decision = "approved"
+	if err := e.st.WriteADR(adr, "Adopted "+string(id)+" as a design unit."); err != nil {
+		return err
+	}
+	if err := e.st.SaveIntended(next); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "adopted %s as %s; %s is a design unit\n", key, adr.ID, id)
 	return nil
 }
 
@@ -745,14 +840,18 @@ func (e env) mode(on bool) error {
 		return errNeedHuman
 	case topology.Drifted:
 		fmt.Fprintln(e.stdout, "drifted: changes made outside the mode touch design units")
-		e.printItems(v.items)
+		if err := e.printTopology(v); err != nil {
+			return err
+		}
 		return e.printRejections(v)
 	}
 	if err := e.st.SetMode(e.session, true); err != nil {
 		return err
 	}
 	fmt.Fprintln(e.stdout, "active")
-	e.printItems(v.items)
+	if err := e.printTopology(v); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -874,6 +973,8 @@ func (e env) status() error {
 	if e.session != "" {
 		fmt.Fprintln(e.stdout, "mode:", map[bool]string{true: "on", false: "off"}[e.st.ModeOn(e.session)])
 	}
-	e.printItems(v.items)
+	if err := e.printTopology(v); err != nil {
+		return err
+	}
 	return nil
 }
