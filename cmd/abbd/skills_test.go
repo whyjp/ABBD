@@ -156,3 +156,15 @@ func TestAbbdModeCoversThePinnedPstack(t *testing.T) {
 		}
 	}
 }
+
+// pstack code playbooks end in Opening a PR, so abbd-mode must hold that step
+// until the turn has ended, or a DRAFT or BLOCKED turn ships without its record.
+func TestAbbdModeEndsTheTurnBeforeAnyPR(t *testing.T) {
+	skill := readPlugin(t, "skills", "abbd-mode", "SKILL.md")
+	_, end, _ := strings.Cut(skill, "## End")
+	turnEnd := strings.Index(end, "abbd turn end")
+	pr := strings.Index(end, "**Opening a PR**")
+	if turnEnd < 0 || pr < turnEnd || !strings.Contains(end[pr:], "SYNCED") || !strings.Contains(end[pr:], ".abbd/changes/") {
+		t.Fatalf("abbd-mode's End must run abbd turn end, then Opening a PR only on SYNCED or CLOSED with the CHG record committed")
+	}
+}

@@ -1,6 +1,7 @@
 ---
 name: abbd-agent
 description: Delegate subagent for code-writing and helper tasks spawned during an /abbd-mode run. The counterpart of pstack's poteto-agent. Reads the open ABBD turn and the intended topology before any work, then follows poteto-agent. Use for delegates, not as the runner for /abbd-mode itself.
+is_background: true
 ---
 
 # ABBD subagent
@@ -17,6 +18,7 @@ Then work, with these limits:
 
 - After each edit that could change a relation or a signature, run `abbd turn diff --session <ID>` with the session ID from your brief. On exit 2, stop and report the `C BLOCKED` lines to your parent.
 - Never start, declare, verify or end the turn. The parent owns it.
-- Never run the abbd commands approve, align, confirm, setup or mode off, and never write under `.abbd/`. A hook denies them. A human approves.
+- Never run the abbd commands approve, align, confirm, setup or mode off. Never write or delete anything under `.abbd/`, the session state in `<git-dir>/abbd/sessions/`, or the registered extraction script. A hook denies them. A human approves.
+- Never open a PR. The parent opens it after the turn ends SYNCED or CLOSED.
 
 In your report, name every relation or signature you changed, by item key.

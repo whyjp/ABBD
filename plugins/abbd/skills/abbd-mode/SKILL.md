@@ -9,13 +9,13 @@ argument-hint: "[request]"
 
 `<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. ABBD is pinned to that version. Open files under `<pstack>` with the Read tool, because the shell may not reach outside the project. If `<pstack>/skills/poteto-mode/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
 
-This skill is a sibling of poteto-mode. Read `<pstack>/docs/harness/claude-code.md`, then `<pstack>/skills/poteto-mode/SKILL.md` in full, and follow it: its non-negotiables, principles, autonomy, subagent defaults and reply rules all apply. Run the playbook it matches from `<pstack>/skills/poteto-mode/playbooks/` unchanged. Never copy a playbook. This skill only adds the turn around it and one check between its steps.
+This skill is a sibling of poteto-mode. Read `<pstack>/docs/harness/claude-code.md`, then `<pstack>/skills/poteto-mode/SKILL.md` in full, and follow it: its non-negotiables, principles, autonomy, subagent defaults and reply rules all apply. Run the playbook it matches from `<pstack>/skills/poteto-mode/playbooks/` unchanged, with one exception: its **Opening a PR** step waits until End below has run. Never copy a playbook. This skill only adds the turn around it, one check between its steps, and that hold on the PR.
 
 The session ID is `${CLAUDE_SESSION_ID}`. Pass it as `--session` to every command below. The CLI owns every gate and state change. When a command exits 2, a human decides next. Never work around it.
 
 ## Commands that are not yours
 
-While the mode is on, a hook denies the abbd commands approve, align, confirm, setup and mode off, and writes to `.abbd/intended.yaml`, `.abbd/project.yaml`, `.abbd/decisions/` and `.abbd/changes/`. These belong to the human. When one is needed, stop and give the human the exact command. Read `.abbd/` files with the Read tool. A shell command that names those files is denied too.
+While the mode is on, a hook denies the abbd commands approve, align, confirm, setup and mode off. It also denies any write or delete under `.abbd/`, of the session state in `<git-dir>/abbd/sessions/`, and of the registered extraction script's files, by a tool or by a shell command such as `rm`, `cp`, a redirect, or `git checkout`, `restore`, `clean`, `stash` or `reset --hard` reaching `.abbd/`. These belong to the human or the CLI. When one is needed, stop and give the human the exact command. Read `.abbd/` files with the Read tool. The hook is a text check, not a boundary, so never look for a way around it.
 
 The one setup you run is a greenfield project's first script registration, when `abbd turn diff --session ${CLAUDE_SESSION_ID}` says `project.yaml names no extraction script`. Write the script as the abbd-setup skill's code-only step 3 says, then register it with `abbd setup -- <interpreter> .abbd/extractor/extract.<ext>`.
 
@@ -29,7 +29,7 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
 | Investigation, Runtime forensics, Trace forensics | Start and end only. The end closes it as CLOSED when the tree did not change |
 | Multi-phase or multi-PR plan | One full turn per phase |
 | Session pickup, Pause safely | No new turn. `abbd mode on --session ${CLAUDE_SESSION_ID}` resumes the open turn. Leave an unfinished turn open when pausing |
-| Opening a PR, Babysit, Shipping, Worktree and simulator cleanup | Pass through. Any code edit they need, such as a CI fix, gets its own full turn first |
+| Opening a PR, Babysit, Shipping, Worktree and simulator cleanup | Pass through, but only for a turn that ended SYNCED or CLOSED. Any code edit they need, such as a CI fix, gets its own full turn first |
 | Orchestrate, Autopilot-full, Autopilot-stack | Pass through. Their workers run in other worktrees, outside this session's mode, so their changes come back as external changes the next time the mode turns on |
 
 ## Start
@@ -102,7 +102,8 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
    - `SYNCED` or `CLOSED`: done.
    - `DRAFT`, exit 2: verification is missing, failed, or older than the tree. Fix it, verify, and end again. If it cannot pass, report the DRAFT turn.
    - `BLOCKED`, exit 2: report the `C BLOCKED` lines to the human, each with its `abbd approve <KEY>` line.
-3. Reply as the playbook and poteto-mode say. Add the turn ID and state, the gate lines, and the declared-but-not-done and done-but-not-declared lines from `abbd turn show`.
+3. Ship. Only now run the playbook's **Opening a PR** step, and only when the turn ended `SYNCED` or `CLOSED`. Never open a PR on a `DRAFT` or `BLOCKED` turn. Commit `.abbd/` with the code, so the PR carries the turn record `.abbd/changes/<CHG>.md` and what the sync wrote to `.abbd/intended.yaml` and `.abbd/decisions/`.
+4. Reply as the playbook and poteto-mode say. Add the turn ID and state, the gate lines, and the declared-but-not-done and done-but-not-declared lines from `abbd turn show`.
 
 Explain a design unit or a change with `<pstack>/skills/teach/SKILL.md` or `<pstack>/skills/how/SKILL.md` only when the human asks.
 
