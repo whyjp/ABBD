@@ -26,8 +26,10 @@ Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is t
 5. Run setup:
 
    ```
-   abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
+   abbd setup --supplement .abbd/extractor/supplement.json --verify "<VERIFY-COMMAND>" -- <interpreter> .abbd/extractor/extract.<ext>
    ```
+
+   `--verify` registers the command every turn verifies with, so the human sees it on the screen before any turn trusts it. Use the project's verify skill (`.claude/skills/verify-*/SKILL.md`) when it has one, otherwise the project's test command, such as `go test -count=1 ./...`. It must write nothing git does not ignore. Leave `--verify` out when the project has no verification yet. It registers once; setup refuses a different command later.
 
    - Exit 1 `not deterministic`: the script printed different output across runs, one of them with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`. Sort what it prints, remove the source of variation, and rerun.
    - Exit 1 `extraction script is fixed`: the project is aligned, and its script is the one `project.yaml` records. Rerun setup without `--`.

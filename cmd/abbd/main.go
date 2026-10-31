@@ -21,8 +21,9 @@ import (
 	"github.com/whyjp/abbd/internal/turn"
 )
 
-const usage = `abbd setup [--supplement FILE] [--adopt FILE] [--root DIR] [-- EXTRACT-ARGV...]
-                                     bootstrap from the project extraction script; never asks
+const usage = `abbd setup [--supplement FILE] [--adopt FILE] [--verify COMMAND] [--root DIR] [-- EXTRACT-ARGV...]
+                                     bootstrap from the project extraction script; never asks;
+                                     --verify registers the turn verify command once
 abbd setup --greenfield FILE [--root DIR]
                                      a human states the design units of an empty project
 abbd align (--all | --confirm IDS | --exclude IDS) [--root DIR]
@@ -91,7 +92,7 @@ type opts struct {
 	root, session                 string
 	supplement, adopt, greenfield string
 	confirm, exclude, value       string
-	reason, addr                  string
+	reason, addr, verify          string
 	reject                        bool
 	seeds, request, units         string
 	changes, add                  string
@@ -107,6 +108,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"adopt": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.adopt, "adopt", "", "existing design document, reconstructed as an extraction result")
+	},
+	"verify": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.verify, "verify", "", "the project verify command, registered once for abbd turn verify")
 	},
 	"greenfield": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.greenfield, "greenfield", "", "design units a human stated")
@@ -153,7 +157,7 @@ type command struct {
 }
 
 var commands = map[string]command{
-	"setup":   {flags: []string{"root", "supplement", "adopt", "greenfield"}, pos: []int{0}, dashArgv: true, run: env.setup},
+	"setup":   {flags: []string{"root", "supplement", "adopt", "greenfield", "verify"}, pos: []int{0}, dashArgv: true, run: env.setup},
 	"align":   {flags: []string{"root", "all", "confirm", "exclude"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.align() }},
 	"confirm": {flags: []string{"root", "list", "value", "reject"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
 	"approve": {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},

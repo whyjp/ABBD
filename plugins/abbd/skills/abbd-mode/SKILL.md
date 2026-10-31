@@ -88,13 +88,13 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
 
 ## End
 
-1. Verify with the project's verify skill (`.claude/skills/verify-*/SKILL.md`). If the project has none, `<pstack>/skills/create-verification-skill/SKILL.md` makes one. Record the run against the current tree. The first run registers the command. A run that writes any file git does not ignore fails, so gitignore build and cache output first, such as `__pycache__/` for Python:
+1. Verify with the project's verify skill (`.claude/skills/verify-*/SKILL.md`). If the project has none, `<pstack>/skills/create-verification-skill/SKILL.md` makes one. Record the run against the current tree. When `.abbd/project.yaml` has no `verify` yet, the first run registers the command. A run that writes any file git does not ignore fails, so gitignore build and cache output first, such as `__pycache__/` for Python:
 
    ```
    abbd turn verify --session ${CLAUDE_SESSION_ID} -- <VERIFY-ARGV>
    ```
 
-   Later runs reuse it with `abbd turn verify --session ${CLAUDE_SESSION_ID}`.
+   Once `project.yaml` records a `verify`, from setup or an earlier turn, run `abbd turn verify --session ${CLAUDE_SESSION_ID}` without `--`.
 2. End the turn. This is the only way it completes, whatever the playbook says:
 
    ```

@@ -23,8 +23,8 @@ import (
 // already stated the design units and the project is aligned at once.
 func (e env) setup(string, []string) error {
 	if e.greenfield != "" {
-		if len(e.argv) > 0 || e.supplement != "" || e.adopt != "" {
-			return fmt.Errorf("--greenfield takes no extraction script, --supplement or --adopt")
+		if len(e.argv) > 0 || e.supplement != "" || e.adopt != "" || e.verify != "" {
+			return fmt.Errorf("--greenfield takes no extraction script, --supplement, --adopt or --verify")
 		}
 		return e.setupGreenfield()
 	}
@@ -52,6 +52,10 @@ func (e env) setup(string, []string) error {
 	// A greenfield project is aligned before it has code. Its first script
 	// is registered here, still under the determinism check.
 	registering := intended != nil && len(p.Extract) == 0
+	verify, err := verifyArgv(e.verify, p.Verify)
+	if err != nil {
+		return err
+	}
 	out, err := e.deterministic(argv)
 	if err != nil {
 		return err
@@ -88,9 +92,16 @@ func (e env) setup(string, []string) error {
 		}
 	}
 
+	newVerify := len(verify) > 0 && len(p.Verify) == 0
 	p.Extract = argv
+	if newVerify {
+		p.Verify = verify
+	}
 	if err := e.st.SaveProject(p); err != nil {
 		return err
+	}
+	if newVerify {
+		fmt.Fprintf(e.stdout, "registered the verify command %q\n", verify)
 	}
 	if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {
 		return err
@@ -142,6 +153,24 @@ func (e env) deterministic(argv []string) ([]byte, error) {
 		}
 	}
 	return first, nil
+}
+
+// verifyArgv splits --verify the way a shell would. Registering it at setup
+// puts the command in front of the human at alignment, before any turn trusts
+// it. Like turn verify --, it registers once and refuses a different argv.
+func verifyArgv(text string, recorded []string) ([]string, error) {
+	if strings.TrimSpace(text) == "" {
+		return nil, nil
+	}
+	ps := parseShell(text)
+	if len(ps.segs) != 1 || len(ps.subs) > 0 || len(ps.bodies) > 0 || len(ps.segs[0].redirects) > 0 || len(ps.segs[0].words) == 0 {
+		return nil, fmt.Errorf("--verify takes one plain command, without pipes, redirects or substitutions: %q", text)
+	}
+	argv := ps.segs[0].words
+	if len(recorded) > 0 && !slices.Equal(argv, recorded) {
+		return nil, fmt.Errorf("the verify command is fixed: project.yaml records %q", recorded)
+	}
+	return argv, nil
 }
 
 func reseeded() []string {

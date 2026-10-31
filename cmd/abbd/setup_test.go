@@ -498,3 +498,36 @@ func TestConfirmedGuessesSurviveALaterSupplement(t *testing.T) {
 		t.Fatalf("a human confirmation must outlive the supplement that proposed it:\n%s", md)
 	}
 }
+
+func TestSetupRegistersTheVerifyCommandATurnThenRuns(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	verify := "'" + exe + "' fake-verify"
+	p.setup(0, "registered the verify command", "--verify", verify, "--", exe)
+	recorded := p.read("project.yaml")
+	if !strings.Contains(recorded, "fake-verify") {
+		t.Fatalf("setup should record the verify command:\n%s", recorded)
+	}
+	p.setup(1, "the verify command is fixed", "--verify", "true", "--", exe)
+	p.setup(0, "bootstrapped", "--verify", verify, "--", exe)
+	if got := p.read("project.yaml"); got != recorded {
+		t.Fatalf("a refused or repeated --verify must leave project.yaml as it was:\n%s", got)
+	}
+
+	p.want(0, "aligned", "align", "--all")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+	verifyFile := filepath.Join(t.TempDir(), "verify")
+	t.Setenv("ABBD_FAKE_VERIFY", verifyFile)
+	write(t, verifyFile, "pass")
+	p.want(0, "OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "make the change")
+	p.want(0, "run-0001 PASSED", "turn", "verify", "--session", "s1")
+}
+
+func TestSetupRefusesAVerifyCommandThatIsNotOneCommand(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	p.setup(1, "one plain command", "--verify", "go test ./... | tee out", "--", exe)
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "project.yaml")); !os.IsNotExist(err) {
+		t.Fatalf("a refused --verify must record nothing, got %v", err)
+	}
+}
