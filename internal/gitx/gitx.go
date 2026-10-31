@@ -27,6 +27,15 @@ func Head(dir string) string {
 	return strings.TrimSpace(out)
 }
 
+// Dir returns the absolute git directory of dir's repository, or "" outside one.
+func Dir(dir string) string {
+	out, err := run(dir, nil, "rev-parse", "--absolute-git-dir")
+	if err != nil {
+		return ""
+	}
+	return filepath.FromSlash(strings.TrimSpace(out))
+}
+
 // Snapshot records the working tree as a git tree object, including untracked
 // files, without touching the user's index. It returns "" outside a repository.
 func Snapshot(dir, exclude string) (string, error) {

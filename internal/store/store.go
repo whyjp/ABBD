@@ -15,6 +15,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/topology"
@@ -32,9 +33,21 @@ type State struct {
 
 const notesHeading = "## Notes"
 
-type Store struct{ root string }
+type Store struct{ root, sessions string }
 
-func Open(projectRoot string) Store { return Store{filepath.Join(projectRoot, Dir)} }
+// Open keeps session state in the git directory when there is one. git clean
+// and checkout never reach it there, so they cannot turn a session's mode off.
+func Open(projectRoot string) Store {
+	s := Store{root: filepath.Join(projectRoot, Dir)}
+	s.sessions = s.path("sessions")
+	if g := gitx.Dir(projectRoot); g != "" {
+		s.sessions = filepath.Join(g, "abbd", "sessions")
+	}
+	return s
+}
+
+// SessionsDir holds each session's mode file and journal.
+func (s Store) SessionsDir() string { return s.sessions }
 
 func (s Store) path(parts ...string) string {
 	return filepath.Join(append([]string{s.root}, parts...)...)
@@ -287,10 +300,11 @@ func (s Store) sessionPath(id string) (string, error) {
 	if !sessionID.MatchString(id) {
 		return "", fmt.Errorf("invalid session id %q", id)
 	}
-	return s.path("sessions", id+".on"), nil
+	return filepath.Join(s.sessions, id+".on"), nil
 }
 
-// Session state is local to this machine, so sessions/ is kept out of git.
+// Session state is local to this machine, so outside a git directory
+// sessions/ is kept out of git.
 func (s Store) SetMode(id string, on bool) error {
 	p, err := s.sessionPath(id)
 	if err != nil {

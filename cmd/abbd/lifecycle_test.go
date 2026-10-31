@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // The test binary doubles as the project extraction script and, given the
@@ -92,7 +94,7 @@ func (p *project) hook(session, file string) {
 }
 
 func (p *project) journal(session string) string {
-	b, _ := os.ReadFile(filepath.Join(p.root, ".abbd", "sessions", session+".journal"))
+	b, _ := os.ReadFile(filepath.Join(store.Open(p.root).SessionsDir(), session+".journal"))
 	return string(b)
 }
 

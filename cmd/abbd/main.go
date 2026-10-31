@@ -619,11 +619,12 @@ func (e env) mode(on bool) error {
 // resume turns the mode on for a session that picks up an unfinished turn. The
 // turn's own changes drift the project until it ends, so they are judged as the
 // turn's work, which its end gate still decides, rather than refused as drift.
-// One turn runs at a time, so the new session takes it over.
+// One turn runs at a time, so the new session takes it over, but only from a
+// session whose mode a human has turned off: a live session keeps its turn.
 func (e env) resume(t *turn.Turn) error {
 	if t.Session != e.session {
-		if err := e.st.SetMode(t.Session, false); err != nil {
-			return err
+		if e.st.ModeOn(t.Session) {
+			return fmt.Errorf("%s belongs to session %s, whose mode is still on; a human turns it off with abbd mode off --session %s before another session takes the turn", t.ID, t.Session, t.Session)
 		}
 		fmt.Fprintf(e.stdout, "%s moves from session %s to %s\n", t.ID, t.Session, e.session)
 		t.Session = e.session

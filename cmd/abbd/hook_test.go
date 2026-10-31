@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // fire runs one hook the way Claude Code does: the event as the argument and
@@ -213,15 +215,27 @@ func TestModeOnResumesAnUnfinishedTurn(t *testing.T) {
 	if !strings.Contains(out, "C BLOCKED new-relation:MOD-0001.depends_on.MOD-0002") {
 		t.Fatalf("resuming should show what the turn has changed so far:\n%s", out)
 	}
+	p.want(1, "CHG-0001 belongs to session s1, whose mode is still on", "mode", "on", "--session", "s2")
+	p.want(0, "mode: on", "status", "--session", "s1")
+	p.want(0, "mode off", "mode", "off", "--session", "s1")
 	p.want(0, "CHG-0001 moves from session s1 to s2", "mode", "on", "--session", "s2")
 	p.want(0, "mode: off", "status", "--session", "s1")
 	p.want(1, "CHG-0001 belongs to session s2, not s1", "turn", "diff", "--session", "s1")
 	p.want(2, "C BLOCKED", "turn", "diff", "--session", "s2")
 
 	p.want(2, "CHG-0001 BLOCKED", "turn", "end", "--session", "s2")
+	p.want(0, "mode off", "mode", "off", "--session", "s2")
 	p.want(0, "active: resuming CHG-0001 (BLOCKED)", "mode", "on", "--session", "s3")
-	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "sessions", "s2.on")); err == nil {
-		t.Fatalf("the session that gave the turn up must be off")
+}
+
+// git clean and checkout rewrite .abbd/, so a session's mode lives where they
+// cannot reach it.
+func TestGitCleanLeavesTheModeOn(t *testing.T) {
+	p := activeTurnProject(t, topoV1)
+	git(t, p.root, "clean", "-fdxq")
+	p.want(0, "mode: on", "status", "--session", "s1")
+	if dir := store.Open(p.root).SessionsDir(); strings.HasPrefix(dir, filepath.Join(p.root, ".abbd")) {
+		t.Fatalf("a git project keeps sessions in its git directory, not %s", dir)
 	}
 }
 
