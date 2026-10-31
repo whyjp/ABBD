@@ -29,7 +29,9 @@ type Edge struct {
 	Kind model.RelationKind `yaml:"kind"`
 }
 
-func (e Edge) String() string { return fmt.Sprintf("%s-%s->%s", e.From, e.Kind, e.To) }
+// String names the edge on the command line, so it holds no character a shell
+// treats specially.
+func (e Edge) String() string { return fmt.Sprintf("%s.%s.%s", e.From, e.Kind, e.To) }
 
 type Phase string
 

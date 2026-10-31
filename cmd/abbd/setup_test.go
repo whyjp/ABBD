@@ -116,7 +116,7 @@ func TestSupplementFeedsTheConfirmQueueAndSurvivesReextraction(t *testing.T) {
 	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "origin: INFERRED") || !strings.Contains(md, "to: MOD-0001") {
 		t.Fatalf("the supplement should add an inferred purpose and coupling:\n%s", md)
 	}
-	queue := p.want(0, "MOD-0002-consumes->MOD-0001", "confirm", "--list")
+	queue := p.want(0, "MOD-0002.consumes.MOD-0001", "confirm", "--list")
 	if !strings.Contains(queue, "MOD-0001.responsibility") || !strings.Contains(queue, "MOD-0002.purpose") {
 		t.Fatalf("supplement why-fields should wait for confirmation:\n%s", queue)
 	}
@@ -141,8 +141,8 @@ func TestSupplementFeedsTheConfirmQueueAndSurvivesReextraction(t *testing.T) {
 	}
 
 	p.want(0, "confirmed MOD-0001.purpose", "confirm", "MOD-0001.purpose")
-	p.want(0, "confirmed MOD-0002-consumes->MOD-0001", "confirm", "MOD-0002-consumes->MOD-0001")
-	p.want(2, "BLOCKED new-relation:MOD-0002-consumes->MOD-0001", "mode", "on", "--session", "s1")
+	p.want(0, "confirmed MOD-0002.consumes.MOD-0001", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(2, "BLOCKED new-relation:MOD-0002.consumes.MOD-0001", "mode", "on", "--session", "s1")
 	if q := p.want(0, "", "confirm", "--list"); strings.TrimSpace(q) != "" {
 		t.Fatalf("every item was confirmed, queue:\n%s", q)
 	}
@@ -152,7 +152,7 @@ func TestConfirmedCouplingBeforeAlignmentBecomesIntended(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
-	p.want(0, "confirmed", "confirm", "MOD-0002-consumes->MOD-0001")
+	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.MOD-0001")
 	p.want(0, "aligned", "align", "--all")
 	if !strings.Contains(p.read("intended.yaml"), "kind: consumes") {
 		t.Fatalf("a coupling a human registered at alignment should be intended:\n%s", p.read("intended.yaml"))

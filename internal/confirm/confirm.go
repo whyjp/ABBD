@@ -8,10 +8,11 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/topology"
 )
 
 type Item struct {
-	// Key names the item on the command line: MOD-0001.purpose or MOD-0001-depends_on->MOD-0002.
+	// Key names the item on the command line: MOD-0001.purpose or MOD-0001.depends_on.MOD-0002.
 	Key   string
 	Unit  model.ID
 	Value string
@@ -35,7 +36,7 @@ func pending(f *model.Fact) bool {
 }
 
 func relationKey(from model.ID, r model.Relation) string {
-	return fmt.Sprintf("%s-%s->%s", from, r.Kind, r.To)
+	return topology.Edge{From: from, To: r.To, Kind: r.Kind}.String()
 }
 
 // Queue lists every pending item of the present units, design units first.
@@ -72,7 +73,7 @@ func Queue(units []model.Unit, design map[model.ID]bool) []Item {
 // Apply confirms one item. An empty value confirms the guess as written; a
 // value replaces it with what the human said.
 func Apply(units []model.Unit, key, value string) (model.Unit, error) {
-	if id, field, ok := strings.Cut(key, "."); ok {
+	if id, field, ok := strings.Cut(key, "."); ok && !strings.Contains(field, ".") {
 		for _, u := range units {
 			if string(u.ID) != id || u.Absent {
 				continue

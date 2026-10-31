@@ -24,6 +24,7 @@ func TestMain(m *testing.M) {
 			os.WriteFile(p+".n", n, 0o644)
 			b = bytes.ReplaceAll(b, []byte("{{RUN}}"), n)
 		}
+		b = bytes.ReplaceAll(b, []byte("{{PYTHONHASHSEED}}"), []byte(os.Getenv("PYTHONHASHSEED")))
 		os.Stdout.Write(b)
 		os.Exit(0)
 	}
@@ -150,7 +151,7 @@ func TestChangeOutsideModeCrossingBoundaryIsBlocked(t *testing.T) {
 		`{"from":"billing","to":"api","kind":"provides"}`,
 		`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"ledger","kind":"depends_on"}`, 1))
 
-	out := p.want(2, "BLOCKED new-relation:MOD-0001-depends_on->MOD-0002", "mode", "on", "--session", "s1")
+	out := p.want(2, "BLOCKED new-relation:MOD-0001.depends_on.MOD-0002", "mode", "on", "--session", "s1")
 	if !strings.Contains(out, "drifted") {
 		t.Fatalf("mode on should report drift:\n%s", out)
 	}
@@ -163,7 +164,7 @@ func TestChangeOutsideModeCrossingBoundaryIsBlocked(t *testing.T) {
 	}
 
 	p.want(2, "pending approval", "align")
-	p.want(0, "approved new-relation:MOD-0001-depends_on->MOD-0002 as ADR-0001", "approve", "new-relation:MOD-0001-depends_on->MOD-0002")
+	p.want(0, "approved new-relation:MOD-0001.depends_on.MOD-0002 as ADR-0001", "approve", "new-relation:MOD-0001.depends_on.MOD-0002")
 	if adr := p.read("decisions/ADR-0001.md"); !strings.Contains(adr, "origin: USER_STATED") || !strings.Contains(adr, "grade: C") {
 		t.Fatalf("approval should leave a grade C ADR:\n%s", adr)
 	}
@@ -223,7 +224,7 @@ func TestStaleIngestCannotBypassTheGate(t *testing.T) {
 	stale := filepath.Join(t.TempDir(), "stale.json")
 	write(t, stale, topoV1)
 	p.want(0, "matched", "ingest", stale)
-	p.want(2, "BLOCKED new-relation:MOD-0001-depends_on->MOD-0002", "mode", "on", "--session", "s1")
+	p.want(2, "BLOCKED new-relation:MOD-0001.depends_on.MOD-0002", "mode", "on", "--session", "s1")
 }
 
 func TestContractReplacedUnderNewIDIsBlocked(t *testing.T) {
@@ -268,8 +269,8 @@ func TestNewCouplingThroughANewUnitNeedsRealign(t *testing.T) {
 	v2 = strings.Replace(v2, `{"from":"billing","to":"api","kind":"provides"}`,
 		`{"from":"billing","to":"api","kind":"provides"},{"from":"billing","to":"audit","kind":"depends_on"},{"from":"audit","to":"ledger","kind":"depends_on"}`, 1)
 	p.extract(v2)
-	out := p.want(2, "REALIGN new-relation:MOD-0001-depends_on->MOD-0003", "mode", "on", "--session", "s1")
-	if !strings.Contains(out, "REALIGN new-relation:MOD-0003-depends_on->MOD-0002") {
+	out := p.want(2, "REALIGN new-relation:MOD-0001.depends_on.MOD-0003", "mode", "on", "--session", "s1")
+	if !strings.Contains(out, "REALIGN new-relation:MOD-0003.depends_on.MOD-0002") {
 		t.Fatalf("both new edges touching intended units should surface:\n%s", out)
 	}
 	p.want(0, "aligned", "align")
@@ -284,7 +285,7 @@ func TestNewConsumerOfAContractIsBlocked(t *testing.T) {
 	v2 = strings.Replace(v2, `{"from":"billing","to":"api","kind":"provides"}`,
 		`{"from":"billing","to":"api","kind":"provides"},{"from":"audit","to":"api","kind":"consumes"}`, 1)
 	p.extract(v2)
-	p.want(2, "BLOCKED new-relation:MOD-0003-consumes->IF-0001", "mode", "on", "--session", "s1")
+	p.want(2, "BLOCKED new-relation:MOD-0003.consumes.IF-0001", "mode", "on", "--session", "s1")
 }
 
 func TestRefusedModeOnTurnsTheSessionOff(t *testing.T) {
