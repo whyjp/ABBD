@@ -136,7 +136,9 @@ func (e env) proposeUnit(pos []string) error {
 	}
 	anchors = model.SortAnchors(anchors)
 	for _, u := range topology.Present(v.units) {
-		if u.Kind == kind && slices.Equal(u.Anchors, anchors) {
+		// Many units can live in one file, so the same file alone does not
+		// make the same unit; the same quoted code does.
+		if u.Kind == kind && slices.Equal(u.Anchors, anchors) && slices.Equal(u.Evidence, es) {
 			return fmt.Errorf("%s %s already rests on the same code", u.ID, u.Name.Value)
 		}
 	}
