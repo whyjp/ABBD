@@ -316,6 +316,32 @@ func commandName(w string) string {
 	return strings.TrimSuffix(w, ".exe")
 }
 
+// keywords open or close a shell compound command; the command they guard
+// follows them in the same segment.
+var keywords = map[string]bool{
+	"do": true, "done": true, "then": true, "else": true, "elif": true, "fi": true,
+	"if": true, "while": true, "until": true, "esac": true, "!": true,
+}
+
+// simpleCommand drops the compound keywords that lead a segment. A for or
+// select header only names a variable and the words it takes, and runs
+// nothing; its substitutions are checked on their own.
+func simpleCommand(words []string) []string {
+	for len(words) > 0 && keywords[words[0]] {
+		words = words[1:]
+	}
+	if len(words) > 0 && (words[0] == "for" || words[0] == "select") {
+		// The header is a name and a word list; the body after do runs. POSIX
+		// allows "for x do ...", so the body can share the header's segment.
+		i := slices.Index(words, "do")
+		if i < 0 {
+			return nil
+		}
+		return simpleCommand(words[i+1:])
+	}
+	return words
+}
+
 // readers only read their arguments and stdin, so a protected name in them is
 // text, not a target.
 var readers = map[string]bool{
@@ -572,22 +598,23 @@ func (g guard) check(cmd, cwd string, depth int) string {
 				return r
 			}
 		}
-		if len(s.words) == 0 {
-			continue
-		}
-		if sub := abbdCommand(s.words); humans[sub] {
-			if !(sub == "setup" && g.setupOpen && depth == 0 && registersOnly(p)) {
-				return fmt.Sprintf("abbd %s is a human's command while ABBD mode is on. Stop and give the human the exact command to run.", sub)
-			}
-		}
 		for _, r := range s.redirects {
 			if g.protected(cwd, r, false) {
 				return protectedReason(r)
 			}
 		}
-		name := commandName(s.words[0])
-		args := s.words[1:]
-		if !readers[name] && slices.ContainsFunc(s.words, g.reachesScreen) {
+		words := simpleCommand(s.words)
+		if len(words) == 0 {
+			continue
+		}
+		if sub := abbdCommand(words); humans[sub] {
+			if !(sub == "setup" && g.setupOpen && depth == 0 && registersOnly(p)) {
+				return fmt.Sprintf("abbd %s is a human's command while ABBD mode is on. Stop and give the human the exact command to run.", sub)
+			}
+		}
+		name := commandName(words[0])
+		args := words[1:]
+		if !readers[name] && slices.ContainsFunc(words, g.reachesScreen) {
 			return screenReason
 		}
 		switch {

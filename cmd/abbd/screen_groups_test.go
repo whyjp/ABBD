@@ -23,7 +23,7 @@ func TestScreenFoldsTheCandidatesByKindAndTheQueueByUnit(t *testing.T) {
 	if design < 0 || below < design {
 		t.Fatalf("the queue should fold by unit, design units first:\n%s", html)
 	}
-	if !strings.Contains(html[design:below], "MOD-0002.purpose") || !strings.Contains(html[design:below], "MOD-0002.consumes.MOD-0001") || !strings.Contains(html[below:], "MOD-0001.responsibility") {
+	if !strings.Contains(html[design:below], "MOD-0002.purpose") || !strings.Contains(html[design:below], "MOD-0002.consumes.IF-0001") || !strings.Contains(html[below:], "MOD-0001.responsibility") {
 		t.Fatalf("each unit's items belong under its own group:\n%s", html)
 	}
 	if regexp.MustCompile(`<details class="group" open`).MatchString(html) {

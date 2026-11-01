@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/model"
@@ -33,6 +34,10 @@ type Input struct {
 	Inputs string
 	// Generated is the watermark the files in .abbd/generated/ carry, nil when missing.
 	Generated *Watermark
+	// Understandings are pstack how's texts by module; Digests are each
+	// module's code as it is now, to tell a text written against older code.
+	Understandings map[model.ID]store.Understanding
+	Digests        map[model.ID]string
 }
 
 // Watermark ties a derived file to the .abbd inputs and intended topology it came from.
@@ -75,6 +80,13 @@ func Load(st store.Store) (Input, error) {
 	}
 	if in.Inputs, err = st.InputsHash(); err != nil {
 		return in, err
+	}
+	if in.Understandings, err = st.LoadUnderstandings(); err != nil {
+		return in, err
+	}
+	in.Digests = map[model.ID]string{}
+	for id := range in.Understandings {
+		in.Digests[id] = st.ModuleDigest(in.Units, id)
 	}
 	b, err := st.ReadGenerated(GraphFile)
 	if err != nil {
@@ -136,6 +148,8 @@ type Card struct {
 	Question  bool
 	Turn      string
 	Rejection *turn.Rejection
+	// Ask says it in a human's words.
+	Ask Question
 }
 
 type TurnView struct {
@@ -150,6 +164,28 @@ type TurnView struct {
 	Verified string
 	// Direct and Far are the impact's tiers against the intended topology.
 	Direct, Far []turn.ImpactItem
+	// DirectNames and FarNames are the same tiers as people name the units.
+	DirectNames, FarNames []Named
+}
+
+type Named struct {
+	ID, Name string
+	Last     bool
+}
+
+func named(items []turn.ImpactItem, names map[model.ID]string) []Named {
+	var out []Named
+	for _, it := range items {
+		n := names[it.Unit]
+		if n == "" {
+			n = string(it.Unit)
+		}
+		out = append(out, Named{ID: string(it.Unit), Name: n})
+	}
+	if len(out) > 0 {
+		out[len(out)-1].Last = true
+	}
+	return out
 }
 
 type Row struct {
@@ -214,6 +250,18 @@ type UnitRow struct {
 	Design                    bool
 	Purpose, Responsibility   *Fact
 	Anchors                   []string
+	// Parent is the module that contains the unit.
+	Parent string `json:",omitempty"`
+	// Evidence is the code a unit only a reader found rests on.
+	Evidence []string `json:",omitempty"`
+	// Couplings are the unit's live semantic relations no human has decided,
+	// with how each arises and the quote it rests on.
+	Couplings []Coupling `json:",omitempty"`
+}
+
+type Coupling struct {
+	Key, Via string
+	Evidence []string
 }
 
 type Model struct {
@@ -239,8 +287,16 @@ type Model struct {
 	// Waiting is true while a grade C change waits, which realignment must not pass.
 	Waiting bool
 	// Idle is true when no unfinished turn waits, so promotion decisions are open.
-	Idle      bool
-	Map       Map
+	Idle bool
+	// Overview is the first level: modules, their contracts as ports, and
+	// the lines between them. Insides are the second, one per module.
+	Overview Drawing
+	Insides  []Inside
+	// Edges are every live relation between present units, for graph.json.
+	Edges []Line
+	// Changed says in words what the latest turn changed, for its view.
+	Changed   []string
+	TurnShown bool
 	Extract   []string
 	Verify    []string
 	Watermark Watermark
@@ -339,26 +395,161 @@ func Build(in Input) Model {
 		}
 		m.AlignGroups = group(m.Align, func(c Candidate) string { return c.Kind }, byKind)
 	}
+	couplings := map[model.ID][]Coupling{}
+	for _, c := range topology.Couplings(in.Units) {
+		row := Coupling{Key: c.String(), Via: string(c.Via)}
+		for _, e := range c.Evidence {
+			row.Evidence = append(row.Evidence, e.String())
+		}
+		couplings[c.From] = append(couplings[c.From], row)
+	}
 	for _, u := range present {
-		m.Units = append(m.Units, UnitRow{
+		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature), Design: design[u.ID],
 			Purpose: fact(u.Purpose), Responsibility: fact(u.Responsibility), Anchors: anchors(u),
-		})
+			Parent: string(u.Parent), Couplings: couplings[u.ID],
+		}
+		for _, e := range u.Evidence {
+			row.Evidence = append(row.Evidence, e.String())
+		}
+		m.Units = append(m.Units, row)
 		for _, r := range u.Relations {
 			if r.Origin == model.UserStated || (r.Confirmation == model.Confirmed && r.Origin != model.Extracted) {
 				m.Registered++
 			}
 		}
 	}
-	m.Map = Draw(in.Units, in.Intended, items, in.Synced.HighWater)
+	m.Edges = lines(in.Units, in.Intended, items)
+	o := planOverview(in.Units, in.Intended)
+	mk := marks{effect: map[string]topology.Effect{}, changed: map[model.ID]bool{}, removed: map[model.ID]bool{}}
+	for _, it := range items {
+		mk.effect[it.Key()] = it.Effect
+		switch it.Change {
+		case topology.ContractChanged:
+			mk.changed[it.Unit] = true
+		case topology.UnitRemoved:
+			mk.removed[it.Unit] = true
+		}
+	}
+	if m.Turn != nil {
+		mk.touchedUnit, mk.touchedEdge, m.Changed = touched(m.Turn.Turn, m.Turn.Verdicts, o.name)
+		m.TurnShown = true
+	}
+	m.Overview = o.draw(items, mk, topology.Couplings(in.Units), func(id model.ID) string { return "#m-" + string(id) })
+	for _, id := range o.modules {
+		ins := o.inside(id, in.Units, mk)
+		if u, ok := in.Understandings[id]; ok {
+			ins.Understanding = &Understanding{By: u.By, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
+		}
+		m.Insides = append(m.Insides, ins)
+	}
+	for i := range m.Pending {
+		m.Pending[i].Ask = question(m.Pending[i].Key, in, o)
+	}
 	return m
+}
+
+// question puts a card's key into words, naming units as people know them.
+func question(key string, in Input, o *overview) Question {
+	it, err := topology.ParseKey(key)
+	if err != nil {
+		return Question{Title: key}
+	}
+	if it.Change == topology.ContractChanged && in.Intended != nil {
+		if iu, ok := in.Intended.Unit(it.Unit); ok {
+			it.Old = iu.Signature
+		}
+		for _, u := range in.Units {
+			if u.ID == it.Unit && u.Signature != nil {
+				it.New = u.Signature.Value
+			}
+		}
+	}
+	var users []string
+	for _, u := range o.users[it.Unit] {
+		users = append(users, o.name(u))
+	}
+	return ask(it, o.name, users)
+}
+
+var changeWords = map[topology.Change]string{
+	topology.ContractChanged: "계약 모양이 바뀜", topology.ContractTouched: "계약의 코드가 바뀜",
+	topology.UnitRemoved: "사라짐", topology.NewRelation: "새 결합", topology.RemovedRelation: "결합이 사라짐",
+	topology.EvidenceTouched: "결합의 근거 줄이 바뀜", topology.Unscanned: "의미 결합 확인 안 함",
+}
+
+// touched reads what the latest turn changed: what it declared, what the
+// gate saw, what a human decided, and what it did without declaring.
+func touched(t turn.Turn, verdicts []string, name func(model.ID) string) (map[model.ID]bool, map[topology.Edge]bool, []string) {
+	units, edges := map[model.ID]bool{}, map[topology.Edge]bool{}
+	var said []string
+	note := func(s string) {
+		// A promotion candidate is below the line and asks nothing of this
+		// turn; the gate lists every one of them on every turn.
+		if strings.Contains(s, string(topology.Promote)) {
+			return
+		}
+		for _, tok := range strings.Fields(s) {
+			it, err := topology.ParseKey(tok)
+			switch {
+			case err == nil && it.Change == topology.UnitAdded:
+			case err == nil && it.Edge.From != "":
+				if !edges[it.Edge] {
+					said = append(said, fmt.Sprintf("%s → %s %s (%s)", name(it.Edge.From), name(it.Edge.To), changeWords[it.Change], it.Edge.Kind))
+				}
+				edges[it.Edge] = true
+				units[it.Edge.From], units[it.Edge.To] = true, true
+			case err == nil:
+				if !units[it.Unit] {
+					said = append(said, fmt.Sprintf("%s %s", name(it.Unit), changeWords[it.Change]))
+				}
+				units[it.Unit] = true
+			default:
+				if _, _, err := model.ParseID(tok); err == nil {
+					units[model.ID(tok)] = true
+				}
+			}
+		}
+	}
+	for _, c := range t.Delta.Changes {
+		note(c)
+	}
+	for _, q := range t.Questions {
+		note(q)
+	}
+	for _, a := range t.Approvals {
+		note(a.Item)
+	}
+	for _, r := range t.Rejections {
+		note(r.Item)
+	}
+	for _, v := range verdicts {
+		note(v)
+	}
+	if t.Report != nil {
+		for _, g := range t.Report.Gate {
+			note(g)
+		}
+		for _, d := range t.Report.DoneNotDeclared {
+			note(d)
+		}
+	}
+	for _, u := range t.Delta.Units {
+		units[u] = true
+	}
+	return units, edges, said
 }
 
 func view(in Input, t turn.Turn) TurnView {
 	tv := TurnView{Turn: t, Request: in.Requests[t.Requirement], Verified: in.Runs[t.Run]}
 	if in.Intended != nil {
-		tv.Direct, tv.Far = t.Tiers(*in.Intended)
+		tv.Direct, tv.Far = t.Tiers(turn.GraphOf(*in.Intended, in.Units))
 	}
+	names := map[model.ID]string{}
+	for _, u := range in.Units {
+		names[u.ID] = u.Name.Value
+	}
+	tv.DirectNames, tv.FarNames = named(tv.Direct, names), named(tv.Far, names)
 	seen := map[string]bool{}
 	for _, r := range t.Rejections {
 		if !seen[r.Item] {
@@ -404,6 +595,10 @@ func detail(it topology.Item) string {
 		return fmt.Sprintf("사라진 결합: %s %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
 	case topology.UnitRemoved:
 		return string(it.Unit) + "이(가) 코드에서 사라짐"
+	case topology.EvidenceTouched:
+		return fmt.Sprintf("확인된 의미 결합 %s의 증거 줄이 바뀜", it.Edge)
+	case topology.Unscanned:
+		return string(it.Unit) + "의 의미 결합을 확인하지 않음"
 	}
 	return string(it.Unit)
 }

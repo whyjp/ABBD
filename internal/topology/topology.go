@@ -73,7 +73,19 @@ const (
 	// ContractTouched is a turn's finding, never a difference Compare reports:
 	// a consumed contract's code changed while its signature stayed the same.
 	ContractTouched Change = "contract-touched"
+	// EvidenceTouched is a turn's finding: the lines that hold the evidence of
+	// a confirmed semantic relation changed while the quote survived.
+	EvidenceTouched Change = "evidence-touched"
+	// Unscanned is a turn's finding: no one checked a direct design unit for
+	// the couplings only a reader sees.
+	Unscanned Change = "semantic-unscanned"
 )
+
+// Finding reports whether a change is a turn's grade B note rather than a
+// difference between the intended and the actual topology.
+func (c Change) Finding() bool {
+	return c == ContractTouched || c == EvidenceTouched || c == Unscanned
+}
 
 // Item is one difference between intended and actual.
 type Item struct {
@@ -88,7 +100,7 @@ type Item struct {
 // Key is stable across runs, so a human can approve an item by name.
 func (it Item) Key() string {
 	switch it.Change {
-	case NewRelation, RemovedRelation:
+	case NewRelation, RemovedRelation, EvidenceTouched:
 		return string(it.Change) + ":" + it.Edge.String()
 	default:
 		return string(it.Change) + ":" + string(it.Unit)
@@ -115,6 +127,30 @@ func actualEdges(present map[model.ID]model.Unit) map[Edge]bool {
 	return edges
 }
 
+// Coupling is a semantic relation of the actual topology that no human has
+// decided and whose evidence is live. It never gates, but the turn impact
+// follows it and the screen draws it.
+type Coupling struct {
+	Edge
+	Via      model.Via
+	Evidence []model.Evidence
+}
+
+// Couplings lists the live semantic guesses between present units, sorted by edge.
+func Couplings(units []model.Unit) []Coupling {
+	present := presentUnits(units)
+	var out []Coupling
+	for id, u := range present {
+		for _, r := range u.Relations {
+			if _, ok := present[r.To]; ok && r.Semantic() && !r.Dead && r.Guess() {
+				out = append(out, Coupling{Edge: Edge{id, r.To, r.Kind}, Via: r.Via, Evidence: r.Evidence})
+			}
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
+	return out
+}
+
 func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 	present := map[model.ID]model.Unit{}
 	for _, u := range units {
@@ -129,9 +165,14 @@ func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 func Compare(in Intended, units []model.Unit) []Item {
 	actual := presentUnits(units)
 	intended := in.byID()
+	boundary := in.boundary(actual)
 	var items []Item
 	add := func(it Item) {
-		if effect, ok := in.Effect(it); ok {
+		graded, keep := boundary(it)
+		if !keep {
+			return
+		}
+		if effect, ok := in.Effect(graded); ok {
 			it.Effect = effect
 			items = append(items, it)
 		}
@@ -279,13 +320,13 @@ func ParseKey(key string) (Item, error) {
 	}
 	it := Item{Change: Change(change)}
 	switch it.Change {
-	case NewRelation, RemovedRelation:
+	case NewRelation, RemovedRelation, EvidenceTouched:
 		e, err := ParseEdge(rest)
 		if err != nil {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
 		it.Edge = e
-	case ContractChanged, UnitRemoved, UnitAdded, ContractTouched:
+	case ContractChanged, UnitRemoved, UnitAdded, ContractTouched, Unscanned:
 		if _, _, err := model.ParseID(rest); err != nil {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
@@ -294,6 +335,13 @@ func ParseKey(key string) (Item, error) {
 		return Item{}, fmt.Errorf("%s: unknown change %q", key, change)
 	}
 	return it, nil
+}
+
+// Joins checks the edge's kind against the kinds its IDs name.
+func (e Edge) Joins() error {
+	from, _, _ := model.ParseID(string(e.From))
+	to, _, _ := model.ParseID(string(e.To))
+	return e.Kind.Joins(from, to)
 }
 
 // ParseEdge reads an edge as Edge.String prints it.
@@ -427,7 +475,7 @@ func Candidates(in Intended, units []model.Unit, rejected func(question string) 
 	intended := in.byID()
 	var out []Candidate
 	for _, u := range Present(units) {
-		if _, ok := intended[u.ID]; ok {
+		if _, ok := intended[u.ID]; ok || u.Parent != "" {
 			continue
 		}
 		c := Candidate{Unit: u.ID, Kind: u.Kind, Question: promotionQuestion(u.ID, edges)}
@@ -557,4 +605,55 @@ func (in Intended) normalized() Intended {
 		in.Relations = []Edge{}
 	}
 	return in
+}
+
+// boundary sees a change at the level of modules. A unit inside a design
+// module, one that is not itself a design unit, stands for the module that
+// contains it: a relation between two units of one module stays inside it and
+// is dropped, and a relation that leaves a module is graded as the module's
+// own relation, so routing a coupling through an inside unit never hides it.
+// A relation a human already acknowledged is not asked again.
+func (in Intended) boundary(actual map[model.ID]model.Unit) func(Item) (Item, bool) {
+	intended := in.byID()
+	insideOf := func(id model.ID) (model.ID, bool) {
+		u, ok := actual[id]
+		if _, design := intended[id]; !ok || design || u.Parent == "" {
+			return "", false
+		}
+		if p, ok := intended[u.Parent]; !ok || p.Kind != model.Module {
+			return "", false
+		}
+		return u.Parent, true
+	}
+	owner := func(id model.ID) model.ID {
+		if p, ok := insideOf(id); ok {
+			return p
+		}
+		return id
+	}
+	return func(it Item) (Item, bool) {
+		switch it.Change {
+		case UnitAdded:
+			_, inside := insideOf(it.Unit)
+			return it, !inside
+		case NewRelation, RemovedRelation:
+			_, fromInside := insideOf(it.Edge.From)
+			_, toInside := insideOf(it.Edge.To)
+			if !fromInside && !toInside {
+				return it, true
+			}
+			lifted := Edge{From: owner(it.Edge.From), To: owner(it.Edge.To), Kind: it.Edge.Kind}
+			if lifted.From == lifted.To {
+				return it, false
+			}
+			if it.Change == RemovedRelation {
+				return it, true
+			}
+			if slices.Contains(in.Relations, it.Edge) {
+				return it, false
+			}
+			return Item{Change: NewRelation, Edge: lifted}, true
+		}
+		return it, true
+	}
 }

@@ -64,6 +64,9 @@ func TestTurnInsideTheBoundarySyncsWithoutAHuman(t *testing.T) {
 		t.Fatalf("the request should be recorded as stated:\n%s", req)
 	}
 	p.want(0, "CHG-0001 declares 1 unit(s) and 0 change(s)", "turn", "declare", "--session", "s1", "--units", "MOD-0001")
+	for _, id := range []string{"MOD-0001", "IF-0001"} {
+		p.want(0, "scanned", "turn", "scan", "--session", "s1", "--unit", id, "--by", "how")
+	}
 	p.editCode("billing/charge.go")
 	p.want(0, "", "turn", "diff", "--session", "s1")
 	p.verify("pass", 0, "run-0001 PASSED")
@@ -187,6 +190,7 @@ func TestImpactSplitsIntoDirectAndFarTiers(t *testing.T) {
 	}
 
 	html := p.screen().view(t)
+	html = html[strings.Index(html, `<section id="turn">`):]
 	at := func(s string) int {
 		i := strings.Index(html, s)
 		if i < 0 {

@@ -87,9 +87,12 @@ func TestScreenPutsTheBlockedChangeFirstAndApprovesIt(t *testing.T) {
 	p, edge := blockedTurn(t)
 	s := p.screen()
 	html := s.view(t)
-	waiting, thisTurn, drift, mapAt := strings.Index(html, "결정 대기"), strings.Index(html, "이번 턴 CHG-0001"), strings.Index(html, "의도 대 실제"), strings.Index(html, "전체 지도")
-	if !(waiting < strings.Index(html, edge) && strings.Index(html, edge) < thisTurn && thisTurn < drift && drift < mapAt) {
-		t.Fatalf("the blocked change comes first, then the turn, drift and the map")
+	waiting, card, overview, thisTurn, drift := strings.Index(html, "결정 대기"), strings.Index(html, `id="card-`+edge), strings.Index(html, "모듈과 계약"), strings.Index(html, "마지막 턴 CHG-0001"), strings.Index(html, "의도 대 실제")
+	if !(waiting < card && card < overview && overview < thisTurn && thisTurn < drift) {
+		t.Fatalf("the blocked change comes first, then the overview, the turn and drift")
+	}
+	if !strings.Contains(html, "billing이(가) 이제 ledger에 직접 의존합니다") {
+		t.Fatalf("the card should say the change in words, naming the units")
 	}
 	if !strings.Contains(html, "make the change") || !strings.Contains(html, "했지만 선언하지 않음: <span class=\"key\">MOD-0001") {
 		t.Fatalf("the turn should show its request and the declared-versus-actual report")
@@ -232,7 +235,7 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 
 	s.decide(t, "do", "confirm", "key", "MOD-0001.responsibility")
 	s.decide(t, "do", "confirm", "key", "MOD-0002.purpose", "value", "posts journal entries")
-	html = s.decide(t, "do", "confirm-reject", "key", "MOD-0002.consumes.MOD-0001")
+	html = s.decide(t, "do", "confirm-reject", "key", "MOD-0002.consumes.IF-0001")
 	md1, md2 := p.read("architecture/MOD-0001.md"), p.read("architecture/MOD-0002.md")
 	if !strings.Contains(md1, "confirmation: CONFIRMED") || !strings.Contains(md2, "posts journal entries\n    origin: USER_STATED") || !strings.Contains(md2, "confirmation: REJECTED") {
 		t.Fatalf("each queue decision should reach the unit:\n%s\n%s", md1, md2)
@@ -248,8 +251,8 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
 	p := aligned(t)
 	s := p.screen()
-	html := s.decide(t, "do", "couple", "from", "MOD-0002", "kind", "consumes", "to", "MOD-0001")
-	if !strings.Contains(p.intended(), "kind: consumes") || !strings.Contains(html, "사람이 등록한 결합 1개") {
+	html := s.decide(t, "do", "couple", "from", "MOD-0002", "kind", "depends_on", "to", "MOD-0001")
+	if !strings.Contains(p.intended(), "kind: depends_on") || !strings.Contains(html, "사람이 등록한 결합 1개") {
 		t.Fatalf("a coupling registered on the screen between design units should be intended")
 	}
 	p.editCode("ledger/book.go")
@@ -258,7 +261,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
  {"key":"api","kind":"IF","name":"http api","signature":"GET /charges","anchors":[{"path":"api/http.go","symbol":"Serve"}]}
 ],"relations":[{"from":"billing","to":"api","kind":"provides"}]}`)
 	p.want(2, "REALIGN unit-removed:MOD-0002", "mode", "on", "--session", "s1")
-	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="removed"`) {
+	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="box removed`) {
 		t.Fatalf("a drifted project should offer the short realignment and draw the removed unit")
 	}
 	s.decide(t, "do", "realign", "key", "unit-removed:MOD-0002")
@@ -288,7 +291,7 @@ func TestGeneratedFilesCarryTheWatermarkAndStatusSaysStale(t *testing.T) {
 	p.want(0, "", "turn", "show")
 	p.want(1, "", "approve", "new-relation:MOD-0001.depends_on.MOD-0002")
 	p.want(0, "generated: STALE", "status")
-	p.want(0, "", "couple", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "", "couple", "MOD-0002.consumes.IF-0001")
 	p.want(0, "generated: CURRENT", "status")
 	if !strings.Contains(p.read("generated/graph.json"), "payments") {
 		t.Fatalf("the regenerated graph should follow the Markdown")

@@ -51,7 +51,7 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    abbd turn start --session ${CLAUDE_SESSION_ID} --seeds <IDS> --request -
    ```
 
-   The output lists the computed impact, one `impact` line per unit, direct items first. Each line ends with its tier, `direct` or `far`. Direct items are the seeds, the units that share a relation with a seed, and the consumers of a contract that shares one. Far items are the rest of the transitive closure.
+   The output lists the computed impact, one `impact` line per unit, direct items first. Each line ends with its tier, `direct` or `far`. Direct items are the seeds, the units that share a relation with a seed in either direction, and the consumers of a contract that shares one. Far items are the rest of the transitive closure. A line that says `(semantic, via V)` was reached through a coupling a reader found and no human has confirmed yet; read it like any other.
    - Read each direct item closely: its code, its contract signature, and how the change reaches it. The change most likely breaks there.
    - Check each far item briefly: open its anchor, confirm whether the change still reaches it through the path its line names, and move on. Read one closely only when that check finds the change does reach it.
 4. Read and follow `<pstack>/skills/blast-radius/SKILL.md` over the request. Add each design unit it finds that the impact lacks. You can only add, and an added unit counts as direct.
@@ -60,7 +60,20 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    abbd turn impact --session ${CLAUDE_SESSION_ID} --add <IDS>
    ```
 
-5. Declare the IntentDelta: the units you will change and every topology change, as item keys (`new-relation:MOD-0001.depends_on.MOD-0002`, `removed-relation:...`, `contract-changed:IF-0001`, `unit-removed:MOD-0003`).
+5. Scan each direct design unit for the couplings the extraction script cannot see: traits used through generics, callbacks, macros, config and flag plumbing, build features, and conventions two units must keep in step. Read and follow `<pstack>/skills/how/SKILL.md` over the unit, unchanged, or `<pstack>/skills/blast-radius/SKILL.md` when the change spans several units. ABBD adds only where the result goes. Register each coupling it finds that the impact does not show, with a short verbatim quote of the code it rests on:
+
+   ```
+   abbd propose relation <FROM> <KIND> <TO> --via <VIA> --evidence "<PATH>:<LINES>:<QUOTE>"
+   ```
+
+   `KIND` is `depends_on`, `consumes` or `provides`, and only a module or feature provides a contract. `VIA` is one of `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`. When an end of the coupling is a unit the topology lacks, such as a shared type or a cargo feature, register it first with `abbd propose unit <KIND> "<NAME>" --evidence "<PATH>:<LINES>:<QUOTE>" --parent <MODULE-ID>`. A proposal stays INFERRED and UNCONFIRMED, never gates, and joins the impact at once; run `abbd turn impact --session ${CLAUDE_SESSION_ID}` to read it. Then record the scan, even when it found nothing:
+
+   ```
+   abbd turn scan --session ${CLAUDE_SESSION_ID} --unit <ID> --by how
+   ```
+
+   Use `--by blast-radius` for a unit you scanned that way. A direct design unit without a scan leaves a grade B card, `semantic-unscanned:<ID>`, when the turn ends.
+6. Declare the IntentDelta: the units you will change and every topology change, as item keys (`new-relation:MOD-0001.depends_on.MOD-0002`, `removed-relation:...`, `contract-changed:IF-0001`, `unit-removed:MOD-0003`).
 
    ```
    abbd turn declare --session ${CLAUDE_SESSION_ID} --units <IDS> --changes <KEYS>
@@ -71,8 +84,8 @@ Match the request to a poteto-mode playbook as poteto-mode says. Then:
    - `C APPROVED KEY`: a human allowed it for this turn. Proceed.
    - `C QUESTION KEY`, exit 2: stop before any edit. Tell the human the question waits on the `abbd serve` screen, give each `abbd approve <KEY>` line as the terminal form, and end your reply, leaving the turn open. Declare again after they answer.
    - `C REJECTED KEY by ADR-...: REASON`, exit 2: the human said no. Declare again without that key and plan around the reason.
-6. Design. When the declaration spans more than one design unit or has any change key, read and follow `<pstack>/skills/architect/SKILL.md`, with the impacted units' boundaries and contract signatures as fixed constraints. Otherwise skip it.
-7. Hand the playbook its context: the impact with its tiers, the signatures of the impacted contracts, and the declaration. Start the playbook.
+7. Design. When the declaration spans more than one design unit or has any change key, read and follow `<pstack>/skills/architect/SKILL.md`, with the impacted units' boundaries and contract signatures as fixed constraints. Otherwise skip it.
+8. Hand the playbook its context: the impact with its tiers, the signatures of the impacted contracts, and the declaration. Start the playbook.
 
 ## Between steps
 
@@ -103,7 +116,7 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
    abbd turn end --session ${CLAUDE_SESSION_ID}
    ```
 
-   - `SYNCED` or `CLOSED`: done. A `B PROCEED contract-touched:<ID>` line means the turn changed a consumed contract's code while its signature stayed the same. Name it in the reply with what its meaning now is, so the human can judge it on the screen.
+   - `SYNCED` or `CLOSED`: done. A `B PROCEED contract-touched:<ID>` line means the turn changed a consumed contract's code while its signature stayed the same. A `B PROCEED evidence-touched:<EDGE>` line means it edited the quoted lines of a coupling a human confirmed. Name each in the reply with what its meaning now is, so the human can judge it on the screen. A `B PROCEED semantic-unscanned:<ID>` line means a direct design unit went unscanned; say why in the reply.
    - `DRAFT`, exit 2: verification is missing, failed, or older than the tree. Fix it, verify, and end again. If it cannot pass, report the DRAFT turn.
    - `BLOCKED`, exit 2: report the `C BLOCKED` lines and send the human to the `abbd serve` screen to approve or reject each. When a `REJECTED` line comes back, undo that change, verify, and end again.
 3. Ship. Only now run the playbook's **Opening a PR** step, and only when the turn ended `SYNCED` or `CLOSED`. Never open a PR on a `DRAFT` or `BLOCKED` turn. Commit `.abbd/` with the code, so the PR carries the turn record `.abbd/changes/<CHG>.md` and what the sync wrote to `.abbd/intended.yaml` and `.abbd/decisions/`.

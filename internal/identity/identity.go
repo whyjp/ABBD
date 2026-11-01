@@ -142,7 +142,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			Anchors: in.Anchors, Purpose: in.Purpose, Responsibility: in.Responsibility,
-			Signature: in.Signature, Digest: in.Digest,
+			Signature: in.Signature, Digest: in.Digest, Evidence: in.Evidence,
 		}
 		created = append(created, nu)
 		ids[i] = nu.ID
@@ -165,18 +165,51 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			}
 		}
 	}
-	for j := range units {
-		units[j].Absent = !stTaken[j]
-		if !stTaken[j] {
-			res.Unmatched = append(res.Unmatched, units[j].ID)
+	for j, u := range units {
+		units[j].Absent = !stTaken[j] && !kept(u, guesses)
+		if units[j].Absent {
+			res.Unmatched = append(res.Unmatched, u.ID)
 		}
 	}
 	res.Units = append(units, created...)
 	sort.Slice(res.Units, func(i, j int) bool { return res.Units[i].ID < res.Units[j].ID })
+	setParents(res.Units, input, ids)
 	setRelations(res.Units, input, ids, extraction.Relations, guesses)
 	res.Candidates = keepLive(append(prior, fresh...), res.Units)
 	res.HighWater = hw
 	return res
+}
+
+// kept reports whether a stored unit the extraction did not report stays
+// present. The script never sees a semantic unit, so a re-extraction keeps
+// it for its evidence to decide; a setup's supplement owns the ones no human
+// has decided.
+func kept(u model.Unit, guesses Guesses) bool {
+	return u.Semantic() && (guesses == KeepGuesses || !u.Name.Guess())
+}
+
+func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
+	byKey := map[string]model.ID{}
+	for i, in := range input {
+		if in.Key != "" {
+			byKey[in.Key] = ids[i]
+		}
+	}
+	return byKey
+}
+
+// setParents gives each reported unit the module its extraction names, by key.
+func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
+	byKey := keyed(input, ids)
+	parent := map[model.ID]model.ID{}
+	for i, in := range input {
+		parent[ids[i]] = byKey[in.Parent]
+	}
+	for i := range units {
+		if p, ok := parent[units[i].ID]; ok {
+			units[i].Parent = p
+		}
+	}
 }
 
 // Extraction owns the EXTRACTED relations of every unit it reports; units it
@@ -185,12 +218,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 // replaced. When the same edge arrives twice, the extracted one wins, then the
 // stored one.
 func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, guesses Guesses) {
-	byKey := map[string]model.ID{}
-	for i, in := range input {
-		if in.Key != "" {
-			byKey[in.Key] = ids[i]
-		}
-	}
+	byKey := keyed(input, ids)
 	reported := map[model.ID]bool{}
 	for _, id := range ids {
 		reported[id] = true
@@ -202,7 +230,7 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 		if origin == "" {
 			origin = model.Extracted
 		}
-		rel := model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: origin}
+		rel := model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: origin, Via: r.Via, Evidence: r.Evidence}
 		f := byKey[r.From]
 		if origin == model.Extracted {
 			extracted[f] = append(extracted[f], rel)
@@ -247,6 +275,12 @@ func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	u.Anchors = in.Anchors
 	u.Signature = in.Signature
 	u.Digest = in.Digest
+	u.Evidence = in.Evidence
+	// A unit moves between the script and the reader whole: once the script
+	// reports a semantic unit its name is extracted, and the other way round.
+	if u.Semantic() || in.Name.Origin == model.Inferred {
+		u.Name = in.Name
+	}
 	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
 		confirmation := u.Name.Confirmation
 		u.Name = in.Name

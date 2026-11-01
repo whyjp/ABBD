@@ -17,6 +17,18 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	"lower": strings.ToLower,
 	// badge is the CSS class of a trust badge: its first word.
 	"badge": func(b string) string { return strings.TrimSuffix(strings.Fields(b + " x")[0], ",") },
+	"half":  func(n int) int { return n / 2 },
+	"short": func(s string, n int) string {
+		if r := []rune(s); len(r) > n {
+			return string(r[:n]) + "…"
+		}
+		return s
+	},
+	"plus":  func(a, b int) int { return a + b },
+	"marks": func() []string { return []string{"contract", "bypass", "guess", "block", "warn", "ink", "ok"} },
+	"markColor": func(k string) string {
+		return map[string]string{"contract": "accent", "bypass": "bypass", "guess": "guess", "block": "block", "warn": "warn", "ink": "ink", "ok": "ok"}[k]
+	},
 	"label": func(k string) string {
 		if l, ok := labels[k]; ok {
 			return l
@@ -61,10 +73,12 @@ type Graph struct {
 	Watermark Watermark `json:"watermark"`
 	Phase     string    `json:"phase"`
 	Units     []UnitRow `json:"units"`
-	Nodes     []Node    `json:"nodes"`
 	Edges     []Line    `json:"edges"`
-	Drift     []Row     `json:"drift"`
-	Queue     []string  `json:"confirm_queue"`
+	// Overview and Modules are the two levels as the page draws them.
+	Overview Drawing  `json:"overview"`
+	Modules  []Inside `json:"modules"`
+	Drift    []Row    `json:"drift"`
+	Queue    []string `json:"confirm_queue"`
 }
 
 // Files renders every generated file. Each carries the watermark of the
@@ -73,7 +87,7 @@ func Files(m Model) (map[string][]byte, error) {
 	// The files describe the .abbd inputs only, so they are current by
 	// construction and say nothing about the working tree.
 	m.Generated, m.Actual, m.Tree = Fresh, "", ""
-	g := Graph{Watermark: m.Watermark, Phase: string(m.Phase), Units: m.Units, Nodes: m.Map.Nodes, Edges: m.Map.Edges, Drift: m.Drift}
+	g := Graph{Watermark: m.Watermark, Phase: string(m.Phase), Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Drift: m.Drift}
 	for _, q := range m.Queue {
 		g.Queue = append(g.Queue, q.Key)
 	}

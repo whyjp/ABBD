@@ -39,7 +39,8 @@ type Findings struct {
 // Overlay matches each document unit to the script unit of the same kind that
 // shares the most anchors, then adds the document's why-fields and the
 // couplings the script did not extract. Code facts (anchors, signatures)
-// always come from the script.
+// always come from the script. A guessing source may also add a unit the
+// script cannot see, when the unit carries evidence ABBD can check.
 func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, error) {
 	out := extract.Result{Units: append([]extract.Unit(nil), base.Units...), Relations: append([]extract.Relation(nil), base.Relations...)}
 	for i := range out.Units {
@@ -50,9 +51,14 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 	var f Findings
 	docTo := map[string]int{}
 	covered := map[int]bool{}
-	for _, d := range doc.Units {
+	scriptUnits := len(out.Units)
+	for n, d := range doc.Units {
 		label := fmt.Sprintf("%s %q", d.Kind, d.Name.Value)
-		i, err := match(out.Units, d)
+		i, err := match(out.Units[:scriptUnits], d)
+		if err != nil && src.Origin == model.Inferred && len(d.Evidence) > 0 {
+			out.Units = append(out.Units, semantic(d, fmt.Sprintf("%s#%d", src.Name, n)))
+			i, err = len(out.Units)-1, nil
+		}
 		if err != nil {
 			f.Gaps = append(f.Gaps, fmt.Sprintf("%s %s: %v", src.Name, label, err))
 			continue
@@ -81,7 +87,14 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 		}
 	}
 	if src.Strict && len(f.Gaps) > 0 {
-		return base, f, fmt.Errorf("the %s names units the script did not report; fix the script:\n  %s", src.Name, strings.Join(f.Gaps, "\n  "))
+		return base, f, fmt.Errorf("the %s names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", src.Name, strings.Join(f.Gaps, "\n  "))
+	}
+	for _, d := range doc.Units {
+		if i, ok := docTo[d.Key]; ok && d.Parent != "" {
+			if p, ok := docTo[d.Parent]; ok {
+				out.Units[i].Parent = out.Units[p].Key
+			}
+		}
 	}
 	if !src.Strict {
 		for i, u := range out.Units {
@@ -125,11 +138,20 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 			out.Relations[i].Origin = src.Origin
 			continue
 		}
-		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: src.Origin})
+		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: src.Origin, Via: r.Via, Evidence: r.Evidence})
 	}
 	sort.Strings(f.Conflicts)
 	sort.Strings(f.Gaps)
 	return out, f, nil
+}
+
+// semantic is a unit only a reader vouches for. Its name is a guess too, and
+// its evidence anchors its ID.
+func semantic(d extract.Unit, key string) extract.Unit {
+	d.Key = key
+	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred, Confirmation: model.Unconfirmed}
+	d.Signature, d.Digest, d.Parent = nil, "", ""
+	return d
 }
 
 // The three-axis vocabulary keeps a guess in the confirm queue; a reconstructed

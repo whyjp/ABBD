@@ -27,6 +27,9 @@ func TestPreToolUseDeniesEverySpellingOfAHumansWrite(t *testing.T) {
 	var calls []map[string]any
 	for _, c := range []string{
 		`abbd approve K`,
+		`for f in a b; do abbd approve $f; done`,
+		`cd .abbd && for f in *.md; do rm $f; done`,
+		`if true; then cat x > .abbd/intended.yaml; fi`,
 		`abbd reject K --reason x`,
 		`abbd couple MOD-0001.consumes.MOD-0002`,
 		`abbd approve unit-added:MOD-0003`,
@@ -108,6 +111,9 @@ func TestPreToolUseAllowsReadsAndRequestText(t *testing.T) {
 		`cp ../notes.txt .`,
 		`git checkout -b charge-in-cents`,
 		`echo "abbd approve K" > notes.txt`,
+		`cd .abbd/architecture && for f in MOD-*.md; do head -8 $f; done`,
+		`abbd propose relation MOD-0001 depends_on MOD-0002 --via call --evidence "billing/charge.go:3:func Charge"`,
+		`abbd turn scan --session s1 --unit MOD-0001 --by how`,
 	} {
 		calls = append(calls, p.bash(c))
 	}
