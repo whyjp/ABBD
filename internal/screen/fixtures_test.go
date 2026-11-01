@@ -33,8 +33,14 @@ type view struct {
 
 func views(m Model) []view {
 	out := []view{{"overview", m.Overview, overviewWidth}}
+	for _, f := range m.Focus {
+		out = append(out, view{"overview focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
+	}
 	for _, ins := range m.Insides {
 		out = append(out, view{ins.ID + " " + ins.Name, ins.Drawing, insideWidth})
+		for _, f := range ins.Focus {
+			out = append(out, view{ins.ID + " focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
+		}
 	}
 	return out
 }
@@ -107,6 +113,18 @@ var debt = map[string]Metrics{
 	"pstack MOD-0001 setup and help":          {Braid: 2278},
 	"pstack MOD-0003 principles":              {Back: 3},
 	"pstack MOD-0015 verification principles": {Truncated: 1},
+	// Focus views (focus.go) of the same states. A name with no break
+	// that wraps is cut as it is in the full views, and lines of two
+	// kinds between the same boxes run side by side.
+	"self overview focus MOD-0030 internal/model":                                        {Braid: 1414},
+	"pstack MOD-0001 focus FEAT-0008 docs/harness/claude-code.md":                        {Truncated: 1, Braid: 916},
+	"pstack MOD-0003 focus MOD-0017 meta principles":                                     {Braid: 210},
+	"pstack MOD-0010 focus FEAT-0012 /benchmark-checklist":                               {Truncated: 1},
+	"pstack MOD-0013 focus FEAT-0030 /principle-attack-the-premise":                      {Truncated: 1},
+	"pstack MOD-0013 focus FEAT-0035 /principle-experience-first":                        {Truncated: 1},
+	"pstack MOD-0014 focus FEAT-0042 /principle-migrate-callers-then-delete-legacy-apis": {Truncated: 1},
+	"pstack MOD-0014 focus FEAT-0044 /principle-model-the-domain":                        {Truncated: 1},
+	"pstack MOD-0015 focus FEAT-0036 /principle-explain-the-number":                      {Truncated: 1},
 }
 
 // over names each measure that went past its recorded debt. A measure the

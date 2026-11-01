@@ -309,3 +309,11 @@
   existing: MOD-0033
   shared:
     path: internal/model/model.go
+- new: MOD-0034
+  existing: MOD-0035
+  shared:
+    path: internal/screen/inside.go
+- new: MOD-0034
+  existing: MOD-0037
+  shared:
+    path: internal/screen/overview.go

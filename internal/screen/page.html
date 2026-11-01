@@ -73,6 +73,9 @@ svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: v
 svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
 svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
+svg .box.twin rect { stroke: var(--muted); }
+.picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
 svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
@@ -132,6 +135,7 @@ svg marker path { stroke: none; }
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" "overview"}}
+  {{template "picker" .Focus}}
   {{if .Links}}<h3>계약 사이의 관계</h3>
   <ul class="plain">{{range .Links}}<li>{{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span></li>{{end}}</ul>{{end}}
   <p class="muted" style="margin:6px 0 0">리더가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 확인하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 닿는 모듈의 안에 나열합니다.</p>
@@ -145,6 +149,7 @@ svg marker path { stroke: none; }
     <div>
       <div class="mapbox">{{template "drawing" .Drawing}}</div>
       {{template "legend" "inside"}}
+      {{template "picker" .Focus}}
       {{if .Unwired}}<div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span>{{range .Unwired}}{{if .Head}}<span class="head">{{.Head}}</span>{{end}}{{range .Names}}<span class="chip">{{.}}</span>{{end}}{{end}}</div>{{end}}
       {{if .Inferred}}<h3>판독한 결합</h3>
       <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
@@ -161,6 +166,8 @@ svg marker path { stroke: none; }
   </div>
 </section>
 {{end}}
+{{range .Focus}}{{template "focus" .}}{{end}}
+{{range .Insides}}{{range .Focus}}{{template "focus" .}}{{end}}{{end}}
 
 <section id="units">
   <details>
@@ -184,6 +191,14 @@ svg marker path { stroke: none; }
 {{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}" data-id="{{.ID}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 {{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
 </svg>{{end}}
+{{define "picker"}}{{if .}}<div class="chips picker"><span class="muted">선이 많아 한 상자씩 봅니다. 상자를 고르면 그 상자와 닿는 상자, 그 사이의 선만 그립니다:</span>{{range .}} <a class="chip" href="#{{.ID}}" title="닿는 상자 {{.Ring}}개">{{.Name}}</a>{{end}}</div>{{end}}{{end}}
+{{define "focus"}}<section class="inside" id="{{.ID}}">
+  <div class="drawhead"><h2>{{.Name}} 둘레 <span class="muted key">{{.Unit}}</span></h2><div class="views"><span class="muted">{{.OfName}}에서 고른 상자</span> <a href="{{.Of}}">전체 그림으로</a>{{if .In}} <a href="{{.In}}">{{.Name}}의 안으로</a>{{end}}</div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox">{{template "drawing" .Drawing}}</div>
+  {{if eq .Of "#overview"}}{{template "legend" "overview"}}{{else}}{{template "legend" "inside"}}{{end}}
+</section>
+{{end}}
 {{define "legend"}}<div class="legend">{{if eq . "overview"}}
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--accent)"/></svg>제공하는 계약 (출구)</span>
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>

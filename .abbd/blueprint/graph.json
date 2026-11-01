@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "e569ebb808a8a58a4f29958324c3cf735de46cd90e3821fcfaa0c7e325e441b8"
+    "inputs_hash": "0e741535baf27fe7ca2d9a83e9119c05510532e7ac3dbaa38d02543c5ea84c37"
   },
   "units": [
     {
@@ -1931,6 +1931,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/focus.go",
         "internal/screen/fold.go",
         "internal/screen/graph.go",
         "internal/screen/ink.go",
@@ -1959,13 +1960,14 @@
         "Badge": "inferred"
       },
       "Anchors": [
+        "internal/screen/inside.go",
         "internal/screen/inside.go inferred",
         "internal/screen/inside.go inside"
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go:78 \"func (o *overview) inside(m model.ID, units []model.Unit) Inside {\"",
-        "internal/screen/inside.go:517 \"func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {\""
+        "internal/screen/inside.go:84 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside {\"",
+        "internal/screen/inside.go:578 \"func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {\""
       ]
     },
     {
@@ -2007,15 +2009,15 @@
         "Badge": "inferred"
       },
       "Anchors": [
+        "internal/screen/overview.go",
         "internal/screen/overview.go draw",
         "internal/screen/overview.go planOverview",
         "internal/screen/overview.go top"
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go:110 \"if present[u.ID] \u0026\u0026 present[r.To] \u0026\u0026 r.Counts() {\"",
-        "internal/screen/overview.go:269 \"func planOverview(units []model.Unit) *overview {\"",
-        "internal/screen/overview.go:377 \"k := fmt.Sprintf(\\\"bypass\u003e%s\\\", e)\""
+        "internal/screen/overview.go:271 \"func planOverview(units []model.Unit, focus model.ID) *overview {\"",
+        "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
       ]
     },
     {
@@ -3818,7 +3820,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:194 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:200 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -3826,7 +3828,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -3834,7 +3836,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -3884,7 +3886,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\""
+      "Quote": "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\""
     },
     {
       "From": "MOD-0035",
@@ -3892,7 +3894,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\""
+      "Quote": "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
     },
     {
       "From": "MOD-0037",
@@ -3908,7 +3910,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+      "Quote": "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
     },
     {
       "From": "MOD-0038",
@@ -3924,7 +3926,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.html:92 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+      "Quote": "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
     },
     {
       "From": "MOD-0038",
@@ -3932,7 +3934,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\""
+      "Quote": "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
     },
     {
       "From": "MOD-0038",
@@ -3980,7 +3982,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:182 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -6124,7 +6126,8 @@
             "X": 520,
             "Y": 322,
             "W": 164,
-            "H": 44
+            "H": 44,
+            "Href": "#f-FEAT-0001--FEAT-0003"
           },
           {
             "ID": "FEAT-0004",
@@ -6152,7 +6155,8 @@
             "X": 80,
             "Y": 314,
             "W": 204,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0001--FEAT-0004"
           },
           {
             "ID": "FEAT-0005",
@@ -6180,7 +6184,8 @@
             "X": 214,
             "Y": 202,
             "W": 172,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0001--FEAT-0005"
           },
           {
             "ID": "FEAT-0006",
@@ -6208,7 +6213,8 @@
             "X": 409,
             "Y": 106,
             "W": 158,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0001--FEAT-0006"
           },
           {
             "ID": "FEAT-0007",
@@ -6236,7 +6242,8 @@
             "X": 80,
             "Y": 418,
             "W": 140,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0001--FEAT-0007"
           },
           {
             "ID": "FEAT-0008",
@@ -6259,7 +6266,8 @@
             "X": 550,
             "Y": 426,
             "W": 150,
-            "H": 44
+            "H": 44,
+            "Href": "#f-FEAT-0001--FEAT-0008"
           },
           {
             "ID": "FEAT-0009",
@@ -6287,7 +6295,8 @@
             "X": 316,
             "Y": 418,
             "W": 140,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0001--FEAT-0009"
           }
         ],
         "Ports": [
@@ -7421,7 +7430,8 @@
             "X": 83,
             "Y": 446,
             "W": 212,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0010"
           },
           {
             "ID": "FEAT-0011",
@@ -7449,7 +7459,8 @@
             "X": 489,
             "Y": 286,
             "W": 196,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0011"
           },
           {
             "ID": "FEAT-0012",
@@ -7477,7 +7488,8 @@
             "X": 140,
             "Y": 158,
             "W": 206,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0012"
           },
           {
             "ID": "FEAT-0013",
@@ -7505,7 +7517,8 @@
             "X": 259,
             "Y": 286,
             "W": 190,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0013"
           },
           {
             "ID": "FEAT-0014",
@@ -7533,7 +7546,8 @@
             "X": 268,
             "Y": 62,
             "W": 188,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0014"
           },
           {
             "ID": "FEAT-0015",
@@ -7561,7 +7575,8 @@
             "X": 335,
             "Y": 446,
             "W": 206,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0015"
           },
           {
             "ID": "FEAT-0016",
@@ -7589,7 +7604,8 @@
             "X": 639,
             "Y": 158,
             "W": 188,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0016"
           },
           {
             "ID": "FEAT-0017",
@@ -7617,7 +7633,8 @@
             "X": 573,
             "Y": 446,
             "W": 158,
-            "H": 60
+            "H": 60,
+            "Href": "#f-FEAT-0002--FEAT-0017"
           }
         ],
         "Ports": [
@@ -8717,7 +8734,8 @@
             "X": 31,
             "Y": 258,
             "W": 194,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--DATA-0001"
           },
           {
             "ID": "MOD-0002",
@@ -8740,7 +8758,8 @@
             "X": 329,
             "Y": 106,
             "W": 146,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0002"
           },
           {
             "ID": "MOD-0003",
@@ -8763,7 +8782,8 @@
             "X": 77,
             "Y": 106,
             "W": 220,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0003"
           },
           {
             "ID": "MOD-0004",
@@ -8786,7 +8806,8 @@
             "X": 515,
             "Y": 106,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0004"
           },
           {
             "ID": "MOD-0005",
@@ -8809,7 +8830,8 @@
             "X": 741,
             "Y": 106,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0005"
           },
           {
             "ID": "MOD-0006",
@@ -8832,7 +8854,8 @@
             "X": 709,
             "Y": 258,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0006"
           },
           {
             "ID": "MOD-0007",
@@ -8855,7 +8878,8 @@
             "X": 265,
             "Y": 258,
             "W": 156,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0001--MOD-0007"
           },
           {
             "ID": "MOD-0008",
@@ -8883,7 +8907,8 @@
             "X": 461,
             "Y": 250,
             "W": 208,
-            "H": 60
+            "H": 60,
+            "Href": "#f-MOD-0001--MOD-0008"
           }
         ],
         "Ports": [
@@ -19800,7 +19825,8 @@
             "X": 106,
             "Y": 62,
             "W": 182,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--DATA-0014"
           },
           {
             "ID": "MOD-0035",
@@ -19823,7 +19849,8 @@
             "X": 169,
             "Y": 142,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--MOD-0035"
           },
           {
             "ID": "MOD-0036",
@@ -19851,7 +19878,8 @@
             "X": 111,
             "Y": 350,
             "W": 140,
-            "H": 60
+            "H": 60,
+            "Href": "#f-MOD-0034--MOD-0036"
           },
           {
             "ID": "MOD-0037",
@@ -19874,7 +19902,8 @@
             "X": 25,
             "Y": 246,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--MOD-0037"
           },
           {
             "ID": "MOD-0038",
@@ -19897,7 +19926,8 @@
             "X": 328,
             "Y": 62,
             "W": 140,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--MOD-0038"
           },
           {
             "ID": "MOD-0039",
@@ -19920,7 +19950,8 @@
             "X": 401,
             "Y": 246,
             "W": 164,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--MOD-0039"
           },
           {
             "ID": "MOD-0040",
@@ -19943,7 +19974,8 @@
             "X": 197,
             "Y": 246,
             "W": 164,
-            "H": 44
+            "H": 44,
+            "Href": "#f-MOD-0034--MOD-0040"
           }
         ],
         "Ports": [
@@ -20057,7 +20089,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\""
+              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037"
@@ -20082,7 +20114,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -20114,7 +20146,7 @@
             "Title": "page template depends_on module inside (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "internal/screen/page.html:92 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+              "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0035"
@@ -20127,7 +20159,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\""
+              "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0037"
@@ -20201,7 +20233,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/screen.go:182 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+              "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
             ],
             "Marks": [
               {
@@ -20276,8 +20308,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\"",
-              "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
+              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
             ],
             "Marks": [
               {
@@ -20308,7 +20340,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Marks": [
               {
@@ -20338,8 +20370,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/page.html:92 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-              "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\"",
+              "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+              "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
               "internal/screen/words.go:15 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph.\""
             ],
             "Marks": [
@@ -20469,8 +20501,8 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\"",
-              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
+              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20483,8 +20515,8 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
-              "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\"",
-              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
+              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20501,8 +20533,8 @@
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\"",
-              "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\""
+              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
+              "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -20515,8 +20547,8 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Quotes": [
-              "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\"",
-              "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\""
+              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
+              "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -20600,6 +20632,7 @@
           "Sentence": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
           "Guess": true,
           "Anchors": [
+            "internal/screen/inside.go",
             "internal/screen/inside.go inferred",
             "internal/screen/inside.go inside"
           ]
@@ -20623,6 +20656,7 @@
           "Sentence": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
           "Guess": true,
           "Anchors": [
+            "internal/screen/overview.go",
             "internal/screen/overview.go draw",
             "internal/screen/overview.go planOverview",
             "internal/screen/overview.go top"
@@ -20867,7 +20901,23 @@
                 "Code": true
               },
               {
-                "Text": " names one. A feature with no parts has none, so its box carries no link and its title offers no click. Everything is sorted before it is placed, so the same store always draws the same picture. ",
+                "Text": " names one, and ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": " makes a view for exactly the units ",
+                "Code": false
+              },
+              {
+                "Text": "viewOf",
+                "Code": true
+              },
+              {
+                "Text": " names, so no link opens a missing section. A feature with no parts has none, so its box carries no link and its title offers no click. Everything is sorted before it is placed, so the same store always draws the same picture. ",
                 "Code": false
               },
               {
@@ -21002,7 +21052,15 @@
                 "Code": true
               },
               {
-                "Text": " per view, every live relation as ",
+                "Text": " per view, the overview's ",
+                "Code": false
+              },
+              {
+                "Text": "Focus",
+                "Code": true
+              },
+              {
+                "Text": " views, every live relation as ",
                 "Code": false
               },
               {
@@ -21587,6 +21645,84 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Focus",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "focus.go",
+                "Code": true
+              },
+              {
+                "Text": "): a view derived from a dense one, which draws more than two relations per box. Each box of a dense overview or inside gets one: that box, the boxes it meets, and only its own lines, built by the same ",
+                "Code": false
+              },
+              {
+                "Text": "planOverview",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "inside",
+                "Code": true
+              },
+              {
+                "Text": " with a focus ID. ",
+                "Code": false
+              },
+              {
+                "Text": "around",
+                "Code": true
+              },
+              {
+                "Text": " cuts the overview's edges down to the focus and the modules across the contracts it meets. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
+                "Code": false
+              },
+              {
+                "Text": "\u003cunit\u003e↓",
+                "Code": true
+              },
+              {
+                "Text": ", so every line reads down; ",
+                "Code": false
+              },
+              {
+                "Text": "base",
+                "Code": true
+              },
+              {
+                "Text": " maps a twin back to its unit. Focus views take the overview's width, name boxes by their last path segment, link each ring box to its own focus view, and are left out of ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "linkFocus",
+                "Code": true
+              },
+              {
+                "Text": " makes each box of the full view that opens nothing else open its focus view, and the page lists the focus views under the full drawing.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Freshness",
                 "Code": false,
                 "Bold": true
@@ -21786,7 +21922,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:194 \"return \\\"stated\\\"\"",
+            "internal/screen/screen.go:200 \"return \\\"stated\\\"\"",
             "internal/screen/page.go:41 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
@@ -21796,7 +21932,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -21805,7 +21941,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -21835,7 +21971,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:182 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:188 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -21844,7 +21980,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\""
+            "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\""
           ]
         },
         {
@@ -21853,8 +21989,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:120 \"if slices.Contains(o.providers[c], m) {\"",
-            "internal/screen/screen.go:180 \"ins := o.inside(id, in.Units)\""
+            "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
+            "internal/screen/screen.go:184 \"ins := o.inside(id, in.Units, \\\"\\\")\""
           ]
         },
         {
@@ -21873,7 +22009,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+            "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
           ]
         },
         {
@@ -21891,10 +22027,10 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.html:92 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-            "internal/screen/inside.go:435 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
-            "internal/screen/page.html:148 \"{{if .Unwired}}\"",
-            "internal/screen/inside.go:391 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
+            "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+            "internal/screen/inside.go:494 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
+            "internal/screen/page.html:153 \"{{if .Unwired}}\"",
+            "internal/screen/inside.go:436 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
         {
@@ -21903,10 +22039,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\"",
-            "internal/screen/overview.go:592 \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
-            "internal/screen/screen.go:158 \"return \\\"#m-\\\" + string(id)\"",
-            "internal/screen/page.html:141 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+            "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
           ]
         },
         {
@@ -21916,7 +22049,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/words.go:15 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph.\"",
-            "internal/screen/page.html:155 \"{{range .Blocks}}{{if eq .Kind \\\"h\\\"}}\""
+            "internal/screen/page.html:160 \"{{range .Blocks}}{{if eq .Kind \\\"h\\\"}}\""
           ]
         },
         {
@@ -21965,7 +22098,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:182 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -23746,7 +23879,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:182 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:188 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -25653,7 +25786,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -25974,7 +26107,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {

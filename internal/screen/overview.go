@@ -266,7 +266,9 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 	return ch
 }
 
-func planOverview(units []model.Unit) *overview {
+// planOverview lays out the overview. With a focus, it lays out the focus
+// view of that module instead (focus.go).
+func planOverview(units []model.Unit, focus model.ID) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -275,10 +277,13 @@ func planOverview(units []model.Unit) *overview {
 		o.units[id] = o.tree.units[id]
 	}
 	o.design, o.relations, o.rels, o.origins = top(o.tree)
+	if focus != "" {
+		o.around(focus)
+	}
 	slices.Sort(o.design)
 	isModule := map[model.ID]bool{}
 	for _, id := range o.design {
-		k, _, _ := model.ParseID(string(id))
+		k := o.units[id].Kind
 		switch {
 		case k == model.Module || k == model.Feature:
 			o.modules = append(o.modules, id)
@@ -393,7 +398,7 @@ func planOverview(units []model.Unit) *overview {
 }
 
 func (o *overview) name(id model.ID) string {
-	if u, ok := o.units[id]; ok && u.Name.Value != "" {
+	if u, ok := o.units[base(id)]; ok && u.Name.Value != "" {
 		return u.Name.Value
 	}
 	return string(id)
@@ -690,10 +695,18 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
-		b.Title = fmt.Sprintf("%s %s", m, b.Name)
-		if viewOf(o.tree, m) != "" {
-			b.Href = href(m)
-			b.Title += ". 누르면 이 모듈의 안을 봅니다"
+		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
+		if base(m) != m {
+			b.Title += "\n" + twinNote
+			b.Class += " twin"
+		}
+		if h := href(m); h != "" {
+			b.Href = h
+			if strings.HasPrefix(h, "#m-") {
+				b.Title += ". 누르면 이 모듈의 안을 봅니다"
+			} else {
+				b.Title += ". 누르면 이 모듈을 중심으로 봅니다"
+			}
 		}
 		d.Boxes = append(d.Boxes, b)
 	}
@@ -777,7 +790,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 
 // viewOf is the link to the view that shows id's inside, when it has one.
 func viewOf(t tree, id model.ID) string {
-	if len(t.children[id]) > 0 || t.units[id].Kind == model.Module {
+	if u := t.units[id]; len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
 		return "#m-" + string(id)
 	}
 	return ""
