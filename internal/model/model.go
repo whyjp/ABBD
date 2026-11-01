@@ -178,9 +178,11 @@ type Unit struct {
 	// Absent marks a unit that is no longer there, and AbsentReason says why.
 	Absent       bool         `yaml:"absent,omitempty"`
 	AbsentReason AbsentReason `yaml:"absent_reason,omitempty"`
-	// Parent and ParentOrigin are the winning parent claim, derived by Resolve.
+	// Parent, ParentOrigin and ParentWriter are the winning parent claim,
+	// derived by Resolve.
 	Parent       ID     `yaml:"-"`
 	ParentOrigin Origin `yaml:"-"`
+	ParentWriter Writer `yaml:"-"`
 	// Notes is the user-owned "## Notes" section, carried through untouched.
 	Notes string `yaml:"-"`
 }
@@ -222,12 +224,9 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
 	}
-	for i := range u.Parents {
-		if c := u.Parents[i]; c.To == u.Parent && c.Writer.Origin() == u.ParentOrigin {
-			for j := range c.Evidence {
-				f(c.Writer, &u.Parents[i].Evidence[j])
-			}
-			break
+	if c := u.ShownParent(); c != nil {
+		for j := range c.Evidence {
+			f(c.Writer, &c.Evidence[j])
 		}
 	}
 	for i := range u.Relations {
@@ -235,6 +234,16 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
 		}
 	}
+}
+
+// ShownParent is the parent claim Resolve picked, or nil.
+func (u *Unit) ShownParent() *ParentClaim {
+	for i := range u.Parents {
+		if u.Parents[i].Writer == u.ParentWriter && u.Parents[i].To == u.Parent {
+			return &u.Parents[i]
+		}
+	}
+	return nil
 }
 
 func (u Unit) Validate() error {
@@ -440,9 +449,10 @@ type Evidence struct {
 }
 
 // Same reports whether two items cite the same code, wherever sync last
-// found it.
+// found it. The symbol only names where in the file to look, so an item that
+// gains or changes one still cites the same code.
 func (e Evidence) Same(o Evidence) bool {
-	return e.Path == o.Path && e.Symbol == o.Symbol && e.Quote == o.Quote
+	return e.Path == o.Path && e.Quote == o.Quote
 }
 
 func (e Evidence) Anchor() Anchor { return Anchor{Path: e.Path, Symbol: e.Symbol} }

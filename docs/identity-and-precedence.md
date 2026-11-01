@@ -44,7 +44,7 @@ Script evidence (the extractor may cite quotes for a relation) is live or dead a
 
 A claim is live if any item is live, else drifted if any item is drifted, else dead. A semantic unit, one only a reader or the supplement vouches for, goes absent with reason `evidence-dead` when its claim is dead. `abbd status` prints the drifted and dead item counts, so they cannot pile up unseen. The `/abbd` after-work step tells the agent to refresh or retract the drifted items under the paths its change touched.
 
-When setup or sync replaces a claim whose items are unchanged (same path, symbol and quote), the items keep their status and `since`. Without that, re-running setup would revive dead items.
+When setup or sync replaces a claim whose items are unchanged (same path and quote), the items keep their status and `since`, whatever symbol the new item names. Without that, re-running setup would revive dead items.
 
 ## 4. The precedence table
 
@@ -60,11 +60,11 @@ When setup or sync replaces a claim whose items are unchanged (same path, symbol
 
 A one-value field is replaced only by its own writer or by a writer above it. Setup replaces supplement values and leaves reader and human values alone.
 
-For relations and parents, the shown claim is the first eligible one in table order, with one exception: between reader and supplement, a live claim beats a drifted one, whatever the writer. A dead claim, or one a mask hides, is not eligible. The other claims stay stored. On a relation, they sit under `hidden:` in the unit file. When the shown claim goes, the next one shows, with its own origin.
+For relations and parents, the shown claim is the first eligible one by status, then in table order: a live claim beats a drifted one and a drifted one beats a dead one, whatever the writer. A claim without evidence is live, so the script's and group's claims always are. A dead claim, or one a mask hides, is not eligible. The other claims stay stored. On a relation, they sit under `hidden:` in the unit file. When the shown claim goes, the next one shows, with its own origin.
 
-A parent claim is also skipped when its parent is absent or is not a module or feature. Cycles are resolved in tier order: script and group claims first, then human, reader and supplement, each in unit ID order. A claim that would close a cycle is skipped, never deleted, and the unit falls through to its next claim. With no claim left, the unit is top level.
+A parent claim is also skipped when its parent is absent or is not a module or feature. Cycles are resolved in tier order: script and group claims first, then human, reader and supplement, each in unit ID order. A claim that would close a cycle is skipped, never deleted, and the unit falls through to its next claim. Acceptance then starts again from the first tier, so that next claim is weighed before any lower tier's. With no claim left, the unit is top level.
 
-A human's parent outranks the script's. The human claim stores `over`, the script's parent when the human stated it. When the script's claim later differs from `over`, sync and `abbd status` print it as a conflict, so a refactor cannot leave the human's placement stale silently.
+A human's parent outranks the script's. The human claim stores `over`, the script's parent when the human stated it. When the script's claim later differs from `over` and from the human's own parent, sync and `abbd status` print it as a conflict, so a refactor cannot leave the human's placement stale silently.
 
 ### Grouping
 
@@ -107,7 +107,7 @@ The adversarial review of the first draft asked to reduce scope before implement
 2. Anchors derived from evidence would change under a symbol migration, so setup would re-mint IDs. Setup now pairs on the stored `supplement_key` first.
 3. `group.Fallback` minted IDs and had no reason for absence. It is now a writer with stored claims and the `unneeded` reason, and it also groups unplaced top-level units.
 4. Without an index, a drifted claim would count forever. Drift is bounded to one revision (section 3). Migration keeps today's dead items dead.
-5. A drifted reader claim beat a live supplement claim. A live claim now wins between them.
+5. A drifted reader claim beat a live supplement claim. A live claim now wins, between any writers.
 6. Retract was a permanent mask in two steps. It is one step, idempotent, and bound to the masked content.
 7. A human parent over the script could go stale silently. The `over` conflict covers it.
 8. Migration's supplement-or-reader split by value equality was unreliable. It now asks whether the supplement makes any claim on the same target (section 8), and it stops when the supplement file is missing.
@@ -128,7 +128,7 @@ An old-format unit file is recognized by `origin` on its name. The old-format lo
 `abbd migrate` runs once per repository and can be re-run on a copy.
 
 1. Load the old state, run the registered extraction, and fold in the supplement (`--supplement`, default `.abbd/extractor/supplement.json`). With no supplement file it stops and says so, because it cannot tell supplement claims from reader claims.
-2. Pair the supplement's units with the stored units as setup would. An INFERRED claim is the reader's when the supplement makes no claim on the same target (the unit, the edge, its parent, or the field). Otherwise it stays the supplement's, which is also the default for anything unclear. A paired supplement unit stores its `supplement_key`.
+2. Pair the supplement's units with the stored units as setup would. An INFERRED claim is the reader's when the supplement makes no claim on the same target (the unit, the edge, its parent, or the field). Otherwise it stays the supplement's, which is also the default for anything unclear. A parent claim is the supplement's only when the supplement places the unit in the same parent. A paired supplement unit stores its `supplement_key`, and a human's parent stores the script's parent the extraction reports as its `over`.
 3. Mark every non-script item that is not live in the tree now as dead, with reason `dead before migration`. Today's dead items stay dead, and nothing is revived.
 4. Compare the graph before and after: present units, their parents, and each shown relation with its origin and deadness. Any difference stops the migration before it writes.
 5. Save every unit in the new format and print the classification.

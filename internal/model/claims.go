@@ -90,14 +90,11 @@ func rank(f Field, w Writer) int {
 // Outranks reports whether w's value of a field beats held's.
 func Outranks(f Field, w, held Writer) bool { return rank(f, w) < rank(f, held) }
 
-// order sorts the claims on one edge or one parent: by the table, except that
-// between a reader and the supplement a live claim beats a drifted one.
+// order sorts the claims on one edge or one parent: live claims before
+// drifted ones before dead ones, whoever wrote them, and by the table within
+// each status. A claim without evidence is live.
 func order(f Field, w Writer, s Status) int {
-	r := rank(f, w)
-	if w.Origin() == Inferred {
-		r += 2 * len(Precedence[f]) * map[Status]int{Live: 0, Drifted: 1, Dead: 2}[s]
-	}
-	return r
+	return rank(f, w) + 2*len(Precedence[f])*map[Status]int{Live: 0, Drifted: 1, Dead: 2}[s]
 }
 
 // ParentClaim is one writer's claim on the unit that contains another.
@@ -324,8 +321,9 @@ func eligible(u Unit, holds map[ID]bool) []ParentClaim {
 
 // resolveParents gives each present unit the first eligible parent claim
 // that closes no cycle. Claims are accepted tier by tier, each tier in unit
-// ID order, and a unit whose best claim would close a cycle falls to its
-// next claim. A skipped claim stays stored.
+// ID order. A unit whose best claim would close a cycle falls to its next
+// claim, and acceptance starts again from the first tier, so that claim is
+// weighed before any lower tier. A skipped claim stays stored.
 func resolveParents(units []Unit) {
 	holds := map[ID]bool{}
 	for _, u := range units {
@@ -354,6 +352,7 @@ func resolveParents(units []Unit) {
 	}
 	for changed := true; changed; {
 		changed = false
+	tiers:
 		for t := 0; t < 4; t++ {
 			for _, id := range ids {
 				if decided[id] {
@@ -369,7 +368,7 @@ func resolveParents(units []Unit) {
 				}
 				if closes(id, c.To) {
 					cands[id], changed = cands[id][1:], true
-					continue
+					break tiers
 				}
 				chosen[id], decided[id], changed = c, true, true
 			}
@@ -381,15 +380,16 @@ func resolveParents(units []Unit) {
 		if u.Absent && len(u.Parents) > 0 {
 			c, ok = u.Parents[0], true
 		}
-		u.Parent, u.ParentOrigin = "", ""
+		u.Parent, u.ParentOrigin, u.ParentWriter = "", "", ""
 		if ok {
-			u.Parent, u.ParentOrigin = c.To, c.Writer.Origin()
+			u.Parent, u.ParentOrigin, u.ParentWriter = c.To, c.Writer.Origin(), c.Writer
 		}
 	}
 }
 
 // ParentConflicts lists the units where a human's parent overrides the
-// script's and the script's parent changed since the human stated it.
+// script's and the script's parent changed since the human stated it to one
+// the human did not choose.
 func ParentConflicts(units []Unit) []string {
 	var out []string
 	for _, u := range Present(units) {
@@ -398,7 +398,7 @@ func ParentConflicts(units []Unit) []string {
 			continue
 		}
 		s, _ := u.Claim(Script)
-		if s.To != h.Over {
+		if s.To != h.Over && s.To != h.To {
 			was := place(h.Over)
 			out = append(out, fmt.Sprintf("%s: a human placed it in %s (%s) over the script's %s, and the script now places it in %s", u.ID, h.To, h.Source, was, place(s.To)))
 		}

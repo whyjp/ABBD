@@ -157,7 +157,9 @@ func markDead(units []model.Unit, c *evidence.Checker) int {
 
 // claims is what the supplement says, by stored ID.
 type claims struct {
-	key      map[model.ID]string
+	key map[model.ID]string
+	// ids maps the overlay's keys to the stored units they took.
+	ids      map[string]model.ID
 	input    map[model.ID]extract.Unit
 	edges    map[model.Edge]bool
 	unpaired int
@@ -170,7 +172,7 @@ func supplementClaims(units []model.Unit, over extract.Result, hw map[model.Kind
 	for _, u := range units {
 		stored[u.ID] = true
 	}
-	c := claims{key: map[model.ID]string{}, input: map[model.ID]extract.Unit{}, edges: map[model.Edge]bool{}, reader: map[model.ID]bool{}}
+	c := claims{key: map[model.ID]string{}, ids: map[string]model.ID{}, input: map[model.ID]extract.Unit{}, edges: map[model.Edge]bool{}, reader: map[model.ID]bool{}}
 	for _, in := range over.Units {
 		id := res.Keys[in.Key]
 		if !stored[id] {
@@ -180,6 +182,9 @@ func supplementClaims(units []model.Unit, over extract.Result, hw map[model.Kind
 			continue
 		}
 		c.input[id] = in
+		if in.Key != "" {
+			c.ids[in.Key] = id
+		}
 		if in.SupplementKey != "" {
 			c.key[id] = in.SupplementKey
 		}
@@ -222,7 +227,9 @@ func (t classification) print(w interface{ Write([]byte) (int, error) }) {
 // classify gives each INFERRED claim of u to the supplement or a reader. A
 // claim the supplement makes on the same target is the supplement's; one it
 // makes none on is a reader's. A unit the supplement does not report follows
-// its own name, and anything unclear stays the supplement's.
+// its own name, and anything unclear stays the supplement's. A human's
+// parent takes the script's parent the extraction reports as the one it
+// overrode, which the old format did not store.
 func (c claims) classify(u *model.Unit, t *classification) {
 	if *t == nil {
 		*t = classification{}
@@ -256,8 +263,13 @@ func (c claims) classify(u *model.Unit, t *classification) {
 		}
 	}
 	for i, p := range u.Parents {
+		if p.Writer == model.Human && p.Over == "" && mapped {
+			u.Parents[i].Over = c.ids[in.Parent]
+		}
 		if p.Writer == model.Supplement {
-			r := readerOf(slices.ContainsFunc(in.Placed, func(pl extract.Placement) bool { return pl.Writer == model.Supplement }))
+			r := readerOf(slices.ContainsFunc(in.Placed, func(pl extract.Placement) bool {
+				return pl.Writer == model.Supplement && c.ids[pl.Key] == p.To
+			}))
 			if r {
 				u.Parents[i].Writer = model.Reader
 			}

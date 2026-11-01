@@ -399,9 +399,6 @@ func (e env) retract(s string) error {
 	case t.edge != nil:
 		key := model.RelationTarget(t.edge.Kind, t.edge.To)
 		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool { return r.To != t.edge.To || r.Kind != t.edge.Kind })
-		if len(claims) == 0 {
-			return fmt.Errorf("%s has no claim", s)
-		}
 		for _, r := range claims {
 			switch {
 			case r.Writer == w:
@@ -414,9 +411,6 @@ func (e env) retract(s string) error {
 			}
 		}
 	case t.field == "parent":
-		if len(u.Parents) == 0 {
-			return fmt.Errorf("%s has no parent claim", t.id)
-		}
 		for _, c := range slices.Clone(u.Parents) {
 			switch {
 			case c.Writer == w:

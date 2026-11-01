@@ -208,3 +208,48 @@ func TestResolvedParentsAlwaysFormATree(t *testing.T) {
 		}
 	}
 }
+
+// A claim whose evidence died holds nothing up, whoever wrote it: a live
+// reader claim on the same edge shows over a dead human or script one.
+func TestALiveReaderClaimShowsOverAHigherWritersDeadOne(t *testing.T) {
+	dead := []Evidence{{Path: "a.go", Quote: "x", Status: Dead, Reason: "a.go is gone"}}
+	for _, w := range []Writer{Human, Script} {
+		u := mod("MOD-0001")
+		u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: w, Evidence: dead})
+		u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Via: "call", Evidence: cite})
+		if len(u.Relations) != 1 || u.Relations[0].Writer != Reader {
+			t.Errorf("a dead %s claim shows over a live reader's: %+v", w, u.Relations)
+		}
+	}
+}
+
+// The evidence that counts for a parent is the evidence of the claim that
+// won, even when another writer with the same origin claims the same parent.
+func TestTheShownParentsEvidenceIsTheWinningClaims(t *testing.T) {
+	r := by(Reader, "MOD-0002")
+	r.Evidence = []Evidence{{Path: "a.go", Quote: "old", Status: Drifted, Since: "r1"}}
+	units := []Unit{mod("MOD-0001", r, by(Supplement, "MOD-0002")), mod("MOD-0002")}
+	Resolve(units)
+	var seen []Writer
+	units[0].EachShownEvidence(func(w Writer, _ *Evidence) { seen = append(seen, w) })
+	if len(seen) != 1 || seen[0] != Supplement {
+		t.Errorf("shown parent evidence by %v, want the live supplement claim that won", seen)
+	}
+}
+
+// Cycles are settled in tier order. When a unit's claim is refused for
+// closing a cycle, its next claim is tried before any lower tier is
+// accepted, so a reader's claim cannot take the place of the script's.
+func TestARefusedClaimFallsToTheNextBeforeALowerTier(t *testing.T) {
+	units := []Unit{
+		mod("MOD-0001", by(Human, "MOD-0002"), by(Script, "MOD-0003")),
+		mod("MOD-0002", by(Script, "MOD-0001")),
+		mod("MOD-0003", by(Reader, "MOD-0001")),
+	}
+	if p, o := parentOf(units, "MOD-0001"); p != "MOD-0003" || o != Extracted {
+		t.Errorf("MOD-0001 inside %q (%s), want the script's MOD-0003", p, o)
+	}
+	if p, _ := parentOf(units, "MOD-0003"); p != "" {
+		t.Errorf("MOD-0003 inside %q, want top level once its reader claim closes a cycle", p)
+	}
+}

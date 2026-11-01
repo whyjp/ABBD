@@ -271,22 +271,18 @@ func setParents(units []model.Unit, input []extract.Unit, ids []model.ID, ws Wri
 	}
 	for i, in := range input {
 		u := &units[at[ids[i]]]
+		old := *u
 		u.DropParents(ws...)
 		if p := byKey[in.Parent]; in.Parent != "" && p != "" {
 			u.PutParent(model.ParentClaim{To: p, Writer: model.Script})
 		}
 		for _, pl := range in.Placed {
 			if p := byKey[pl.Key]; p != "" && ws.own(pl.Writer) {
-				u.PutParent(model.ParentClaim{To: p, Writer: pl.Writer, Evidence: carry(pl.Evidence, prior(*u, pl.Writer))})
+				was, _ := old.Claim(pl.Writer)
+				u.PutParent(model.ParentClaim{To: p, Writer: pl.Writer, Evidence: carry(pl.Evidence, was.Evidence)})
 			}
 		}
 	}
-}
-
-// prior is the evidence of the writer's parent claim before it is replaced.
-func prior(u model.Unit, w model.Writer) []model.Evidence {
-	c, _ := u.Claim(w)
-	return c.Evidence
 }
 
 // setRelations replaces the claims the extraction's writers hold on the

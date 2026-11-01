@@ -49,14 +49,10 @@ func (e env) checkEvidence() error {
 		for _, ev := range u.Evidence {
 			line(string(u.ID)+" "+u.Name.Value, u.Name.Writer, "", ev)
 		}
-		for _, p := range u.Parents {
-			if p.To != u.Parent || p.Writer.Origin() != u.ParentOrigin {
-				continue
-			}
+		if p := u.ShownParent(); p != nil {
 			for _, ev := range p.Evidence {
 				line(string(u.ID)+".parent "+string(p.To), p.Writer, "", ev)
 			}
-			break
 		}
 		for _, r := range u.Relations {
 			for _, ev := range r.Evidence {

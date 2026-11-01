@@ -132,3 +132,13 @@ func TestAFeatureHoldsItsParts(t *testing.T) {
 	p.extract(strings.Replace(parts, `"parent":"skill"`, `"parent":"run"`, 1))
 	p.want(1, "is not the key of another module or feature", "sync")
 }
+
+// A script that comes to agree with a human's parent is no conflict.
+func TestNoConflictWhenTheScriptComesToAgreeWithTheHuman(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "", "record", "parent", "MOD-0002", "MOD-0001", "--source", "pr 1")
+	p.extract(strings.Replace(ledgerTopo, `"name":"ledger",`, `"name":"ledger","parent":"billing",`, 1))
+	if out := p.resync() + p.want(0, "", "status"); strings.Contains(out, "conflict") {
+		t.Fatalf("a script that agrees with the human is reported as a conflict:\n%s", out)
+	}
+}

@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "67c7ab77d058babbc6abdf07a0bafe19c5cce11c3f2ee078dea50ae1cac84ee5"
+    "inputs_hash": "352fadd1d4a9b6df0b1680bf422c523c5d15703b5b446b777a9594296a9b6dd2"
   },
   "units": [
     {
@@ -242,7 +242,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:532 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -332,7 +332,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:577 \"if !u.Absent {\""
+        "internal/model/model.go:587 \"if !u.Absent {\""
       ]
     },
     {
@@ -386,7 +386,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:458 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -404,7 +404,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:478 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -1158,8 +1158,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:501 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:479 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:511 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:489 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
@@ -1260,7 +1260,7 @@
       "Evidence": [
         "cmd/abbd/diff.go:44 \"if e.check \u0026\u0026 d.Boundary() {\"",
         "cmd/abbd/evidence.go:24 \"r := c.Check(ev)\"",
-        "cmd/abbd/evidence.go:82 \"switch in.ActualFreshness() {\""
+        "cmd/abbd/evidence.go:78 \"switch in.ActualFreshness() {\""
       ]
     },
     {
@@ -1832,8 +1832,8 @@
       ],
       "Parent": "MOD-0026",
       "Evidence": [
-        "internal/identity/identity.go:356 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
-        "internal/identity/identity.go:317 \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
+        "internal/identity/identity.go:352 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
+        "internal/identity/identity.go:313 \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
       ]
     },
     {
@@ -1875,7 +1875,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:190 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
+        "internal/model/model.go:192 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
       ]
     },
     {
@@ -1897,8 +1897,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:384 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:415 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:393 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go:424 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -2997,7 +2997,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/evidence.go:103 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
+      "Quote": "cmd/abbd/evidence.go:99 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
     },
     {
       "From": "MOD-0001",
@@ -3225,7 +3225,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/evidence.go:82 \"switch in.ActualFreshness() {\""
+      "Quote": "cmd/abbd/evidence.go:78 \"switch in.ActualFreshness() {\""
     },
     {
       "From": "MOD-0001",
@@ -3291,7 +3291,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\""
+      "Quote": "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\""
     },
     {
       "From": "MOD-0002",
@@ -3689,7 +3689,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/identity/identity.go:352 \"u.Digest = in.Digest\""
+      "Quote": "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
     },
     {
       "From": "MOD-0026",
@@ -3709,7 +3709,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/identity/identity.go:398 \"if to, ok := renames[a.Path]; ok {\""
+      "Quote": "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\""
     },
     {
       "From": "MOD-0030",
@@ -3717,7 +3717,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:532 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -3733,7 +3733,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:577 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:587 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3749,7 +3749,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:458 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3757,7 +3757,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:478 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -9365,7 +9365,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\""
+              "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007"
@@ -9826,7 +9826,7 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\"",
+              "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
               "cmd/abbd/evidence.go:22 \"c := evidence.New(e.root)\""
             ],
             "Marks": [
@@ -9964,7 +9964,7 @@
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\"",
+              "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
               "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
@@ -9978,7 +9978,7 @@
             "Kind": "depends_on",
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Quotes": [
-              "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\"",
+              "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
               "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
@@ -11071,7 +11071,7 @@
                 "Code": true
               },
               {
-                "Text": " removes the writer's own claim on the target and masks each lower INFERRED claim on it, bound to that claim's content. A run that can change nothing says the target is already retracted, or fails when the claim left is one it may not hide, such as the script's.",
+                "Text": " removes the writer's own claim on the target and masks each lower INFERRED claim on it, bound to that claim's content. A run that can change nothing, including one on a target with no claim left, says the target is already retracted and succeeds. It fails only when the claim left is one it may not hide, such as the script's.",
                 "Code": false
               }
             ]
@@ -11101,7 +11101,15 @@
                 "Code": true
               },
               {
-                "Text": ") folded onto a fresh extraction. An INFERRED claim becomes the reader's when the supplement makes no claim on the same target. Every item but the script's that is not live now becomes dead with the reason ",
+                "Text": ") folded onto a fresh extraction. An INFERRED claim becomes the reader's when the supplement makes no claim on the same target, and a parent claim stays the supplement's only when the supplement places the unit in the same parent. A human's parent takes the extraction's script parent as its ",
+                "Code": false
+              },
+              {
+                "Text": "over",
+                "Code": true
+              },
+              {
+                "Text": ", which the old format never stored. Every item but the script's that is not live now becomes dead with the reason ",
                 "Code": false
               },
               {
@@ -11193,7 +11201,15 @@
                 "Code": true
               },
               {
-                "Text": " checks the items of the claims that show and prints each as live, drifted or dead. It never writes, so a drifted item stays drifted. ",
+                "Text": " checks the items of the claims that show, the parent's through ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.ShownParent",
+                "Code": true
+              },
+              {
+                "Text": ", and prints each as live, drifted or dead. It never writes, so a drifted item stays drifted. ",
                 "Code": false
               },
               {
@@ -11426,7 +11442,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/evidence.go:103 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
+            "cmd/abbd/evidence.go:99 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
           ]
         },
         {
@@ -11509,8 +11525,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/evidence.go:82 \"switch in.ActualFreshness() {\"",
-            "cmd/abbd/evidence.go:88 \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
+            "cmd/abbd/evidence.go:78 \"switch in.ActualFreshness() {\"",
+            "cmd/abbd/evidence.go:84 \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
           ]
         },
         {
@@ -11565,7 +11581,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/evidence.go:74 \"in, err := e.screenInput()\""
+            "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\""
           ]
         },
         {
@@ -15914,7 +15930,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:398 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -16071,7 +16087,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/identity/identity.go:398 \"if to, ok := renames[a.Path]; ok {\""
+              "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\""
             ],
             "Marks": [
               {
@@ -16735,7 +16751,23 @@
                 "Code": true
               },
               {
-                "Text": "). So re-running setup never revives a dead item. The script's own evidence is taken as it comes.",
+                "Text": ", path and quote, so a symbol the supplement adds or changes does not matter). ",
+                "Code": false
+              },
+              {
+                "Text": "setParents",
+                "Code": true
+              },
+              {
+                "Text": " reads the writer's stored parent claim before it drops it, as ",
+                "Code": false
+              },
+              {
+                "Text": "setRelations",
+                "Code": true
+              },
+              {
+                "Text": " does. So re-running setup never revives a dead item. The script's own evidence is taken as it comes.",
                 "Code": false
               }
             ]
@@ -16979,7 +17011,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:352 \"u.Digest = in.Digest\""
+            "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
           ]
         },
         {
@@ -16988,7 +17020,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:398 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -18537,11 +18569,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "ParentOrigin",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "ParentWriter",
                 "Code": true
               },
               {
@@ -18554,6 +18594,22 @@
               },
               {
                 "Text": " stay out of the YAML. ",
+                "Code": false
+              },
+              {
+                "Text": "ShownParent",
+                "Code": true
+              },
+              {
+                "Text": " returns the parent claim that won, and ",
+                "Code": false
+              },
+              {
+                "Text": "EachShownEvidence",
+                "Code": true
+              },
+              {
+                "Text": " visits its items. ",
                 "Code": false
               },
               {
@@ -19023,7 +19079,7 @@
                 "Code": true
               },
               {
-                "Text": " compares path, symbol and quote. ",
+                "Text": " compares path and quote, since the symbol only says where in the file to look. ",
                 "Code": false
               },
               {
@@ -19431,7 +19487,15 @@
                 "Code": true
               },
               {
-                "Text": " compares two writers on a field. On a relation or a parent, between a reader and the supplement, a live claim beats a drifted one whatever the writer.",
+                "Text": " compares two writers on a field. On a relation or a parent, ",
+                "Code": false
+              },
+              {
+                "Text": "order",
+                "Code": true
+              },
+              {
+                "Text": " puts live claims before drifted ones before dead ones, whatever the writer, and the table decides within a status. A claim without evidence is live.",
                 "Code": false
               }
             ]
@@ -19501,7 +19565,7 @@
                 "Code": true
               },
               {
-                "Text": " lists each unit whose script parent has moved off it. A unit holds at most one claim per writer.",
+                "Text": " lists each unit whose script parent has moved off it to a parent other than the human's. A unit holds at most one claim per writer.",
                 "Code": false
               }
             ]
@@ -19593,7 +19657,7 @@
                 "Code": true
               },
               {
-                "Text": ". Each present unit takes its first parent claim that is not dead, not masked, points at a present module or feature and closes no cycle. Claims are accepted tier by tier, script and group first, then human, reader and supplement, each tier in unit ID order. A skipped claim stays stored.",
+                "Text": ". Each present unit takes its first parent claim that is not dead, not masked, points at a present module or feature and closes no cycle. Claims are accepted tier by tier, script and group first, then human, reader and supplement, each tier in unit ID order. When a claim is refused for closing a cycle, acceptance starts again from the first tier, so the unit's next claim is weighed before any lower tier. A skipped claim stays stored.",
                 "Code": false
               }
             ]
@@ -19619,7 +19683,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/evidence.go:103 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
+            "cmd/abbd/evidence.go:99 \"for _, k := range []model.Kind{model.Module, model.Interface, model.Event, model.Data,\""
           ]
         },
         {
@@ -19727,7 +19791,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:532 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -19745,7 +19809,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:577 \"if !u.Absent {\""
+            "internal/model/model.go:587 \"if !u.Absent {\""
           ]
         },
         {
@@ -19763,7 +19827,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:458 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -19772,7 +19836,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:478 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -21614,8 +21678,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/evidence.go:82 \"switch in.ActualFreshness() {\"",
-            "cmd/abbd/evidence.go:88 \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
+            "cmd/abbd/evidence.go:78 \"switch in.ActualFreshness() {\"",
+            "cmd/abbd/evidence.go:84 \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
           ]
         },
         {
@@ -23124,7 +23188,23 @@
                 "Code": true
               },
               {
-                "Text": " writer each script parent claim that points at a group or sits on one.",
+                "Text": " writer each script parent claim that points at a group or sits on one. A human's parent comes out with no ",
+                "Code": false
+              },
+              {
+                "Text": "over",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd migrate",
+                "Code": true
+              },
+              {
+                "Text": " fills it from the extraction.",
                 "Code": false
               }
             ]
@@ -25438,7 +25518,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:352 \"u.Digest = in.Digest\""
+            "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
           ]
         },
         {
