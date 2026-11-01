@@ -393,7 +393,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <h3>모든 플레이북에 같은 단계를 쓴다</h3>
 <p><code>/abbd</code>는 플레이북마다 다른 규칙을 두지 않는다. 작업 트리를 바꾸지 않는 플레이북(Investigation과 두 forensics)은 작업 앞의 읽기만 쓰면 된다. sync는 멱등이므로 바뀐 것이 없으면 차이도 없다. 다른 worktree에서 도는 플레이북(Orchestrate, Autopilot)의 변화는 그 PR의 sync와 diff로 드러난다.</p>
 <h3>CLAUDE.md의 상시 지침</h3>
-<p>상시 지침은 <code>/abbd</code>를 부르지 않은 대화에서도 에이전트가 설계도에 먼저 묻게 하는 몇 줄이다. graphify의 상시 설정과 같은 자리지만, 훅이 아니라 CLAUDE.md의 블록 하나로 둔다. abbd-setup이 마지막 단계에서 프로젝트의 CLAUDE.md에 쓴다. 블록은 두 가지를 지시한다.</p>
+<p>상시 지침은 <code>/abbd</code>를 부르지 않은 대화에서도 에이전트가 설계도에 먼저 묻게 하는 몇 줄이다. graphify의 상시 설정과 같은 자리지만, 훅이 아니라 CLAUDE.md의 블록 하나로 둔다. abbd-setup이 마지막 단계에서 <code>abbd install</code>로 프로젝트의 CLAUDE.md에 쓴다. <code>abbd install</code>은 setup과 따로 둔 명령이다. 블록만 다시 쓰고 싶을 때 추출을 세 번 다시 돌리고 추정을 갈아 끼우는 setup을 거치지 않게 하려는 것이다. 표시한 블록을 제자리에서 바꾸고 파일의 나머지와 줄바꿈은 그대로 두며, 표시가 하나만 있는 파일은 거부한다. 블록은 두 가지를 지시한다.</p>
 <ul>
 <li>아키텍처 질문은 코드를 뒤지기 전에 설계도에 먼저 묻는다(<code>abbd explain</code>, <code>abbd path</code>, <code>abbd impact</code>).</li>
 <li>코드를 바꾼 뒤에는 <code>abbd sync</code>를 돌리고 <code>abbd diff</code>를 PR에 넣는다.</li>
@@ -406,7 +406,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>pstack swarm과 how로 스크립트가 못 보는 단위와 결합을 읽어, 증거와 <code>parent</code>를 단 의미 보완을 만든다. swarm은 관련 후보를 묶어 다섯 조각 이하로 나눈다.</li>
 <li><code>abbd setup --supplement FILE -- ARGV</code>를 돌린다.</li>
 <li>모듈마다 how의 글을 <code>abbd understand</code>로 저장한다.</li>
-<li>프로젝트의 CLAUDE.md에 상시 지침 블록을 쓴다.</li>
+<li><code>abbd install</code>로 프로젝트의 CLAUDE.md에 상시 지침 블록을 쓴다.</li>
 </ol>
 <p>정렬 단계는 없다. 첫 병합된 상태가 기준이다.</p>
 <h2 id="sec-7">7. 사람이 읽는 설계도</h2>
@@ -587,6 +587,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td><code>abbd path A B</code></td><td>읽기 전용. EXTRACTED, USER_STATED, 살아 있는 INFERRED 관계를 따라 두 단위 사이의 최단 경로를 낸다. 홉마다 관계 종류, <code>via</code>, origin을 적고, 경로에서 가장 약한 origin으로 끝난다. graphify의 <code>path</code>와 같은 자리다</td></tr>
 <tr><td><code>abbd diff [--base REV] [--json] [--check]</code></td><td>기준 revision(기본값은 기본 브랜치와의 merge base)의 상태와 지금의 토폴로지 차이다. 단위의 추가와 삭제, 계약 시그니처 변경, 시그니처는 같은데 코드가 바뀐 계약(digest), 최상위 모듈 사이 관계의 추가와 삭제, 새 추정 결합을 보고한다. PR 설명에 넣을 줄과 <code>--json</code>을 낸다. exit 0이다. <code>--check</code>를 주면 계약이 바뀌었거나 모듈 사이 관계가 생겼을 때 exit 1이다. PR에 라벨을 붙이는 CI 작업용이고, ABBD 안의 게이트가 아니다</td></tr>
 <tr><td><code>abbd evidence</code></td><td>읽기 전용 인용 확인. 결정적이다</td></tr>
+<tr><td><code>abbd install</code></td><td>프로젝트의 CLAUDE.md에 상시 지침 블록을 쓰거나 제자리에서 바꾼다. <code>.abbd/</code>는 건드리지 않는다. 두 번 돌려도 바뀌는 것이 없다</td></tr>
 <tr><td><code>abbd status</code></td><td>상태의 최신성과 수</td></tr>
 </tbody></table></div>
 <h3>문서 형식</h3>
@@ -638,7 +639,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><code>abbd explain</code>은 작업 트리와 <code>.abbd/</code>를 바꾸지 않고, 단위의 종류, <code>parent</code>, 책임과 origin, 시그니처, 계약, 직접 이웃, INFERRED 결합의 증거 인용을 낸다. 모듈이면 속 단위와 how의 글을 내고, 낡은 글에는 STALE이 붙는다.</li>
 <li><code>abbd path A B</code>는 작업 트리와 <code>.abbd/</code>를 바꾸지 않고, 최단 경로의 홉마다 관계 종류, <code>via</code>, origin을 내며, 경로에서 가장 약한 origin으로 끝난다. 죽은 INFERRED 관계는 경로에 쓰지 않는다.</li>
 <li><code>/abbd</code>와 <code>abbd-setup</code>이 참조하는 pstack 경로가 고정 버전에 모두 있고, 스킬과 상시 지침 블록이 부르는 <code>abbd</code> 명령이 모두 실제 명령이다.</li>
-<li><code>abbd-setup</code>이 쓰는 CLAUDE.md 블록은 시작과 끝 표시로 감싸인다. setup을 두 번 돌려도 블록은 하나다.</li>
+<li><code>abbd install</code>이 쓰는 CLAUDE.md 블록은 시작과 끝 표시로 감싸인다. 두 번 돌려도 블록은 하나이고, 블록 밖의 내용은 그대로다.</li>
 <li>걷어 낸 명령(<code>align</code>, <code>approve</code>, <code>reject</code>, <code>confirm</code>, <code>couple</code>, <code>propose</code>, <code>mode</code>, <code>hook</code>, <code>serve</code>, <code>turn</code>, <code>ingest</code>)이 CLI에 없다.</li>
 </ol>
 <h3>맥락과 예약</h3>
