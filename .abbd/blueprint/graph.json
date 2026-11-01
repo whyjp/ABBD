@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "9388577e1def4d24d7e7488de639d19901a79f73ebe7a98fc358402bf419ba59"
+    "inputs_hash": "25e333dce689244b2ee6e305dc8cba81dab865a99fb9fc61073d2a9b3d99db23"
   },
   "units": [
     {
@@ -2022,67 +2022,78 @@
       "From": "FEAT-0001",
       "To": "IF-0001",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:39 \"abbd diff\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0002",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:43 \"abbd evidence\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0003",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:19 \"abbd status\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0004",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:23 \"abbd impact\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0006",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:39 \"abbd sync\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0007",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:21 \"abbd explain\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0008",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:22 \"abbd path\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0009",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:34 \"abbd record fact\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0010",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:26 \"abbd record relation\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0011",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:27 \"abbd record unit\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0013",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:28 \"abbd understand\""
     },
     {
       "From": "FEAT-0001",
@@ -2094,49 +2105,57 @@
       "From": "FEAT-0002",
       "To": "IF-0001",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd diff\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0004",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd impact\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0005",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd install\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0006",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd sync\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0007",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd explain\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0008",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"abbd path\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0012",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:25 \"abbd setup\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0013",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:33 \"abbd understand\""
     },
     {
       "From": "FEAT-0002",
@@ -2148,7 +2167,8 @@
       "From": "FEAT-0002",
       "To": "IF-0018",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"abbd record parent\""
     },
     {
       "From": "MOD-0001",
