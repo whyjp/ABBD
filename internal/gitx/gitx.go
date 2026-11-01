@@ -37,6 +37,22 @@ func Files(dir, rev string, paths ...string) ([]string, error) {
 	return strings.Fields(out), nil
 }
 
+// WorkingFiles lists the files of the working tree, tracked or not but not
+// ignored, relative to dir. It returns nothing outside a repository.
+func WorkingFiles(dir string) []string {
+	out, err := run(dir, nil, "ls-files", "-z", "--cached", "--others", "--exclude-standard")
+	if err != nil {
+		return nil
+	}
+	var files []string
+	for _, f := range strings.Split(out, "\x00") {
+		if f != "" {
+			files = append(files, f)
+		}
+	}
+	return files
+}
+
 // Show returns a file as it was at rev; path is relative to dir.
 func Show(dir, rev, path string) ([]byte, error) {
 	out, err := run(dir, nil, "show", rev+":./"+filepath.ToSlash(path))

@@ -39,11 +39,14 @@ abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root 
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
-abbd explain ID|NAME [--root DIR]    one unit at a glance: its contracts, neighbours, inside
-                                     units, a reader's couplings with their quotes, how's text
+abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
+                                     units, a reader's couplings with their quotes, how's text;
+                                     QUERY is a unit ID or name, a file or directory path, a
+                                     symbol, or a phrase, and a QUERY that is no unit lists
+                                     the units it matches, best first, and explains the best
 abbd path A B [--root DIR]           the shortest path between two units, each hop with its
-                                     origin, and the path's weakest origin
-abbd impact IDS [--root DIR]         what a change to the comma-separated units reaches, in a
+                                     origin, and the path's weakest origin; A and B are QUERYs
+abbd impact QUERIES [--root DIR]     what a change to the comma-separated units reaches, in a
                                      direct and a far tier; read before the work
 abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      the topology difference since REV (default: the merge base

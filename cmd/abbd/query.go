@@ -4,35 +4,50 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/topology"
 )
 
-// resolve finds a present unit by its ID or, failing that, by its name.
-func resolve(units []model.Unit, s string) (model.Unit, error) {
-	present := model.Present(units)
-	if u, ok := presentUnit(present, model.ID(s)); ok {
-		return u, nil
+// shown is how many matches a query prints before it counts the rest.
+const shown = 5
+
+// resolve finds the unit a query names: its ID or name, a file, directory or
+// symbol its code holds, or a phrase. When the query is not the unit's own ID
+// or name, it prints what the query matched, best first, so the reader sees
+// why this unit and which others came close.
+func (e env) resolve(units []model.Unit, s string) (model.Unit, error) {
+	if _, _, err := model.ParseID(s); err == nil {
+		if u, ok := presentUnit(units, model.ID(s)); ok {
+			return u, nil
+		}
+		return model.Unit{}, fmt.Errorf("%q is not a unit of the state", s)
 	}
-	var named, near []string
-	var hit model.Unit
-	for _, u := range present {
-		switch name := strings.ToLower(u.Name.Value); {
-		case name == strings.ToLower(s):
-			named, hit = append(named, string(u.ID)), u
-		case strings.Contains(name, strings.ToLower(s)):
+	ms := topology.Find(units, func() []string { return gitx.WorkingFiles(e.root) }, s)
+	switch {
+	case len(ms) == 0:
+		var near []string
+		for _, u := range topology.Nearest(units, s, shown) {
 			near = append(near, fmt.Sprintf("%s %s", u.ID, u.Name.Value))
 		}
+		return model.Unit{}, fmt.Errorf("%q names no unit, file, symbol or phrase of the state; nearest: %s", s, strings.Join(near, "; "))
+	case ms[0].Tier == topology.ByName && len(ms) > 1:
+		var ids []string
+		for _, m := range ms {
+			ids = append(ids, string(m.Unit.ID))
+		}
+		return model.Unit{}, fmt.Errorf("%q names %s; pass the ID", s, strings.Join(ids, ", "))
+	case !ms[0].Exact():
+		fmt.Fprintf(e.stdout, "%q is not a unit; it matches, best first:\n", s)
+		for _, m := range ms[:min(len(ms), shown)] {
+			fmt.Fprintf(e.stdout, "  %s %s: %s\n", m.Unit.ID, m.Unit.Name.Value, m.Why)
+		}
+		if len(ms) > shown {
+			fmt.Fprintf(e.stdout, "  and %d more\n", len(ms)-shown)
+		}
+		fmt.Fprintln(e.stdout)
 	}
-	switch {
-	case len(named) == 1:
-		return hit, nil
-	case len(named) > 1:
-		return model.Unit{}, fmt.Errorf("%q names %s; pass the ID", s, strings.Join(named, ", "))
-	case len(near) > 0:
-		return model.Unit{}, fmt.Errorf("no unit is named %q; close: %s", s, strings.Join(near[:min(len(near), 5)], "; "))
-	}
-	return model.Unit{}, fmt.Errorf("%q is not a unit of the state", s)
+	return ms[0].Unit, nil
 }
 
 func names(units []model.Unit) map[model.ID]string {
@@ -57,7 +72,7 @@ func (e env) explain(s string) error {
 	if err != nil {
 		return err
 	}
-	u, err := resolve(units, s)
+	u, err := e.resolve(units, s)
 	if err != nil {
 		return err
 	}
@@ -159,11 +174,11 @@ func (e env) path(a, b string) error {
 	if err != nil {
 		return err
 	}
-	from, err := resolve(units, a)
+	from, err := e.resolve(units, a)
 	if err != nil {
 		return err
 	}
-	to, err := resolve(units, b)
+	to, err := e.resolve(units, b)
 	if err != nil {
 		return err
 	}
