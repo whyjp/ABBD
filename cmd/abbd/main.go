@@ -52,8 +52,12 @@ abbd couple FROM.KIND.TO [--root DIR]
 abbd propose relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      an agent's guess at a coupling, kept while its evidence is
                                      in the code; it waits in the confirm queue and never gates
-abbd propose unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--root DIR]
+abbd propose unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
                                      an agent's guess at a unit the extraction script cannot see
+abbd understand MOD-ID FILE|- [--root DIR]
+                                     store pstack how's Overview and Key Concepts for a module,
+                                     INFERRED and stamped with the module's code; the screen
+                                     shows it beside the module and marks it STALE when it moves
 abbd evidence [--root DIR]           check every semantic unit's and relation's evidence against
                                      the working tree: live or dead, and where each quote is
 abbd serve [--addr 127.0.0.1:PORT] [--root DIR]
@@ -116,6 +120,7 @@ type opts struct {
 	seeds, request, units         string
 	changes, add                  string
 	via, parent, unit, by         string
+	responsibility                string
 	evidence                      evidenceFlags
 	all, list                     bool
 	argv                          []string
@@ -173,6 +178,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"parent": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.parent, "parent", "", "the module that contains the unit")
 	},
+	"responsibility": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.responsibility, "responsibility", "", "the one sentence a reader says the unit is responsible for")
+	},
 	"unit": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.unit, "unit", "", "the impacted unit that was scanned")
 	},
@@ -202,7 +210,8 @@ var commands = map[string]command{
 	"reject":           {flags: []string{"root", "reason"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.rejectChange(pos[0]) }},
 	"couple":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.couple(pos[0]) }},
 	"propose relation": {flags: []string{"root", "via", "evidence"}, pos: []int{3}, run: func(e env, _ string, pos []string) error { return e.proposeRelation(pos) }},
-	"propose unit":     {flags: []string{"root", "evidence", "parent"}, pos: []int{2}, run: func(e env, _ string, pos []string) error { return e.proposeUnit(pos) }},
+	"propose unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, run: func(e env, _ string, pos []string) error { return e.proposeUnit(pos) }},
+	"understand":       {flags: []string{"root"}, pos: []int{2}, run: func(e env, _ string, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
 	"evidence":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.checkEvidence() }},
 	"serve":            {flags: []string{"root", "addr"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.serve() }},
 	"ingest":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},

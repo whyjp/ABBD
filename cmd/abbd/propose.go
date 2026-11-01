@@ -157,6 +157,9 @@ func (e env) proposeUnit(pos []string) error {
 		ID: model.FormatID(kind, state.HighWater[kind]), Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,
 		Name: model.Fact{Value: name, Origin: model.Inferred, Confirmation: model.Unconfirmed},
 	}
+	if r := strings.TrimSpace(e.responsibility); r != "" {
+		u.Responsibility = &model.Fact{Value: r, Origin: model.Inferred, Confirmation: model.Unconfirmed}
+	}
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
 	}
