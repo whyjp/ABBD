@@ -3,7 +3,6 @@ package screen
 import (
 	"fmt"
 	"slices"
-	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -11,9 +10,11 @@ import (
 // The drawings place nodes in layers by what uses what: a node sits above
 // everything it uses, so a binary is on top and its leaf libraries at the
 // bottom. A layer wider than the drawing's budget wraps into several rows.
-// Lines run on a grid: down out of a box, across in the gap between two rows
-// on a track of their own, down through a row in the space between boxes,
-// and into the box they reach. docs/blueprint-svg.md states the rules this
+// A line between rows further apart than one has a chain of dummies, one in
+// each row it passes (layered.go), so the rows are ordered and placed with
+// room for it. Lines run on a grid: down out of a box, across in the gap
+// between two rows on a track of their own, down through a row on their
+// chain or in the space between boxes, and into the box they reach. docs/blueprint-svg.md states the rules this
 // layout keeps; legible_test.go measures them. Everything is sorted before it
 // is placed, so the same graph always gives the same picture.
 
@@ -48,6 +49,13 @@ type layout struct {
 	passes         map[int][]int
 	heights        map[string]int
 	minGap, endGap int
+	// chains are the long lines' runs of dummies, and pass the left x of
+	// each chain in each row it passes.
+	chains []chain
+	pass   map[[2]int]int
+	// reserved are the x of every chain's lanes in each row, which a line
+	// with no chain keeps clear of.
+	reserved map[int][]int
 }
 
 const (
@@ -77,9 +85,15 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 	}
 	out := map[string][]string{}
 	touched := map[string]bool{}
+	// lines counts the edges between each pair of places, either way: each
+	// stands for a line the drawing will route between them.
+	lines := map[[2]string]int{}
 	for _, e := range edges {
 		if _, ok := byID[e.from]; !ok {
 			continue
+		}
+		if _, ok := byID[e.to]; ok && e.from != e.to {
+			lines[pairKey(e.from, e.to)]++
 		}
 		if _, ok := byID[e.to]; !ok || e.from == e.to || slices.Contains(out[e.from], e.to) {
 			continue
@@ -90,6 +104,17 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 	for k := range out {
 		slices.Sort(out[k])
 	}
+	// The pairs of places lines join, frame edges included.
+	var pairs [][2]string
+	for k := range lines {
+		pairs = append(pairs, k)
+	}
+	slices.SortFunc(pairs, func(a, b [2]string) int {
+		if c := strings.Compare(a[0], b[0]); c != 0 {
+			return c
+		}
+		return strings.Compare(a[1], b[1])
+	})
 	// A cycle cannot be layered. The nodes are put in an order that leaves
 	// as few edges as it can pointing backwards (Eades, Lin and Smyth: peel
 	// sinks to the back and sources to the front, else the node with the most
@@ -272,47 +297,93 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 		}
 		n++
 	}
-	neighbours := map[string][]string{}
-	for v, ws := range out {
-		for _, w := range ws {
-			neighbours[v] = append(neighbours[v], w)
-			neighbours[w] = append(neighbours[w], v)
-		}
-	}
-	for k := range neighbours {
-		slices.Sort(neighbours[k])
-	}
 	ranks := make([][]string, n)
 	for _, nd := range nodes {
 		ranks[rank[nd.id]] = append(ranks[rank[nd.id]], nd.id)
 	}
-	order2(ranks, rank, neighbours)
-
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12}
-	room := budget - 2*padX
-	for _, ids := range ranks {
-		l.rows = append(l.rows, wrap(ids, byID, room)...)
+	w := map[string]int{}
+	for _, nd := range nodes {
+		w[nd.id] = nd.w
 	}
-	for r, ids := range l.rows {
-		l.width = max(l.width, rowWidth(ids, byID))
+	// Order the layers with their chains, wrap a layer wider than the room
+	// into rows in that order, and order the rows again with the chains the
+	// wrapping adds.
+	g := proper(ranks, w, pairs, lines)
+	g.order()
+	room := budget - 2*padX
+	var rows [][]string
+	wrapped := false
+	for _, row := range g.rows {
+		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
+		rs := wrap(ids, byID, room)
+		wrapped = wrapped || len(rs) > 1
+		rows = append(rows, rs...)
+	}
+	if wrapped {
+		g = proper(rows, w, pairs, lines)
+		g.order()
+	}
+
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}}
+	// Where even crooked chains leave the drawing wider than its budget,
+	// the shortest give up their slots.
+	x, width := g.place(budget)
+	for width > budget {
+		c := -1
+		for i, ch := range g.chains {
+			if ch.lanes > 0 && (c < 0 || ch.bottom-ch.top < g.chains[c].bottom-g.chains[c].top) {
+				c = i
+			}
+		}
+		if c < 0 {
+			break
+		}
+		g.drop(c)
+		x, width = g.place(budget)
+	}
+	l.width, l.chains = width, g.chains
+	for r, row := range g.rows {
+		var ids []string
+		for _, id := range row {
+			if _, d := g.chainOf[id]; !d {
+				ids = append(ids, id)
+			}
+		}
+		l.rows = append(l.rows, ids)
 		for _, id := range ids {
 			l.row[id] = r
 			l.heights[id] = byID[id].h
 		}
 	}
-	l.width += 2 * padX
-	for _, ids := range l.rows {
-		x := (l.width - rowWidth(ids, byID)) / 2
-		for i, id := range ids {
-			if i > 0 {
-				x += gapX
+	for r, row := range g.rows {
+		for _, id := range row {
+			if c, d := g.chainOf[id]; d {
+				l.pass[[2]int{c, r}] = x[id]
+				continue
 			}
-			l.pos[id] = rect{X: x, W: byID[id].w, H: byID[id].h}
-			x += byID[id].w
+			l.pos[id] = rect{X: x[id], W: byID[id].w, H: byID[id].h}
 		}
 	}
-	l.align(neighbours)
 	return l
+}
+
+// toward is the x at which the lines from box id to place other leave
+// id's row: down or up their chain when they have one, else at other's
+// centre. A frame's top and bottom are places too.
+func (l *layout) toward(id, other string) int {
+	for c, ch := range l.chains {
+		if ch.lanes > 0 && pairKey(ch.upper, ch.lower) == pairKey(id, other) {
+			if ch.upper == id {
+				return l.pass[[2]int{c, ch.top}]
+			}
+			return l.pass[[2]int{c, ch.bottom}]
+		}
+	}
+	p, ok := l.pos[other]
+	if !ok {
+		p = l.pos[id]
+	}
+	return p.X + p.W/2
 }
 
 func rowWidth(ids []string, byID map[string]lnode) int {
@@ -324,138 +395,6 @@ func rowWidth(ids []string, byID map[string]lnode) int {
 		w += byID[id].w
 	}
 	return w
-}
-
-// align moves each box toward the mean centre of the boxes it is joined to,
-// keeping each row's order and spacing, so lines run straighter. A few
-// passes down and up settle it.
-func (l *layout) align(neighbours map[string][]string) {
-	for pass := 0; pass < 6; pass++ {
-		order := make([]int, len(l.rows))
-		for i := range order {
-			order[i] = i
-			if pass%2 == 1 {
-				order[i] = len(l.rows) - 1 - i
-			}
-		}
-		for _, r := range order {
-			ids := l.rows[r]
-			want := make([]int, len(ids))
-			for i, id := range ids {
-				p := l.pos[id]
-				sum, k := 0, 0
-				for _, o := range neighbours[id] {
-					if q, ok := l.pos[o]; ok && l.row[o] != r {
-						sum += q.X + q.W/2
-						k++
-					}
-				}
-				want[i] = p.X
-				if k > 0 {
-					want[i] = sum/k - p.W/2
-				}
-			}
-			// Left to right keeps the spacing; right to left keeps the
-			// right margin; the box ends between its two bounds.
-			xs := make([]int, len(ids))
-			edge := padX
-			for i, id := range ids {
-				if i > 0 {
-					edge += gapX
-				}
-				xs[i] = max(want[i], edge)
-				edge = xs[i] + l.pos[id].W
-			}
-			edge = l.width - padX
-			for i := len(ids) - 1; i >= 0; i-- {
-				w := l.pos[ids[i]].W
-				xs[i] = min(xs[i], edge-w)
-				if i > 0 {
-					edge = xs[i] - gapX
-				}
-			}
-			for i, id := range ids {
-				p := l.pos[id]
-				p.X = xs[i]
-				l.pos[id] = p
-			}
-		}
-	}
-}
-
-// order2 sorts each layer by the mean position of its neighbours, sweeping
-// down and up a few times, and keeps the order with the fewest crossings
-// between adjacent layers.
-func order2(ranks [][]string, rank map[string]int, neighbours map[string][]string) {
-	at := func() map[string]float64 {
-		out := map[string]float64{}
-		for _, r := range ranks {
-			for i, id := range r {
-				out[id] = (float64(i) + 0.5) / float64(len(r))
-			}
-		}
-		return out
-	}
-	crossings := func() int {
-		pos := at()
-		total := 0
-		for r := 0; r+1 < len(ranks); r++ {
-			var es [][2]float64
-			for _, v := range ranks[r] {
-				for _, w := range neighbours[v] {
-					if rank[w] == r+1 {
-						es = append(es, [2]float64{pos[v], pos[w]})
-					}
-				}
-			}
-			for i := range es {
-				for j := i + 1; j < len(es); j++ {
-					if (es[i][0]-es[j][0])*(es[i][1]-es[j][1]) < 0 {
-						total++
-					}
-				}
-			}
-		}
-		return total
-	}
-	sweep := func(r int, above bool) {
-		pos := at()
-		key := map[string]float64{}
-		for _, id := range ranks[r] {
-			sum, k := 0.0, 0
-			for _, o := range neighbours[id] {
-				if (above && rank[o] < r) || (!above && rank[o] > r) {
-					sum += pos[o]
-					k++
-				}
-			}
-			key[id] = pos[id]
-			if k > 0 {
-				key[id] = sum / float64(k)
-			}
-		}
-		sort.SliceStable(ranks[r], func(i, j int) bool { return key[ranks[r][i]] < key[ranks[r][j]] })
-	}
-	snapshot := func() [][]string {
-		out := make([][]string, len(ranks))
-		for i, r := range ranks {
-			out[i] = slices.Clone(r)
-		}
-		return out
-	}
-	best, bestN := snapshot(), crossings()
-	for i := 0; i < 8; i++ {
-		for r := 1; r < len(ranks); r++ {
-			sweep(r, true)
-		}
-		for r := len(ranks) - 2; r >= 0; r-- {
-			sweep(r, false)
-		}
-		if c := crossings(); c < bestN {
-			best, bestN = snapshot(), c
-		}
-	}
-	copy(ranks, best)
 }
 
 // wrap splits a layer wider than room into rows of about equal width.
@@ -567,7 +506,7 @@ func (l *layout) gutter(r, x int) int {
 	l.lanes[[2]int{r, best}]++
 	if best > 0 && best < len(gaps)-1 {
 		at := func(k int) int { return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane }
-		for k+1 < slots(best) && l.nextTo(r, at(k)) {
+		for k+1 < slots(best) && (l.nextTo(r, at(k)) || l.taken(r, at(k))) {
 			k++
 			l.lanes[[2]int{r, best}]++
 		}
@@ -582,12 +521,22 @@ func (l *layout) gutter(r, x int) int {
 		out = 1
 	}
 	at := clamp(x, g.from+12, g.to-12)
-	for !l.free(r, at) {
+	for !l.free(r, at) || l.taken(r, at) {
 		at += out * lane
 	}
 	l.beside[r] = append(l.beside[r], at)
 	l.passes[r] = append(l.passes[r], at)
 	return at
+}
+
+// taken says x in row r lies on a chain's lane, or in its channel.
+func (l *layout) taken(r, x int) bool {
+	for _, y := range l.reserved[r] {
+		if abs(x-y) <= channel {
+			return true
+		}
+	}
+	return false
 }
 
 // nextTo says a line passing row r at x would meet one that passes a row

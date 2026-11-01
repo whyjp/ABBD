@@ -246,7 +246,6 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 			wired[k] = append(wired[k], ln.from)
 		}
 	}
-	center := func(id model.ID) int { p := l.pos[string(id)]; return p.X + p.W/2 }
 	below := map[string]bool{}
 	lean := map[string]int{}
 	var tops, bottoms []attach
@@ -258,7 +257,11 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 		x, r := 0, 0
 		for _, u := range us {
-			x += center(u)
+			edge := frameTopNode
+			if !p.exit {
+				edge = frameBottomNode
+			}
+			x += l.toward(string(u), edge)
 			r += l.row[string(u)]
 		}
 		lean[k] = 2*r - (len(l.rows)-1)*len(us)
@@ -311,14 +314,17 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 			p.X += shift
 			l.pos[id] = p
 		}
+		for k := range l.pass {
+			l.pass[k] += shift
+		}
 		l.width = width
 	}
 	frame := rect{X: 6, Y: frameTop, W: width - 12}
 	at := map[string]Port{}
-	for k, p := range spread(frame, false, tops, 1) {
+	for k, p := range settle(spread(frame, false, tops, 1), tops, frame) {
 		at[k] = p
 	}
-	for k, p := range spread(frame, true, bottoms, 1) {
+	for k, p := range settle(spread(frame, true, bottoms, 1), bottoms, frame) {
 		at[k] = p
 	}
 	l.top = frameTop + chipH + 3

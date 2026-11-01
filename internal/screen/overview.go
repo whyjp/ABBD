@@ -324,9 +324,9 @@ func planOverview(units []model.Unit) *overview {
 				k := [2]model.ID{u, p}
 				if len(o.carry[k]) == 0 {
 					o.pairs = append(o.pairs, k)
+					edges = append(edges, ledge{string(u), string(p)})
 				}
 				o.carry[k] = append(o.carry[k], c)
-				edges = append(edges, ledge{string(u), string(p)})
 			}
 		}
 	}
@@ -454,6 +454,40 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 	return out
 }
 
+// settle moves each chip of a frame's or a box's edge, set out by spread
+// in the order of what it leads to, over the x its lines run at, so they
+// drop straight from it. The chips keep their order and gaps inside the
+// edge; an edge whose chips wrap into two rows or fold into "+N" stays as
+// spread set it.
+func settle(ps map[string]Port, items []attach, frame rect) map[string]Port {
+	xs, ys := map[int]bool{}, map[int]bool{}
+	for _, p := range ps {
+		xs[p.X], ys[p.Y] = true, true
+	}
+	if len(xs) < len(items) || len(ys) > 1 {
+		return ps
+	}
+	at := make([]int, len(items))
+	edge := frame.X + 8
+	for i, a := range items {
+		p := ps[a.key]
+		at[i] = max(a.other-p.W/2, edge)
+		edge = at[i] + p.W + 4
+	}
+	edge = frame.X + frame.W - 4
+	for i := len(items) - 1; i >= 0; i-- {
+		p := ps[items[i].key]
+		at[i] = min(at[i], edge-p.W)
+		edge = at[i] - 4
+	}
+	for i, a := range items {
+		p := ps[a.key]
+		p.X = at[i]
+		ps[a.key] = p
+	}
+	return ps
+}
+
 // rowEnd is where a row of chips that starts at labels[start] ends, at w
 // wide: it always holds one.
 func rowEnd(labels []string, start, w int) int {
@@ -485,10 +519,6 @@ func chipRowWidth(labels []string) int {
 
 func (o *overview) draw(href func(model.ID) string) Drawing {
 	l := &o.layout
-	center := func(id model.ID) int {
-		p := l.pos[string(id)]
-		return p.X + p.W/2
-	}
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
 
 	type wireSpec struct {
@@ -506,10 +536,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, k := range o.pairs {
 		u, p := k[0], k[1]
 		in, out := chipKey(u, o.carry[k], false), string(p)
-		toward[in] = append(toward[in], center(p))
+		toward[in] = append(toward[in], l.toward(string(u), string(p)))
 		if isModule(p) {
 			out = chipKey(p, o.carry[k], true)
-			toward[out] = append(toward[out], center(u))
+			toward[out] = append(toward[out], l.toward(string(p), string(u)))
 		}
 		var titles, rels []string
 		for _, c := range o.carry[k] {
@@ -566,10 +596,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		at := map[string]Port{}
 		for _, m := range o.modules {
 			r := l.pos[string(m)]
-			for k, p := range spread(r, false, tops[m], chipRowsMax) {
+			for k, p := range settle(spread(r, false, tops[m], chipRowsMax), tops[m], r) {
 				at[k] = p
 			}
-			for k, p := range spread(r, true, bottoms[m], chipRowsMax) {
+			for k, p := range settle(spread(r, true, bottoms[m], chipRowsMax), bottoms[m], r) {
 				at[k] = p
 			}
 		}
