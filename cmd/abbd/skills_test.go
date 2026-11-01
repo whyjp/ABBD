@@ -42,7 +42,9 @@ func TestThePluginShipsOnlySkills(t *testing.T) {
 	if err := json.Unmarshal([]byte(readPlugin(t, ".claude-plugin", "plugin.json")), &manifest); err != nil || manifest.Name != "abbd" {
 		t.Fatalf("plugin.json must parse and name the plugin abbd: %v %+v", err, manifest)
 	}
-	var market struct{ Plugins []struct{ Name, Source string } }
+	var market struct {
+		Plugins []struct{ Name, Source string }
+	}
 	b, err := os.ReadFile(filepath.Join("..", "..", ".claude-plugin", "marketplace.json"))
 	if err != nil || json.Unmarshal(b, &market) != nil || len(market.Plugins) != 1 || market.Plugins[0].Source != "./plugins/abbd" {
 		t.Fatalf("marketplace.json must parse and point at ./plugins/abbd: %v %+v", err, market)
