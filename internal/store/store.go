@@ -10,9 +10,11 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -70,6 +72,40 @@ func readUnit(path string) (model.Unit, error) {
 	if err != nil {
 		return model.Unit{}, err
 	}
+	return parseUnit(path, b)
+}
+
+// UnitsAt reads the unit files as they were committed at rev. A revision
+// without .abbd/ has no units.
+func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
+	project := filepath.Dir(s.root)
+	var dirs []string
+	for _, d := range s.unitDirs() {
+		dirs = append(dirs, Dir+"/"+d)
+	}
+	files, err := gitx.Files(project, rev, dirs...)
+	if err != nil {
+		return nil, err
+	}
+	var units []model.Unit
+	for _, f := range files {
+		if !strings.HasSuffix(f, ".md") {
+			continue
+		}
+		b, err := gitx.Show(project, rev, f)
+		if err != nil {
+			return nil, err
+		}
+		u, err := parseUnit(f, b)
+		if err != nil {
+			return nil, fmt.Errorf("%s at %s: %w", f, rev, err)
+		}
+		units = append(units, u)
+	}
+	return units, nil
+}
+
+func parseUnit(path string, b []byte) (model.Unit, error) {
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
 	if !ok {

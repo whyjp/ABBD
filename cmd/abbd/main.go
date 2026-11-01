@@ -38,6 +38,10 @@ abbd understand MOD-ID FILE|- [--root DIR]
                                      stamped with the module's code
 abbd impact IDS [--root DIR]         what a change to the comma-separated units reaches, in a
                                      direct and a far tier; read before the work
+abbd diff [--base REV] [--json] [--check] [--root DIR]
+                                     the topology difference since REV (default: the merge base
+                                     with the default branch), for the PR; --check exits 1 when
+                                     a contract changed or a cross-module relation appeared
 abbd evidence [--root DIR]           check every quote against the working tree
 abbd status [--root DIR]             whether the state and the blueprint are CURRENT, and counts`
 
@@ -63,6 +67,8 @@ type opts struct {
 	via, parent      string
 	responsibility   string
 	value, src       string
+	base             string
+	asJSON, check    bool
 	evidence         evidenceFlags
 	argv             []string
 }
@@ -83,6 +89,13 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"responsibility": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.responsibility, "responsibility", "", "the one sentence a reader says the unit is responsible for")
+	},
+	"base": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.base, "base", "", "the revision to compare with; default: the merge base with the default branch")
+	},
+	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
+	"check": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract changed or a cross-module relation appeared")
 	},
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
 	"source": func(fs *flag.FlagSet, o *opts) {
@@ -108,6 +121,7 @@ var commands = map[string]command{
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
 	"impact":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
+	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 }

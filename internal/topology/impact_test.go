@@ -21,7 +21,7 @@ func rel(to model.ID, kind model.RelationKind, origin model.Origin) model.Relati
 	return r
 }
 
-func ids(items []Item) []model.ID {
+func itemIDs(items []Item) []model.ID {
 	var out []model.ID
 	for _, it := range items {
 		out = append(out, it.Unit)
@@ -54,8 +54,8 @@ func TestImpactTiers(t *testing.T) {
 	im := ImpactOf(units, []model.ID{"MOD-0001"})
 	wantDirect := []model.ID{"DATA-0001", "IF-0001", "MOD-0001", "MOD-0003", "MOD-0004", "MOD-0006", "MOD-0007", "MOD-0008"}
 	wantFar := []model.ID{"MOD-0002"}
-	if !reflect.DeepEqual(ids(im.Direct), wantDirect) || !reflect.DeepEqual(ids(im.Far), wantFar) {
-		t.Fatalf("direct %v far %v, want direct %v far %v", ids(im.Direct), ids(im.Far), wantDirect, wantFar)
+	if !reflect.DeepEqual(itemIDs(im.Direct), wantDirect) || !reflect.DeepEqual(itemIDs(im.Far), wantFar) {
+		t.Fatalf("direct %v far %v, want direct %v far %v", itemIDs(im.Direct), itemIDs(im.Far), wantDirect, wantFar)
 	}
 	for _, it := range im.Direct {
 		if it.Unit == "MOD-0004" && it.Why != "consumes DATA-0001 (inferred, via data)" {
