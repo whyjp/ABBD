@@ -312,7 +312,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td><code>kind</code>, <code>name</code></td><td>단위의 종류와 이름</td></tr>
 <tr><td><code>anchors</code></td><td>단위를 코드에 묶는 파일 경로와 심볼. ID 유지의 근거다</td></tr>
 <tr><td><code>parent</code></td><td>단위를 포함하는 모듈의 ID. 선택이고, 없으면 최상위 단위다</td></tr>
-<tr><td><code>evidence</code></td><td>단위가 있다는 증거. 경로, 줄 범위, 짧은 인용</td></tr>
+<tr><td><code>evidence</code></td><td>단위가 있다는 증거. 경로, 범위(심볼, 없으면 파일 전체), 줄 위치, 짧은 인용, 상태(drifted, dead)</td></tr>
 <tr><td><code>purpose</code>, <code>responsibility</code></td><td>단위가 무엇을 책임지는지 한 문장</td></tr>
 <tr><td><code>signature</code></td><td>계약의 모양. 트레이트의 메서드 헤더나 명령의 플래그 같은 것</td></tr>
 <tr><td><code>digest</code></td><td>계약의 의미가 사는 코드의 지문</td></tr>
@@ -329,7 +329,30 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td>INFERRED</td><td>pstack 이해 스킬(how, swarm, blast-radius)이 읽은 결과</td><td>증거(경로, 줄 범위, 인용)가 있어야 한다</td></tr>
 <tr><td>USER_STATED</td><td>사람이 말한 것</td><td><code>source</code>가 있어야 한다. PR URL이나 &quot;conversation 2026-11-01&quot; 같은 것</td></tr>
 </tbody></table></div>
-<p>확인 축은 없다. INFERRED를 사람이 확인해 올리는 큐도, REJECTED 값도 없다. 추정이 틀렸으면 사람이 대화에서 말하고, 에이전트가 그 말을 USER_STATED로 적는다. sync는 모든 증거 인용을 다시 확인한다. 인용이 코드에서 사라진 INFERRED 관계는 죽은 관계로 표시되고, 영향 범위와 그림에서 빠진다.</p>
+<p>확인 축은 없다. INFERRED를 사람이 확인해 올리는 큐도, REJECTED 값도 없다. 추정이 틀렸으면 사람이 대화에서 말하고, 에이전트가 그 말을 USER_STATED로 적는다. sync는 모든 증거 인용을 다시 확인한다. 상태는 셋이고, 이유가 상태 파일에 남는다(아래).</p>
+<h3>증거는 범위 안의 인용이다</h3>
+<p>증거의 정체는 범위와 인용이다. 범위는 프로젝트 추출기가 내놓는 심볼 색인(경로, 심볼, 줄 범위)에 있는 심볼이고, 색인에 없는 파일과 산문(SKILL.md 같은 markdown)은 파일 전체가 범위다. ABBD 본체는 언어를 모른다. 색인은 추출기의 선택 출력이다.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>범위</th><th>범위 안의 인용</th><th>상태</th><th>뜻</th></tr></thead>
+<tbody>
+<tr><td>있다</td><td>있다</td><td>live</td><td>줄 위치와 digest를 따라 옮긴다</td></tr>
+<tr><td>있다</td><td>없다</td><td>drifted</td><td>사실은 남고 표시된다. 독자가 <code>refresh</code>나 <code>retract</code>로 정리한다</td></tr>
+<tr><td>없다</td><td>(없음)</td><td>dead</td><td>사실이 빠진다. 항목은 이유와 함께 남는다</td></tr>
+</tbody></table></div>
+<p>심볼은 다른 파일로 옮겨도 이름으로 따라간다. 다른 파일에서 인용을 글자로 찾던 규칙(테스트 파일, 추적 파일, 소유 앵커)은 지운다. 심볼만으로 살리지 않는 이유는, 함수가 남은 채 결합이 사라진 경우(<code>r.Counts()</code>)까지 살려 두기 때문이다. 상세는 <code>docs/identity-and-precedence.md</code>다.</p>
+<h3>필드마다 이기는 쪽은 한 표로 정한다</h3>
+<p>단위 파일은 쓰는 쪽(script, supplement, reader, human)마다 주장을 따로 담는다. 각 쓰는 쪽은 자기 층만 고친다. 화면, diff, explain이 보는 단위는 읽을 때 한 표로 계산한다. 진 주장도 남으므로, 이긴 주장이 사라지면 다음 주장이 자동으로 이긴다. 사라짐에는 언제나 상태 파일에 적힌 이유가 있다.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>필드</th><th>순서</th></tr></thead>
+<tbody>
+<tr><td><code>name</code>, <code>anchors</code>, <code>signature</code></td><td>script, reader, supplement</td></tr>
+<tr><td><code>parent</code></td><td>human, script, reader, supplement. 없는 단위를 가리키거나 순환을 만드는 주장은 건너뛴다</td></tr>
+<tr><td><code>purpose</code>, <code>responsibility</code></td><td>human, reader, supplement</td></tr>
+<tr><td><code>digest</code></td><td>script만</td></tr>
+<tr><td>관계(대상과 종류마다)</td><td>script, human, reader, supplement</td></tr>
+<tr><td>존재</td><td>script, reader, supplement. 없으면 <code>absent</code>와 이유(not-reported, evidence-dead, withdrawn, retracted)</td></tr>
+</tbody></table></div>
+<p>reader와 human의 철회(retract)는 자기보다 낮은 INFERRED 주장을 가린다. script의 사실은 아무도 가리지 못한다. 틀린 추출은 추출기에서 고친다.</p>
 <h3>모듈 이해</h3>
 <p>최상위 모듈마다 <code>understanding/&lt;MOD&gt;.md</code>에 pstack how의 Overview와 Key Concepts를 둔다. 글을 쓸 때의 모듈 코드 digest를 함께 둔다. 모듈 코드가 바뀌어 digest가 달라지면 그 글은 STALE이다. 다음 작업이나 사람의 요청에서 같은 how로 다시 쓴다.</p>
 <h3>해상도는 사람이 판단하는 단위다</h3>
@@ -659,6 +682,8 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><input disabled="" type="checkbox"> <code>abbd diff --check</code>를 돌리는 CI 작업을 어디에 두는가? ABBD 저장소에 예시 workflow로 둘지, abbd-setup이 대상 저장소에 만들게 할지 정한다.</li>
 <li><input disabled="" type="checkbox"> <code>candidates.yaml</code>이 ID 유지에 여전히 필요한가? 필요 없으면 지운다.</li>
 <li><input disabled="" type="checkbox"> EXTRACTED의 출처로 graphify의 언어 공통 AST 추출(tree-sitter)을 쓰는가? 쓰면 프로젝트마다 추출 스크립트를 쓰지 않아도 된다(14장 계획 6과 겹친다). 대신 외부 Python 의존성(<code>graphifyy</code>, Python 3.10 이상)이 생겨, Go 단일 바이너리라는 12장의 구현 형태가 깨진다. graphify의 노드는 클래스와 메서드라서 모듈과 계약으로 묶는 단계도 따로 필요하다(추론).</li>
+<li><input disabled="" type="checkbox"> <code>parent</code>에서 사람이 스크립트를 이기는가? 지금은 스크립트가 이기고 사람의 배치가 기록 없이 사라진다. 설계(<code>docs/identity-and-precedence.md</code>)는 사람이 이기게 두고, 스크립트의 주장은 밑에 남긴다.</li>
+<li><input disabled="" type="checkbox"> drifted인 INFERRED 사실이 영향 범위에 들어가는가? 설계는 표시를 단 채 넣는다. 숨기는 쪽보다 많이 보이는 쪽을 골랐다.</li>
 <li><input disabled="" type="checkbox"> 빈 저장소. 추출할 코드가 없으면 setup의 결정성 검사가 아무것도 증명하지 못한다. 지금은 첫 코드와 함께 abbd-setup을 돌리는 것으로 둔다.</li>
 </ul>
 <h3>v3로 닫힌 결정</h3>
@@ -705,6 +730,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td>설계 문서가 사양과 경과 기록이 섞여 커졌다</td><td>v2판 문서는 약 168KB였다</td><td>7</td></tr>
 <tr><td>코드에 v2 장치가 남아 있다</td><td>턴, 등급, 승인, 훅, <code>abbd serve</code>가 그대로 있다</td><td>8</td></tr>
 <tr><td>setup이 보완 단위를 조용히 잃는다</td><td>자기 적용에서 스크립트 단위와 앵커를 공유한 속 단위가 exit 0으로 사라졌다</td><td>9</td></tr>
+<tr><td>증거와 병합 규칙에서 결함이 계속 나온다</td><td>죽은 인용 12개 가운데 9개는 아직 참이었다. reader의 parent가 스크립트의 것으로 보였고(2404d01), parent가 사라지자 단위가 사라졌다(f0d043b)</td><td>10</td></tr>
 </tbody></table></div>
 <h3>1. 의미 구조 경로 (끝남, v3로 이어 씀)</h3>
 <p>발견은 모델이 하고, 확인은 결정적으로 한다. pstack how, swarm, blast-radius가 결합을 찾고, ABBD는 증거(경로, 줄 범위, 인용)를 sync마다 다시 확인한다. 브랜치 <code>abbd-plan1</code>에서 했다. ripgrep 의미 실측의 실제 결합 51개가 모두 증거와 함께 실제 토폴로지, 영향 범위, 화면에 닿았다(구현 전에는 0개). 같은 트리에서 증거 확인을 세 번 돌리면 결과가 같았다.</p>
@@ -743,6 +769,12 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>지금은 의미 보완의 단위가 스크립트 단위와 앵커 하나를 공유하면 스크립트 단위에 조용히 합쳐지고, setup은 exit 0으로 끝난다. 자기 적용에서 속 단위 하나가 이렇게 사라졌다.</li>
 <li>setup은 이 경우를 오류로 보고하고, 두 단위의 이름을 모두 적는다.</li>
 <li><strong>끝 기준.</strong> 앵커를 공유하는 보완 단위를 넣은 setup이 0이 아닌 코드로 끝나고 두 이름을 출력한다는 테스트가 있다.</li>
+</ul>
+<h3>10. 증거의 정체와 우선순위 표 (설계 끝남)</h3>
+<ul>
+<li>설계는 <code>docs/identity-and-precedence.md</code>다. 증거는 범위(심볼 또는 파일) 안의 인용이고 live, drifted, dead 셋으로 산다. 단위 파일은 쓰는 쪽마다 층을 두고, 한 표가 이기는 쪽을 정한다. <code>abbd retract</code>와 <code>abbd record evidence</code>(refresh)를 더한다.</li>
+<li>기존 <code>.abbd/</code>는 <code>abbd migrate</code> 한 번으로 옮긴다. 이 저장소와 Orca에서 돌리고 <code>graph.json</code>의 앞뒤를 비교한다.</li>
+<li><strong>끝 기준.</strong> 불변식 시험(어떤 단위나 사실도 이유 없이 사라지지 않는다, 멱등, 쓰는 쪽의 격리, 한 그루 트리, origin은 이긴 쓰는 쪽의 것)이 무작위 상태와 연산 열에서 통과한다. 이 시험은 지금 코드에서 먼저 실패한다. 이 저장소의 죽은 인용 12개 가운데 10개가 drifted로, <code>topology.Path</code>가 live로 바뀐다.</li>
 </ul>
 <h3>순서</h3>
 <p>9를 먼저 한다. 작고, 8이 setup 코드를 건드리기 전에 손실을 막는다. 다음으로 8을 하고, 4회차(5)를 v3 설계도로 돌린다. 6과 7은 그 뒤다. 사람만 할 수 있는 일도 남아 있다. 사람 키트로 재는 시간이다.</p>
