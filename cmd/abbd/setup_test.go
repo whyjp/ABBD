@@ -46,7 +46,7 @@ func TestSupplementAddsInferredFactsThatSurviveReextraction(t *testing.T) {
 	if !strings.Contains(md, "keeps the books\n    origin: INFERRED") || !strings.Contains(md, "to: IF-0001") || !strings.Contains(md, "quote: func Serve()") {
 		t.Fatalf("the supplement should add an inferred purpose and a coupling with its evidence:\n%s", md)
 	}
-	p.want(0, "MOD-0002 matched", "sync")
+	p.want(0, "MOD-0002 matched", "sync", "--verbose")
 	if !strings.Contains(p.read("architecture/MOD-0002.md"), "kind: consumes") {
 		t.Fatalf("re-extraction by the script must keep a coupling the script cannot see")
 	}
