@@ -74,12 +74,23 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
+	scriptKey := map[string]int{}
+	for i, u := range out.Units[:scriptUnits] {
+		scriptKey[u.Key] = i
+	}
 	for _, d := range doc.Units {
-		if i, ok := docTo[d.Key]; ok && d.Parent != "" {
-			if p, ok := docTo[d.Parent]; ok {
-				out.Units[i].Parent = out.Units[p].Key
-			}
+		i, ok := docTo[d.Key]
+		if !ok || d.Parent == "" {
+			continue
 		}
+		p, ok := docTo[d.Parent]
+		if !ok {
+			p, ok = scriptKey[d.Parent]
+		}
+		if !ok || out.Units[p].Kind != model.Module {
+			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
+		}
+		out.Units[i].Parent = out.Units[p].Key
 	}
 
 	type edge struct {

@@ -68,7 +68,14 @@ type Unit struct {
 	Evidence []model.Evidence
 }
 
-func Parse(r io.Reader) (Result, error) {
+func Parse(r io.Reader) (Result, error) { return parse(r, false) }
+
+// ParseSupplement reads a semantic supplement. Its units may name a module
+// only the script reports as their parent, by the script's key, so a parent
+// key the supplement does not hold is left for the overlay to resolve.
+func ParseSupplement(r io.Reader) (Result, error) { return parse(r, true) }
+
+func parse(r io.Reader, foreignParents bool) (Result, error) {
 	units, raw, err := parseUnits(r)
 	if err != nil {
 		return Result{}, err
@@ -83,7 +90,8 @@ func Parse(r io.Reader) (Result, error) {
 		}
 	}
 	for _, u := range units {
-		if k, ok := kinds[u.Parent]; u.Parent != "" && (!ok || k != model.Module || u.Parent == u.Key) {
+		k, ok := kinds[u.Parent]
+		if u.Parent != "" && (ok && k != model.Module || !ok && !foreignParents || u.Parent == u.Key) {
 			return Result{}, fmt.Errorf("unit %q: parent %q is not the key of another module", u.Name.Value, u.Parent)
 		}
 		if parentCycle(units, u.Key) {
