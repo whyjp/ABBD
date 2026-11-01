@@ -245,12 +245,14 @@ type chip struct {
 func chipKey(at model.ID, cs []model.ID, exit bool) string { return fmt.Sprint(at, exit, cs) }
 
 // chipFor names a chip after its one contract, or counts its contracts.
+// A count label keeps its words together with a no-break space, so the
+// first word that shorten drops from a row of contract names stays.
 func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 	var names []string
 	for _, c := range cs {
 		names = append(names, o.name(c))
 	}
-	ch := chip{key: chipKey(at, cs, exit), contracts: cs, label: fmt.Sprintf("계약 %d개", len(cs)), title: strings.Join(names, ", ")}
+	ch := chip{key: chipKey(at, cs, exit), contracts: cs, label: fmt.Sprintf("계약\u00a0%d개", len(cs)), title: strings.Join(names, ", ")}
 	if len(cs) == 1 {
 		ch.label = portLabel(names[0])
 	}
@@ -348,10 +350,7 @@ func planOverview(units []model.Unit) *overview {
 	for _, m := range o.modules {
 		if cs := unreached[m]; len(cs) > 0 {
 			ch := o.chipFor(m, cs, true)
-			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d 계약", len(cs))
-			if len(cs) == 1 {
-				ch.label = "+1 계약"
-			}
+			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d\u00a0계약", len(cs))
 			put(m, 0, ch)
 		}
 	}

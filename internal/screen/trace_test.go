@@ -3,6 +3,7 @@ package screen
 import (
 	"bytes"
 	"fmt"
+	"github.com/whyjp/abbd/internal/store"
 	"math"
 	"os"
 	"path/filepath"
@@ -622,5 +623,21 @@ func TestReferenceRanksFirst(t *testing.T) {
 		if c.ref > c.got {
 			t.Errorf("%s rates the renderer (%.2f) above the hand-laid reference (%.2f)", c.name, c.got, c.ref)
 		}
+	}
+}
+
+// With ABBD_TRACE_STORE set to a repository's root, the path
+// measures of its views are logged, for a state the fixtures do not hold.
+func TestTraceStore(t *testing.T) {
+	dir := os.Getenv("ABBD_TRACE_STORE")
+	if dir == "" {
+		t.Skip("ABBD_TRACE_STORE is not set")
+	}
+	units, err := store.Open(dir).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range views(Build(Input{Units: units})) {
+		t.Logf("%s: %s", v.name, traced(t, v.d))
 	}
 }
