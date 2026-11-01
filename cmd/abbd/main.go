@@ -12,6 +12,7 @@ import (
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/gitx"
+	"github.com/whyjp/abbd/internal/group"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
@@ -25,8 +26,9 @@ abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      fold in the semantic supplement, and sync
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
-abbd sync [--root DIR]              run the registered script, check every quote, keep the
-                                     IDs, write the state and render the blueprint
+abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
+                                     IDs, write the state and render the blueprint; prints
+                                     counts and what needs attention, --verbose every unit
 abbd record relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      a reader's coupling, INFERRED while its evidence is live
 abbd record relation FROM KIND TO --source REF [--via VIA] [--evidence ...] [--root DIR]
@@ -38,11 +40,14 @@ abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root 
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
-abbd explain ID|NAME [--root DIR]    one unit at a glance: its contracts, neighbours, inside
-                                     units, a reader's couplings with their quotes, how's text
+abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
+                                     units, a reader's couplings with their quotes, how's text;
+                                     QUERY is a unit ID or name, a file or directory path, a
+                                     symbol, or a phrase, and a QUERY that is no unit lists
+                                     the units it matches, best first, and explains the best
 abbd path A B [--root DIR]           the shortest path between two units, each hop with its
-                                     origin, and the path's weakest origin
-abbd impact IDS [--root DIR]         what a change to the comma-separated units reaches, in a
+                                     origin, and the path's weakest origin; A and B are QUERYs
+abbd impact QUERIES [--root DIR]     what a change to the comma-separated units reaches, in a
                                      direct and a far tier; read before the work
 abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      the topology difference since REV (default: the merge base
@@ -78,6 +83,7 @@ type opts struct {
 	value, src       string
 	base             string
 	asJSON, check    bool
+	verbose          bool
 	evidence         evidenceFlags
 	argv             []string
 }
@@ -103,6 +109,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.base, "base", "", "the revision to compare with; default: the merge base with the default branch")
 	},
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
+	"verbose": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.verbose, "verbose", false, "list every unit, not only what needs attention")
+	},
 	"check": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")
 	},
@@ -124,9 +133,10 @@ type command struct {
 
 var commands = map[string]command{
 	"setup":           {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, writes: true, run: func(e env, _ []string) error { return e.setup() }},
-	"sync":            {flags: []string{"root"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
+	"sync":            {flags: []string{"root", "verbose"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
 	"record relation": {flags: []string{"root", "via", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
+	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
@@ -244,8 +254,15 @@ func (e env) sync() error {
 	if err != nil {
 		return err
 	}
+	n := map[identity.Outcome]int{}
 	for _, ev := range res.Events {
-		fmt.Fprintf(e.stdout, "%s %s\n", ev.ID, ev.Outcome)
+		n[ev.Outcome]++
+	}
+	fmt.Fprintf(e.stdout, "synced: %d unit(s), %d matched, %d new, %d unmatched\n", len(model.Present(res.Units)), n[identity.Matched], n[identity.Created], len(res.Unmatched))
+	for _, ev := range res.Events {
+		if e.verbose || ev.Outcome != identity.Matched {
+			fmt.Fprintf(e.stdout, "%s %s\n", ev.ID, ev.Outcome)
+		}
 	}
 	for _, c := range res.Candidates {
 		fmt.Fprintf(e.stdout, "%s candidate-of %s via %s\n", c.New, c.Existing, c.Shared.Key())
@@ -288,6 +305,11 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 	}
 	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)
 	res.Units = evidence.New(e.root).Apply(res.Units)
+	res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
+	res.Unmatched = slices.DeleteFunc(res.Unmatched, func(id model.ID) bool {
+		u, ok := presentUnit(res.Units, id)
+		return ok && group.Made(u)
+	})
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}

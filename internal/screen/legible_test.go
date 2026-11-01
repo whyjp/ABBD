@@ -1,0 +1,612 @@
+package screen
+
+import (
+	"encoding/xml"
+	"fmt"
+	"math"
+	"sort"
+	"strconv"
+	"strings"
+	"unicode"
+)
+
+// This file measures a rendered drawing against docs/blueprint-svg.md. It
+// reads the SVG the page embeds, not the Drawing that produced it, so what it
+// judges is what a reader sees. Its thresholds are its own constants, so a
+// change to the renderer cannot loosen them.
+
+// The rules' numbers are docs/blueprint-svg.md's.
+const (
+	// 1: boxes per view.
+	viewBudget = 16
+	// 3: width budgets.
+	overviewWidth, insideWidth = 1320, 920
+	// 5: lines side by side within channelGap share a channel.
+	maxPerChannel = 4
+	channelGap    = 12.0
+	// 6: two lines closer than minGap for runLimit or longer overlap.
+	minGap, runLimit = 5.0, 24.0
+	// 7: crossings per drawn line, after bundling.
+	crossingsPerLine = 2
+	// 8: the widths past which a label may be cut, its full text in the tooltip.
+	hardChip, hardBox, hardUnit, hardLoose = 220, 280, 220, 236
+	// 13: back lines allowed: one, or this share of the arriving lines.
+	backShare = 0.2
+	// endZone is how close to a line's end two lines may meet or run
+	// together: lines that share a port converge there by design.
+	endZone = 26.0
+)
+
+type fpt struct{ x, y float64 }
+
+type frect struct{ x, y, w, h float64 }
+
+func (r frect) contains(p fpt, inset float64) bool {
+	return p.x > r.x+inset && p.x < r.x+r.w-inset && p.y > r.y+inset && p.y < r.y+r.h-inset
+}
+
+func (r frect) grow(d float64) frect { return frect{r.x - d, r.y - d, r.w + 2*d, r.h + 2*d} }
+
+func (r frect) overlaps(o frect) bool {
+	return r.x < o.x+o.w && o.x < r.x+r.w && r.y < o.y+o.h && o.y < r.y+r.h
+}
+
+func (r frect) center() fpt { return fpt{r.x + r.w/2, r.y + r.h/2} }
+
+// shape is a box or a port chip.
+type shape struct {
+	kind  string // "box" or "port"
+	class string
+	r     frect
+	lines []string
+	px    []int
+	title string
+}
+
+func (s shape) is(c string) bool { return strings.Contains(" "+s.class+" ", " "+c+" ") }
+
+// stroke is one subpath of a drawn line. A bundle is one line drawn as
+// several subpaths; they share a group.
+type stroke struct {
+	group         int
+	class, origin string
+	pts           []fpt
+}
+
+type sheet struct {
+	width, height float64
+	frame         *frect
+	shapes        []shape
+	strokes       []stroke
+	groups        int
+	markers       []fpt
+}
+
+func num(s string) float64 {
+	f, _ := strconv.ParseFloat(strings.TrimSpace(s), 64)
+	return f
+}
+
+func attr(e xml.StartElement, name string) string {
+	for _, a := range e.Attr {
+		if a.Name.Local == name {
+			return a.Value
+		}
+	}
+	return ""
+}
+
+func hasClass(e xml.StartElement, c string) bool {
+	return strings.Contains(" "+attr(e, "class")+" ", " "+c+" ")
+}
+
+// readSVG parses one drawing. It understands the elements page.html emits.
+func readSVG(src string) (sheet, error) {
+	var s sheet
+	dec := xml.NewDecoder(strings.NewReader(src))
+	var group *shape
+	nets := map[string]int{}
+	var inText bool
+	var title *string
+	for {
+		tok, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "svg":
+				s.width, s.height = num(attr(t, "width")), num(attr(t, "height"))
+			case "g":
+				for _, k := range []string{"box", "port"} {
+					if hasClass(t, k) {
+						group = &shape{kind: k, class: attr(t, "class")}
+					}
+				}
+			case "rect":
+				r := frect{num(attr(t, "x")), num(attr(t, "y")), num(attr(t, "width")), num(attr(t, "height"))}
+				switch {
+				case hasClass(t, "frame"):
+					s.frame = &r
+				case group != nil && group.r.w == 0:
+					group.r = r
+				}
+			case "text":
+				inText = group != nil && !hasClass(t, "sub")
+				if inText {
+					px := 13
+					if hasClass(t, "chip") || group.is("loose") {
+						px = chipPx
+					}
+					group.lines = append(group.lines, "")
+					group.px = append(group.px, px)
+				}
+			case "path":
+				if hasClass(t, "w") {
+					parts, err := flatten(attr(t, "d"))
+					if err != nil {
+						return s, err
+					}
+					g := s.groups
+					if n := attr(t, "data-net"); n != "" {
+						if k, ok := nets[n]; ok {
+							g = k
+						} else {
+							nets[n] = g
+							s.groups++
+						}
+					} else {
+						s.groups++
+					}
+					for _, p := range parts {
+						s.strokes = append(s.strokes, stroke{group: g, class: attr(t, "class"), origin: attr(t, "data-origin"), pts: p})
+					}
+				}
+			case "circle":
+				if hasClass(t, "origin") {
+					s.markers = append(s.markers, fpt{num(attr(t, "cx")), num(attr(t, "cy"))})
+				}
+			case "title":
+				if group != nil {
+					title = &group.title
+				}
+			}
+		case xml.CharData:
+			switch {
+			case title != nil:
+				*title += string(t)
+			case inText:
+				group.lines[len(group.lines)-1] += string(t)
+			}
+		case xml.EndElement:
+			switch t.Name.Local {
+			case "g":
+				if group != nil {
+					s.shapes = append(s.shapes, *group)
+					group = nil
+				}
+			case "text":
+				inText = false
+			case "title":
+				title = nil
+			}
+		}
+	}
+	return s, nil
+}
+
+// flatten turns a path made of M, L, H, V and C commands into polylines,
+// one per subpath.
+func flatten(d string) ([][]fpt, error) {
+	fields := strings.FieldsFunc(d, func(r rune) bool { return r == ' ' || r == ',' })
+	var toks []string
+	for _, f := range fields {
+		for f != "" && unicode.IsLetter(rune(f[0])) {
+			toks = append(toks, f[:1])
+			f = f[1:]
+		}
+		if f != "" {
+			toks = append(toks, f)
+		}
+	}
+	var out [][]fpt
+	var cur fpt
+	i := 0
+	next := func() float64 { i++; return num(toks[i-1]) }
+	add := func(p fpt) { out[len(out)-1] = append(out[len(out)-1], p) }
+	for i < len(toks) {
+		cmd := toks[i]
+		i++
+		switch cmd {
+		case "M":
+			cur = fpt{next(), next()}
+			out = append(out, []fpt{cur})
+		case "L":
+			cur = fpt{next(), next()}
+			add(cur)
+		case "H":
+			cur = fpt{next(), cur.y}
+			add(cur)
+		case "V":
+			cur = fpt{cur.x, next()}
+			add(cur)
+		case "C":
+			a, b, c := fpt{next(), next()}, fpt{next(), next()}, fpt{next(), next()}
+			for k := 1; k <= 16; k++ {
+				t := float64(k) / 16
+				u := 1 - t
+				add(fpt{
+					u*u*u*cur.x + 3*u*u*t*a.x + 3*u*t*t*b.x + t*t*t*c.x,
+					u*u*u*cur.y + 3*u*u*t*a.y + 3*u*t*t*b.y + t*t*t*c.y,
+				})
+			}
+			cur = c
+		default:
+			return nil, fmt.Errorf("path command %q in %q", cmd, d)
+		}
+	}
+	return out, nil
+}
+
+func dist(a, b fpt) float64 { return math.Hypot(a.x-b.x, a.y-b.y) }
+
+func segDist(p, a, b fpt) float64 {
+	dx, dy := b.x-a.x, b.y-a.y
+	l := dx*dx + dy*dy
+	if l == 0 {
+		return dist(p, a)
+	}
+	t := math.Max(0, math.Min(1, ((p.x-a.x)*dx+(p.y-a.y)*dy)/l))
+	return dist(p, fpt{a.x + t*dx, a.y + t*dy})
+}
+
+func cross(a, b, c, d fpt) (fpt, bool) {
+	r := fpt{b.x - a.x, b.y - a.y}
+	s := fpt{d.x - c.x, d.y - c.y}
+	den := r.x*s.y - r.y*s.x
+	if den == 0 {
+		return fpt{}, false
+	}
+	t := ((c.x-a.x)*s.y - (c.y-a.y)*s.x) / den
+	u := ((c.x-a.x)*r.y - (c.y-a.y)*r.x) / den
+	if t < 0 || t >= 1 || u < 0 || u >= 1 {
+		return fpt{}, false
+	}
+	return fpt{a.x + t*r.x, a.y + t*r.y}, true
+}
+
+// sample is a point on a polyline with the direction the line runs there
+// and its distance along the line.
+type sample struct {
+	p, dir fpt
+	at     float64
+}
+
+func samples(pts []fpt, step float64) []sample {
+	var out []sample
+	along := 0.0
+	for i := 1; i < len(pts); i++ {
+		a, b := pts[i-1], pts[i]
+		l := dist(a, b)
+		if l == 0 {
+			continue
+		}
+		dir := fpt{(b.x - a.x) / l, (b.y - a.y) / l}
+		for t := 0.0; t < l; t += step {
+			out = append(out, sample{fpt{a.x + dir.x*t, a.y + dir.y*t}, dir, along + t})
+		}
+		along += l
+	}
+	return out
+}
+
+func nearEnds(p fpt, w stroke, r float64) bool {
+	return dist(p, w.pts[0]) < r || dist(p, w.pts[len(w.pts)-1]) < r
+}
+
+// Metrics is what docs/blueprint-svg.md bounds, measured on one drawing.
+type Metrics struct {
+	Boxes, Split                                  int
+	Width, Wires, Crossings, TooClose, MaxChannel int
+	Truncated, Overflow                           int
+	OriginDashed, Unmarked                        int
+	UnwiredOnFrame, NodeOverlaps, ThroughBox      int
+	// Forward and Back count the lines that arrive at a box or a chip by
+	// the way they run, BackPlain the back lines drawn like forward ones,
+	// and SplitIn the lines of one kind that arrive at one edge of a box
+	// apart from the bundle of their kind.
+	Forward, Back, BackPlain, SplitIn int
+}
+
+func (m Metrics) String() string {
+	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox)
+}
+
+func measure(s sheet) Metrics {
+	m := Metrics{Width: int(s.width), Wires: s.groups}
+	for _, sh := range s.shapes {
+		if sh.kind == "box" {
+			m.Boxes++
+		}
+	}
+	var ws []stroke
+	for _, w := range s.strokes {
+		if len(w.pts) > 1 {
+			ws = append(ws, w)
+		}
+	}
+	// R1: crossings between two lines, away from the ends where lines meet
+	// on purpose.
+	for i := range ws {
+		for j := i + 1; j < len(ws); j++ {
+			if ws[i].group == ws[j].group {
+				continue
+			}
+			var seen []fpt
+			for a := 1; a < len(ws[i].pts); a++ {
+				for b := 1; b < len(ws[j].pts); b++ {
+					p, ok := cross(ws[i].pts[a-1], ws[i].pts[a], ws[j].pts[b-1], ws[j].pts[b])
+					if !ok || nearEnds(p, ws[i], endZone) || nearEnds(p, ws[j], endZone) {
+						continue
+					}
+					dup := false
+					for _, q := range seen {
+						dup = dup || dist(p, q) < 6
+					}
+					if !dup {
+						seen = append(seen, p)
+					}
+				}
+			}
+			m.Crossings += len(seen)
+		}
+	}
+	// R3: two lines running side by side closer than minGap.
+	close := func(i, j int) bool {
+		si := samples(ws[i].pts, 2)
+		run := 0.0
+		for k, sm := range si {
+			if nearEnds(sm.p, ws[i], endZone) || nearEnds(sm.p, ws[j], endZone) {
+				run = 0
+				continue
+			}
+			near := false
+			for b := 1; b < len(ws[j].pts) && !near; b++ {
+				a, c := ws[j].pts[b-1], ws[j].pts[b]
+				l := dist(a, c)
+				near = l > 0 && segDist(sm.p, a, c) < minGap && math.Abs(sm.dir.x*(c.x-a.x)/l+sm.dir.y*(c.y-a.y)/l) > 0.9
+			}
+			if !near || k == 0 {
+				run = 0
+				continue
+			}
+			if run += sm.at - si[k-1].at; run >= runLimit {
+				return true
+			}
+		}
+		return false
+	}
+	pairs := map[[2]int]bool{}
+	for i := range ws {
+		for j := i + 1; j < len(ws); j++ {
+			g := [2]int{ws[i].group, ws[j].group}
+			if g[0] != g[1] && !pairs[g] && (close(i, j) || close(j, i)) {
+				pairs[g] = true
+				m.TooClose++
+			}
+		}
+	}
+	// R2: lines that share a vertical channel, read on scan lines.
+	for y := 0.0; y < s.height; y += 6 {
+		var xs []float64
+		for _, w := range ws {
+			for a := 1; a < len(w.pts); a++ {
+				p, q := w.pts[a-1], w.pts[a]
+				if (p.y-y)*(q.y-y) > 0 || p.y == q.y || math.Abs(q.y-p.y) < 2*math.Abs(q.x-p.x) {
+					continue
+				}
+				x := p.x + (q.x-p.x)*(y-p.y)/(q.y-p.y)
+				if !nearEnds(fpt{x, y}, w, endZone) {
+					xs = append(xs, x)
+				}
+				break
+			}
+		}
+		sort.Float64s(xs)
+		run := 1
+		for k := range xs {
+			if k > 0 && xs[k]-xs[k-1] <= channelGap {
+				run++
+			} else {
+				run = 1
+			}
+			m.MaxChannel = max(m.MaxChannel, run)
+		}
+	}
+	// R4: labels whole, and inside their shapes.
+	for _, sh := range s.shapes {
+		pad, hard := 12.0, float64(hardBox)
+		switch {
+		case sh.kind == "port":
+			pad, hard = 6, hardChip
+		case sh.is("inner"):
+			hard = hardUnit
+		case sh.is("loose"):
+			pad, hard = 6, hardLoose
+		}
+		for k, line := range sh.lines {
+			if strings.HasSuffix(line, "…") && (sh.r.w < hard || !strings.Contains(sh.title, strings.TrimSuffix(line, "…"))) {
+				m.Truncated++
+			}
+			if float64(textWidth(line, sh.px[k])) > sh.r.w-pad {
+				m.Overflow++
+			}
+		}
+	}
+	// R10: nothing drawn on top of anything else.
+	for i := range s.shapes {
+		for j := i + 1; j < len(s.shapes); j++ {
+			a, b := s.shapes[i], s.shapes[j]
+			if a.kind == b.kind && a.r.overlaps(b.r) {
+				m.NodeOverlaps++
+			}
+		}
+	}
+	through := map[int]bool{}
+	for _, w := range ws {
+		for _, sh := range s.shapes {
+			if sh.r.grow(5).contains(w.pts[0], 0) || sh.r.grow(5).contains(w.pts[len(w.pts)-1], 0) {
+				continue
+			}
+			for _, sm := range samples(w.pts, 3) {
+				if sh.r.contains(sm.p, 2) {
+					through[w.group] = true
+					break
+				}
+			}
+		}
+	}
+	m.ThroughBox = len(through)
+	// 12: an unwired contract is listed under the drawing, not on the frame.
+	if s.frame != nil {
+		for _, sh := range s.shapes {
+			if sh.kind == "port" && sh.is("unwired") {
+				m.UnwiredOnFrame++
+			}
+		}
+	}
+	// 4: lines of one kind that leave one edge of a box are one bundle.
+	leaving := map[string]map[int]bool{}
+	for _, w := range ws {
+		st := w.pts[0]
+		for k, b := range s.shapes {
+			if b.kind != "box" || st.x <= b.r.x || st.x >= b.r.x+b.r.w {
+				continue
+			}
+			edge := ""
+			switch {
+			case math.Abs(st.y-b.r.y) < 1:
+				edge = "top"
+			case math.Abs(st.y-b.r.y-b.r.h) < 1:
+				edge = "bottom"
+			default:
+				continue
+			}
+			kk := fmt.Sprint(k, edge, w.class)
+			if leaving[kk] == nil {
+				leaving[kk] = map[int]bool{}
+			}
+			leaving[kk][w.group] = true
+		}
+	}
+	for _, gs := range leaving {
+		m.Split += len(gs) - 1
+	}
+	// 13: a line reads top to bottom and left to right. Each stroke that
+	// ends on a box or a chip is one arriving line; it runs forward when its
+	// end lies below its start, or level with it and to the right. A line
+	// that provides a contract reads from the contract to the unit that
+	// meets it, so it counts the other way round.
+	on := func(p fpt) (frect, bool) {
+		for _, sh := range s.shapes {
+			if sh.r.grow(5).contains(p, 0) {
+				return sh.r, true
+			}
+		}
+		return frect{}, false
+	}
+	arrivals := map[string]map[int]bool{}
+	for _, w := range ws {
+		a, b := w.pts[0], w.pts[len(w.pts)-1]
+		r, ok := on(b)
+		if !ok {
+			continue
+		}
+		dy, dx := b.y-a.y, b.x-a.x
+		if strings.Contains(" "+w.class+" ", " provides ") {
+			dy, dx = -dy, -dx
+		}
+		forward := dy > 2 || math.Abs(dy) <= 2 && dx >= 0
+		switch {
+		case forward:
+			m.Forward++
+		default:
+			m.Back++
+			if !strings.Contains(" "+w.class+" ", " back ") {
+				m.BackPlain++
+			}
+		}
+		edge := "top"
+		if math.Abs(b.y-r.y-r.h) < math.Abs(b.y-r.y) {
+			edge = "bottom"
+		}
+		k := fmt.Sprint(r, edge, strings.ReplaceAll(w.class, " back", ""))
+		if arrivals[k] == nil {
+			arrivals[k] = map[int]bool{}
+		}
+		arrivals[k][w.group] = true
+	}
+	// Rule 7 counts a drawn line by where it arrives: a bundle is one line
+	// however many pieces draw it, and a piece that ends on a trunk is part
+	// of the line that trunk carries.
+	m.Wires = 0
+	counted := map[int]bool{}
+	for _, gs := range arrivals {
+		m.SplitIn += len(gs) - 1
+		for g := range gs {
+			if !counted[g] {
+				counted[g] = true
+				m.Wires++
+			}
+		}
+	}
+	// R7: a line's dash says its kind, never its origin, and a line a reader
+	// or a human gave carries a mark where it leaves its unit.
+	dashed, unmarked := map[int]bool{}, map[int]bool{}
+	marked := map[int]bool{}
+	for _, w := range ws {
+		if strings.Contains(" "+w.class+" ", " guess ") {
+			dashed[w.group] = true
+		}
+		for _, mk := range s.markers {
+			if dist(mk, w.pts[0]) < 6 || dist(mk, w.pts[len(w.pts)-1]) < 6 {
+				marked[w.group] = true
+			}
+		}
+	}
+	for _, w := range ws {
+		if w.origin != "" && w.origin != "extracted" && !marked[w.group] {
+			unmarked[w.group] = true
+		}
+	}
+	m.OriginDashed, m.Unmarked = len(dashed), len(unmarked)
+	return m
+}
+
+func (m Metrics) violations(width int) []string {
+	var out []string
+	check := func(ok bool, rule, msg string, args ...any) {
+		if !ok {
+			out = append(out, rule+": "+fmt.Sprintf(msg, args...))
+		}
+	}
+	check(m.Boxes <= viewBudget, "1", "%d boxes, budget %d", m.Boxes, viewBudget)
+	check(m.Width <= width, "3", "%dpx wide, budget %dpx", m.Width, width)
+	check(m.Split == 0, "4", "%d lines leave a box beside a bundle of their kind instead of in it", m.Split)
+	check(m.SplitIn == 0, "4", "%d lines reach a box beside a bundle of their kind instead of in it", m.SplitIn)
+	check(m.MaxChannel <= maxPerChannel, "5", "%d lines share one channel, limit %d", m.MaxChannel, maxPerChannel)
+	check(m.TooClose == 0, "6", "%d pairs of lines run closer than %vpx for %vpx", m.TooClose, minGap, runLimit)
+	check(m.Crossings <= crossingsPerLine*m.Wires, "7", "%d crossings for %d drawn lines, limit %d", m.Crossings, m.Wires, crossingsPerLine*m.Wires)
+	check(m.Truncated == 0, "8", "%d labels cut short below the hard width", m.Truncated)
+	check(m.Overflow == 0, "8", "%d labels wider than their box", m.Overflow)
+	check(m.NodeOverlaps == 0, "9", "%d boxes or chips overlap", m.NodeOverlaps)
+	check(m.ThroughBox == 0, "9", "%d lines pass through a box they do not join", m.ThroughBox)
+	check(m.OriginDashed == 0, "11", "%d lines dashed for their origin", m.OriginDashed)
+	check(m.Unmarked == 0, "11", "%d lines from a reader or a human without an origin mark", m.Unmarked)
+	check(m.UnwiredOnFrame == 0, "12", "%d unwired contracts spread on the frame", m.UnwiredOnFrame)
+	check(m.Back <= max(1, int(backShare*float64(m.Forward+m.Back))), "13", "%d of %d arriving lines run up or left, limit %d", m.Back, m.Forward+m.Back, max(1, int(backShare*float64(m.Forward+m.Back))))
+	check(m.BackPlain == 0, "13", "%d lines run up or left drawn like forward ones", m.BackPlain)
+	return out
+}

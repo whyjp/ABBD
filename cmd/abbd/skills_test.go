@@ -260,6 +260,23 @@ func TestInstallKeepsOneBlockInClaudeMD(t *testing.T) {
 	}
 }
 
+// The steps the skill runs after setup, install and understand, leave a
+// current state current: neither touches the code the state was synced from.
+// A state the code already moved past stays STALE.
+func TestInstallAndUnderstandKeepTheStateCurrent(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "state: CURRENT", "status")
+	p.want(0, "added the abbd block", "install")
+	p.want(0, "state: CURRENT", "status")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling charges.\n"))
+	p.want(0, "state: CURRENT", "status")
+
+	p.code("billing/extra.go", "package billing\n")
+	write(t, filepath.Join(p.root, "CLAUDE.md"), "# Project\n")
+	p.want(0, "added the abbd block", "install")
+	p.want(0, "state: STALE", "status")
+}
+
 // A CLAUDE.md that shows the markers in a fenced example keeps the example;
 // install appends its own block after it.
 func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {

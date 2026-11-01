@@ -97,3 +97,88 @@ func TestExplainSplitsDrawnLinksFromGuesses(t *testing.T) {
 		t.Fatalf("guesses %v, want %v", guessed, want)
 	}
 }
+
+type joint struct {
+	Kind             model.RelationKind
+	Forward          bool
+	Shares, Provider model.ID
+}
+
+func joints(hops []Hop) []joint {
+	var out []joint
+	for _, h := range hops {
+		out = append(out, joint{h.Kind, h.Forward, h.Shares, h.Provider})
+	}
+	return out
+}
+
+// Two consumers of one contract do not reach each other through it. The
+// path goes the way they talk, through the contract's provider, even when
+// that is longer.
+func TestPathRoutesAroundTwoConsumersOfOneContract(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", "", rel("IF-0001", model.Consumes, model.Extracted)),
+		unit("MOD-0002", "", rel("IF-0001", model.Consumes, model.Extracted), rel("MOD-0003", model.DependsOn, model.Extracted)),
+		unit("MOD-0003", "", rel("IF-0001", model.Provides, model.Extracted)),
+		unit("IF-0001", ""),
+	}
+	hops, ok := Path(units, "MOD-0001", "MOD-0002")
+	want := []step{
+		{"MOD-0001", "IF-0001", true, model.Extracted},
+		{"MOD-0003", "IF-0001", false, model.Extracted},
+		{"MOD-0002", "MOD-0003", false, model.Extracted},
+	}
+	if !ok || !reflect.DeepEqual(steps(hops), want) {
+		t.Fatalf("got %+v, want the route through the provider: %+v", steps(hops), want)
+	}
+}
+
+// When sharing the contract is all that joins two units, the path says so
+// on the hop that joins them, with the contract and its provider.
+func TestPathLabelsTwoConsumersThatOnlyShareAContract(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", "", rel("IF-0001", model.Consumes, model.Extracted)),
+		unit("MOD-0002", "", rel("IF-0001", model.Consumes, model.Extracted)),
+		unit("MOD-0003", "", rel("IF-0001", model.Provides, model.Extracted)),
+		unit("IF-0001", ""),
+	}
+	hops, ok := Path(units, "MOD-0001", "MOD-0002")
+	want := []joint{{model.Consumes, true, "", ""}, {model.Consumes, false, "IF-0001", "MOD-0003"}}
+	if !ok || !reflect.DeepEqual(joints(hops), want) {
+		t.Fatalf("got %+v, want two hops, the second marked as sharing IF-0001 that MOD-0003 provides: %+v", joints(hops), want)
+	}
+	hops, _ = Path(units[:2:2], "MOD-0001", "MOD-0002")
+	if len(hops) != 0 {
+		t.Fatalf("units without IF-0001 have no path: %+v", joints(hops))
+	}
+	hops, _ = Path(append(units[:2:2], units[3]), "MOD-0001", "MOD-0002")
+	if want := []joint{{model.Consumes, true, "", ""}, {model.Consumes, false, "IF-0001", ""}}; !reflect.DeepEqual(joints(hops), want) {
+		t.Fatalf("got %+v, want %+v", joints(hops), want)
+	}
+}
+
+// A module reaches what a unit inside it uses through that unit, by the
+// nesting, which the path names as a hop of its own.
+func TestPathWalksFromAModuleIntoAUnitInsideIt(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", "", rel("MOD-0006", model.DependsOn, model.Extracted)),
+		unit("MOD-0004", "MOD-0001", rel("MOD-0005", model.DependsOn, model.Inferred)),
+		unit("MOD-0005", "", rel("MOD-0006", model.DependsOn, model.Extracted)),
+		unit("MOD-0006", ""),
+	}
+	hops, ok := Path(units, "MOD-0001", "MOD-0005")
+	want := []joint{{Contains, true, "", ""}, {model.DependsOn, true, "", ""}}
+	if !ok || !reflect.DeepEqual(joints(hops), want) || hops[0].From != "MOD-0001" || hops[0].To != "MOD-0004" {
+		t.Fatalf("got %+v, want MOD-0001 -contains-> MOD-0004 -depends_on-> MOD-0005, not the shared dependency: %+v", steps(hops), want)
+	}
+
+	units = []model.Unit{
+		unit("MOD-0001", "", rel("MOD-0003", model.DependsOn, model.Extracted)),
+		unit("MOD-0002", "MOD-0001", rel("MOD-0004", model.DependsOn, model.Extracted)),
+		unit("MOD-0003", "", rel("MOD-0004", model.DependsOn, model.Extracted)),
+		unit("MOD-0004", ""),
+	}
+	if hops, _ := Path(units, "MOD-0004", "MOD-0001"); len(hops) != 2 || hops[1].Kind != model.DependsOn {
+		t.Fatalf("a recorded relation wins a tie with the nesting: %+v", joints(hops))
+	}
+}

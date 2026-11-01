@@ -22,10 +22,11 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 		}
 		return s
 	},
-	"marks": func() []string { return []string{"contract", "bypass", "guess", "ink", "ok"} },
+	"marks": func() []string { return []string{"contract", "bypass", "ink", "ok"} },
 	"markColor": func(k string) string {
-		return map[string]string{"contract": "accent", "bypass": "bypass", "guess": "guess", "ink": "ink", "ok": "ok"}[k]
+		return map[string]string{"contract": "accent", "bypass": "bypass", "ink": "ink", "ok": "ok"}[k]
 	},
+	"tip": func(k string) string { return tips[k] },
 	"label": func(k string) string {
 		if l, ok := labels[k]; ok {
 			return l
@@ -37,8 +38,15 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 // labels are the Korean words the screen shows for an origin badge or a kind.
 // The English key stays the CSS class and the word the CLI prints.
 var labels = map[string]string{
-	"stated": "사람이 명시", "inferred": "추정", "extracted": "코드에서 추출",
+	"stated": "확인", "inferred": "판독", "extracted": "추출",
 	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능",
+}
+
+// tips say what each origin word means; the page shows them on hover.
+var tips = map[string]string{
+	"inferred":  "pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음",
+	"stated":    "사람이 말함",
+	"extracted": "프로젝트의 추출 스크립트가 코드에서 읽음",
 }
 
 func Render(w io.Writer, m Model) error { return page.Execute(w, m) }

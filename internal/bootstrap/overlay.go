@@ -4,6 +4,7 @@ package bootstrap
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -33,15 +34,18 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 	var gaps []string
 	docTo := map[string]int{}
 	covered := map[int]bool{}
-	scriptUnits := len(out.Units)
+	sc := newScript(slices.Clip(out.Units))
 	for n, d := range doc.Units {
 		label := fmt.Sprintf("%s %q", d.Kind, d.Name.Value)
-		i, err := match(out.Units[:scriptUnits], d)
+		i, err := sc.match(d)
 		if len(d.Evidence) > 0 {
 			// Evidence says the script cannot see the unit. Folding it into a
 			// script unit that shares an anchor would drop it without a word.
-			if err == nil {
-				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Name.Value)
+			// A unit that names the module it shares with as its parent sits
+			// inside that module's anchors, so it stays a unit of its own as
+			// long as some anchor of the parent's tells the two apart.
+			if err == nil && !(sc.within(i, sc.parentOf(d, doc)) && !sameAnchors(sc.units[i].Anchors, d.Anchors)) {
+				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; name %q as its parent if it sits inside it, anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Key, out.Units[i].Name.Value)
 			}
 			out.Units = append(out.Units, semantic(d, fmt.Sprintf("supplement#%d", n)))
 			i, err = len(out.Units)-1, nil
@@ -60,8 +64,14 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		}
 		f.Matched++
 		u := &out.Units[i]
-		if d.Signature != nil && (u.Signature == nil || u.Signature.Value != d.Signature.Value) {
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, sig(u.Signature)))
+		// The code's signature wins. Where the script reads none, the
+		// reader's is the only one there is, and it is a guess.
+		switch {
+		case d.Signature == nil:
+		case u.Signature == nil || u.Signature.Origin == model.Inferred:
+			u.Signature = &model.Fact{Value: d.Signature.Value, Origin: model.Inferred}
+		case u.Signature.Value != d.Signature.Value:
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, u.Signature.Value))
 		}
 		if d.Purpose != nil {
 			u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: model.Inferred}
@@ -74,12 +84,29 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
+	// A parent the supplement gives is a reader's, INFERRED: it rests on
+	// the parent evidence the reader cites, or on the unit's own evidence.
 	for _, d := range doc.Units {
-		if i, ok := docTo[d.Key]; ok && d.Parent != "" {
-			if p, ok := docTo[d.Parent]; ok {
-				out.Units[i].Parent = out.Units[p].Key
-			}
+		i, ok := docTo[d.Key]
+		if !ok || d.Parent == "" {
+			continue
 		}
+		p, ok := docTo[d.Parent]
+		if !ok {
+			p, ok = sc.key[d.Parent]
+		}
+		if !ok || out.Units[p].Kind != model.Module {
+			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
+		}
+		es := d.ParentEvidence
+		if len(es) == 0 {
+			es = d.Evidence
+		}
+		if len(es) == 0 {
+			return base, f, fmt.Errorf("supplement %s %q puts it in %q without evidence; cite parent_evidence, the code that shows it belongs there", d.Kind, d.Name.Value, d.Parent)
+		}
+		u := &out.Units[i]
+		u.Parent, u.ParentOrigin, u.ParentEvidence = out.Units[p].Key, model.Inferred, es
 	}
 
 	type edge struct {
@@ -114,31 +141,97 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 func semantic(d extract.Unit, key string) extract.Unit {
 	d.Key = key
 	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred}
-	d.Signature, d.Digest, d.Parent = nil, "", ""
+	d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, "", "", nil
 	return d
 }
 
-func match(units []extract.Unit, d extract.Unit) (int, error) {
-	best, bestN, tie := -1, 0, false
+// script is the units the extraction script reported, indexed by key.
+type script struct {
+	units []extract.Unit
+	key   map[string]int
+}
+
+func newScript(units []extract.Unit) script {
+	s := script{units: units, key: map[string]int{}}
 	for i, u := range units {
+		s.key[u.Key] = i
+	}
+	return s
+}
+
+// within reports whether script unit i is j or one of j's ancestors. A j
+// of -1 is no unit.
+func (s script) within(i, j int) bool {
+	for range s.units {
+		if j < 0 {
+			return false
+		}
+		if i == j {
+			return true
+		}
+		p, ok := s.key[s.units[j].Parent]
+		if s.units[j].Parent == "" || !ok {
+			return false
+		}
+		j = p
+	}
+	return false
+}
+
+// parentOf is the script unit d names as its parent, by a script key or by
+// a supplement unit that restates one, or -1.
+func (s script) parentOf(d extract.Unit, doc extract.Result) int {
+	if d.Parent == "" {
+		return -1
+	}
+	for _, p := range doc.Units {
+		if p.Key == d.Parent {
+			if i, err := s.match(p); err == nil && len(p.Evidence) == 0 {
+				return i
+			}
+			return -1
+		}
+	}
+	if i, ok := s.key[d.Parent]; ok {
+		return i
+	}
+	return -1
+}
+
+func sameAnchors(a, b []model.Anchor) bool {
+	return len(a) == len(b) && overlap(a, b) == len(a)
+}
+
+// match finds the script unit of d's kind that shares the most anchors with
+// d. A package module anchored on its directory also holds the directory of
+// each module inside it, so when the best matches nest, the innermost wins.
+func (s script) match(d extract.Unit) (int, error) {
+	var best []int
+	bestN := 0
+	for i, u := range s.units {
 		if u.Kind != d.Kind {
 			continue
 		}
-		n := overlap(u.Anchors, d.Anchors)
-		switch {
+		switch n := overlap(u.Anchors, d.Anchors); {
 		case n > bestN:
-			best, bestN, tie = i, n, false
+			best, bestN = []int{i}, n
 		case n == bestN && n > 0:
-			tie = true
+			best = append(best, i)
 		}
 	}
-	switch {
-	case best < 0:
+	if len(best) == 0 {
 		return 0, fmt.Errorf("no %s in the code shares an anchor with it", d.Kind)
-	case tie:
-		return 0, fmt.Errorf("its anchors match more than one %s equally", d.Kind)
 	}
-	return best, nil
+	for _, c := range best {
+		if !slices.ContainsFunc(best, func(o int) bool { return !s.within(o, c) }) {
+			return c, nil
+		}
+	}
+	var names []string
+	for _, i := range best {
+		names = append(names, fmt.Sprintf("%s %q", s.units[i].Kind, s.units[i].Name.Value))
+	}
+	return 0, fmt.Errorf("its anchors match %s and %s equally; give it an anchor only one of them holds", strings.Join(names[:len(names)-1], ", "), names[len(names)-1])
 }
 
 func overlap(a, b []model.Anchor) int {
@@ -153,11 +246,4 @@ func overlap(a, b []model.Anchor) int {
 		}
 	}
 	return n
-}
-
-func sig(f *model.Fact) string {
-	if f == nil {
-		return ""
-	}
-	return f.Value
 }

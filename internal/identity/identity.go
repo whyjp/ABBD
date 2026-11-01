@@ -243,18 +243,65 @@ func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
 	return byKey
 }
 
-// setParents gives each reported unit the module its extraction names, by key.
+// setParents gives each reported unit the module its extraction names, by
+// key. A unit the extraction places nowhere keeps a parent a reader or a
+// human gave it, so structure a reader found survives a script that cannot
+// see it; a parent the script gave earlier goes when the script drops it.
+// A kept parent goes when its module is absent, and when its own ancestors
+// lead back to it, since the script's word on code it reads wins.
 func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 	byKey := keyed(input, ids)
-	parent := map[model.ID]model.ID{}
-	for i, in := range input {
-		parent[ids[i]] = byKey[in.Parent]
+	type placed struct {
+		id       model.ID
+		origin   model.Origin
+		evidence []model.Evidence
 	}
+	parent := map[model.ID]placed{}
+	for i, in := range input {
+		parent[ids[i]] = placed{byKey[in.Parent], in.ParentOrigin, in.ParentEvidence}
+	}
+	present := map[model.ID]bool{}
+	for _, u := range model.Present(units) {
+		present[u.ID] = true
+	}
+	var kept []int
 	for i := range units {
-		if p, ok := parent[units[i].ID]; ok {
-			units[i].Parent = p
+		u := &units[i]
+		p, ok := parent[u.ID]
+		switch {
+		case !ok:
+		case p.id != "":
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = p.id, p.origin, p.evidence, ""
+			if p.origin == model.Extracted {
+				u.ParentOrigin = ""
+			}
+		case present[u.Parent] && (u.ParentOrigin == model.Inferred || u.ParentOrigin == model.UserStated):
+			kept = append(kept, i)
+		default:
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 		}
 	}
+	for _, i := range kept {
+		if u := &units[i]; ancestor(units, u.Parent, u.ID) {
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
+		}
+	}
+}
+
+// ancestor says whether following parents up from id reaches target.
+func ancestor(units []model.Unit, id, target model.ID) bool {
+	parent := map[model.ID]model.ID{}
+	for _, u := range units {
+		parent[u.ID] = u.Parent
+	}
+	seen := map[model.ID]bool{}
+	for k := id; k != "" && !seen[k]; k = parent[k] {
+		if k == target {
+			return true
+		}
+		seen[k] = true
+	}
+	return false
 }
 
 // Extraction owns the EXTRACTED relations of every unit it reports; units it
@@ -315,10 +362,13 @@ func dedupRelations(rs []model.Relation) []model.Relation {
 }
 
 // Extraction owns anchors, signatures and EXTRACTED names. Human-given values
-// and decided guesses survive.
+// and decided guesses survive, a reader's signature among them while the
+// script reads none.
 func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	u.Anchors = in.Anchors
-	u.Signature = in.Signature
+	if in.Signature != nil || guesses == ReplaceGuesses || !u.Signature.Guess() {
+		u.Signature = in.Signature
+	}
 	u.Digest = in.Digest
 	u.Evidence = in.Evidence
 	// A unit moves between the script and the reader whole: once the script

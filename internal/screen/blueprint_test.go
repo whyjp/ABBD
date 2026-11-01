@@ -10,8 +10,8 @@ import (
 )
 
 // The blueprint shows the final state only: nothing on it waits for a
-// decision, and the overview draws no reader's guess, which the inside of
-// each module it touches lists with its via and quote.
+// decision. The overview draws a reader's coupling with the reader's mark,
+// and the inside of each module it touches lists it with its via and quote.
 func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 	units := append(ripgrep(), inside("DATA-0001", "MOD-0004"))
 	units[0].Relations = append(units[0].Relations, guess("MOD-0005", model.DependsOn, "import"))
@@ -31,8 +31,11 @@ func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 		t.Fatalf("the blueprint has no module insides")
 	}
 	_, svg, _ := strings.Cut(overview, `<section id="overview">`)
-	if regexp.MustCompile(`class="w [^"]*guess|pill inferred|ripgrep → grep-printer|DATA-0001`).MatchString(svg) {
-		t.Errorf("the overview draws or lists a reader's guess:\n%s", svg)
+	if regexp.MustCompile(`class="w [^"]*guess|DATA-0001`).MatchString(svg) {
+		t.Errorf("the overview dashes a reader's line or draws an inside unit:\n%s", svg)
+	}
+	if !regexp.MustCompile(`<path class="w bypass[^"]*" [^>]*><title>[^<]*ripgrep → grep-printer[^<]*판독`).MatchString(svg) || !strings.Contains(svg, `<circle class="origin inferred"`) {
+		t.Errorf("the overview should draw the reader's coupling ripgrep → grep-printer with its mark:\n%s", svg)
 	}
 	for _, want := range []string{
 		`ripgrep → grep-printer <span class="muted">(depends_on, via import)</span>`,

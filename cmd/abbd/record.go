@@ -7,6 +7,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
+	"github.com/whyjp/abbd/internal/group"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -16,8 +17,8 @@ type evidenceFlags []string
 func (f *evidenceFlags) String() string     { return strings.Join(*f, " ") }
 func (f *evidenceFlags) Set(s string) error { *f = append(*f, s); return nil }
 
-// citations parses --evidence and refuses any quote the tree does not hold
-// now, so a finding enters the state only with evidence that is live.
+// citations parses --evidence and refuses any quote the file it names does not
+// hold now, so a finding enters the state only with evidence that is live.
 func (e env) citations() ([]model.Evidence, error) {
 	var es []model.Evidence
 	for _, s := range e.evidence {
@@ -33,7 +34,7 @@ func (e env) citations() ([]model.Evidence, error) {
 	}
 	c := evidence.New(e.root)
 	for _, ev := range es {
-		if !c.Check(ev).Live {
+		if !c.Check(ev, nil).Live {
 			return nil, fmt.Errorf("the code does not hold %s; quote it verbatim from the working tree", ev)
 		}
 	}
@@ -151,6 +152,53 @@ func (e env) recordUnit(pos []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "recorded %s %s, INFERRED; it stays while its evidence is in the code\n", u.ID, name)
+	return nil
+}
+
+// recordParent places a unit inside a module: a reader's grouping with
+// --evidence, or what a human stated with --source. A sync keeps it unless
+// the script reports a parent for the unit.
+func (e env) recordParent(pos []string) error {
+	id, parent := model.ID(pos[0]), model.ID(pos[1])
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	u, ok := presentUnit(units, id)
+	if !ok {
+		return fmt.Errorf("%s is not a unit of the state", id)
+	}
+	p, ok := presentUnit(units, parent)
+	if !ok || p.Kind != model.Module || parent == id {
+		return fmt.Errorf("%s is not another module of the state", parent)
+	}
+	if group.Made(p) {
+		return fmt.Errorf("%s is a directory group sync makes to keep a view small and drops when it is not needed; record the module that owns %s", parent, id)
+	}
+	switch {
+	case e.sourceRef() != "":
+		u.ParentOrigin, u.ParentSource, u.ParentEvidence = model.UserStated, e.sourceRef(), nil
+	case len(e.evidence) == 0:
+		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE that shows %s belongs in %s, or give the --source where a human stated it", id, parent)
+	default:
+		if u.ParentEvidence, err = e.citations(); err != nil {
+			return err
+		}
+		u.ParentOrigin, u.ParentSource = model.Inferred, ""
+	}
+	u.Parent = parent
+	for i := range units {
+		if units[i].ID == id {
+			units[i] = u
+		}
+	}
+	if c := model.ParentCycle(units); c != "" {
+		return fmt.Errorf("placing %s in %s makes %s its own ancestor", id, parent, c)
+	}
+	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "recorded %s in %s, %s\n", id, parent, u.ParentOrigin)
 	return nil
 }
 

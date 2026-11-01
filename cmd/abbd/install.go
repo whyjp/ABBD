@@ -7,6 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/whyjp/abbd/internal/gitx"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 const (
@@ -21,7 +24,7 @@ const block = blockBegin + `
 
 This repository keeps its architecture topology in ` + "`.abbd/`" + `, drawn at ` + "`.abbd/blueprint/index.html`" + `.
 
-- Ask architecture questions of the blueprint first, before grepping: ` + "`abbd explain <ID|NAME>`" + `, ` + "`abbd path <A> <B>`" + `, ` + "`abbd impact <IDS>`" + `.
+- Ask architecture questions of the blueprint first, before grepping: ` + "`abbd explain <QUERY>`" + `, ` + "`abbd path <A> <B>`" + `, ` + "`abbd impact <QUERIES>`" + `. A query is what you have in hand: a unit ID or name, a file path, a symbol, or a few words.
 - After changing code, run ` + "`abbd sync`" + `, put ` + "`abbd diff`" + ` in the PR description, and commit ` + "`.abbd/`" + ` with the code.
 - The /abbd skill says how to read, query and record the topology.
 ` + blockEnd + "\n"
@@ -60,7 +63,7 @@ func (e env) install() error {
 		fmt.Fprintln(e.stdout, "CLAUDE.md: the abbd block is current")
 		return nil
 	}
-	if err := os.WriteFile(path, []byte(next), 0o644); err != nil {
+	if err := e.keepingCurrent(func() error { return os.WriteFile(path, []byte(next), 0o644) }); err != nil {
 		return err
 	}
 	if begin >= 0 {
@@ -69,6 +72,31 @@ func (e env) install() error {
 		fmt.Fprintln(e.stdout, "CLAUDE.md: added the abbd block")
 	}
 	return nil
+}
+
+// keepingCurrent runs write, which changes a file outside .abbd/ that no
+// extraction reads. The state's fingerprint covers the whole working tree, so
+// a state that was current before the write moves its fingerprint along, and
+// the steps after setup do not demand another sync. A stale state stays stale.
+func (e env) keepingCurrent(write func() error) error {
+	state, err := e.st.LoadState()
+	if err != nil {
+		return err
+	}
+	before, err := gitx.Snapshot(e.root, store.Dir)
+	if err != nil {
+		return err
+	}
+	if err := write(); err != nil {
+		return err
+	}
+	if before == "" || before != state.Fingerprint {
+		return nil
+	}
+	if state.Fingerprint, err = gitx.Snapshot(e.root, store.Dir); err != nil {
+		return err
+	}
+	return e.st.SaveState(state)
 }
 
 // markers returns where the block's begin line starts and where its end line
