@@ -34,7 +34,7 @@ func (e env) citations() ([]model.Evidence, error) {
 	}
 	c := evidence.New(e.root)
 	for _, ev := range es {
-		if !c.Check(ev, nil).Live {
+		if !c.Check(ev).Live {
 			return nil, fmt.Errorf("the code does not hold %s; quote it verbatim from the working tree", ev)
 		}
 	}
@@ -44,23 +44,41 @@ func (e env) citations() ([]model.Evidence, error) {
 // source is what a USER_STATED fact rests on: where the human said it.
 func (e env) sourceRef() string { return strings.TrimSpace(e.src) }
 
+// writer is who a record speaks for: a human when a source is given, else a
+// reader.
+func (e env) writer() model.Writer {
+	if e.sourceRef() != "" {
+		return model.Human
+	}
+	return model.Reader
+}
+
+// save checks the unit's evidence, so its lines and digests are current, and
+// writes it.
+func (e env) save(u model.Unit) error {
+	u = evidence.New(e.root).Apply([]model.Unit{u}, "")[0]
+	return e.st.SaveUnits([]model.Unit{u})
+}
+
 // recordRelation writes a coupling. A reader's finding is INFERRED and rests
-// on live evidence; with --source it is what a human stated.
+// on live evidence; with --source it is what a human stated. Each writer
+// holds its own claim on an edge, and the precedence table picks the shown one.
 func (e env) recordRelation(pos []string) error {
 	edge, err := model.ParseEdge(strings.Join(pos, "."))
 	if err != nil {
 		return err
 	}
-	rel := model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.Inferred, Via: model.Via(e.via)}
-	if e.sourceRef() != "" {
-		rel.Origin, rel.Source = model.UserStated, e.sourceRef()
+	w := e.writer()
+	rel := model.Relation{To: edge.To, Kind: edge.Kind, Writer: w, Via: model.Via(e.via)}
+	if w == model.Human {
+		rel.Source = e.sourceRef()
 	}
 	switch {
 	case edge.From == edge.To:
 		return fmt.Errorf("%s couples a unit to itself", edge)
-	case rel.Origin == model.Inferred && rel.Via == "":
+	case w == model.Reader && rel.Via == "":
 		return fmt.Errorf("say how the coupling arises with --via")
-	case rel.Origin == model.Inferred && len(e.evidence) == 0:
+	case w == model.Reader && len(e.evidence) == 0:
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE, or give the --source where a human stated it")
 	}
 	if err := rel.Via.Validate(); err != nil {
@@ -69,7 +87,7 @@ func (e env) recordRelation(pos []string) error {
 	if err := edge.Joins(); err != nil {
 		return err
 	}
-	units, err := e.st.LoadUnits()
+	units, err := e.st.Writable()
 	if err != nil {
 		return err
 	}
@@ -80,23 +98,20 @@ func (e env) recordRelation(pos []string) error {
 	if rel.Evidence, err = e.citations(); err != nil {
 		return err
 	}
-	rels := slices.Clone(u.Relations)
-	switch i := slices.IndexFunc(rels, func(r model.Relation) bool { return r.To == edge.To && r.Kind == edge.Kind }); {
-	case i < 0:
-		rels = append(rels, rel)
-	case rels[i].Origin == model.Extracted:
-		return fmt.Errorf("%s is already EXTRACTED from the code", edge)
-	case rels[i].Origin == model.UserStated && rel.Origin == model.Inferred:
-		return fmt.Errorf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, rels[i].Source)
-	default:
-		rels[i] = rel
+	for _, o := range u.Claims() {
+		switch {
+		case o.To != edge.To || o.Kind != edge.Kind:
+		case o.Writer == model.Script:
+			return fmt.Errorf("%s is already EXTRACTED from the code", edge)
+		case o.Writer == model.Human && w == model.Reader:
+			return fmt.Errorf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, o.Source)
+		}
 	}
-	u.Relations = model.SortRelations(rels)
-	u = evidence.New(e.root).Apply([]model.Unit{u})[0]
-	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+	u.PutRelation(rel)
+	if err := e.save(u); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, rel.Origin)
+	fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, w.Origin())
 	return nil
 }
 
@@ -113,7 +128,7 @@ func (e env) recordUnit(pos []string) error {
 	if len(e.evidence) == 0 {
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE")
 	}
-	units, err := e.st.LoadUnits()
+	units, err := e.st.Writable()
 	if err != nil {
 		return err
 	}
@@ -125,15 +140,11 @@ func (e env) recordUnit(pos []string) error {
 	if err != nil {
 		return err
 	}
-	var anchors []model.Anchor
-	for _, ev := range es {
-		anchors = append(anchors, ev.Anchor())
-	}
-	anchors = model.SortAnchors(anchors)
+	anchors := evidenceAnchors(nil, es)
 	for _, u := range model.Present(units) {
 		// Many units can live in one file, so the same file alone does not
 		// make the same unit; the same quoted code does.
-		if u.Kind == kind && slices.Equal(u.Anchors, anchors) && slices.Equal(u.Evidence, es) {
+		if u.Kind == kind && slices.Equal(u.Anchors, anchors) && slices.EqualFunc(u.Evidence, es, model.Evidence.Same) {
 			return fmt.Errorf("%s %s already rests on the same code", u.ID, u.Name.Value)
 		}
 	}
@@ -141,15 +152,13 @@ func (e env) recordUnit(pos []string) error {
 	if err != nil {
 		return err
 	}
-	u := model.Unit{
-		ID: id, Kind: kind, Anchors: anchors, Evidence: es,
-		Name: model.Fact{Value: name, Origin: model.Inferred},
-	}
+	u := model.Unit{ID: id, Kind: kind, Anchors: anchors, Evidence: es, Name: model.Said(model.Reader, name)}
 	if parent != "" {
-		u.Parent, u.ParentOrigin, u.ParentEvidence = parent, model.Inferred, es
+		u.PutParent(model.ParentClaim{To: parent, Writer: model.Reader, Evidence: es})
 	}
 	if r := strings.TrimSpace(e.responsibility); r != "" {
-		u.Responsibility = &model.Fact{Value: r, Origin: model.Inferred}
+		f := model.Said(model.Reader, r)
+		u.Responsibility = &f
 	}
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
@@ -158,12 +167,20 @@ func (e env) recordUnit(pos []string) error {
 	return nil
 }
 
+func evidenceAnchors(as []model.Anchor, es []model.Evidence) []model.Anchor {
+	as = slices.Clone(as)
+	for _, ev := range es {
+		as = append(as, ev.Anchor())
+	}
+	return model.SortAnchors(as)
+}
+
 // recordParent places a unit inside a module: a reader's grouping with
-// --evidence, or what a human stated with --source. A sync keeps it unless
-// the script reports a parent for the unit.
+// --evidence, or what a human stated with --source. The claim is stored
+// beside the other writers'; a human's outranks the script's.
 func (e env) recordParent(pos []string) error {
 	id, parent := model.ID(pos[0]), model.ID(pos[1])
-	units, err := e.st.LoadUnits()
+	units, err := e.st.Writable()
 	if err != nil {
 		return err
 	}
@@ -178,31 +195,45 @@ func (e env) recordParent(pos []string) error {
 	if group.Made(p) {
 		return fmt.Errorf("%s is a directory group sync makes to keep a view small and drops when it is not needed; record the module that owns %s", parent, id)
 	}
+	for k := parent; k != ""; {
+		if k == id {
+			return fmt.Errorf("placing %s in %s makes %s its own ancestor", id, parent, id)
+		}
+		q, _ := presentUnit(units, k)
+		k = q.Parent
+	}
+	c := model.ParentClaim{To: parent, Writer: e.writer()}
 	switch {
-	case e.sourceRef() != "":
-		u.ParentOrigin, u.ParentSource, u.ParentEvidence = model.UserStated, e.sourceRef(), nil
+	case c.Writer == model.Human:
+		s, _ := u.Claim(model.Script)
+		c.Source, c.Over = e.sourceRef(), s.To
 	case len(e.evidence) == 0:
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE that shows %s belongs in %s, or give the --source where a human stated it", id, parent)
 	default:
-		if u.ParentEvidence, err = e.citations(); err != nil {
+		if c.Evidence, err = e.citations(); err != nil {
 			return err
 		}
-		u.ParentOrigin, u.ParentSource = model.Inferred, ""
 	}
-	u.Parent = parent
-	for i := range units {
-		if units[i].ID == id {
-			units[i] = u
-		}
-	}
-	if c := model.ParentCycle(units); c != "" {
-		return fmt.Errorf("placing %s in %s makes %s its own ancestor", id, parent, c)
-	}
-	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+	u.PutParent(c)
+	if err := e.save(u); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "recorded %s in %s, %s\n", id, parent, u.ParentOrigin)
+	fmt.Fprintf(e.stdout, "recorded %s in %s, %s\n", id, parent, c.Writer.Origin())
+	units, err = e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	if now, _ := presentUnit(units, id); now.Parent != parent {
+		fmt.Fprintf(e.stdout, "%s stays in %s for now: a claim above the %s's wins (abbd explain %s)\n", id, place(now.Parent), c.Writer, id)
+	}
 	return nil
+}
+
+func place(id model.ID) string {
+	if id == "" {
+		return "the top level"
+	}
+	return string(id)
 }
 
 // statedFields are the why-fields a human states; code facts come from the script.
@@ -223,7 +254,7 @@ func (e env) recordFact(key string) error {
 	case e.sourceRef() == "":
 		return fmt.Errorf("give where the human stated it with --source, such as a PR URL or \"conversation 2026-11-01\"")
 	}
-	units, err := e.st.LoadUnits()
+	units, err := e.st.Writable()
 	if err != nil {
 		return err
 	}
@@ -231,10 +262,207 @@ func (e env) recordFact(key string) error {
 	if !ok {
 		return fmt.Errorf("%s is not a unit of the state", id)
 	}
-	*at(&u) = &model.Fact{Value: strings.TrimSpace(e.value), Origin: model.UserStated, Source: e.sourceRef()}
+	f := model.Stated(strings.TrimSpace(e.value), e.sourceRef())
+	*at(&u) = &f
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "recorded %s, USER_STATED from %s\n", key, e.sourceRef())
+	return nil
+}
+
+// target is what refresh and retract act on: a unit, one of its fields, or
+// an edge from it.
+type target struct {
+	id    model.ID
+	field string // "", "parent", "purpose" or "responsibility"
+	edge  *model.Edge
+}
+
+func parseTarget(s string) (target, error) {
+	if strings.Count(s, ".") == 2 {
+		edge, err := model.ParseEdge(s)
+		return target{id: edge.From, edge: &edge}, err
+	}
+	id, field, _ := strings.Cut(s, ".")
+	if _, _, err := model.ParseID(id); err != nil {
+		return target{}, err
+	}
+	switch field {
+	case "", "parent", "purpose", "responsibility":
+	default:
+		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility or an edge such as MOD-0001.depends_on.MOD-0002", s)
+	}
+	return target{id: model.ID(id), field: field}, nil
+}
+
+func unitByID(units []model.Unit, id model.ID) (model.Unit, bool) {
+	i := slices.IndexFunc(units, func(u model.Unit) bool { return u.ID == id })
+	if i < 0 {
+		return model.Unit{}, false
+	}
+	return units[i], true
+}
+
+// refresh replaces the evidence of a reader's claim. When the shown INFERRED
+// claim is the supplement's, the reader's claim with the new evidence goes
+// above it, and a supplement unit becomes the reader's.
+func (e env) refresh(s string) error {
+	t, err := parseTarget(s)
+	if err != nil {
+		return err
+	}
+	if t.field == "purpose" || t.field == "responsibility" {
+		return fmt.Errorf("%s rests on no evidence; a human states it with abbd record fact", s)
+	}
+	if len(e.evidence) == 0 {
+		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE")
+	}
+	units, err := e.st.Writable()
+	if err != nil {
+		return err
+	}
+	u, ok := unitByID(units, t.id)
+	if !ok {
+		return fmt.Errorf("%s is not a unit of the state", t.id)
+	}
+	es, err := e.citations()
+	if err != nil {
+		return err
+	}
+	switch {
+	case t.edge != nil:
+		var base *model.Relation
+		for _, r := range u.Claims() {
+			if r.To == t.edge.To && r.Kind == t.edge.Kind && (r.Writer == model.Reader || r.Writer == model.Supplement && base == nil) {
+				base = &r
+			}
+		}
+		if base == nil {
+			return fmt.Errorf("%s has no INFERRED claim to refresh", s)
+		}
+		r := *base
+		r.Writer, r.Evidence, r.Digest = model.Reader, es, ""
+		u.PutRelation(r)
+	case t.field == "parent":
+		c, ok := u.Claim(model.Reader)
+		if !ok {
+			if c, ok = u.Claim(model.Supplement); !ok {
+				return fmt.Errorf("%s has no INFERRED parent claim to refresh", t.id)
+			}
+		}
+		c.Writer, c.Evidence = model.Reader, es
+		u.PutParent(c)
+	default:
+		if !u.Semantic() {
+			return fmt.Errorf("%s is the %s's unit; only a unit a reader or the supplement found rests on evidence", t.id, u.Name.Writer)
+		}
+		u.Name.Writer, u.Evidence = model.Reader, es
+		u.Anchors = evidenceAnchors(u.Anchors, es)
+		if u.Absent && u.AbsentReason != model.Retracted {
+			u.SetAbsent("")
+		}
+	}
+	if err := e.save(u); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "refreshed %s, INFERRED by a reader\n", s)
+	return nil
+}
+
+// retract removes the writer's own claim on the target and masks each lower
+// INFERRED claim on it, bound to that claim's content. Run again, it finds
+// nothing left to do.
+func (e env) retract(s string) error {
+	t, err := parseTarget(s)
+	if err != nil {
+		return err
+	}
+	reason := strings.TrimSpace(e.reason)
+	if reason == "" {
+		return fmt.Errorf("say why with --reason")
+	}
+	units, err := e.st.Writable()
+	if err != nil {
+		return err
+	}
+	u, ok := unitByID(units, t.id)
+	if !ok {
+		return fmt.Errorf("%s is not a unit of the state", t.id)
+	}
+	w := e.writer()
+	mask := func(target, digest string) bool {
+		return u.PutMask(model.Mask{Target: target, Writer: w, Digest: digest, Reason: reason, Source: e.sourceRef()})
+	}
+	changed, held := false, ""
+	switch {
+	case t.edge != nil:
+		key := model.RelationTarget(t.edge.Kind, t.edge.To)
+		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool { return r.To != t.edge.To || r.Kind != t.edge.Kind })
+		if len(claims) == 0 {
+			return fmt.Errorf("%s has no claim", s)
+		}
+		for _, r := range claims {
+			switch {
+			case r.Writer == w:
+				u.DropRelations(func(o model.Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == w })
+				changed = true
+			case model.Hides(w, r.Writer):
+				changed = mask(key, model.RelationDigest(r)) || changed
+			case !u.Masked(key, r.Writer, model.RelationDigest(r)):
+				held = string(r.Writer)
+			}
+		}
+	case t.field == "parent":
+		if len(u.Parents) == 0 {
+			return fmt.Errorf("%s has no parent claim", t.id)
+		}
+		for _, c := range slices.Clone(u.Parents) {
+			switch {
+			case c.Writer == w:
+				u.DropParents(w)
+				changed = true
+			case model.Hides(w, c.Writer):
+				changed = mask("parent", model.ParentDigest(c)) || changed
+			case !u.Masked("parent", c.Writer, model.ParentDigest(c)):
+				held = string(c.Writer)
+			}
+		}
+	case t.field != "":
+		f := *statedFields[t.field](&u)
+		switch {
+		case f == nil:
+		case f.Writer == w:
+			*statedFields[t.field](&u), changed = nil, true
+		case model.Hides(w, f.Writer):
+			mask(t.field, model.FactDigest(*f))
+			*statedFields[t.field](&u), changed = nil, true
+		default:
+			held = string(f.Writer)
+		}
+	default:
+		switch {
+		case u.Name.Writer == w:
+			if u.AbsentReason != model.Retracted {
+				u.SetAbsent(model.Retracted)
+				changed = true
+			}
+		case model.Hides(w, u.Name.Writer):
+			changed = mask("unit", model.FactDigest(u.Name))
+		default:
+			held = string(u.Name.Writer)
+		}
+	}
+	if held != "" && !changed {
+		return fmt.Errorf("%s is the %s's; a %s does not retract it%s", s, held, w, map[bool]string{true: ", and a wrong code fact is fixed in the extractor"}[held == string(model.Script) || held == string(model.Group)])
+	}
+	if !changed {
+		fmt.Fprintf(e.stdout, "%s is already retracted\n", s)
+		return nil
+	}
+	if err := e.save(u); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "retracted %s: %s\n", s, reason)
 	return nil
 }

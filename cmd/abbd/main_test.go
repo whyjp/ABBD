@@ -248,8 +248,8 @@ func TestStatedPurposeAndNotesSurviveReingest(t *testing.T) {
 	ingestOK(t, root, extraction)
 	p := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
 	b, _ := os.ReadFile(p)
-	stated := "value: posts entries\n    origin: USER_STATED\n    source: conversation 2026-11-01\n"
-	edited := strings.Replace(string(b), "value: takes payments\n    origin: INFERRED\n", stated, 1) + "\n## Notes\n\nkeep this\n"
+	stated := "value: posts entries\n    writer: human\n    source: conversation 2026-11-01\n"
+	edited := strings.Replace(string(b), "value: takes payments\n    writer: supplement\n", stated, 1) + "\n## Notes\n\nkeep this\n"
 	write(t, p, edited)
 	ingestOK(t, root, extraction)
 	b, _ = os.ReadFile(p)

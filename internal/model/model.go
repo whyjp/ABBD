@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -18,14 +19,22 @@ const (
 	UserStated Origin = "USER_STATED"
 )
 
-var origins = map[Origin]bool{UserStated: true, Extracted: true, Inferred: true}
-
-// Fact is one field value and where it came from.
+// Fact is one field value and the writer that set it.
 type Fact struct {
 	Value  string `yaml:"value"`
-	Origin Origin `yaml:"origin"`
-	// Source is where a human stated a USER_STATED value, such as a PR URL.
+	Writer Writer `yaml:"writer"`
+	// Source is where a human stated the value, such as a PR URL.
 	Source string `yaml:"source,omitempty"`
+	// Origin is what the reader of the state sees. Resolve derives it from Writer.
+	Origin Origin `yaml:"-"`
+}
+
+// Said is a value a writer other than a human set.
+func Said(w Writer, value string) Fact { return Fact{Value: value, Writer: w, Origin: w.Origin()} }
+
+// Stated is a value a human stated, with where.
+func Stated(value, source string) Fact {
+	return Fact{Value: value, Writer: Human, Source: source, Origin: UserStated}
 }
 
 // Guess reports whether only a reader vouches for the value.
@@ -33,24 +42,24 @@ func (f *Fact) Guess() bool { return f != nil && f.Origin == Inferred }
 
 // A why-field states intent, which code can never prove.
 func (f Fact) validate(why bool) error {
-	if err := sourced(f.Origin, f.Source); err != nil {
+	if err := sourced(f.Writer, f.Source); err != nil {
 		return err
 	}
-	if why && f.Origin == Extracted {
-		return fmt.Errorf("why-field origin must be USER_STATED or INFERRED, got %s", f.Origin)
+	if why && f.Writer.Origin() == Extracted {
+		return fmt.Errorf("a why-field is a human's or a reader's, not the %s's", f.Writer)
 	}
 	return nil
 }
 
-// sourced checks that a fact a human stated says where, and only such a fact.
-func sourced(o Origin, source string) error {
+// sourced checks that what a human stated says where, and only that.
+func sourced(w Writer, source string) error {
 	switch {
-	case !origins[o]:
-		return fmt.Errorf("unknown origin %q", o)
-	case o == UserStated && strings.TrimSpace(source) == "":
-		return fmt.Errorf("a USER_STATED fact needs a source, such as a PR URL or \"conversation 2026-11-01\"")
-	case o != UserStated && source != "":
-		return fmt.Errorf("only a USER_STATED fact carries a source, not %s", o)
+	case w.Origin() == "":
+		return fmt.Errorf("unknown writer %q", w)
+	case w == Human && strings.TrimSpace(source) == "":
+		return fmt.Errorf("what a human stated needs a source, such as a PR URL or \"conversation 2026-11-01\"")
+	case w != Human && source != "":
+		return fmt.Errorf("only what a human stated carries a source, not the %s's", w)
 	}
 	return nil
 }
@@ -122,21 +131,36 @@ func ParseID(s string) (Kind, int, error) {
 
 func FormatID(k Kind, n int) ID { return ID(fmt.Sprintf("%s-%04d", k, n)) }
 
+// AbsentReason says why a unit is no longer there.
+type AbsentReason string
+
+const (
+	// NotReported is a unit the script named and no longer reports.
+	NotReported AbsentReason = "not-reported"
+	// Withdrawn is a unit the setup supplement named and no longer reports.
+	Withdrawn AbsentReason = "withdrawn"
+	// EvidenceDead is a semantic unit whose evidence is all dead.
+	EvidenceDead AbsentReason = "evidence-dead"
+	// Retracted is a unit a reader or a human retracted.
+	Retracted AbsentReason = "retracted"
+	// Unneeded is a directory group no view needs.
+	Unneeded AbsentReason = "unneeded"
+)
+
+var absentReasons = map[AbsentReason]bool{NotReported: true, Withdrawn: true, EvidenceDead: true, Retracted: true, Unneeded: true}
+
 // Unit is one design unit: a module, an external contract, or a feature.
 type Unit struct {
-	ID      ID       `yaml:"id"`
-	Kind    Kind     `yaml:"kind"`
-	Name    Fact     `yaml:"name"`
-	Anchors []Anchor `yaml:"anchors"`
-	// Parent is the module or feature that contains this unit. ParentOrigin says who
-	// placed it there, the way a relation's origin does: the script
-	// (EXTRACTED, also when empty), a reader citing ParentEvidence
-	// (INFERRED), or a human naming ParentSource (USER_STATED). A sync keeps
-	// a reader's or a human's parent unless the script reports one.
-	Parent         ID         `yaml:"parent,omitempty"`
-	ParentOrigin   Origin     `yaml:"parent_origin,omitempty"`
-	ParentSource   string     `yaml:"parent_source,omitempty"`
-	ParentEvidence []Evidence `yaml:"parent_evidence,omitempty"`
+	ID   ID   `yaml:"id"`
+	Kind Kind `yaml:"kind"`
+	// SupplementKey is the setup supplement's own key for the unit, so a
+	// re-run of setup finds it without comparing evidence that sync rewrites.
+	SupplementKey string   `yaml:"supplement_key,omitempty"`
+	Name          Fact     `yaml:"name"`
+	Anchors       []Anchor `yaml:"anchors"`
+	// Parents holds every writer's claim on the module or feature that
+	// contains the unit. Resolve picks one into Parent.
+	Parents []ParentClaim `yaml:"parents,omitempty"`
 	// Evidence is what a semantic unit, one the script did not report, rests on.
 	Evidence       []Evidence `yaml:"evidence,omitempty"`
 	Purpose        *Fact      `yaml:"purpose,omitempty"`
@@ -145,18 +169,51 @@ type Unit struct {
 	Signature *Fact `yaml:"signature,omitempty"`
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
-	Digest    string     `yaml:"digest,omitempty"`
+	Digest string `yaml:"digest,omitempty"`
+	// Relations is the shown claim on each edge. Hidden holds the other
+	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
-	// Absent marks a unit the latest extraction did not report, or a semantic
-	// unit whose evidence is all gone.
-	Absent bool `yaml:"absent,omitempty"`
+	Hidden    []Relation `yaml:"hidden,omitempty"`
+	Masks     []Mask     `yaml:"masks,omitempty"`
+	// Absent marks a unit that is no longer there, and AbsentReason says why.
+	Absent       bool         `yaml:"absent,omitempty"`
+	AbsentReason AbsentReason `yaml:"absent_reason,omitempty"`
+	// Parent and ParentOrigin are the winning parent claim, derived by Resolve.
+	Parent       ID     `yaml:"-"`
+	ParentOrigin Origin `yaml:"-"`
 	// Notes is the user-owned "## Notes" section, carried through untouched.
 	Notes string `yaml:"-"`
 }
 
 // Semantic reports whether only a reader vouches for the unit: the script
 // never reported it, so its evidence decides whether it is still there.
-func (u Unit) Semantic() bool { return u.Name.Origin == Inferred }
+func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }
+
+// SetAbsent marks the unit gone for reason, or present when reason is "".
+func (u *Unit) SetAbsent(reason AbsentReason) { u.Absent, u.AbsentReason = reason != "", reason }
+
+// Claims lists every relation claim the unit stores, shown or hidden.
+func (u Unit) Claims() []Relation { return append(slices.Clone(u.Relations), u.Hidden...) }
+
+// EachEvidence visits every evidence item the unit stores, with the writer
+// of the claim it belongs to.
+func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
+	for i := range u.Evidence {
+		f(u.Name.Writer, &u.Evidence[i])
+	}
+	for i := range u.Parents {
+		for j := range u.Parents[i].Evidence {
+			f(u.Parents[i].Writer, &u.Parents[i].Evidence[j])
+		}
+	}
+	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
+		for i := range rs {
+			for j := range rs[i].Evidence {
+				f(rs[i].Writer, &rs[i].Evidence[j])
+			}
+		}
+	}
+}
 
 func (u Unit) Validate() error {
 	if err := u.Kind.Validate(); err != nil {
@@ -190,52 +247,70 @@ func (u Unit) Validate() error {
 			return fmt.Errorf("%s signature: %w", u.ID, err)
 		}
 	}
-	if u.Parent != "" {
-		if k, _, err := ParseID(string(u.Parent)); err != nil || !k.Holds() || u.Parent == u.ID {
-			return fmt.Errorf("%s: parent %s is not another module or feature", u.ID, u.Parent)
+	seen := map[Writer]bool{}
+	for _, c := range u.Parents {
+		if err := c.validate(u.ID); err != nil {
+			return err
 		}
-	}
-	switch {
-	case u.Parent == "" && (u.ParentOrigin != "" || u.ParentSource != "" || len(u.ParentEvidence) > 0):
-		return fmt.Errorf("%s: a parent origin without a parent", u.ID)
-	case u.ParentOrigin != "":
-		if err := sourced(u.ParentOrigin, u.ParentSource); err != nil {
-			return fmt.Errorf("%s parent: %w", u.ID, err)
+		if seen[c.Writer] {
+			return fmt.Errorf("%s: two parent claims by the %s", u.ID, c.Writer)
 		}
-		if u.ParentOrigin == Inferred && len(u.ParentEvidence) == 0 {
-			return fmt.Errorf("%s: a reader's parent %s needs evidence", u.ID, u.Parent)
-		}
-	}
-	for _, e := range u.ParentEvidence {
-		if err := e.Validate(); err != nil {
-			return fmt.Errorf("%s parent evidence: %w", u.ID, err)
-		}
+		seen[c.Writer] = true
 	}
 	if u.Semantic() && len(u.Evidence) == 0 {
 		return fmt.Errorf("%s: a unit the script did not report needs evidence", u.ID)
 	}
-	for _, e := range u.Evidence {
-		if err := e.Validate(); err != nil {
-			return fmt.Errorf("%s evidence: %w", u.ID, err)
+	if err := validateEvidence(u.Evidence); err != nil {
+		return fmt.Errorf("%s evidence: %w", u.ID, err)
+	}
+	claims := map[string]bool{}
+	for _, r := range u.Claims() {
+		if err := r.validate(); err != nil {
+			return fmt.Errorf("%s relation to %s: %w", u.ID, r.To, err)
+		}
+		k := fmt.Sprintf("%s %s %s", r.Kind, r.To, r.Writer)
+		if claims[k] {
+			return fmt.Errorf("%s: two %s claims by the %s on %s", u.ID, r.Kind, r.Writer, r.To)
+		}
+		claims[k] = true
+	}
+	for _, m := range u.Masks {
+		if err := m.validate(); err != nil {
+			return fmt.Errorf("%s mask on %s: %w", u.ID, m.Target, err)
 		}
 	}
-	for _, r := range u.Relations {
-		if err := r.Kind.Validate(); err != nil {
-			return fmt.Errorf("%s relation: %w", u.ID, err)
-		}
-		if err := r.Via.Validate(); err != nil {
-			return fmt.Errorf("%s relation: %w", u.ID, err)
-		}
-		for _, e := range r.Evidence {
-			if err := e.Validate(); err != nil {
-				return fmt.Errorf("%s relation evidence: %w", u.ID, err)
-			}
-		}
-		if err := sourced(r.Origin, r.Source); err != nil {
-			return fmt.Errorf("%s relation: %w", u.ID, err)
-		}
-		if r.Origin == Inferred && len(r.Evidence) == 0 {
-			return fmt.Errorf("%s relation to %s: an INFERRED coupling needs evidence", u.ID, r.To)
+	switch {
+	case u.Absent && !absentReasons[u.AbsentReason]:
+		return fmt.Errorf("%s: an absent unit needs an absent_reason, got %q", u.ID, u.AbsentReason)
+	case !u.Absent && u.AbsentReason != "":
+		return fmt.Errorf("%s: absent_reason on a present unit", u.ID)
+	}
+	return nil
+}
+
+func (r Relation) validate() error {
+	if err := r.Kind.Validate(); err != nil {
+		return err
+	}
+	if err := r.Via.Validate(); err != nil {
+		return err
+	}
+	if err := validateEvidence(r.Evidence); err != nil {
+		return err
+	}
+	if err := sourced(r.Writer, r.Source); err != nil {
+		return err
+	}
+	if r.Writer.Origin() == Inferred && len(r.Evidence) == 0 {
+		return fmt.Errorf("an INFERRED coupling needs evidence")
+	}
+	return nil
+}
+
+func validateEvidence(es []Evidence) error {
+	for _, e := range es {
+		if err := e.Validate(); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -328,12 +403,24 @@ func (v Via) Validate() error {
 }
 
 // Evidence is a short verbatim excerpt of the code a semantic fact rests on.
-// Lines, when given, is where the quote starts and ends, such as "120" or "120-134".
+// Lines, when given, is where the quote starts and ends, such as "120" or
+// "120-134". Its status is stored by sync and never read from an extraction.
 type Evidence struct {
 	Path   string `yaml:"path" json:"path"`
 	Lines  string `yaml:"lines,omitempty" json:"lines,omitempty"`
 	Symbol string `yaml:"symbol,omitempty" json:"symbol,omitempty"`
 	Quote  string `yaml:"quote" json:"quote"`
+	Status Status `yaml:"status,omitempty" json:"-"`
+	// Since is the revision of the sync that first found the item drifted.
+	Since string `yaml:"since,omitempty" json:"-"`
+	// Reason says why a dead item died.
+	Reason string `yaml:"reason,omitempty" json:"-"`
+}
+
+// Same reports whether two items cite the same code, wherever sync last
+// found it.
+func (e Evidence) Same(o Evidence) bool {
+	return e.Path == o.Path && e.Symbol == o.Symbol && e.Quote == o.Quote
 }
 
 func (e Evidence) Anchor() Anchor { return Anchor{Path: e.Path, Symbol: e.Symbol} }
@@ -370,6 +457,10 @@ func (e Evidence) Validate() error {
 		return fmt.Errorf("evidence %s must cite the code, not ABBD's or git's own files, which repeat the quote", e.Path)
 	case strings.TrimSpace(e.Quote) == "":
 		return fmt.Errorf("evidence %s needs a quote", e.Path)
+	case e.Status != Live && e.Status != Drifted && e.Status != Dead:
+		return fmt.Errorf("evidence %s: unknown status %q", e.Path, e.Status)
+	case e.Status == Dead && e.Reason == "":
+		return fmt.Errorf("evidence %s: a dead item needs a reason", e.Path)
 	case e.Lines != "":
 		first, last, ok := e.Span()
 		if !ok || first < 1 || last < first {
@@ -391,19 +482,27 @@ func ParseEvidence(s string) (Evidence, error) {
 	return e, e.Validate()
 }
 
-// Relation is an edge from the unit that holds it.
+// Relation is one writer's claim on an edge from the unit that holds it.
 type Relation struct {
 	To       ID           `yaml:"to"`
 	Kind     RelationKind `yaml:"kind"`
-	Origin   Origin       `yaml:"origin"`
+	Writer   Writer       `yaml:"writer"`
 	Source   string       `yaml:"source,omitempty"`
 	Via      Via          `yaml:"via,omitempty"`
 	Evidence []Evidence   `yaml:"evidence,omitempty"`
-	// Dead marks a semantic relation whose evidence the code no longer holds.
-	Dead bool `yaml:"dead,omitempty"`
 	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
+	// Origin and Dead are derived by Resolve. Dead marks a claim whose
+	// evidence is all dead.
+	Origin Origin `yaml:"-"`
+	Dead   bool   `yaml:"-"`
 }
+
+// Status is the claim's: live while any item is, else drifted while any is.
+func (r Relation) Status() Status { return StatusOf(r.Evidence) }
+
+// Drifted reports whether the claim counts on evidence that drifted only.
+func (r Relation) Drifted() bool { return r.Status() == Drifted }
 
 // Counts reports whether the edge is drawn as the topology: the script read
 // it or a human stated it. A reader's coupling is listed beside it instead.
@@ -449,7 +548,7 @@ func ParseEdge(s string) (Edge, error) {
 	return e, e.Kind.Validate()
 }
 
-// Present lists the units the latest sync found, sorted by ID.
+// Present lists the units that are there, sorted by ID.
 func Present(units []Unit) []Unit {
 	var out []Unit
 	for _, u := range units {
@@ -463,7 +562,7 @@ func Present(units []Unit) []Unit {
 
 func SortRelations(rs []Relation) []Relation {
 	out := append([]Relation(nil), rs...)
-	sort.Slice(out, func(i, j int) bool {
+	sort.SliceStable(out, func(i, j int) bool {
 		if out[i].To != out[j].To {
 			return out[i].To < out[j].To
 		}

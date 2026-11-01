@@ -9,7 +9,7 @@ import (
 )
 
 func module(n int, file string) model.Unit {
-	return model.Unit{ID: model.FormatID(model.Module, n), Kind: model.Module, Name: model.Fact{Value: file, Origin: model.Extracted}, Anchors: []model.Anchor{{Path: file}}}
+	return model.Unit{ID: model.FormatID(model.Module, n), Kind: model.Module, Name: model.Said(model.Script, file), Anchors: []model.Anchor{{Path: file}}}
 }
 
 // Twenty top-level modules, ten under apps/ and ten under native/.
@@ -56,8 +56,7 @@ func TestTooManyModulesAreGroupedByDirectory(t *testing.T) {
 func TestAReadersGroupingIsNeverMoved(t *testing.T) {
 	us := flat()
 	for i := range us[:19] {
-		us[i].Parent, us[i].ParentOrigin = "MOD-0020", model.Inferred
-		us[i].ParentEvidence = []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}
+		us[i].PutParent(model.ParentClaim{To: "MOD-0020", Writer: model.Reader, Evidence: []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}})
 	}
 	got, _ := Fallback(us, map[model.Kind]int{model.Module: 20})
 	for _, u := range got[:19] {
@@ -113,7 +112,7 @@ func TestSameDirectoryGroupsInTwoContainersStayApart(t *testing.T) {
 			dir = "docs"
 		}
 		u := module(i, fmt.Sprintf("%s/k%d/c.go", dir, i))
-		u.Parent = "MOD-0001"
+		u.PutParent(model.ParentClaim{To: "MOD-0001", Writer: model.Script})
 		us = append(us, u)
 	}
 	got, _ := Fallback(us, map[model.Kind]int{model.Module: 38})
@@ -141,7 +140,7 @@ func TestSameDirectoryGroupsInTwoContainersStayApart(t *testing.T) {
 func TestTopLevelContractsDoNotCrowdTheOverview(t *testing.T) {
 	us := flat()[:Budget]
 	for i := 1; i <= 5; i++ {
-		us = append(us, model.Unit{ID: model.FormatID(model.Interface, i), Kind: model.Interface, Name: model.Fact{Value: "c", Origin: model.Extracted}, Anchors: []model.Anchor{{Path: fmt.Sprintf("api/c%d.go", i)}}})
+		us = append(us, model.Unit{ID: model.FormatID(model.Interface, i), Kind: model.Interface, Name: model.Said(model.Script, "c"), Anchors: []model.Anchor{{Path: fmt.Sprintf("api/c%d.go", i)}}})
 	}
 	got, _ := Fallback(us, nil)
 	if len(got) != len(us) || !reflect.DeepEqual(parents(got), parents(us)) {

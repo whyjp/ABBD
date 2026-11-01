@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 // The ledger reads the charges table billing writes. No import shows it, so
@@ -37,6 +39,15 @@ func semanticProject(t *testing.T) *project {
 
 func (p *project) resync() string { p.t.Helper(); return p.want(0, "", "sync") }
 
+// laterRevision commits the tree and changes it, so the next sync runs at a
+// later revision, where an item still drifted dies.
+func (p *project) laterRevision() {
+	p.t.Helper()
+	git(p.t, p.root, "add", "-A")
+	git(p.t, p.root, "commit", "-qm", "next")
+	p.code(fmt.Sprintf("next/%d.txt", time.Now().UnixNano()), "x\n")
+}
+
 func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
@@ -47,7 +58,7 @@ func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 
 	p = semanticProject(t)
 	md := p.read("architecture/DATA-0001.md")
-	for _, want := range []string{"value: charges table\n    origin: INFERRED", "parent: MOD-0001", "quote: INSERT INTO charges", "path: billing/charge.go"} {
+	for _, want := range []string{"value: charges table\n    writer: supplement", "- to: MOD-0001\n      writer: supplement", "quote: INSERT INTO charges", "path: billing/charge.go", "supplement_key: t"} {
 		if !strings.Contains(md, want) {
 			t.Fatalf("a unit only the reader found should be stored with its evidence and parent; missing %q:\n%s", want, md)
 		}
@@ -58,19 +69,29 @@ func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 	}
 }
 
+// Deleting a quote first drifts the coupling: it still counts, flagged, in
+// the PR that removed it. A sync at a later revision that still finds it
+// drifted kills it, and the dead coupling stays on record with its reason.
 func TestDeletingTheEvidenceKillsTheCoupling(t *testing.T) {
 	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
-	p.resync()
-	if !strings.Contains(p.read("architecture/MOD-0002.md"), "dead: true") {
-		t.Fatalf("the dead coupling stays on record, marked dead:\n%s", p.read("architecture/MOD-0002.md"))
+	contains(t, p.resync(), "evidence: 1 drifted, 0 dead")
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "status: drifted") || strings.Contains(md, "status: dead") {
+		t.Fatalf("a quote gone from its file drifts first:\n%s", md)
 	}
-	if strings.Contains(p.read("architecture/MOD-0001.md"), "dead: true") {
+	p.laterRevision()
+	p.resync()
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "status: dead\n") || !strings.Contains(md, "and not refreshed") {
+		t.Fatalf("the dead coupling stays on record, marked dead with its reason:\n%s", md)
+	}
+	if strings.Contains(p.read("architecture/MOD-0001.md"), "status: dead") {
 		t.Fatalf("only the coupling whose evidence went away dies:\n%s", p.read("architecture/MOD-0001.md"))
 	}
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.resync()
-	if !strings.Contains(p.read("architecture/DATA-0001.md"), "absent: true") {
+	p.laterRevision()
+	p.resync()
+	if !strings.Contains(p.read("architecture/DATA-0001.md"), "absent: true\nabsent_reason: evidence-dead\n") {
 		t.Fatalf("a semantic unit whose evidence is gone is absent:\n%s", p.read("architecture/DATA-0001.md"))
 	}
 }
@@ -176,6 +197,8 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 	}
 
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.resync()
+	p.laterRevision()
 	p.resync()
 	if strings.Contains(p.read("blueprint/index.html"), "ledger → charges table") {
 		t.Fatalf("a coupling whose evidence is gone leaves the blueprint")

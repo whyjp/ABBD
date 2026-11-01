@@ -103,7 +103,14 @@ func (e env) explain(s string) error {
 		}
 	}
 	for _, ev := range u.Evidence {
-		fmt.Fprintf(w, "evidence: %s\n", ev)
+		fmt.Fprintf(w, "evidence: %s%s\n", ev, status(ev))
+	}
+	if len(u.Parents) > 1 {
+		var cs []string
+		for _, c := range u.Parents {
+			cs = append(cs, fmt.Sprintf("%s by the %s", place(c.To), c.Writer))
+		}
+		fmt.Fprintf(w, "parent claims: %s\n", strings.Join(cs, ", "))
 	}
 	section := func(title string, lines []string) {
 		if len(lines) == 0 {
@@ -143,13 +150,27 @@ func (e env) explain(s string) error {
 		if l.Via != "" {
 			line += " via " + string(l.Via)
 		}
+		if l.Drifted {
+			line += " (drifted: refresh or retract it)"
+		}
 		for _, ev := range l.Evidence {
-			line += "\n    " + ev.String()
+			line += "\n    " + ev.String() + status(ev)
 		}
 		guesses = append(guesses, line)
 	}
 	section("inferred couplings", guesses)
 	return e.explainHow(units, u)
+}
+
+// status marks an item that is not live.
+func status(ev model.Evidence) string {
+	switch ev.Status {
+	case model.Drifted:
+		return " (drifted)"
+	case model.Dead:
+		return " (dead: " + ev.Reason + ")"
+	}
+	return ""
 }
 
 // explainHow prints pstack how's text for a top-level module, marked STALE

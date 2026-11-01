@@ -47,7 +47,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			if err == nil && !(sc.within(i, sc.parentOf(d, doc)) && !sameAnchors(sc.units[i].Anchors, d.Anchors)) {
 				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; name %q as its parent if it sits inside it, anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Key, out.Units[i].Name.Value)
 			}
-			out.Units = append(out.Units, semantic(d, fmt.Sprintf("supplement#%d", n)))
+			out.Units = append(out.Units, semantic(d, n))
 			i, err = len(out.Units)-1, nil
 		}
 		if err != nil {
@@ -68,24 +68,25 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		// reader's is the only one there is, and it is a guess.
 		switch {
 		case d.Signature == nil:
-		case u.Signature == nil || u.Signature.Origin == model.Inferred:
-			u.Signature = &model.Fact{Value: d.Signature.Value, Origin: model.Inferred}
+		case u.Signature == nil || u.Signature.Writer != model.Script:
+			u.Signature = supplemented(d.Signature)
 		case u.Signature.Value != d.Signature.Value:
 			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, u.Signature.Value))
 		}
 		if d.Purpose != nil {
-			u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: model.Inferred}
+			u.Purpose = supplemented(d.Purpose)
 		}
 		if d.Responsibility != nil {
-			u.Responsibility = &model.Fact{Value: d.Responsibility.Value, Origin: model.Inferred}
+			u.Responsibility = supplemented(d.Responsibility)
 		}
 	}
 	if len(gaps) > 0 {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
-	// A parent the supplement gives is a reader's, INFERRED: it rests on
+	// A parent the supplement gives is its own claim, INFERRED: it rests on
 	// the parent evidence the reader cites, or on the unit's own evidence.
+	// The script's parent, if any, stays beside it.
 	for _, d := range doc.Units {
 		i, ok := docTo[d.Key]
 		if !ok || d.Parent == "" {
@@ -106,7 +107,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			return base, f, fmt.Errorf("supplement %s %q puts it in %q without evidence; cite parent_evidence, the code that shows it belongs there", d.Kind, d.Name.Value, d.Parent)
 		}
 		u := &out.Units[i]
-		u.Parent, u.ParentOrigin, u.ParentEvidence = out.Units[p].Key, model.Inferred, es
+		u.Placed = append(u.Placed, extract.Placement{Key: out.Units[p].Key, Writer: model.Supplement, Evidence: es})
 	}
 
 	type edge struct {
@@ -130,19 +131,28 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if len(r.Evidence) == 0 {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
 		}
-		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: model.Inferred, Via: r.Via, Evidence: r.Evidence})
+		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
 	}
 	sort.Strings(f.Conflicts)
 	return out, f, nil
 }
 
 // semantic is a unit only a reader vouches for. Its name is a guess too, and
-// its evidence anchors its ID.
-func semantic(d extract.Unit, key string) extract.Unit {
-	d.Key = key
-	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred}
+// its evidence anchors its ID. It keeps the supplement's key, by which a
+// re-run of setup finds it again.
+func semantic(d extract.Unit, n int) extract.Unit {
+	d.SupplementKey, d.Key = d.Key, fmt.Sprintf("supplement#%d", n)
+	if d.SupplementKey != "" {
+		d.Key = "supplement:" + d.SupplementKey
+	}
+	d.Name = model.Said(model.Supplement, d.Name.Value)
 	d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, "", "", nil
 	return d
+}
+
+func supplemented(f *model.Fact) *model.Fact {
+	s := model.Said(model.Supplement, f.Value)
+	return &s
 }
 
 // script is the units the extraction script reported, indexed by key.
