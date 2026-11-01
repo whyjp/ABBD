@@ -205,7 +205,7 @@ func TestFocusViewsKeepTheMapOfTheirView(t *testing.T) {
 							t.Errorf("%s %s: the focus stands at %d in a drawing %d wide", name, f.ID, mid, f.Drawing.Width)
 						}
 					}
-					rows[b.Y] = append(rows[b.Y], b)
+					rows[b.Y+b.H/2] = append(rows[b.Y+b.H/2], b)
 				}
 				for _, row := range rows {
 					slices.SortFunc(row, func(a, b Box) int { return a.X - b.X })
