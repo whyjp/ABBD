@@ -168,3 +168,38 @@ func TestAbbdModeEndsTheTurnBeforeAnyPR(t *testing.T) {
 		t.Fatalf("abbd-mode's End must run abbd turn end, then Opening a PR only on SYNCED or CLOSED with the CHG record committed")
 	}
 }
+
+// ABBD has no code-reading procedure of its own: abbd-mode sends each direct
+// design unit through pstack's how (or blast-radius) after the impact, and
+// only then registers the result and records the scan, before any edit.
+func TestAbbdModeScansDirectUnitsWithPstackBeforeDeclaring(t *testing.T) {
+	skill := readPlugin(t, "skills", "abbd-mode", "SKILL.md")
+	_, start, _ := strings.Cut(skill, "## Start")
+	order := []string{"abbd turn start", "`<pstack>/skills/how/SKILL.md`", "abbd propose relation", "abbd turn scan", "abbd turn declare"}
+	last := -1
+	for _, s := range order {
+		i := strings.Index(start, s)
+		if i <= last {
+			t.Fatalf("abbd-mode's Start must run %v in that order; %q is out of place", order, s)
+		}
+		last = i
+	}
+	if !strings.Contains(start, "`<pstack>/skills/blast-radius/SKILL.md` when the change spans") || !strings.Contains(start, "unchanged") {
+		t.Fatalf("the scan must follow how or blast-radius unchanged")
+	}
+}
+
+// Setup follows swarm and how unchanged and adds only ABBD's result format,
+// which must carry what makes a semantic coupling checkable.
+func TestAbbdSetupAsksForCheckableSemanticCouplings(t *testing.T) {
+	skill := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
+	for _, want := range []string{"`<pstack>/skills/swarm/SKILL.md`", "`<pstack>/skills/how/references/explorer-prompt.md`", `"evidence"`, `"via"`, `"parent"`, "verbatim"} {
+		if !strings.Contains(skill, want) {
+			t.Errorf("abbd-setup must name %s", want)
+		}
+	}
+	agent := readPlugin(t, "agents", "abbd-agent.md")
+	if !strings.Contains(agent, "FROM.KIND.TO") || !strings.Contains(agent, "PATH:LINES:QUOTE") {
+		t.Errorf("the abbd agent must report the couplings it met by key with their evidence")
+	}
+}

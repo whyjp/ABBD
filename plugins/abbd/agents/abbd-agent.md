@@ -21,4 +21,4 @@ Then work, with these limits:
 - Never run the abbd commands approve, align, confirm, setup or mode off. Never write or delete anything under `.abbd/`, the session state in `<git-dir>/abbd/sessions/`, or the registered extraction script. A hook denies them. A human approves.
 - Never open a PR. The parent opens it after the turn ends SYNCED or CLOSED.
 
-In your report, name every relation or signature you changed, by item key.
+In your report, name every relation or signature you changed, by item key. Also name every coupling you met that `abbd turn show` does not list, as `FROM.KIND.TO`, with how it arises (`via`) and one `PATH:LINES:QUOTE` of the code it rests on, so your parent can register it with abbd propose.
