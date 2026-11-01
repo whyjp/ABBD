@@ -202,15 +202,15 @@ func (s Store) MDHash() (string, error) {
 }
 
 // InputsHash fingerprints every file under .abbd that a page can render, so
-// a generated file is STALE whenever any of them changed. The generated files
-// are not inputs.
+// the blueprint is STALE whenever any of them changed. The blueprint is not
+// an input.
 func (s Store) InputsHash() (string, error) {
 	var files []string
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
 		switch {
 		case err != nil:
 			return err
-		case d.IsDir() && p == s.path("generated"):
+		case d.IsDir() && p == s.path("blueprint"):
 			return filepath.SkipDir
 		case !d.IsDir():
 			files = append(files, p)
@@ -298,14 +298,14 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
-// Generated files derive from the unit Markdown and are rewritten freely.
-func (s Store) SaveGenerated(name string, b []byte) error {
-	return writeFile(s.path("generated", name), b)
+// The blueprint derives from the state and is rewritten freely.
+func (s Store) SaveBlueprint(name string, b []byte) error {
+	return writeFile(s.path("blueprint", name), b)
 }
 
-// ReadGenerated returns nil when the file was never generated.
-func (s Store) ReadGenerated(name string) ([]byte, error) {
-	b, err := os.ReadFile(s.path("generated", name))
+// ReadBlueprint returns nil when the file was never rendered.
+func (s Store) ReadBlueprint(name string) ([]byte, error) {
+	b, err := os.ReadFile(s.path("blueprint", name))
 	if os.IsNotExist(err) {
 		return nil, nil
 	}

@@ -18,8 +18,8 @@ type Input struct {
 	Synced store.State
 	Tree   string
 	Inputs string
-	// Generated is the watermark the rendered files carry, nil when missing.
-	Generated *Watermark
+	// Rendered is the watermark the blueprint carries, nil when missing.
+	Rendered *Watermark
 	// Understandings are pstack how's texts by module; Digests are each
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
@@ -55,14 +55,14 @@ func Load(st store.Store) (Input, error) {
 	for id := range in.Understandings {
 		in.Digests[id] = st.ModuleDigest(in.Units, id)
 	}
-	b, err := st.ReadGenerated(GraphFile)
+	b, err := st.ReadBlueprint(GraphFile)
 	if err != nil {
 		return in, err
 	}
 	if b != nil {
 		var g struct{ Watermark Watermark }
 		if json.Unmarshal(b, &g) == nil {
-			in.Generated = &g.Watermark
+			in.Rendered = &g.Watermark
 		}
 	}
 	return in, nil
@@ -79,12 +79,12 @@ const (
 	Unknown Freshness = "UNKNOWN"
 )
 
-// GeneratedFreshness compares the rendered files with the inputs they derive from.
-func (in Input) GeneratedFreshness() Freshness {
+// BlueprintFreshness compares the blueprint with the state it renders.
+func (in Input) BlueprintFreshness() Freshness {
 	switch {
-	case in.Generated == nil:
+	case in.Rendered == nil:
 		return Unknown
-	case *in.Generated != in.Current():
+	case *in.Rendered != in.Current():
 		return Stale
 	}
 	return Fresh
@@ -124,7 +124,7 @@ type Model struct {
 	// Edges are every live relation between present units, for graph.json.
 	Edges     []Line
 	Actual    Freshness
-	Generated Freshness
+	Blueprint Freshness
 	Extract   []string
 	Watermark Watermark
 	Synced    store.State
@@ -135,7 +135,7 @@ type Model struct {
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
 	m := Model{
-		Actual: in.ActualFreshness(), Generated: in.GeneratedFreshness(),
+		Actual: in.ActualFreshness(), Blueprint: in.BlueprintFreshness(),
 		Extract: in.Project.Extract, Watermark: in.Current(), Synced: in.Synced, Tree: in.Tree,
 	}
 	for _, u := range model.Present(in.Units) {

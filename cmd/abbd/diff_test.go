@@ -83,9 +83,9 @@ func TestDiffNamesEveryCategorySinceTheBase(t *testing.T) {
 
 	var d struct {
 		Base           string
-		Signatures     []struct{ ID, Old, New string } `json:"contract_signatures_changed"`
+		Signatures     []struct{ ID, Old, New string }   `json:"contract_signatures_changed"`
 		RelationsAdded []struct{ From, Kind, To string } `json:"relations_added"`
-		InferredAdded  []struct{ Via, Quote string }      `json:"inferred_added"`
+		InferredAdded  []struct{ Via, Quote string }     `json:"inferred_added"`
 	}
 	if err := json.Unmarshal([]byte(p.want(0, "", "diff", "--base", base, "--json")), &d); err != nil {
 		t.Fatal(err)

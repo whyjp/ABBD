@@ -127,7 +127,7 @@ type graphFile struct {
 func (p *project) graph() graphFile {
 	p.t.Helper()
 	var g graphFile
-	if err := json.Unmarshal([]byte(p.read("generated/graph.json")), &g); err != nil {
+	if err := json.Unmarshal([]byte(p.read("blueprint/graph.json")), &g); err != nil {
 		p.t.Fatal(err)
 	}
 	return g
@@ -137,7 +137,7 @@ func (p *project) graph() graphFile {
 // on. The overview draws none; the inside of each module it touches lists it.
 func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 	p := semanticProject(t)
-	html := p.read("generated/explorer.html")
+	html := p.read("blueprint/index.html")
 	for _, want := range []string{
 		`ledger → charges table <span class="muted">(consumes, via data)</span>`,
 		`<q>ledger/book.go:3-4 &#34;SELECT amount FROM charges&#34;</q>`,
@@ -177,7 +177,7 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
 	p.resync()
-	if strings.Contains(p.read("generated/explorer.html"), "ledger → charges table") {
+	if strings.Contains(p.read("blueprint/index.html"), "ledger → charges table") {
 		t.Fatalf("a coupling whose evidence is gone leaves the blueprint")
 	}
 }
@@ -189,7 +189,7 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	text := p.file(t, "how.md", "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n")
 	p.want(1, "is not a top-level module", "understand", "DATA-0001", text)
 	p.want(0, "understood MOD-0001 billing, INFERRED", "understand", "MOD-0001", text)
-	html := p.read("generated/explorer.html")
+	html := p.read("blueprint/index.html")
 	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `pstack how가 쓴 설명`} {
 		if !strings.Contains(html, want) {
 			t.Fatalf("the module's inside should carry how's text; missing %s", want)
@@ -200,7 +200,7 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	}
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge(currency string) {}\n")
 	p.resync()
-	if !strings.Contains(p.read("generated/explorer.html"), `title="이 설명을 쓴 뒤`) {
+	if !strings.Contains(p.read("blueprint/index.html"), `title="이 설명을 쓴 뒤`) {
 		t.Fatalf("the text should turn STALE once the module's code changes")
 	}
 	p.want(1, "code changed since this text was written", "understand", "MOD-0001", text)

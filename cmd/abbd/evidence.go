@@ -73,7 +73,7 @@ func (e env) status() error {
 	default:
 		fmt.Fprintf(e.stdout, "state: %s, synced at %s\n", in.ActualFreshness(), in.Synced.Revision)
 	}
-	fmt.Fprintln(e.stdout, "blueprint:", in.GeneratedFreshness())
+	fmt.Fprintln(e.stdout, "blueprint:", in.BlueprintFreshness())
 	kinds := map[model.Kind]int{}
 	origins := map[model.Origin]int{}
 	dead := 0

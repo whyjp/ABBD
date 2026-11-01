@@ -357,7 +357,7 @@ func contractTable() []contract {
 		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", fields(".abbd/{architecture,features}/ID.md frontmatter", "internal/model.Unit", "yaml"), nil},
 		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", fields(".abbd/understanding/MOD.md frontmatter", "internal/store.Understanding", "yaml"), nil},
 		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", fields(".abbd/state.yaml", "internal/store.State", "yaml"), nil},
-		{"data-generated", "DATA", "generated files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", generatedSig, nil},
+		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil},
 		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil},
 	}...)
 }
@@ -838,7 +838,7 @@ func edgeKeySig() (string, error) {
 	return "ID.{" + strings.Join(kinds, ",") + "}.ID", nil
 }
 
-func generatedSig() (string, error) {
+func blueprintSig() (string, error) {
 	var names []string
 	for _, d := range files["internal/screen/page.go"].ast.Decls {
 		g, ok := d.(*ast.GenDecl)
@@ -859,7 +859,7 @@ func generatedSig() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ".abbd/generated/{" + strings.Join(names, ",") + "}; graph.json {" + graph + "}", nil
+	return ".abbd/blueprint/{" + strings.Join(names, ",") + "}; graph.json {" + graph + "}", nil
 }
 
 func pluginSig() (string, error) {

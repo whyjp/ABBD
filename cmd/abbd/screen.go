@@ -28,8 +28,8 @@ func (e env) publish() error {
 	if err != nil {
 		return err
 	}
-	for _, name := range []string{screen.ExplorerFile, screen.GraphFile} {
-		if err := e.st.SaveGenerated(name, files[name]); err != nil {
+	for _, name := range []string{screen.PageFile, screen.GraphFile} {
+		if err := e.st.SaveBlueprint(name, files[name]); err != nil {
 			return err
 		}
 	}

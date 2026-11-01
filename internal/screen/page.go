@@ -44,8 +44,8 @@ var labels = map[string]string{
 func Render(w io.Writer, m Model) error { return page.Execute(w, m) }
 
 const (
-	GraphFile    = "graph.json"
-	ExplorerFile = "explorer.html"
+	GraphFile = "graph.json"
+	PageFile  = "index.html"
 )
 
 // Graph is graph.json: the blueprint's data, for tools that do not read the page.
@@ -61,7 +61,7 @@ type Graph struct {
 // Files renders every file. Each carries the watermark of the .abbd inputs it
 // came from, so a reader can tell when it is STALE.
 func Files(m Model) (map[string][]byte, error) {
-	m.Generated = Fresh
+	m.Blueprint = Fresh
 	g := Graph{Watermark: m.Watermark, Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
@@ -71,5 +71,5 @@ func Files(m Model) (map[string][]byte, error) {
 	if err := Render(&b, m); err != nil {
 		return nil, err
 	}
-	return map[string][]byte{GraphFile: append(graph, '\n'), ExplorerFile: b.Bytes()}, nil
+	return map[string][]byte{GraphFile: append(graph, '\n'), PageFile: b.Bytes()}, nil
 }
