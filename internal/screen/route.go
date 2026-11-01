@@ -268,8 +268,9 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	place(ends, func(i int) int { return plans[i].arr }, func(i int) int { return center(reqs[i].from) }, func(i, x int) { plans[i].tx = x }, func(i int) end { return reqs[i].to })
 
 	// The x of each passage through a row. A line on a departure trunk
-	// passes the rows it rides on the trunk, which heads for the middle of
-	// the places its lines still reach. A line on an arrival bus passes
+	// passes the rows it rides on the trunk, which heads row by row from
+	// where it leaves toward the middle of the places its lines still
+	// reach. A line on an arrival bus passes
 	// every other row on the bus's trunk, which runs straight above the
 	// middle of the places it reaches.
 	passRow := func(p *plan, j int) int {
