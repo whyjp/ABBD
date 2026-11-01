@@ -12,6 +12,7 @@ import (
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/gitx"
+	"github.com/whyjp/abbd/internal/group"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
@@ -289,6 +290,11 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 	}
 	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)
 	res.Units = evidence.New(e.root).Apply(res.Units)
+	res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
+	res.Unmatched = slices.DeleteFunc(res.Unmatched, func(id model.ID) bool {
+		u, ok := presentUnit(res.Units, id)
+		return ok && group.Made(u)
+	})
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}
