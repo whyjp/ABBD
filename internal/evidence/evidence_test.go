@@ -24,7 +24,7 @@ func tree(t *testing.T) string {
 	return root
 }
 
-func TestAQuoteIsLiveOnlyWhereItsLinesSay(t *testing.T) {
+func TestAQuoteIsFoundNearItsLinesOrAsItsFilesOnlyOccurrence(t *testing.T) {
 	c := New(tree(t))
 	for _, tc := range []struct {
 		e    model.Evidence
@@ -34,7 +34,7 @@ func TestAQuoteIsLiveOnlyWhereItsLinesSay(t *testing.T) {
 		{model.Evidence{Path: "src/mod.rs", Lines: "7", Quote: "if matcher_line_term != self.config.line_term {"}, true, "7"},
 		{model.Evidence{Path: "src/mod.rs", Lines: "4", Quote: "if   matcher_line_term !=\tself.config.line_term"}, true, "7"},
 		{model.Evidence{Path: "src/mod.rs", Quote: "None => return Ok(()), Some(line_term) => line_term,"}, true, "4-5"},
-		{model.Evidence{Path: "src/mod.rs", Lines: "20-22", Quote: "if matcher_line_term != self.config.line_term {"}, false, ""},
+		{model.Evidence{Path: "src/mod.rs", Lines: "20-22", Quote: "if matcher_line_term != self.config.line_term {"}, true, "7"},
 		{model.Evidence{Path: "src/mod.rs", Quote: "matcher_line_term == self.config.line_term"}, false, ""},
 		{model.Evidence{Path: "src/gone.rs", Quote: "impl Searcher"}, false, ""},
 	} {
@@ -86,5 +86,47 @@ func TestEditingTheQuotedLinesChangesTheDigestOnly(t *testing.T) {
 	os.WriteFile(filepath.Join(root, "src", "mod.rs"), edited, 0o644)
 	if after := New(root).Apply(units())[0].Relations[0]; after.Dead || after.Digest == before.Digest {
 		t.Fatalf("an edit to the quoted line keeps the evidence but changes its digest: %+v vs %+v", after, before)
+	}
+}
+
+// Code moves between syncs: a merge can push a quote many lines down, and a
+// refactor can move it to another file. The quote follows only when there is
+// exactly one place it can be, so the same tree still gives the same answer.
+func TestAQuoteFollowsItsCodeOnlyToAUniquePlace(t *testing.T) {
+	root := t.TempDir()
+	write := func(p, body string) {
+		t.Helper()
+		full := filepath.Join(root, filepath.FromSlash(p))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	long := "renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)"
+	write("cmd/main.go", strings.Repeat("// pad\n", 40)+long+"\n")
+	write("internal/path.go", "func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {\n")
+	write("internal/twice_a.go", "x := shared.Helper(a, b, c, d, e)\n")
+	write("internal/twice_b.go", "x := shared.Helper(a, b, c, d, e)\n")
+	write("internal/dup.go", long+"\n// pad\n"+long+"\n")
+	c := New(root)
+	for _, tc := range []struct {
+		name string
+		e    model.Evidence
+		live bool
+		at   string
+		path string
+	}{
+		{"pushed 38 lines down in the same file", model.Evidence{Path: "cmd/main.go", Lines: "3", Quote: long}, true, "41", ""},
+		{"moved to another file", model.Evidence{Path: "internal/query.go", Lines: "12", Quote: "func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {"}, true, "1", "internal/path.go"},
+		{"two places to go", model.Evidence{Path: "internal/gone.go", Quote: "x := shared.Helper(a, b, c, d, e)"}, false, "", ""},
+		{"twice in its own file, far from its lines", model.Evidence{Path: "internal/dup.go", Lines: "90", Quote: long}, false, "", ""},
+		{"too short to follow out of its file", model.Evidence{Path: "internal/gone.go", Quote: "func Path("}, false, "", ""},
+	} {
+		r := c.Check(tc.e)
+		if r.Live != tc.live || r.At != tc.at || r.Path != tc.path {
+			t.Errorf("%s: got live=%v at %q path %q, want live=%v at %q path %q", tc.name, r.Live, r.At, r.Path, tc.live, tc.at, tc.path)
+		}
 	}
 }

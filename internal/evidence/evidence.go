@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -28,7 +29,13 @@ type Result struct {
 	// Digest fingerprints the lines that hold the quote, so a diff sees an
 	// edit to them even while the quote survives.
 	Digest string
+	// Path is where the quote lives now when it moved to another file.
+	Path string
 }
+
+// MinMoveQuote is how long, without whitespace, a quote must be before it is
+// followed into another file: a short one could match unrelated code.
+const MinMoveQuote = 24
 
 type file struct {
 	raw []string
@@ -44,6 +51,9 @@ type file struct {
 type Checker struct {
 	root  string
 	files map[string]*file
+	// paths lists the project's files once a quote must be looked for
+	// outside its own file.
+	paths []string
 }
 
 func New(root string) *Checker { return &Checker{root: root, files: map[string]*file{}} }
@@ -78,37 +88,120 @@ func (c *Checker) load(path string) *file {
 	return f
 }
 
-// Check finds e's quote in its file, whitespace-insensitively, within its
-// lines and the slack when it names lines, and anywhere in the file otherwise.
-func (c *Checker) Check(e model.Evidence) Result {
-	f := c.load(e.Path)
-	q := normalize(e.Quote)
-	if f == nil || q == "" {
-		return Result{}
-	}
-	first, last, bounded := e.Span()
+// match is one whole-word occurrence of a quote: its first and last line.
+type match struct{ start, end int }
+
+func (f *file) matches(q string) []match {
+	var out []match
 	for from := 0; from <= len(f.norm); {
 		i := strings.Index(f.norm[from:], q)
 		if i < 0 {
 			break
 		}
 		at, after := from+i, from+i+len(q)
-		start, end := f.line[at], f.line[after-1]
 		// A quote ending in a word must end where the code's word ends, so
 		// "charges" does not live on in "charges_archive".
-		whole := (at == 0 || f.gap[at] || !word(f.norm[at-1]) || !word(q[0])) &&
-			(after == len(f.norm) || f.gap[after] || !word(f.norm[after]) || !word(q[len(q)-1]))
-		if whole && (!bounded || (start <= last+Slack && end >= first-Slack)) {
-			h := sha256.Sum256([]byte(strings.Join(f.raw[start-1:end], "\n")))
-			at := fmt.Sprint(start)
-			if end != start {
-				at += fmt.Sprintf("-%d", end)
-			}
-			return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8])}
+		if (at == 0 || f.gap[at] || !word(f.norm[at-1]) || !word(q[0])) &&
+			(after == len(f.norm) || f.gap[after] || !word(f.norm[after]) || !word(q[len(q)-1])) {
+			out = append(out, match{f.line[at], f.line[after-1]})
 		}
 		from += i + 1
 	}
+	return out
+}
+
+func (f *file) result(m match, moved string) Result {
+	h := sha256.Sum256([]byte(strings.Join(f.raw[m.start-1:m.end], "\n")))
+	at := fmt.Sprint(m.start)
+	if m.end != m.start {
+		at += fmt.Sprintf("-%d", m.end)
+	}
+	return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8]), Path: moved}
+}
+
+// Check finds e's quote, whitespace-insensitively. It looks within the lines
+// e names and the slack first. Code moves, so it then takes the quote's only
+// occurrence anywhere in the same file, and, when the file no longer holds it,
+// the only occurrence of a long enough quote in any file of the same kind. A
+// quote found twice is ambiguous and stays dead, so the same tree always gives
+// the same answer.
+func (c *Checker) Check(e model.Evidence) Result {
+	q := normalize(e.Quote)
+	if q == "" {
+		return Result{}
+	}
+	first, last, bounded := e.Span()
+	if f := c.load(e.Path); f != nil {
+		ms := f.matches(q)
+		for _, m := range ms {
+			if !bounded || (m.start <= last+Slack && m.end >= first-Slack) {
+				return f.result(m, "")
+			}
+		}
+		if len(ms) == 1 {
+			return f.result(ms[0], "")
+		}
+		if len(ms) > 1 {
+			return Result{}
+		}
+	}
+	if len(q) < MinMoveQuote {
+		return Result{}
+	}
+	var found Result
+	n := 0
+	for _, p := range c.candidates(path.Ext(e.Path)) {
+		if p == e.Path {
+			continue
+		}
+		f := c.load(p)
+		if f == nil {
+			continue
+		}
+		for _, m := range f.matches(q) {
+			n++
+			found = f.result(m, p)
+		}
+		if n > 1 {
+			return Result{}
+		}
+	}
+	if n == 1 {
+		return found
+	}
 	return Result{}
+}
+
+// candidates lists the project's files with extension ext, in a fixed order,
+// leaving out ABBD's state, git's, and dependency folders.
+func (c *Checker) candidates(ext string) []string {
+	if c.paths == nil {
+		c.paths = []string{}
+		filepath.WalkDir(c.root, func(p string, d os.DirEntry, err error) error {
+			if err != nil {
+				return nil
+			}
+			if d.IsDir() {
+				switch d.Name() {
+				case ".git", ".abbd", "node_modules", "vendor", "testdata":
+					return filepath.SkipDir
+				}
+				return nil
+			}
+			if rel, err := filepath.Rel(c.root, p); err == nil {
+				c.paths = append(c.paths, filepath.ToSlash(rel))
+			}
+			return nil
+		})
+		slices.Sort(c.paths)
+	}
+	var out []string
+	for _, p := range c.paths {
+		if path.Ext(p) == ext {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 // all checks a fact's evidence: it is live while any item is, and its digest
@@ -122,6 +215,9 @@ func (c *Checker) all(es []model.Evidence) (live bool, digest string, moved []mo
 			ds = append(ds, r.Digest)
 			if e.Lines != "" {
 				moved[i].Lines = r.At
+			}
+			if r.Path != "" {
+				moved[i].Path = r.Path
 			}
 		}
 	}
