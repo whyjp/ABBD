@@ -37,6 +37,18 @@ abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--paren
                                      a unit the script cannot see, INFERRED
 abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root DIR]
                                      what a human stated, USER_STATED with where they said it
+abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     refresh a reader's claim with live evidence; TARGET is an ID,
+                                     ID.parent or an edge FROM.KIND.TO; a supplement claim gets a
+                                     reader's claim above it
+abbd retract TARGET --reason TEXT [--source REF] [--root DIR]
+                                     remove your own claim on TARGET (ID, ID.parent, ID.purpose,
+                                     ID.responsibility or an edge) and hide the lower INFERRED
+                                     claims on it until their content changes; a human's with --source
+abbd migrate [--supplement FILE] [--root DIR]
+                                     convert an old-format state once, telling the supplement's
+                                     claims from a reader's by the supplement (default
+                                     .abbd/extractor/supplement.json)
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
@@ -56,8 +68,9 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      removed, or a relation between top-level modules appeared
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
-abbd evidence [--root DIR]           check every quote against the working tree
-abbd status [--root DIR]             whether the state and the blueprint are CURRENT, and counts`
+abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
+abbd status [--root DIR]             whether the state and the blueprint are CURRENT, counts,
+                                     drifted and dead evidence, retractions and parent conflicts`
 
 const (
 	exitOK    = 0
@@ -81,6 +94,7 @@ type opts struct {
 	via, parent      string
 	responsibility   string
 	value, src       string
+	reason           string
 	base             string
 	asJSON, check    bool
 	verbose          bool
@@ -116,6 +130,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")
 	},
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
+	"reason": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.reason, "reason", "", "why the claim is wrong")
+	},
 	"source": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.src, "source", "", `where the human stated it, such as a PR URL or "conversation 2026-11-01"`)
 	},
@@ -138,6 +155,9 @@ var commands = map[string]command{
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
+	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
+	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
+	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
@@ -250,7 +270,7 @@ func (e env) sync() error {
 	if err != nil {
 		return fmt.Errorf("extraction script output: %w", err)
 	}
-	res, err := e.syncActual(ex, identity.KeepGuesses)
+	res, err := e.syncActual(ex, identity.Sync)
 	if err != nil {
 		return err
 	}
@@ -270,13 +290,41 @@ func (e env) sync() error {
 	for _, id := range res.Unmatched {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
 	}
+	e.attention(res.Units)
 	return nil
 }
 
-// syncActual writes the state from one extraction. It only ever touches EXTRACTED facts.
-func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.Result, error) {
+// attention prints what a reader or a human must look at after a write:
+// drifted and dead evidence, and a human's parent the script moved under.
+func (e env) attention(units []model.Unit) {
+	n := evidenceCounts(units)
+	if n[model.Drifted]+n[model.Dead] > 0 {
+		fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead; abbd evidence lists them, abbd record evidence refreshes and abbd retract removes\n", n[model.Drifted], n[model.Dead])
+	}
+	for _, c := range model.ParentConflicts(units) {
+		fmt.Fprintln(e.stdout, "conflict:", c)
+	}
+}
+
+// evidenceCounts counts the items of the claims that show on present units,
+// by status.
+func evidenceCounts(units []model.Unit) map[model.Status]int {
+	n := map[model.Status]int{}
+	for _, u := range model.Present(units) {
+		u.EachShownEvidence(func(w model.Writer, ev *model.Evidence) {
+			if w != model.Script || ev.Status != model.Live {
+				n[ev.Status]++
+			}
+		})
+	}
+	return n
+}
+
+// syncActual writes the state from one extraction. It only ever replaces the
+// claims of the writers the extraction speaks for.
+func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result, error) {
 	st := e.st
-	stored, err := st.LoadUnits()
+	stored, err := st.Writable()
 	if err != nil {
 		return identity.Result{}, err
 	}
@@ -303,13 +351,16 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 	if len(ex.Units) == 0 && len(stored) > 0 {
 		return identity.Result{}, fmt.Errorf("the extraction reported no units; refusing to mark every unit absent")
 	}
-	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)
-	res.Units = evidence.New(e.root).Apply(res.Units)
+	// The revision is where this tree was first synced. Committing .abbd/
+	// moves HEAD without changing the tree, and must not dirty .abbd/ again.
+	// A drifted item dies at a sync of a later revision.
+	rev := state.Revision
+	if state.Fingerprint != tree || rev == "" {
+		rev = gitx.Head(e.root)
+	}
+	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)
+	res.Units = evidence.New(e.root).Apply(res.Units, rev)
 	res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
-	res.Unmatched = slices.DeleteFunc(res.Unmatched, func(id model.ID) bool {
-		u, ok := presentUnit(res.Units, id)
-		return ok && group.Made(u)
-	})
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}
@@ -319,12 +370,6 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 	hash, err := st.MDHash()
 	if err != nil {
 		return res, err
-	}
-	// The revision is where this tree was first synced. Committing .abbd/
-	// moves HEAD without changing the tree, and must not dirty .abbd/ again.
-	rev := state.Revision
-	if state.Fingerprint != tree || rev == "" {
-		rev = gitx.Head(e.root)
 	}
 	state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}
 	return res, st.SaveState(state)

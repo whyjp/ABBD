@@ -26,8 +26,11 @@ func TestImpactFollowsLiveCouplingsAndWritesNothing(t *testing.T) {
 
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
 	p.want(0, "", "sync")
+	contains(t, p.want(0, "seed", "impact", "MOD-0001"), "direct MOD-0002 ledger: consumes DATA-0001 (inferred, via data, drifted)")
+	p.laterRevision()
+	p.want(0, "", "sync")
 	if out := p.want(0, "seed", "impact", "MOD-0001"); strings.Contains(out, "MOD-0002") {
-		t.Fatalf("a coupling whose evidence is gone leads nowhere:\n%s", out)
+		t.Fatalf("a coupling whose evidence died leads nowhere:\n%s", out)
 	}
 }
 

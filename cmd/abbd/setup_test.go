@@ -33,7 +33,7 @@ func TestSetupRegistersTheScriptAndSyncs(t *testing.T) {
 	if !strings.Contains(p.read("project.yaml"), filepath.Base(exe)) {
 		t.Fatalf("setup should record the extraction script:\n%s", p.read("project.yaml"))
 	}
-	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "takes payments\n    origin: INFERRED") || strings.Contains(md, "confirmation") {
+	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "takes payments\n    writer: supplement") || strings.Contains(md, "confirmation") {
 		t.Fatalf("a purpose the script guessed is INFERRED and waits for nobody:\n%s", md)
 	}
 }
@@ -43,7 +43,7 @@ func TestSupplementAddsInferredFactsThatSurviveReextraction(t *testing.T) {
 	p.extract(codeOnly)
 	p.setup(0, "3 matched by the supplement", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
 	md := p.read("architecture/MOD-0002.md")
-	if !strings.Contains(md, "keeps the books\n    origin: INFERRED") || !strings.Contains(md, "to: IF-0001") || !strings.Contains(md, "quote: func Serve()") {
+	if !strings.Contains(md, "keeps the books\n    writer: supplement") || !strings.Contains(md, "to: IF-0001") || !strings.Contains(md, "quote: func Serve()") {
 		t.Fatalf("the supplement should add an inferred purpose and a coupling with its evidence:\n%s", md)
 	}
 	p.want(0, "MOD-0002 matched", "sync", "--verbose")
@@ -140,31 +140,29 @@ func TestCommittedStateStaysCleanOnResync(t *testing.T) {
 	}
 }
 
-// A setup's supplement owns the guesses, so it withdraws a recorded unit it no
-// longer reports. A unit a human stated something about stays: a stated fact,
-// a stated relation of its own, or a stated relation pointing at it would
-// otherwise sit where explain and record cannot reach it.
-func TestSetupKeepsARecordedUnitAHumanStatedAbout(t *testing.T) {
-	p := semanticProject(t)
+// A setup's supplement owns only its own claims. Re-running setup never
+// withdraws what a reader recorded with abbd record. It withdraws a
+// supplement unit it no longer reports, with a reason, unless a human stated
+// something about it, which would otherwise sit where no command reaches it.
+func TestSetupKeepsReaderFindingsAndAUnitAHumanStatedAbout(t *testing.T) {
 	src := "conversation 2026-11-01"
+	p := semanticProject(t)
 	p.want(0, "recorded DATA-0002", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
-	p.want(0, "USER_STATED", "record", "fact", "DATA-0002.purpose", "--value", "reads charges for the books", "--source", src)
-	p.want(0, "recorded DATA-0003", "record", "unit", "DATA", "ledger rows", "--parent", "MOD-0002", "--evidence", "ledger/book.go:4:FROM charges")
-	p.want(0, "USER_STATED", "record", "relation", "MOD-0001", "consumes", "DATA-0003", "--source", src)
-	p.want(0, "recorded DATA-0004", "record", "unit", "DATA", "charge call", "--parent", "MOD-0001", "--evidence", "billing/charge.go:4:func Charge")
-	p.want(0, "USER_STATED", "record", "relation", "DATA-0004", "depends_on", "MOD-0002", "--source", src)
-	p.want(0, "recorded DATA-0005", "record", "unit", "DATA", "unsaid", "--parent", "MOD-0002", "--evidence", "ledger/book.go:6:func Post")
+	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
+	out := p.setup(0, "synced", "--supplement", p.file(t, "sup2.json", ledgerTopo))
+	if md := p.read("architecture/DATA-0002.md"); strings.Contains(md, "absent") {
+		t.Errorf("setup withdrew a unit a reader recorded:\n%s\n%s", out, md)
+	}
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "MOD-0002 ledger depends_on MOD-0001 billing via call")
+	if md := p.read("architecture/DATA-0001.md"); !strings.Contains(md, "absent_reason: withdrawn") {
+		t.Errorf("a supplement unit the supplement no longer reports is withdrawn with a reason:\n%s", md)
+	}
 
-	out := p.setup(0, "synced", "--supplement", p.file(t, "sup2.json", chargesTable))
-	for _, id := range []string{"DATA-0002", "DATA-0003", "DATA-0004"} {
-		if !strings.Contains(out, id+" kept") || strings.Contains(p.read("architecture/"+id+".md"), "absent: true") {
-			t.Errorf("setup should keep %s, which a human stated something about, and say so:\n%s", id, out)
-		}
+	p = semanticProject(t)
+	p.want(0, "USER_STATED", "record", "fact", "DATA-0001.purpose", "--value", "the books read it", "--source", src)
+	out = p.setup(0, "synced", "--supplement", p.file(t, "sup3.json", ledgerTopo))
+	if !strings.Contains(out, "DATA-0001 kept") || strings.Contains(p.read("architecture/DATA-0001.md"), "absent") {
+		t.Errorf("setup should keep DATA-0001, which a human stated something about, and say so:\n%s", out)
 	}
-	if !strings.Contains(p.read("architecture/DATA-0005.md"), "absent: true") {
-		t.Errorf("a recorded unit no human stated anything about is withdrawn with the supplement's guesses")
-	}
-	contains(t, p.want(0, "", "explain", "DATA-0002"), "purpose: reads charges for the books (USER_STATED, "+src+")")
-	contains(t, p.want(0, "", "explain", "MOD-0001"), "DATA-0003 ledger rows (stated)")
-	contains(t, p.want(0, "", "explain", "DATA-0004"), "MOD-0002 ledger (stated)")
+	contains(t, p.want(0, "", "explain", "DATA-0001"), "purpose: the books read it (USER_STATED, "+src+")")
 }

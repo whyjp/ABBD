@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -41,38 +42,82 @@ func (s Store) path(parts ...string) string {
 
 func (s Store) unitDirs() []string { return []string{"architecture", "features"} }
 
+// ErrOldFormat refuses a write to a state in the old format, which cannot
+// tell the supplement's claims from a reader's.
+var ErrOldFormat = fmt.Errorf("the state is in the old format; run abbd migrate first")
+
+// LoadUnits reads every unit file, in either format, and resolves the read
+// model.
 func (s Store) LoadUnits() ([]model.Unit, error) {
+	units, old, err := s.loadUnits()
+	if err != nil {
+		return nil, err
+	}
+	finish(units, old)
+	return units, nil
+}
+
+// Writable is LoadUnits for a command that will write: it refuses a state
+// with any file in the old format.
+func (s Store) Writable() ([]model.Unit, error) {
+	units, old, err := s.loadUnits()
+	if err != nil {
+		return nil, err
+	}
+	if len(old) > 0 {
+		return nil, ErrOldFormat
+	}
+	finish(units, old)
+	return units, nil
+}
+
+// Legacy loads the state and names the units still in the old format.
+func (s Store) Legacy() ([]model.Unit, map[model.ID]bool, error) {
+	units, old, err := s.loadUnits()
+	if err != nil {
+		return nil, nil, err
+	}
+	finish(units, old)
+	return units, old, nil
+}
+
+func finish(units []model.Unit, old map[model.ID]bool) {
+	regroup(units, old)
+	model.Resolve(units)
+}
+
+func (s Store) loadUnits() ([]model.Unit, map[model.ID]bool, error) {
 	var units []model.Unit
+	old := map[model.ID]bool{}
 	seen := map[model.ID]string{}
 	for _, d := range s.unitDirs() {
 		files, err := filepath.Glob(s.path(d, "*.md"))
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for _, f := range files {
-			u, err := readUnit(f)
+			b, err := os.ReadFile(f)
 			if err != nil {
-				return nil, fmt.Errorf("%s: %w", f, err)
+				return nil, nil, err
+			}
+			u, isOld, err := parseUnit(f, b)
+			if err != nil {
+				return nil, nil, fmt.Errorf("%s: %w", f, err)
 			}
 			if u.Kind.Dir() != d {
-				return nil, fmt.Errorf("%s: kind %s belongs in %s/", f, u.Kind, u.Kind.Dir())
+				return nil, nil, fmt.Errorf("%s: kind %s belongs in %s/", f, u.Kind, u.Kind.Dir())
 			}
 			if other, dup := seen[u.ID]; dup {
-				return nil, fmt.Errorf("%s: id %s is also used by %s", f, u.ID, other)
+				return nil, nil, fmt.Errorf("%s: id %s is also used by %s", f, u.ID, other)
 			}
 			seen[u.ID] = f
+			if isOld {
+				old[u.ID] = true
+			}
 			units = append(units, u)
 		}
 	}
-	return units, nil
-}
-
-func readUnit(path string) (model.Unit, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return model.Unit{}, err
-	}
-	return parseUnit(path, b)
+	return units, old, nil
 }
 
 // UnitsAt reads the unit files as they were committed at rev. A revision
@@ -88,6 +133,7 @@ func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
 		return nil, err
 	}
 	var units []model.Unit
+	old := map[model.ID]bool{}
 	for _, f := range files {
 		if !strings.HasSuffix(f, ".md") {
 			continue
@@ -96,36 +142,45 @@ func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
 		if err != nil {
 			return nil, err
 		}
-		u, err := parseUnit(f, b)
+		u, isOld, err := parseUnit(f, b)
 		if err != nil {
 			return nil, fmt.Errorf("%s at %s: %w", f, rev, err)
 		}
+		if isOld {
+			old[u.ID] = true
+		}
 		units = append(units, u)
 	}
+	finish(units, old)
 	return units, nil
 }
 
-func parseUnit(path string, b []byte) (model.Unit, error) {
+func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
 	if !ok {
-		return model.Unit{}, fmt.Errorf("missing frontmatter")
+		return u, false, fmt.Errorf("missing frontmatter")
 	}
 	front, body, ok := bytes.Cut(rest, []byte("\n---\n"))
 	if !ok {
-		return model.Unit{}, fmt.Errorf("unterminated frontmatter")
+		return u, false, fmt.Errorf("unterminated frontmatter")
 	}
-	var u model.Unit
-	if err := yaml.Unmarshal(front, &u); err != nil {
-		return model.Unit{}, err
+	if old = legacy(front); old {
+		var l legacyUnit
+		if err := yaml.Unmarshal(front, &l); err != nil {
+			return u, true, err
+		}
+		u = l.convert()
+	} else if err := yaml.Unmarshal(front, &u); err != nil {
+		return u, false, err
 	}
 	if i := bytes.Index(body, []byte("\n"+notesHeading)); i >= 0 {
 		u.Notes = string(body[i+1:])
 	}
 	if want := string(u.ID) + ".md"; filepath.Base(path) != want {
-		return model.Unit{}, fmt.Errorf("file name does not match id %s", u.ID)
+		return u, old, fmt.Errorf("file name does not match id %s", u.ID)
 	}
-	return u, u.Validate()
+	return u, old, u.Validate()
 }
 
 func renderUnit(u model.Unit) ([]byte, error) {
@@ -153,8 +208,15 @@ func renderUnit(u model.Unit) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+// SaveUnits writes each unit in the current format. Each unit's shown and
+// hidden claims are resolved again first, so the file always partitions
+// them the way a load would.
 func (s Store) SaveUnits(units []model.Unit) error {
 	for _, u := range units {
+		u.Parents = slices.Clone(u.Parents)
+		one := []model.Unit{u}
+		model.Resolve(one)
+		u = one[0]
 		if err := u.Validate(); err != nil {
 			return err
 		}

@@ -1,7 +1,8 @@
 // Package identity keeps design-unit IDs stable across re-extraction.
 //
-// An extracted unit takes over a stored ID when they share two or more
-// anchors, or when their anchor sets are identical. Pairs are assigned
+// A supplement unit takes over the stored unit with the same supplement key.
+// Any other extracted unit takes over a stored ID when they share two or
+// more anchors, or when their anchor sets are identical. Pairs are assigned
 // globally, best match first, so input order never changes the outcome.
 // Any leftover overlap between a unit and a stored unit it did not take
 // over is recorded as a merge candidate for a human to resolve.
@@ -39,22 +40,26 @@ type Result struct {
 	Candidates []Candidate
 	Events     []Event
 	Unmatched  []model.ID
-	// Stated are the semantic units a setup's supplement no longer reports
-	// that stay present because a human stated something about them.
-	Stated    []model.ID
+	// Stated are the supplement units a setup no longer reports that stay
+	// present because a human stated something about them.
+	Stated []model.ID
+	// Keys maps each extracted unit's key to the ID it took.
+	Keys      map[string]model.ID
 	HighWater map[model.Kind]int
 }
 
-// Guesses says what happens to the stored INFERRED facts.
-type Guesses int
+// Writers names the writers an extraction speaks for: their claims on the
+// units it reports are replaced by its own, and no one else's are.
+type Writers []model.Writer
 
-const (
-	// KeepGuesses is a re-extraction by the script, which cannot see them.
-	KeepGuesses Guesses = iota
-	// ReplaceGuesses is a setup, whose supplement owns them: a guess the new
-	// supplement no longer makes is withdrawn. What a human stated stays.
-	ReplaceGuesses
+var (
+	// Sync is a re-extraction by the script.
+	Sync = Writers{model.Script}
+	// Setup is the script with the supplement folded in.
+	Setup = Writers{model.Script, model.Supplement}
 )
+
+func (ws Writers) own(w model.Writer) bool { return slices.Contains(ws, w) }
 
 type pair struct {
 	in, st    int
@@ -65,7 +70,7 @@ type pair struct {
 
 // Reconcile is pure. renames maps old paths to new paths since the last sync.
 // highWater holds the largest number ever minted per kind, so deleted IDs are never reused.
-func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int, guesses Guesses) Result {
+func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int, ws Writers) Result {
 	hw := map[model.Kind]int{}
 	for k, n := range highWater {
 		hw[k] = n
@@ -73,6 +78,14 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	units := make([]model.Unit, len(stored))
 	for i, u := range stored {
 		u.Anchors = applyRenames(u.Anchors, renames)
+		u.Parents = clonedParents(u.Parents)
+		u.Evidence = slices.Clone(u.Evidence)
+		u.Relations, u.Hidden = clonedRelations(u.Relations), clonedRelations(u.Hidden)
+		u.EachEvidence(func(_ model.Writer, e *model.Evidence) {
+			if to, ok := renames[e.Path]; ok {
+				e.Path = to
+			}
+		})
 		units[i] = u
 		if _, n, err := model.ParseID(string(u.ID)); err == nil && n > hw[u.Kind] {
 			hw[u.Kind] = n
@@ -89,10 +102,26 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		return anchorList(input[i].Anchors) < anchorList(input[j].Anchors)
 	})
 
+	inTo := map[int]int{}
+	stTaken := map[int]bool{}
+	for i, in := range input {
+		if in.SupplementKey == "" {
+			continue
+		}
+		for j, u := range units {
+			if !stTaken[j] && u.Kind == in.Kind && u.SupplementKey == in.SupplementKey {
+				inTo[i], stTaken[j] = j, true
+				break
+			}
+		}
+	}
 	var pairs []pair
 	for i, in := range input {
+		if _, done := inTo[i]; done {
+			continue
+		}
 		for j, u := range units {
-			if u.Kind != in.Kind {
+			if u.Kind != in.Kind || stTaken[j] {
 				continue
 			}
 			ov := overlap(u.Anchors, in.Anchors)
@@ -117,8 +146,6 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			return p.in < q.in
 		}
 	})
-	inTo := map[int]int{}
-	stTaken := map[int]bool{}
 	for _, p := range pairs {
 		if _, done := inTo[p.in]; done || stTaken[p.st] {
 			continue
@@ -137,7 +164,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	ids := make([]model.ID, len(input))
 	for i, in := range input {
 		if j, ok := inTo[i]; ok {
-			merge(&units[j], in, guesses)
+			merge(&units[j], in, ws)
 			ids[i] = units[j].ID
 			res.Events = append(res.Events, Event{ids[i], Matched})
 			continue
@@ -145,8 +172,9 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		hw[in.Kind]++
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
-			Anchors: in.Anchors, Purpose: in.Purpose, Responsibility: in.Responsibility,
-			Signature: in.Signature, Digest: in.Digest, Evidence: in.Evidence,
+			SupplementKey: in.SupplementKey, Anchors: in.Anchors, Purpose: in.Purpose,
+			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest,
+			Evidence: in.Evidence,
 		}
 		created = append(created, nu)
 		ids[i] = nu.ID
@@ -169,68 +197,56 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			}
 		}
 	}
-	held := heldByHuman(units, stTaken)
+	held := heldByHuman(units)
 	for j, u := range units {
 		switch {
-		case stTaken[j] || u.Semantic() && guesses == KeepGuesses:
-			units[j].Absent = false
-		case u.Semantic() && held[u.ID]:
-			units[j].Absent = false
+		case stTaken[j]:
+			units[j].SetAbsent("")
+		case !ws.own(u.Name.Writer):
+		case u.Absent:
+			res.Unmatched = append(res.Unmatched, u.ID)
+		case u.Name.Writer == model.Supplement && held[u.ID]:
 			res.Stated = append(res.Stated, u.ID)
+		case u.Name.Writer == model.Supplement:
+			units[j].SetAbsent(model.Withdrawn)
+			res.Unmatched = append(res.Unmatched, u.ID)
 		default:
-			units[j].Absent = true
+			units[j].SetAbsent(model.NotReported)
 			res.Unmatched = append(res.Unmatched, u.ID)
 		}
 	}
 	res.Units = append(units, created...)
 	sort.Slice(res.Units, func(i, j int) bool { return res.Units[i].ID < res.Units[j].ID })
-	setParents(res.Units, input, ids)
-	setRelations(res.Units, input, ids, extraction.Relations, guesses)
+	res.Keys = keyed(input, ids)
+	setParents(res.Units, input, ids, ws)
+	setRelations(res.Units, input, ids, extraction.Relations, ws)
+	model.Resolve(res.Units)
 	res.Candidates = keepLive(append(prior, fresh...), res.Units)
 	res.HighWater = hw
 	return res
 }
 
-// heldByHuman lists the stored semantic units a human stated something
-// about: a fact, a relation of their own, or a relation from a unit that
-// stays. A setup's supplement owns the guesses, but withdrawing such a unit
-// would leave the human's words where no command reaches them.
-func heldByHuman(units []model.Unit, matched map[int]bool) map[model.ID]bool {
-	stays := map[model.ID]bool{}
-	for j, u := range units {
-		if matched[j] {
-			stays[u.ID] = true
-		}
-	}
+// heldByHuman lists the units a human stated something about, or that a
+// human's relation points at. Withdrawing such a supplement unit would leave
+// the human's words where no command reaches them.
+func heldByHuman(units []model.Unit) map[model.ID]bool {
 	held := map[model.ID]bool{}
-	for grew := true; grew; {
-		grew = false
-		pointed := map[model.ID]bool{}
-		for _, u := range units {
-			if stays[u.ID] {
-				for _, r := range u.Relations {
-					if r.Origin == model.UserStated {
-						pointed[r.To] = true
-					}
-				}
+	for _, u := range units {
+		for _, f := range []*model.Fact{&u.Name, u.Purpose, u.Responsibility, u.Signature} {
+			if f != nil && f.Writer == model.Human {
+				held[u.ID] = true
 			}
 		}
-		for _, u := range units {
-			if !stays[u.ID] && u.Semantic() && (stated(u) || pointed[u.ID]) {
-				stays[u.ID], held[u.ID], grew = true, true, true
+		if _, ok := u.Claim(model.Human); ok {
+			held[u.ID] = true
+		}
+		for _, r := range u.Claims() {
+			if r.Writer == model.Human {
+				held[u.ID], held[r.To] = true, true
 			}
 		}
 	}
 	return held
-}
-
-func stated(u model.Unit) bool {
-	for _, f := range []*model.Fact{&u.Name, u.Purpose, u.Responsibility, u.Signature} {
-		if f != nil && f.Origin == model.UserStated {
-			return true
-		}
-	}
-	return slices.ContainsFunc(u.Relations, func(r model.Relation) bool { return r.Origin == model.UserStated })
 }
 
 func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
@@ -243,149 +259,147 @@ func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
 	return byKey
 }
 
-// setParents gives each reported unit the module its extraction names, by
-// key. A unit the extraction places nowhere keeps a parent a reader or a
-// human gave it, so structure a reader found survives a script that cannot
-// see it; a parent the script gave earlier goes when the script drops it.
-// A kept parent goes when its module is absent, and when its own ancestors
-// lead back to it, since the script's word on code it reads wins.
-func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
+// setParents replaces the parent claims the extraction's writers hold on
+// each unit it reports with the claims it makes: the script's parent and
+// the supplement's placements. Every other claim stays stored, and Resolve
+// decides which one shows.
+func setParents(units []model.Unit, input []extract.Unit, ids []model.ID, ws Writers) {
 	byKey := keyed(input, ids)
-	type placed struct {
-		id       model.ID
-		origin   model.Origin
-		evidence []model.Evidence
+	at := map[model.ID]int{}
+	for i, u := range units {
+		at[u.ID] = i
 	}
-	parent := map[model.ID]placed{}
 	for i, in := range input {
-		parent[ids[i]] = placed{byKey[in.Parent], in.ParentOrigin, in.ParentEvidence}
-	}
-	present := map[model.ID]bool{}
-	for _, u := range model.Present(units) {
-		present[u.ID] = true
-	}
-	var kept []int
-	for i := range units {
-		u := &units[i]
-		p, ok := parent[u.ID]
-		switch {
-		case !ok:
-		case p.id != "":
-			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = p.id, p.origin, p.evidence, ""
-			if p.origin == model.Extracted {
-				u.ParentOrigin = ""
+		u := &units[at[ids[i]]]
+		old := *u
+		u.DropParents(ws...)
+		if p := byKey[in.Parent]; in.Parent != "" && p != "" {
+			u.PutParent(model.ParentClaim{To: p, Writer: model.Script})
+		}
+		for _, pl := range in.Placed {
+			if p := byKey[pl.Key]; p != "" && ws.own(pl.Writer) {
+				was, _ := old.Claim(pl.Writer)
+				u.PutParent(model.ParentClaim{To: p, Writer: pl.Writer, Evidence: carry(pl.Evidence, was.Evidence, items(old))})
 			}
-		case present[u.Parent] && (u.ParentOrigin == model.Inferred || u.ParentOrigin == model.UserStated):
-			kept = append(kept, i)
-		default:
-			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
-		}
-	}
-	for _, i := range kept {
-		if u := &units[i]; ancestor(units, u.Parent, u.ID) {
-			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 		}
 	}
 }
 
-// ancestor says whether following parents up from id reaches target.
-func ancestor(units []model.Unit, id, target model.ID) bool {
-	parent := map[model.ID]model.ID{}
-	for _, u := range units {
-		parent[u.ID] = u.Parent
-	}
-	seen := map[model.ID]bool{}
-	for k := id; k != "" && !seen[k]; k = parent[k] {
-		if k == target {
-			return true
-		}
-		seen[k] = true
-	}
-	return false
-}
-
-// Extraction owns the EXTRACTED relations of every unit it reports; units it
-// did not report keep theirs until a human resolves them. A relation from any
-// other origin survives, because the script cannot see it, unless guesses are
-// replaced. When the same edge arrives twice, the extracted one wins, then the
-// stored one.
-func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, guesses Guesses) {
+// setRelations replaces the claims the extraction's writers hold on the
+// relations of each unit it reports with the claims it makes. Units it did
+// not report keep theirs until a human resolves them, and every other
+// writer's claim stays.
+func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, ws Writers) {
 	byKey := keyed(input, ids)
 	reported := map[model.ID]bool{}
 	for _, id := range ids {
 		reported[id] = true
 	}
-	extracted := map[model.ID][]model.Relation{}
-	stated := map[model.ID][]model.Relation{}
+	made := map[model.ID][]model.Relation{}
 	for _, r := range rels {
-		origin := r.Origin
-		if origin == "" {
-			origin = model.Extracted
+		w := r.Writer
+		if w == "" {
+			w = model.Script
 		}
-		rel := model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: origin, Via: r.Via, Evidence: r.Evidence}
 		f := byKey[r.From]
-		if origin == model.Extracted {
-			extracted[f] = append(extracted[f], rel)
-		} else {
-			stated[f] = append(stated[f], rel)
-		}
+		made[f] = append(made[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Writer: w, Via: r.Via, Evidence: r.Evidence})
 	}
 	for i := range units {
-		id := units[i].ID
-		if !reported[id] {
+		u := &units[i]
+		if !reported[u.ID] {
 			continue
 		}
-		next := extracted[id]
-		for _, r := range units[i].Relations {
-			if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {
-				next = append(next, r)
+		old, all := u.Claims(), items(*u)
+		u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })
+		for _, r := range made[u.ID] {
+			if slices.ContainsFunc(u.Claims(), func(o model.Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer }) {
+				continue
+			}
+			if r.Writer != model.Script {
+				var was []model.Evidence
+				for _, o := range old {
+					if o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer {
+						was = o.Evidence
+					}
+				}
+				r.Evidence = carry(r.Evidence, was, all)
+			}
+			u.PutRelation(r)
+		}
+	}
+}
+
+// carry gives each new item the status a stored item citing the same code
+// had, so restating a claim never revives its dead items. It looks in each
+// list in turn: the claim's own items first, then the rest of the unit's,
+// since a status belongs to the code an item cites, not to one claim.
+func carry(next []model.Evidence, old ...[]model.Evidence) []model.Evidence {
+	out := slices.Clone(next)
+	for i := range out {
+		for _, es := range old {
+			if j := slices.IndexFunc(es, out[i].Same); j >= 0 {
+				out[i].Lines, out[i].Status, out[i].Since, out[i].Reason = es[j].Lines, es[j].Status, es[j].Since, es[j].Reason
+				break
 			}
 		}
-		units[i].Relations = dedupRelations(append(next, stated[id]...))
 	}
+	return out
 }
 
-func dedupRelations(rs []model.Relation) []model.Relation {
-	type edge struct {
-		to   model.ID
-		kind model.RelationKind
+// items lists every evidence item the unit stores.
+func items(u model.Unit) []model.Evidence {
+	var out []model.Evidence
+	u.EachEvidence(func(_ model.Writer, e *model.Evidence) { out = append(out, *e) })
+	return out
+}
+
+// merge folds an extracted unit into the stored unit it took over. A
+// one-value field is replaced when a writer the extraction speaks for held
+// it, or when the extraction's writer outranks the one that did. The unit's
+// evidence goes with its name.
+func merge(u *model.Unit, in extract.Unit, ws Writers) {
+	u.Anchors = in.Anchors
+	u.Digest = in.Digest
+	if in.SupplementKey != "" {
+		u.SupplementKey = in.SupplementKey
 	}
-	seen := map[edge]bool{}
-	var out []model.Relation
-	for _, r := range rs {
-		if e := (edge{r.To, r.Kind}); !seen[e] {
-			seen[e] = true
-			out = append(out, r)
+	if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {
+		u.Name = in.Name
+		u.Evidence = carry(in.Evidence, u.Evidence, items(*u))
+		if u.Name.Writer == model.Script {
+			u.Evidence = in.Evidence
 		}
 	}
-	return model.SortRelations(out)
+	for _, f := range []struct {
+		field  model.Field
+		at     **model.Fact
+		offers *model.Fact
+	}{
+		{model.PurposeField, &u.Purpose, in.Purpose},
+		{model.ResponsibilityField, &u.Responsibility, in.Responsibility},
+		{model.SignatureField, &u.Signature, in.Signature},
+	} {
+		held := *f.at
+		if held == nil || ws.own(held.Writer) || f.offers != nil && model.Outranks(f.field, f.offers.Writer, held.Writer) {
+			*f.at = f.offers
+		}
+	}
 }
 
-// Extraction owns anchors, signatures and EXTRACTED names. Human-given values
-// and decided guesses survive, a reader's signature among them while the
-// script reads none.
-func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
-	u.Anchors = in.Anchors
-	if in.Signature != nil || guesses == ReplaceGuesses || !u.Signature.Guess() {
-		u.Signature = in.Signature
+func clonedParents(cs []model.ParentClaim) []model.ParentClaim {
+	out := slices.Clone(cs)
+	for i := range out {
+		out[i].Evidence = slices.Clone(out[i].Evidence)
 	}
-	u.Digest = in.Digest
-	u.Evidence = in.Evidence
-	// A unit moves between the script and the reader whole: once the script
-	// reports a semantic unit its name is extracted, and the other way round.
-	if u.Semantic() || in.Name.Origin == model.Inferred {
-		u.Name = in.Name
+	return out
+}
+
+func clonedRelations(rs []model.Relation) []model.Relation {
+	out := slices.Clone(rs)
+	for i := range out {
+		out[i].Evidence = slices.Clone(out[i].Evidence)
 	}
-	if u.Name.Origin == model.Extracted {
-		u.Name = in.Name
-	}
-	replace := func(f *model.Fact) bool { return f == nil || (guesses == ReplaceGuesses && f.Guess()) }
-	if replace(u.Purpose) {
-		u.Purpose = in.Purpose
-	}
-	if replace(u.Responsibility) {
-		u.Responsibility = in.Responsibility
-	}
+	return out
 }
 
 func applyRenames(as []model.Anchor, renames map[string]string) []model.Anchor {

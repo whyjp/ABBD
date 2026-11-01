@@ -61,13 +61,13 @@ func TestRecordRelationNeedsEvidenceOrASource(t *testing.T) {
 	}
 
 	p.want(0, "recorded MOD-0002.depends_on.MOD-0001, INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
-	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "to: MOD-0001\n      kind: depends_on\n      origin: INFERRED\n      via: call\n      evidence:") {
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "to: MOD-0001\n      kind: depends_on\n      writer: reader\n      via: call\n      evidence:") {
 		t.Fatalf("the finding should be stored INFERRED with its via and evidence:\n%s", md)
 	}
 
 	pr := "https://github.com/o/r/pull/7"
 	p.want(0, "USER_STATED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--source", pr)
-	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "origin: USER_STATED\n      source: "+pr) {
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "writer: human\n      source: "+pr) {
 		t.Fatalf("a stated coupling carries its source:\n%s", md)
 	}
 	p.want(1, "is USER_STATED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
@@ -79,7 +79,7 @@ func TestRecordUnitNeedsLiveEvidence(t *testing.T) {
 	p.want(1, "cite at least one --evidence", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002")
 	p.want(1, "is not a module", "record", "unit", "DATA", "ledger query", "--parent", "DATA-0001", "--evidence", "ledger/book.go:3:SELECT amount")
 	p.want(0, "recorded DATA-0002 ledger query, INFERRED", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
-	if md := p.read("architecture/DATA-0002.md"); !strings.Contains(md, "parent: MOD-0002") || !strings.Contains(md, "quote: SELECT amount") {
+	if md := p.read("architecture/DATA-0002.md"); !strings.Contains(md, "parents:\n    - to: MOD-0002\n      writer: reader\n") || !strings.Contains(md, "quote: SELECT amount") {
 		t.Fatalf("the unit should be stored with its parent and evidence:\n%s", md)
 	}
 	p.want(0, "", "sync")
@@ -110,7 +110,7 @@ func TestRecordFactNeedsASourceAndOutlivesTheSupplement(t *testing.T) {
 	p.want(1, "--source", "record", "fact", "MOD-0002.purpose", "--value", "posts journal entries")
 	p.want(1, "is not ID.purpose or ID.responsibility", "record", "fact", "MOD-0002.signature", "--value", "x", "--source", "conversation 2026-11-01")
 	p.want(0, "recorded MOD-0002.purpose, USER_STATED", "record", "fact", "MOD-0002.purpose", "--value", "posts journal entries", "--source", "conversation 2026-11-01")
-	stated := "value: posts journal entries\n    origin: USER_STATED\n    source: conversation 2026-11-01\n"
+	stated := "value: posts journal entries\n    writer: human\n    source: conversation 2026-11-01\n"
 	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, stated) {
 		t.Fatalf("the stated purpose should replace the guess with its source:\n%s", md)
 	}

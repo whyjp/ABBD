@@ -1,13 +1,12 @@
 // Package evidence checks, deterministically, that the code still holds the
-// excerpts a reader cited for a semantic unit or relation. A reader finds a
-// coupling; this package only decides whether the same tree still shows it,
-// so the same tree always gives the same answer.
+// excerpts a reader cited for a semantic unit, relation or parent. A reader
+// finds a coupling; this package only decides whether the same tree still
+// shows it, so the same tree always gives the same answer.
 //
-// A quote follows its code within its file, and into another file only when
-// that file is one git would commit (tracked, or untracked and not ignored,
-// as the state's fingerprint counts them), is not a test, and lies under an
-// anchor of the unit that owns the evidence. So a build output, a vendored
-// copy or a test never keeps a dead coupling alive.
+// An item's scope is the file it names. It is live while the file holds the
+// quote, drifted while the file exists without it, and dead once the file is
+// gone or a sync at a later revision still finds it drifted. A quote never
+// follows into another file.
 package evidence
 
 import (
@@ -16,12 +15,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"slices"
 	"strings"
 
-	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -31,18 +28,14 @@ const Slack = 3
 // Result is one evidence item checked against the tree.
 type Result struct {
 	Live bool
+	// Gone says the file the item names does not exist.
+	Gone bool
 	// At is where the quote was found, such as "120-121".
 	At string
 	// Digest fingerprints the lines that hold the quote, so a diff sees an
 	// edit to them even while the quote survives.
 	Digest string
-	// Path is where the quote lives now when it moved to another file.
-	Path string
 }
-
-// MinMoveQuote is how long, without whitespace, a quote must be before it is
-// followed into another file: a short one could match unrelated code.
-const MinMoveQuote = 24
 
 type file struct {
 	raw []string
@@ -58,9 +51,6 @@ type file struct {
 type Checker struct {
 	root  string
 	files map[string]*file
-	// paths lists the project's committable files once a quote must be
-	// looked for outside its own file.
-	paths []string
 }
 
 func New(root string) *Checker { return &Checker{root: root, files: map[string]*file{}} }
@@ -117,160 +107,121 @@ func (f *file) matches(q string) []match {
 	return out
 }
 
-func (f *file) result(m match, moved string) Result {
+func (f *file) result(m match) Result {
 	h := sha256.Sum256([]byte(strings.Join(f.raw[m.start-1:m.end], "\n")))
 	at := fmt.Sprint(m.start)
 	if m.end != m.start {
 		at += fmt.Sprintf("-%d", m.end)
 	}
-	return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8]), Path: moved}
+	return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8])}
 }
 
-// Check finds e's quote, whitespace-insensitively. It looks within the lines
-// e names and the slack first. Code moves, so it then takes the quote's only
-// occurrence anywhere in the same file, and, when the file no longer holds it,
-// the only occurrence of a long enough quote in any other file of the same
-// kind under within, the anchors of the unit that owns e. A quote found twice
-// is ambiguous and stays dead, so the same tree always gives the same answer.
-func (c *Checker) Check(e model.Evidence, within []model.Anchor) Result {
+// Check finds e's quote in its file, whitespace-insensitively: within the
+// lines e names and the slack first, then the quote's only occurrence in the
+// file. A quote found twice with neither near is not found, so the same tree
+// always gives the same answer.
+func (c *Checker) Check(e model.Evidence) Result {
+	f := c.load(e.Path)
+	if f == nil {
+		return Result{Gone: true}
+	}
 	q := normalize(e.Quote)
 	if q == "" {
 		return Result{}
 	}
 	first, last, bounded := e.Span()
-	if f := c.load(e.Path); f != nil {
-		ms := f.matches(q)
-		for _, m := range ms {
-			if !bounded || (m.start <= last+Slack && m.end >= first-Slack) {
-				return f.result(m, "")
-			}
-		}
-		if len(ms) == 1 {
-			return f.result(ms[0], "")
-		}
-		if len(ms) > 1 {
-			return Result{}
+	ms := f.matches(q)
+	for _, m := range ms {
+		if !bounded || (m.start <= last+Slack && m.end >= first-Slack) {
+			return f.result(m)
 		}
 	}
-	if len(q) < MinMoveQuote {
-		return Result{}
-	}
-	var found Result
-	n := 0
-	for _, p := range c.candidates(path.Ext(e.Path), within) {
-		if p == e.Path {
-			continue
-		}
-		f := c.load(p)
-		if f == nil {
-			continue
-		}
-		for _, m := range f.matches(q) {
-			n++
-			found = f.result(m, p)
-		}
-		if n > 1 {
-			return Result{}
-		}
-	}
-	if n == 1 {
-		return found
+	if len(ms) == 1 {
+		return f.result(ms[0])
 	}
 	return Result{}
 }
 
-// candidates lists, in a fixed order, the committable non-test files with
-// extension ext under one of the anchors.
-func (c *Checker) candidates(ext string, within []model.Anchor) []string {
-	if c.paths == nil {
-		c.paths = slices.Sorted(slices.Values(gitx.WorkingFiles(c.root)))
-		if c.paths == nil {
-			c.paths = []string{}
-		}
+// Status checks one item and returns it with its new status. rev is the
+// revision of the sync; "" checks without moving anything toward dead.
+// drifts is false for the script's evidence, which the script restates on
+// every sync, so it is live or dead.
+func (c *Checker) Status(e model.Evidence, rev string, drifts bool) (model.Evidence, Result) {
+	if e.Status == model.Dead && drifts {
+		return e, Result{}
 	}
-	var out []string
-	for _, p := range c.paths {
-		if path.Ext(p) == ext && !isTest(p) && covered(p, within) {
-			out = append(out, p)
+	r := c.Check(e)
+	switch {
+	case r.Live:
+		if e.Lines != "" {
+			e.Lines = r.At
 		}
+		e.Status, e.Since, e.Reason = model.Live, "", ""
+	case r.Gone:
+		e.Status, e.Since, e.Reason = model.Dead, "", fmt.Sprintf("%s is gone", e.Path)
+	case !drifts:
+		e.Status, e.Since, e.Reason = model.Dead, "", "the script's quote is not in the file"
+	case e.Status == model.Drifted && e.Since != "" && rev != "" && e.Since != rev:
+		e.Status, e.Reason = model.Dead, fmt.Sprintf("drifted since %s and not refreshed", short(e.Since))
+		e.Since = ""
+	case e.Status != model.Drifted:
+		e.Status, e.Since = model.Drifted, rev
+	case e.Since == "":
+		e.Since = rev
 	}
-	return out
+	return e, r
 }
 
-// covered says whether a file anchor names p or a directory anchor holds it.
-func covered(p string, within []model.Anchor) bool {
-	for _, a := range within {
-		d := strings.TrimSuffix(a.Path, "/")
-		if d == "" || d == "." || p == d || strings.HasPrefix(p, d+"/") {
-			return true
-		}
-	}
-	return false
-}
+func short(rev string) string { return rev[:min(len(rev), 12)] }
 
-// isTest says whether p is a test file or sits in a test folder.
-func isTest(p string) bool {
-	dirs := strings.Split(p, "/")
-	name := dirs[len(dirs)-1]
-	for _, d := range dirs[:len(dirs)-1] {
-		switch d {
-		case "test", "tests", "__tests__":
-			return true
-		}
-	}
-	return strings.HasSuffix(name, "_test.go") || strings.Contains(name, ".test.") || strings.Contains(name, ".spec.")
-}
-
-// all checks a fact's evidence: it is live while any item is, and its digest
-// covers every live item in order.
-func (c *Checker) all(es []model.Evidence, within []model.Anchor) (live bool, digest string, moved []model.Evidence) {
+// all checks a claim's items and returns them with the digest of the live
+// ones, in order.
+func (c *Checker) all(es []model.Evidence, rev string, drifts bool) ([]model.Evidence, string) {
+	out := slices.Clone(es)
 	var ds []string
-	moved = slices.Clone(es)
 	for i, e := range es {
-		if r := c.Check(e, within); r.Live {
-			live = true
+		var r Result
+		out[i], r = c.Status(e, rev, drifts)
+		if r.Live {
 			ds = append(ds, r.Digest)
-			if e.Lines != "" {
-				moved[i].Lines = r.At
-			}
-			if r.Path != "" {
-				moved[i].Path = r.Path
-			}
 		}
 	}
-	return live, strings.Join(ds, ","), moved
+	return out, strings.Join(ds, ",")
 }
 
-// Apply marks each semantic relation dead when none of its evidence is in the
-// tree, and each present semantic unit absent the same way. A relation or
-// unit without evidence is left as it is. Each live item's lines move to where
-// the quote is now, so edits above it never add up to a false removal. A
-// relation's quote may move only within the anchors of its source unit, and a
-// unit's within its own.
-func (c *Checker) Apply(units []model.Unit) []model.Unit {
+// Apply checks every item of every present unit: a semantic unit's own, its
+// parent claims' and its relation claims'. A present semantic unit whose
+// claim is dead goes absent. Each live item's lines move to where the quote
+// is now, so edits above it never add up to a false removal.
+func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
 	out := make([]model.Unit, len(units))
 	for i, u := range units {
-		if u.Semantic() && !u.Absent {
-			var live bool
-			live, _, u.Evidence = c.all(u.Evidence, u.Anchors)
-			u.Absent = !live
-		}
-		// A reader's parent lives while the code it cites does.
-		if u.ParentOrigin == model.Inferred && len(u.ParentEvidence) > 0 {
-			var live bool
-			live, _, u.ParentEvidence = c.all(u.ParentEvidence, u.Anchors)
-			if !live {
-				u.Parent, u.ParentOrigin, u.ParentEvidence = "", "", nil
-			}
-		}
-		u.Relations = slices.Clone(u.Relations)
-		for j, r := range u.Relations {
-			if r.Semantic() {
-				live, digest, es := c.all(r.Evidence, u.Anchors)
-				u.Relations[j].Dead, u.Relations[j].Digest, u.Relations[j].Evidence = !live, digest, es
-			}
-		}
 		out[i] = u
+		if u.Absent {
+			continue
+		}
+		v := &out[i]
+		if u.Semantic() {
+			v.Evidence, _ = c.all(u.Evidence, rev, true)
+			if model.StatusOf(v.Evidence) == model.Dead {
+				v.SetAbsent(model.EvidenceDead)
+			}
+		}
+		v.Parents = slices.Clone(u.Parents)
+		for j, p := range v.Parents {
+			if len(p.Evidence) > 0 {
+				v.Parents[j].Evidence, _ = c.all(p.Evidence, rev, true)
+			}
+		}
+		for _, rs := range []*[]model.Relation{&v.Relations, &v.Hidden} {
+			*rs = slices.Clone(*rs)
+			for j, r := range *rs {
+				if len(r.Evidence) > 0 {
+					(*rs)[j].Evidence, (*rs)[j].Digest = c.all(r.Evidence, rev, r.Writer != model.Script)
+				}
+			}
+		}
 	}
+	model.Resolve(out)
 	return out
 }

@@ -22,8 +22,7 @@ func TestAParentOnAGroupNoLongerNeededGoes(t *testing.T) {
 	}
 	for i := range us {
 		if us[i].ID == "MOD-0001" {
-			us[i].Parent, us[i].ParentOrigin = apps, model.Inferred
-			us[i].ParentEvidence = []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}
+			us[i].PutParent(model.ParentClaim{To: apps, Writer: model.Reader, Evidence: []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}})
 		}
 	}
 	// Drop five native modules so the top level fits the budget.

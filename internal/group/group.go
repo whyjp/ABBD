@@ -1,10 +1,11 @@
 // Package group is the last resort that keeps every blueprint view small.
 // When a module, or the top level, holds more modules than one view shows
 // and no reader grouped them, sync places them in groups by the directory
-// their code lives in. A grouping a pstack reader recorded, or a human
-// stated, always wins: the fallback only moves modules the script placed or
-// left at the top, and it runs again on every sync, so it never outlives the
-// layout it read.
+// their code lives in. It is a writer of its own: each placement is a group
+// parent claim, which ranks below a human's and above the script's. It only
+// moves units whose winning claim is the script's, or that have none, and it
+// runs again on every sync from scratch, so it never outlives the layout it
+// read.
 package group
 
 import (
@@ -30,8 +31,8 @@ func Made(u model.Unit) bool {
 // Fallback groups the units of every container that holds more boxes than
 // Budget (at the top level, its modules), by the shallowest directory that
 // splits them, and returns the units with its groups present and the
-// high-water marks moved past any ID it took. Groups it made earlier are reused by directory, and
-// left absent when no longer needed.
+// high-water marks moved past any ID it took. Groups it made earlier are
+// reused by container and directory, and left absent as unneeded otherwise.
 func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[model.Kind]int) {
 	out := make([]model.Unit, len(units))
 	copy(out, units)
@@ -48,26 +49,33 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	made := map[place]int{}
 	for i, u := range out {
 		if Made(u) {
-			made[place{u.Parent, u.Anchors[0].Path}] = i
-			out[i].Absent = true
+			in, _ := u.Claim(model.Group)
+			made[place{in.To, u.Anchors[0].Path}] = i
+			out[i].SetAbsent(model.Unneeded)
 		}
 	}
-	// Start from the layout without the fallback's groups: each unit they
-	// held goes back to where the group sat.
-	byID := map[model.ID]model.Unit{}
-	for _, u := range out {
-		byID[u.ID] = u
-	}
+	// Start from the layout without the fallback's claims: each unit they
+	// held falls back to its next claim.
 	for i := range out {
-		for p, ok := byID[out[i].Parent]; ok && Made(p) && placedByScript(out[i]); p, ok = byID[out[i].Parent] {
-			out[i].Parent = p.Parent
+		out[i].DropParents(model.Group)
+	}
+	model.Resolve(out)
+	scripted := make([]bool, len(out))
+	for i, u := range out {
+		scripted[i] = u.Parent == "" || u.ParentOrigin == model.Extracted
+	}
+	placedByScript := func(i int) bool { return scripted[i] }
+	claim := func(i int, to model.ID) {
+		out[i].Parent = to
+		if to != "" {
+			out[i].PutParent(model.ParentClaim{To: to, Writer: model.Group})
 		}
 	}
 	var split func(container model.ID)
 	split = func(container model.ID) {
 		var members []int
 		for i, u := range out {
-			if !u.Absent && u.Parent == container && (u.Kind == model.Module || container != "") && !Made(u) && placedByScript(u) {
+			if !u.Absent && u.Parent == container && (u.Kind == model.Module || container != "") && !Made(u) && placedByScript(i) {
 				members = append(members, i)
 			}
 		}
@@ -108,16 +116,17 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 				out = append(out, model.Unit{
 					ID:      model.FormatID(model.Module, next[model.Module]),
 					Kind:    model.Module,
-					Name:    model.Fact{Value: dir + "/", Origin: model.Extracted},
+					Name:    model.Said(model.Group, dir+"/"),
 					Anchors: []model.Anchor{{Path: dir, Symbol: marker}},
 				})
+				scripted = append(scripted, true)
 				g = len(out) - 1
 				made[place{container, dir}] = g
 			}
-			out[g].Absent, out[g].Parent = false, container
-			out[g].ParentOrigin, out[g].ParentSource, out[g].ParentEvidence = "", "", nil
+			out[g].SetAbsent("")
+			claim(g, container)
 			for _, i := range is {
-				out[i].Parent, out[i].ParentOrigin, out[i].ParentSource, out[i].ParentEvidence = out[g].ID, "", "", nil
+				claim(i, out[g].ID)
 			}
 		}
 		for _, dir := range names {
@@ -137,24 +146,9 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	for _, c := range containers {
 		split(c)
 	}
-	// A reader's or human's parent on a group no longer needed would hide its
-	// unit, so the unit goes to the top level.
-	present := map[model.ID]bool{}
-	for _, u := range model.Present(out) {
-		present[u.ID] = true
-	}
-	for i, u := range out {
-		if !u.Absent && !placedByScript(u) && !present[u.Parent] {
-			out[i].Parent, out[i].ParentOrigin, out[i].ParentSource, out[i].ParentEvidence = "", "", "", nil
-		}
-	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	model.Resolve(out)
 	return out, next
-}
-
-// placedByScript is a unit whose place no reader or human chose.
-func placedByScript(u model.Unit) bool {
-	return u.ParentOrigin == "" || u.ParentOrigin == model.Extracted
 }
 
 // home is the directory a unit's first anchor lives in.

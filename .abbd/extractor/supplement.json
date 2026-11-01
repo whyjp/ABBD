@@ -1512,9 +1512,8 @@
       "evidence": [
         {
           "path": "internal/bootstrap/overlay.go",
-          "lines": "39",
-          "symbol": "Overlay",
-          "quote": "i, err := match(out.Units[:scriptUnits], d)"
+          "lines": "40",
+          "quote": "i, err := sc.match(d)"
         }
       ]
     },
@@ -1822,9 +1821,8 @@
       "evidence": [
         {
           "path": "cmd/abbd/setup.go",
-          "lines": "135",
-          "quote": "return extract.Parse(f)",
-          "symbol": "readExtraction"
+          "lines": "34",
+          "quote": "ex, err := extract.Parse(bytes.NewReader(out))"
         }
       ]
     },
@@ -1974,9 +1972,8 @@
       "evidence": [
         {
           "path": "internal/evidence/evidence.go",
-          "lines": "120",
-          "symbol": "all",
-          "quote": "if r := c.Check(e); r.Live {"
+          "lines": "230",
+          "quote": "if r := c.Check(e, within); r.Live {"
         }
       ]
     },
@@ -2215,9 +2212,8 @@
       "evidence": [
         {
           "path": "internal/screen/inside.go",
-          "lines": "69",
-          "quote": "l := arrange(nodes, edges, frameTop+chipH+40)",
-          "symbol": "inside"
+          "lines": "236",
+          "quote": "l := arrange(nodes, edges, insideBudget-12)"
         }
       ]
     },
@@ -2249,9 +2245,8 @@
       "evidence": [
         {
           "path": "internal/screen/overview.go",
-          "lines": "205",
-          "quote": "o.layout = arrange(nodes, edges, padY+14)",
-          "symbol": "planOverview"
+          "lines": "305",
+          "quote": "o.layout = arrange(nodes, edges, overviewBudget)"
         }
       ]
     },
@@ -2259,19 +2254,17 @@
       "from": "in-screen-overview",
       "to": "mod-model",
       "kind": "depends_on",
-      "via": "call",
+      "via": "data",
       "evidence": [
         {
           "path": "internal/screen/overview.go",
-          "lines": "110",
-          "quote": "r.Counts()",
-          "symbol": "top"
+          "lines": "198",
+          "quote": "origins[key(s, r.Kind, r.To)] = r.Origin"
         },
         {
-          "path": "internal/model/model.go",
-          "lines": "360",
-          "quote": "return !r.Dead && (r.Origin == Extracted || r.Origin == UserStated)",
-          "symbol": "Counts"
+          "path": "internal/screen/overview.go",
+          "lines": "213",
+          "quote": "return Badge(model.Extracted)"
         }
       ]
     },
@@ -2283,25 +2276,23 @@
       "evidence": [
         {
           "path": "internal/screen/page.html",
-          "lines": "87",
-          "quote": "svg path.guess { stroke: var(--guess)"
+          "lines": "92",
+          "quote": "svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }"
         },
         {
           "path": "internal/screen/inside.go",
-          "lines": "263",
-          "quote": "kind += \" guess\"",
-          "symbol": "inside"
-        },
-        {
-          "path": "internal/screen/inside.go",
-          "lines": "235",
-          "quote": "pt.Class += \" unwired\"",
-          "symbol": "inside"
+          "lines": "428",
+          "quote": "w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})"
         },
         {
           "path": "internal/screen/page.html",
-          "lines": "80",
-          "quote": "svg .port.unwired { opacity: .55; }"
+          "lines": "144",
+          "quote": "{{if .Unwired}}"
+        },
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "384",
+          "quote": "ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })"
         }
       ]
     },
@@ -2313,24 +2304,22 @@
       "evidence": [
         {
           "path": "internal/screen/page.html",
-          "lines": "83",
+          "lines": "86",
           "quote": "svg path.bypass { stroke: var(--bypass)"
         },
         {
           "path": "internal/screen/overview.go",
-          "lines": "378",
-          "quote": "s := wireSpec{kind: \"bypass\"",
-          "symbol": "draw"
+          "lines": "474",
+          "quote": "specs = append(specs, wireSpec{kind: \"bypass\""
         },
         {
           "path": "internal/screen/screen.go",
-          "lines": "154",
-          "quote": "return \"#m-\" + string(id)",
-          "symbol": "Build"
+          "lines": "158",
+          "quote": "return \"#m-\" + string(id)"
         },
         {
           "path": "internal/screen/page.html",
-          "lines": "126",
+          "lines": "137",
           "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
         }
       ]
@@ -2535,10 +2524,9 @@
       "via": "call",
       "evidence": [
         {
-          "path": "internal/topology/query.go",
-          "lines": "76",
-          "symbol": "Path",
-          "quote": "links := Links(units)"
+          "path": "internal/topology/path.go",
+          "lines": "51",
+          "quote": "return walk(append(Links(units), nesting(units)...), a, b)"
         }
       ]
     },

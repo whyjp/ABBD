@@ -19,6 +19,9 @@ type Link struct {
 	Origin   model.Origin
 	Via      model.Via
 	Evidence []model.Evidence
+	// Drifted says the link counts on evidence the code no longer holds as
+	// quoted; a reader must refresh or retract it.
+	Drifted bool
 }
 
 // Label says where the link comes from and how it arises: " (inferred, via data)".
@@ -26,6 +29,9 @@ func (l Link) Label() string {
 	s := map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}[l.Origin]
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
+	}
+	if l.Drifted {
+		s += ", drifted"
 	}
 	return " (" + s + ")"
 }
@@ -41,7 +47,7 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence})
+				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Drifted: r.Drifted()})
 			}
 		}
 	}

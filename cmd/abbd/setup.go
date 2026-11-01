@@ -52,14 +52,11 @@ func (e env) setup() error {
 	if err := e.st.SaveProject(p); err != nil {
 		return err
 	}
-	res, err := e.syncActual(ex, identity.ReplaceGuesses)
+	res, err := e.syncActual(ex, identity.Setup)
 	if err != nil {
 		return err
 	}
-	units, err := e.st.LoadUnits()
-	if err != nil {
-		return err
-	}
+	units := res.Units
 	for _, id := range res.Stated {
 		fmt.Fprintf(e.stdout, "%s kept: the supplement no longer reports it, but a human stated something about it\n", id)
 	}
@@ -67,6 +64,7 @@ func (e env) setup() error {
 		fmt.Fprintln(e.stdout, "conflict:", c)
 	}
 	fmt.Fprintf(e.stdout, "synced: %d unit(s), %d matched by the supplement\n", len(model.Present(units)), f.Matched)
+	e.attention(units)
 	return nil
 }
 

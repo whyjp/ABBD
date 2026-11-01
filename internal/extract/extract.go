@@ -49,8 +49,15 @@ type Result struct {
 type Relation struct {
 	From, To string
 	Kind     model.RelationKind
-	Origin   model.Origin
+	Writer   model.Writer
 	Via      model.Via
+	Evidence []model.Evidence
+}
+
+// Placement is one writer's claim on the unit, by key, that contains another.
+type Placement struct {
+	Key      string
+	Writer   model.Writer
 	Evidence []model.Evidence
 }
 
@@ -64,13 +71,16 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
-	// Parent is the key of the module or feature that contains the unit. A parent the
-	// script reports has no ParentOrigin; one a supplement gives is INFERRED
-	// and rests on ParentEvidence.
+	// Parent is the key of the module or feature the input says contains the
+	// unit, and ParentEvidence what a supplement cites for it. The script's
+	// parent is the script's claim; a supplement's becomes a Placement.
 	Parent         string
-	ParentOrigin   model.Origin
 	ParentEvidence []model.Evidence
-	Evidence       []model.Evidence
+	// Placed are the parent claims other writers add, such as the supplement's.
+	Placed   []Placement
+	Evidence []model.Evidence
+	// SupplementKey is the supplement's own key for a unit only it reports.
+	SupplementKey string
 }
 
 func Parse(r io.Reader) (Result, error) { return parse(r, false) }
@@ -123,7 +133,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Origin: model.Extracted, Via: rr.Via, Evidence: evidence})
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence})
 	}
 	return res, nil
 }
@@ -187,13 +197,14 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			if !ru.Kind.IsContract() {
 				return nil, raw, fmt.Errorf("unit %d (%s): only contracts carry a signature", i, ru.Name)
 			}
-			sig = &model.Fact{Value: ru.Signature, Origin: model.Extracted}
+			f := model.Said(model.Script, ru.Signature)
+			sig = &f
 		}
 		out = append(out, Unit{
 			Key:            ru.Key,
 			Signature:      sig,
 			Kind:           ru.Kind,
-			Name:           model.Fact{Value: ru.Name, Origin: model.Extracted},
+			Name:           model.Said(model.Script, ru.Name),
 			Anchors:        anchors,
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
@@ -222,12 +233,14 @@ func normalizePath(p string) (string, error) {
 	return p, nil
 }
 
-// Extraction reads code, so any statement of intent it makes is a guess.
+// Extraction reads code, so any statement of intent it makes is a guess, and
+// it ranks with the supplement's.
 func inferred(v string) *model.Fact {
 	if v == "" {
 		return nil
 	}
-	return &model.Fact{Value: v, Origin: model.Inferred}
+	f := model.Said(model.Supplement, v)
+	return &f
 }
 
 // parentCycle reports whether following parents from key ever comes back.

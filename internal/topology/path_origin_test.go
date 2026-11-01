@@ -10,8 +10,7 @@ import (
 func TestAContainsHopCarriesWhoPlacedTheUnit(t *testing.T) {
 	units := []model.Unit{
 		{ID: "MOD-0001", Kind: model.Module, Name: model.Fact{Value: "inner", Origin: model.Extracted},
-			Parent: "MOD-0002", ParentOrigin: model.Inferred,
-			ParentEvidence: []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}},
+			Parent: "MOD-0002", ParentOrigin: model.Inferred},
 		{ID: "MOD-0002", Kind: model.Module, Name: model.Fact{Value: "outer", Origin: model.Extracted}},
 	}
 	hops, ok := Path(units, "MOD-0002", "MOD-0001")

@@ -10,53 +10,57 @@ import (
 	"github.com/whyjp/abbd/internal/screen"
 )
 
-// checkEvidence prints, for every semantic unit and relation, whether each
-// quote is in the working tree now and where. It reads and never writes, so
-// the same tree prints the same lines.
+// checkEvidence prints, for every claim that shows and cites evidence, whether each
+// quote is in the working tree now and where: live, drifted or dead. It reads
+// and never writes, so the same tree prints the same lines, and it never
+// moves a drifted item to dead; only a sync at a later revision does.
 func (e env) checkEvidence() error {
 	stored, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
 	c := evidence.New(e.root)
-	live, dead := 0, 0
-	line := func(subject string, via model.Via, ev model.Evidence, within []model.Anchor) {
-		r := c.Check(ev, within)
-		state := "dead"
-		if r.Live {
-			state, live = "live", live+1
-		} else {
-			dead++
-		}
+	n := map[model.Status]int{}
+	line := func(subject string, w model.Writer, via model.Via, ev model.Evidence) {
+		now, r := c.Status(ev, "", w != model.Script)
+		n[now.Status]++
 		if via != "" {
 			subject += " via " + string(via)
 		}
-		if r.Live {
-			at := r.At
-			if r.Path != "" {
-				at = r.Path + ":" + r.At
+		switch now.Status {
+		case model.Live:
+			fmt.Fprintf(e.stdout, "live %s: %s found at %s\n", subject, ev, r.At)
+		case model.Drifted:
+			since := ""
+			if now.Since != "" {
+				since = " since " + now.Since[:min(12, len(now.Since))]
 			}
-			fmt.Fprintf(e.stdout, "%s %s: %s found at %s\n", state, subject, ev, at)
-		} else {
-			fmt.Fprintf(e.stdout, "%s %s: %s\n", state, subject, ev)
+			fmt.Fprintf(e.stdout, "drifted%s %s: %s is no longer in the file; refresh or retract it\n", since, subject, ev)
+		default:
+			fmt.Fprintf(e.stdout, "dead %s: %s (%s)\n", subject, ev, now.Reason)
 		}
 	}
 	units := slices.Clone(stored)
 	slices.SortFunc(units, func(a, b model.Unit) int { return strings.Compare(string(a.ID), string(b.ID)) })
 	for _, u := range units {
-		if u.Absent && !u.Semantic() {
+		if u.Absent && u.AbsentReason != model.EvidenceDead {
 			continue
 		}
 		for _, ev := range u.Evidence {
-			line(string(u.ID)+" "+u.Name.Value, "", ev, u.Anchors)
+			line(string(u.ID)+" "+u.Name.Value, u.Name.Writer, "", ev)
+		}
+		if p := u.ShownParent(); p != nil {
+			for _, ev := range p.Evidence {
+				line(string(u.ID)+".parent "+string(p.To), p.Writer, "", ev)
+			}
 		}
 		for _, r := range u.Relations {
 			for _, ev := range r.Evidence {
-				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev, u.Anchors)
+				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Writer, r.Via, ev)
 			}
 		}
 	}
-	fmt.Fprintf(e.stdout, "%d live, %d dead\n", live, dead)
+	fmt.Fprintf(e.stdout, "%d live, %d drifted, %d dead\n", n[model.Live], n[model.Drifted], n[model.Dead])
 	return nil
 }
 
@@ -107,5 +111,15 @@ func (e env) status() error {
 		}
 	}
 	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE\n", len(in.Understandings), stale)
+	ev := evidenceCounts(in.Units)
+	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
+	for _, u := range in.Units {
+		for _, m := range u.Masks {
+			fmt.Fprintf(e.stdout, "retracted: %s %s by a %s: %s\n", u.ID, m.Target, m.Writer, m.Reason)
+		}
+	}
+	for _, c := range model.ParentConflicts(in.Units) {
+		fmt.Fprintln(e.stdout, "conflict:", c)
+	}
 	return nil
 }
