@@ -36,6 +36,8 @@ abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root 
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
+abbd impact IDS [--root DIR]         what a change to the comma-separated units reaches, in a
+                                     direct and a far tier; read before the work
 abbd evidence [--root DIR]           check every quote against the working tree
 abbd status [--root DIR]             whether the state and the blueprint are CURRENT, and counts`
 
@@ -105,6 +107,7 @@ var commands = map[string]command{
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
+	"impact":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 }

@@ -1,0 +1,147 @@
+// Package topology answers questions about the stored topology: what a change
+// to some units reaches, and how the topology differs between two revisions.
+// It reads units and never writes them.
+package topology
+
+import (
+	"fmt"
+	"maps"
+	"slices"
+
+	"github.com/whyjp/abbd/internal/model"
+)
+
+// Link is one live relation the impact follows, with its origin.
+type Link struct {
+	model.Edge
+	Origin model.Origin
+	Via    model.Via
+}
+
+func (l Link) how() string {
+	s := map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}[l.Origin]
+	if l.Via != "" {
+		s += ", via " + string(l.Via)
+	}
+	return " (" + s + ")"
+}
+
+// Links lists every live relation between present units: what the script
+// read, what a human stated, and a reader's couplings while their evidence lives.
+func Links(units []model.Unit) []Link {
+	present := map[model.ID]bool{}
+	for _, u := range units {
+		present[u.ID] = !u.Absent
+	}
+	var out []Link
+	for _, u := range model.Present(units) {
+		for _, r := range model.SortRelations(u.Relations) {
+			if present[r.To] && !r.Dead {
+				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via})
+			}
+		}
+	}
+	return out
+}
+
+// Item is one impacted unit and why.
+type Item struct {
+	Unit model.ID
+	Why  string
+}
+
+// Impact is the neighbourhood of a change for an agent to read: Direct closely,
+// Far briefly.
+type Impact struct {
+	Direct, Far []Item
+}
+
+// ImpactOf follows the links from the seeds: whatever depends on or consumes
+// an impacted unit, the providers of an impacted contract, and the contracts an
+// impacted unit provides. A provider is impacted because it implements the
+// contract, but what it does elsewhere is not followed. A unit inside a seed
+// module is a seed too. What a seed itself depends on or consumes is impacted
+// without being followed, because the change most likely breaks where they meet.
+//
+// Direct are the seeds, the units that share a link with a seed, and the
+// consumers of a contract that does. Far is the rest.
+func ImpactOf(units []model.Unit, seeds []model.ID) Impact {
+	links := Links(units)
+	all := slices.Clone(seeds)
+	for _, u := range model.Present(units) {
+		if slices.Contains(seeds, u.Parent) && !slices.Contains(all, u.ID) {
+			all = append(all, u.ID)
+		}
+	}
+	var items []Item
+	seen := map[model.ID]bool{}
+	var queue []model.ID
+	add := func(id model.ID, why string, follow bool) {
+		if seen[id] {
+			return
+		}
+		seen[id] = true
+		items = append(items, Item{Unit: id, Why: why})
+		if follow {
+			queue = append(queue, id)
+		}
+	}
+	for _, s := range seeds {
+		add(s, "seed", true)
+	}
+	for _, id := range all[len(seeds):] {
+		add(id, "inside a seed", true)
+	}
+	for len(queue) > 0 {
+		u := queue[0]
+		queue = queue[1:]
+		for _, l := range links {
+			switch {
+			case l.To == u && (l.Kind == model.DependsOn || l.Kind == model.Consumes):
+				add(l.From, fmt.Sprintf("%s %s%s", l.Kind, u, l.how()), true)
+			case l.To == u && l.Kind == model.Provides && isContract(u):
+				add(l.From, "provides "+string(u)+l.how(), false)
+			case l.From == u && l.Kind == model.Provides:
+				add(l.To, "provided by "+string(u)+l.how(), true)
+			}
+		}
+	}
+	for _, l := range links {
+		if slices.Contains(all, l.From) && (l.Kind == model.DependsOn || l.Kind == model.Consumes) {
+			add(l.To, fmt.Sprintf("%s by %s%s", map[model.RelationKind]string{model.DependsOn: "depended on", model.Consumes: "consumed"}[l.Kind], l.From, l.how()), false)
+		}
+	}
+
+	near := map[model.ID]bool{}
+	for _, s := range all {
+		near[s] = true
+	}
+	for _, l := range links {
+		if slices.Contains(all, l.From) {
+			near[l.To] = true
+		}
+		if slices.Contains(all, l.To) {
+			near[l.From] = true
+		}
+	}
+	reached := maps.Clone(near)
+	for _, l := range links {
+		if (l.Kind == model.DependsOn || l.Kind == model.Consumes) && isContract(l.To) && near[l.To] {
+			reached[l.From] = true
+		}
+	}
+	var im Impact
+	for _, it := range items {
+		if reached[it.Unit] {
+			im.Direct = append(im.Direct, it)
+		} else {
+			im.Far = append(im.Far, it)
+		}
+	}
+	return im
+}
+
+func isContract(id model.ID) bool {
+	k, _, err := model.ParseID(string(id))
+	return err == nil && k.IsContract()
+}
