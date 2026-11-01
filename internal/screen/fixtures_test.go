@@ -104,10 +104,11 @@ var debt = map[string]Metrics{
 	"orca MOD-0072 desktop renderer UI":           {Back: 6},
 	"orca MOD-0098~1 서로 쓰는 5개":                    {SplitIn: 2},
 	"orca MOD-0099 src/":                          {Back: 2},
-	"orca MOD-0100~1 서로 쓰는 9개":                    {Back: 3},
+	"orca MOD-0100~1 서로 쓰는 9개":                    {Back: 3, MaxDetour: 252},
 	"pstack MOD-0001 setup and help":              {SplitIn: 4},
 	"pstack MOD-0003 principles":                  {Back: 3},
 	"pstack MOD-0004 poteto-mode, the front door": {SplitIn: 4},
+	"pstack MOD-0005 writing and prose":           {Braid: 746},
 	"pstack MOD-0015 verification principles":     {Truncated: 1},
 }
 
@@ -121,13 +122,14 @@ func (m Metrics) over(d Metrics) []string {
 	}{
 		{"boxes", m.Boxes, d.Boxes}, {"width", m.Width, d.Width}, {"channel", m.MaxChannel, d.MaxChannel},
 		{"too-close pairs", m.TooClose, d.TooClose}, {"crossings", m.Crossings, d.Crossings}, {"back lines", m.Back, d.Back}, {"split arrivals", m.SplitIn, d.SplitIn}, {"cut labels", m.Truncated, d.Truncated},
+		{"braid", m.Braid, d.Braid}, {"longest detour", m.MaxDetour, d.MaxDetour},
 	} {
 		if c.owed > 0 && c.got > c.owed {
 			out = append(out, fmt.Sprintf("%s %d, recorded %d", c.name, c.got, c.owed))
 		}
 	}
 	held := m
-	held.Boxes, held.Width, held.MaxChannel, held.TooClose, held.Crossings, held.Back, held.SplitIn, held.Truncated = 0, 0, 0, 0, 0, 0, 0, 0
+	held.Boxes, held.Width, held.MaxChannel, held.TooClose, held.Crossings, held.Back, held.SplitIn, held.Truncated, held.Braid, held.MaxDetour = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	if d.Boxes == 0 {
 		held.Boxes = m.Boxes
 	}
@@ -151,6 +153,12 @@ func (m Metrics) over(d Metrics) []string {
 	}
 	if d.Truncated == 0 {
 		held.Truncated = m.Truncated
+	}
+	if d.Braid == 0 {
+		held.Braid = m.Braid
+	}
+	if d.MaxDetour == 0 {
+		held.MaxDetour = m.MaxDetour
 	}
 	width := insideWidth
 	if strings.HasSuffix(fmt.Sprint(d), "overview") {

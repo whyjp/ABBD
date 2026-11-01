@@ -38,6 +38,12 @@ const (
 	// braidGap is how close two lines of different bundles run before they
 	// read as one braid: the width of a channel.
 	braidGap = channelGap
+	// 14: how far, per drawn line, lines of different bundles may run
+	// side by side in one channel.
+	braidPerLine = 200
+	// 15: how much longer than the shortest grid path between its ends any
+	// one line may run.
+	detourLimit = 240
 )
 
 type fpt struct{ x, y float64 }
@@ -323,13 +329,14 @@ type Metrics struct {
 	// Braid is how far, in pixels, lines of different bundles run side by
 	// side within braidGap of each other, away from their ends: a run a
 	// shared trunk would draw once. Detour is how much longer, in pixels,
-	// the lines are than the shortest grid path between their ends.
-	Braid, Detour int
+	// the lines are than the shortest grid path between their ends, and
+	// MaxDetour the most any one line is.
+	Braid, Detour, MaxDetour int
 }
 
 func (m Metrics) String() string {
 	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx", m.Braid, m.Detour)
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx", m.Braid, m.Detour, m.MaxDetour)
 }
 
 func measure(s sheet) Metrics {
@@ -484,7 +491,9 @@ func measure(s sheet) Metrics {
 			run += dist(w.pts[a-1], w.pts[a])
 		}
 		a, b := w.pts[0], w.pts[len(w.pts)-1]
-		m.Detour += int(run - math.Abs(b.x-a.x) - math.Abs(b.y-a.y))
+		d := int(run - math.Abs(b.x-a.x) - math.Abs(b.y-a.y))
+		m.Detour += d
+		m.MaxDetour = max(m.MaxDetour, d)
 	}
 	// 12: an unwired contract is listed under the drawing, not on the frame.
 	if s.frame != nil {
@@ -653,5 +662,7 @@ func (m Metrics) violations(width int) []string {
 	check(m.UnwiredOnFrame == 0, "12", "%d unwired contracts spread on the frame", m.UnwiredOnFrame)
 	check(m.Back <= max(1, int(backShare*float64(m.Forward+m.Back))), "13", "%d of %d arriving lines run up or left, limit %d", m.Back, m.Forward+m.Back, max(1, int(backShare*float64(m.Forward+m.Back))))
 	check(m.BackPlain == 0, "13", "%d lines run up or left drawn like forward ones", m.BackPlain)
+	check(m.Braid <= braidPerLine*max(1, m.Wires), "14", "lines run %dpx side by side for %d drawn lines, limit %dpx", m.Braid, m.Wires, braidPerLine*max(1, m.Wires))
+	check(m.MaxDetour <= detourLimit, "15", "a line runs %dpx longer than the shortest way between its ends, limit %dpx", m.MaxDetour, detourLimit)
 	return out
 }
