@@ -44,3 +44,29 @@ func TestSupplementUnitTakesAScriptModuleAsItsParent(t *testing.T) {
 	}
 	contains(t, p.want(0, "", "explain", "charges table"), "inside MOD-0002 app/sub\n")
 }
+
+// Restating a script module by one anchor its parent also holds names the
+// inner module, the one the anchor is most specific to.
+func TestSupplementMatchesTheInnermostModuleOnATie(t *testing.T) {
+	p, out := nestedProject(t, `{"units":[
+ {"key":"s","kind":"MOD","name":"app/sub","anchors":[{"path":"app/sub"}],"responsibility":"Writes charges."}]}`)
+	if p.setupCode(out) != 0 {
+		t.Fatalf("setup should match the inner module:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "app/sub"), "responsibility: Writes charges.")
+	if strings.Contains(p.want(0, "", "explain", "MOD-0001"), "Writes charges.") {
+		t.Fatalf("the parent must not take the inner module's responsibility")
+	}
+}
+
+// Two unrelated modules that share the anchor stay ambiguous, and the error
+// names both.
+func TestSupplementTieBetweenUnrelatedModulesNamesThem(t *testing.T) {
+	p, exe := bare(t)
+	p.code("lib/a.py", "a\n")
+	p.extract(`{"units":[
+ {"key":"a","kind":"MOD","name":"alpha","anchors":[{"path":"lib"},{"path":"lib/a.py"}]},
+ {"key":"b","kind":"MOD","name":"beta","anchors":[{"path":"lib"}]}]}`)
+	p.setup(1, `MOD "alpha" and MOD "beta"`, "--supplement", p.file(t, "sup.json", `{"units":[
+ {"key":"x","kind":"MOD","name":"lib","anchors":[{"path":"lib"}],"purpose":"p"}]}`), "--", exe)
+}

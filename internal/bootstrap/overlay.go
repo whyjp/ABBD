@@ -4,6 +4,7 @@ package bootstrap
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -33,10 +34,10 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 	var gaps []string
 	docTo := map[string]int{}
 	covered := map[int]bool{}
-	scriptUnits := len(out.Units)
+	sc := newScript(slices.Clip(out.Units))
 	for n, d := range doc.Units {
 		label := fmt.Sprintf("%s %q", d.Kind, d.Name.Value)
-		i, err := match(out.Units[:scriptUnits], d)
+		i, err := sc.match(d)
 		if len(d.Evidence) > 0 {
 			// Evidence says the script cannot see the unit. Folding it into a
 			// script unit that shares an anchor would drop it without a word.
@@ -74,10 +75,6 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
-	scriptKey := map[string]int{}
-	for i, u := range out.Units[:scriptUnits] {
-		scriptKey[u.Key] = i
-	}
 	for _, d := range doc.Units {
 		i, ok := docTo[d.Key]
 		if !ok || d.Parent == "" {
@@ -85,7 +82,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		}
 		p, ok := docTo[d.Parent]
 		if !ok {
-			p, ok = scriptKey[d.Parent]
+			p, ok = sc.key[d.Parent]
 		}
 		if !ok || out.Units[p].Kind != model.Module {
 			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
@@ -129,27 +126,65 @@ func semantic(d extract.Unit, key string) extract.Unit {
 	return d
 }
 
-func match(units []extract.Unit, d extract.Unit) (int, error) {
-	best, bestN, tie := -1, 0, false
+// script is the units the extraction script reported, indexed by key.
+type script struct {
+	units []extract.Unit
+	key   map[string]int
+}
+
+func newScript(units []extract.Unit) script {
+	s := script{units: units, key: map[string]int{}}
 	for i, u := range units {
+		s.key[u.Key] = i
+	}
+	return s
+}
+
+// within reports whether script unit i is j or one of j's ancestors.
+func (s script) within(i, j int) bool {
+	for range s.units {
+		if i == j {
+			return true
+		}
+		p, ok := s.key[s.units[j].Parent]
+		if s.units[j].Parent == "" || !ok {
+			return false
+		}
+		j = p
+	}
+	return false
+}
+
+// match finds the script unit of d's kind that shares the most anchors with
+// d. A package module anchored on its directory also holds the directory of
+// each module inside it, so when the best matches nest, the innermost wins.
+func (s script) match(d extract.Unit) (int, error) {
+	var best []int
+	bestN := 0
+	for i, u := range s.units {
 		if u.Kind != d.Kind {
 			continue
 		}
-		n := overlap(u.Anchors, d.Anchors)
-		switch {
+		switch n := overlap(u.Anchors, d.Anchors); {
 		case n > bestN:
-			best, bestN, tie = i, n, false
+			best, bestN = []int{i}, n
 		case n == bestN && n > 0:
-			tie = true
+			best = append(best, i)
 		}
 	}
-	switch {
-	case best < 0:
+	if len(best) == 0 {
 		return 0, fmt.Errorf("no %s in the code shares an anchor with it", d.Kind)
-	case tie:
-		return 0, fmt.Errorf("its anchors match more than one %s equally", d.Kind)
 	}
-	return best, nil
+	for _, c := range best {
+		if !slices.ContainsFunc(best, func(o int) bool { return !s.within(o, c) }) {
+			return c, nil
+		}
+	}
+	var names []string
+	for _, i := range best {
+		names = append(names, fmt.Sprintf("%s %q", s.units[i].Kind, s.units[i].Name.Value))
+	}
+	return 0, fmt.Errorf("its anchors match %s and %s equally; give it an anchor only one of them holds", strings.Join(names[:len(names)-1], ", "), names[len(names)-1])
 }
 
 func overlap(a, b []model.Anchor) int {
