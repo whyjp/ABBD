@@ -357,7 +357,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: junctions(pieces(paths), joinPoints(paths))}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)
@@ -371,7 +371,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		if below[k] {
 			pt.Y = frame.Y + frame.H
 		}
-		pt.Contract, pt.Exit, pt.Class, pt.Title = string(p.id), p.exit, p.cls, p.title
+		pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Key = string(p.id), p.exit, p.cls, p.title, "port|"+k
 		pt.Href = viewOf(t, p.id)
 		if j := slices.IndexFunc(d.Ports, func(q Port) bool { return q.X == pt.X && q.Y == pt.Y }); j >= 0 {
 			q := &d.Ports[j]
@@ -444,7 +444,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
+		w.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends
 		d.Wires = append(d.Wires, w)
 	}
 	ins.Drawing = d

@@ -15,6 +15,8 @@ type Drawing struct {
 	Boxes         []Box
 	Ports         []Port
 	Wires         []Wire
+	// Dots mark where lines split or merge.
+	Dots []Dot `json:",omitempty"`
 	// Frame is the module's own boundary on its inside drawing.
 	Frame *rect `json:",omitempty"`
 }
@@ -51,6 +53,8 @@ type Port struct {
 	Href string `json:",omitempty"`
 	// Rels are the stored relations the chip stands for.
 	Rels []string `json:",omitempty"`
+	// Key names a frame port as the lines that join it do.
+	Key string `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
@@ -74,6 +78,8 @@ type Wire struct {
 	Marks  []Mark   `json:",omitempty"`
 	// Rels are the stored relations the line stands for.
 	Rels []string `json:",omitempty"`
+	// Ends name what each line it draws joins, for the checker.
+	Ends [][2]string `json:"-"`
 	// Count is how many lines a bundle carries, drawn at LX, LY. Net groups
 	// the paths of one bundle drawn as several paths.
 	Count  int `json:",omitempty"`
@@ -94,7 +100,7 @@ const (
 	// chipRowsMax rows instead of widening, so lines can pass beside it.
 	chipRow     = 20
 	chipWrap    = 480
-	chipRowsMax = 3
+	chipRowsMax = 2
 	chipPx      = 11
 	nameLine    = 16
 	// chipMax and boxMax are the hard widths past which a label is cut and
@@ -168,6 +174,13 @@ type overview struct {
 	names     map[model.ID][]string
 	// chipRows are how many rows of chips each module's top and bottom hold.
 	chipRows map[model.ID][2]int
+	// carry are the contracts each drawn contract line carries, by the
+	// user and the provider it joins, in the order lines are drawn.
+	carry map[[2]model.ID][]model.ID
+	pairs [][2]model.ID
+	// chips sit on each module's top, where lines arrive at what it
+	// provides, and on its bottom, where lines leave for what it uses.
+	chips map[model.ID][2][]chip
 	// rels are the stored relations each drawn edge stands for, by edge,
 	// and origins say where each stored relation came from.
 	rels    map[string][]string
@@ -218,8 +231,37 @@ func (o *overview) origin(rels []string) string {
 	return Badge(best)
 }
 
+// chip is one contract chip on a module's edge. On the overview a chip
+// stands for the contracts one drawn line carries there, so a module that
+// provides twenty commands to one caller shows one chip, not twenty, and its
+// box keeps its size (rule 21). The contracts no line in the view reaches
+// fold into one "+N" chip.
+type chip struct {
+	key, label, title string
+	contracts         []model.ID
+	rels              []string
+}
+
+func chipKey(at model.ID, cs []model.ID, exit bool) string { return fmt.Sprint(at, exit, cs) }
+
+// chipFor names a chip after its one contract, or counts its contracts.
+func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
+	var names []string
+	for _, c := range cs {
+		names = append(names, o.name(c))
+	}
+	ch := chip{key: chipKey(at, cs, exit), contracts: cs, label: fmt.Sprintf("계약 %d개", len(cs)), title: strings.Join(names, ", ")}
+	if len(cs) == 1 {
+		ch.label = portLabel(names[0])
+	}
+	for _, c := range cs {
+		ch.rels = append(ch.rels, o.between(at, c)...)
+	}
+	return ch
+}
+
 func planOverview(units []model.Unit) *overview {
-	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}}
+	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -265,21 +307,60 @@ func planOverview(units []model.Unit) *overview {
 		o.users[c] = slices.DeleteFunc(o.users[c], func(u model.ID) bool { return slices.Contains(o.providers[c], u) })
 	}
 
-	exits, entries := map[model.ID][]string{}, map[model.ID][]string{}
 	var edges []ledge
 	for _, c := range o.contracts {
-		for _, p := range o.providers[c] {
-			exits[p] = append(exits[p], portLabel(o.name(c)))
+		targets := o.providers[c]
+		if len(targets) == 0 {
+			targets = []model.ID{c}
 		}
 		for _, u := range o.users[c] {
-			entries[u] = append(entries[u], portLabel(o.name(c)))
-			if len(o.providers[c]) == 0 {
-				edges = append(edges, ledge{string(u), string(c)})
-			}
-			for _, p := range o.providers[c] {
+			for _, p := range targets {
+				k := [2]model.ID{u, p}
+				if len(o.carry[k]) == 0 {
+					o.pairs = append(o.pairs, k)
+				}
+				o.carry[k] = append(o.carry[k], c)
 				edges = append(edges, ledge{string(u), string(p)})
 			}
 		}
+	}
+	put := func(m model.ID, side int, ch chip) {
+		cs := o.chips[m]
+		if !slices.ContainsFunc(cs[side], func(q chip) bool { return q.key == ch.key }) {
+			cs[side] = append(cs[side], ch)
+			o.chips[m] = cs
+		}
+	}
+	for _, k := range o.pairs {
+		put(k[0], 1, o.chipFor(k[0], o.carry[k], false))
+		if isModule[k[1]] {
+			put(k[1], 0, o.chipFor(k[1], o.carry[k], true))
+		}
+	}
+	unreached := map[model.ID][]model.ID{}
+	for _, c := range o.contracts {
+		if len(o.users[c]) == 0 {
+			for _, p := range o.providers[c] {
+				unreached[p] = append(unreached[p], c)
+			}
+		}
+	}
+	for _, m := range o.modules {
+		if cs := unreached[m]; len(cs) > 0 {
+			ch := o.chipFor(m, cs, true)
+			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d 계약", len(cs))
+			if len(cs) == 1 {
+				ch.label = "+1 계약"
+			}
+			put(m, 0, ch)
+		}
+	}
+	labels := func(cs []chip) []string {
+		var out []string
+		for _, c := range cs {
+			out = append(out, c.label)
+		}
+		return out
 	}
 	for _, e := range o.relations {
 		if e.Kind == model.DependsOn && isModule[e.From] && isModule[e.To] {
@@ -290,8 +371,9 @@ func planOverview(units []model.Unit) *overview {
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
 		o.names[m] = ls
-		w = max(w, min(chipWrap, max(chipsWidth(exits[m]), chipsWidth(entries[m]))))
-		rows := [2]int{max(1, chipRows(exits[m], w, chipRowsMax)), max(1, chipRows(entries[m], w, chipRowsMax))}
+		exits, entries := labels(o.chips[m][0]), labels(o.chips[m][1])
+		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
+		rows := [2]int{max(1, chipRows(exits, w, chipRowsMax)), max(1, chipRows(entries, w, chipRowsMax))}
 		o.chipRows[m] = rows
 		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + (rows[0]+rows[1]-2)*chipRow})
 	}
@@ -414,41 +496,44 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	}
 	var specs []wireSpec
 	tops, bottoms := map[model.ID][]attach{}, map[model.ID][]attach{}
-	chipKey := func(box, c model.ID, exit bool) string { return fmt.Sprintf("%s|%s|%v", box, c, exit) }
-
-	for _, c := range o.contracts {
-		for _, p := range o.providers[c] {
-			other := 0
-			for _, u := range o.users[c] {
-				other += center(u)
-			}
-			if n := len(o.users[c]); n > 0 {
-				other /= n
-			}
-			tops[p] = append(tops[p], attach{key: chipKey(p, c, true), label: portLabel(o.name(c)), other: other})
+	// One line per user and provider, however many contracts it carries:
+	// it leaves the user's chip for those contracts and reaches the
+	// provider's.
+	toward := map[string][]int{}
+	for _, k := range o.pairs {
+		u, p := k[0], k[1]
+		in, out := chipKey(u, o.carry[k], false), string(p)
+		toward[in] = append(toward[in], center(p))
+		if isModule(p) {
+			out = chipKey(p, o.carry[k], true)
+			toward[out] = append(toward[out], center(u))
 		}
-		for _, u := range o.users[c] {
-			other := 0
-			for _, p := range o.providers[c] {
-				other += center(p)
-			}
-			if n := len(o.providers[c]); n > 0 {
-				other /= n
-			} else {
-				other = center(c)
-			}
-			bottoms[u] = append(bottoms[u], attach{key: chipKey(u, c, false), label: portLabel(o.name(c)), other: other})
-			targets := o.providers[c]
-			if len(targets) == 0 {
-				targets = []model.ID{c}
-			}
-			for _, p := range targets {
-				title := fmt.Sprintf("%s → %s: %s 계약을 거쳐 씁니다", o.name(u), o.name(p), o.name(c))
-				toKey := chipKey(p, c, true)
-				if p == c {
-					toKey = string(c)
+		var titles, rels []string
+		for _, c := range o.carry[k] {
+			titles = append(titles, fmt.Sprintf("%s → %s: %s 계약을 거쳐 씁니다", o.name(u), o.name(p), o.name(c)))
+			rels = append(rels, o.between(u, c)...)
+		}
+		specs = append(specs, wireSpec{kind: "contract", title: strings.Join(titles, "; "), from: u, to: p, fromKey: in, toKey: out, rels: rels})
+	}
+	// Chips sit in the order of what their lines lead to; the chip of
+	// contracts no line reaches sits last.
+	for _, m := range o.modules {
+		for side, cs := range o.chips[m] {
+			for _, ch := range cs {
+				other := 1 << 20
+				if xs := toward[ch.key]; len(xs) > 0 {
+					other = 0
+					for _, x := range xs {
+						other += x
+					}
+					other /= len(xs)
 				}
-				specs = append(specs, wireSpec{kind: "contract", title: title, from: u, to: p, fromKey: chipKey(u, c, false), toKey: toKey, rels: o.between(u, c)})
+				a := attach{key: ch.key, label: ch.label, other: other}
+				if side == 0 {
+					tops[m] = append(tops[m], a)
+				} else {
+					bottoms[m] = append(bottoms[m], a)
+				}
 			}
 		}
 	}
@@ -489,26 +574,12 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	}
 	at := chips()
 
-	// One line per user and provider, however many contracts it carries:
-	// it leaves from the user's chips and arrives at the provider's.
 	var merged []wireSpec
-	keys := map[[2]model.ID][][2]string{}
-	index := map[[2]model.ID]int{}
 	for _, s := range specs {
-		pair := [2]model.ID{s.from, s.to}
-		if s.kind != "contract" {
-			merged = append(merged, s)
-			continue
+		if s.kind == "contract" {
+			s.rels = append(s.rels, carried[[2]model.ID{s.from, s.to}]...)
 		}
-		if i, ok := index[pair]; ok {
-			merged[i].title += "; " + s.title
-			merged[i].rels = append(merged[i].rels, s.rels...)
-		} else {
-			index[pair] = len(merged)
-			s.rels = append(slices.Clone(s.rels), carried[pair]...)
-			merged = append(merged, s)
-		}
-		keys[pair] = append(keys[pair], [2]string{s.fromKey, s.toKey})
+		merged = append(merged, s)
 	}
 	// Two modules that use each other directly are joined by one line with
 	// a head at each end, drawn the way the eye reads, instead of two lines
@@ -562,26 +633,20 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	var reqs []wireReq
 	for _, s := range merged {
 		from, to := whole(s.from, "plain|"+string(s.from)), whole(s.to, "plain|"+string(s.to))
-		if ks, ok := keys[[2]model.ID{s.from, s.to}]; ok {
-			var fs, ts []string
-			for _, k := range ks {
-				fs, ts = append(fs, k[0]), append(ts, k[1])
-			}
-			slices.Sort(fs)
-			slices.Sort(ts)
-			from.lo, from.hi = span(fs)
-			from.key = strings.Join(fs, ",")
-			if ts[0] != string(s.to) {
-				to.lo, to.hi = span(ts)
-				to.key = strings.Join(ts, ",")
-			}
+		if s.fromKey != "" {
+			from.lo, from.hi = span([]string{s.fromKey})
+			from.key = s.fromKey
+		}
+		if s.toKey != "" && s.toKey != string(s.to) {
+			to.lo, to.hi = span([]string{s.toKey})
+			to.key = s.toKey
 		}
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
 	}
 	paths := l.route(reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, 320), Height: l.height + 4}
+	d := Drawing{Width: max(l.width, 320), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths))}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -624,15 +689,21 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			}
 			d.Boxes = append(d.Boxes, b)
 		}
-		for _, p := range o.providers[c] {
-			pt := at[chipKey(p, c, true)]
-			pt.Contract, pt.Exit, pt.Class, pt.Rels = string(c), true, "design", o.between(p, c)
-			addPort(pt, fmt.Sprintf("%s가 제공하는 계약", o.name(p)), o.name(c))
-		}
-		for _, u := range o.users[c] {
-			pt := at[chipKey(u, c, false)]
-			pt.Contract, pt.Class, pt.Rels = string(c), "design", o.between(u, c)
-			addPort(pt, fmt.Sprintf("%s가 쓰는 계약", o.name(u)), o.name(c))
+	}
+	for _, m := range o.modules {
+		for side, cs := range o.chips[m] {
+			for _, ch := range cs {
+				pt := at[ch.key]
+				pt.Exit, pt.Class, pt.Rels = side == 0, "design", ch.rels
+				if len(ch.contracts) == 1 {
+					pt.Contract = string(ch.contracts[0])
+				}
+				what := "쓰는"
+				if pt.Exit {
+					what = "제공하는"
+				}
+				addPort(pt, fmt.Sprintf("%s가 %s 계약", o.name(m), what), ch.title)
+			}
 		}
 	}
 	for _, p := range paths {
@@ -665,7 +736,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
+		w.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends
 		d.Wires = append(d.Wires, w)
 	}
 	return d

@@ -41,7 +41,11 @@ type layout struct {
 	height       int
 	lanes        map[[2]int]int
 	// beside are where lines pass beside each row, left or right of it.
-	beside         map[int][]int
+	beside map[int][]int
+	// passes are where lines pass through each row, beside or between its
+	// boxes. Two lines that pass rows next to each other at one x would
+	// meet in the gap between those rows and read as one.
+	passes         map[int][]int
 	heights        map[string]int
 	minGap, endGap int
 }
@@ -562,7 +566,13 @@ func (l *layout) gutter(r, x int) int {
 	k := l.lanes[[2]int{r, best}]
 	l.lanes[[2]int{r, best}]++
 	if best > 0 && best < len(gaps)-1 {
-		return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane
+		at := func(k int) int { return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane }
+		for k+1 < slots(best) && l.nextTo(r, at(k)) {
+			k++
+			l.lanes[[2]int{r, best}]++
+		}
+		l.passes[r] = append(l.passes[r], at(k))
+		return at(k)
 	}
 	// Beside the row a line passes straight on where it is headed. It
 	// steps a lane outward from any line already there, and once more
@@ -576,7 +586,21 @@ func (l *layout) gutter(r, x int) int {
 		at += out * lane
 	}
 	l.beside[r] = append(l.beside[r], at)
+	l.passes[r] = append(l.passes[r], at)
 	return at
+}
+
+// nextTo says a line passing row r at x would meet one that passes a row
+// next to it at the same x.
+func (l *layout) nextTo(r, x int) bool {
+	for _, q := range []int{r - 1, r + 1} {
+		for _, y := range l.passes[q] {
+			if abs(x-y) < 3 {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // free says a line may pass beside row r at x: no line passes within a

@@ -1,0 +1,86 @@
+"""Measure the path metrics (internal/screen/trace_test.go) on a renderer.
+
+    python eval/render-r1/measure.py REV OUT.tsv
+
+checks REV out into a temporary worktree, gives its drawings the ids the
+checker reads (data-id on boxes and frame ports, and each wire's ends) when
+it lacks them, copies this branch's checker in, and writes the table of every
+fixture view to OUT.tsv. With REV set to the working tree (".") it measures
+the working tree as it is.
+"""
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
+here = os.path.dirname(os.path.abspath(__file__))
+repo = os.path.dirname(os.path.dirname(here))
+rev, out = sys.argv[1], os.path.abspath(sys.argv[2])
+
+
+def edit(root, path, pairs):
+    p = os.path.join(root, path)
+    s = open(p, encoding="utf8").read()
+    for a, b in pairs:
+        if b in s:
+            continue
+        assert a in s, (path, a)
+        s = s.replace(a, b, 1)
+    open(p, "w", encoding="utf8", newline="\n").write(s)
+
+
+def plumb(root):
+    """Give an older renderer the ids the checker reads; geometry is untouched."""
+    edit(root, "internal/screen/page.html", [
+        ('<g class="box {{.Class}}">', '<g class="box {{.Class}}" data-id="{{.ID}}">'),
+        ('<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}">',
+         '<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{if .Key}} data-id="{{.Key}}"{{end}}>'),
+    ])
+    edit(root, "internal/screen/overview.go", [
+        ("\t// Rels are the stored relations the line stands for.\n\tRels []string `json:\",omitempty\"`\n",
+         "\t// Rels are the stored relations the line stands for.\n\tRels []string `json:\",omitempty\"`\n\tEnds [][2]string `json:\"-\"`\n"),
+        ("\t// Rels are the stored relations the chip stands for.\n\tRels []string `json:\",omitempty\"`\n}",
+         "\t// Rels are the stored relations the chip stands for.\n\tRels []string `json:\",omitempty\"`\n\tKey string `json:\"-\"`\n}"),
+        ("\t\tw.Net, w.Joins, w.Back = p.net, p.joins, p.back\n",
+         "\t\tw.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends\n"),
+    ])
+    edit(root, "internal/screen/inside.go", [
+        ("w.Net, w.Joins, w.Back = p.net, p.joins, p.back", "w.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends"),
+        ("pt.Contract, pt.Exit, pt.Class, pt.Title = string(p.id), p.exit, p.cls, p.title\n",
+         "pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Key = string(p.id), p.exit, p.cls, p.title, \"port|\"+k\n"),
+    ])
+    edit(root, "internal/screen/route.go", [
+        ("\tback bool\n}", "\tback bool\n\tends [][2]string\n}"),
+        ("\t\ttaken = append(taken, out[k].label)\n\t}\n\treturn out\n}",
+         "\t\ttaken = append(taken, out[k].label)\n\t}\n\tfor k := range out {\n\t\tfor _, i := range out[k].reqs {\n\t\t\tf, t := reqs[i].from, reqs[i].to\n\t\t\ta, b := f.node, t.node\n\t\t\tif a == \"\" {\n\t\t\t\ta = f.key\n\t\t\t}\n\t\t\tif b == \"\" {\n\t\t\t\tb = t.key\n\t\t\t}\n\t\t\tout[k].ends = append(out[k].ends, [2]string{a, b})\n\t\t}\n\t}\n\treturn out\n}"),
+    ])
+
+
+def run(root):
+    env = dict(os.environ, ABBD_METRICS=out)
+    subprocess.run(["go", "test", "./internal/screen/", "-run", "TestTraceEveryRealDrawing", "-count=1"], cwd=root, env=env)
+
+
+if rev == ".":
+    run(repo)
+    sys.exit(0)
+tmp = tempfile.mkdtemp(prefix="abbd-measure-")
+wt = os.path.join(tmp, "wt")
+subprocess.run(["git", "worktree", "add", "--detach", wt, rev], cwd=repo, check=True)
+try:
+    if "data-id" not in open(os.path.join(wt, "internal/screen/page.html"), encoding="utf8").read():
+        plumb(wt)
+    for f in ("trace_test.go", "legible_test.go"):
+        shutil.copy(os.path.join(repo, "internal/screen", f), os.path.join(wt, "internal/screen", f))
+    for f in os.listdir(os.path.join(wt, "internal/screen")):
+        if f.endswith("_test.go") and f not in ("trace_test.go", "legible_test.go", "fixtures_test.go"):
+            os.remove(os.path.join(wt, "internal/screen", f))
+    fx = os.path.join(wt, "internal/screen/fixtures_test.go")
+    s = open(fx, encoding="utf8").read()
+    s = s.replace("func TestEveryRealDrawingIsLegible(", "func skipLegible(").replace("func TestEveryRelationIsInSomeView(", "func skipRelations(")
+    open(fx, "w", encoding="utf8", newline="\n").write(s)
+    run(wt)
+finally:
+    subprocess.run(["git", "worktree", "remove", "--force", wt], cwd=repo)
+    shutil.rmtree(tmp, ignore_errors=True)
