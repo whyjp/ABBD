@@ -3,6 +3,7 @@ package gitx
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -27,13 +28,38 @@ func Head(dir string) string {
 	return strings.TrimSpace(out)
 }
 
-// Dir returns the absolute git directory of dir's repository, or "" outside one.
-func Dir(dir string) string {
-	out, err := run(dir, nil, "rev-parse", "--absolute-git-dir")
+// Files lists the files under paths at rev, relative to dir.
+func Files(dir, rev string, paths ...string) ([]string, error) {
+	out, err := run(dir, nil, append([]string{"ls-tree", "-r", "--name-only", rev, "--"}, paths...)...)
 	if err != nil {
-		return ""
+		return nil, fmt.Errorf("git ls-tree %s: %w", rev, err)
 	}
-	return filepath.FromSlash(strings.TrimSpace(out))
+	return strings.Fields(out), nil
+}
+
+// Show returns a file as it was at rev; path is relative to dir.
+func Show(dir, rev, path string) ([]byte, error) {
+	out, err := run(dir, nil, "show", rev+":./"+filepath.ToSlash(path))
+	if err != nil {
+		return nil, fmt.Errorf("git show %s:%s: %w", rev, path, err)
+	}
+	return []byte(out), nil
+}
+
+// MergeBase returns where HEAD left the default branch, trying origin's HEAD,
+// the upstream, origin/main, origin/master, main and master in turn. A CI
+// checkout often has origin/main and nothing else.
+func MergeBase(dir string) (string, error) {
+	var candidates []string
+	if out, err := run(dir, nil, "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD"); err == nil {
+		candidates = append(candidates, strings.TrimSpace(out))
+	}
+	for _, b := range append(candidates, "@{upstream}", "origin/main", "origin/master", "main", "master") {
+		if out, err := run(dir, nil, "merge-base", "HEAD", b); err == nil {
+			return strings.TrimSpace(out), nil
+		}
+	}
+	return "", fmt.Errorf("no default branch to diff against; pass --base REV")
 }
 
 // Snapshot records the working tree as a git tree object, including untracked

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -28,15 +29,30 @@ func write(t *testing.T, path, content string) {
 	}
 }
 
+// syncWith registers the fake extraction script for root, has it report
+// extraction, and runs abbd sync.
+func syncWith(t *testing.T, root, extraction string) (code int, stdout, stderr string) {
+	t.Helper()
+	src := root + ".extraction.json"
+	write(t, src, extraction)
+	t.Setenv("ABBD_FAKE_EXTRACT", src)
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, filepath.Join(root, ".abbd", "project.yaml"), fmt.Sprintf("extract: [%q]\n", exe))
+	var out, errb bytes.Buffer
+	code = run([]string{"sync", "--root", root}, nil, &out, &errb)
+	return code, out.String(), errb.String()
+}
+
 func ingestOK(t *testing.T, root, extraction string) string {
 	t.Helper()
-	src := filepath.Join(t.TempDir(), "extraction.json")
-	write(t, src, extraction)
-	var out, errb bytes.Buffer
-	if code := run([]string{"ingest", "--root", root, src}, nil, &out, &errb); code != 0 {
-		t.Fatalf("ingest exit %d: %s", code, errb.String())
+	code, out, errOut := syncWith(t, root, extraction)
+	if code != 0 {
+		t.Fatalf("sync exit %d: %s", code, errOut)
 	}
-	return out.String()
+	return out
 }
 
 func snapshot(t *testing.T, root string) map[string]string {
@@ -154,11 +170,8 @@ func TestSingleSharedAnchorBecomesCandidate(t *testing.T) {
 
 func TestReservedDomainKindIsRejected(t *testing.T) {
 	root := newRepo(t)
-	src := filepath.Join(t.TempDir(), "x.json")
-	write(t, src, `{"units":[{"kind":"STATE","name":"s","anchors":[{"path":"a.go"}]}]}`)
-	var out, errb bytes.Buffer
-	if code := run([]string{"ingest", "--root", root, src}, nil, &out, &errb); code == 0 || !strings.Contains(errb.String(), "reserved") {
-		t.Fatalf("STATE kind should be rejected as reserved, exit %d: %s", code, errb.String())
+	if code, _, errOut := syncWith(t, root, `{"units":[{"kind":"STATE","name":"s","anchors":[{"path":"a.go"}]}]}`); code == 0 || !strings.Contains(errOut, "reserved") {
+		t.Fatalf("STATE kind should be rejected as reserved, exit %d: %s", code, errOut)
 	}
 }
 
@@ -172,13 +185,11 @@ func keysOf(m map[string]string) []string {
 
 func ingestErr(t *testing.T, root, extraction string) (string, string) {
 	t.Helper()
-	src := filepath.Join(t.TempDir(), "extraction.json")
-	write(t, src, extraction)
-	var out, errb bytes.Buffer
-	if code := run([]string{"ingest", "--root", root, src}, nil, &out, &errb); code != 0 {
-		t.Fatalf("ingest exit %d: %s", code, errb.String())
+	code, out, errOut := syncWith(t, root, extraction)
+	if code != 0 {
+		t.Fatalf("sync exit %d: %s", code, errOut)
 	}
-	return out.String(), errb.String()
+	return out, errOut
 }
 
 func unitsByName(t *testing.T, root string) map[string]string {
@@ -232,17 +243,18 @@ func TestPlainMoveWithoutGitKeepsID(t *testing.T) {
 	}
 }
 
-func TestConfirmationAndNotesSurviveReingest(t *testing.T) {
+func TestStatedPurposeAndNotesSurviveReingest(t *testing.T) {
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	p := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
 	b, _ := os.ReadFile(p)
-	edited := strings.Replace(string(b), "origin: EXTRACTED\n", "origin: EXTRACTED\n    confirmation: CONFIRMED\n", 1) + "\n## Notes\n\nkeep this\n"
+	stated := "value: posts entries\n    origin: USER_STATED\n    source: conversation 2026-11-01\n"
+	edited := strings.Replace(string(b), "value: takes payments\n    origin: INFERRED\n", stated, 1) + "\n## Notes\n\nkeep this\n"
 	write(t, p, edited)
 	ingestOK(t, root, extraction)
 	b, _ = os.ReadFile(p)
-	if !strings.Contains(string(b), "confirmation: CONFIRMED") || !strings.Contains(string(b), "## Notes\n\nkeep this\n") {
-		t.Fatalf("confirmation and notes should survive re-ingest:\n%s", b)
+	if !strings.Contains(string(b), stated) || !strings.Contains(string(b), "## Notes\n\nkeep this\n") {
+		t.Fatalf("a stated purpose and notes should survive re-ingest:\n%s", b)
 	}
 }
 
@@ -304,10 +316,7 @@ func TestUnitInWrongFolderIsRejected(t *testing.T) {
 	a := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
 	b, _ := os.ReadFile(a)
 	write(t, filepath.Join(root, ".abbd", "features", "MOD-0001.md"), string(b))
-	src := filepath.Join(t.TempDir(), "x.json")
-	write(t, src, extraction)
-	var out, errb bytes.Buffer
-	if code := run([]string{"ingest", "--root", root, src}, nil, &out, &errb); code == 0 || !strings.Contains(errb.String(), "belongs in architecture/") {
-		t.Fatalf("a MOD file under features/ should be rejected, exit %d: %s", code, errb.String())
+	if code, _, errOut := syncWith(t, root, extraction); code == 0 || !strings.Contains(errOut, "belongs in architecture/") {
+		t.Fatalf("a MOD file under features/ should be rejected, exit %d: %s", code, errOut)
 	}
 }

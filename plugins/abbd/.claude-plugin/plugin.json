@@ -1,7 +1,7 @@
 {
   "name": "abbd",
-  "version": "0.4.0",
-  "description": "Keeps a human-approved intended topology next to the topology extracted from code, and gates structural drift. Requires pstack 0.15.36 and the abbd CLI on PATH.",
+  "version": "0.6.0",
+  "description": "Keeps the architecture topology of the merged code and renders it as a blueprint a human reads. Requires pstack 0.15.36 and the abbd CLI on PATH.",
   "author": {
     "name": "whyjp"
   },

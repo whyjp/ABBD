@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
 // Drawing is one SVG picture: the overview of modules, or one module's inside.
@@ -29,8 +28,6 @@ type Box struct {
 	H       int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
-	// Quiet is true when the latest turn did not touch it.
-	Quiet bool `json:",omitempty"`
 }
 
 // Port is a contract on a module's boundary: an exit on top for one it
@@ -40,17 +37,15 @@ type Port struct {
 	Contract, Label, Class, Title string
 	Exit                          bool
 	X, Y, W                       int
-	Quiet                         bool `json:",omitempty"`
 }
 
 // Wire is one line. Kind says what it stands for, and the page draws each
 // kind its own way: use through a contract, a dependency that bypasses every
-// contract, a coupling only a reader found, and the turn's new or lost lines.
+// contract, and, inside a module, a coupling only a reader found.
 type Wire struct {
 	D, Kind, Title string
 	Via            string   `json:",omitempty"`
 	Quotes         []string `json:",omitempty"`
-	Quiet          bool     `json:",omitempty"`
 }
 
 const (
@@ -83,13 +78,13 @@ func portLabel(name string) string {
 
 func chipWidth(label string) int { return min(130, textWidth(label, chipPx)+12) }
 
-// overviewInput is what the overview's layout may depend on: the design
-// units and the relations a human approved. A module's inside, a guess, or
-// what a turn did never moves a box.
+// overview is what the overview's layout may depend on: the top-level units
+// and the relations the script read or a human stated between them. A
+// module's inside or a reader's guess never moves a box.
 type overview struct {
 	units     map[model.ID]model.Unit
 	design    []model.ID
-	relations []topology.Edge
+	relations []model.Edge
 	modules   []model.ID
 	contracts []model.ID
 	providers map[model.ID][]model.ID
@@ -98,38 +93,35 @@ type overview struct {
 	boxes     map[model.ID]Box
 }
 
-func designOf(units []model.Unit, in *topology.Intended) ([]model.ID, []topology.Edge) {
+// top lists the top-level units, those with no parent, and the drawn
+// relations between them.
+func top(units []model.Unit) ([]model.ID, []model.Edge) {
 	var ids []model.ID
-	var rels []topology.Edge
-	if in != nil {
-		for _, u := range in.Units {
-			ids = append(ids, u.ID)
-		}
-		return ids, in.Relations
-	}
+	var rels []model.Edge
 	present := map[model.ID]bool{}
-	for _, u := range topology.Present(units) {
+	for _, u := range model.Present(units) {
 		if u.Parent == "" {
 			ids = append(ids, u.ID)
 			present[u.ID] = true
 		}
 	}
-	for _, u := range topology.Present(units) {
+	for _, u := range model.Present(units) {
 		for _, r := range u.Relations {
 			if present[u.ID] && present[r.To] && r.Counts() {
-				rels = append(rels, topology.Edge{From: u.ID, To: r.To, Kind: r.Kind})
+				rels = append(rels, model.Edge{From: u.ID, To: r.To, Kind: r.Kind})
 			}
 		}
 	}
+	sort.Slice(rels, func(i, j int) bool { return rels[i].String() < rels[j].String() })
 	return ids, rels
 }
 
-func planOverview(units []model.Unit, in *topology.Intended) *overview {
+func planOverview(units []model.Unit) *overview {
 	o := &overview{units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, boxes: map[model.ID]Box{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
-	o.design, o.relations = designOf(units, in)
+	o.design, o.relations = top(units)
 	slices.Sort(o.design)
 	isModule := map[model.ID]bool{}
 	for _, id := range o.design {
@@ -219,49 +211,6 @@ func (o *overview) name(id model.ID) string {
 		return u.Name.Value
 	}
 	return string(id)
-}
-
-// owner is the box a unit is drawn on: a module itself, or the module whose
-// inside holds it.
-func (o *overview) owner(id model.ID) (model.ID, bool) {
-	if _, ok := o.layout.pos[string(id)]; ok {
-		return id, true
-	}
-	if p := o.units[id].Parent; p != "" {
-		if _, ok := o.layout.pos[string(p)]; ok {
-			return p, true
-		}
-	}
-	return "", false
-}
-
-// marks says how the current drift and the latest turn touch the picture.
-type marks struct {
-	effect  map[string]topology.Effect
-	changed map[model.ID]bool
-	removed map[model.ID]bool
-	// touched is nil when no turn has run.
-	touchedUnit map[model.ID]bool
-	touchedEdge map[topology.Edge]bool
-}
-
-func (mk marks) quiet(ids ...model.ID) bool {
-	if mk.touchedUnit == nil {
-		return false
-	}
-	for _, id := range ids {
-		if mk.touchedUnit[id] {
-			return false
-		}
-	}
-	return true
-}
-
-func (mk marks) quietEdge(e topology.Edge) bool {
-	if mk.touchedUnit == nil {
-		return false
-	}
-	return !mk.touchedEdge[e] && !(mk.touchedUnit[e.From] && mk.touchedUnit[e.To])
 }
 
 // side places what attaches to one edge of a box: the labelled contract
@@ -359,7 +308,7 @@ func spread(r rect, top bool, items []attach) map[string]Port {
 	return out
 }
 
-func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Coupling, href func(model.ID) string) Drawing {
+func (o *overview) draw(href func(model.ID) string) Drawing {
 	l := &o.layout
 	d := Drawing{Width: max(l.width, 320), Height: l.height + padY + 4}
 	center := func(id model.ID) int {
@@ -369,12 +318,9 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
 
 	type wireSpec struct {
-		kind, title, via string
-		quotes           []string
-		from, to         model.ID
-		fromKey, toKey   string
-		edge             topology.Edge
-		quiet            bool
+		kind, title    string
+		from, to       model.ID
+		fromKey, toKey string
 	}
 	var specs []wireSpec
 	top, bottom := map[model.ID][]attach{}, map[model.ID][]attach{}
@@ -407,22 +353,12 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 				targets = []model.ID{c}
 			}
 			for _, p := range targets {
-				e := topology.Edge{From: u, To: c, Kind: model.Consumes}
-				for _, r := range o.relations {
-					if r.From == u && r.To == c {
-						e = r
-					}
-				}
-				kind := "contract"
 				title := fmt.Sprintf("%s → %s: %s 계약을 거쳐 씁니다", o.name(u), o.name(p), o.name(c))
-				if mk.effect["removed-relation:"+e.String()] != "" {
-					kind, title = "removed", title+". 의도했으나 코드에서 사라졌습니다"
-				}
 				toKey := chipKey(p, c, true)
 				if p == c {
 					toKey = string(c)
 				}
-				specs = append(specs, wireSpec{kind: kind, title: title, from: u, to: p, fromKey: chipKey(u, c, false), toKey: toKey, edge: e, quiet: mk.quietEdge(e) && !mk.touchedUnit[c]})
+				specs = append(specs, wireSpec{kind: "contract", title: title, from: u, to: p, fromKey: chipKey(u, c, false), toKey: toKey})
 			}
 		}
 	}
@@ -434,105 +370,15 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 		}
 		return false
 	}
-	plainWire := func(kind, title string, a, b model.ID, e topology.Edge, via string, quotes []string, toContract model.ID) {
-		k := fmt.Sprintf("%s>%s>%s>%s", kind, a, b, e)
-		s := wireSpec{kind: kind, title: title, via: via, quotes: quotes, from: a, to: b, fromKey: "a|" + k, toKey: "b|" + k, edge: e, quiet: mk.quietEdge(e)}
-		bottom[a] = append(bottom[a], attach{key: s.fromKey, other: center(b)})
-		if toContract != "" {
-			if b == toContract {
-				s.toKey = string(b)
-			} else {
-				s.toKey = chipKey(b, toContract, true)
-			}
-		} else {
-			top[b] = append(top[b], attach{key: s.toKey, other: center(a)})
-		}
-		specs = append(specs, s)
-	}
 	for _, e := range o.relations {
 		if e.Kind != model.DependsOn || !isModule(e.From) || !isModule(e.To) || covered(e.From, e.To) {
 			continue
 		}
-		kind, title := "bypass", fmt.Sprintf("%s → %s: 계약을 거치지 않는 직접 의존", o.name(e.From), o.name(e.To))
-		if mk.effect["removed-relation:"+e.String()] != "" {
-			kind, title = "removed", title+". 의도했으나 코드에서 사라졌습니다"
-		}
-		plainWire(kind, title, e.From, e.To, e, "", nil, "")
-	}
-
-	// target finds where a line to a unit ends: the contract's port, or the
-	// box that is or holds the unit.
-	target := func(id model.ID) (box, contract model.ID, ok bool) {
-		if slices.Contains(o.contracts, id) {
-			if ps := o.providers[id]; len(ps) > 0 {
-				return ps[0], id, true
-			}
-			return id, id, true
-		}
-		b, ok := o.owner(id)
-		return b, "", ok
-	}
-	for _, it := range items {
-		if it.Change != topology.NewRelation || it.Effect == topology.Promote {
-			continue
-		}
-		a, okA := o.owner(it.Edge.From)
-		b, c, okB := target(it.Edge.To)
-		if !okA || !okB || a == b {
-			continue
-		}
-		kind := "new"
-		title := fmt.Sprintf("새 결합: %s → %s (%s). 의도한 경계를 넘어 사람의 승인이 필요합니다", o.name(it.Edge.From), o.name(it.Edge.To), it.Edge.Kind)
-		if it.Effect == topology.Realign {
-			kind, title = "realign", fmt.Sprintf("새 결합: %s → %s (%s). 짧은 재정렬로 인정합니다", o.name(it.Edge.From), o.name(it.Edge.To), it.Edge.Kind)
-		}
-		plainWire(kind, title, a, b, it.Edge, "", nil, c)
-	}
-
-	type group struct {
-		a, b, c model.ID
-		lines   []string
-		vias    []string
-		quotes  []string
-		edges   []topology.Edge
-	}
-	groups := map[string]*group{}
-	var order []string
-	for _, cp := range couplings {
-		a, okA := o.owner(cp.From)
-		b, c, okB := target(cp.To)
-		if !okA || !okB || a == b || slices.Contains(o.relations, cp.Edge) {
-			continue
-		}
-		k := fmt.Sprintf("%s>%s>%s", a, b, c)
-		g, ok := groups[k]
-		if !ok {
-			g = &group{a: a, b: b, c: c}
-			groups[k] = g
-			order = append(order, k)
-		}
-		g.lines = append(g.lines, fmt.Sprintf("%s %s %s", o.name(cp.From), cp.Kind, o.name(cp.To)))
-		if cp.Via != "" && !slices.Contains(g.vias, string(cp.Via)) {
-			g.vias = append(g.vias, string(cp.Via))
-		}
-		for _, ev := range cp.Evidence {
-			if len(g.quotes) < 3 {
-				g.quotes = append(g.quotes, ev.String())
-			}
-		}
-		g.edges = append(g.edges, cp.Edge)
-	}
-	slices.Sort(order)
-	for _, k := range order {
-		g := groups[k]
-		slices.Sort(g.vias)
-		title := fmt.Sprintf("추정 결합 %d개, %s → %s (via %s, 사람이 확인하지 않음): %s", len(g.lines), o.name(g.a), o.name(g.b), strings.Join(g.vias, ", "), strings.Join(g.lines, "; "))
-		quiet := true
-		for _, e := range g.edges {
-			quiet = quiet && mk.quietEdge(e)
-		}
-		plainWire("semantic", title, g.a, g.b, g.edges[0], strings.Join(g.vias, ", "), g.quotes, g.c)
-		specs[len(specs)-1].quiet = quiet
+		k := fmt.Sprintf("bypass>%s", e)
+		s := wireSpec{kind: "bypass", title: fmt.Sprintf("%s → %s: 계약을 거치지 않는 직접 의존", o.name(e.From), o.name(e.To)), from: e.From, to: e.To, fromKey: "a|" + k, toKey: "b|" + k}
+		bottom[e.From] = append(bottom[e.From], attach{key: s.fromKey, other: center(e.To)})
+		top[e.To] = append(top[e.To], attach{key: s.toKey, other: center(e.From)})
+		specs = append(specs, s)
 	}
 
 	at := map[string]Port{}
@@ -554,12 +400,9 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design", Href: href(m), Quiet: mk.quiet(m)}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design", Href: href(m)}
 		b.Label = fit(b.Name, r.W-20, 13)
 		b.Title = fmt.Sprintf("%s %s. 누르면 이 모듈의 안을 봅니다", m, b.Name)
-		if mk.removed[m] {
-			b.Class, b.Title = "removed", b.Title+". 의도했으나 코드에서 사라졌습니다"
-		}
 		d.Boxes = append(d.Boxes, b)
 	}
 	// A folded "+N" chip stands for several contracts at one place: it is
@@ -570,10 +413,6 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 		if i, ok := folded[k]; ok {
 			q := &d.Ports[i]
 			q.Title += ", " + name
-			q.Quiet = q.Quiet && pt.Quiet
-			if pt.Class != "design" {
-				q.Class = pt.Class
-			}
 			q.Contract = ""
 			return
 		}
@@ -582,24 +421,17 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 		d.Ports = append(d.Ports, pt)
 	}
 	for _, c := range o.contracts {
-		cls := "design"
-		if mk.changed[c] {
-			cls = "changed"
-		}
-		if mk.removed[c] {
-			cls = "removed"
-		}
 		if r, ok := l.pos[string(c)]; ok {
-			d.Boxes = append(d.Boxes, Box{ID: string(c), Name: o.name(c), Label: fit(portLabel(o.name(c)), r.W-12, chipPx), Kind: string(o.units[c].Kind), Class: "loose " + cls, X: r.X, Y: r.Y, W: r.W, H: r.H, Title: o.name(c) + ": 그림 안에 제공하는 모듈이 없는 계약", Quiet: mk.quiet(c)})
+			d.Boxes = append(d.Boxes, Box{ID: string(c), Name: o.name(c), Label: fit(portLabel(o.name(c)), r.W-12, chipPx), Kind: string(o.units[c].Kind), Class: "loose design", X: r.X, Y: r.Y, W: r.W, H: r.H, Title: o.name(c) + ": 그림 안에 제공하는 모듈이 없는 계약"})
 		}
 		for _, p := range o.providers[c] {
 			pt := at[chipKey(p, c, true)]
-			pt.Contract, pt.Exit, pt.Class, pt.Quiet = string(c), true, cls, mk.quiet(c, p)
+			pt.Contract, pt.Exit, pt.Class = string(c), true, "design"
 			addPort(pt, fmt.Sprintf("%s가 제공하는 계약", o.name(p)), o.name(c))
 		}
 		for _, u := range o.users[c] {
 			pt := at[chipKey(u, c, false)]
-			pt.Contract, pt.Class, pt.Quiet = string(c), cls, mk.quiet(c, u)
+			pt.Contract, pt.Class = string(c), "design"
 			addPort(pt, fmt.Sprintf("%s가 쓰는 계약", o.name(u)), o.name(c))
 		}
 	}
@@ -616,7 +448,6 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 		}
 		if i, ok := at2[pair]; ok {
 			merged[i].title += "; " + s.title
-			merged[i].quiet = merged[i].quiet && s.quiet
 		} else {
 			at2[pair] = len(merged)
 			merged = append(merged, s)
@@ -653,7 +484,7 @@ func (o *overview) draw(items []topology.Item, mk marks, couplings []topology.Co
 				fy = l.pos[string(s.from)].Y
 			}
 		}
-		w := Wire{D: l.route(pt{fx, fy}, ra, pt{tx, ty}, rb), Kind: s.kind, Title: s.title, Via: s.via, Quotes: s.quotes, Quiet: s.quiet}
+		w := Wire{D: l.route(pt{fx, fy}, ra, pt{tx, ty}, rb), Kind: s.kind, Title: s.title}
 		d.Wires = append(d.Wires, w)
 	}
 	return d

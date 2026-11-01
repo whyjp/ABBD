@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
 func unit(id model.ID, rels ...model.Relation) model.Unit {
@@ -26,7 +25,7 @@ func rel(to model.ID, kind model.RelationKind) model.Relation {
 }
 
 func guess(to model.ID, kind model.RelationKind, via model.Via) model.Relation {
-	return model.Relation{To: to, Kind: kind, Origin: model.Inferred, Confirmation: model.Unconfirmed, Via: via,
+	return model.Relation{To: to, Kind: kind, Origin: model.Inferred, Via: via,
 		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: "use b;"}}}
 }
 
@@ -51,17 +50,7 @@ func ripgrep() []model.Unit {
 	}
 }
 
-func design(units []model.Unit) topology.Intended {
-	all := map[model.ID]bool{}
-	for _, u := range units {
-		all[u.ID] = true
-	}
-	return topology.Select(units, all)
-}
-
-func build(units []model.Unit, in topology.Intended) Model {
-	return Build(Input{Units: units, Intended: &in})
-}
+func build(units []model.Unit) Model { return Build(Input{Units: units}) }
 
 func svg(t *testing.T, d Drawing) string {
 	t.Helper()
@@ -82,10 +71,9 @@ func boxes(d Drawing) map[string]Box {
 
 func TestTheSameDataAlwaysDrawsTheSamePicture(t *testing.T) {
 	units := ripgrep()
-	in := design(units)
-	first := build(units, in)
+	first := build(units)
 	for i := 0; i < 5; i++ {
-		again := build(units, in)
+		again := build(units)
 		if svg(t, again.Overview) != svg(t, first.Overview) {
 			t.Fatalf("drawing the same data twice gave two overviews")
 		}
@@ -98,11 +86,10 @@ func TestTheSameDataAlwaysDrawsTheSamePicture(t *testing.T) {
 }
 
 // A human compares two screenshots of the overview, so what happens inside a
-// module, and any guess an agent registers, must not move a box or a port.
+// module, and any guess a reader records, must not move a box or a port, and
+// the overview draws no guess at all: each module's inside lists them.
 func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
-	units := ripgrep()
-	in := design(units)
-	before := build(units, in).Overview
+	before := build(ripgrep()).Overview
 
 	grown := append(ripgrep(),
 		inside("MOD-0006", "MOD-0003", rel("IF-0001", model.Consumes), rel("MOD-0007", model.DependsOn)),
@@ -114,7 +101,8 @@ func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 	// A guess that grep-matcher uses grep-printer would put the printer
 	// under the matcher if guesses moved boxes.
 	grown[3].Relations = append(grown[3].Relations, guess("MOD-0005", model.DependsOn, model.Via("convention")))
-	after := build(grown, in).Overview
+	m := build(grown)
+	after := m.Overview
 
 	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(before.Ports, after.Ports) {
 		t.Fatalf("the overview moved when only insides and guesses changed:\nbefore %+v\nafter  %+v", before.Boxes, after.Boxes)
@@ -122,19 +110,28 @@ func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 	if strings.Contains(svg(t, after), "MOD-0006") || strings.Contains(svg(t, after), "DATA-0001\"") {
 		t.Fatalf("an inside unit must never be drawn on the overview")
 	}
-	semantic := 0
-	for _, w := range after.Wires {
-		if w.Kind == "semantic" {
-			semantic++
+	if !reflect.DeepEqual(before.Wires, after.Wires) {
+		t.Fatalf("the overview drew a reader's guess:\nbefore %+v\nafter  %+v", before.Wires, after.Wires)
+	}
+	listed := map[string]int{}
+	for _, ins := range m.Insides {
+		for _, c := range ins.Inferred {
+			if c.Via == "" || len(c.Quotes) == 0 {
+				t.Errorf("%s lists a guess without its via and quote: %+v", ins.ID, c)
+			}
+			listed[ins.ID]++
 		}
 	}
-	if semantic != 4 {
-		t.Fatalf("each guessed coupling between two modules is drawn once, lifted to the modules; got %d", semantic)
+	// ripgrep's two guesses, the searcher's guess into the matcher's inside,
+	// and the matcher's guess, each listed in every module it touches.
+	want := map[string]int{"MOD-0001": 2, "MOD-0003": 1, "MOD-0004": 2, "MOD-0005": 2}
+	if !reflect.DeepEqual(listed, want) {
+		t.Fatalf("each module's inside lists the guesses that touch it: got %v, want %v", listed, want)
 	}
 }
 
 func TestModulesSitAboveWhatTheyUse(t *testing.T) {
-	b := boxes(build(ripgrep(), design(ripgrep())).Overview)
+	b := boxes(build(ripgrep()).Overview)
 	for _, pair := range [][2]string{{"MOD-0001", "MOD-0002"}, {"MOD-0002", "MOD-0003"}, {"MOD-0005", "MOD-0003"}, {"MOD-0003", "MOD-0004"}} {
 		if b[pair[0]].Y >= b[pair[1]].Y {
 			t.Errorf("%s uses %s and should sit above it: y %d vs %d", pair[0], pair[1], b[pair[0]].Y, b[pair[1]].Y)
@@ -145,7 +142,7 @@ func TestModulesSitAboveWhatTheyUse(t *testing.T) {
 // A line between modules goes through a contract. A dependency with no
 // contract under it bypasses the boundary and is drawn as its own kind.
 func TestADependencyThatBypassesEveryContractStandsOut(t *testing.T) {
-	d := build(ripgrep(), design(ripgrep())).Overview
+	d := build(ripgrep()).Overview
 	kinds := map[string]int{}
 	var bypass []string
 	for _, w := range d.Wires {
@@ -179,7 +176,7 @@ func TestLabelsFitTheirBoxes(t *testing.T) {
 	units := ripgrep()
 	units[0].Name.Value = "a module whose name is far too long to fit any box drawn on the overview at all"
 	units[5].Name.Value = "trait AnExtremelyLongContractNameThatWouldOverflowItsChip"
-	d := build(units, design(units)).Overview
+	d := build(units).Overview
 	for _, b := range d.Boxes {
 		if textWidth(b.Label, 13) > b.W-16 {
 			t.Errorf("box %s label %q is wider than the box", b.ID, b.Label)
@@ -199,7 +196,7 @@ func TestAModulesInsideJoinsItsContractsToItsUnits(t *testing.T) {
 		inside("MOD-0006", "MOD-0003", rel("IF-0001", model.Consumes), rel("MOD-0007", model.DependsOn)),
 		inside("MOD-0007", "MOD-0003", rel("IF-0002", model.Provides)),
 	)
-	m := build(units, design(ripgrep()))
+	m := build(units)
 	var searcher Inside
 	for _, ins := range m.Insides {
 		if ins.ID == "MOD-0003" {
@@ -227,19 +224,5 @@ func TestAModulesInsideJoinsItsContractsToItsUnits(t *testing.T) {
 	}
 	if len(searcher.Unwired) != 0 {
 		t.Errorf("every contract on the frame has an inside unit: %v", searcher.Unwired)
-	}
-}
-
-func TestAContractChangeShowsOnlyTheMembersThatChanged(t *testing.T) {
-	old := "pub trait Sink { type Error: SinkError; fn matched(&mut self, _searcher: &Searcher) -> Result<bool, Self::Error>; fn finish(&mut self) -> Result<(), Self::Error> }"
-	new := "pub trait Sink { type Error: SinkError; fn matched(&mut self, _searcher: &Searcher, at: u64) -> Result<bool, Self::Error>; fn finish(&mut self) -> Result<(), Self::Error> }"
-	diff, same := diffSignature(old, new)
-	if len(diff) != 2 || diff[0].Op != "+" && diff[0].Op != "-" || same != 3 {
-		t.Fatalf("one changed method shows as one removal and one addition, the rest folded: %+v same %d", diff, same)
-	}
-	for _, d := range diff {
-		if strings.Contains(d.Parts[0].Text, "finish") {
-			t.Fatalf("an unchanged member was shown: %+v", d)
-		}
 	}
 }

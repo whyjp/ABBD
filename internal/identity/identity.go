@@ -8,6 +8,7 @@
 package identity
 
 import (
+	"slices"
 	"sort"
 	"strings"
 
@@ -38,17 +39,20 @@ type Result struct {
 	Candidates []Candidate
 	Events     []Event
 	Unmatched  []model.ID
-	HighWater  map[model.Kind]int
+	// Stated are the semantic units a setup's supplement no longer reports
+	// that stay present because a human stated something about them.
+	Stated    []model.ID
+	HighWater map[model.Kind]int
 }
 
-// Guesses says what happens to the stored INFERRED facts no human has decided.
+// Guesses says what happens to the stored INFERRED facts.
 type Guesses int
 
 const (
 	// KeepGuesses is a re-extraction by the script, which cannot see them.
 	KeepGuesses Guesses = iota
 	// ReplaceGuesses is a setup, whose supplement owns them: a guess the new
-	// supplement no longer makes is withdrawn.
+	// supplement no longer makes is withdrawn. What a human stated stays.
 	ReplaceGuesses
 )
 
@@ -165,9 +169,16 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 			}
 		}
 	}
+	held := heldByHuman(units, stTaken)
 	for j, u := range units {
-		units[j].Absent = !stTaken[j] && !kept(u, guesses)
-		if units[j].Absent {
+		switch {
+		case stTaken[j] || u.Semantic() && guesses == KeepGuesses:
+			units[j].Absent = false
+		case u.Semantic() && held[u.ID]:
+			units[j].Absent = false
+			res.Stated = append(res.Stated, u.ID)
+		default:
+			units[j].Absent = true
 			res.Unmatched = append(res.Unmatched, u.ID)
 		}
 	}
@@ -180,12 +191,46 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	return res
 }
 
-// kept reports whether a stored unit the extraction did not report stays
-// present. The script never sees a semantic unit, so a re-extraction keeps
-// it for its evidence to decide; a setup's supplement owns the ones no human
-// has decided.
-func kept(u model.Unit, guesses Guesses) bool {
-	return u.Semantic() && (guesses == KeepGuesses || !u.Name.Guess())
+// heldByHuman lists the stored semantic units a human stated something
+// about: a fact, a relation of their own, or a relation from a unit that
+// stays. A setup's supplement owns the guesses, but withdrawing such a unit
+// would leave the human's words where no command reaches them.
+func heldByHuman(units []model.Unit, matched map[int]bool) map[model.ID]bool {
+	stays := map[model.ID]bool{}
+	for j, u := range units {
+		if matched[j] {
+			stays[u.ID] = true
+		}
+	}
+	held := map[model.ID]bool{}
+	for grew := true; grew; {
+		grew = false
+		pointed := map[model.ID]bool{}
+		for _, u := range units {
+			if stays[u.ID] {
+				for _, r := range u.Relations {
+					if r.Origin == model.UserStated {
+						pointed[r.To] = true
+					}
+				}
+			}
+		}
+		for _, u := range units {
+			if !stays[u.ID] && u.Semantic() && (stated(u) || pointed[u.ID]) {
+				stays[u.ID], held[u.ID], grew = true, true, true
+			}
+		}
+	}
+	return held
+}
+
+func stated(u model.Unit) bool {
+	for _, f := range []*model.Fact{&u.Name, u.Purpose, u.Responsibility, u.Signature} {
+		if f != nil && f.Origin == model.UserStated {
+			return true
+		}
+	}
+	return slices.ContainsFunc(u.Relations, func(r model.Relation) bool { return r.Origin == model.UserStated })
 }
 
 func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
@@ -281,12 +326,8 @@ func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	if u.Semantic() || in.Name.Origin == model.Inferred {
 		u.Name = in.Name
 	}
-	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
-		confirmation := u.Name.Confirmation
+	if u.Name.Origin == model.Extracted {
 		u.Name = in.Name
-		if confirmation != "" {
-			u.Name.Confirmation = model.Unconfirmed
-		}
 	}
 	replace := func(f *model.Fact) bool { return f == nil || (guesses == ReplaceGuesses && f.Guess()) }
 	if replace(u.Purpose) {

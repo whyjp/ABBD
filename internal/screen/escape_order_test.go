@@ -13,8 +13,7 @@ import (
 // the same data and should draw the same picture.
 func TestUnitOrderDoesNotMoveTheDrawing(t *testing.T) {
 	units := ripgrep()
-	in := design(units)
-	first := build(units, in)
+	first := build(units)
 	rev := make([]model.Unit, len(units))
 	for i, u := range units {
 		rs := append([]model.Relation(nil), u.Relations...)
@@ -24,7 +23,7 @@ func TestUnitOrderDoesNotMoveTheDrawing(t *testing.T) {
 		u.Relations = rs
 		rev[len(units)-1-i] = u
 	}
-	again := build(rev, design(rev))
+	again := build(rev)
 	if svg(t, again.Overview) != svg(t, first.Overview) {
 		t.Errorf("reordering the units changes the overview SVG")
 	}
@@ -39,12 +38,11 @@ func TestUnitOrderDoesNotMoveTheDrawing(t *testing.T) {
 func TestUnderstandingAndNamesAreEscaped(t *testing.T) {
 	units := ripgrep()
 	units[0].Name.Value = `<img src=x onerror=alert(1)>`
-	in := design(units)
-	m := Build(Input{Units: units, Intended: &in, Understandings: map[model.ID]store.Understanding{
-		"MOD-0001": {Unit: "MOD-0001", By: `how"><script>alert(2)</script>`, Text: "# <script>alert(3)</script>\n- **<b onmouseover=x>** `</code><script>alert(4)</script>`\n[x](javascript:alert(5))"},
+	m := Build(Input{Units: units, Understandings: map[model.ID]store.Understanding{
+		"MOD-0001": {Unit: "MOD-0001", Text: "# <script>alert(3)</script>\n- **<b onmouseover=x>** `</code><script>alert(4)</script>`\n[x](javascript:alert(5))"},
 	}})
 	var b bytes.Buffer
-	if err := Render(&b, m, Options{Nonce: "n"}); err != nil {
+	if err := Render(&b, m); err != nil {
 		t.Fatal(err)
 	}
 	html := b.String()

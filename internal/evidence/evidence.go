@@ -25,7 +25,7 @@ type Result struct {
 	Live bool
 	// At is where the quote was found, such as "120-121".
 	At string
-	// Digest fingerprints the lines that hold the quote, so a turn sees an
+	// Digest fingerprints the lines that hold the quote, so a diff sees an
 	// edit to them even while the quote survives.
 	Digest string
 }

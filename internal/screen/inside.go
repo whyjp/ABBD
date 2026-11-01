@@ -5,7 +5,6 @@ import (
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
 // Inside is the second level: one module's units and how they connect, with
@@ -20,22 +19,32 @@ type Inside struct {
 	Understanding *Understanding
 	// Unwired names the contracts on the frame no inside unit is known to meet.
 	Unwired []string
+	// Inferred are the couplings a reader found that touch this module, which
+	// the overview does not draw.
+	Inferred []Coupling
+}
+
+// Coupling is one INFERRED relation as a human checks it: its ends, how it
+// arises, and the code it rests on.
+type Coupling struct {
+	From, To, Kind, Via string
+	Quotes              []string
 }
 
 type InsideUnit struct {
 	ID, Name, Kind string
 	Sentence       string
-	// Guess is true when only an agent vouches for the sentence.
+	// Guess is true when only a reader vouches for the sentence.
 	Guess   bool
 	Anchors []string
 }
 
 const unitW, unitH = 168, 44
 
-func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {
+func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 	ins := Inside{ID: string(m), Name: o.name(m)}
 	var inner []model.Unit
-	for _, u := range topology.Present(units) {
+	for _, u := range model.Present(units) {
 		if u.Parent == m {
 			inner = append(inner, u)
 		}
@@ -44,7 +53,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {
 	for _, u := range inner {
 		isInner[u.ID] = true
 	}
-	live := func(r model.Relation) bool { return !r.Dead && r.Confirmation != model.Rejected }
+	live := func(r model.Relation) bool { return !r.Dead }
 
 	var nodes []lnode
 	var edges []ledge
@@ -79,9 +88,6 @@ func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {
 	}
 	for _, c := range o.contracts {
 		cls := "design"
-		if mk.changed[c] {
-			cls = "changed"
-		}
 		if slices.Contains(o.providers[c], m) {
 			addPort(port{id: c, exit: true, label: portLabel(o.name(c)), title: "이 모듈이 제공하는 계약: " + o.name(c), cls: cls})
 		}
@@ -142,7 +148,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {
 			lines = append(lines, ln)
 		}
 	}
-	for _, u := range topology.Present(units) {
+	for _, u := range model.Present(units) {
 		if isInner[u.ID] || u.ID == m || u.Parent == m {
 			continue
 		}
@@ -294,7 +300,28 @@ func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {
 		d.Wires = append(d.Wires, w)
 	}
 	ins.Drawing = d
+	ins.Inferred = o.inferred(m, units)
 	return ins
+}
+
+// inferred lists the live INFERRED relations with an end in module m or in a
+// unit it contains.
+func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {
+	in := func(id model.ID) bool { return id == m || o.units[id].Parent == m }
+	var out []Coupling
+	for _, u := range model.Present(units) {
+		for _, r := range model.SortRelations(u.Relations) {
+			if !r.Guess() || r.Dead || o.units[r.To].Absent || !(in(u.ID) || in(r.To)) {
+				continue
+			}
+			c := Coupling{From: o.name(u.ID), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
+			for _, e := range r.Evidence {
+				c.Quotes = append(c.Quotes, e.String())
+			}
+			out = append(out, c)
+		}
+	}
+	return out
 }
 
 // sentence is the one thing a unit is responsible for: its responsibility,

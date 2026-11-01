@@ -10,7 +10,7 @@
     {
       "name": "abbd",
       "source": "./plugins/abbd",
-      "description": "Keeps a human-approved intended topology next to the topology extracted from code, and gates structural drift."
+      "description": "Keeps the architecture topology of the merged code and renders it as a blueprint a human reads."
     }
   ]
 }

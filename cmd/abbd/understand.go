@@ -14,13 +14,13 @@ import (
 // module's code as it is now, so the screen can show the text beside the
 // drawing and mark it STALE once the code moves on.
 func (e env) understand(id model.ID, file string) error {
-	v, err := e.load()
+	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
-	u, ok := presentUnit(v, id)
+	u, ok := presentUnit(units, id)
 	if !ok || u.Kind != model.Module || u.Parent != "" {
-		return fmt.Errorf("%s is not a top-level module of the actual topology", id)
+		return fmt.Errorf("%s is not a top-level module", id)
 	}
 	var b []byte
 	if file == "-" {
@@ -35,7 +35,7 @@ func (e env) understand(id model.ID, file string) error {
 	if text == "" {
 		return fmt.Errorf("the text is empty; pass pstack how's Overview and Key Concepts")
 	}
-	digest := e.st.ModuleDigest(v.units, id)
+	digest := e.st.ModuleDigest(units, id)
 	old, err := e.st.LoadUnderstandings()
 	if err != nil {
 		return err
@@ -45,13 +45,7 @@ func (e env) understand(id model.ID, file string) error {
 	if prev, ok := old[id]; ok && prev.Digest != digest && strings.TrimSpace(prev.Text) == text {
 		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
 	}
-	by := "outside a turn"
-	if t, err := e.st.LatestTurn(); err != nil {
-		return err
-	} else if t != nil && t.State.Resumable() {
-		by = "agent in " + t.ID
-	}
-	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, By: by, Digest: digest, Text: text}); err != nil {
+	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)

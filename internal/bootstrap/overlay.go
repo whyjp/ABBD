@@ -1,5 +1,5 @@
-// Package bootstrap folds documents that are not code onto the result of the
-// project extraction script, and renders what setup found.
+// Package bootstrap folds the semantic supplement, what pstack's readers
+// found with evidence, onto the result of the project extraction script.
 package bootstrap
 
 import (
@@ -11,37 +11,18 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// Source says which document an overlay comes from. It fixes the origin of
-// every fact the document adds and whether a mismatch is fatal.
-type Source struct {
-	Name   string
-	Origin model.Origin
-	// Strict sources come from the same agent that wrote the script, so a
-	// unit the script did not report means the script is incomplete.
-	Strict bool
-	// Names says whether the document may rename units.
-	Names bool
-}
-
-var (
-	Supplement = Source{Name: "supplement", Origin: model.Inferred, Strict: true}
-	Adopt      = Source{Name: "adopt", Origin: model.Adopted, Names: true}
-)
-
-// Findings lists what a human should look at. Conflicts are claims the code
-// contradicts; gaps are things one side has and the other lacks.
+// Findings lists what the supplement said that the code contradicts.
 type Findings struct {
 	Matched   int
 	Conflicts []string
-	Gaps      []string
 }
 
-// Overlay matches each document unit to the script unit of the same kind that
-// shares the most anchors, then adds the document's why-fields and the
+// Overlay matches each supplement unit to the script unit of the same kind
+// that shares the most anchors, then adds the supplement's why-fields and the
 // couplings the script did not extract. Code facts (anchors, signatures)
-// always come from the script. A guessing source may also add a unit the
-// script cannot see, when the unit carries evidence ABBD can check.
-func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, error) {
+// always come from the script. A supplement unit with evidence is one the
+// script cannot see, and is added as a unit of its own.
+func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 	out := extract.Result{Units: append([]extract.Unit(nil), base.Units...), Relations: append([]extract.Relation(nil), base.Relations...)}
 	for i := range out.Units {
 		if out.Units[i].Key == "" {
@@ -49,22 +30,28 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 		}
 	}
 	var f Findings
+	var gaps []string
 	docTo := map[string]int{}
 	covered := map[int]bool{}
 	scriptUnits := len(out.Units)
 	for n, d := range doc.Units {
 		label := fmt.Sprintf("%s %q", d.Kind, d.Name.Value)
 		i, err := match(out.Units[:scriptUnits], d)
-		if err != nil && src.Origin == model.Inferred && len(d.Evidence) > 0 {
-			out.Units = append(out.Units, semantic(d, fmt.Sprintf("%s#%d", src.Name, n)))
+		if len(d.Evidence) > 0 {
+			// Evidence says the script cannot see the unit. Folding it into a
+			// script unit that shares an anchor would drop it without a word.
+			if err == nil {
+				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Name.Value)
+			}
+			out.Units = append(out.Units, semantic(d, fmt.Sprintf("supplement#%d", n)))
 			i, err = len(out.Units)-1, nil
 		}
 		if err != nil {
-			f.Gaps = append(f.Gaps, fmt.Sprintf("%s %s: %v", src.Name, label, err))
+			gaps = append(gaps, fmt.Sprintf("supplement %s: %v", label, err))
 			continue
 		}
 		if covered[i] {
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("%s %s describes the same code as another %s unit", src.Name, label, src.Name))
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s describes the same code as another supplement unit", label))
 			continue
 		}
 		covered[i] = true
@@ -73,33 +60,24 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 		}
 		f.Matched++
 		u := &out.Units[i]
-		if src.Names && d.Name.Value != u.Name.Value {
-			u.Name = model.Fact{Value: d.Name.Value, Origin: src.Origin}
-		}
 		if d.Signature != nil && (u.Signature == nil || u.Signature.Value != d.Signature.Value) {
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("%s %s documents signature %q, code has %q", src.Name, label, d.Signature.Value, sig(u.Signature)))
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, sig(u.Signature)))
 		}
 		if d.Purpose != nil {
-			u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: src.Origin, Confirmation: unconfirmed(src.Origin)}
+			u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: model.Inferred}
 		}
 		if d.Responsibility != nil {
-			u.Responsibility = &model.Fact{Value: d.Responsibility.Value, Origin: src.Origin, Confirmation: unconfirmed(src.Origin)}
+			u.Responsibility = &model.Fact{Value: d.Responsibility.Value, Origin: model.Inferred}
 		}
 	}
-	if src.Strict && len(f.Gaps) > 0 {
-		return base, f, fmt.Errorf("the %s names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", src.Name, strings.Join(f.Gaps, "\n  "))
+	if len(gaps) > 0 {
+		sort.Strings(gaps)
+		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
 	for _, d := range doc.Units {
 		if i, ok := docTo[d.Key]; ok && d.Parent != "" {
 			if p, ok := docTo[d.Parent]; ok {
 				out.Units[i].Parent = out.Units[p].Key
-			}
-		}
-	}
-	if !src.Strict {
-		for i, u := range out.Units {
-			if !covered[i] {
-				f.Gaps = append(f.Gaps, fmt.Sprintf("code %s %q is not in the %s document", u.Kind, u.Name.Value, src.Name))
 			}
 		}
 	}
@@ -109,39 +87,25 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 		kind     model.RelationKind
 	}
 	extracted := map[edge]bool{}
-	earlier := map[edge]int{}
-	for i, r := range out.Relations {
-		e := edge{r.From, r.To, r.Kind}
-		if r.Origin == model.Extracted {
-			extracted[e] = true
-		} else {
-			earlier[e] = i
-		}
+	for _, r := range out.Relations {
+		extracted[edge{r.From, r.To, r.Kind}] = true
 	}
-	baseKey := func(i int) string { return out.Units[i].Key }
 	for _, r := range doc.Relations {
 		fi, okf := docTo[r.From]
 		ti, okt := docTo[r.To]
 		if !okf || !okt {
-			f.Gaps = append(f.Gaps, fmt.Sprintf("%s relation %s -%s-> %s names a unit that matched no code", src.Name, r.From, r.Kind, r.To))
-			continue
+			return base, f, fmt.Errorf("supplement relation %s -%s-> %s names a unit that matched no code", r.From, r.Kind, r.To)
 		}
-		e := edge{baseKey(fi), baseKey(ti), r.Kind}
+		e := edge{out.Units[fi].Key, out.Units[ti].Key, r.Kind}
 		if extracted[e] {
 			continue
 		}
-		if !src.Strict {
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("%s relation %s -%s-> %s is not in the code; queued for confirmation", src.Name, r.From, r.Kind, r.To))
+		if len(r.Evidence) == 0 {
+			return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
 		}
-		// An earlier overlay guessed the same edge; this document's origin replaces the guess.
-		if i, ok := earlier[e]; ok {
-			out.Relations[i].Origin = src.Origin
-			continue
-		}
-		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: src.Origin, Via: r.Via, Evidence: r.Evidence})
+		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Origin: model.Inferred, Via: r.Via, Evidence: r.Evidence})
 	}
 	sort.Strings(f.Conflicts)
-	sort.Strings(f.Gaps)
 	return out, f, nil
 }
 
@@ -149,18 +113,9 @@ func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, er
 // its evidence anchors its ID.
 func semantic(d extract.Unit, key string) extract.Unit {
 	d.Key = key
-	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred, Confirmation: model.Unconfirmed}
+	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred}
 	d.Signature, d.Digest, d.Parent = nil, "", ""
 	return d
-}
-
-// The three-axis vocabulary keeps a guess in the confirm queue; a reconstructed
-// document is already a human's intent.
-func unconfirmed(o model.Origin) model.Confirmation {
-	if o == model.Inferred {
-		return model.Unconfirmed
-	}
-	return ""
 }
 
 func match(units []extract.Unit, d extract.Unit) (int, error) {

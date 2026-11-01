@@ -5,47 +5,28 @@ import (
 	"testing"
 )
 
-func activeSemanticProject(t *testing.T) *project {
-	t.Helper()
-	p, exe := semanticProject(t)
-	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
-	p.want(0, "aligned", "align", "--all")
-	p.want(0, "active", "mode", "on", "--session", "s1")
-	return p
-}
-
-// An unconfirmed coupling never gates, but a turn that touches one end must
-// read the other.
-func TestImpactFollowsLiveSemanticCouplings(t *testing.T) {
-	p := activeSemanticProject(t)
-	out := p.want(0, "OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "rename the amount column")
+// The impact follows a reader's coupling while its evidence lives, and only
+// reads: it writes nothing.
+func TestImpactFollowsLiveCouplingsAndWritesNothing(t *testing.T) {
+	p := semanticProject(t)
+	before := snapshot(t, p.root)
+	out := p.want(0, "direct MOD-0001 billing: seed", "impact", "MOD-0001")
 	for _, want := range []string{
-		"impact DATA-0001: provided by MOD-0001 (semantic, via data) (computed, direct)",
-		"impact MOD-0002: consumes DATA-0001 (semantic, via data) (computed, direct)",
+		"direct DATA-0001 charges table: inside a seed",
+		"direct MOD-0002 ledger: consumes DATA-0001 (inferred, via data)",
 	} {
 		if !strings.Contains(out, want) {
-			t.Fatalf("the impact should follow the live couplings and say they are semantic; missing %q:\n%s", want, out)
+			t.Fatalf("missing %q:\n%s", want, out)
 		}
 	}
-	p.want(0, "CLOSED", "turn", "end", "--session", "s1")
+	if !equal(before, snapshot(t, p.root)) {
+		t.Fatalf("impact must not write .abbd/")
+	}
+	p.want(1, "is not a unit of the state", "impact", "MOD-0001,MOD-0099")
 
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
-	p.want(0, "active", "mode", "on", "--session", "s1")
-	out = p.want(0, "OPEN", "turn", "start", "--session", "s1", "--seeds", "MOD-0001", "--request", "x")
-	if strings.Contains(out, "MOD-0002") {
+	p.want(0, "", "sync")
+	if out := p.want(0, "seed", "impact", "MOD-0001"); strings.Contains(out, "MOD-0002") {
 		t.Fatalf("a coupling whose evidence is gone leads nowhere:\n%s", out)
-	}
-}
-
-// A seed's change most likely breaks where it meets what it depends on, so
-// those units are direct even though nothing depends on the seed.
-func TestASeedsOwnDependenciesAreDirect(t *testing.T) {
-	p := activeTurnProject(t, topoConsumed)
-	out := p.start("MOD-0003")
-	if !strings.Contains(out, "impact IF-0001: consumed by MOD-0003 (computed, direct)") {
-		t.Fatalf("the contract the seed consumes should be direct impact:\n%s", out)
-	}
-	if strings.Contains(out, "MOD-0001") {
-		t.Fatalf("what the seed uses is read where they meet, not followed further:\n%s", out)
 	}
 }
