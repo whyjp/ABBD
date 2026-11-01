@@ -315,10 +315,10 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 	}
 	frame := rect{X: 6, Y: frameTop, W: width - 12}
 	at := map[string]Port{}
-	for k, p := range spread(frame, false, tops) {
+	for k, p := range spread(frame, false, tops, 1) {
 		at[k] = p
 	}
-	for k, p := range spread(frame, true, bottoms) {
+	for k, p := range spread(frame, true, bottoms, 1) {
 		at[k] = p
 	}
 	l.top = frameTop + chipH + 3

@@ -277,3 +277,28 @@ func TestAModulesInsideJoinsItsContractsToItsUnits(t *testing.T) {
 		t.Errorf("every contract on the frame has an inside unit: %v", searcher.Unwired)
 	}
 }
+
+// Two modules that use each other directly are one line with a head at each
+// end, read downward, and it stands for both relations.
+func TestMutualUseIsOneLine(t *testing.T) {
+	m := build([]model.Unit{
+		called("MOD-0001", "app", rel("MOD-0002", model.DependsOn), rel("MOD-0003", model.DependsOn)),
+		called("MOD-0002", "core", rel("MOD-0003", model.DependsOn)),
+		called("MOD-0003", "util", rel("MOD-0002", model.DependsOn)),
+	})
+	var mutual []Wire
+	for _, w := range m.Overview.Wires {
+		if w.Kind == "mutual" {
+			mutual = append(mutual, w)
+		}
+		if w.Back {
+			t.Errorf("no line should climb, got %q", w.Title)
+		}
+	}
+	if len(mutual) != 1 || !mutual[0].Both || len(mutual[0].Rels) != 2 {
+		t.Fatalf("want one two-headed line for core and util, got %+v", mutual)
+	}
+	if !strings.Contains(mutual[0].Title, "core → util") || !strings.Contains(mutual[0].Title, "util → core") {
+		t.Fatalf("the line should name both directions, got %q", mutual[0].Title)
+	}
+}

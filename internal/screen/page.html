@@ -83,7 +83,8 @@ svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharra
 svg .port.other text { fill: var(--muted); }
 svg path.w { fill: none; stroke-width: 1.5; }
 svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.bypass { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.w.both { marker-start: url(#m-bypass); }
 svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
 svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
 svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
@@ -173,7 +174,7 @@ svg marker path { stroke: none; }
 {{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
 <defs>{{range $k := marks}}<marker id="m-{{$k}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--{{markColor $k}})"/></marker>{{end}}</defs>
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
-{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
+{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
 {{.}}{{end}}</title></path>{{range .Marks}}<circle class="origin {{.Origin}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
 {{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 {{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
@@ -183,6 +184,7 @@ svg marker path { stroke: none; }
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>계약을 거친 사용</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--bypass);stroke-width:2.6"/></svg>계약을 거치지 않는 직접 의존</span>
+<span><svg width="30" height="10"><path d="M6 5 H24" style="stroke:var(--bypass);stroke-width:2" marker-start="url(#m-bypass)" marker-end="url(#m-bypass)"/></svg>서로 직접 의존</span>
 {{template "origins"}}
 {{else}}
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
