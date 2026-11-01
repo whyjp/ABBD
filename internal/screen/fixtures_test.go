@@ -94,21 +94,19 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // cannot fold, so its climbing lines stay (docs/blueprint-svg.md, "Known
 // gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
-	"self MOD-0001 abbd CLI":                      {Back: 5},
-	"self FEAT-0001 /abbd":                        {Back: 5},
-	"self MOD-0030 internal/model":                {Back: 3},
-	"self MOD-0047 internal/topology":             {Back: 2},
-	"orca MOD-0007 mobile app (Expo)":             {Back: 11, MaxChannel: 5, TooClose: 2},
-	"orca MOD-0042 desktop main process":          {Crossings: 89, Back: 10, MaxChannel: 5},
-	"orca MOD-0056 Orca runtime (RPC host)":       {MaxChannel: 6, Back: 7, TooClose: 3},
-	"orca MOD-0072 desktop renderer UI":           {Back: 6},
-	"orca MOD-0098~1 서로 쓰는 5개":                    {SplitIn: 2, TooClose: 3},
-	"orca MOD-0099 src/":                          {Back: 2},
-	"orca MOD-0100~1 서로 쓰는 9개":                    {Back: 3, MaxDetour: 252},
-	"pstack MOD-0001 setup and help":              {SplitIn: 4},
-	"pstack MOD-0003 principles":                  {Back: 3},
-	"pstack MOD-0004 poteto-mode, the front door": {SplitIn: 4},
-	"pstack MOD-0015 verification principles":     {Truncated: 1},
+	"self MOD-0001 abbd CLI":                  {Back: 5},
+	"self FEAT-0001 /abbd":                    {Back: 5},
+	"self MOD-0030 internal/model":            {Back: 3},
+	"self MOD-0047 internal/topology":         {Back: 2},
+	"orca MOD-0007 mobile app (Expo)":         {Back: 11},
+	"orca MOD-0042 desktop main process":      {Crossings: 87, Back: 10, MaxDetour: 244},
+	"orca MOD-0056 Orca runtime (RPC host)":   {Back: 7},
+	"orca MOD-0072 desktop renderer UI":       {Back: 6},
+	"orca MOD-0099 src/":                      {Back: 2},
+	"orca MOD-0100~1 서로 쓰는 9개":                {Back: 3, MaxDetour: 344},
+	"pstack MOD-0001 setup and help":          {Braid: 2278},
+	"pstack MOD-0003 principles":              {Back: 3},
+	"pstack MOD-0015 verification principles": {Truncated: 1},
 }
 
 // over names each measure that went past its recorded debt. A measure the

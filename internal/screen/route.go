@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"maps"
 	"slices"
 	"sort"
@@ -70,6 +71,9 @@ type plan struct {
 	dep, arr int
 	// ride is how many rows the line passes on its departure bus's trunk.
 	ride int
+	// via is where a line that leaves its departure trunk for an arrival
+	// trunk below that trunk's top steps off the departure track, or -1.
+	via int
 }
 
 type bus struct {
@@ -81,6 +85,9 @@ type bus struct {
 	// rows a departure trunk passes.
 	passage map[int]int
 	deep    int
+	// lead is the line whose chain the trunk runs down, len(reqs) for none
+	// and -1 before it is chosen.
+	lead int
 }
 
 type slotKey struct {
@@ -118,7 +125,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	leave, arrive := map[slotKey][]int{}, map[slotKey][]int{}
 	for i, r := range reqs {
 		p := &plans[i]
-		p.dep, p.arr = -1, -1
+		p.dep, p.arr, p.via = -1, -1, -1
 		a, b := r.from.row, r.to.row
 		p.up, p.same = b < a, a == b
 		switch {
@@ -135,13 +142,20 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		}
 		fk := slotKey{r.from.key, side(p.up, true, p.same)}
 		tk := slotKey{r.to.key, side(p.up, false, p.same)}
-		members[fk] = append(members[fk], i)
-		ends[tk] = append(ends[tk], i)
+		// Frame ports folded into one chip are one place: they share its
+		// slots and its buses.
+		at := func(e end, k slotKey) slotKey {
+			k.key = place(e)
+			return k
+		}
+		members[at(r.from, fk)] = append(members[at(r.from, fk)], i)
+		ends[at(r.to, tk)] = append(ends[at(r.to, tk)], i)
 		if p.same {
 			continue
 		}
-		// A box's lines bus by the box, whichever of its chips they use.
-		dk, ak := fk, tk
+		// A box's lines bus by the box, whichever of its chips they use,
+		// and a chip's by the chip, whichever folded ports it stands for.
+		dk, ak := at(r.from, fk), at(r.to, tk)
 		if r.from.node != "" {
 			dk.key = "node|" + r.from.node
 		}
@@ -152,6 +166,116 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		ak.key += "|" + r.kind
 		leave[dk] = append(leave[dk], i)
 		arrive[ak] = append(arrive[ak], i)
+	}
+	// A line between places more than a row apart runs down its chain:
+	// the dummies the layout set straight for it.
+	chainOf := make([]int, len(reqs))
+	{
+		byPair := map[[2]string]int{}
+		for c, ch := range l.chains {
+			byPair[pairKey(ch.upper, ch.lower)] = c
+		}
+		id := func(e end) string {
+			switch {
+			case e.node != "":
+				return e.node
+			case e.row < 0:
+				return frameTopNode
+			}
+			return frameBottomNode
+		}
+		for i, r := range reqs {
+			chainOf[i] = -1
+			c, ok := byPair[pairKey(id(r.from), id(r.to))]
+			if !ok {
+				continue
+			}
+			ch := l.chains[c]
+			if top, bottom := min(r.from.row, r.to.row)+1, max(r.from.row, r.to.row)-1; ch.top == top && ch.bottom == bottom {
+				chainOf[i] = c
+			}
+		}
+		// A frame's chips are set out after the layout, each over the
+		// mean of its lines, so a line to a chip may find its chain far off
+		// the way between its ends; it passes the rows on its own instead.
+		for i, r := range reqs {
+			c := chainOf[i]
+			if c < 0 {
+				continue
+			}
+			if r.from.node != "" && r.to.node != "" {
+				continue
+			}
+			ch := l.chains[c]
+			a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
+			for row := ch.top; row <= ch.bottom; row++ {
+				x := l.pass[[2]int{c, row}]
+				if abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
+					chainOf[i] = -1
+					break
+				}
+			}
+		}
+		l.reserved = map[int][]int{}
+		for c, ch := range l.chains {
+			for r := ch.top; r <= ch.bottom; r++ {
+				for k := 0; k < ch.lanes; k++ {
+					l.reserved[r] = append(l.reserved[r], l.pass[[2]int{c, r}]+k*chainLane)
+				}
+			}
+		}
+	}
+	// laneOf is the lane each line takes down its chain: the first lane
+	// while trunks choose their leads, then as handed out below.
+	laneOf := map[int]int{}
+	for i, c := range chainOf {
+		if c >= 0 {
+			laneOf[i] = 0
+		}
+	}
+	// near is the x where line i runs down its chain in the row next to its
+	// start, or its end.
+	near := func(i int, start bool) (int, bool) {
+		c := chainOf[i]
+		if k, ok := laneOf[i]; c < 0 || !ok || k >= l.chains[c].lanes {
+			return 0, false
+		}
+		ch := l.chains[c]
+		r := reqs[i]
+		row := ch.bottom
+		if start == (r.from.row < r.to.row) {
+			row = ch.top
+		}
+		return l.pass[[2]int{c, row}] + laneOf[i]*chainLane, true
+	}
+	// held says who passes each row at each x: a line by its index, a bus
+	// by -1-b. Two of them at one x in one row, or in rows next to each
+	// other, would meet and read as one.
+	held := map[[2]int]int{}
+	// runs is where line i, or the bus owner draws it for, runs down i's
+	// chain in row r, if it has room there.
+	runs := func(i, r, owner int) (int, bool) {
+		if i >= len(reqs) || chainOf[i] < 0 {
+			return 0, false
+		}
+		c := chainOf[i]
+		k, ok := laneOf[i]
+		if !ok || k >= l.chains[c].lanes {
+			return 0, false
+		}
+		x, ok := l.pass[[2]int{c, r}]
+		if !ok {
+			return 0, false
+		}
+		x += k * chainLane
+		for _, q := range []int{r - 1, r, r + 1} {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner {
+				return 0, false
+			}
+		}
+		held[[2]int{r, x}] = owner
+		l.passes[r] = append(l.passes[r], x)
+		return x, true
 	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
@@ -178,7 +302,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			for _, i := range is {
 				plans[i].ride = min(deep, len(plans[i].gaps)-1)
 			}
-			buses = append(buses, &bus{members: is, passage: map[int]int{}, deep: deep})
+			buses = append(buses, &bus{members: is, passage: map[int]int{}, deep: deep, lead: -1})
 		}
 	}
 	// Lines bound for boxes in one row, of one kind and from exactly the
@@ -214,15 +338,102 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			gathers = append(gathers, g)
 		}
 	}
+	// Lines that all ride one departure bus, one into each box, already
+	// travel as one; they split off its track straight into their boxes,
+	// without a second bus.
+	oneBus := func(is []int) bool {
+		seen := map[string]bool{}
+		for _, i := range is {
+			if d := plans[i].dep; d < 0 || d != plans[is[0]].dep || seen[place(reqs[i].to)] {
+				return false
+			}
+			seen[place(reqs[i].to)] = true
+		}
+		return true
+	}
 	for _, g := range gathers {
-		if len(g.members) >= busAt {
+		if len(g.members) >= busAt && !oneBus(g.members) {
 			for _, i := range g.members {
 				plans[i].arr = len(buses)
 			}
-			buses = append(buses, &bus{members: g.members, arrive: true, passage: map[int]int{}})
+			buses = append(buses, &bus{members: g.members, arrive: true, passage: map[int]int{}, lead: -1})
 		}
 	}
 	center := func(e end) int { return (e.lo + e.hi) / 2 }
+	// A trunk runs down the chain of one of its lines, its lead: for a
+	// departure bus the deepest line whose chain starts nearest the box,
+	// for an arrival bus the line that joins it first, whose chain ends
+	// nearest the boxes it reaches. The bus's stub, or its drop, stands
+	// right above or below that chain, so the trunk runs straight.
+	for _, b := range buses {
+		b.lead = len(reqs)
+		var at int
+		if b.arrive {
+			lo, hi := 1<<30, -1<<30
+			for _, m := range b.members {
+				lo, hi = min(lo, center(reqs[m].to)), max(hi, center(reqs[m].to))
+			}
+			at = (lo + hi) / 2
+		} else {
+			at = center(reqs[b.members[0]].from)
+		}
+		// own is how many rows the line passes on this bus's trunk.
+		own := func(m int) int {
+			q := &plans[m]
+			if !b.arrive {
+				return q.ride
+			}
+			if q.dep >= 0 {
+				return len(q.gaps) - 1 - q.ride
+			}
+			return len(q.gaps) - 1
+		}
+		for _, m := range b.members {
+			x, ok := near(m, !b.arrive)
+			if !ok || own(m) == 0 || !b.arrive && own(m) < b.deep {
+				continue
+			}
+			if b.lead == len(reqs) {
+				b.lead = m
+				continue
+			}
+			lx, _ := near(b.lead, !b.arrive)
+			if b.arrive && own(m) != own(b.lead) {
+				if own(m) > own(b.lead) {
+					b.lead = m
+				}
+				continue
+			}
+			if abs(x-at) < abs(lx-at) {
+				b.lead = m
+			}
+		}
+	}
+	// A chain's lanes go to the lines that run down it themselves: each
+	// trunk's lead first, then every line that passes rows off any trunk.
+	// A line that rides trunks all the way needs no lane of its own.
+	{
+		used := map[int]int{}
+		laneOf = map[int]int{}
+		claim := func(i int) {
+			if c := chainOf[i]; c >= 0 {
+				if _, ok := laneOf[i]; !ok {
+					laneOf[i] = used[c]
+					used[c]++
+				}
+			}
+		}
+		for _, b := range buses {
+			if b.lead < len(reqs) {
+				claim(b.lead)
+			}
+		}
+		for i := range reqs {
+			if p := &plans[i]; p.arr < 0 && (p.dep < 0 || p.ride < len(p.gaps)-1) {
+				claim(i)
+			}
+		}
+	}
 	// place spreads the lines over each end's range: one slot per bus, one
 	// per other line, ordered by where they lead. Lines that leave an edge
 	// and lines that reach it share the edge, so no two of them meet there.
@@ -256,7 +467,27 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		for _, i := range ends[k] {
 			add(i, plans[i].arr, false)
 		}
+		// A line alone in its slot that runs down a chain, or a bus whose
+		// trunk does, wants to leave or reach the box right above or below
+		// that chain, so it drops straight.
+		pin := func(sl slot) (int, bool) {
+			i := sl.is[0]
+			if b := plans[i].dep; sl.leave && b >= 0 {
+				i = buses[b].lead
+			} else if b := plans[i].arr; !sl.leave && b >= 0 {
+				i = buses[b].lead
+			} else if len(sl.is) != 1 {
+				return 0, false
+			}
+			if i >= len(reqs) {
+				return 0, false
+			}
+			return near(i, sl.leave)
+		}
 		other := func(sl slot) int {
+			if x, ok := pin(sl); ok {
+				return x
+			}
 			sum := 0
 			for _, i := range sl.is {
 				if sl.leave {
@@ -277,8 +508,55 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		if slots[0].leave {
 			r = reqs[slots[0].is[0]].from
 		}
+		// Slots spread evenly, a pinned one moves over its chain, and every
+		// slot keeps its order, a gap from the next, and clear of the
+		// chains passing the row next to the edge, which its stub would
+		// otherwise run into.
+		adj := r.row + k.side
+		xs := make([]int, len(slots))
+		pinned := make([]bool, len(slots))
 		for s, sl := range slots {
-			x := r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
+			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
+			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi {
+				xs[s], pinned[s] = x, true
+			}
+		}
+		clear := func(s, x int) bool {
+			for _, y := range l.reserved[adj] {
+				if abs(x-y) < lane && !(pinned[s] && x == xs[s]) {
+					return false
+				}
+			}
+			return true
+		}
+		for s := range slots {
+			if pinned[s] {
+				continue
+			}
+			for d := 0; d <= r.hi-r.lo; d += 2 {
+				if x := xs[s] + d; x <= r.hi && clear(s, x) {
+					xs[s] = x
+					break
+				}
+				if x := xs[s] - d; x >= r.lo && clear(s, x) {
+					xs[s] = x
+					break
+				}
+			}
+		}
+		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
+		edge := r.lo - gap
+		for s := range xs {
+			xs[s] = max(xs[s], edge+gap)
+			edge = xs[s]
+		}
+		edge = r.hi + gap
+		for s := len(xs) - 1; s >= 0; s-- {
+			xs[s] = min(xs[s], edge-gap)
+			edge = xs[s]
+		}
+		for s, sl := range slots {
+			x := xs[s]
 			for _, i := range sl.is {
 				if sl.leave {
 					plans[i].fx = x
@@ -311,13 +589,18 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				b := buses[p.dep]
 				x, ok := b.passage[r]
 				if !ok {
-					sum, n := 0, 0
-					for _, m := range b.members {
-						if plans[m].ride >= j {
-							sum, n = sum+plans[m].tx, n+1
+					if cx, ok := runs(b.lead, r, -1-p.dep); ok {
+						x = cx
+					} else {
+						sum, n := 0, 0
+						for _, m := range b.members {
+							if plans[m].ride >= j {
+								sum, n = sum+plans[m].tx, n+1
+							}
 						}
+						x = l.gutter(r, p.fx+(sum/n-p.fx)*j/(b.deep+1))
+						held[[2]int{r, x}] = -1 - p.dep
 					}
-					x = l.gutter(r, p.fx+(sum/n-p.fx)*j/(b.deep+1))
 					b.passage[r] = x
 				}
 				p.xs = append(p.xs, x)
@@ -331,24 +614,150 @@ func (l *layout) route(reqs []wireReq) []drawn {
 					for _, m := range b.members {
 						lo, hi = min(lo, plans[m].tx), max(hi, plans[m].tx)
 					}
-					x = l.gutter(r, (lo+hi)/2)
+					if cx, ok := runs(b.lead, r, -1-p.arr); ok {
+						x = cx
+					} else {
+						x = l.gutter(r, (lo+hi)/2)
+						held[[2]int{r, x}] = -1 - p.arr
+					}
 					b.passage[r] = x
 				}
 				p.xs = append(p.xs, x)
 				continue
 			}
-			p.xs = append(p.xs, l.gutter(r, p.fx+(p.tx-p.fx)*j/k))
+			if x, ok := runs(i, r, i); ok {
+				p.xs = append(p.xs, x)
+				continue
+			}
+			x := l.gutter(r, p.fx+(p.tx-p.fx)*j/k)
+			held[[2]int{r, x}] = i
+			p.xs = append(p.xs, x)
 		}
 		p.xs = append(p.xs, p.tx)
-		// A line that rides its departure trunk into its last gap leaves
-		// it where the trunk crosses that gap and steps down onto its
-		// arrival bus's track there, so lines from different trunks never
-		// share one drop.
-		if p.dep >= 0 && p.arr >= 0 && p.ride == k-1 {
-			p.xs[k] = p.xs[k-1]
+	}
+	// A line that rides its departure trunk into its last gap steps down
+	// from the trunk's track onto its arrival bus's track. Lines of one
+	// departure bus bound for one arrival bus step down together, and each
+	// such pair of buses steps down at an x of its own, clear of the lines
+	// passing the rows on either side: two steps at one x would overlap,
+	// and a reader could follow one bus's lines down the other's step into
+	// places they never reach. Where the trunk ends, the first pair steps
+	// straight on down it and the others a lane or more beside it, toward
+	// their ends. Where the trunk runs on below, every pair steps down
+	// above its end instead: an arrival track that ended on that trunk
+	// would join the two the same way.
+	{
+		type step struct{ dep, arr int }
+		var steps []step
+		for i := range plans {
+			p := &plans[i]
+			if p.dep >= 0 && p.arr >= 0 && p.ride == len(p.gaps)-1 {
+				st := step{p.dep, p.arr}
+				if !slices.Contains(steps, st) {
+					steps = append(steps, st)
+				}
+			}
+		}
+		at := map[step]int{}
+		for _, st := range steps {
+			lead := -1
+			for i := range plans {
+				if p := &plans[i]; p.dep == st.dep && p.arr == st.arr && p.ride == len(p.gaps)-1 {
+					lead = i
+					break
+				}
+			}
+			p := &plans[lead]
+			k := len(p.gaps)
+			g := p.gaps[k-1]
+			free := func(x int) bool {
+				for _, r := range []int{g - 1, g} {
+					for _, y := range l.passes[r] {
+						if abs(x-y) < lane && y != p.xs[k-1] {
+							return false
+						}
+					}
+				}
+				for o, y := range at {
+					if o != st && abs(x-y) < lane {
+						return false
+					}
+				}
+				return true
+			}
+			base := p.xs[k-1]
+			if buses[st.dep].deep > p.ride {
+				base = p.tx
+			}
+			at[st] = stepX(base, p.tx, free)
+		}
+		for i := range plans {
+			p := &plans[i]
+			if k := len(p.gaps); p.dep >= 0 && p.arr >= 0 && p.ride == k-1 {
+				p.xs[k] = at[step{p.dep, p.arr}]
+			}
 		}
 	}
 
+	// Only one departure track may meet an arrival trunk, at the trunk's
+	// top: a track that met it lower down would let a reader follow the
+	// trunk's lines from above onto that track and into the other places
+	// its bus reaches. Every other line that leaves a departure trunk for
+	// the arrival trunk steps down off its departure track a little before
+	// the trunk, onto a track of its own that ends on the trunk; a reader
+	// coming along the trunk cannot climb that step.
+	vias := map[int][]int{}
+	for _, b := range buses {
+		if !b.arrive {
+			continue
+		}
+		joinAt := func(m int) (int, bool) {
+			q := &plans[m]
+			switch {
+			case q.dep < 0:
+				return q.gaps[0], true
+			case q.ride < len(q.gaps)-1:
+				return q.gaps[q.ride], true
+			}
+			return 0, false
+		}
+		first, set := 0, false
+		for _, m := range b.members {
+			if g, ok := joinAt(m); ok && (!set || plans[m].up && g > first || !plans[m].up && g < first) {
+				first, set = g, true
+			}
+		}
+		top := -1
+		for _, m := range b.members {
+			q := &plans[m]
+			g, ok := joinAt(m)
+			if !ok || q.dep < 0 {
+				continue
+			}
+			if g == first && (top < 0 || top == q.dep) {
+				top = q.dep
+				continue
+			}
+			t, d := q.xs[q.ride+1], q.xs[q.ride]
+			free := func(x int) bool {
+				for _, r := range []int{g - 1, g} {
+					for _, y := range l.passes[r] {
+						if abs(x-y) < lane {
+							return false
+						}
+					}
+				}
+				for _, y := range vias[g] {
+					if abs(x-y) < lane {
+						return false
+					}
+				}
+				return true
+			}
+			q.via = viaX(t, d, free)
+			vias[g] = append(vias[g], q.via)
+		}
+	}
 	// owner says whose track crossing j of line i runs on: its departure
 	// bus while it rides that trunk, its arrival bus after it has joined
 	// that trunk, else its own. A line that rides its departure trunk into
@@ -358,6 +767,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	owner := func(i, j int) int {
 		p := &plans[i]
 		switch {
+		case p.via >= 0 && j == p.ride:
+			return i
 		case p.dep >= 0 && j <= p.ride:
 			return busOwner(p.dep)
 		case p.arr >= 0 && (j > 0 || len(p.gaps) == 1):
@@ -400,6 +811,17 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		for j, g := range p.gaps {
 			a, b := p.xs[j], p.xs[j+1]
 			o := owner(i, j)
+			if p.via >= 0 && j == p.ride {
+				d := busOwner(p.dep)
+				addSpan(g, d, a, p.via, p.up, false)
+				addSpan(g, i, p.via, b, p.up, false)
+				if p.up {
+					above[g][[2]int{i, d}] = true
+				} else {
+					above[g][[2]int{d, i}] = true
+				}
+				continue
+			}
 			// A line bound for a trunk keeps a track even when it runs
 			// straight down to it: the trunk starts there.
 			if a == b && !p.same && o == i && p.arr < 0 {
@@ -424,7 +846,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	// track into places they never reach.
 	for i := range reqs {
 		p := &plans[i]
-		if p.dep < 0 || p.arr < 0 || p.up || p.ride >= len(p.gaps)-1 {
+		if p.dep < 0 || p.arr < 0 || p.up || p.ride >= len(p.gaps)-1 || p.via >= 0 {
 			continue
 		}
 		g, r := p.gaps[p.ride], passRow(p, p.ride+1)
@@ -559,7 +981,11 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		st := noStart
 		k := len(p.gaps)
 		j := 0
-		if p.dep >= 0 {
+		if p.dep >= 0 && p.via >= 0 {
+			j = p.ride + 1
+			g := p.gaps[p.ride]
+			pts = append(pts, pt{p.via, trackY(g, busOwner(p.dep))}, pt{p.via, trackY(g, i)}, pt{p.xs[j], trackY(g, i)})
+		} else if p.dep >= 0 {
 			j = p.ride + 1
 			pts = append(pts, pt{p.xs[j], trackY(p.gaps[j-1], busOwner(p.dep))})
 		} else {
@@ -619,6 +1045,9 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			starts = append(starts, st)
 			for j := 0; j <= p.ride; j++ {
 				next := p.xs[j+1]
+				if j == p.ride && p.via >= 0 {
+					next = p.via
+				}
 				g := p.gaps[j]
 				lh, ok := span[g]
 				if !ok {
@@ -751,7 +1180,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		out[k].kind = reqs[out[k].reqs[0]].kind
 	}
 	for i := range reqs {
-		if p := &plans[i]; p.dep >= 0 && p.arr >= 0 && p.ride < len(p.gaps)-1 && len(out) > 0 {
+		if p := &plans[i]; p.dep >= 0 && p.arr >= 0 && p.ride < len(p.gaps)-1 && p.via < 0 && len(out) > 0 {
 			at := pt{p.xs[p.ride+1], trackY(p.gaps[p.ride], busOwner(p.dep))}
 			out[0].joinsAt = append(out[0].joinsAt, join{at, hue(reqs[i].kind)})
 		}
@@ -760,11 +1189,37 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	for _, r := range l.pos {
 		boxes = append(boxes, box{r.X, r.Y, r.W, r.H})
 	}
+	// A frame's chips are boxes to a count too: it must not sit on one.
+	seen := map[box]bool{}
+	for _, r := range reqs {
+		for _, e := range []end{r.from, r.to} {
+			if e.node != "" {
+				continue
+			}
+			b := box{e.lo - 4, l.top - chipH - 3, e.hi - e.lo + 8, chipH + 3}
+			if e.row >= 0 {
+				b.y = endY(e, 1) - 3
+			}
+			if !seen[b] {
+				seen[b] = true
+				boxes = append(boxes, b)
+			}
+		}
+	}
 	sort.Slice(boxes, func(i, j int) bool {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
 	anchor(out, pieces(out), boxes)
 	return out
+}
+
+// place names where an end is drawn: its key, or for a frame port the
+// chip it shares with the ports folded into it.
+func place(e end) string {
+	if e.node == "" {
+		return fmt.Sprint("chip|", e.row, "|", e.lo, "|", e.hi)
+	}
+	return e.key
 }
 
 // wanted are the pairs of places the requests join: a box, or a frame
@@ -786,6 +1241,13 @@ func wanted(reqs []wireReq) [][2]string {
 	}
 	return out
 }
+
+// detourOffer is how much longer than the direct way a chain may make a
+// line to a frame's chip before the line passes the rows on its own.
+const detourOffer = 160
+
+// slotGap is the least room between two lines on one edge of a box.
+const slotGap = 12
 
 // countRoom is how far a bus's track keeps from the box whose stub or drop
 // carries the bus's count: the count's height and a clear margin.
@@ -824,4 +1286,58 @@ func (l *layout) place(tracks []int, room [][2]int) {
 		y += rh
 	}
 	l.height = y
+}
+
+// walk is the first x that free says is clear, going a lane at a time in
+// direction dir from a without passing b.
+func walk(a, b, dir int, free func(int) bool) (int, bool) {
+	for x := a; (x-b)*dir <= 0; x += dir * lane {
+		if free(x) {
+			return x, true
+		}
+	}
+	return 0, false
+}
+
+// stepX is where a line that rides its departure trunk into its last gap
+// steps down onto its arrival track: from base toward its end at x end,
+// at the first x free says is clear. Past either of those it costs the
+// line twice the overshoot, so it then takes the clear x nearest to them,
+// up to 32 lanes out. With none clear it steps at base.
+func stepX(base, end int, free func(int) bool) int {
+	dir := 1
+	if end < base {
+		dir = -1
+	}
+	if x, ok := walk(base, end, dir, free); ok {
+		return x
+	}
+	for m := 1; m <= 32; m++ {
+		for _, x := range []int{end + dir*m*lane, base - dir*m*lane} {
+			if free(x) {
+				return x
+			}
+		}
+	}
+	return base
+}
+
+// viaX is where a line steps down off its departure track at x d onto a
+// track of its own that ends on the arrival trunk at x t: two lanes or
+// more off the trunk toward d, at the first x free says is clear, then
+// one lane off it. It never reaches d, past which its track would hook
+// back under the departure trunk. With no clear x between them it steps
+// halfway.
+func viaX(t, d int, free func(int) bool) int {
+	dir := 1
+	if d < t {
+		dir = -1
+	}
+	if x, ok := walk(t+2*dir*lane, d-dir, dir, free); ok {
+		return x
+	}
+	if x := t + dir*lane; (x-d)*dir < 0 && free(x) {
+		return x
+	}
+	return (t + d) / 2
 }
