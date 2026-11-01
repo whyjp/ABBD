@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "b5224a9f84b56a1284a987e9d6dccdb1c5ad71bdba51b7defdd86939d1995cf4"
+    "inputs_hash": "9388577e1def4d24d7e7488de639d19901a79f73ebe7a98fc358402bf419ba59"
   },
   "units": [
     {
@@ -242,7 +242,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:407 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:411 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -332,7 +332,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:452 \"if !u.Absent {\""
+        "internal/model/model.go:456 \"if !u.Absent {\""
       ]
     },
     {
@@ -404,7 +404,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:345 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:349 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -422,7 +422,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:365 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:369 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -828,8 +828,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:384 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:366 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:388 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:370 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
@@ -1506,7 +1506,7 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go:159 \"func (u Unit) Semantic() bool { return u.Name.Origin == Inferred }\"",
-        "internal/model/model.go:407 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:411 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -1528,8 +1528,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:283 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:314 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:287 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go:318 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -2972,7 +2972,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:407 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:411 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -2988,7 +2988,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:452 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:456 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3012,7 +3012,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:345 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:349 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3020,7 +3020,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:365 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:369 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -3546,7 +3546,7 @@
         "Name": "/abbd",
         "Kind": "FEAT",
         "Class": "design",
-        "Title": "FEAT-0001 /abbd. 누르면 이 모듈의 안을 봅니다",
+        "Title": "FEAT-0001 /abbd",
         "Lines": [
           {
             "S": "/abbd",
@@ -3558,15 +3558,14 @@
         "X": 223,
         "Y": 32,
         "W": 874,
-        "H": 60,
-        "Href": "#m-FEAT-0001"
+        "H": 60
       },
       {
         "ID": "FEAT-0002",
         "Name": "/abbd-setup",
         "Kind": "FEAT",
         "Class": "design",
-        "Title": "FEAT-0002 /abbd-setup. 누르면 이 모듈의 안을 봅니다",
+        "Title": "FEAT-0002 /abbd-setup",
         "Lines": [
           {
             "S": "/abbd-setup",
@@ -3578,8 +3577,7 @@
         "X": 330,
         "Y": 128,
         "W": 660,
-        "H": 60,
-        "Href": "#m-FEAT-0002"
+        "H": 60
       },
       {
         "ID": "MOD-0001",
@@ -6587,7 +6585,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7118,7 +7116,31 @@
                 "Code": true
               },
               {
-                "Text": " never overwrites an EXTRACTED relation and never lets an INFERRED finding replace a USER_STATED one.",
+                "Text": " never overwrites an EXTRACTED relation and never lets an INFERRED finding replace a USER_STATED one. ",
+                "Code": false
+              },
+              {
+                "Text": "recordParent",
+                "Code": true
+              },
+              {
+                "Text": " places a unit inside another module or feature, INFERRED with ",
+                "Code": false
+              },
+              {
+                "Text": "--evidence",
+                "Code": true
+              },
+              {
+                "Text": " or USER_STATED with ",
+                "Code": false
+              },
+              {
+                "Text": "--source",
+                "Code": true
+              },
+              {
+                "Text": ". It refuses a directory group that sync made.",
                 "Code": false
               }
             ]
@@ -7172,7 +7194,15 @@
                 "Code": true
               },
               {
-                "Text": " has an INFERRED name and stays present only while its evidence is live.",
+                "Text": " has an INFERRED name and stays present only while its evidence is live. Its ",
+                "Code": false
+              },
+              {
+                "Text": "--parent",
+                "Code": true
+              },
+              {
+                "Text": " must be a module or feature of the state. That parent is the reader's, INFERRED on the unit's own evidence. So a later sync keeps it when the script takes the unit over without a parent of its own.",
                 "Code": false
               }
             ]
@@ -8005,7 +8035,7 @@
                 "Code": true
               },
               {
-                "Text": ". The script reports what the code shows mechanically. The readers add what only reading reveals. That covers a unit's purpose and responsibility, units the script cannot see, which module a unit sits in, and couplings through a callback, a config flag or shared data. ",
+                "Text": ". The script reports what the code shows mechanically. The readers add what only reading reveals. That covers a unit's purpose and responsibility, units the script cannot see, which module or feature a unit sits in, and couplings through a callback, a config flag or shared data. ",
                 "Code": false
               },
               {
@@ -8175,7 +8205,7 @@
                 "Code": true
               },
               {
-                "Text": ". It shares the script's schema and checks, but its units may name a script module's key as their parent. Its other keys are local to the file.",
+                "Text": ". It shares the script's schema and checks, but its units may name the key of a script module or feature as their parent. Its other keys are local to the file.",
                 "Code": false
               }
             ]
@@ -8305,7 +8335,15 @@
                 "Code": true
               },
               {
-                "Text": " key looked up first among the supplement units that landed, then among the script's keys. It must be a module. It rests on ",
+                "Text": " key looked up first among the supplement units that landed, then among the script's keys. It must be a module or a feature, the two kinds ",
+                "Code": false
+              },
+              {
+                "Text": "model.Kind.Holds",
+                "Code": true
+              },
+              {
+                "Text": " allows. It rests on ",
                 "Code": false
               },
               {
@@ -10113,7 +10151,7 @@
                 "Code": true
               },
               {
-                "Text": " module key with ",
+                "Text": " key of the module or feature that contains it, with ",
                 "Code": false
               },
               {
@@ -10307,7 +10345,15 @@
                 "Code": true
               },
               {
-                "Text": "): keys are unique. A parent must be the key of another module, and ",
+                "Text": "): keys are unique. A parent must be the key of another module or feature, the two kinds ",
+                "Code": false
+              },
+              {
+                "Text": "model.Kind.Holds",
+                "Code": true
+              },
+              {
+                "Text": " allows. ",
                 "Code": false
               },
               {
@@ -13813,7 +13859,15 @@
                 "Code": true
               },
               {
-                "Text": ", of about 470 lines, and it imports only the standard library. Every other internal package uses it (",
+                "Text": ", of about 470 lines, and it imports only the standard library. Every other internal package but ",
+                "Code": false
+              },
+              {
+                "Text": "gitx",
+                "Code": true
+              },
+              {
+                "Text": " uses it (",
                 "Code": false
               },
               {
@@ -13918,7 +13972,7 @@
                 "Code": true
               },
               {
-                "Text": ", and a parent must be another module. ",
+                "Text": ", and a parent must be another module or feature. ",
                 "Code": false
               },
               {
@@ -14053,7 +14107,7 @@
                 "Code": true
               },
               {
-                "Text": " with ",
+                "Text": ", the module or feature that contains it, with ",
                 "Code": false
               },
               {
@@ -14275,7 +14329,31 @@
                 "Code": true
               },
               {
-                "Text": " are reserved and rejected.",
+                "Text": " are reserved and rejected. ",
+                "Code": false
+              },
+              {
+                "Text": "Holds()",
+                "Code": true
+              },
+              {
+                "Text": " is true for ",
+                "Code": false
+              },
+              {
+                "Text": "MOD",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "FEAT",
+                "Code": true
+              },
+              {
+                "Text": ", the two kinds that may contain others. A module holds its units, and a feature holds its parts, such as a skill's steps.",
                 "Code": false
               }
             ]
@@ -15046,7 +15124,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:407 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:411 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -15064,7 +15142,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:452 \"if !u.Absent {\""
+            "internal/model/model.go:456 \"if !u.Absent {\""
           ]
         },
         {
@@ -15091,7 +15169,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:345 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:349 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -15100,7 +15178,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:365 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:369 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -16171,7 +16249,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The overview draws each top-level module as a box. Provided contracts are chips on its top edge and used ones are chips on its bottom edge. A blue line runs from a user's chip to the provider's chip, and a thick orange ",
+                "Text": "The overview draws each top-level module and feature as a box. Provided contracts are chips on its top edge and used ones are chips on its bottom edge. A blue line runs from a user's chip to the provider's chip, and a thick orange ",
                 "Code": false
               },
               {
@@ -16179,7 +16257,15 @@
                 "Code": true
               },
               {
-                "Text": " line marks a module dependency no contract carries. A relation from a unit at any depth is lifted to its top-level module. Live INFERRED couplings are drawn too, because sync rechecks their quotes. Only dead ones are dropped. A small circle at a line's start marks a reader's or a human's relation, and a dashed line runs against the reading direction. Every top-level module and every unit that holds others has its own view. Everything is sorted before it is placed, so the same store always draws the same picture. ",
+                "Text": " line marks a module dependency no contract carries. A relation from a unit at any depth is lifted to the top-level unit that contains it. Live INFERRED couplings are drawn too, because sync rechecks their quotes. Only dead ones are dropped. A small circle at a line's start marks a reader's or a human's relation, and a dashed line runs against the reading direction. Every top-level module and every unit that holds others has its own view. An overview box links to its view only when ",
+                "Code": false
+              },
+              {
+                "Text": "viewOf",
+                "Code": true
+              },
+              {
+                "Text": " names one. A feature with no parts has none, so its box carries no link and its title offers no click. Everything is sorted before it is placed, so the same store always draws the same picture. ",
                 "Code": false
               },
               {
@@ -16490,7 +16576,15 @@
                 "Code": true
               },
               {
-                "Text": " is a module, an inside unit, a fold, or a contract no module provides. A crowded edge folds its last chips into one \"+N\" ",
+                "Text": " is a top-level module or feature, an inside unit, a fold, or a contract no module provides. Its ",
+                "Code": false
+              },
+              {
+                "Text": "Href",
+                "Code": true
+              },
+              {
+                "Text": " opens a view the page holds, and it stays empty when there is none. A crowded edge folds its last chips into one \"+N\" ",
                 "Code": false
               },
               {
@@ -16644,7 +16738,7 @@
                 "Code": true
               },
               {
-                "Text": ". Its frame carries the module's contracts and dashed ports for the modules it meets without one. It also holds ",
+                "Text": ". Its frame carries the contracts of the module or feature it opens and dashed ports for the modules it meets without one. It also holds ",
                 "Code": false
               },
               {
