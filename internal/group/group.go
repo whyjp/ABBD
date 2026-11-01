@@ -65,9 +65,11 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 				members = append(members, i)
 			}
 		}
+		// The overview draws a top-level contract as a chip on the module
+		// that provides it, not as a box.
 		boxes := 0
 		for _, u := range out {
-			if !u.Absent && u.Parent == container {
+			if !u.Absent && u.Parent == container && (container != "" || !u.Kind.IsContract()) {
 				boxes++
 			}
 		}

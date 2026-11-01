@@ -77,3 +77,16 @@ func TestASmallTopLevelStaysFlat(t *testing.T) {
 		t.Fatalf("a top level within the budget is left alone")
 	}
 }
+
+// The overview draws a top-level contract as a chip, so contracts do not
+// count against the budget there.
+func TestTopLevelContractsDoNotCrowdTheOverview(t *testing.T) {
+	us := flat()[:Budget]
+	for i := 1; i <= 5; i++ {
+		us = append(us, model.Unit{ID: model.FormatID(model.Interface, i), Kind: model.Interface, Name: model.Fact{Value: "c", Origin: model.Extracted}, Anchors: []model.Anchor{{Path: fmt.Sprintf("api/c%d.go", i)}}})
+	}
+	got, _ := Fallback(us, nil)
+	if len(got) != len(us) || !reflect.DeepEqual(parents(got), parents(us)) {
+		t.Fatalf("twelve modules and five contracts fit one overview")
+	}
+}
