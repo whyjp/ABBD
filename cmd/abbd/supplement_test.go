@@ -70,3 +70,37 @@ func TestSupplementTieBetweenUnrelatedModulesNamesThem(t *testing.T) {
 	p.setup(1, `MOD "alpha" and MOD "beta"`, "--supplement", p.file(t, "sup.json", `{"units":[
  {"key":"x","kind":"MOD","name":"lib","anchors":[{"path":"lib"}],"purpose":"p"}]}`), "--", exe)
 }
+
+// A reader finds a module inside a package the script anchors on its
+// directory and files, so its quote sits on one of the parent's anchors. It
+// names that parent, so it is code inside the parent, not the parent itself.
+func TestSupplementInsideModuleUnderADirectoryAnchoredParent(t *testing.T) {
+	for _, symbol := range []string{"", `"symbol":"serve",`} {
+		p, out := nestedProject(t, `{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]},
+ {"key":"serve","kind":"MOD","name":"serve","parent":"app",
+  "evidence":[{"path":"app/main.py","lines":"2",`+symbol+`"quote":"return 'GET /x'"}]}]}`)
+		if p.setupCode(out) != 0 {
+			t.Fatalf("setup should accept an inside module under the parent it names (%s):\n%s", symbol, out)
+		}
+		contains(t, p.want(0, "", "explain", "serve"), "serve (MOD, INFERRED)\ninside MOD-0001 app\n")
+		p.want(0, "", "sync")
+		contains(t, p.want(0, "", "explain", "serve"), "inside MOD-0001 app\n")
+		contains(t, p.want(0, "", "explain", "MOD-0001"), "app (MOD, EXTRACTED)")
+	}
+	_, out := nestedProject(t, `{"units":[
+ {"key":"serve","kind":"MOD","name":"serve",
+  "evidence":[{"path":"app/main.py","lines":"2","quote":"return 'GET /x'"}]}]}`)
+	contains(t, out, "exit 1\n", `would merge into it`)
+}
+
+// When the parent's anchors are exactly the unit's, nothing tells the two
+// apart, so the unit is still refused.
+func TestSupplementInsideModuleNeedsAnAnchorItsParentLacks(t *testing.T) {
+	p, exe := bare(t)
+	p.code("app/main.py", "def serve():\n    return 'GET /x'\n")
+	p.extract(`{"units":[{"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]}]}`)
+	p.setup(1, "would merge into it", "--supplement", p.file(t, "sup.json", `{"units":[
+ {"key":"serve","kind":"MOD","name":"serve","parent":"app",
+  "evidence":[{"path":"app/main.py","lines":"2","quote":"return 'GET /x'"}]}]}`), "--", exe)
+}

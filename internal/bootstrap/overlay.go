@@ -41,8 +41,11 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if len(d.Evidence) > 0 {
 			// Evidence says the script cannot see the unit. Folding it into a
 			// script unit that shares an anchor would drop it without a word.
-			if err == nil {
-				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Name.Value)
+			// A unit that names the module it shares with as its parent sits
+			// inside that module's anchors, so it stays a unit of its own as
+			// long as some anchor of the parent's tells the two apart.
+			if err == nil && !(sc.within(i, sc.parentOf(d, doc)) && !sameAnchors(sc.units[i].Anchors, d.Anchors)) {
+				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; name %q as its parent if it sits inside it, anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Key, out.Units[i].Name.Value)
 			}
 			out.Units = append(out.Units, semantic(d, fmt.Sprintf("supplement#%d", n)))
 			i, err = len(out.Units)-1, nil
@@ -140,9 +143,13 @@ func newScript(units []extract.Unit) script {
 	return s
 }
 
-// within reports whether script unit i is j or one of j's ancestors.
+// within reports whether script unit i is j or one of j's ancestors. A j
+// of -1 is no unit.
 func (s script) within(i, j int) bool {
 	for range s.units {
+		if j < 0 {
+			return false
+		}
 		if i == j {
 			return true
 		}
@@ -153,6 +160,30 @@ func (s script) within(i, j int) bool {
 		j = p
 	}
 	return false
+}
+
+// parentOf is the script unit d names as its parent, by a script key or by
+// a supplement unit that restates one, or -1.
+func (s script) parentOf(d extract.Unit, doc extract.Result) int {
+	if d.Parent == "" {
+		return -1
+	}
+	for _, p := range doc.Units {
+		if p.Key == d.Parent {
+			if i, err := s.match(p); err == nil && len(p.Evidence) == 0 {
+				return i
+			}
+			return -1
+		}
+	}
+	if i, ok := s.key[d.Parent]; ok {
+		return i
+	}
+	return -1
+}
+
+func sameAnchors(a, b []model.Anchor) bool {
+	return len(a) == len(b) && overlap(a, b) == len(a)
 }
 
 // match finds the script unit of d's kind that shares the most anchors with
