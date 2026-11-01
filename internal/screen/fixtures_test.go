@@ -89,20 +89,23 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 }
 
 // debt are the views of the real states that do not keep every rule yet,
-// with what they measure now. They may only improve. Each is a dense,
-// cyclic import graph among siblings that no grouping by directory splits;
-// it waits for a reader's grouping (docs/blueprint-svg.md, "Supplying
-// groups").
+// with what they measure now. They may only improve. The Orca insides are
+// dense cyclic import graphs among siblings: a cycle that fills its view
+// cannot fold, so its climbing lines stay (docs/blueprint-svg.md, "Known
+// gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
-	"self overview":                         {Crossings: 35},
-	"ripgrep overview":                      {TooClose: 1, Crossings: 39},
-	"self MOD-0001 abbd CLI":                {PortFar: 1},
-	"orca MOD-0007 mobile app (Expo)":       {MaxChannel: 5, TooClose: 10, Crossings: 189},
-	"orca MOD-0042 desktop main process":    {MaxChannel: 5, TooClose: 11, Crossings: 365},
-	"orca MOD-0056 Orca runtime (RPC host)": {MaxChannel: 5, TooClose: 1, Crossings: 97, PortFar: 3},
-	"orca MOD-0072 desktop renderer UI":     {MaxChannel: 6, TooClose: 4, Crossings: 65},
-	"orca MOD-0098 src/":                    {MaxChannel: 5, TooClose: 7, Crossings: 68},
-	"orca MOD-0100 src/shared/":             {Boxes: 20, TooClose: 1, Crossings: 68, PortFar: 2},
+	"self overview":                         {TooClose: 2},
+	"self MOD-0001 abbd CLI":                {Back: 5},
+	"self MOD-0030 internal/model":          {Crossings: 7},
+	"ripgrep overview":                      {TooClose: 1},
+	"orca MOD-0007 mobile app (Expo)":       {Back: 11},
+	"orca MOD-0042 desktop main process":    {MaxChannel: 6, TooClose: 3, Crossings: 117, Back: 10},
+	"orca MOD-0056 Orca runtime (RPC host)": {MaxChannel: 7, TooClose: 3, Crossings: 77, Back: 7},
+	"orca MOD-0072 desktop renderer UI":     {MaxChannel: 5, TooClose: 1, Back: 6},
+	"orca MOD-0097 native/":                 {TooClose: 1},
+	"orca MOD-0098~1 서로 쓰는 5개":              {SplitIn: 2, TooClose: 3},
+	"orca MOD-0099 src/":                    {Back: 2},
+	"orca MOD-0100~1 서로 쓰는 9개":              {Back: 3},
 }
 
 // over names each measure that went past its recorded debt. A measure the
@@ -114,14 +117,14 @@ func (m Metrics) over(d Metrics) []string {
 		got, owed int
 	}{
 		{"boxes", m.Boxes, d.Boxes}, {"width", m.Width, d.Width}, {"channel", m.MaxChannel, d.MaxChannel},
-		{"too-close pairs", m.TooClose, d.TooClose}, {"crossings", m.Crossings, d.Crossings}, {"far ports", m.PortFar, d.PortFar},
+		{"too-close pairs", m.TooClose, d.TooClose}, {"crossings", m.Crossings, d.Crossings}, {"back lines", m.Back, d.Back}, {"split arrivals", m.SplitIn, d.SplitIn},
 	} {
 		if c.owed > 0 && c.got > c.owed {
 			out = append(out, fmt.Sprintf("%s %d, recorded %d", c.name, c.got, c.owed))
 		}
 	}
 	held := m
-	held.Boxes, held.Width, held.MaxChannel, held.TooClose, held.Crossings, held.PortFar = 0, 0, 0, 0, 0, 0
+	held.Boxes, held.Width, held.MaxChannel, held.TooClose, held.Crossings, held.Back, held.SplitIn = 0, 0, 0, 0, 0, 0, 0
 	if d.Boxes == 0 {
 		held.Boxes = m.Boxes
 	}
@@ -137,8 +140,11 @@ func (m Metrics) over(d Metrics) []string {
 	if d.Crossings == 0 {
 		held.Crossings = m.Crossings
 	}
-	if d.PortFar == 0 {
-		held.PortFar = m.PortFar
+	if d.Back == 0 {
+		held.Back = m.Back
+	}
+	if d.SplitIn == 0 {
+		held.SplitIn = m.SplitIn
 	}
 	width := insideWidth
 	if strings.HasSuffix(fmt.Sprint(d), "overview") {

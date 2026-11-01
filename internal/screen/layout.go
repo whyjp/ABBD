@@ -51,8 +51,11 @@ const (
 	// share a channel before the next one starts a new channel, rule 2.
 	lane   = 8
 	bundle = 4
-	// busAt is how many lines into one place are drawn as one bundle.
-	busAt = 3
+	// busAt is how many lines into one box are drawn as one bundle.
+	busAt = 2
+	// frameTopNode and frameBottomNode stand for a frame's top and bottom
+	// edge while a view is layered; they are never placed.
+	frameTopNode, frameBottomNode = "frame:top", "frame:bottom"
 	// Width budgets, rule 5: what the page shows of a drawing at 1440px wide.
 	overviewBudget = 1320
 	insideBudget   = 920
@@ -196,6 +199,50 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 		if !used && low > 0 {
 			rank[v] = low - 1
 		}
+	}
+	// A node that uses what sits below the frame sinks to just above the
+	// highest other thing it uses, so its line down stays short.
+	for i := len(order) - 1; i >= 0; i-- {
+		v := order[i]
+		if !keep[ledge{v, frameBottomNode}] {
+			continue
+		}
+		low := rank[frameBottomNode]
+		for _, w := range out[v] {
+			if keep[ledge{v, w}] && w != frameBottomNode {
+				low = min(low, rank[w])
+			}
+		}
+		rank[v] = max(rank[v], low-1)
+	}
+	// The frame's edges leave the layering, and the layers they alone held
+	// close up.
+	if _, ok := byID[frameTopNode]; ok {
+		nodes = slices.DeleteFunc(nodes, func(nd lnode) bool { return nd.id == frameTopNode || nd.id == frameBottomNode })
+		delete(rank, frameTopNode)
+		delete(rank, frameBottomNode)
+		used := map[int]bool{}
+		for _, nd := range nodes {
+			used[rank[nd.id]] = true
+		}
+		var levels []int
+		for r := range used {
+			levels = append(levels, r)
+		}
+		slices.Sort(levels)
+		at := map[int]int{}
+		for i, r := range levels {
+			at[r] = i
+		}
+		for _, nd := range nodes {
+			rank[nd.id] = at[rank[nd.id]]
+		}
+		for k := range out {
+			out[k] = slices.DeleteFunc(out[k], func(w string) bool { return w == frameTopNode || w == frameBottomNode })
+		}
+		delete(out, frameTopNode)
+		delete(touched, frameTopNode)
+		delete(touched, frameBottomNode)
 	}
 	n := 0
 	for _, r := range rank {
@@ -443,528 +490,6 @@ type wireReq struct {
 	from, to end
 	// kind keeps lines of different kinds out of one bundle.
 	kind string
-}
-
-// drawn is one path on the page. It draws one request, or a bundle of
-// several that end in the same place, with Count saying how many.
-type drawn struct {
-	D      string
-	reqs   []int
-	starts []pt
-	label  pt
-	// net groups the paths of one bundle drawn as several paths; count is
-	// how many lines a bundle carries, on the path that shows the count.
-	net, count int
-	parts      [][]pt
-}
-
-type pt struct{ x, y int }
-
-type plan struct {
-	gaps []int
-	xs   []int
-	// up says the line climbs: it leaves a box's top and enters one's bottom.
-	up, same bool
-	fx, tx   int
-	bus      int
-	// fan says the bundle leaves one place: its lines share the leader's
-	// route and branch off in their last gap.
-	fan bool
-}
-
-// route draws every request. Lines that leave one place in one direction
-// always share a trunk; whether lines into one place do too is decided by
-// trying both and keeping the one whose lines cross least, the merged one on
-// a tie. Each try is deterministic, so the choice is too.
-func (l *layout) route(reqs []wireReq) []drawn {
-	best, bestN := 0, -1
-	for v, opt := range bundlings {
-		if n := crossings(l.routeWith(reqs, opt)); bestN < 0 || n < bestN {
-			best, bestN = v, n
-		}
-	}
-	return l.routeWith(reqs, bundlings[best])
-}
-
-// bundling says which bundles a routing makes: fan-out from one place, and
-// fan-in into one place.
-type bundling struct{ out, in bool }
-
-var bundlings = []bundling{{true, true}, {true, false}}
-
-// crossings counts where two drawn paths of different bundles cross.
-func crossings(ds []drawn) int {
-	type seg struct {
-		a, b pt
-		net  int
-	}
-	var segs []seg
-	for i, d := range ds {
-		net := -1 - i
-		if d.net > 0 {
-			net = d.net
-		}
-		for _, part := range d.parts {
-			for k := 1; k < len(part); k++ {
-				segs = append(segs, seg{part[k-1], part[k], net})
-			}
-		}
-	}
-	n := 0
-	for i := range segs {
-		for j := i + 1; j < len(segs); j++ {
-			a, b := segs[i], segs[j]
-			if a.net == b.net {
-				continue
-			}
-			// Paths run on a grid: one segment is horizontal, the other
-			// vertical, and they cross strictly inside both.
-			h, v := a, b
-			if h.a.y != h.b.y {
-				h, v = b, a
-			}
-			if h.a.y != h.b.y || v.a.x != v.b.x {
-				continue
-			}
-			if v.a.x > min(h.a.x, h.b.x) && v.a.x < max(h.a.x, h.b.x) && h.a.y > min(v.a.y, v.b.y) && h.a.y < max(v.a.y, v.b.y) {
-				n++
-			}
-		}
-	}
-	return n
-}
-
-func (l *layout) routeWith(reqs []wireReq, opt bundling) []drawn {
-	l.lanes = map[[2]int]int{}
-	n := len(l.rows)
-	plans := make([]plan, len(reqs))
-	side := func(e end, up, isFrom, same bool) int {
-		// +1 is a box's bottom, -1 its top.
-		switch {
-		case same:
-			return 1
-		case isFrom == up:
-			return -1
-		}
-		return 1
-	}
-	type slotKey struct {
-		key  string
-		side int
-	}
-	members := map[slotKey][]int{}
-	ends := map[slotKey][]int{}
-	fans := map[slotKey][]int{}
-	for i, r := range reqs {
-		p := &plans[i]
-		a, b := r.from.row, r.to.row
-		p.up, p.same = b < a, a == b
-		switch {
-		case p.same:
-			p.gaps = []int{a + 1}
-		case p.up:
-			for g := a; g > b; g-- {
-				p.gaps = append(p.gaps, g)
-			}
-		default:
-			for g := a + 1; g <= b; g++ {
-				p.gaps = append(p.gaps, g)
-			}
-		}
-		fk := slotKey{r.from.key, side(r.from, p.up, true, p.same)}
-		tk := slotKey{r.to.key, side(r.to, p.up, false, p.same)}
-		members[fk] = append(members[fk], i)
-		ends[tk] = append(ends[tk], i)
-		// A box's lines bundle by the box, whichever of its chips they leave.
-		if r.from.node != "" {
-			fk.key = "node|" + r.from.node
-		}
-		fans[fk] = append(fans[fk], i)
-	}
-	// Bundles, rule 2. Lines of one kind that leave one place in one
-	// direction travel as one trunk led by the one that goes furthest, and
-	// branch off in their last gap. Of the lines left, those of one kind into
-	// one place travel as one trunk led by the one that starts furthest away,
-	// and join it in the first gap they cross.
-	p0 := 0
-	buses := map[int][]int{}
-	leader := map[int]int{}
-	bundleOf := func(is []int) {
-		p0++
-		buses[p0] = is
-		lead := is[0]
-		for _, i := range is {
-			plans[i].bus = p0
-			if len(plans[i].gaps) > len(plans[lead].gaps) {
-				lead = i
-			}
-		}
-		leader[p0] = lead
-	}
-	var fanKeys []slotKey
-	for k := range fans {
-		fanKeys = append(fanKeys, k)
-	}
-	sort.Slice(fanKeys, func(i, j int) bool {
-		if fanKeys[i].key != fanKeys[j].key {
-			return fanKeys[i].key < fanKeys[j].key
-		}
-		return fanKeys[i].side < fanKeys[j].side
-	})
-	for _, k := range fanKeys {
-		byKind := map[string][]int{}
-		var kinds []string
-		for _, i := range fans[k] {
-			if plans[i].same {
-				continue
-			}
-			kd := fmt.Sprint(reqs[i].kind, plans[i].up)
-			if len(byKind[kd]) == 0 {
-				kinds = append(kinds, kd)
-			}
-			byKind[kd] = append(byKind[kd], i)
-		}
-		for _, kd := range kinds {
-			if is := byKind[kd]; opt.out && len(is) >= 2 {
-				bundleOf(is)
-				for _, i := range is {
-					plans[i].fan = true
-				}
-			}
-		}
-	}
-	var busKeys []slotKey
-	for k := range ends {
-		busKeys = append(busKeys, k)
-	}
-	sort.Slice(busKeys, func(i, j int) bool {
-		if busKeys[i].key != busKeys[j].key {
-			return busKeys[i].key < busKeys[j].key
-		}
-		return busKeys[i].side < busKeys[j].side
-	})
-	for _, k := range busKeys {
-		byKind := map[string][]int{}
-		var kinds []string
-		for _, i := range ends[k] {
-			if plans[i].same || plans[i].bus > 0 {
-				continue
-			}
-			if len(byKind[reqs[i].kind]) == 0 {
-				kinds = append(kinds, reqs[i].kind)
-			}
-			byKind[reqs[i].kind] = append(byKind[reqs[i].kind], i)
-		}
-		for _, kind := range kinds {
-			if is := byKind[kind]; opt.in && len(is) >= busAt {
-				bundleOf(is)
-			}
-		}
-	}
-	center := func(e end) int { return (e.lo + e.hi) / 2 }
-	place := func(groups map[slotKey][]int, other func(int) int, set func(int, int), e func(int) end) {
-		var keys []slotKey
-		for k := range groups {
-			keys = append(keys, k)
-		}
-		sort.Slice(keys, func(i, j int) bool {
-			if keys[i].key != keys[j].key {
-				return keys[i].key < keys[j].key
-			}
-			return keys[i].side < keys[j].side
-		})
-		for _, k := range keys {
-			is := groups[k]
-			// One slot per bundle, one per other line.
-			var slots [][]int
-			seen := map[int]int{}
-			for _, i := range is {
-				if b := plans[i].bus; b > 0 && set == nil {
-					continue
-				}
-				if b := plans[i].bus; b > 0 {
-					if j, ok := seen[b]; ok {
-						slots[j] = append(slots[j], i)
-						continue
-					}
-					seen[b] = len(slots)
-				}
-				slots = append(slots, []int{i})
-			}
-			sort.SliceStable(slots, func(a, b int) bool {
-				oa, ob := 0, 0
-				for _, i := range slots[a] {
-					oa += other(i)
-				}
-				for _, i := range slots[b] {
-					ob += other(i)
-				}
-				oa, ob = oa/len(slots[a]), ob/len(slots[b])
-				if oa != ob {
-					return oa < ob
-				}
-				return slots[a][0] < slots[b][0]
-			})
-			r := e(is[0])
-			for s, group := range slots {
-				x := r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
-				for _, i := range group {
-					set(i, x)
-				}
-			}
-		}
-	}
-	place(members, func(i int) int { return center(reqs[i].to) }, func(i, x int) { plans[i].fx = x }, func(i int) end { return reqs[i].from })
-	place(ends, func(i int) int { return center(reqs[i].from) }, func(i, x int) { plans[i].tx = x }, func(i int) end { return reqs[i].to })
-
-	// The x of each passage through a row between the ends.
-	for i := range reqs {
-		p := &plans[i]
-		if p.bus > 0 && leader[p.bus] != i {
-			continue
-		}
-		p.xs = []int{p.fx}
-		k := len(p.gaps) - 1
-		for j := 0; j < k; j++ {
-			var r int
-			if p.up {
-				r = p.gaps[j] - 1
-			} else {
-				r = p.gaps[j]
-			}
-			want := p.fx + (p.tx-p.fx)*(j+1)/(k+1)
-			if p.bus > 0 && !p.fan {
-				// A trunk runs straight above the place it reaches.
-				want = p.tx
-			}
-			p.xs = append(p.xs, l.gutter(r, want))
-		}
-		p.xs = append(p.xs, p.tx)
-	}
-	for i := range reqs {
-		p := &plans[i]
-		if p.bus == 0 || leader[p.bus] == i {
-			continue
-		}
-		lead := plans[leader[p.bus]]
-		if p.fan {
-			k := len(p.gaps) - 1
-			p.gaps = p.gaps[k:]
-			p.xs = []int{lead.xs[k], p.tx}
-			continue
-		}
-		k := len(lead.gaps) - len(p.gaps)
-		p.gaps = p.gaps[:1]
-		p.xs = []int{p.fx, lead.xs[k+1]}
-	}
-	// Tracks: each crossing of a gap gets a height of its own; a bundle is
-	// one crossing however many lines it carries. A crossing joins the gap's
-	// top edge at some x and its bottom edge at others; its track is ordered
-	// against the others so few of those joins cut through another track.
-	type span struct {
-		lo, hi      int
-		owner       int
-		tops, downs []int
-	}
-	spans := make([]map[int]*span, n+1)
-	var owners = make([][]int, n+1)
-	for i := range reqs {
-		p := &plans[i]
-		for j, g := range p.gaps {
-			a, b := p.xs[j], p.xs[j+1]
-			if a == b && !p.same {
-				continue
-			}
-			owner := i
-			if p.bus > 0 {
-				owner = -p.bus
-			}
-			if spans[g] == nil {
-				spans[g] = map[int]*span{}
-			}
-			sp, ok := spans[g][owner]
-			if !ok {
-				sp = &span{lo: min(a, b), hi: max(a, b), owner: owner}
-				spans[g][owner] = sp
-				owners[g] = append(owners[g], owner)
-			}
-			sp.lo, sp.hi = min(sp.lo, a, b), max(sp.hi, a, b)
-			switch {
-			case p.same:
-				sp.tops = append(sp.tops, a, b)
-			case p.up:
-				sp.downs, sp.tops = append(sp.downs, a), append(sp.tops, b)
-			default:
-				sp.tops, sp.downs = append(sp.tops, a), append(sp.downs, b)
-			}
-		}
-	}
-	inside := func(xs []int, s *span) int {
-		c := 0
-		for _, x := range xs {
-			if x > s.lo && x < s.hi {
-				c++
-			}
-		}
-		return c
-	}
-	// cost is how many crossings putting a above b makes between them.
-	cost := func(a, b *span) int { return inside(a.downs, b) + inside(b.tops, a) }
-	track := map[[2]int]int{}
-	tracks := make([]int, n+1)
-	for g := range spans {
-		left := slices.Clone(owners[g])
-		var order []*span
-		for len(left) > 0 {
-			best, bestC := 0, 1<<30
-			for k, o := range left {
-				c := 0
-				for _, q := range left {
-					if q != o {
-						c += cost(spans[g][o], spans[g][q])
-					}
-				}
-				if c < bestC {
-					best, bestC = k, c
-				}
-			}
-			order = append(order, spans[g][left[best]])
-			left = slices.Delete(left, best, best+1)
-		}
-		// Each crossing takes the highest track below every crossing ordered
-		// before it that it overlaps.
-		var placed []*span
-		for _, s := range order {
-			t := 0
-			for _, q := range placed {
-				if q.lo <= s.hi+lane && s.lo <= q.hi+lane {
-					t = max(t, track[[2]int{g, q.owner}]+1)
-				}
-			}
-			track[[2]int{g, s.owner}] = t
-			tracks[g] = max(tracks[g], t+1)
-			placed = append(placed, s)
-		}
-	}
-	// Place the rows now that each gap's height is known.
-	l.gapTop, l.gapH = make([]int, n+1), make([]int, n+1)
-	l.rowTop, l.rowH = make([]int, n), make([]int, n)
-	y := l.top
-	for g := 0; g <= n; g++ {
-		h := l.minGap
-		if g == 0 || g == n {
-			h = l.endGap
-		}
-		if tracks[g] > 0 {
-			h = max(h, lane*(tracks[g]+1)+lane/2+(tracks[g]-1)/bundle*lane)
-		}
-		l.gapTop[g], l.gapH[g] = y, h
-		y += h
-		if g == n {
-			break
-		}
-		rh := 0
-		for _, id := range l.rows[g] {
-			rh = max(rh, l.heights[id])
-		}
-		l.rowTop[g], l.rowH[g] = y, rh
-		for _, id := range l.rows[g] {
-			p := l.pos[id]
-			p.Y = y + (rh-p.H)/2
-			l.pos[id] = p
-		}
-		y += rh
-	}
-	l.height = y
-	trackY := func(g, owner int) int {
-		t := track[[2]int{g, owner}]
-		return l.gapTop[g] + lane*(t+1) + t/bundle*lane
-	}
-	endY := func(e end, sideOf int) int {
-		switch {
-		case e.node == "" && e.row < 0:
-			return l.top
-		case e.node == "":
-			return l.gapTop[n] + l.gapH[n]
-		case sideOf < 0:
-			return l.pos[e.node].Y
-		}
-		return l.pos[e.node].Y + l.pos[e.node].H
-	}
-	points := func(i int) []pt {
-		p := plans[i]
-		r := reqs[i]
-		owner := i
-		if p.bus > 0 {
-			owner = -p.bus
-		}
-		pts := []pt{{p.xs[0], endY(r.from, side(r.from, p.up, true, p.same))}}
-		if p.fan && leader[p.bus] != i {
-			// A branch starts where it leaves the trunk.
-			pts[0].y = trackY(p.gaps[0], owner)
-		}
-		for j, g := range p.gaps {
-			a, b := p.xs[j], p.xs[j+1]
-			if a != b || p.same {
-				ty := trackY(g, owner)
-				pts = append(pts, pt{a, ty}, pt{b, ty})
-			}
-		}
-		if p.bus > 0 && !p.fan && leader[p.bus] != i {
-			if len(pts) == 1 {
-				pts = append(pts, pt{p.xs[0], trackY(p.gaps[0], owner)})
-			}
-			return pts
-		}
-		return append(pts, pt{p.xs[len(p.xs)-1], endY(r.to, side(r.to, p.up, false, p.same))})
-	}
-	var out []drawn
-	done := map[int]bool{}
-	for i := range reqs {
-		p := plans[i]
-		if p.bus == 0 {
-			pts := points(i)
-			out = append(out, drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{pts[0]}})
-			continue
-		}
-		if p.fan {
-			pts := points(i)
-			d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{pts[0]}, net: p.bus}
-			if leader[p.bus] == i {
-				d.count, d.label = len(buses[p.bus]), pt{pts[0].x + 5, pts[0].y + 14}
-				if p.up {
-					d.label.y = pts[0].y - 6
-				}
-			}
-			out = append(out, d)
-			continue
-		}
-		if done[p.bus] {
-			continue
-		}
-		done[p.bus] = true
-		lead := leader[p.bus]
-		var parts []string
-		var all [][]pt
-		var starts []pt
-		var lpts []pt
-		for _, j := range buses[p.bus] {
-			pts := points(j)
-			starts = append(starts, pts[0])
-			if j == lead {
-				lpts = pts
-				continue
-			}
-			parts = append(parts, polyline(pts))
-			all = append(all, pts)
-		}
-		// The leader goes last, so the arrowhead marks the trunk's end.
-		parts = append(parts, polyline(lpts))
-		all = append(all, lpts)
-		a, b := lpts[len(lpts)-2], lpts[len(lpts)-1]
-		out = append(out, drawn{D: strings.Join(parts, " "), parts: all, reqs: buses[p.bus], starts: starts, label: pt{b.x + 5, (a.y+b.y)/2 + 4}, net: p.bus, count: len(buses[p.bus])})
-	}
-	return out
 }
 
 func polyline(pts []pt) string {

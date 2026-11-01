@@ -3,6 +3,7 @@ package screen
 import (
 	"bytes"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -86,7 +87,9 @@ func TestTheSameDataAlwaysDrawsTheSamePicture(t *testing.T) {
 }
 
 // A human compares two screenshots of the overview, so what happens inside a
-// module must not move a box, a port or a line.
+// module must not move a box, a port or a line. A relation from inside a
+// module that crosses to another top-level unit is the module's own on the
+// overview: it adds what it stands for to the line already drawn.
 func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 	before := build(ripgrep()).Overview
 	grown := append(ripgrep(),
@@ -94,13 +97,37 @@ func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 		inside("MOD-0007", "MOD-0003", rel("IF-0002", model.Provides)),
 		inside("DATA-0001", "MOD-0004"),
 	)
-	grown[2].Relations = append(grown[2].Relations, guess("DATA-0001", model.Consumes, model.Via("convention")))
 	after := build(grown).Overview
-	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(before.Ports, after.Ports) || !reflect.DeepEqual(before.Wires, after.Wires) {
-		t.Fatalf("the overview moved when only insides changed:\nbefore %+v\nafter  %+v", before.Boxes, after.Boxes)
+	type drawnLine struct {
+		D, Kind string
+		Count   int
+	}
+	shape := func(d Drawing) ([]drawnLine, []Port) {
+		var ws []drawnLine
+		for _, w := range d.Wires {
+			ws = append(ws, drawnLine{w.D, w.Kind, w.Count})
+		}
+		var ps []Port
+		for _, p := range d.Ports {
+			p.Rels = nil
+			ps = append(ps, p)
+		}
+		return ws, ps
+	}
+	bw, bp := shape(before)
+	aw, ap := shape(after)
+	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(bp, ap) || !reflect.DeepEqual(bw, aw) {
+		t.Fatalf("the overview moved when only insides changed:\nbefore %+v\nafter  %+v", bw, aw)
 	}
 	if strings.Contains(svg(t, after), "MOD-0006") || strings.Contains(svg(t, after), "DATA-0001\"") {
 		t.Fatalf("an inside unit must never be drawn on the overview")
+	}
+	var carried bool
+	for _, w := range after.Wires {
+		carried = carried || slices.Contains(w.Rels, "MOD-0006.consumes.IF-0001")
+	}
+	if !carried {
+		t.Fatalf("the inside unit's use of Matcher should ride the searcher's line to the matcher")
 	}
 }
 
@@ -115,13 +142,13 @@ func TestAReadersCouplingIsDrawnWithItsMark(t *testing.T) {
 	dead.Dead = true
 	units[4].Relations = append(units[4].Relations, dead)
 	m := build(units)
-	var found bool
+	var found, marked bool
 	for _, w := range m.Overview.Wires {
 		for _, r := range w.Rels {
 			if r == "MOD-0001.depends_on.MOD-0005" {
 				found = true
-				if w.Origin != "inferred" || len(w.Marks) != 1 || w.Marks[0].Origin != "inferred" {
-					t.Errorf("the reader's line carries no reader's mark: %+v", w)
+				for _, mk := range w.Marks {
+					marked = marked || mk.Origin == "inferred"
 				}
 			}
 			if r == "MOD-0005.depends_on.MOD-0004" {
@@ -129,8 +156,8 @@ func TestAReadersCouplingIsDrawnWithItsMark(t *testing.T) {
 			}
 		}
 	}
-	if !found {
-		t.Fatalf("the overview leaves out the reader's coupling ripgrep → grep-printer")
+	if !found || !marked {
+		t.Fatalf("the overview should draw the reader's coupling ripgrep → grep-printer with a reader's mark: drawn %v, marked %v", found, marked)
 	}
 	listed := map[string]int{}
 	for _, ins := range m.Insides {
@@ -159,12 +186,18 @@ func TestModulesSitAboveWhatTheyUse(t *testing.T) {
 // contract under it bypasses the boundary and is drawn as its own kind.
 func TestADependencyThatBypassesEveryContractStandsOut(t *testing.T) {
 	d := build(ripgrep()).Overview
+	seen := map[string]bool{}
 	kinds := map[string]int{}
 	var bypass []string
 	for _, w := range d.Wires {
-		kinds[w.Kind] += w.Carries
-		if w.Kind == "bypass" {
-			bypass = append(bypass, w.Title)
+		for _, title := range strings.Split(w.Title, "\n") {
+			if !seen[title] {
+				seen[title] = true
+				kinds[w.Kind]++
+				if w.Kind == "bypass" {
+					bypass = append(bypass, title)
+				}
+			}
 		}
 	}
 	// ripgrep → grep and grep → its three crates have no contract; the

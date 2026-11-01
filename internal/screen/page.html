@@ -91,6 +91,8 @@ svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg path.w.joins { marker-end: none; }
+svg path.w.back { stroke-dasharray: 6 4; }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
@@ -171,7 +173,7 @@ svg marker path { stroke: none; }
 {{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
 <defs>{{range $k := marks}}<marker id="m-{{$k}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--{{markColor $k}})"/></marker>{{end}}</defs>
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
-{{range .Wires}}<path class="w {{.Kind}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
+{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
 {{.}}{{end}}</title></path>{{range .Marks}}<circle class="origin {{.Origin}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
 {{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 {{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
@@ -188,7 +190,8 @@ svg marker path { stroke: none; }
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
 {{template "origins"}}
 {{end}}</div>{{end}}
-{{define "origins"}}<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+{{define "origins"}}<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
 <span title="{{tip "stated"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>{{end}}

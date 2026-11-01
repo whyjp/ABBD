@@ -30,8 +30,8 @@ const (
 	crossingsPerLine = 2
 	// 8: the widths past which a label may be cut, its full text in the tooltip.
 	hardChip, hardBox, hardUnit, hardLoose = 220, 280, 220, 236
-	// 10: a port may sit on the side up to one row further than the nearest.
-	unitRowTolerance = 80
+	// 13: back lines allowed: one, or this share of the arriving lines.
+	backShare = 0.2
 	// endZone is how close to a line's end two lines may meet or run
 	// together: lines that share a port converge there by design.
 	endZone = 26.0
@@ -310,13 +310,18 @@ type Metrics struct {
 	Boxes, Split                                  int
 	Width, Wires, Crossings, TooClose, MaxChannel int
 	Truncated, Overflow                           int
-	PortFar, OriginDashed, Unmarked               int
+	OriginDashed, Unmarked                        int
 	UnwiredOnFrame, NodeOverlaps, ThroughBox      int
+	// Forward and Back count the lines that arrive at a box or a chip by
+	// the way they run, BackPlain the back lines drawn like forward ones,
+	// and SplitIn the lines of one kind that arrive at one edge of a box
+	// apart from the bundle of their kind.
+	Forward, Back, BackPlain, SplitIn int
 }
 
 func (m Metrics) String() string {
-	return fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, far ports %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.PortFar, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox)
+	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox)
 }
 
 func measure(s sheet) Metrics {
@@ -464,50 +469,11 @@ func measure(s sheet) Metrics {
 		}
 	}
 	m.ThroughBox = len(through)
-	// R6: a port on the frame's top or bottom, whichever is nearer the unit
-	// its line joins.
-	if f := s.frame; f != nil {
+	// 12: an unwired contract is listed under the drawing, not on the frame.
+	if s.frame != nil {
 		for _, sh := range s.shapes {
-			if sh.kind != "port" {
-				continue
-			}
-			if sh.is("unwired") {
+			if sh.kind == "port" && sh.is("unwired") {
 				m.UnwiredOnFrame++
-				continue
-			}
-			groups := map[int]bool{}
-			for _, w := range ws {
-				if sh.r.grow(5).contains(w.pts[0], 0) || sh.r.grow(5).contains(w.pts[len(w.pts)-1], 0) {
-					groups[w.group] = true
-				}
-			}
-			// The units are the boxes the port's lines end on; the port
-			// belongs on the side nearer their mean centre.
-			sum, k := 0.0, 0
-			for _, w := range ws {
-				if !groups[w.group] {
-					continue
-				}
-				for _, e := range []fpt{w.pts[0], w.pts[len(w.pts)-1]} {
-					for _, b := range s.shapes {
-						if b.kind == "box" && b.r.grow(5).contains(e, 0) {
-							sum += b.r.center().y
-							k++
-						}
-					}
-				}
-			}
-			if k == 0 {
-				continue
-			}
-			cy := sum / float64(k)
-			up, down := cy-f.y, f.y+f.h-cy
-			here, other := up, down
-			if pc := sh.r.center(); math.Abs(pc.y-f.y) > math.Abs(pc.y-f.y-f.h) {
-				here, other = down, up
-			}
-			if here > other+unitRowTolerance {
-				m.PortFar++
 			}
 		}
 	}
@@ -537,6 +503,64 @@ func measure(s sheet) Metrics {
 	}
 	for _, gs := range leaving {
 		m.Split += len(gs) - 1
+	}
+	// 13: a line reads top to bottom and left to right. Each stroke that
+	// ends on a box or a chip is one arriving line; it runs forward when its
+	// end lies below its start, or level with it and to the right. A line
+	// that provides a contract reads from the contract to the unit that
+	// meets it, so it counts the other way round.
+	on := func(p fpt) (frect, bool) {
+		for _, sh := range s.shapes {
+			if sh.r.grow(5).contains(p, 0) {
+				return sh.r, true
+			}
+		}
+		return frect{}, false
+	}
+	arrivals := map[string]map[int]bool{}
+	for _, w := range ws {
+		a, b := w.pts[0], w.pts[len(w.pts)-1]
+		r, ok := on(b)
+		if !ok {
+			continue
+		}
+		dy, dx := b.y-a.y, b.x-a.x
+		if strings.Contains(" "+w.class+" ", " provides ") {
+			dy, dx = -dy, -dx
+		}
+		forward := dy > 2 || math.Abs(dy) <= 2 && dx >= 0
+		switch {
+		case forward:
+			m.Forward++
+		default:
+			m.Back++
+			if !strings.Contains(" "+w.class+" ", " back ") {
+				m.BackPlain++
+			}
+		}
+		edge := "top"
+		if math.Abs(b.y-r.y-r.h) < math.Abs(b.y-r.y) {
+			edge = "bottom"
+		}
+		k := fmt.Sprint(r, edge, strings.ReplaceAll(w.class, " back", ""))
+		if arrivals[k] == nil {
+			arrivals[k] = map[int]bool{}
+		}
+		arrivals[k][w.group] = true
+	}
+	// Rule 7 counts a drawn line by where it arrives: a bundle is one line
+	// however many pieces draw it, and a piece that ends on a trunk is part
+	// of the line that trunk carries.
+	m.Wires = 0
+	counted := map[int]bool{}
+	for _, gs := range arrivals {
+		m.SplitIn += len(gs) - 1
+		for g := range gs {
+			if !counted[g] {
+				counted[g] = true
+				m.Wires++
+			}
+		}
 	}
 	// R7: a line's dash says its kind, never its origin, and a line a reader
 	// or a human gave carries a mark where it leaves its unit.
@@ -571,6 +595,7 @@ func (m Metrics) violations(width int) []string {
 	check(m.Boxes <= viewBudget, "1", "%d boxes, budget %d", m.Boxes, viewBudget)
 	check(m.Width <= width, "3", "%dpx wide, budget %dpx", m.Width, width)
 	check(m.Split == 0, "4", "%d lines leave a box beside a bundle of their kind instead of in it", m.Split)
+	check(m.SplitIn == 0, "4", "%d lines reach a box beside a bundle of their kind instead of in it", m.SplitIn)
 	check(m.MaxChannel <= maxPerChannel, "5", "%d lines share one channel, limit %d", m.MaxChannel, maxPerChannel)
 	check(m.TooClose == 0, "6", "%d pairs of lines run closer than %vpx for %vpx", m.TooClose, minGap, runLimit)
 	check(m.Crossings <= crossingsPerLine*m.Wires, "7", "%d crossings for %d drawn lines, limit %d", m.Crossings, m.Wires, crossingsPerLine*m.Wires)
@@ -578,9 +603,10 @@ func (m Metrics) violations(width int) []string {
 	check(m.Overflow == 0, "8", "%d labels wider than their box", m.Overflow)
 	check(m.NodeOverlaps == 0, "9", "%d boxes or chips overlap", m.NodeOverlaps)
 	check(m.ThroughBox == 0, "9", "%d lines pass through a box they do not join", m.ThroughBox)
-	check(m.PortFar == 0, "10", "%d ports on a frame side away from their unit", m.PortFar)
 	check(m.OriginDashed == 0, "11", "%d lines dashed for their origin", m.OriginDashed)
 	check(m.Unmarked == 0, "11", "%d lines from a reader or a human without an origin mark", m.Unmarked)
 	check(m.UnwiredOnFrame == 0, "12", "%d unwired contracts spread on the frame", m.UnwiredOnFrame)
+	check(m.Back <= max(1, int(backShare*float64(m.Forward+m.Back))), "13", "%d of %d arriving lines run up or left, limit %d", m.Back, m.Forward+m.Back, max(1, int(backShare*float64(m.Forward+m.Back))))
+	check(m.BackPlain == 0, "13", "%d lines run up or left drawn like forward ones", m.BackPlain)
 	return out
 }

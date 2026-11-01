@@ -59,19 +59,23 @@ type Port struct {
 // with a small circle at its start, not with the line's dash.
 type Wire struct {
 	D, Kind, Title string
-	Origin         string   `json:",omitempty"`
-	Via            string   `json:",omitempty"`
-	Quotes         []string `json:",omitempty"`
-	Marks          []Mark   `json:",omitempty"`
+	Origin         string `json:",omitempty"`
+	// Joins says the path ends on a bundle's trunk, not at a box, so it
+	// carries no arrowhead.
+	Joins bool `json:",omitempty"`
+	// Back says the line runs against the reading direction: up, or left
+	// within a row. The page draws it dashed.
+	Back   bool     `json:",omitempty"`
+	Via    string   `json:",omitempty"`
+	Quotes []string `json:",omitempty"`
+	Marks  []Mark   `json:",omitempty"`
 	// Rels are the stored relations the line stands for.
 	Rels []string `json:",omitempty"`
 	// Count is how many lines a bundle carries, drawn at LX, LY. Net groups
 	// the paths of one bundle drawn as several paths.
-	Count int `json:",omitempty"`
-	Net   int `json:",omitempty"`
-	// Carries is how many lines this path draws.
-	Carries int `json:"-"`
-	LX, LY  int `json:",omitempty"`
+	Count  int `json:",omitempty"`
+	Net    int `json:",omitempty"`
+	LX, LY int `json:",omitempty"`
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -166,14 +170,16 @@ type overview struct {
 }
 
 // top lists the top-level units, those with no parent, and the drawn
-// relations between them, with the stored relations each one stands for.
+// relations between them, with the stored relations each one stands for. A
+// relation from anywhere inside a top-level unit to another one crosses the
+// boundary the overview shows, so it is drawn as that unit's.
 func top(t tree) ([]model.ID, []model.Edge, map[string][]string, map[string]model.Origin) {
 	ids := slices.Clone(t.children[""])
 	var rels []model.Edge
 	via := map[string][]string{}
 	origins := map[string]model.Origin{}
 	for _, id := range ids {
-		for _, s := range t.sources(id) {
+		for _, s := range t.subtree(id) {
 			for _, r := range t.units[s].Relations {
 				to, ok := t.within(r.To, "")
 				if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {
@@ -211,6 +217,9 @@ func planOverview(units []model.Unit) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}}
 	for _, u := range units {
 		o.units[u.ID] = u
+	}
+	for id := range o.tree.folds {
+		o.units[id] = o.tree.units[id]
 	}
 	o.design, o.relations, o.rels, o.origins = top(o.tree)
 	slices.Sort(o.design)
@@ -514,6 +523,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			q := &d.Ports[i]
 			q.Title += ", " + name
 			q.Contract = ""
+			q.Rels = append(q.Rels, pt.Rels...)
 			return
 		}
 		folded[k] = len(d.Ports)
@@ -550,11 +560,16 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for j, i := range p.reqs {
 			w.Rels = append(w.Rels, merged[i].rels...)
 			og := o.origin(merged[i].rels)
+			if og != Badge(model.Extracted) {
+				titles[j] += ", " + labels[og]
+			}
+			if p.starts[j] == noStart {
+				continue
+			}
 			origins[og] = true
 			w.Origin = og
 			if og != Badge(model.Extracted) {
 				w.Marks = append(w.Marks, Mark{X: p.starts[j].x, Y: p.starts[j].y, Origin: og})
-				titles[j] += ", " + labels[og]
 			}
 		}
 		if len(origins) > 1 {
@@ -564,7 +579,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Carries = p.net, len(p.reqs)
+		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		d.Wires = append(d.Wires, w)
 	}
 	return d

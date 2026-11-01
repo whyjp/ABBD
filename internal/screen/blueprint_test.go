@@ -34,7 +34,7 @@ func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 	if regexp.MustCompile(`class="w [^"]*guess|DATA-0001`).MatchString(svg) {
 		t.Errorf("the overview dashes a reader's line or draws an inside unit:\n%s", svg)
 	}
-	if !regexp.MustCompile(`<path class="w bypass" [^>]*data-origin="inferred"[^>]*><title>ripgrep → grep-printer[^<]*판독`).MatchString(svg) || !strings.Contains(svg, `<circle class="origin inferred"`) {
+	if !regexp.MustCompile(`<path class="w bypass[^"]*" [^>]*><title>[^<]*ripgrep → grep-printer[^<]*판독`).MatchString(svg) || !strings.Contains(svg, `<circle class="origin inferred"`) {
 		t.Errorf("the overview should draw the reader's coupling ripgrep → grep-printer with its mark:\n%s", svg)
 	}
 	for _, want := range []string{

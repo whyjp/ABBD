@@ -133,17 +133,14 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 			}
 		}
 	}
-	// outside is the port a line to id outside the module ends at.
+	// outside is the port a line to id outside the module ends at. A line
+	// in, or one that provides a contract, meets the port on top; a line out
+	// that uses something meets its port below, even when the module also
+	// provides that contract, rule 13.
 	outside := func(id model.ID, exit bool) (model.ID, bool) {
 		o2 := t.outside(id, m)
 		if o2 == "" {
 			return "", false
-		}
-		if seen[fmt.Sprint(o2, true)] {
-			return o2, true
-		}
-		if seen[fmt.Sprint(o2, false)] && !exit {
-			return o2, false
 		}
 		if isContract(o2) {
 			contract(o2, exit)
@@ -180,7 +177,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 					}
 					ln.to, ln.inner = to, true
 				} else {
-					exit := r.Kind == model.Provides || seen[fmt.Sprint(t.outside(r.To, m), true)]
+					exit := r.Kind == model.Provides
 					to, ex := outside(r.To, exit)
 					if to == "" {
 						continue
@@ -222,16 +219,26 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		names[u.ID] = ls
 		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2})
 	}
+	// The frame's top and bottom take part in the layering, so a unit that
+	// meets a port on top rises toward it and one that uses a port below
+	// sinks toward it.
 	for _, ln := range lines {
-		if ln.inner {
+		switch {
+		case ln.inner:
 			edges = append(edges, ledge{string(ln.from), string(ln.to)})
+		case ln.exit:
+			edges = append(edges, ledge{frameTopNode, string(ln.from)})
+		default:
+			edges = append(edges, ledge{string(ln.from), frameBottomNode})
 		}
 	}
+	nodes = append(nodes, lnode{id: frameTopNode}, lnode{id: frameBottomNode})
 	l := arrange(nodes, edges, insideBudget-12)
 
-	// A wired port sits on the frame side nearer the units it joins. A side
-	// that cannot hold its chips hands the least committed ones to the other
-	// side.
+	// A wired port sits on the side its lines flow from, rule 10: a contract
+	// the module provides and a caller from outside on top, what the module
+	// uses below. A side that cannot hold its chips hands the least
+	// committed ones to the other side.
 	wired := map[string][]model.ID{}
 	for _, ln := range lines {
 		if !ln.inner {
@@ -255,7 +262,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 			r += l.row[string(u)]
 		}
 		lean[k] = 2*r - (len(l.rows)-1)*len(us)
-		below[k] = lean[k] > 0 || lean[k] == 0 && !p.exit
+		below[k] = !p.exit
 		a := attach{key: k, label: p.label, other: x / len(us)}
 		if below[k] {
 			bottoms = append(bottoms, a)
@@ -270,21 +277,23 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 		return chipsWidth(labels) + 12
 	}
-	least := func(as []attach) int {
+	// least is the port whose units sit nearest the other side: the lowest
+	// of a crowded top, the highest of a crowded bottom.
+	least := func(as []attach, down int) int {
 		best := -1
 		for i, a := range as {
-			if best < 0 || abs(lean[a.key]) < abs(lean[as[best].key]) || abs(lean[a.key]) == abs(lean[as[best].key]) && a.key < as[best].key {
+			if best < 0 || down*lean[a.key] > down*lean[as[best].key] || lean[a.key] == lean[as[best].key] && a.key < as[best].key {
 				best = i
 			}
 		}
 		return best
 	}
 	for need(tops) > insideBudget || need(bottoms) > insideBudget {
-		from, to := &tops, &bottoms
+		from, to, down := &tops, &bottoms, 1
 		if need(bottoms) > insideBudget {
-			from, to = &bottoms, &tops
+			from, to, down = &bottoms, &tops, -1
 		}
-		i := least(*from)
+		i := least(*from, down)
 		a := (*from)[i]
 		if need(append(slices.Clone(*to), a)) > insideBudget {
 			break
@@ -293,7 +302,9 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		*to = append(*to, a)
 		below[a.key] = !below[a.key]
 	}
-	width := max(l.width, need(tops), need(bottoms), 360)
+	// The frame never grows past the budget, rule 3: chips that still do
+	// not fit fold into one "+N" chip that names them all.
+	width := max(l.width, min(insideBudget, max(need(tops), need(bottoms))), 360)
 	if width > l.width {
 		shift := (width - l.width) / 2
 		for id, p := range l.pos {
@@ -362,6 +373,12 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 		pt.Contract, pt.Exit, pt.Class, pt.Title = string(p.id), p.exit, p.cls, p.title
 		pt.Href = viewOf(t, p.id)
+		if j := slices.IndexFunc(d.Ports, func(q Port) bool { return q.X == pt.X && q.Y == pt.Y }); j >= 0 {
+			q := &d.Ports[j]
+			q.Title += "; " + pt.Title
+			q.Contract, q.Href = "", ""
+			continue
+		}
 		d.Ports = append(d.Ports, pt)
 	}
 	ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })
@@ -375,13 +392,13 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + 8, Y: r.Y + 19 + i*nameLine})
 		}
-		b.Sub = &Text{S: kindWord(u.Kind), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
+		b.Sub = &Text{S: o.kindWord(u), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
 		b.Title = fmt.Sprintf("%s %s", u.ID, u.Name.Value)
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
 		}
 		d.Boxes = append(d.Boxes, b)
-		iu := InsideUnit{ID: string(u.ID), Name: u.Name.Value, Kind: kindWord(u.Kind), Anchors: anchors(u)}
+		iu := InsideUnit{ID: string(u.ID), Name: u.Name.Value, Kind: o.kindWord(u), Anchors: anchors(u)}
 		if f := sentence(u); f != nil {
 			iu.Sentence, iu.Guess = f.Value, f.Guess()
 		}
@@ -405,15 +422,19 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 			}
 			if ln.origin != "extracted" {
 				title += ", " + labels[ln.origin]
-				s := p.starts[j]
-				w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})
 			}
-			origins[ln.origin] = true
+			if s := p.starts[j]; s != noStart {
+				if ln.origin != "extracted" {
+					w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})
+				}
+				origins[ln.origin] = true
+				w.Origin = ln.origin
+			}
 			titles = append(titles, title)
 			w.Rels = append(w.Rels, ln.rels...)
 		}
 		ln := lines[p.reqs[0]]
-		w.D, w.Kind, w.Origin, w.Title = p.D, string(ln.kind), ln.origin, strings.Join(titles, "\n")
+		w.D, w.Kind, w.Title = p.D, string(ln.kind), strings.Join(titles, "\n")
 		if len(origins) > 1 {
 			w.Origin = "mixed"
 		}
@@ -423,12 +444,20 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net = p.net
+		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		d.Wires = append(d.Wires, w)
 	}
 	ins.Drawing = d
 	ins.Inferred = o.inferred(m, units)
 	return ins
+}
+
+// kindWord names a unit's kind under its name; a folded cycle says so.
+func (o *overview) kindWord(u model.Unit) string {
+	if o.tree.folds[u.ID] {
+		return "순환 묶음"
+	}
+	return kindWord(u.Kind)
 }
 
 // lastPart drops the leading path segments of a module's name, such as
