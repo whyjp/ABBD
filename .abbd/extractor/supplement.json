@@ -9,8 +9,8 @@
           "path": ".claude-plugin/marketplace.json"
         }
       ],
-      "purpose": "publishes ABBD as a Claude Code plugin from this repository",
-      "responsibility": "fixes the marketplace and plugin names and the plugin source path"
+      "purpose": "so Claude Code can install ABBD's skills from this repository as a marketplace plugin",
+      "responsibility": "Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin's version and its requirements (pstack 0.15.36 and the abbd CLI on PATH)."
     },
     {
       "key": "cfg-project",
@@ -22,21 +22,8 @@
           "symbol": "Project"
         }
       ],
-      "purpose": "records the registered extraction argv",
-      "responsibility": "fixes project.yaml, which abbd sync runs without asking"
-    },
-    {
-      "key": "data-extraction",
-      "kind": "DATA",
-      "name": "extraction JSON",
-      "anchors": [
-        {
-          "path": "internal/extract/extract.go",
-          "symbol": "rawResult"
-        }
-      ],
-      "purpose": "is what every project extraction script and supplement must print",
-      "responsibility": "fixes the units and relations JSON; unknown fields are rejected"
+      "purpose": "so sync can rerun the project's own extraction script without being told how each time",
+      "responsibility": "Holds the argv of the extraction script that setup recorded and sync runs from the repository root."
     },
     {
       "key": "data-blueprint",
@@ -48,8 +35,47 @@
           "symbol": "Graph"
         }
       ],
-      "purpose": "lets a human read the topology and tools read it without the CLI",
-      "responsibility": "fixes the blueprint file names and graph.json, whose watermark tells CURRENT from STALE"
+      "purpose": "lets a human read the topology in a browser and tools read it without the CLI",
+      "responsibility": "fixes the two rendered files, index.html and graph.json, and graph.json's shape: units, live edges, both drawing levels and the inputs_hash watermark that tells a CURRENT blueprint from a STALE one"
+    },
+    {
+      "key": "data-extraction",
+      "kind": "DATA",
+      "name": "extraction JSON",
+      "anchors": [
+        {
+          "path": "internal/extract/extract.go",
+          "symbol": "rawResult"
+        }
+      ],
+      "purpose": "so the project script, the swarm supplement and abbd agree on one format for units and relations",
+      "responsibility": "The JSON shape the extraction script prints and the supplement repeats: units with key, kind, name, anchors or evidence, optional signature, digest and parent, and relations with from, to, kind, via and evidence, with unknown fields rejected."
+    },
+    {
+      "key": "data-state",
+      "kind": "DATA",
+      "name": "sync state",
+      "anchors": [
+        {
+          "path": "internal/store/store.go",
+          "symbol": "SaveState"
+        }
+      ],
+      "purpose": "so ABBD knows what tree and revision the stored units were synced from and which ID numbers were ever used",
+      "responsibility": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the hash of all unit files, and the per-kind high-water mark of minted IDs."
+    },
+    {
+      "key": "data-understanding",
+      "kind": "DATA",
+      "name": "module understanding",
+      "anchors": [
+        {
+          "path": "internal/store/understanding.go",
+          "symbol": "SaveUnderstanding"
+        }
+      ],
+      "purpose": "so a reader's prose about a module sits beside its drawing and is flagged when the module's code moves on",
+      "responsibility": "Stores one Markdown file per module with its unit ID, INFERRED origin and the module digest at writing time in frontmatter, and the Overview and Key Concepts text as body."
     },
     {
       "key": "data-units",
@@ -61,8 +87,8 @@
           "symbol": "SaveUnits"
         }
       ],
-      "purpose": "is the topology of the merged code as reviewable files",
-      "responsibility": "fixes the unit file frontmatter: anchors, facts with their origin and source, relations with their evidence"
+      "purpose": "so the design units are reviewable Markdown that is the single source every other view derives from",
+      "responsibility": "Defines one file per unit at architecture/ or features/ ID.md, YAML frontmatter with each fact's value and origin, a generated title and anchor list, and a human Notes section kept across rewrites."
     },
     {
       "key": "feat-abbd",
@@ -74,8 +100,8 @@
           "symbol": "abbd"
         }
       ],
-      "purpose": "brings the stored topology into work under any mode, without routing it",
-      "responsibility": "queries the blueprint with abbd explain, path and impact before the work, records readers' couplings and the human's statements, and ends with abbd sync and abbd diff in the PR"
+      "purpose": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
+      "responsibility": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work."
     },
     {
       "key": "feat-abbd-setup",
@@ -87,8 +113,1274 @@
           "symbol": "abbd-setup"
         }
       ],
-      "purpose": "bootstraps ABBD on a repository without asking the human",
-      "responsibility": "drives build-the-lever for the extraction script, the swarm and how supplement with evidence and parents, abbd setup and abbd understand"
+      "purpose": "so a repository without .abbd gets its first topology baseline with no human alignment step",
+      "responsibility": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block."
+    },
+    {
+      "key": "if-cli",
+      "kind": "IF",
+      "name": "abbd exit codes",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "flagDefs"
+        }
+      ],
+      "purpose": "so scripts and CI tell a usage mistake from a failed command from success",
+      "responsibility": "Fixes the process contract: exit 0 on success, 1 when a command fails, 64 when the command line does not parse, with the usage printed on stderr."
+    },
+    {
+      "key": "if-cli-diff",
+      "kind": "IF",
+      "name": "abbd diff",
+      "anchors": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "symbol": "diff"
+        }
+      ],
+      "purpose": "so a PR shows its topology change and CI can label a change that crosses module boundaries",
+      "responsibility": "Prints the topology difference from a base revision as text or --json, and with --check exits 1 on a boundary change."
+    },
+    {
+      "key": "if-cli-evidence",
+      "kind": "IF",
+      "name": "abbd evidence",
+      "anchors": [
+        {
+          "path": "cmd/abbd/evidence.go",
+          "symbol": "checkEvidence"
+        }
+      ],
+      "purpose": "so a reader sees which quoted evidence still holds in the working tree",
+      "responsibility": "Prints live or dead, with location, for every quote of every unit and relation, and the totals, without writing."
+    },
+    {
+      "key": "if-cli-explain",
+      "kind": "IF",
+      "name": "abbd explain",
+      "anchors": [
+        {
+          "path": "cmd/abbd/query.go",
+          "symbol": "explain"
+        }
+      ],
+      "purpose": "so an assistant reads one unit's place in the architecture before it greps",
+      "responsibility": "Prints a unit, found by ID or name, with its facts, inside units, contracts, neighbours, inferred couplings and how's text."
+    },
+    {
+      "key": "if-cli-impact",
+      "kind": "IF",
+      "name": "abbd impact",
+      "anchors": [
+        {
+          "path": "cmd/abbd/impact.go",
+          "symbol": "impact"
+        }
+      ],
+      "purpose": "so an agent knows what a change reaches before it starts",
+      "responsibility": "Prints the direct and far tiers a change to comma-separated unit IDs reaches, with why each is reached."
+    },
+    {
+      "key": "if-cli-install",
+      "kind": "IF",
+      "name": "abbd install",
+      "anchors": [
+        {
+          "path": "cmd/abbd/install.go",
+          "symbol": "install"
+        }
+      ],
+      "purpose": "so every assistant session asks the blueprint before grepping and leaves the topology current",
+      "responsibility": "Writes or replaces the marked abbd block in the root CLAUDE.md and keeps everything else in that file."
+    },
+    {
+      "key": "if-cli-path",
+      "kind": "IF",
+      "name": "abbd path",
+      "anchors": [
+        {
+          "path": "cmd/abbd/query.go",
+          "symbol": "path"
+        }
+      ],
+      "purpose": "so a reader sees how two units are connected and how certain that connection is",
+      "responsibility": "Prints the shortest hop path between two units and the weakest origin along it."
+    },
+    {
+      "key": "if-cli-record-fact",
+      "kind": "IF",
+      "name": "abbd record fact",
+      "anchors": [
+        {
+          "path": "cmd/abbd/record.go",
+          "symbol": "recordFact"
+        }
+      ],
+      "purpose": "so what a human said about a unit's why is kept with where they said it",
+      "responsibility": "Records ID.purpose or ID.responsibility as USER_STATED with --value and --source."
+    },
+    {
+      "key": "if-cli-record-relation",
+      "kind": "IF",
+      "name": "abbd record relation",
+      "anchors": [
+        {
+          "path": "cmd/abbd/record.go",
+          "symbol": "recordRelation"
+        }
+      ],
+      "purpose": "so a reader's or a human's coupling enters the state with its origin",
+      "responsibility": "Records FROM KIND TO as INFERRED with --via and live --evidence, or USER_STATED with --source, never over an EXTRACTED relation."
+    },
+    {
+      "key": "if-cli-record-unit",
+      "kind": "IF",
+      "name": "abbd record unit",
+      "anchors": [
+        {
+          "path": "cmd/abbd/record.go",
+          "symbol": "recordUnit"
+        }
+      ],
+      "purpose": "so a unit the script cannot see enters the state, anchored on its quoted code",
+      "responsibility": "Records a KIND NAME unit as INFERRED with live --evidence, an optional module --parent and --responsibility, refusing a duplicate on the same code."
+    },
+    {
+      "key": "if-cli-setup",
+      "kind": "IF",
+      "name": "abbd setup",
+      "anchors": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "symbol": "setup"
+        }
+      ],
+      "purpose": "so a repository gets its first state from a proven-deterministic script plus the readers' supplement",
+      "responsibility": "Registers the extraction argv after --, runs it three times to prove it deterministic, folds in --supplement, replaces earlier guesses and syncs."
+    },
+    {
+      "key": "if-cli-status",
+      "kind": "IF",
+      "name": "abbd status",
+      "anchors": [
+        {
+          "path": "cmd/abbd/evidence.go",
+          "symbol": "status"
+        }
+      ],
+      "purpose": "so anyone sees at once whether state and blueprint are current",
+      "responsibility": "Prints the freshness of the state against the tree and of the blueprint against the state, with unit, relation and understanding counts."
+    },
+    {
+      "key": "if-cli-sync",
+      "kind": "IF",
+      "name": "abbd sync",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "sync"
+        }
+      ],
+      "purpose": "so the stored topology follows the working tree after a code change",
+      "responsibility": "Reruns the registered script, reconciles IDs across renames, checks every quote, writes the state and renders the blueprint."
+    },
+    {
+      "key": "if-cli-understand",
+      "kind": "IF",
+      "name": "abbd understand",
+      "anchors": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "symbol": "understand"
+        }
+      ],
+      "purpose": "so pstack how's text about a module is shown beside its drawing and flagged when the code moves on",
+      "responsibility": "Stores a top-level module's Overview and Key Concepts from a file or stdin, stamped with the module's code digest."
+    },
+    {
+      "key": "if-edge-key",
+      "kind": "IF",
+      "name": "relation key",
+      "anchors": [
+        {
+          "path": "internal/model/model.go",
+          "symbol": "Edge"
+        }
+      ],
+      "purpose": "so a relation can be named on the command line and as a map key without characters a shell treats specially",
+      "responsibility": "The FROM.kind.TO text form of a relation, such as MOD-0001.depends_on.MOD-0002, that Edge.String prints and ParseEdge reads back, checking both IDs and the relation kind."
+    },
+    {
+      "key": "in-bootstrap-fold",
+      "kind": "MOD",
+      "name": "supplement fold",
+      "parent": "mod-bootstrap",
+      "purpose": "so a reader adds intent and couplings but never replaces what the script read from code",
+      "responsibility": "Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "67",
+          "symbol": "Overlay",
+          "quote": "u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: model.Inferred}"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "104",
+          "symbol": "Overlay",
+          "quote": "a reader's coupling rests on the code it quotes"
+        }
+      ]
+    },
+    {
+      "key": "in-bootstrap-match",
+      "kind": "MOD",
+      "name": "anchor matching",
+      "parent": "mod-bootstrap",
+      "purpose": "so a supplement entry describes exactly one script unit and an ambiguous one is refused rather than guessed",
+      "responsibility": "Picks the script unit of the same kind sharing the most anchors with a supplement unit, and fails when none shares one or two share the same count.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "139",
+          "symbol": "match",
+          "quote": "its anchors match more than one %s equally"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "147",
+          "symbol": "overlap",
+          "quote": "keys[x.Key()] = true"
+        }
+      ]
+    },
+    {
+      "key": "in-bootstrap-reader-unit",
+      "kind": "MOD",
+      "name": "reader-only unit",
+      "parent": "mod-bootstrap",
+      "purpose": "so a unit only a reader vouches for is marked as a guess and carries no code facts it did not read",
+      "responsibility": "Builds a unit the script cannot see from a supplement entry: name made INFERRED, signature, digest and parent cleared, key replaced by its supplement position.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "116-117",
+          "symbol": "semantic",
+          "quote": "d.Signature, d.Digest, d.Parent = nil, \"\", \"\""
+        }
+      ]
+    },
+    {
+      "key": "in-cli-argv",
+      "kind": "MOD",
+      "name": "argv parsing and dispatch",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so every verb shares one parser, one exit-code policy and one publish-after-write rule",
+      "responsibility": "Owns the command table walk: two-word verbs, the setup-only -- argv split, flags interspersed with positionals, the positional count check, and calling publish after a writing verb.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "155",
+          "quote": "if _, ok := commands[inv.name+\" \"+args[0]]; ok {",
+          "symbol": "parse"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "211",
+          "quote": "func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {",
+          "symbol": "parseInterspersed"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "201",
+          "quote": "if c.writes {",
+          "symbol": "run"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-claude-block",
+      "kind": "DATA",
+      "name": "CLAUDE.md abbd block",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so install can replace its own block on a rerun and leave the rest of CLAUDE.md alone",
+      "responsibility": "Defines the block text between <!-- abbd:begin --> and <!-- abbd:end -->, and the rule that a marker counts only alone on its line and outside fenced code, preserving the file's line endings.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/install.go",
+          "lines": "13",
+          "quote": "blockBegin = \"<!-- abbd:begin -->\"",
+          "symbol": "blockBegin"
+        },
+        {
+          "path": "cmd/abbd/install.go",
+          "lines": "94",
+          "quote": "case line == blockBegin && begin < 0:",
+          "symbol": "markers"
+        },
+        {
+          "path": "cmd/abbd/install.go",
+          "lines": "42",
+          "quote": "want := strings.ReplaceAll(block, \"\\n\", nl)",
+          "symbol": "install"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-publish",
+      "kind": "MOD",
+      "name": "blueprint publish",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so the blueprint on disk always matches the state after a writing command",
+      "responsibility": "Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "16",
+          "quote": "in.Tree, _ = gitx.Snapshot(e.root, store.Dir)",
+          "symbol": "screenInput"
+        },
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "31",
+          "quote": "for _, name := range []string{screen.PageFile, screen.GraphFile} {",
+          "symbol": "publish"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-query",
+      "kind": "MOD",
+      "name": "query commands",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so explain, path and impact answer architecture questions from the state without writing",
+      "responsibility": "Owns resolving a unit by ID, exact name or near name, and printing topology's explain, path and impact results with names, origins and how's CURRENT or STALE text.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "12",
+          "quote": "func resolve(units []model.Unit, s string) (model.Unit, error) {",
+          "symbol": "resolve"
+        },
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "145",
+          "quote": "if t.Digest != e.st.ModuleDigest(units, u.ID) {",
+          "symbol": "explainHow"
+        },
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "189",
+          "quote": "fmt.Fprintf(e.stdout, \"%d hop(s), weakest origin %s\\n\", len(hops), topology.Weakest(hops))",
+          "symbol": "path"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-record",
+      "kind": "MOD",
+      "name": "record writers",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so a reader's or a human's finding enters the state only with live evidence or a stated source",
+      "responsibility": "Owns record relation, record unit, record fact and understand: checking every quote against the tree, the origin precedence EXTRACTED over USER_STATED over INFERRED, the duplicate-code refusal, and refusing to restamp unchanged how text onto changed code.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "36",
+          "quote": "if !c.Check(ev).Live {",
+          "symbol": "citations"
+        },
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "88",
+          "quote": "case rels[i].Origin == model.UserStated && rel.Origin == model.Inferred:",
+          "symbol": "recordRelation"
+        },
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "158",
+          "quote": "var statedFields = map[string]func(*model.Unit) **model.Fact{",
+          "symbol": "statedFields"
+        },
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "45",
+          "quote": "if prev, ok := old[id]; ok && prev.Digest != digest && strings.TrimSpace(prev.Text) == text {",
+          "symbol": "understand"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-review",
+      "kind": "MOD",
+      "name": "review commands",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so a PR and its reviewer see what changed and whether the record still holds, without writing",
+      "responsibility": "Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "44",
+          "quote": "if e.check && d.Boundary() {",
+          "symbol": "diff"
+        },
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "24",
+          "quote": "r := c.Check(ev)",
+          "symbol": "checkEvidence"
+        },
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "70",
+          "quote": "switch in.ActualFreshness() {",
+          "symbol": "status"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-setup",
+      "kind": "MOD",
+      "name": "setup determinism proof and supplement fold",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so a nondeterministic script or an unbacked supplement never becomes the baseline",
+      "responsibility": "Owns the three-run determinism proof (the third with reseeded PYTHONHASHSEED and PERL_HASH_SEED), reading the supplement relative to the root, and folding it over the script output before syncing with guesses replaced.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "82",
+          "quote": "reseed := reseeded()",
+          "symbol": "deterministic"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "104",
+          "quote": "for _, name := range []string{\"PYTHONHASHSEED\", \"PERL_HASH_SEED\"} {",
+          "symbol": "reseeded"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "128",
+          "quote": "path = filepath.Join(e.root, path)",
+          "symbol": "readExtraction"
+        }
+      ]
+    },
+    {
+      "key": "in-cli-sync",
+      "kind": "MOD",
+      "name": "sync pipeline",
+      "parent": "mod-cmd-abbd",
+      "purpose": "so the state always rests on the deterministic extraction alone",
+      "responsibility": "Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "289",
+          "quote": "res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)",
+          "symbol": "syncActual"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "304",
+          "quote": "if state.Fingerprint != tree || rev == \"\" {",
+          "symbol": "syncActual"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "313",
+          "quote": "cmd := exec.Command(argv[0], argv[1:]...)",
+          "symbol": "runScript"
+        }
+      ]
+    },
+    {
+      "key": "in-evidence-apply",
+      "kind": "MOD",
+      "name": "liveness and line moves",
+      "parent": "mod-evidence",
+      "purpose": "so a reader's finding disappears when its code does, and edits above a quote never add up to a false removal",
+      "responsibility": "Marks a present semantic unit absent and a semantic relation dead when none of its evidence is live, leaves evidence-less items alone, and rewrites each live item's lines and the relation digest to the current location.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "141",
+          "symbol": "Apply",
+          "quote": "u.Absent = !live"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "115",
+          "symbol": "all",
+          "quote": "// covers every live item in order."
+        }
+      ]
+    },
+    {
+      "key": "in-evidence-index",
+      "kind": "MOD",
+      "name": "whitespace-free file index",
+      "parent": "mod-evidence",
+      "purpose": "so each file is read once and a match in the stripped text maps back to real line numbers",
+      "responsibility": "Caches each file as its raw lines, a whitespace-free copy, the line of each byte and where whitespace stood, with CRLF folded to LF.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "35-37",
+          "symbol": "file",
+          "quote": "// norm is the file with all whitespace removed, so formatting never kills"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "64",
+          "symbol": "load",
+          "quote": "bytes.ReplaceAll(b, []byte(\"\\r\\n\"), []byte(\"\\n\"))"
+        }
+      ]
+    },
+    {
+      "key": "in-evidence-match",
+      "kind": "MOD",
+      "name": "quote matching",
+      "parent": "mod-evidence",
+      "purpose": "so formatting changes never kill a quote but a renamed identifier or moved code does",
+      "responsibility": "Searches a whitespace-stripped copy of the file for the quote, requires word boundaries at a word-ending quote, accepts a hit only within the named lines plus Slack, and returns where it sits and a digest of those lines.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "21",
+          "symbol": "Slack",
+          "quote": "const Slack = 3"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "97-98",
+          "symbol": "Check",
+          "quote": "// A quote ending in a word must end where the code's word ends, so"
+        }
+      ]
+    },
+    {
+      "key": "in-extract-gate",
+      "kind": "MOD",
+      "name": "untrusted-output gate",
+      "parent": "mod-extract",
+      "purpose": "so malformed or overreaching extraction output fails loudly instead of entering the state",
+      "responsibility": "Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader's unit is identified by the code it cites.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "136",
+          "symbol": "parseUnits",
+          "quote": "dec.DisallowUnknownFields()"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "162",
+          "symbol": "parseUnits",
+          "quote": "ru.Anchors = append(ru.Anchors, e.Anchor())"
+        }
+      ]
+    },
+    {
+      "key": "in-extract-graph-check",
+      "kind": "MOD",
+      "name": "key and parent checks",
+      "parent": "mod-extract",
+      "purpose": "so the units and relations of one run form a well-formed graph before identity matching sees them",
+      "responsibility": "Refuses duplicate keys, a parent that is not another module, parent cycles, relations naming missing keys or a unit itself, and relation kinds that cannot join the two unit kinds.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "87",
+          "symbol": "Parse",
+          "quote": "parent %q is not the key of another module"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "215-216",
+          "symbol": "parentCycle",
+          "quote": "func parentCycle(units []Unit, key string) bool {"
+        }
+      ]
+    },
+    {
+      "key": "in-extract-guess",
+      "kind": "MOD",
+      "name": "intent is a guess",
+      "parent": "mod-extract",
+      "purpose": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
+      "responsibility": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "207-212",
+          "symbol": "inferred",
+          "quote": "// Extraction reads code, so any statement of intent it makes is a guess."
+        }
+      ]
+    },
+    {
+      "key": "in-extract-paths",
+      "kind": "MOD",
+      "name": "anchor path normalization",
+      "parent": "mod-extract",
+      "purpose": "so anchors and evidence paths compare equal to the paths git reports on every platform",
+      "responsibility": "Turns backslashes into forward slashes, cleans the path, and refuses empty, absolute or root-escaping paths.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "191",
+          "symbol": "normalizePath",
+          "quote": "// Anchors must compare equal to the forward-slash, root-relative paths git reports."
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "202",
+          "symbol": "normalizePath",
+          "quote": "leaves the project root"
+        }
+      ]
+    },
+    {
+      "key": "in-gitx-mergebase",
+      "kind": "MOD",
+      "name": "default-branch base search",
+      "parent": "mod-gitx",
+      "purpose": "so diff finds a base to compare with in a local clone and in a bare CI checkout alike",
+      "responsibility": "Tries origin's HEAD, the upstream, origin/main, origin/master, main and master in that order and returns the first merge base with HEAD.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "57",
+          "quote": "for _, b := range append(candidates, \"@{upstream}\", \"origin/main\", \"origin/master\", \"main\", \"master\") {",
+          "symbol": "MergeBase"
+        }
+      ]
+    },
+    {
+      "key": "in-gitx-renames",
+      "kind": "MOD",
+      "name": "rename detection",
+      "parent": "mod-gitx",
+      "purpose": "so a moved file keeps its units' IDs instead of looking like a delete and an add",
+      "responsibility": "Diffs two snapshot trees with unlimited rename detection, parses the NUL-separated name-status output into old-to-new paths, and reports ok=false when the old tree was garbage collected.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "94",
+          "quote": "\"diff-tree\", \"-r\", \"-M\", \"-l0\"",
+          "symbol": "Renames"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "101",
+          "quote": "case strings.HasPrefix(f[i], \"R\") && i+2 < len(f):",
+          "symbol": "Renames"
+        }
+      ]
+    },
+    {
+      "key": "in-gitx-snapshot",
+      "kind": "MOD",
+      "name": "working-tree snapshot",
+      "parent": "mod-gitx",
+      "purpose": "so a sync can fingerprint the working tree, untracked files included, without disturbing the user's index",
+      "responsibility": "Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "76",
+          "quote": "env := []string{\"GIT_INDEX_FILE=\" + filepath.Join(tmp, \"index\")}",
+          "symbol": "Snapshot"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "77",
+          "quote": "\":(exclude)\"+exclude",
+          "symbol": "Snapshot"
+        }
+      ]
+    },
+    {
+      "key": "in-identity-held",
+      "kind": "MOD",
+      "name": "human-held unit retention",
+      "parent": "mod-identity",
+      "purpose": "so a reader-found unit a human spoke about is not marked absent when a new supplement stops reporting it",
+      "responsibility": "Computes, to a fixed point, the semantic units that carry a USER_STATED fact or relation or are pointed at by a stated relation from a unit that stays, and keeps them present as Stated.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "219",
+          "quote": "if !stays[u.ID] && u.Semantic() && (stated(u) || pointed[u.ID]) {",
+          "symbol": "heldByHuman"
+        }
+      ]
+    },
+    {
+      "key": "in-identity-match",
+      "kind": "MOD",
+      "name": "anchor takeover matching",
+      "parent": "mod-identity",
+      "purpose": "so an extracted unit inherits a stored ID only when the code evidently is the same unit, regardless of input order",
+      "responsibility": "Pairs extracted and stored units of the same kind that share two or more anchors or an identical anchor set, assigning globally best match first (identical, then larger overlap, then smaller difference).",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "100",
+          "quote": "if ov >= 2 || same {",
+          "symbol": "Reconcile"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "108",
+          "quote": "case p.identical != q.identical:",
+          "symbol": "Reconcile"
+        }
+      ]
+    },
+    {
+      "key": "in-identity-ownership",
+      "kind": "MOD",
+      "name": "fact and relation ownership",
+      "parent": "mod-identity",
+      "purpose": "so a rerun of the script or of setup never overwrites what a human stated",
+      "responsibility": "On a match the extraction replaces anchors, signature, digest and EXTRACTED names and relations; INFERRED guesses are replaced only by a setup (ReplaceGuesses); USER_STATED facts and relations always survive.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "332",
+          "quote": "replace := func(f *model.Fact) bool { return f == nil || (guesses == ReplaceGuesses && f.Guess()) }",
+          "symbol": "merge"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "293",
+          "quote": "if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {",
+          "symbol": "setRelations"
+        }
+      ]
+    },
+    {
+      "key": "in-model-evidence-arg",
+      "kind": "IF",
+      "name": "evidence citation",
+      "parent": "mod-model",
+      "purpose": "so a cited excerpt has one shape whether it comes from the supplement or the command line",
+      "responsibility": "An evidence item is a path, optional lines such as 120 or 120-134, optional symbol and a verbatim quote, written PATH:LINES:QUOTE on the command line, and may not cite .abbd or .git files.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "337",
+          "symbol": "ParseEvidence",
+          "quote": "is not PATH:LINES:QUOTE"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "319",
+          "symbol": "Validate",
+          "quote": "must cite the code, not ABBD's or git's own files"
+        }
+      ]
+    },
+    {
+      "key": "in-model-id",
+      "kind": "IF",
+      "name": "unit ID format",
+      "parent": "mod-model",
+      "purpose": "so a unit keeps one stable, typed name across syncs, commands and files",
+      "responsibility": "IDs are a kind prefix, a dash and at least four digits, such as MOD-0001; FormatID writes them and ParseID reads the kind back.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "111",
+          "symbol": "idPattern",
+          "quote": "var idPattern = regexp.MustCompile("
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "123",
+          "symbol": "FormatID",
+          "quote": "return ID(fmt.Sprintf(\"%s-%04d\", k, n))"
+        }
+      ]
+    },
+    {
+      "key": "in-model-origin",
+      "kind": "MOD",
+      "name": "fact origins",
+      "parent": "mod-model",
+      "purpose": "so everyone can tell a code fact from a reader's guess from a human's word",
+      "responsibility": "Defines the EXTRACTED, INFERRED and USER_STATED origins and enforces that a why-field is never EXTRACTED and that exactly the USER_STATED facts carry a source.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "39",
+          "symbol": "validate",
+          "quote": "if why && f.Origin == Extracted {"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "46",
+          "symbol": "sourced",
+          "quote": "func sourced(o Origin, source string) error {"
+        }
+      ]
+    },
+    {
+      "key": "in-model-reader-marker",
+      "kind": "MOD",
+      "name": "guess versus topology rule",
+      "parent": "mod-model",
+      "purpose": "so every package decides the same way which units and relations are a reader's guess and which are drawn as the topology",
+      "responsibility": "A unit is semantic when its name is INFERRED; a relation counts as topology only when it is live and EXTRACTED or USER_STATED, and is a guess when INFERRED.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "152",
+          "symbol": "Semantic",
+          "quote": "func (u Unit) Semantic() bool { return u.Name.Origin == Inferred }"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "360",
+          "symbol": "Counts",
+          "quote": "return !r.Dead && (r.Origin == Extracted || r.Origin == UserStated)"
+        }
+      ]
+    },
+    {
+      "key": "in-model-relation-grammar",
+      "kind": "MOD",
+      "name": "relation grammar",
+      "parent": "mod-model",
+      "purpose": "so every relation, extracted, read or stated, has a meaning ABBD can draw",
+      "responsibility": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "236",
+          "symbol": "ends",
+          "quote": "var ends = map[RelationKind]struct{ from, to func(Kind) bool }{"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "267",
+          "symbol": "vias",
+          "quote": "var vias = map[Via]bool{"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-freshness",
+      "kind": "MOD",
+      "name": "freshness verdicts",
+      "parent": "mod-screen",
+      "purpose": "tells the human whether what they read can be trusted",
+      "responsibility": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the blueprint's stored watermark with the inputs hash now (blueprint freshness)",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "83",
+          "quote": "func (in Input) BlueprintFreshness() Freshness",
+          "symbol": "BlueprintFreshness"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "94",
+          "quote": "func (in Input) ActualFreshness() Freshness",
+          "symbol": "ActualFreshness"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-inside",
+      "kind": "MOD",
+      "name": "module inside",
+      "parent": "mod-screen",
+      "purpose": "shows what inside a module meets each of its contracts and the other modules",
+      "responsibility": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
+      "evidence": [
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "44",
+          "quote": "func (o *overview) inside(m model.ID, units []model.Unit) Inside {",
+          "symbol": "inside"
+        },
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "309",
+          "quote": "func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {",
+          "symbol": "inferred"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-layout",
+      "kind": "MOD",
+      "name": "layered layout and routing",
+      "parent": "mod-screen",
+      "purpose": "gives the same graph the same picture every time",
+      "responsibility": "ranks nodes so each sits above what it uses (dropping cycle-closing edges from ranking only), orders layers by neighbours after sorting, routes lines through layer gaps in their own lanes, and estimates label widths (Hangul wide) to cut labels to fit",
+      "evidence": [
+        {
+          "path": "internal/screen/layout.go",
+          "lines": "45",
+          "quote": "func arrange(nodes []lnode, edges []ledge, top int) layout {",
+          "symbol": "arrange"
+        },
+        {
+          "path": "internal/screen/layout.go",
+          "lines": "274",
+          "quote": "func (l *layout) route(from pt, a int, to pt, b int) string {",
+          "symbol": "route"
+        },
+        {
+          "path": "internal/screen/layout.go",
+          "lines": "310",
+          "quote": "func textWidth(s string, px int) int {",
+          "symbol": "textWidth"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-overview",
+      "kind": "MOD",
+      "name": "overview plan",
+      "parent": "mod-screen",
+      "purpose": "keeps the first level a picture of what the code and the human say, never of guesses",
+      "responsibility": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "110",
+          "quote": "if present[u.ID] && present[r.To] && r.Counts() {",
+          "symbol": "top"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "119",
+          "quote": "func planOverview(units []model.Unit) *overview {",
+          "symbol": "planOverview"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "377",
+          "quote": "k := fmt.Sprintf(\"bypass>%s\", e)",
+          "symbol": "draw"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-page",
+      "kind": "MOD",
+      "name": "page template",
+      "parent": "mod-screen",
+      "purpose": "turns the model into the one page a human opens",
+      "responsibility": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
+      "evidence": [
+        {
+          "path": "internal/screen/page.go",
+          "lines": "15",
+          "quote": "var page = template.Must(template.New(\"page\").Funcs(template.FuncMap{",
+          "symbol": "page"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "7",
+          "quote": "<meta name=\"abbd-watermark\" content=\"inputs_hash={{.Watermark.Inputs}}\">"
+        }
+      ]
+    },
+    {
+      "key": "in-screen-understanding",
+      "kind": "MOD",
+      "name": "understanding text",
+      "parent": "mod-screen",
+      "purpose": "shows pstack how's text for a module without trusting any markup in it",
+      "responsibility": "splits a module's stored text into heading, list-item and paragraph blocks with code and bold spans, and marks it STALE when the module's code digest moved since the text was written",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "45",
+          "quote": "func blocks(text string) []Block {",
+          "symbol": "blocks"
+        },
+        {
+          "path": "internal/screen/words.go",
+          "lines": "27",
+          "quote": "func spans(s string) []Span {",
+          "symbol": "spans"
+        }
+      ]
+    },
+    {
+      "key": "in-store-candidates",
+      "kind": "DATA",
+      "name": "merge candidates file",
+      "parent": "mod-store",
+      "purpose": "so a leftover anchor overlap the matcher did not resolve waits in .abbd for a human instead of being merged silently",
+      "responsibility": "Persists .abbd/candidates.yaml as a list of new, existing and shared-anchor entries, written empty rather than absent, and pruned to live IDs on each sync.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "174",
+          "quote": "return cs, readYAML(s.path(\"candidates.yaml\"), &cs)",
+          "symbol": "LoadCandidates"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "22",
+          "quote": "Shared   model.Anchor `yaml:\"shared\"`",
+          "symbol": "Candidate"
+        }
+      ]
+    },
+    {
+      "key": "in-store-hashes",
+      "kind": "MOD",
+      "name": "store staleness hashes",
+      "parent": "mod-store",
+      "purpose": "so derived views can tell cheaply whether what they rendered still matches the stored files",
+      "responsibility": "Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "213",
+          "quote": "case d.IsDir() && p == s.path(\"blueprint\"):",
+          "symbol": "InputsHash"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "235",
+          "quote": "fmt.Fprintf(h, \"%s\\x00%d\\x00\", filepath.ToSlash(rel), len(b))",
+          "symbol": "hashFiles"
+        }
+      ]
+    },
+    {
+      "key": "in-store-highwater",
+      "kind": "MOD",
+      "name": "ID high-water minting",
+      "parent": "mod-store",
+      "purpose": "so an ID number, once given out, is never handed to another unit even after its unit is deleted",
+      "responsibility": "Mints the next ID of a kind for a hand-recorded unit by bumping the per-kind high-water in state.yaml and saving it.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "297",
+          "quote": "st.HighWater[kind]++",
+          "symbol": "NextID"
+        }
+      ]
+    },
+    {
+      "key": "in-store-history",
+      "kind": "MOD",
+      "name": "units at a revision",
+      "parent": "mod-store",
+      "purpose": "so a diff can compare today's units with those committed at a base revision",
+      "responsibility": "Reads and parses the committed unit files under .abbd/architecture and .abbd/features at a revision through git, treating a revision without .abbd as having no units.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "86",
+          "quote": "files, err := gitx.Files(project, rev, dirs...)",
+          "symbol": "UnitsAt"
+        }
+      ]
+    },
+    {
+      "key": "in-store-moddigest",
+      "kind": "MOD",
+      "name": "module code digest",
+      "parent": "mod-store",
+      "purpose": "so a module's understanding text is marked STALE once any code it describes changes or disappears",
+      "responsibility": "Fingerprints, CRLF-normalized and truncated to 16 hex, every file cited by the anchors and evidence of a present module and its child units, counting a missing file as missing.",
+      "evidence": [
+        {
+          "path": "internal/store/understanding.go",
+          "lines": "70",
+          "quote": "if u.Absent || (u.ID != id && u.Parent != id) {",
+          "symbol": "ModuleDigest"
+        },
+        {
+          "path": "internal/store/understanding.go",
+          "lines": "90",
+          "quote": "fmt.Fprintf(h, \"%s\\x00missing\\x00\", p)",
+          "symbol": "ModuleDigest"
+        }
+      ]
+    },
+    {
+      "key": "in-store-notes",
+      "kind": "DATA",
+      "name": "unit notes section",
+      "parent": "mod-store",
+      "purpose": "so prose a human writes in a unit file survives every regeneration of that file",
+      "responsibility": "Splits a unit file's body at the '## Notes' heading on read and appends it unchanged after the generated title and anchor list on write; everything above it is regenerated.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "122",
+          "quote": "if i := bytes.Index(body, []byte(\"\\n\"+notesHeading)); i >= 0 {",
+          "symbol": "parseUnit"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "149",
+          "quote": "if u.Notes != \"\" {",
+          "symbol": "renderUnit"
+        }
+      ]
+    },
+    {
+      "key": "in-store-write",
+      "kind": "MOD",
+      "name": "no-op-aware atomic write",
+      "parent": "mod-store",
+      "purpose": "so rewriting .abbd with the same content leaves files untouched and a crash never leaves a half-written file",
+      "responsibility": "Every store write skips a file whose bytes are already equal and otherwise writes a .tmp sibling and renames it into place.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "264",
+          "quote": "if old, err := os.ReadFile(path); err == nil && bytes.Equal(old, b) {",
+          "symbol": "writeFile"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "271",
+          "quote": "return os.Rename(tmp, path)",
+          "symbol": "writeFile"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-boundary",
+      "kind": "MOD",
+      "name": "boundary rule",
+      "parent": "mod-topology",
+      "purpose": "so a CI label fires on a change of module boundaries and not on every edit to an interface file",
+      "responsibility": "Decides that a diff reaches the boundary when a contract's signature changed, a contract was added or removed, or a drawn relation between top-level units appeared or went; a contract's code change under the same signature does not count.",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "105",
+          "symbol": "Boundary",
+          "quote": "func (d Diff) Boundary() bool {"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-diff",
+      "kind": "MOD",
+      "name": "topology diff",
+      "parent": "mod-topology",
+      "purpose": "so a PR shows what changed in the architecture, not in the lines",
+      "responsibility": "Compares two unit sets into sorted categories: units added and removed, contract signatures changed, contract code changed under the same signature, drawn relations between top-level units (an inside unit's relation lifted to its module), and reader couplings added.",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "58",
+          "symbol": "Compare",
+          "quote": "func Compare(base, now []model.Unit) Diff {"
+        },
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "205",
+          "symbol": "between",
+          "quote": "e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-diff-report",
+      "kind": "DATA",
+      "name": "diff report fields",
+      "parent": "mod-topology",
+      "purpose": "so a CI job or PR tooling can read the topology difference as JSON",
+      "responsibility": "Fixes the JSON field names of the diff (units_added, units_removed, contract_signatures_changed, contract_code_changed, relations_added, relations_removed, inferred_added) that abbd diff --json prints.",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "47",
+          "symbol": "Diff",
+          "quote": "Signatures []Signature `json:\"contract_signatures_changed\"`"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-explain",
+      "kind": "MOD",
+      "name": "unit explanation",
+      "parent": "mod-topology",
+      "purpose": "so one unit can be read at a glance with its neighbours",
+      "responsibility": "Gathers one present unit, the units inside it, its drawn links out and in (counting an inside unit's link across the boundary as the unit's own), and the reader couplings touching it or anything inside it.",
+      "evidence": [
+        {
+          "path": "internal/topology/query.go",
+          "lines": "23",
+          "symbol": "Explain",
+          "quote": "func Explain(units []model.Unit, id model.ID) Explanation {"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-impact",
+      "kind": "MOD",
+      "name": "impact walk",
+      "parent": "mod-topology",
+      "purpose": "so an agent knows which units to read closely and which briefly before changing some units",
+      "responsibility": "Walks from the seeds (and units inside seed modules) to dependents, consumers, contract providers and provided contracts, marks what the seeds use without following it, and splits the result into a direct and a far tier.",
+      "evidence": [
+        {
+          "path": "internal/topology/impact.go",
+          "lines": "72",
+          "symbol": "ImpactOf",
+          "quote": "func ImpactOf(units []model.Unit, seeds []model.ID) Impact {"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-links",
+      "kind": "MOD",
+      "name": "live links",
+      "parent": "mod-topology",
+      "purpose": "so every query walks the same set of relations",
+      "responsibility": "Lists every relation between present units that is not dead, extracted, stated or inferred, with its origin, via and evidence, and labels each with where it comes from.",
+      "evidence": [
+        {
+          "path": "internal/topology/impact.go",
+          "lines": "35",
+          "symbol": "Links",
+          "quote": "func Links(units []model.Unit) []Link {"
+        }
+      ]
+    },
+    {
+      "key": "in-topo-path",
+      "kind": "MOD",
+      "name": "strongest shortest path",
+      "parent": "mod-topology",
+      "purpose": "so a path between two units shows a guess only where nothing firmer connects them",
+      "responsibility": "Finds the shortest undirected walk over live links and, among equally short walks, the one whose weakest hop is strongest by the order extracted over stated over inferred, and reports that weakest origin.",
+      "evidence": [
+        {
+          "path": "internal/topology/query.go",
+          "lines": "75",
+          "symbol": "Path",
+          "quote": "func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {"
+        },
+        {
+          "path": "internal/topology/query.go",
+          "lines": "62",
+          "symbol": "strength",
+          "quote": "var strength = map[model.Origin]int{model.Extracted: 2, model.UserStated: 1, model.Inferred: 0}"
+        }
+      ]
     },
     {
       "key": "mod-bootstrap",
@@ -99,8 +1391,8 @@
           "path": "internal/bootstrap"
         }
       ],
-      "purpose": "lays the semantic supplement over the script result",
-      "responsibility": "matches supplement units to script units by shared anchors, refuses ties, a coupling without evidence and an evidence unit that would merge into a script unit"
+      "purpose": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
+      "responsibility": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract."
     },
     {
       "key": "mod-cmd-abbd",
@@ -111,8 +1403,20 @@
           "path": "cmd/abbd"
         }
       ],
-      "purpose": "lets the human and the agent work the lever from a terminal",
-      "responsibility": "parses argv against the command table, runs setup, install, sync, record, understand, explain, path, impact, diff, evidence and status, and renders the blueprint after every write"
+      "purpose": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
+      "responsibility": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes."
+    },
+    {
+      "key": "mod-evidence",
+      "kind": "MOD",
+      "name": "internal/evidence",
+      "anchors": [
+        {
+          "path": "internal/evidence"
+        }
+      ],
+      "purpose": "so a reader's unit or coupling lives exactly as long as the code it quoted, decided the same way every time for the same tree",
+      "responsibility": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now."
     },
     {
       "key": "mod-extract",
@@ -123,8 +1427,8 @@
           "path": "internal/extract"
         }
       ],
-      "purpose": "is the trust boundary where extraction JSON becomes typed units",
-      "responsibility": "validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED"
+      "purpose": "so untrusted script or model output becomes typed units only after it passes strict checks",
+      "responsibility": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity."
     },
     {
       "key": "mod-gitx",
@@ -135,8 +1439,8 @@
           "path": "internal/gitx"
         }
       ],
-      "purpose": "reads the few git facts ABBD needs without touching the user's index",
-      "responsibility": "snapshots the working tree as a tree object, diffs snapshots for renames, reads files at a revision and finds the merge base"
+      "purpose": "so ABBD can ask git the few facts it needs without touching the user's index or history",
+      "responsibility": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots."
     },
     {
       "key": "mod-identity",
@@ -147,8 +1451,8 @@
           "path": "internal/identity"
         }
       ],
-      "purpose": "keeps design unit IDs stable across re-extraction",
-      "responsibility": "matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite"
+      "purpose": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
+      "responsibility": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates."
     },
     {
       "key": "mod-model",
@@ -159,8 +1463,8 @@
           "path": "internal/model"
         }
       ],
-      "purpose": "is the shared vocabulary of design units and their evidence",
-      "responsibility": "defines Unit, Fact, Relation, Edge and Anchor, the three origins and the source a stated fact carries, the kinds and their directories, and KIND-NNNN IDs"
+      "purpose": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
+      "responsibility": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds."
     },
     {
       "key": "mod-screen",
@@ -171,8 +1475,8 @@
           "path": "internal/screen"
         }
       ],
-      "purpose": "shows a human the architecture as it is",
-      "responsibility": "builds a deterministic two-level drawing, the overview of top-level units and one inside per module, and renders the watermarked blueprint"
+      "purpose": "shows a human the architecture as it is, read-only over the store",
+      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark"
     },
     {
       "key": "mod-store",
@@ -183,8 +1487,8 @@
           "path": "internal/store"
         }
       ],
-      "purpose": "persists ABBD state as reviewable files under .abbd/",
-      "responsibility": "is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, input hashes, and units at a revision"
+      "purpose": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
+      "responsibility": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale."
     },
     {
       "key": "mod-topology",
@@ -195,8 +1499,1390 @@
           "path": "internal/topology"
         }
       ],
-      "purpose": "answers questions about the stored topology",
-      "responsibility": "explains one unit, finds the shortest path between two units with its weakest origin, computes the impact of a change in direct and far tiers, and the difference between two revisions' topologies"
+      "purpose": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
+      "responsibility": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions."
+    }
+  ],
+  "relations": [
+    {
+      "from": "in-bootstrap-fold",
+      "to": "in-bootstrap-match",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "39",
+          "symbol": "Overlay",
+          "quote": "i, err := match(out.Units[:scriptUnits], d)"
+        }
+      ]
+    },
+    {
+      "from": "in-bootstrap-fold",
+      "to": "in-bootstrap-reader-unit",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "46",
+          "symbol": "Overlay",
+          "quote": "out.Units = append(out.Units, semantic(d, fmt.Sprintf(\"supplement#%d\", n)))"
+        }
+      ]
+    },
+    {
+      "from": "in-bootstrap-match",
+      "to": "in-extract-gate",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "127",
+          "symbol": "match",
+          "quote": "n := overlap(u.Anchors, d.Anchors)"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "160-162",
+          "symbol": "parseUnits",
+          "quote": "// Evidence locates a unit the script cannot see, so it anchors the unit's ID."
+        }
+      ]
+    },
+    {
+      "from": "in-bootstrap-reader-unit",
+      "to": "in-model-reader-marker",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "116",
+          "symbol": "semantic",
+          "quote": "d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred}"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "152",
+          "symbol": "Semantic",
+          "quote": "return u.Name.Origin == Inferred"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-argv",
+      "to": "in-cli-publish",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "202",
+          "quote": "if err := e.publish(); err != nil {",
+          "symbol": "run"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-argv",
+      "to": "if-cli",
+      "kind": "provides",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "193",
+          "quote": "return exitUsage",
+          "symbol": "run"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "199",
+          "quote": "return exitError",
+          "symbol": "run"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-publish",
+      "to": "mod-screen",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "27",
+          "quote": "files, err := screen.Files(screen.Build(in))",
+          "symbol": "publish"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-publish",
+      "to": "data-blueprint",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "32",
+          "quote": "if err := e.st.SaveBlueprint(name, files[name]); err != nil {",
+          "symbol": "publish"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-query",
+      "to": "data-understanding",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "135",
+          "quote": "texts, err := e.st.LoadUnderstandings()",
+          "symbol": "explainHow"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-query",
+      "to": "in-cli-record",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "38",
+          "quote": "digest := e.st.ModuleDigest(units, id)",
+          "symbol": "understand"
+        },
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "145",
+          "quote": "if t.Digest != e.st.ModuleDigest(units, u.ID) {",
+          "symbol": "explainHow"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-query",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "65",
+          "quote": "ex := topology.Explain(units, u.ID)",
+          "symbol": "explain"
+        },
+        {
+          "path": "cmd/abbd/impact.go",
+          "lines": "27",
+          "quote": "im := topology.ImpactOf(units, seeds)",
+          "symbol": "impact"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-record",
+      "to": "data-understanding",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "48",
+          "quote": "if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {",
+          "symbol": "understand"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-record",
+      "to": "data-units",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "95",
+          "quote": "if err := e.st.SaveUnits([]model.Unit{u}); err != nil {",
+          "symbol": "recordRelation"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-record",
+      "to": "if-edge-key",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "49",
+          "quote": "edge, err := model.ParseEdge(strings.Join(pos, \".\"))",
+          "symbol": "recordRelation"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-record",
+      "to": "mod-evidence",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "34",
+          "quote": "c := evidence.New(e.root)",
+          "symbol": "citations"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-review",
+      "to": "data-units",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "23",
+          "quote": "was, err := e.st.UnitsAt(base)",
+          "symbol": "diff"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-review",
+      "to": "in-cli-publish",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "62",
+          "quote": "in, err := e.screenInput()",
+          "symbol": "status"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-review",
+      "to": "mod-evidence",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "21",
+          "quote": "c := evidence.New(e.root)",
+          "symbol": "checkEvidence"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-review",
+      "to": "mod-gitx",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "19",
+          "quote": "if base, err = gitx.MergeBase(e.root); err != nil {",
+          "symbol": "diff"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-review",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "31",
+          "quote": "d := topology.Compare(was, now)",
+          "symbol": "diff"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-setup",
+      "to": "data-extraction",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "135",
+          "quote": "return extract.Parse(f)",
+          "symbol": "readExtraction"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-setup",
+      "to": "in-cli-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "55",
+          "quote": "res, err := e.syncActual(ex, identity.ReplaceGuesses)",
+          "symbol": "setup"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "78",
+          "quote": "first, err := e.runScript(argv)",
+          "symbol": "deterministic"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-setup",
+      "to": "mod-bootstrap",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "47",
+          "quote": "if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {",
+          "symbol": "setup"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "cfg-project",
+      "kind": "consumes",
+      "via": "config",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "232",
+          "quote": "if len(p.Extract) == 0 {",
+          "symbol": "sync"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "data-extraction",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "239",
+          "quote": "ex, err := extract.Parse(bytes.NewReader(out))",
+          "symbol": "sync"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "data-state",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "307",
+          "quote": "state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}",
+          "symbol": "syncActual"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "in-cli-setup",
+      "kind": "depends_on",
+      "via": "config",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "233",
+          "quote": "project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first",
+          "symbol": "sync"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "51",
+          "quote": "p.Extract = argv",
+          "symbol": "setup"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "mod-evidence",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "290",
+          "quote": "res.Units = evidence.New(e.root).Apply(res.Units)",
+          "symbol": "syncActual"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "mod-gitx",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "278",
+          "quote": "renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)",
+          "symbol": "syncActual"
+        }
+      ]
+    },
+    {
+      "from": "in-cli-sync",
+      "to": "mod-identity",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "289",
+          "quote": "identity.Reconcile(",
+          "symbol": "syncActual"
+        }
+      ]
+    },
+    {
+      "from": "in-evidence-apply",
+      "to": "in-evidence-match",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "120",
+          "symbol": "all",
+          "quote": "if r := c.Check(e); r.Live {"
+        }
+      ]
+    },
+    {
+      "from": "in-evidence-apply",
+      "to": "in-model-reader-marker",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "138",
+          "symbol": "Apply",
+          "quote": "if u.Semantic() && !u.Absent {"
+        }
+      ]
+    },
+    {
+      "from": "in-evidence-match",
+      "to": "in-model-evidence-arg",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "89",
+          "symbol": "Check",
+          "quote": "first, last, bounded := e.Span()"
+        }
+      ]
+    },
+    {
+      "from": "in-evidence-match",
+      "to": "in-evidence-index",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "84",
+          "symbol": "Check",
+          "quote": "f := c.load(e.Path)"
+        }
+      ]
+    },
+    {
+      "from": "in-extract-gate",
+      "to": "in-model-evidence-arg",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "126",
+          "symbol": "NormalizeEvidence",
+          "quote": "if err := e.Validate(); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "in-extract-gate",
+      "to": "in-extract-guess",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "181",
+          "symbol": "parseUnits",
+          "quote": "Purpose:        inferred(ru.Purpose),"
+        }
+      ]
+    },
+    {
+      "from": "in-extract-gate",
+      "to": "in-extract-paths",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "150",
+          "symbol": "parseUnits",
+          "quote": "p, err := normalizePath(a.Path)"
+        }
+      ]
+    },
+    {
+      "from": "in-extract-graph-check",
+      "to": "in-model-relation-grammar",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "103",
+          "symbol": "Parse",
+          "quote": "if err := rr.Kind.Joins(from, to); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "in-extract-paths",
+      "to": "mod-gitx",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "191",
+          "symbol": "normalizePath",
+          "quote": "the forward-slash, root-relative paths git reports"
+        }
+      ]
+    },
+    {
+      "from": "in-gitx-renames",
+      "to": "in-gitx-snapshot",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "274",
+          "quote": "tree, err := gitx.Snapshot(e.root, store.Dir)"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "278",
+          "quote": "gitx.Renames(e.root, state.Fingerprint, tree)"
+        }
+      ]
+    },
+    {
+      "from": "in-identity-match",
+      "to": "in-gitx-renames",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "344",
+          "quote": "if to, ok := renames[a.Path]; ok {",
+          "symbol": "applyRenames"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "278",
+          "quote": "renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-freshness",
+      "to": "data-blueprint",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "58",
+          "quote": "b, err := st.ReadBlueprint(GraphFile)",
+          "symbol": "Load"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "63",
+          "quote": "var g struct{ Watermark Watermark }",
+          "symbol": "Load"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-freshness",
+      "to": "data-state",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "98",
+          "quote": "case in.Tree != in.Synced.Fingerprint:",
+          "symbol": "ActualFreshness"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "307",
+          "quote": "state = store.State{Revision: rev, Fingerprint: tree"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-freshness",
+      "to": "mod-gitx",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "16",
+          "quote": "in.Tree, _ = gitx.Snapshot(e.root, store.Dir)",
+          "symbol": "screenInput"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "274",
+          "quote": "tree, err := gitx.Snapshot(e.root, store.Dir)"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-freshness",
+      "to": "mod-store",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "48",
+          "quote": "if in.Inputs, err = st.InputsHash(); err != nil {",
+          "symbol": "Load"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "213",
+          "quote": "case d.IsDir() && p == s.path(\"blueprint\"):",
+          "symbol": "InputsHash"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-inside",
+      "to": "in-screen-layout",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "69",
+          "quote": "l := arrange(nodes, edges, frameTop+chipH+40)",
+          "symbol": "inside"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-inside",
+      "to": "in-screen-overview",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "91",
+          "quote": "if slices.Contains(o.providers[c], m) {",
+          "symbol": "inside"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "156",
+          "quote": "ins := o.inside(id, in.Units)",
+          "symbol": "Build"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-overview",
+      "to": "in-screen-layout",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "205",
+          "quote": "o.layout = arrange(nodes, edges, padY+14)",
+          "symbol": "planOverview"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-overview",
+      "to": "mod-model",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "110",
+          "quote": "r.Counts()",
+          "symbol": "top"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "360",
+          "quote": "return !r.Dead && (r.Origin == Extracted || r.Origin == UserStated)",
+          "symbol": "Counts"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-page",
+      "to": "in-screen-inside",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "87",
+          "quote": "svg path.guess { stroke: var(--guess)"
+        },
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "263",
+          "quote": "kind += \" guess\"",
+          "symbol": "inside"
+        },
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "235",
+          "quote": "pt.Class += \" unwired\"",
+          "symbol": "inside"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "80",
+          "quote": "svg .port.unwired { opacity: .55; }"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-page",
+      "to": "in-screen-overview",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "83",
+          "quote": "svg path.bypass { stroke: var(--bypass)"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "378",
+          "quote": "s := wireSpec{kind: \"bypass\"",
+          "symbol": "draw"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "154",
+          "quote": "return \"#m-\" + string(id)",
+          "symbol": "Build"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "126",
+          "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-page",
+      "to": "in-screen-understanding",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "15",
+          "quote": "// Kind is \"h\" for a heading, \"li\" for a list item, \"p\" for a paragraph.",
+          "symbol": "Block"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "140",
+          "quote": "{{range .Blocks}}{{if eq .Kind \"h\"}}"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-page",
+      "to": "data-blueprint",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "7",
+          "quote": "<meta name=\"abbd-watermark\" content=\"inputs_hash={{.Watermark.Inputs}}\">"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-understanding",
+      "to": "data-understanding",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "158",
+          "quote": "ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}",
+          "symbol": "Build"
+        }
+      ]
+    },
+    {
+      "from": "in-screen-understanding",
+      "to": "mod-store",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "56",
+          "quote": "in.Digests[id] = st.ModuleDigest(in.Units, id)",
+          "symbol": "Load"
+        },
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "38",
+          "quote": "digest := e.st.ModuleDigest(units, id)",
+          "symbol": "understand"
+        }
+      ]
+    },
+    {
+      "from": "in-store-hashes",
+      "to": "data-state",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "297",
+          "quote": "hash, err := st.MDHash()"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "307",
+          "quote": "MDHash: hash"
+        }
+      ]
+    },
+    {
+      "from": "in-store-highwater",
+      "to": "in-identity-match",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "298",
+          "quote": "return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)",
+          "symbol": "NextID"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "147",
+          "quote": "ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,",
+          "symbol": "Reconcile"
+        }
+      ]
+    },
+    {
+      "from": "in-store-moddigest",
+      "to": "data-understanding",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "48",
+          "quote": "Digest: digest, Text: text}"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-boundary",
+      "to": "in-topo-diff",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "107",
+          "symbol": "Boundary",
+          "quote": "return len(d.Signatures) > 0 || len(d.RelationsAdded) > 0 || len(d.RelationsRemoved) > 0 ||"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-diff",
+      "to": "in-topo-diff-report",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "58",
+          "symbol": "Compare",
+          "quote": "func Compare(base, now []model.Unit) Diff {"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-explain",
+      "to": "in-topo-diff",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/topology/query.go",
+          "lines": "50",
+          "symbol": "Explain",
+          "quote": "case l.From == id, own(l.From) && !own(l.To):"
+        },
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "205",
+          "symbol": "between",
+          "quote": "e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-explain",
+      "to": "in-topo-links",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/query.go",
+          "lines": "44",
+          "symbol": "Explain",
+          "quote": "for _, l := range Links(units) {"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-impact",
+      "to": "in-topo-links",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/impact.go",
+          "lines": "73",
+          "symbol": "ImpactOf",
+          "quote": "links := Links(units)"
+        }
+      ]
+    },
+    {
+      "from": "in-topo-path",
+      "to": "in-topo-links",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/query.go",
+          "lines": "76",
+          "symbol": "Path",
+          "quote": "links := Links(units)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-model-evidence-arg",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "24",
+          "quote": "ev, err := model.ParseEvidence(s)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-topo-diff-report",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "33-36",
+          "symbol": "diff",
+          "quote": "b, err := json.MarshalIndent(struct {"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-bootstrap-fold",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "47",
+          "quote": "if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-evidence-apply",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "289-290",
+          "quote": "res.Units = evidence.New(e.root).Apply(res.Units)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-gitx-mergebase",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "19",
+          "quote": "if base, err = gitx.MergeBase(e.root); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-gitx-snapshot",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "274",
+          "quote": "tree, err := gitx.Snapshot(e.root, store.Dir)"
+        },
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "16",
+          "quote": "in.Tree, _ = gitx.Snapshot(e.root, store.Dir)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-identity-ownership",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "55",
+          "quote": "res, err := e.syncActual(ex, identity.ReplaceGuesses)"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "243",
+          "quote": "res, err := e.syncActual(ex, identity.KeepGuesses)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-model-relation-grammar",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "68",
+          "quote": "if err := edge.Joins(); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-screen-freshness",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "70",
+          "quote": "switch in.ActualFreshness() {",
+          "symbol": "status"
+        },
+        {
+          "path": "cmd/abbd/evidence.go",
+          "lines": "76",
+          "quote": "fmt.Fprintln(e.stdout, \"blueprint:\", in.BlueprintFreshness())",
+          "symbol": "status"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-store-highwater",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/record.go",
+          "lines": "139",
+          "quote": "id, err := e.st.NextID(kind)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-store-history",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "23",
+          "quote": "was, err := e.st.UnitsAt(base)"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-store-moddigest",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "38",
+          "quote": "digest := e.st.ModuleDigest(units, id)"
+        },
+        {
+          "path": "cmd/abbd/query.go",
+          "lines": "145",
+          "quote": "if t.Digest != e.st.ModuleDigest(units, u.ID) {"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "in-topo-boundary",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/diff.go",
+          "lines": "44",
+          "symbol": "diff",
+          "quote": "if e.check && d.Boundary() {"
+        }
+      ]
+    },
+    {
+      "from": "mod-identity",
+      "to": "data-state",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "289",
+          "quote": "res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "307",
+          "quote": "state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}"
+        }
+      ]
+    },
+    {
+      "from": "mod-identity",
+      "to": "in-store-candidates",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "266",
+          "quote": "prior, err := st.LoadCandidates()"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "82",
+          "quote": "prior = keepLive(prior, units)",
+          "symbol": "Reconcile"
+        }
+      ]
+    },
+    {
+      "from": "mod-identity",
+      "to": "in-model-reader-marker",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "175",
+          "quote": "case stTaken[j] || u.Semantic() && guesses == KeepGuesses:"
+        }
+      ]
+    },
+    {
+      "from": "mod-identity",
+      "to": "in-store-candidates",
+      "kind": "provides",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "168",
+          "quote": "fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})",
+          "symbol": "Reconcile"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "294",
+          "quote": "if err := st.SaveCandidates(res.Candidates); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "in-gitx-snapshot",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "98",
+          "quote": "case in.Tree != in.Synced.Fingerprint:"
+        },
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "16",
+          "quote": "in.Tree, _ = gitx.Snapshot(e.root, store.Dir)"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "in-model-reader-marker",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "110",
+          "quote": "if present[u.ID] && present[r.To] && r.Counts() {"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "in-store-hashes",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "48",
+          "quote": "if in.Inputs, err = st.InputsHash(); err != nil {"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "87",
+          "quote": "case *in.Rendered != in.Current():"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "in-store-moddigest",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "56",
+          "quote": "in.Digests[id] = st.ModuleDigest(in.Units, id)"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "158",
+          "quote": "Stale: u.Digest != in.Digests[id]"
+        }
+      ]
+    },
+    {
+      "from": "mod-topology",
+      "to": "in-model-reader-marker",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/diff.go",
+          "lines": "202",
+          "quote": "if _, ok := units[r.To]; !ok || !r.Counts() {"
+        }
+      ]
     }
   ]
 }
