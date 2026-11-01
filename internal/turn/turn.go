@@ -142,11 +142,50 @@ type Turn struct {
 	Report      *Report      `yaml:"report,omitempty"`
 }
 
-// ComputeImpact follows the intended graph from the seeds: whatever depends
-// on or consumes an impacted unit, the providers of an impacted contract, and
-// the contracts an impacted unit provides. A provider is impacted because it
-// implements the contract, but what it does elsewhere is not followed.
-func ComputeImpact(in topology.Intended, seeds []model.ID) []ImpactItem {
+// Link is one edge the impact follows. Semantic links come from a reader's
+// evidence rather than from the intended topology.
+type Link struct {
+	topology.Edge
+	Semantic bool
+	Via      model.Via
+}
+
+// how names the way a semantic link arises, so a reader tells it from an intended one.
+func (l Link) how() string {
+	switch {
+	case !l.Semantic:
+		return ""
+	case l.Via == "":
+		return " (semantic)"
+	}
+	return fmt.Sprintf(" (semantic, via %s)", l.Via)
+}
+
+// Graph is what a turn's impact reads: the intended relations, then the live
+// semantic couplings of the actual topology that no human has decided yet.
+// Following a guess only adds to what the agent reads, so it never blocks.
+type Graph []Link
+
+func GraphOf(in topology.Intended, units []model.Unit) Graph {
+	var g Graph
+	for _, e := range in.Relations {
+		g = append(g, Link{Edge: e})
+	}
+	for _, c := range topology.Couplings(units) {
+		if !slices.Contains(in.Relations, c.Edge) {
+			g = append(g, Link{Edge: c.Edge, Semantic: true, Via: c.Via})
+		}
+	}
+	return g
+}
+
+// ComputeImpact follows the graph from the seeds: whatever depends on or
+// consumes an impacted unit, the providers of an impacted contract, and the
+// contracts an impacted unit provides. A provider is impacted because it
+// implements the contract, but what it does elsewhere is not followed. What a
+// seed itself depends on or consumes is impacted too, without following it,
+// because the seed's change most likely breaks where it meets them.
+func ComputeImpact(g Graph, seeds []model.ID) []ImpactItem {
 	var out []ImpactItem
 	seen := map[model.ID]bool{}
 	var queue []model.ID
@@ -166,22 +205,27 @@ func ComputeImpact(in topology.Intended, seeds []model.ID) []ImpactItem {
 	for len(queue) > 0 {
 		u := queue[0]
 		queue = queue[1:]
-		for _, e := range in.Relations {
+		for _, e := range g {
 			switch {
 			case e.To == u && (e.Kind == model.DependsOn || e.Kind == model.Consumes):
-				add(e.From, fmt.Sprintf("%s %s", e.Kind, u), true)
+				add(e.From, fmt.Sprintf("%s %s%s", e.Kind, u, e.how()), true)
 			case e.To == u && e.Kind == model.Provides && isContract(u):
-				add(e.From, "provides "+string(u), false)
+				add(e.From, "provides "+string(u)+e.how(), false)
 			case e.From == u && e.Kind == model.Provides:
-				add(e.To, "provided by "+string(u), true)
+				add(e.To, "provided by "+string(u)+e.how(), true)
 			}
+		}
+	}
+	for _, e := range g {
+		if slices.Contains(seeds, e.From) && (e.Kind == model.DependsOn || e.Kind == model.Consumes) {
+			add(e.To, fmt.Sprintf("%s by %s%s", map[model.RelationKind]string{model.DependsOn: "depended on", model.Consumes: "consumed"}[e.Kind], e.From, e.how()), false)
 		}
 	}
 	return out
 }
 
 // Tier says how closely the agent reads an impact item. It is read from the
-// intended graph each time, so the change record keeps its shape.
+// graph each time, so the change record keeps its shape.
 type Tier string
 
 const (
@@ -194,12 +238,12 @@ const (
 // Tiers splits the impact, each tier in recorded order. Direct are the seeds,
 // the units that share a relation with a seed, the consumers of a contract that
 // shares one, and the agent's own additions. Far is everything else computed.
-func (t Turn) Tiers(in topology.Intended) (direct, far []ImpactItem) {
+func (t Turn) Tiers(g Graph) (direct, far []ImpactItem) {
 	near := map[model.ID]bool{}
 	for _, s := range t.Seeds {
 		near[s] = true
 	}
-	for _, e := range in.Relations {
+	for _, e := range g {
 		if slices.Contains(t.Seeds, e.From) {
 			near[e.To] = true
 		}
@@ -208,7 +252,7 @@ func (t Turn) Tiers(in topology.Intended) (direct, far []ImpactItem) {
 		}
 	}
 	reached := maps.Clone(near)
-	for _, e := range in.Relations {
+	for _, e := range g {
 		if (e.Kind == model.DependsOn || e.Kind == model.Consumes) && isContract(e.To) && near[e.To] {
 			reached[e.From] = true
 		}

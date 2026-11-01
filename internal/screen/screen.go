@@ -357,7 +357,7 @@ func Build(in Input) Model {
 func view(in Input, t turn.Turn) TurnView {
 	tv := TurnView{Turn: t, Request: in.Requests[t.Requirement], Verified: in.Runs[t.Run]}
 	if in.Intended != nil {
-		tv.Direct, tv.Far = t.Tiers(*in.Intended)
+		tv.Direct, tv.Far = t.Tiers(turn.GraphOf(*in.Intended, in.Units))
 	}
 	seen := map[string]bool{}
 	for _, r := range t.Rejections {

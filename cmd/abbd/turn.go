@@ -113,7 +113,7 @@ func (e env) impact(t *turn.Turn) (view, error) {
 	if v.intended == nil {
 		return v, fmt.Errorf("nothing is aligned yet")
 	}
-	for _, id := range t.EnsureImpact(turn.ComputeImpact(*v.intended, t.Seeds)) {
+	for _, id := range t.EnsureImpact(turn.ComputeImpact(turn.GraphOf(*v.intended, v.units), t.Seeds)) {
 		fmt.Fprintf(e.stderr, "abbd: %s is computed impact and cannot be removed; restored\n", id)
 	}
 	return v, nil
@@ -174,7 +174,7 @@ func (e env) turnStart() error {
 	t := turn.Turn{
 		ID: string(chg), Requirement: string(req), Session: e.session, State: turn.Open,
 		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.Digests(v.units)},
-		Seeds:    seeds, Impact: turn.ComputeImpact(*v.intended, seeds),
+		Seeds:    seeds, Impact: turn.ComputeImpact(turn.GraphOf(*v.intended, v.units), seeds),
 	}
 	if err := e.st.WriteRequirement(store.Requirement{ID: string(req), Origin: model.UserStated, Turn: t.ID}, text); err != nil {
 		return err
@@ -183,13 +183,13 @@ func (e env) turnStart() error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "%s OPEN, request %s\n", t.ID, req)
-	e.printImpact(t, *v.intended)
+	e.printImpact(t, turn.GraphOf(*v.intended, v.units))
 	return nil
 }
 
 // printImpact lists the direct items first, so the agent reads them closely.
-func (e env) printImpact(t turn.Turn, in topology.Intended) {
-	direct, far := t.Tiers(in)
+func (e env) printImpact(t turn.Turn, g turn.Graph) {
+	direct, far := t.Tiers(g)
 	for _, i := range direct {
 		fmt.Fprintln(e.stdout, "impact", i.Line(turn.Direct))
 	}
@@ -217,7 +217,7 @@ func (e env) turnImpact() error {
 	if err := e.st.SaveTurn(*t); err != nil {
 		return err
 	}
-	e.printImpact(*t, *v.intended)
+	e.printImpact(*t, turn.GraphOf(*v.intended, v.units))
 	return nil
 }
 
@@ -678,14 +678,14 @@ func (e env) turnShow() error {
 			return err
 		}
 	}
-	in, err := e.st.LoadIntended()
+	v, err := e.load()
 	if err != nil {
 		return err
 	}
-	if in == nil {
+	if v.intended == nil {
 		return fmt.Errorf("nothing is aligned yet")
 	}
-	e.printImpact(*t, *in)
+	e.printImpact(*t, turn.GraphOf(*v.intended, v.units))
 	for _, c := range t.Delta.Changes {
 		fmt.Fprintln(e.stdout, "declared", c)
 	}

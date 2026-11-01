@@ -67,7 +67,7 @@ func (s Store) WriteRequirement(r Requirement, text string) error {
 	return writeFile(s.path("requirements", r.ID+".md"), b)
 }
 
-// SaveTurn renders the impact's tiers against the intended topology as it is now.
+// SaveTurn renders the impact's tiers against the graph as it is now.
 func (s Store) SaveTurn(t turn.Turn) error {
 	in, err := s.LoadIntended()
 	if err != nil {
@@ -76,17 +76,21 @@ func (s Store) SaveTurn(t turn.Turn) error {
 	if in == nil {
 		in = &topology.Intended{}
 	}
-	b, err := frontmatter(t, renderTurn(t, *in))
+	units, err := s.LoadUnits()
+	if err != nil {
+		return err
+	}
+	b, err := frontmatter(t, renderTurn(t, turn.GraphOf(*in, units)))
 	if err != nil {
 		return err
 	}
 	return writeFile(s.path("changes", t.ID+".md"), b)
 }
 
-func renderTurn(t turn.Turn, in topology.Intended) string {
+func renderTurn(t turn.Turn, g turn.Graph) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s %s\n\nRequest: %s\n\n## Impact\n\n", t.ID, t.State, t.Requirement)
-	direct, far := t.Tiers(in)
+	direct, far := t.Tiers(g)
 	for _, i := range direct {
 		fmt.Fprintf(&b, "- %s\n", i.Line(turn.Direct))
 	}
