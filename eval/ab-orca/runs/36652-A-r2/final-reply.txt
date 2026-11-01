@@ -1,0 +1,15 @@
+renamed branch also now drop the prefix. A new test covers this, and it fails when the fix is removed.
+
+**Verification.**
+- **Passing:** the shared prefix and branch-name suites plus the rename suite, 108 tests in all. Running the rename suite needed a throwaway vitest config outside the repo, because some packages don't resolve in this checkout.
+- **`worktree-logic`:** my new branch-name tests pass. The other failures there all come from `sanitizeWorktreeName`, which can't load the emoji dataset in this environment.
+- **Typecheck:** `tsc` can't load the project configs here. A standalone strict typecheck reports no errors in the changed `.ts` files. The `.tsx` and test files still show errors, all from missing React and vitest types.
+- **Lint and format:** `oxlint` and `oxfmt --check` are clean on every changed file.
+- **Not checked:** the settings UI in a running app.
+
+**Known gaps** (listed in `PR.md`, not fixed):
+- The draft title for a new pull request still keeps a dash-joined prefix ("Jd feat login form"). The field is editable. Fixing it would mean getting the prefix and git username into the renderer.
+- A few contrived prefix and separator pairs pass both checks but Git still rejects them, such as `foo.lo` with `k/`. Git catches these when the worktree is created.
+- You can't choose an empty separator, because a blank field means `/`.
+
+**Topology.** `abbd sync` then `abbd diff` reports no topology change. No units, contracts or relations between modules came or went.

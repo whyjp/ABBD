@@ -1,0 +1,127 @@
+diff --git a/docs/reference/plugin-theme-tokens.md b/docs/reference/plugin-theme-tokens.md
+index 2f963490..5520f8e3 100644
+--- a/docs/reference/plugin-theme-tokens.md
++++ b/docs/reference/plugin-theme-tokens.md
+@@ -72,6 +72,14 @@ Every key an app theme may set in `tokens` (see [plugin themes](plugin-themes.md
+ | `--git-decoration-untracked` | Untracked files | no | Orca's built-in color |
+ | `--git-decoration-copied` | Copied files | no | Orca's built-in color |
+ | `--git-decoration-ignored` | Git-ignored files | no | Orca's built-in color |
++| `--agent-working` | Working agent dots, spinners and progress rings | no | Orca's built-in color |
++| `--agent-question` | Agent waiting for your answer: dots, icons and card tints | no | Orca's built-in color |
++| `--agent-question-text` | Text on an `--agent-question` tint | no | Orca's built-in color |
++| `--workspace-status-done` | Done pull request state on workspaces | no | Orca's built-in color |
++| `--workspace-status-review` | In-review pull request state on workspaces | no | Orca's built-in color |
++| `--workspace-status-progress` | In-progress pull request state on workspaces | no | Orca's built-in color |
++| `--status-success` | Success icons and text; its background and border tints follow it | no | Orca's built-in color |
++| `--status-warning` | Warning icons and text; its text, background and border tints follow it | no | Orca's built-in color |
+ 
+ ## Frame CSS variables
+ 
+diff --git a/src/renderer/src/lib/document-theme.test.ts b/src/renderer/src/lib/document-theme.test.ts
+index c05d909c..afe01f56 100644
+--- a/src/renderer/src/lib/document-theme.test.ts
++++ b/src/renderer/src/lib/document-theme.test.ts
+@@ -256,6 +256,18 @@ describe('applyPluginAppTheme', () => {
+     expect(painted({ '--editor-surface': '#151515', '--text-link': '#1a1a40' })).toEqual({
+       '--editor-surface': '#151515'
+     })
++    const workspaces = {
++      '--worktree-sidebar': '#202020',
++      '--worktree-sidebar-foreground': '#f0f0f0'
++    }
++    expect(
++      painted({
++        ...workspaces,
++        '--agent-working': '#c6ff3a',
++        '--agent-question': '#303030',
++        '--workspace-status-review': '#ffffff80'
++      })
++    ).toEqual({ ...workspaces, '--agent-working': '#c6ff3a' })
+   })
+ 
+   it('checks a translucent row as painted over the sidebar it tints', () => {
+diff --git a/src/renderer/src/lib/plugin-theme-tokens.ts b/src/renderer/src/lib/plugin-theme-tokens.ts
+index 6c8f2426..3a2be891 100644
+--- a/src/renderer/src/lib/plugin-theme-tokens.ts
++++ b/src/renderer/src/lib/plugin-theme-tokens.ts
+@@ -36,6 +36,20 @@ const GIT_DECORATIONS = [
+   'copied',
+   'ignored'
+ ]
++const statusHue = (surface: string, hue: string): ContrastRule => ({
++  surface,
++  text: hue,
++  min: MIN_STATUS_TEXT_CONTRAST,
++  drop: [hue]
++})
++// Why the workspace sidebar: these dots and glyphs mark workspace rows there.
++const WORKSPACE_STATUS_HUES = [
++  '--agent-working',
++  '--agent-question',
++  '--workspace-status-done',
++  '--workspace-status-review',
++  '--workspace-status-progress'
++]
+ 
+ // Why: a theme must not be able to hide text, so every text/surface pair keeps WCAG AA contrast.
+ const CONTRAST_RULE_DEFINITIONS: readonly ContrastRule[] = [
+@@ -85,12 +99,11 @@ const CONTRAST_RULE_DEFINITIONS: readonly ContrastRule[] = [
+     ]
+   }),
+   { ...textPair('--editor-surface', '--text-link'), drop: ['--text-link'] },
+-  ...GIT_DECORATIONS.map((status): ContrastRule => ({
+-    surface: '--sidebar',
+-    text: `--git-decoration-${status}`,
+-    min: MIN_STATUS_TEXT_CONTRAST,
+-    drop: [`--git-decoration-${status}`]
+-  }))
++  ...GIT_DECORATIONS.map((status) => statusHue('--sidebar', `--git-decoration-${status}`)),
++  ...WORKSPACE_STATUS_HUES.map((hue) => statusHue('--worktree-sidebar', hue)),
++  statusHue('--background', '--status-success'),
++  statusHue('--background', '--status-warning'),
++  { ...textPair('--background', '--agent-question-text'), drop: ['--agent-question-text'] }
+ ]
+ const CONTRAST_RULES = CONTRAST_RULE_DEFINITIONS.map((rule) => ({
+   ...rule,
+diff --git a/src/shared/plugins/artifacts/plugin-theme-artifact.ts b/src/shared/plugins/artifacts/plugin-theme-artifact.ts
+index 2d5d2210..de9c1b67 100644
+--- a/src/shared/plugins/artifacts/plugin-theme-artifact.ts
++++ b/src/shared/plugins/artifacts/plugin-theme-artifact.ts
+@@ -75,7 +75,15 @@ export const PLUGIN_APP_THEME_TOKENS = [
+   '--git-decoration-renamed',
+   '--git-decoration-untracked',
+   '--git-decoration-copied',
+-  '--git-decoration-ignored'
++  '--git-decoration-ignored',
++  '--agent-working',
++  '--agent-question',
++  '--agent-question-text',
++  '--workspace-status-done',
++  '--workspace-status-review',
++  '--workspace-status-progress',
++  '--status-success',
++  '--status-warning'
+ ] as const
+ 
+ const THEME_TOKEN_SET = new Set<string>(PLUGIN_APP_THEME_TOKENS)
+diff --git a/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts b/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
+index 89a182e1..0826cc0d 100644
+--- a/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
++++ b/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
+@@ -78,7 +78,15 @@ const TOKEN_ROLES: Record<PluginAppThemeToken, string> = {
+   '--git-decoration-renamed': 'Renamed files',
+   '--git-decoration-untracked': 'Untracked files',
+   '--git-decoration-copied': 'Copied files',
+-  '--git-decoration-ignored': 'Git-ignored files'
++  '--git-decoration-ignored': 'Git-ignored files',
++  '--agent-working': 'Working agent dots, spinners and progress rings',
++  '--agent-question': 'Agent waiting for your answer: dots, icons and card tints',
++  '--agent-question-text': 'Text on an `--agent-question` tint',
++  '--workspace-status-done': 'Done pull request state on workspaces',
++  '--workspace-status-review': 'In-review pull request state on workspaces',
++  '--workspace-status-progress': 'In-progress pull request state on workspaces',
++  '--status-success': 'Success icons and text; its background and border tints follow it',
++  '--status-warning': 'Warning icons and text; its text, background and border tints follow it'
+ }
+ 
+ // Why: these mix per mode in main.css, which the derivation rules cannot express.

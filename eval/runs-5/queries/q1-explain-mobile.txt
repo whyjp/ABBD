@@ -1,0 +1,94 @@
+﻿$ abbd explain | mobile app (Expo)
+# exit 0, 52 ms, 9495 chars
+MOD-0007 mobile app (Expo) (MOD, EXTRACTED)
+purpose: Expo React Native app that remotely drives a paired Orca desktop's runtime over E2EE RPC, directly or through the cloud relay. (INFERRED)
+inside:
+  MOD-0014 mobile/components (MOD)
+  MOD-0015 mobile/files (MOD)
+  MOD-0016 mobile/host-screen (MOD)
+  MOD-0017 mobile/mobile-web-shell (MOD)
+  MOD-0018 mobile/notifications (MOD)
+  MOD-0019 mobile/platform (MOD)
+  MOD-0020 mobile/session (MOD)
+  MOD-0021 mobile/source-control (MOD)
+  MOD-0022 mobile/tasks (MOD)
+  MOD-0023 mobile/terminal (MOD)
+  MOD-0024 mobile/transport (MOD)
+  MOD-0025 mobile/worktree (MOD)
+consumes:
+  IF-0020 Orca runtime RPC methods (extracted)
+depends on:
+  MOD-0008 orca-gzip-utf8-codec (extracted)
+  MOD-0009 orca-mobile-web-shell (extracted)
+  MOD-0011 orca-reserved-regions (extracted)
+  MOD-0013 @orca/expo-two-way-audio (extracted)
+  MOD-0056 Orca runtime (RPC host) (extracted)
+  MOD-0070 @orca/process-host (extracted)
+  MOD-0081 shared types and schemas (extracted)
+inferred couplings:
+  MOD-0007 mobile app (Expo) consumes CFG-0004 mobile RPC method routes / allowlist via convention
+    mobile/src/session/mobile-terminal-stream-subscribe.ts:50 "return client.subscribe('terminal.subscribe', params, onData)"
+  MOD-0007 mobile app (Expo) consumes IF-0001 push notification orca data block via data
+    mobile/src/notifications/push-payload.ts:26 "const nested = (data as { orca?: unknown }).orca"
+  MOD-0007 mobile app (Expo) consumes IF-0012 OrcaNotificationDismissal native module via convention
+    mobile/src/notifications/native-push-dismissal.ios.ts:4 "export const nativePushDismissal = requireNativeModule<NativeDismissal>('OrcaNotificationDismissal')"
+  MOD-0007 mobile app (Expo) consumes IF-0027 desktop/phone copy of push contract via import
+    mobile/src/notifications/push-token.ts:5 "} from '../../../src/shared/mobile-push-contract'"
+    mobile/src/notifications/mobile-push-registration-operations.ts:13 "method: 'notifications.registerPush',"
+  MOD-0007 mobile app (Expo) depends_on MOD-0012 orca-window-controls-inset via build-feature
+    mobile/modules/orca-window-controls-inset/expo-module.config.json:4 "\"appDelegateSubscribers\": [\"OrcaWindowControlsInsetSubscriber\"]"
+  MOD-0019 mobile/platform consumes IF-0013 ExpoTwoWayAudio native module via callback
+    mobile/src/platform/native-audio-device.ts:47 "addExpoTwoWayAudioEventListener('onMicrophoneData', (event) => {"
+    mobile/packages/expo-two-way-audio/ios/ExpoTwoWayAudioModule.swift:4 "let ON_MIC_DATA_EVENT_NAME = \"onMicrophoneData\""
+  MOD-0024 mobile/transport consumes DATA-0005 generated RPC params catalog via import
+    mobile/src/transport/rpc-params-contract.ts:6 "} from '../../../src/shared/rpc-contract/rpc-params-catalog.generated'"
+  MOD-0024 mobile/transport consumes IF-0006 phone connect WebSocket via call
+    mobile/src/transport/mobile-relay-connect-url.ts:5 "url.pathname = `/v1/connect/${encodeURIComponent(relayHostId)}`"
+  MOD-0024 mobile/transport depends_on IF-0010 @orca-cloud/relay-contract via convention
+    mobile/src/transport/pairing-relay-candidate.ts:161 "return error.code === 4409 || error.code === 4503 || error.code === 1006"
+    cloud/packages/relay-contract/src/close-codes.ts:5 "WRONG_CELL: 4409,"
+  MOD-0024 mobile/transport consumes IF-0014 phone-to-relay connect frames via data
+    mobile/src/transport/mobile-relay-physical-client.ts:2 "import { RelayPhoneHelloSchema } from '../../../src/shared/mobile-relay-phone-protocol'"
+  MOD-0024 mobile/transport consumes IF-0021 mobile E2EE WebSocket handshake via data
+    mobile/src/transport/direct-socket-framing.ts:75 "args.emitLog('info', 'Sent e2ee_hello (v2)', 'Awaiting server e2ee_ready')"
+  MOD-0024 mobile/transport consumes IF-0026 paired E2EE v2 handshake via data
+    mobile/src/transport/mobile-e2ee-v2-physical-channel.ts:8 "} from '../../../src/shared/paired-e2ee-client-handshake'"
+  MOD-0024 mobile/transport consumes IF-0029 mobileWeb.bundle.* RPC methods via call
+    mobile/src/transport/mobile-web-bundle-operations.ts:22 "method: MOBILE_WEB_BUNDLE_MANIFEST_METHOD,"
+  MOD-0024 mobile/transport consumes IF-0030 orca://pair QR pairing URL via convention
+    mobile/src/transport/pairing.ts:5 "// Keep parsing aligned with src/shared/pairing.ts; use mobile base64 APIs instead of Node Buffer."
+  MOD-0024 mobile/transport consumes IF-0031 orca://pair pairing offer via convention
+    mobile/src/transport/pairing.ts:5 "// Keep parsing aligned with src/shared/pairing.ts; use mobile base64 APIs instead of Node Buffer."
+    mobile/app.json:9 "\"scheme\": \"orca\","
+  MOD-0024 mobile/transport depends_on MOD-0003 @orca-cloud/relay via call
+    mobile/src/transport/mobile-relay-connect-url.ts:5 "url.pathname = `/v1/connect/${encodeURIComponent(relayHostId)}`"
+    cloud/apps/relay/src/relay-server.ts:631 "if (url.pathname.startsWith('/v1/connect/')) {"
+  MOD-0024 mobile/transport depends_on MOD-0008 orca-gzip-utf8-codec via convention
+    mobile/modules/orca-gzip-utf8-codec/src/index.ts:12 "requireOptionalNativeModule<OrcaGzipUtf8CodecModule>('OrcaGzipUtf8Codec')"
+    mobile/modules/orca-gzip-utf8-codec/ios/OrcaGzipUtf8CodecModule.swift:6 "Name(\"OrcaGzipUtf8Codec\")"
+  MOD-0024 mobile/transport depends_on MOD-0056 Orca runtime (RPC host) via call
+    src/main/runtime/rpc/ws-transport.ts:212 "const wss = new WebSocketServer({"
+  MOD-0024 mobile/transport depends_on MOD-0081 shared types and schemas via convention
+    mobile/src/transport/protocol-version.ts:1 "// Keep protocol constants aligned with src/shared/protocol-version.ts."
+    src/shared/protocol-version.ts:41 "export const RUNTIME_PROTOCOL_VERSION = 3"
+  MOD-0056 Orca runtime (RPC host) depends_on MOD-0007 mobile app (Expo) via build-feature
+    src/main/runtime/bundled-mobile-web-bundle.ts:24 "join(appPath, 'out', 'mobile-web'),"
+    config/scripts/build-mobile-web-app-bundle.mjs:29 "const mobileDir = join(projectDir, 'mobile')"
+how (INFERRED, CURRENT):
+  ## Overview
+
+  `mobile/` is an Expo React Native app that is a remote control for an Orca desktop. It runs nothing itself: every worktree list, terminal, chat, diff and file view comes from the desktop's Orca runtime over the same JSON RPC that the CLI and renderer use (`{id, deviceToken, method, params}` in, `{id, ok, result|error}` out). The phone pairs once by scanning an `orca://pair?code=...` QR code the desktop prints. After that it reaches the desktop in one of two ways: a **direct** WebSocket to the desktop's runtime server (LAN or Tailscale), or the **cloud relay** (`wss://<relay>/v1/connect/<relayHostId>`), which only forwards bytes. Both paths run an end-to-end encrypted (E2EE) channel that the desktop terminates, so the relay never sees plaintext. The phone moves between the two at runtime ("direct upgrade" and relay fallback).
+
+  Push notifications do **not** go phone to cloud. The phone gets its native APNs/FCM token and hands it to its desktop with the RPC `notifications.registerPush`. The desktop registers the device with the cloud push gateway (`ORCA_PUSH_GATEWAY_URL`, default `https://push.onorca.dev`), and the gateway pushes an `orca` data block (`hostFingerprint`, `kind: alert|dismiss`, `notificationId`, seq/epoch, `paneKey`, `worktreeId`). The phone and one Swift module read that block. Native work lives in five small Expo modules, all bound by **string name**: gzip/UTF-8 decoding, a WKWebView "web shell" that hosts an over-the-air web build of the app served by the desktop, iOS notification dismissal, an iPad window-controls inset fix, and two-way audio for dictation.
+
+  ## Key Concepts
+
+  - **Pairing offer**: the desktop's `orca://pair?code=<base64url>` URL holds the endpoints, the desktop public key, a device token and optional relay invite. `src/shared/pairing.ts` writes it; `mobile/src/transport/pairing.ts` keeps its own parser "aligned" by hand.
+  - **Host**: one paired desktop. The phone stores its descriptor, device token and relay credentials (keychain) and keeps a connection supervisor for each host.
+  - **Direct vs relay path**: `DirectRpcClient` dials the desktop's `ws-transport` WebSocket server. `mobile-relay-physical-client` dials the relay, sends `relay-auth` and waits for `relay-hello`. The endpoint supervisor picks and switches between them.
+  - **E2EE v2**: the `e2ee_hello` / `e2ee_ready` handshake (shared in `src/shared/paired-e2ee-client-handshake.ts`) plus NaCl box or libsodium framing. The desktop's `src/main/runtime/rpc/e2ee-channel.ts` is the other end, for both paths.
+  - **RPC operation**: `defineRpcOperation({name, method, read})` in `mobile/src/transport/rpc-operation`. Methods are named by string (`notifications.registerPush`, `mobileWeb.bundle.range`), and each reply is checked with a zod schema on the phone.
+  - **Protocol version**: `MOBILE_PROTOCOL_VERSION = 3` is a hand copy of the desktop's `RUNTIME_PROTOCOL_VERSION`. Capability negotiation then hides features the host lacks.
+  - **Mobile web shell**: most screens can run as a web bundle (the Expo web export of `mobile/app`). The desktop build packages it into `out/mobile-web`, the phone downloads it with `mobileWeb.bundle.*` RPC, and it runs inside the native `OrcaMobileWebShellView` with a postMessage bridge.
+  - **Push payload**: the gateway's `orca` data block. APNs nests it under `orca`, while FCM sends it flat as strings, so the reader handles both.
+

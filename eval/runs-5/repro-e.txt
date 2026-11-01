@@ -1,0 +1,11 @@
+﻿E1 new unit whose parent is a script unit the supplement does not restate
+  exit 1: abbd: supplement: unit "charges table": parent "app/sub" is not the key of another module
+E2 restate a script unit with one anchor its parent also holds
+  exit 1: abbd: the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on: /   supplement MOD "app/sub": its anchors match more than one MOD equally
+E12 signature on a non-contract unit
+  exit 1: abbd: supplement: unit 0 (app/sub): only contracts carry a signature
+E13 reader-found inside MOD quoting a file under its parent's anchor
+  exit 1: abbd: supplement MOD "serve" cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's MOD "app" and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes "app"
+E14 reader-found contract keeps its signature
+  exit 0: conflict: supplement IF "http api" documents signature "GET /x", code has "" / synced: 3 unit(s), 2 matched by the supplement
+  stored signature: ['']

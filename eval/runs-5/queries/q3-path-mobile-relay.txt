@@ -1,0 +1,8 @@
+﻿$ abbd path | mobile app (Expo) | @orca-cloud/relay
+# exit 0, 44 ms, 257 chars
+MOD-0007 mobile app (Expo)
+  -depends_on-> MOD-0008 orca-gzip-utf8-codec (extracted)
+  <-depends_on- MOD-0024 mobile/transport (inferred, via convention)
+  -depends_on-> MOD-0003 @orca-cloud/relay (inferred, via call)
+3 hop(s), weakest origin INFERRED
+

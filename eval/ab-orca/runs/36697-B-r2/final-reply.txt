@@ -1,0 +1,12 @@
+ugin-theme-token-reference-doc.ts` says what each token paints, and the type system requires an entry for every token.
+- `src/renderer/src/lib/plugin-theme-tokens.ts` adds the contrast rules from one table mapping each token to its surface.
+- `docs/reference/plugin-theme-tokens.md` is regenerated, and `docs/reference/plugin-themes.md` describes the checks and the fallback.
+- `src/renderer/src/lib/document-theme.test.ts` has a new test: a theme with visible and vanishing status hues.
+
+**Verification.**
+- `document-theme.test.ts` and `plugin-theme-artifact.test.ts` pass (41 tests). The new test fails when the contrast rules are removed.
+- I regenerated the token reference doc by calling `renderPluginThemeTokenReference()`, and its diff is exactly the eight new rows.
+- `oxlint` and `oxfmt --check` pass on the changed files.
+- `tsc` on the web project reports nothing in the files I changed. Its other errors are all missing modules (`react`, `vitest`, `sonner`) or knock-on errors in files I didn't touch. I'm inferring they come from the environment and didn't run a baseline to confirm.
+
+**Not run as the repo intends.** Several `node_modules` links here (`zod`, `yaml`, `ajv`) are broken, and the workspace packages are unbuilt. So `pnpm test` and `pnpm generate:plugin-schemas` couldn't run as-is, and I ran the tests under a minimal vitest config outside the repo instead. I also didn't launch the Electron app to look at the sidebar dots under a theme. CI should rerun the full checks.

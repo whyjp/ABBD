@@ -1,0 +1,14 @@
+﻿$ abbd explain | push gateway HTTP API
+# exit 0, 44 ms, 970 chars
+IF-0002 push gateway HTTP API (IF, INFERRED)
+inside MOD-0002 @orca-cloud/push
+responsibility: Lets a desktop host authenticate with its E2EE key, register phone push tokens and request APNs/FCM sends. (INFERRED)
+evidence: cloud/apps/push/src/push-server.ts:181 "app.post('/v1/host/challenge', limitUnauthenticatedIp, limitBody, async (context) => {"
+evidence: cloud/apps/push/src/push-server.ts:213 "app.post('/v1/devices', limitBody, async (context) => {"
+evidence: cloud/apps/push/src/push-server.ts:249 "app.post('/v1/send', limitBody, async (context) => {"
+inferred couplings:
+  MOD-0056 Orca runtime (RPC host) consumes IF-0002 push gateway HTTP API via call
+    src/main/runtime/push/push-gateway-session.ts:89 "'/v1/host/challenge',"
+    src/main/runtime/push/push-gateway-client.ts:84 "const response = await this.authorized('/v1/devices', {"
+    src/main/runtime/push/push-gateway-client.ts:114 "const response = await this.authorized('/v1/send', {"
+

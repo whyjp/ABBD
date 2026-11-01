@@ -1,0 +1,14 @@
+ification.** All in a stripped-down setup, because the real one can't load here.
+- The new tests (separator join, blank fallback, no prefix, invalid separator, accepted and rejected separators) pass. `src/shared/branch-prefix.test.ts` passes in full. The separator and branch-name tests in `worktree-logic.test.ts` pass (18).
+- I ran them under a minimal vitest config outside the repo, since the repo's config imports the unbuilt `@orca/process-host`.
+- Three checks couldn't run. The `sanitizeWorktreeName` cases and `first-work-branch-rename.test.ts` fail to load because `emojibase-data` and `zod` aren't installed. The web typecheck can't find React. The localization verifier needs `typescript-api`. CI needs to run all three.
+- A typecheck limited to the changed main and shared files showed only those environment errors, none from this change.
+- I didn't look at the new field in the running app.
+
+**Not done.**
+- The three new strings exist only in `en.json`. Other languages show the English text until translations are added.
+- The per-project prefix (#18103) and folder template (#5082) are out of scope. A future branch token in the template can reuse `getBranchNameHead`.
+
+**Blueprint.** `abbd sync` then `abbd diff` reports no topology change. No units came or went, no contracts changed, and no links between modules appeared or disappeared. The refreshed `.abbd/` files are in the commit.
+
+**Principles.** I didn't read any principle skill files this session, so I'm not citing any.

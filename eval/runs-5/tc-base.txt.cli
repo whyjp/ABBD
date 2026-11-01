@@ -1,0 +1,265 @@
+src/cli/account-add-process.test.ts(9,42): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/agent-launch-process.test.ts(7,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/handlers/account.test.ts(2,41): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/handlers/account.ts(2,40): error TS2307: Cannot find module '@orca/process-host/wsl-distro-allowlist' or its corresponding type declarations.
+src/cli/handlers/opencode-account-login-command.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/handlers/opencode-account-login-command.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/handlers/opencode-account-login-command.ts(6,8): error TS2307: Cannot find module '@orca/process-host/process-tree-termination' or its corresponding type declarations.
+src/cli/handlers/opencode-account-login-command.ts(7,41): error TS2307: Cannot find module '@orca/process-host/windows-tree-kill' or its corresponding type declarations.
+src/cli/handlers/opencode-account-login-command.ts(8,34): error TS2307: Cannot find module '@orca/process-host/bounded-output-sink' or its corresponding type declarations.
+src/cli/handlers/serve-service.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/orchestration-mutation-recovery.test.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/orchestration-mutation-recovery.ts(7,41): error TS2307: Cannot find module '@orca/process-host/windows-command-line' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-panel-check.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-release-entry.test.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-test-node.test.ts(2,49): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-test-node.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-test-node.ts(5,49): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/plugin-authoring/plugin-test-runner.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/electron-sandbox-switch.ts(3,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/launch.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/launch.ts(3,34): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/runtime/offline-admission-commands.test.ts(19,35): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/profile-state-recovery-launch.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/serve-appimage-update.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/serve-electron-preflight.ts(1,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/serve-orcad-launch.test.ts(3,33): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/serve-orcad-launch.ts(3,42): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/cli/runtime/serve-orcad-launch.ts(4,34): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/runtime/serve-pairing-redaction.ts(1,34): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/runtime/serve-recipe-json.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/runtime/serve-supervisor-policy.ts(1,36): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/cli/runtime/serve-update-supervisor.ts(1,54): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/acp/acp-agent-connection.ts(1,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/acp/acp-agent-connection.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/agent-cli-version-probe.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/agent-cli-version-probe.ts(3,34): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/agent-hooks/wsl-hook-relay-launch.ts(1,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/agent-hooks/wsl-hook-relay-launch.ts(4,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ai-vault/session-scanner-background.ts(56,52): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './cached-session-list.js'?
+src/main/ai-vault/session-scanner-opencode-sqlite-process-client.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/antigravity/antigravity-browser-helper.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/browser/agent-browser-orphan-sweep.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/browser/cdp-ws-proxy.ts(123,34): error TS2702: 'WebSocket' only refers to a type, but is being used as a namespace here.
+src/main/browser/cookies/sources/browser-cookie-key.ts(4,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/browser/cookies/sources/browser-cookie-key.ts(5,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/main/claude-accounts/claude-command-process.ts(1,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/claude-accounts/claude-login-process-termination.ts(1,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/claude-accounts/claude-login-process-termination.ts(2,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/claude/claude-agent-sdk-exit-proof.ts(1,37): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/claude/claude-agent-sdk-process-spawn.ts(1,61): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/claude/claude-agent-sdk-process-spawn.ts(3,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/claude/claude-child-root-termination.ts(1,37): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/claude/claude-hook-event-versions.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/claude/claude-stream-json-connection.ts(1,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/claude/claude-stream-json-connection.ts(4,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/claude/claude-structured-session-close.ts(18,38): error TS2307: Cannot find module '@orca/process-host/close-process-registry' or its corresponding type declarations.
+src/main/claude/structured/claude-structured-session-state.ts(17,42): error TS2307: Cannot find module '@orca/process-host/cancel-process-acquisition' or its corresponding type declarations.
+src/main/cli/appimage-extracted-root.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/cli/wsl-managed-cli.ts(5,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/main/codex-accounts/service.ts(2,40): error TS2307: Cannot find module '@orca/process-host/wsl-distro-allowlist' or its corresponding type declarations.
+src/main/codex/codex-app-server-client.ts(1,54): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/codex/codex-app-server-client.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/codex/codex-app-server-connection.ts(1,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/codex/codex-app-server-connection.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/codex/codex-app-server-process-tree-kill.ts(1,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/codex/codex-app-server-process-tree-kill.ts(2,54): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/codex/codex-app-server-process-tree-kill.ts(3,38): error TS2307: Cannot find module '@orca/process-host/process-tree-kill-gate' or its corresponding type declarations.
+src/main/codex/codex-hook-trust-derivation.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/codex/codex-state-db-backfill-recovery-process.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/codex/codex-state-db-backfill-recovery.ts(9,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/codex/codex-structured-session-close.ts(7,38): error TS2307: Cannot find module '@orca/process-host/close-process-registry' or its corresponding type declarations.
+src/main/codex/codex-structured-session-state.ts(11,42): error TS2307: Cannot find module '@orca/process-host/cancel-process-acquisition' or its corresponding type declarations.
+src/main/codex/codex-trust-grant-host.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/codex/codex-wsl-hook-install-plan.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/crash-reporting/self-initiated-tree-kill-log.ts(2,43): error TS2307: Cannot find module '@orca/process-host/process-tree-kill-gate' or its corresponding type declarations.
+src/main/daemon/daemon-folder-access-probe.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/daemon/daemon-mac-code-identity.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/daemon/macos-daemon-bundle.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/daemon/system-pty-limit.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/emulator/android/android-command-runner.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/emulator/android/scrcpy-stream-session.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/emulator/android/scrcpy-stream-session.ts(135,5): error TS2531: Object is possibly 'null'.
+src/main/emulator/android/scrcpy-stream-session.ts(136,5): error TS2531: Object is possibly 'null'.
+src/main/emulator/android/scrcpy-stream-session.ts(137,5): error TS2531: Object is possibly 'null'.
+src/main/emulator/android/scrcpy-stream-session.ts(138,5): error TS2531: Object is possibly 'null'.
+src/main/emulator/serve-sim-execution.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/git/command-runner/exec-file-capture.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/git/command-runner/gh-bound-account-env.ts(41,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../github/gh-account-token.js'?
+src/main/git/command-runner/worker-exec-file.ts(1,34): error TS2307: Cannot find module '@orca/process-host/bounded-output-sink' or its corresponding type declarations.
+src/main/git/command-runner/wsl-command-resolution.ts(1,40): error TS2307: Cannot find module '@orca/process-host/wsl-distro-allowlist' or its corresponding type declarations.
+src/main/git/wsl-git-read-environment.ts(2,40): error TS2307: Cannot find module '@orca/process-host/wsl-distro-allowlist' or its corresponding type declarations.
+src/main/git/wsl-process-group-termination.ts(3,48): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/git/wsl-windows-checkout-git-probe.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/hooks.ts(22,8): error TS2307: Cannot find module '@orca/process-host/process-tree-termination' or its corresponding type declarations.
+src/main/hooks.ts(23,34): error TS2307: Cannot find module '@orca/process-host/bounded-output-sink' or its corresponding type declarations.
+src/main/ipc/filesystem/filesystem-listing-process-cleanup.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ipc/filesystem/watcher-process/parcel-watcher-child-slot.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ipc/filesystem/watcher-process/parcel-watcher-owned-children.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ipc/filesystem/watchers/filesystem-watcher-wsl.ts(2,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ipc/filesystem/watchers/wsl-watcher-spawn.ts(1,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ipc/filesystem/watchers/wsl-watcher-spawn.ts(2,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ipc/preflight-command-exec.ts(8,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/jsonl-rpc/agent-connection.ts(1,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/jsonl-rpc/agent-connection.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/local-worktree-filesystem.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/macos-tree-clone.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/memory/darwin-process-footprint.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/memory/host-memory.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/memory/windows-process-resource-collector.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/native-chat/agent-model-catalog/agent-model-catalog-probe-runner.ts(2,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/native-chat/agent-model-catalog/agent-model-catalog-probe-runner.ts(4,34): error TS2307: Cannot find module '@orca/process-host/bounded-output-sink' or its corresponding type declarations.
+src/main/native-chat/agent-session-journal/adopted-directory-probe.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/node-runtime/runtime-archive-download.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/node-runtime/runtime-archive-download.ts(4,36): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/opencode/opencode-acp-connection.ts(3,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/opencode/opencode-acp-connection.ts(4,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/opencode/opencode-cli-version.ts(7,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/opencode/opencode-client-sweep.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/opencode/opencode-credential-backend.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/opencode/opencode-launch-model-context.ts(4,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/opencode/opencode-launch-model-context.ts(8,8): error TS2307: Cannot find module '@orca/process-host/process-tree-termination' or its corresponding type declarations.
+src/main/opencode/opencode-launch-model-context.ts(10,34): error TS2307: Cannot find module '@orca/process-host/bounded-output-sink' or its corresponding type declarations.
+src/main/opencode/opencode-launch-model-context.ts(13,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/opencode/opencode-transcript-import.ts(64,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../ai-vault/session-scanner-opencode-sqlite-worker-spawn.js'?
+src/main/orcad/orcad-bundled-runtime.ts(4,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/own-chromium-tree-kill-guard.ts(7,40): error TS2307: Cannot find module '@orca/process-host/process-tree-kill-gate' or its corresponding type declarations.
+src/main/persistence/profile-state/profile-state-access-identity.ts(2,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/persistence/profile-state/profile-state-access-identity.ts(87,3): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+src/main/persistence/profile-state/profile-state-recovery-copy.ts(11,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/plugins/plugin-catalog-release-entry.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/provider-process/managed-provider-process.ts(1,61): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/provider-process/managed-provider-process.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/provider-process/managed-provider-process.ts(3,43): error TS2307: Cannot find module '@orca/process-host/retryable-process-exit-proof' or its corresponding type declarations.
+src/main/provider-process/provider-process-close.ts(1,37): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/provider-process/provider-process-row-read.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/provider-process/provider-process-teardown.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/provider-process/supervised-child-process-stop.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/providers/local-pty-runtime-spawn.ts(1,40): error TS2307: Cannot find module '@orca/process-host/wsl-distro-allowlist' or its corresponding type declarations.
+src/main/providers/macos-tcc-login-shell.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/providers/windows-console-attached-processes.ts(1,29): error TS2307: Cannot find module '@orca/process-host/fork-process' or its corresponding type declarations.
+src/main/providers/windows-console-attached-processes.ts(2,37): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/pty/posix-pty-foreground-group.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/pty/posix-pty-process-table.ts(5,44): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/pty/posix-pty-process-table.ts(6,36): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/pty/windows-environment-path.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/rate-limits/antigravity-usage-fetcher.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ripgrep/bundled-ripgrep-stop.ts(1,35): error TS2307: Cannot find module '@orca/process-host/process-tree-termination' or its corresponding type declarations.
+src/main/ripgrep/bundled-ripgrep-stop.ts(3,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ripgrep/bundled-ripgrep-text-search.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/runtime/agent-session/ownership/agent-session-process-identity-probe.ts(10,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/runtime/runtime-linear-save-fields-commands.ts(24,20): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './linear-issue-description-comparison.js'?
+src/main/runtime/runtime-machine-name.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/runtime/structured-agent-session-runtime.ts(138,45): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './structured-agent-session-host-assembly.js'?
+src/main/runtime/terminal-foreground-group.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/runtime/terminal/stop/terminal-update-admission.ts(23,49): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../../daemon/daemon-provider-state.js'?
+src/main/ssh/config/ssh-g-config-resolution.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ssh/connection/ssh-connection-file-transfers.ts(48,48): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../sftp-upload.js'?
+src/main/ssh/connection/ssh-connection-file-transfers.ts(69,47): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../../providers/ssh-filesystem-provider-sftp.js'?
+src/main/ssh/connection/ssh-connection-file-transfers.ts(89,41): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../sftp-upload.js'?
+src/main/ssh/connection/ssh-connection-file-transfers.ts(121,51): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../sftp-upload.js'?
+src/main/ssh/connection/ssh-connection-file-transfers.ts(228,45): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../sftp-upload.js'?
+src/main/ssh/ssh-proxy-command.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-forward-process.ts(1,57): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-forward-process.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-loopback-route-admission.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-loopback-route.ts(2,57): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-loopback-route.ts(6,8): error TS2307: Cannot find module '@orca/process-host/process-tree-termination' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-muxed-forward-cancel.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-orphaned-forward.ts(2,41): error TS2307: Cannot find module '@orca/process-host/windows-command-line' or its corresponding type declarations.
+src/main/ssh/system-transport/system-ssh-sftp-transfer.ts(17,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/startup/cli-launch-redirect.ts(3,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/startup/hydrate-shell-path.ts(1,37): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/startup/hydrate-shell-path.ts(3,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/startup/login-shell-environment.ts(3,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/telemetry/client.ts(24,10): error TS2552: Cannot find name 'ORCA_BUILD_IDENTITY'. Did you mean 'BUILD_IDENTITY'?
+src/main/telemetry/client.ts(25,7): error TS2552: Cannot find name 'ORCA_BUILD_IDENTITY'. Did you mean 'BUILD_IDENTITY'?
+src/main/telemetry/client.ts(28,10): error TS2304: Cannot find name 'ORCA_POSTHOG_WRITE_KEY'.
+src/main/telemetry/client.ts(29,7): error TS2304: Cannot find name 'ORCA_POSTHOG_WRITE_KEY'.
+src/main/text-generation/source-control-agent-launch.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/text-generation/source-control-local-process.ts(9,42): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/text-generation/source-control-text-generation-types.ts(2,35): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/windows/windows-process-table-cim-scan.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/windows/windows-process-table-cim-scan.ts(2,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/main/wsl-availability.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl-availability.ts(2,49): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl-console-running-distros.ts(4,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/main/wsl-exe-process.ts(1,49): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl-registered-distro-fallback.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl-registered-distro-fallback.ts(3,36): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl-unc-delete.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl.ts(1,44): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-automount-root.ts(9,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-command-channel.ts(2,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl/wsl-command-loop-pool.ts(1,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl/wsl-command-loop.ts(4,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl/wsl-default-distro.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-distro-boot-id.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-distro-holder.ts(2,49): error TS2307: Cannot find module '@orca/process-host/isolated-detached-spawn' or its corresponding type declarations.
+src/main/wsl/wsl-distro-registry-id.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-distro-registry-id.ts(3,34): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl/wsl-distro-registry-id.ts(4,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/main/wsl/wsl-guest-environment.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-orcad-host-transport.ts(2,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/main/wsl/wsl-orcad-host-transport.ts(3,42): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/main/wsl/wsl-runner.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/__fixtures__/fake-spawned-child.ts(3,40): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-cmd-shim-resolution.test.ts(10,8): error TS2307: Cannot find module '@orca/process-host/windows-cmd-shim-resolution' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-cmd-shim-resolution.test.ts(11,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-cmd-shim-resolution.win32.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-command-line.win32.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-tree-kill-late-taskkill.win32.test.ts(7,42): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-tree-kill-late-taskkill.win32.test.ts(8,53): error TS2307: Cannot find module '@orca/process-host/windows-tree-kill' or its corresponding type declarations.
+src/shared/__tests__/process-host/windows-tree-kill-late-taskkill.win32.test.ts(9,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/shared/agent-cli-install-dir-fallback.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/agent-hook-listener/providers/claude-helper-checkpoints.test.ts(11,16): error TS1309: The current file is a CommonJS module and cannot use 'await' at the top level.
+src/shared/agent-hook-listener/providers/claude-helper-kill.test.ts(481,75): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/agent-hook-listener/providers/claude-transcript-semantics.test.ts(117,84): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/agent-launch-picker.test.ts(167,78): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/agent-launch-picker.test.ts(336,18): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './agent-launch-picker-arguments.js'?
+src/shared/agent-launch-picker.test.ts(368,18): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './agent-launch-picker-permission.js'?
+src/shared/agent-launch-picker.test.ts(369,54): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './agent-launch-picker-arguments.js'?
+src/shared/agent-launch-picker.test.ts(387,54): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './agent-launch-picker-arguments.js'?
+src/shared/agent-process-presence-probe.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/cheap-process-table-snapshot-reader.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/codex-rollout-jsonl-cursor.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/dsh-real-cli.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/ephemeral-vm-recipe-output-capture.test.ts(10,35): error TS2307: Cannot find module '@orca/process-host/growing-byte-buffer' or its corresponding type declarations.
+src/shared/ephemeral-vm-recipe-process.ts(5,38): error TS2307: Cannot find module '@orca/process-host/process-tree-kill-gate' or its corresponding type declarations.
+src/shared/ephemeral-vm-recipe-process.ts(6,35): error TS2307: Cannot find module '@orca/process-host/growing-byte-buffer' or its corresponding type declarations.
+src/shared/git-binary.test-fixture.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/git-history-real-repository.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/git-ssh-policy-env.test.ts(4,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/libproc-ps-fallback.ts(1,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/libproc-ps-fallback.ts(2,36): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/shared/locale-text-collators.test.ts(65,39): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './locale-text-collators.js'?
+src/shared/node-markdown-document-listing.ts(1,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/shared/omp-draft-launch-shell.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/omp-draft-launch-windows.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/omp-fresh-launch-cmd.win32.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/omp-fresh-launch-shell.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/opencode-plugin-permissions.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/openssh-default-shell.ts(1,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/openssh-default-shell.ts(2,39): error TS2307: Cannot find module '@orca/process-host/windows-system-binary' or its corresponding type declarations.
+src/shared/openssh-default-shell.ts(26,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/shared/orca-cli-command-name.test.ts(2,43): error TS6059: File 'C:/Users/cxx/AppData/Local/Temp/claude/C--Users-cxx-orca-projects-cccv/000b9666-0ece-41a9-a3ee-b18520c3a8b9/scratchpad/orca-eval/orca-v5/config/scripts/vitest-host-ports-setup.ts' is not under 'rootDir' 'C:/Users/cxx/AppData/Local/Temp/claude/C--Users-cxx-orca-projects-cccv/000b9666-0ece-41a9-a3ee-b18520c3a8b9/scratchpad/orca-eval/orca-v5/src'. 'rootDir' is expected to contain all source files.
+  File is CommonJS module because 'C:/Users/cxx/AppData/Local/Temp/claude/C--Users-cxx-orca-projects-cccv/000b9666-0ece-41a9-a3ee-b18520c3a8b9/scratchpad/orca-eval/orca-v5/package.json' does not have field "type"
+src/shared/plugins/authoring/plugin-host-typings.test.ts(10,32): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/plugins/declarative/plugin-declarative-example.test.ts(9,27): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/plugins/declarative/plugin-declarative-typings.test.ts(14,3): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.
+src/shared/powershell-native-argument.windows.test.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/quick-open-subprocess-path-accumulator.ts(1,35): error TS2307: Cannot find module '@orca/process-host/growing-byte-buffer' or its corresponding type declarations.
+src/shared/ripgrep-process-availability.ts(3,41): error TS2307: Cannot find module '@orca/process-host/process-spec' or its corresponding type declarations.
+src/shared/secure-file-windows.test.ts(5,44): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/shell-process-readiness.test.ts(5,30): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/shell-process-readiness.ts(6,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/shipit-process-listing.ts(2,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/text-search-dense-matches.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/text-search-glob-patterns.test.ts(5,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/tmux-host-attachment-probe.ts(3,28): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/windows-breakaway-launcher.test.ts(2,38): error TS2307: Cannot find module '@orca/process-host/windows-command-line' or its corresponding type declarations.
+src/shared/windows-breakaway-launcher.ts(5,38): error TS2307: Cannot find module '@orca/process-host/windows-command-line' or its corresponding type declarations.
+src/shared/windows-security-addon.win32.test.ts(5,32): error TS2307: Cannot find module '@orca/process-host' or its corresponding type declarations.
+src/shared/windows-security-addon.win32.test.ts(88,63): error TS1470: The 'import.meta' meta-property is not allowed in files which will build into CommonJS output.

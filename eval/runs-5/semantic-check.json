@@ -1,0 +1,63 @@
+{
+ "dropped_units": [
+  {
+   "slice": "cloud-relay",
+   "key": "relay-director-http",
+   "why": "no live quote"
+  }
+ ],
+ "dropped_relations": [
+  {
+   "slice": "desktop-runtime",
+   "rel": "cli/runtime consumes runtime-ndjson-socket",
+   "why": "no live quote"
+  },
+  {
+   "slice": "cloud-relay",
+   "rel": "cloud-connector depends_on cloud-cloud-database",
+   "why": "script already reports it"
+  },
+  {
+   "slice": "desktop-main",
+   "rel": "desktop-main depends_on desktop-runtime",
+   "why": "script already reports it"
+  },
+  {
+   "slice": "cloud-relay",
+   "rel": "desktop-runtime/mobile-cloud-relay consumes relay-director-http",
+   "why": "unknown key"
+  },
+  {
+   "slice": "desktop-runtime",
+   "rel": "desktop-runtime/rpc provides mobile-e2ee-handshake",
+   "why": "no live quote"
+  },
+  {
+   "slice": "mobile",
+   "rel": "mobile depends_on desktop-runtime",
+   "why": "script already reports it"
+  },
+  {
+   "slice": "mobile",
+   "rel": "mobile/mobile-web-shell consumes web-shell-native-view",
+   "why": "no live quote"
+  },
+  {
+   "slice": "cloud-relay",
+   "rel": "mobile/transport consumes relay-director-http",
+   "why": "unknown key"
+  },
+  {
+   "slice": "desktop-main",
+   "rel": "native-computer-use-linux provides desktop-script-runtime-protocol",
+   "why": "no live quote"
+  }
+ ],
+ "fixed": [],
+ "counts": {
+  "purposes": 69,
+  "new_units": 40,
+  "relations_in": 101,
+  "relations_out": 92
+ }
+}
