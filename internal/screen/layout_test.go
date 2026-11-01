@@ -111,6 +111,9 @@ func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 	)
 	grown[0].Relations = append(grown[0].Relations, guess("IF-0002", model.Consumes, model.Via("trait")), guess("MOD-0005", model.DependsOn, model.Via("import")))
 	grown[2].Relations = append(grown[2].Relations, guess("DATA-0001", model.Consumes, model.Via("convention")))
+	// A guess that grep-matcher uses grep-printer would put the printer
+	// under the matcher if guesses moved boxes.
+	grown[3].Relations = append(grown[3].Relations, guess("MOD-0005", model.DependsOn, model.Via("convention")))
 	after := build(grown, in).Overview
 
 	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(before.Ports, after.Ports) {
@@ -125,7 +128,7 @@ func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 			semantic++
 		}
 	}
-	if semantic != 3 {
+	if semantic != 4 {
 		t.Fatalf("each guessed coupling between two modules is drawn once, lifted to the modules; got %d", semantic)
 	}
 }
