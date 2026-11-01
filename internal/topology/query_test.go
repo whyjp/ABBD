@@ -99,8 +99,8 @@ func TestExplainSplitsDrawnLinksFromGuesses(t *testing.T) {
 }
 
 type joint struct {
-	Kind              model.RelationKind
-	Forward           bool
+	Kind             model.RelationKind
+	Forward          bool
 	Shares, Provider model.ID
 }
 
@@ -157,3 +157,28 @@ func TestPathLabelsTwoConsumersThatOnlyShareAContract(t *testing.T) {
 	}
 }
 
+// A module reaches what a unit inside it uses through that unit, by the
+// nesting, which the path names as a hop of its own.
+func TestPathWalksFromAModuleIntoAUnitInsideIt(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", "", rel("MOD-0006", model.DependsOn, model.Extracted)),
+		unit("MOD-0004", "MOD-0001", rel("MOD-0005", model.DependsOn, model.Inferred)),
+		unit("MOD-0005", "", rel("MOD-0006", model.DependsOn, model.Extracted)),
+		unit("MOD-0006", ""),
+	}
+	hops, ok := Path(units, "MOD-0001", "MOD-0005")
+	want := []joint{{Contains, true, "", ""}, {model.DependsOn, true, "", ""}}
+	if !ok || !reflect.DeepEqual(joints(hops), want) || hops[0].From != "MOD-0001" || hops[0].To != "MOD-0004" {
+		t.Fatalf("got %+v, want MOD-0001 -contains-> MOD-0004 -depends_on-> MOD-0005, not the shared dependency: %+v", steps(hops), want)
+	}
+
+	units = []model.Unit{
+		unit("MOD-0001", "", rel("MOD-0003", model.DependsOn, model.Extracted)),
+		unit("MOD-0002", "MOD-0001", rel("MOD-0004", model.DependsOn, model.Extracted)),
+		unit("MOD-0003", "", rel("MOD-0004", model.DependsOn, model.Extracted)),
+		unit("MOD-0004", ""),
+	}
+	if hops, _ := Path(units, "MOD-0004", "MOD-0001"); len(hops) != 2 || hops[1].Kind != model.DependsOn {
+		t.Fatalf("a recorded relation wins a tie with the nesting: %+v", joints(hops))
+	}
+}

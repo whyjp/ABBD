@@ -23,12 +23,14 @@ type Hop struct {
 func uses(k model.RelationKind) bool { return k == model.DependsOn || k == model.Consumes }
 
 // cost orders walks: fewest joints where two users of one unit meet, then
-// fewest hops, then the strongest weakest link, kept negated so smaller is
+// fewest hops, then fewest hops through the nesting, so a relation someone
+// recorded wins a tie, then the strongest weakest link, kept negated so
+// smaller is better throughout.
 // better throughout.
-type cost struct{ joints, hops, weak int }
+type cost struct{ joints, hops, nests, weak int }
 
 func (c cost) less(d cost) bool {
-	return cmp.Or(cmp.Compare(c.joints, d.joints), cmp.Compare(c.hops, d.hops), cmp.Compare(c.weak, d.weak)) < 0
+	return cmp.Or(cmp.Compare(c.joints, d.joints), cmp.Compare(c.hops, d.hops), cmp.Compare(c.nests, d.nests), cmp.Compare(c.weak, d.weak)) < 0
 }
 
 // state is where a walk stands and whether it got there by using that unit,
@@ -38,15 +40,36 @@ type state struct {
 	used bool
 }
 
-// Path is the walk from a to b over the live links, each walked in either
-// direction. It routes the way units talk: two units that both use a third
-// do not reach each other through it while any other way exists, however
-// long. Then it takes the fewest hops, and of those the one whose weakest
-// link is strongest, so a guess shows only where nothing firmer connects the
-// two. A joint that remains is marked on its hop. ok is false when no walk
-// exists.
+// Path is the walk from a to b over the live links and the nesting, each
+// walked in either direction. It routes the way units talk: two units that
+// both use a third do not reach each other through it while any other way
+// exists, however long. Then it takes the fewest hops, a recorded relation
+// over the nesting, and the walk whose weakest link is strongest, so a guess
+// shows only where nothing firmer connects the two. A joint that remains is
+// marked on its hop. ok is false when no walk exists.
 func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {
-	return walk(Links(units), a, b)
+	return walk(append(Links(units), nesting(units)...), a, b)
+}
+
+// Contains is the hop from a module to a unit inside it. Nobody records it
+// as a relation; it is the unit's parent, so a module reaches what the units
+// inside it use.
+const Contains model.RelationKind = "contains"
+
+// nesting is a link from each present unit's parent to it, as certain as
+// the unit itself.
+func nesting(units []model.Unit) []Link {
+	present := map[model.ID]bool{}
+	for _, u := range model.Present(units) {
+		present[u.ID] = true
+	}
+	var out []Link
+	for _, u := range model.Present(units) {
+		if present[u.Parent] {
+			out = append(out, Link{Edge: model.Edge{From: u.Parent, To: u.ID, Kind: Contains}, Origin: u.Name.Origin})
+		}
+	}
+	return out
 }
 
 func walk(links []Link, a, b model.ID) ([]Hop, bool) {
@@ -82,7 +105,10 @@ func walk(links []Link, a, b model.ID) ([]Hop, bool) {
 			default:
 				continue
 			}
-			n := cost{c.joints, c.hops + 1, max(c.weak, -strength[l.Origin])}
+			n := cost{c.joints, c.hops + 1, c.nests, max(c.weak, -strength[l.Origin])}
+			if l.Kind == Contains {
+				n.nests++
+			}
 			if x.used && !forward && uses(l.Kind) {
 				n.joints++
 			}
