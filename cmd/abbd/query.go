@@ -191,7 +191,7 @@ func (e env) path(a, b string) error {
 		return nil
 	}
 	name := names(units)
-	at := from.ID
+	before, at := from.ID, from.ID
 	fmt.Fprintf(e.stdout, "%s %s\n", at, name[at])
 	for _, h := range hops {
 		next, arrow := h.To, fmt.Sprintf("-%s->", h.Kind)
@@ -199,7 +199,15 @@ func (e env) path(a, b string) error {
 			next, arrow = h.From, fmt.Sprintf("<-%s-", h.Kind)
 		}
 		fmt.Fprintf(e.stdout, "  %s %s %s%s\n", arrow, next, name[next], h.Label())
-		at = next
+		if h.Shares != "" {
+			verb := map[model.RelationKind]string{model.Consumes: "consume", model.DependsOn: "depend on"}[h.Kind]
+			provider := ""
+			if h.Provider != "" {
+				provider = fmt.Sprintf(", which %s %s provides", h.Provider, name[h.Provider])
+			}
+			fmt.Fprintf(e.stdout, "      both %s %s %s%s; no relation joins %s and %s\n", verb, h.Shares, name[h.Shares], provider, before, next)
+		}
+		before, at = at, next
 	}
 	fmt.Fprintf(e.stdout, "%d hop(s), weakest origin %s\n", len(hops), topology.Weakest(hops))
 	return nil

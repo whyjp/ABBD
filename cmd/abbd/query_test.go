@@ -112,6 +112,24 @@ func TestPathNamesEachHopAndTheWeakestOrigin(t *testing.T) {
 	p.resync()
 	p.want(0, "no path from MOD-0002 ledger to MOD-0003 island", "path", "MOD-0002", "island")
 	p.want(1, "are the same unit", "path", "ledger", "MOD-0002")
+
+	p.want(0, "USER_STATED", "record", "relation", "MOD-0003", "consumes", "DATA-0001", "--source", "conversation 2026-11-01")
+	contains(t, p.want(0, "", "path", "island", "ledger"),
+		"MOD-0003 island\n  -consumes-> DATA-0001 charges table (stated)\n  <-provides- MOD-0001 billing (inferred, via data)\n  <-depends_on- MOD-0002 ledger (stated)\n3 hop(s)")
+}
+
+// Two units that only consume the same contract are not joined by it, and
+// the path says so where they meet.
+func TestPathMarksTwoConsumersThatOnlyShareAContract(t *testing.T) {
+	p := semanticProject(t)
+	p.code("island/x.go", "package island\n\nfunc X() {}\n")
+	p.extract(strings.Replace(ledgerTopo, "\n]}", `,
+ {"key":"island","kind":"MOD","name":"island","anchors":[{"path":"island/x.go","symbol":"X"}]}]}`, 1))
+	p.resync()
+	p.want(0, "USER_STATED", "record", "relation", "MOD-0003", "consumes", "DATA-0001", "--source", "conversation 2026-11-01")
+	contains(t, p.want(0, "", "path", "island", "ledger"),
+		"MOD-0003 island\n  -consumes-> DATA-0001 charges table (stated)\n  <-consumes- MOD-0002 ledger (inferred, via data)\n"+
+			"      both consume DATA-0001 charges table, which MOD-0001 billing provides; no relation joins MOD-0003 and MOD-0002\n")
 }
 
 // diff counts an inside unit's relation to another module as its module's;
