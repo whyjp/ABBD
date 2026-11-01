@@ -7,6 +7,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
+	"github.com/whyjp/abbd/internal/group"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -167,8 +168,12 @@ func (e env) recordParent(pos []string) error {
 	if !ok {
 		return fmt.Errorf("%s is not a unit of the state", id)
 	}
-	if p, ok := presentUnit(units, parent); !ok || p.Kind != model.Module || parent == id {
+	p, ok := presentUnit(units, parent)
+	if !ok || p.Kind != model.Module || parent == id {
 		return fmt.Errorf("%s is not another module of the state", parent)
+	}
+	if group.Made(p) {
+		return fmt.Errorf("%s is a directory group sync makes to keep a view small and drops when it is not needed; record the module that owns %s", parent, id)
 	}
 	switch {
 	case e.sourceRef() != "":

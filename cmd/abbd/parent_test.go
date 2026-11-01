@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -57,4 +58,26 @@ func TestTheScriptsParentReplacesAReadersParent(t *testing.T) {
 	if !strings.Contains(md, "parent: MOD-0001") || strings.Contains(md, "parent_origin") {
 		t.Fatalf("the script's parent replaces the reader's and carries no reader origin:\n%s", md)
 	}
+}
+
+// A directory group exists only while the top level is too big, so a parent
+// on it would leave its unit nowhere once the group goes.
+func TestAParentOnADirectoryGroupIsRefused(t *testing.T) {
+	p, exe := bare(t)
+	var us []string
+	for i := 1; i <= 20; i++ {
+		dir := "apps"
+		if i > 10 {
+			dir = "libs"
+		}
+		f := fmt.Sprintf("%s/m%02d/m.go", dir, i)
+		p.code(f, "package m\n")
+		us = append(us, fmt.Sprintf(`{"key":"m%02d","kind":"MOD","name":"m%02d","anchors":[{"path":%q}]}`, i, i, f))
+	}
+	p.extract(`{"units":[` + strings.Join(us, ",") + `]}`)
+	p.setup(0, "synced", "--", exe)
+	if md := p.read("architecture/MOD-0021.md"); !strings.Contains(md, "apps/") {
+		t.Fatalf("MOD-0021 should be the apps/ group:\n%s", md)
+	}
+	p.want(1, "directory group", "record", "parent", "MOD-0011", "MOD-0021", "--source", "conversation 2026-11-01")
 }

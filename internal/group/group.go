@@ -137,6 +137,17 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	for _, c := range containers {
 		split(c)
 	}
+	// A reader's or human's parent on a group no longer needed would hide its
+	// unit, so the unit goes to the top level.
+	present := map[model.ID]bool{}
+	for _, u := range model.Present(out) {
+		present[u.ID] = true
+	}
+	for i, u := range out {
+		if !u.Absent && !placedByScript(u) && !present[u.Parent] {
+			out[i].Parent, out[i].ParentOrigin, out[i].ParentSource, out[i].ParentEvidence = "", "", "", nil
+		}
+	}
 	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
 	return out, next
 }

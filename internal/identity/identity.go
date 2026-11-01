@@ -247,8 +247,9 @@ func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
 // key. A unit the extraction places nowhere keeps a parent a reader or a
 // human gave it, so structure a reader found survives a script that cannot
 // see it; a parent the script gave earlier goes when the script drops it.
-// A kept parent that would close a cycle with the script's parents is
-// dropped, since the script's word on code it reads wins.
+// A kept parent goes when its module is absent. A kept parent that would
+// close a cycle with the script's parents is dropped, since the script's word
+// on code it reads wins.
 func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 	byKey := keyed(input, ids)
 	type placed struct {
@@ -259,6 +260,10 @@ func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 	parent := map[model.ID]placed{}
 	for i, in := range input {
 		parent[ids[i]] = placed{byKey[in.Parent], in.ParentOrigin, in.ParentEvidence}
+	}
+	present := map[model.ID]bool{}
+	for _, u := range model.Present(units) {
+		present[u.ID] = true
 	}
 	var kept []int
 	for i := range units {
@@ -271,7 +276,7 @@ func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 			if p.origin == model.Extracted {
 				u.ParentOrigin = ""
 			}
-		case u.Parent != "" && (u.ParentOrigin == model.Inferred || u.ParentOrigin == model.UserStated):
+		case present[u.Parent] && (u.ParentOrigin == model.Inferred || u.ParentOrigin == model.UserStated):
 			kept = append(kept, i)
 		default:
 			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""

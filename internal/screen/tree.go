@@ -23,10 +23,14 @@ func newTree(units []model.Unit) tree {
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 	}
+	// A unit whose parent is not present sits at the top level, so nothing
+	// present ever drops out of the blueprint.
 	for _, u := range model.Present(units) {
-		if _, ok := t.units[u.Parent]; ok || u.Parent == "" {
-			t.children[u.Parent] = append(t.children[u.Parent], u.ID)
+		if _, ok := t.units[u.Parent]; !ok {
+			u.Parent = ""
+			t.units[u.ID] = u
 		}
+		t.children[u.Parent] = append(t.children[u.Parent], u.ID)
 	}
 	var containers []model.ID
 	for k := range t.children {
