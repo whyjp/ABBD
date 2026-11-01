@@ -47,6 +47,9 @@ type Node struct {
 
 type Line struct {
 	D, Class, Title string
+	// Via says how a semantic coupling arises; Quote is the code it rests on.
+	Via   string `json:",omitempty"`
+	Quote string `json:",omitempty"`
 }
 
 type slot struct{ col, row int }
@@ -131,7 +134,8 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 	sort.Slice(m.Nodes, func(i, j int) bool { return m.Nodes[i].ID < m.Nodes[j].ID })
 
 	actual := map[topology.Edge]bool{}
-	var guesses []topology.Edge
+	var guesses []model.Relation
+	var from []model.ID
 	for _, u := range units {
 		if u.Absent {
 			continue
@@ -139,21 +143,24 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 		for _, r := range u.Relations {
 			e := topology.Edge{From: u.ID, To: r.To, Kind: r.Kind}
 			switch {
-			case !present[r.To]:
+			case !present[r.To] || r.Dead:
 			case r.Counts():
 				actual[e] = true
 			case r.Guess() || (r.Origin == model.Adopted && r.Confirmation != model.Rejected):
-				guesses = append(guesses, e)
+				guesses, from = append(guesses, r), append(from, u.ID)
 			}
 		}
 	}
-	add := func(e topology.Edge, class, title string) {
+	line := func(e topology.Edge, class, title string) *Line {
 		a, okA := pos[e.From]
 		b, okB := pos[e.To]
-		if okA && okB {
-			m.Edges = append(m.Edges, Line{D: route(a, b), Class: class, Title: e.String() + ": " + title})
+		if !okA || !okB {
+			return nil
 		}
+		m.Edges = append(m.Edges, Line{D: route(a, b), Class: class, Title: e.String() + ": " + title})
+		return &m.Edges[len(m.Edges)-1]
 	}
+	add := func(e topology.Edge, class, title string) { line(e, class, title) }
 	for _, e := range intendedEdges {
 		if actual[e] {
 			add(e, "kept", "의도")
@@ -178,8 +185,18 @@ func Draw(units []model.Unit, in *topology.Intended, items []topology.Item, high
 			add(e, "below", "선 아래")
 		}
 	}
-	for _, e := range guesses {
-		add(e, "guess", "추정, 미확인")
+	for i, r := range guesses {
+		e := topology.Edge{From: from[i], To: r.To, Kind: r.Kind}
+		title := "추정, 미확인"
+		if r.Via != "" {
+			title += ", via " + string(r.Via)
+		}
+		if len(r.Evidence) > 0 {
+			title += ": " + r.Evidence[0].String()
+		}
+		if l := line(e, "guess", title); l != nil && len(r.Evidence) > 0 {
+			l.Via, l.Quote = string(r.Via), r.Evidence[0].String()
+		}
 	}
 	return m
 }

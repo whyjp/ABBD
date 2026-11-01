@@ -86,6 +86,8 @@ svg path.removed { stroke: var(--block); stroke-dasharray: 6 4; }
 svg path.blocked { stroke: var(--block); stroke-width: 2.6; }
 svg path.realign { stroke: var(--warn); stroke-width: 2.2; }
 svg path.guess { stroke: var(--guess); stroke-dasharray: 2 4; }
+.coupling { font-size: 13px; color: var(--guess); margin-top: 2px; }
+.coupling q { color: var(--ink); font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
 svg marker path { fill: var(--muted); stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; margin-top: 6px; }
 .legend span::before { content: ""; display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--muted); vertical-align: middle; margin-right: 5px; }
@@ -207,7 +209,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   </form>
   {{end}}
   <h3>단위</h3>
-  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{if .Rejected}} <span class="muted">(반려된 추정: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
+  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{if .Parent}}<div class="muted">{{.Parent}} 안</div>{{end}}{{range .Evidence}}<div class="coupling">근거 <q>{{.}}</q></div>{{end}}{{range .Couplings}}<div class="coupling">추정 결합 <span class="key">{{.Key}}</span>{{if .Via}} via {{.Via}}{{end}}{{range .Evidence}}<div><q>{{.}}</q></div>{{end}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{if .Rejected}} <span class="muted">(반려된 추정: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
   </details>
 </section>
 

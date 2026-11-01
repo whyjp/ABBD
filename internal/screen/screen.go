@@ -214,6 +214,18 @@ type UnitRow struct {
 	Design                    bool
 	Purpose, Responsibility   *Fact
 	Anchors                   []string
+	// Parent is the module that contains the unit.
+	Parent string `json:",omitempty"`
+	// Evidence is the code a unit only a reader found rests on.
+	Evidence []string `json:",omitempty"`
+	// Couplings are the unit's live semantic relations no human has decided,
+	// with how each arises and the quote it rests on.
+	Couplings []Coupling `json:",omitempty"`
+}
+
+type Coupling struct {
+	Key, Via string
+	Evidence []string
 }
 
 type Model struct {
@@ -339,11 +351,24 @@ func Build(in Input) Model {
 		}
 		m.AlignGroups = group(m.Align, func(c Candidate) string { return c.Kind }, byKind)
 	}
+	couplings := map[model.ID][]Coupling{}
+	for _, c := range topology.Couplings(in.Units) {
+		row := Coupling{Key: c.String(), Via: string(c.Via)}
+		for _, e := range c.Evidence {
+			row.Evidence = append(row.Evidence, e.String())
+		}
+		couplings[c.From] = append(couplings[c.From], row)
+	}
 	for _, u := range present {
-		m.Units = append(m.Units, UnitRow{
+		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature), Design: design[u.ID],
 			Purpose: fact(u.Purpose), Responsibility: fact(u.Responsibility), Anchors: anchors(u),
-		})
+			Parent: string(u.Parent), Couplings: couplings[u.ID],
+		}
+		for _, e := range u.Evidence {
+			row.Evidence = append(row.Evidence, e.String())
+		}
+		m.Units = append(m.Units, row)
 		for _, r := range u.Relations {
 			if r.Origin == model.UserStated || (r.Confirmation == model.Confirmed && r.Origin != model.Extracted) {
 				m.Registered++
@@ -404,6 +429,10 @@ func detail(it topology.Item) string {
 		return fmt.Sprintf("사라진 결합: %s %s %s", it.Edge.From, it.Edge.Kind, it.Edge.To)
 	case topology.UnitRemoved:
 		return string(it.Unit) + "이(가) 코드에서 사라짐"
+	case topology.EvidenceTouched:
+		return fmt.Sprintf("확인된 의미 결합 %s의 증거 줄이 바뀜", it.Edge)
+	case topology.Unscanned:
+		return string(it.Unit) + "의 의미 결합을 확인하지 않음"
 	}
 	return string(it.Unit)
 }
