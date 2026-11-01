@@ -165,13 +165,14 @@ func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 func Compare(in Intended, units []model.Unit) []Item {
 	actual := presentUnits(units)
 	intended := in.byID()
-	inside := in.inside(actual)
+	boundary := in.boundary(actual)
 	var items []Item
 	add := func(it Item) {
-		if inside(it) {
+		graded, keep := boundary(it)
+		if !keep {
 			return
 		}
-		if effect, ok := in.Effect(it); ok {
+		if effect, ok := in.Effect(graded); ok {
 			it.Effect = effect
 			items = append(items, it)
 		}
@@ -606,41 +607,53 @@ func (in Intended) normalized() Intended {
 	return in
 }
 
-// inside reports whether a change stays within one module's inside: a new
-// below-the-line unit that a module contains, or a relation that starts at
-// one, or that ends at one from the module that contains it. The inside of a
-// module explains it to a human and never gates; the module's own relations
-// and contracts carry its boundary.
-func (in Intended) inside(actual map[model.ID]model.Unit) func(Item) bool {
+// boundary sees a change at the level of modules. A unit inside a design
+// module, one that is not itself a design unit, stands for the module that
+// contains it: a relation between two units of one module stays inside it and
+// is dropped, and a relation that leaves a module is graded as the module's
+// own relation, so routing a coupling through an inside unit never hides it.
+// A relation a human already acknowledged is not asked again.
+func (in Intended) boundary(actual map[model.ID]model.Unit) func(Item) (Item, bool) {
 	intended := in.byID()
-	internal := func(id model.ID) (model.ID, bool) {
+	insideOf := func(id model.ID) (model.ID, bool) {
 		u, ok := actual[id]
 		if _, design := intended[id]; !ok || design || u.Parent == "" {
+			return "", false
+		}
+		if p, ok := intended[u.Parent]; !ok || p.Kind != model.Module {
 			return "", false
 		}
 		return u.Parent, true
 	}
 	owner := func(id model.ID) model.ID {
-		if p, ok := internal(id); ok {
+		if p, ok := insideOf(id); ok {
 			return p
-		}
-		if u, ok := actual[id]; ok && u.Parent != "" {
-			return u.Parent
 		}
 		return id
 	}
-	return func(it Item) bool {
+	return func(it Item) (Item, bool) {
 		switch it.Change {
 		case UnitAdded:
-			_, ok := internal(it.Unit)
-			return ok
+			_, inside := insideOf(it.Unit)
+			return it, !inside
 		case NewRelation, RemovedRelation:
-			if _, ok := internal(it.Edge.From); ok {
-				return true
+			_, fromInside := insideOf(it.Edge.From)
+			_, toInside := insideOf(it.Edge.To)
+			if !fromInside && !toInside {
+				return it, true
 			}
-			p, ok := internal(it.Edge.To)
-			return ok && owner(it.Edge.From) == p
+			lifted := Edge{From: owner(it.Edge.From), To: owner(it.Edge.To), Kind: it.Edge.Kind}
+			if lifted.From == lifted.To {
+				return it, false
+			}
+			if it.Change == RemovedRelation {
+				return it, true
+			}
+			if slices.Contains(in.Relations, it.Edge) {
+				return it, false
+			}
+			return Item{Change: NewRelation, Edge: lifted}, true
 		}
-		return false
+		return it, true
 	}
 }

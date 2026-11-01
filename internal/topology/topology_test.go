@@ -35,11 +35,14 @@ func TestAModulesInsideNeverGates(t *testing.T) {
 	for _, key := range []string{
 		"unit-added:DATA-0001", "unit-added:MOD-0003",
 		"new-relation:MOD-0001.provides.DATA-0001", "new-relation:MOD-0001.depends_on.MOD-0003",
-		"new-relation:MOD-0003.consumes.IF-0001", "new-relation:MOD-0003.consumes.DATA-0001",
+		"new-relation:MOD-0003.consumes.DATA-0001",
 	} {
 		if e, ok := got[key]; ok {
 			t.Errorf("%s stays inside MOD-0001, but Compare reports it as %s", key, e)
 		}
+	}
+	if got["new-relation:MOD-0003.consumes.IF-0001"] != Blocked {
+		t.Errorf("an inside unit consuming another design contract makes its module a new consumer and must gate: %v", got)
 	}
 	if got["new-relation:MOD-0002.consumes.DATA-0001"] != Blocked {
 		t.Errorf("another module reaching into MOD-0001's inside crosses the boundary and must gate: %v", got)
@@ -49,4 +52,18 @@ func TestAModulesInsideNeverGates(t *testing.T) {
 			t.Errorf("%s lives inside a module and is never offered as a design unit", c.Unit)
 		}
 	}
+}
+
+// Only a design module has an inside. A unit whose parent is still below the
+// line stays a promotion candidate a human can see.
+func TestAUnitUnderABelowTheLineModuleIsStillACandidate(t *testing.T) {
+	before := []model.Unit{unit("MOD-0001", "")}
+	in := Select(before, map[model.ID]bool{"MOD-0001": true})
+	after := []model.Unit{unit("MOD-0001", ""), unit("MOD-0002", ""), unit("MOD-0003", "MOD-0002")}
+	for _, it := range Compare(in, after) {
+		if it.Key() == "unit-added:MOD-0003" && it.Effect == Promote {
+			return
+		}
+	}
+	t.Errorf("MOD-0003 sits under MOD-0002, which no human adopted, and vanished from the candidates: %v", Compare(in, after))
 }

@@ -247,7 +247,7 @@ svg marker path { stroke: none; }
     </div>
     <div class="text">
       {{with .Understanding}}
-      <div><span class="pill inferred">추정</span> <span class="muted">pstack {{.By}}가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}</div>
+      <div><span class="pill inferred">추정</span> <span class="muted">pstack how가 쓴 설명 (저장: {{.By}})</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}</div>
       {{range .Blocks}}{{if eq .Kind "h"}}<h4>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</h4>{{else if eq .Kind "li"}}<ul><li>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</li></ul>{{else}}<p>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</p>{{end}}{{end}}
       {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
       {{if .Units}}<h3>안의 단위</h3>

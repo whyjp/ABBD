@@ -86,6 +86,9 @@ func Parse(r io.Reader) (Result, error) {
 		if k, ok := kinds[u.Parent]; u.Parent != "" && (!ok || k != model.Module || u.Parent == u.Key) {
 			return Result{}, fmt.Errorf("unit %q: parent %q is not the key of another module", u.Name.Value, u.Parent)
 		}
+		if parentCycle(units, u.Key) {
+			return Result{}, fmt.Errorf("unit %q: its parents form a cycle", u.Name.Value)
+		}
 	}
 	res := Result{Units: units}
 	for i, rr := range raw.Relations {
@@ -231,4 +234,20 @@ func (r Result) StatedBy(origin model.Origin) Result {
 		out.Relations = append(out.Relations, rel)
 	}
 	return out
+}
+
+// parentCycle reports whether following parents from key ever comes back.
+func parentCycle(units []Unit, key string) bool {
+	parent := map[string]string{}
+	for _, u := range units {
+		parent[u.Key] = u.Parent
+	}
+	seen := map[string]bool{}
+	for k := key; k != ""; k = parent[k] {
+		if seen[k] {
+			return true
+		}
+		seen[k] = true
+	}
+	return false
 }

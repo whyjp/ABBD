@@ -36,7 +36,22 @@ func (e env) understand(id model.ID, file string) error {
 		return fmt.Errorf("the text is empty; pass pstack how's Overview and Key Concepts")
 	}
 	digest := e.st.ModuleDigest(v.units, id)
-	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, By: "how", Digest: digest, Text: text}); err != nil {
+	old, err := e.st.LoadUnderstandings()
+	if err != nil {
+		return err
+	}
+	// Restamping the same words onto newer code would mark a stale reading
+	// fresh without anyone reading the code again.
+	if prev, ok := old[id]; ok && prev.Digest != digest && strings.TrimSpace(prev.Text) == text {
+		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
+	}
+	by := "outside a turn"
+	if t, err := e.st.LatestTurn(); err != nil {
+		return err
+	} else if t != nil && t.State.Resumable() {
+		by = "agent in " + t.ID
+	}
+	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, By: by, Digest: digest, Text: text}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
