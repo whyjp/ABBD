@@ -44,7 +44,7 @@ Script evidence (the extractor may cite quotes for a relation) is live or dead a
 
 A claim is live if any item is live, else drifted if any item is drifted, else dead. A semantic unit, one only a reader or the supplement vouches for, goes absent with reason `evidence-dead` when its claim is dead. `abbd status` prints the drifted and dead item counts, so they cannot pile up unseen. The `/abbd` after-work step tells the agent to refresh or retract the drifted items under the paths its change touched.
 
-When setup or sync replaces a claim whose items are unchanged (same path and quote), the items keep their status and `since`, whatever symbol the new item names. Without that, re-running setup would revive dead items.
+When setup or sync replaces a claim whose items are unchanged (same path and quote), the items keep their status and `since`, whatever symbol the new item names. An item the claim did not hold before takes the status of an item the unit stores elsewhere with the same path and quote, such as a supplement parent that restates the unit's own evidence. Without that, re-running setup would revive dead items.
 
 ## 4. The precedence table
 

@@ -316,3 +316,27 @@ func TestMigrateRecordsWhatAHumanParentOverrode(t *testing.T) {
 	}
 	contains(t, p.want(0, "", "explain", "MOD-0002"), "inside MOD-0001 billing")
 }
+
+// An item's status belongs to the code it cites. When setup restates a
+// claim with an item the claim did not hold but the unit already stores
+// dead, the item comes in dead, not as a fresh drift.
+func TestSetupTakesAnItemsStatusFromTheUnitThatStoresIt(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
+	p.extract(ledgerTopo)
+	gone := "    - path: billing/charge.go\n      lines: \"4\"\n      quote: DELETE FROM charges\n---"
+	oldState(t, p, exe, map[string]string{
+		"state.yaml":                "revision: \"\"\nfingerprint: \"\"\nmd_hash: \"\"\nhigh_water:\n    DATA: 1\n    MOD: 2\n",
+		"architecture/MOD-0001.md":  oldBilling,
+		"architecture/MOD-0002.md":  oldLedger,
+		"architecture/DATA-0001.md": strings.Replace(oldTable, "---\n\n# charges", gone+"\n\n# charges", 1),
+	})
+	sup := strings.Replace(chargesTable, `"evidence":[{"path":"billing/charge.go","lines":"3","quote":"INSERT INTO charges"}]},`,
+		`"evidence":[{"path":"billing/charge.go","lines":"3","quote":"INSERT INTO charges"},{"path":"billing/charge.go","lines":"4","quote":"DELETE FROM charges"}]},`, 1)
+	write(t, filepath.Join(p.root, ".abbd", "extractor", "supplement.json"), sup)
+	contains(t, p.want(0, "", "migrate"), "1 item(s) no longer in the tree stay dead")
+	p.resync()
+	p.setup(0, "synced", "--supplement", ".abbd/extractor/supplement.json")
+	contains(t, p.want(0, "", "status"), "evidence: 0 drifted")
+}

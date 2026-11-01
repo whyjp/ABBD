@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "352fadd1d4a9b6df0b1680bf422c523c5d15703b5b446b777a9594296a9b6dd2"
+    "inputs_hash": "099d17c142f0f7229cd35e748188e4e71a270fe4e38bfe1a883d93a00c85351c"
   },
   "units": [
     {
@@ -1832,7 +1832,7 @@
       ],
       "Parent": "MOD-0026",
       "Evidence": [
-        "internal/identity/identity.go:352 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
+        "internal/identity/identity.go:366 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go:313 \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
       ]
     },
@@ -3689,7 +3689,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
+      "Quote": "internal/identity/identity.go:362 \"u.Digest = in.Digest\""
     },
     {
       "From": "MOD-0026",
@@ -3709,7 +3709,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\""
+      "Quote": "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\""
     },
     {
       "From": "MOD-0030",
@@ -15930,7 +15930,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -16087,7 +16087,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\""
+              "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\""
             ],
             "Marks": [
               {
@@ -16767,7 +16767,15 @@
                 "Code": true
               },
               {
-                "Text": " does. So re-running setup never revives a dead item. The script's own evidence is taken as it comes.",
+                "Text": " does. An item the claim did not hold falls back to any item the unit stores with the same path and quote (",
+                "Code": false
+              },
+              {
+                "Text": "items",
+                "Code": true
+              },
+              {
+                "Text": "), so a supplement parent that restates the unit's evidence keeps that evidence's status. So re-running setup never revives a dead item. The script's own evidence is taken as it comes.",
                 "Code": false
               }
             ]
@@ -17011,7 +17019,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
+            "internal/identity/identity.go:362 \"u.Digest = in.Digest\""
           ]
         },
         {
@@ -17020,7 +17028,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:394 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -23502,7 +23510,23 @@
                 "Code": true
               },
               {
-                "Text": "): the first 16 hex characters of a SHA-256 over the files cited by the anchors and evidence of a module and of its direct children, with absent units left out. A missing file hashes as missing. A text whose ",
+                "Text": "): the first 16 hex characters of a SHA-256 over the files cited by the anchors and evidence of a module and of its direct children, with absent units left out. A missing file hashes as missing. A child's citations count, so ",
+                "Code": false
+              },
+              {
+                "Text": "internal/store",
+                "Code": true
+              },
+              {
+                "Text": "'s text goes STALE when ",
+                "Code": false
+              },
+              {
+                "Text": "internal/identity/identity.go",
+                "Code": true
+              },
+              {
+                "Text": ", which the merge candidates file unit cites, changes. A text whose ",
                 "Code": false
               },
               {
@@ -25518,7 +25542,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:348 \"u.Digest = in.Digest\""
+            "internal/identity/identity.go:362 \"u.Digest = in.Digest\""
           ]
         },
         {

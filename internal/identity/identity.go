@@ -279,7 +279,7 @@ func setParents(units []model.Unit, input []extract.Unit, ids []model.ID, ws Wri
 		for _, pl := range in.Placed {
 			if p := byKey[pl.Key]; p != "" && ws.own(pl.Writer) {
 				was, _ := old.Claim(pl.Writer)
-				u.PutParent(model.ParentClaim{To: p, Writer: pl.Writer, Evidence: carry(pl.Evidence, was.Evidence)})
+				u.PutParent(model.ParentClaim{To: p, Writer: pl.Writer, Evidence: carry(pl.Evidence, was.Evidence, items(old))})
 			}
 		}
 	}
@@ -309,18 +309,20 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 		if !reported[u.ID] {
 			continue
 		}
-		old := u.Claims()
+		old, all := u.Claims(), items(*u)
 		u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })
 		for _, r := range made[u.ID] {
 			if slices.ContainsFunc(u.Claims(), func(o model.Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer }) {
 				continue
 			}
 			if r.Writer != model.Script {
+				var was []model.Evidence
 				for _, o := range old {
 					if o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer {
-						r.Evidence = carry(r.Evidence, o.Evidence)
+						was = o.Evidence
 					}
 				}
+				r.Evidence = carry(r.Evidence, was, all)
 			}
 			u.PutRelation(r)
 		}
@@ -328,14 +330,26 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 }
 
 // carry gives each new item the status a stored item citing the same code
-// had, so restating a claim never revives its dead items.
-func carry(next, old []model.Evidence) []model.Evidence {
+// had, so restating a claim never revives its dead items. It looks in each
+// list in turn: the claim's own items first, then the rest of the unit's,
+// since a status belongs to the code an item cites, not to one claim.
+func carry(next []model.Evidence, old ...[]model.Evidence) []model.Evidence {
 	out := slices.Clone(next)
 	for i := range out {
-		if j := slices.IndexFunc(old, out[i].Same); j >= 0 {
-			out[i].Lines, out[i].Status, out[i].Since, out[i].Reason = old[j].Lines, old[j].Status, old[j].Since, old[j].Reason
+		for _, es := range old {
+			if j := slices.IndexFunc(es, out[i].Same); j >= 0 {
+				out[i].Lines, out[i].Status, out[i].Since, out[i].Reason = es[j].Lines, es[j].Status, es[j].Since, es[j].Reason
+				break
+			}
 		}
 	}
+	return out
+}
+
+// items lists every evidence item the unit stores.
+func items(u model.Unit) []model.Evidence {
+	var out []model.Evidence
+	u.EachEvidence(func(_ model.Writer, e *model.Evidence) { out = append(out, *e) })
 	return out
 }
 
@@ -351,7 +365,7 @@ func merge(u *model.Unit, in extract.Unit, ws Writers) {
 	}
 	if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {
 		u.Name = in.Name
-		u.Evidence = carry(in.Evidence, u.Evidence)
+		u.Evidence = carry(in.Evidence, u.Evidence, items(*u))
 		if u.Name.Writer == model.Script {
 			u.Evidence = in.Evidence
 		}
