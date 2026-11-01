@@ -1,66 +1,37 @@
 ---
 name: abbd-setup
-description: Bootstrap ABBD on a repository. Extracts the actual topology with pstack, generates the deterministic project extraction script, and runs abbd setup. Use for /abbd-setup, "set up abbd", or a project with no .abbd directory.
+description: Set ABBD up on a repository. Writes the deterministic extraction script with pstack, supplements it with what pstack's readers find, and stores and renders the topology. Use for /abbd-setup, "set up abbd", or a repository with no .abbd directory.
 ---
 
 # ABBD setup
 
-`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. ABBD is pinned to that version. If `<pstack>/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
+`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. Open files under it with the Read tool. If `<pstack>/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
 
-Setup never asks the human anything. Make every call yourself and let the bootstrap report show it.
+Setup never asks the human anything. The first state you commit is the baseline; the human reads it in the blueprint and the PR, and there is no alignment step.
 
-Do not run `abbd align` or `abbd confirm` yourself. Confirming design units is the human's step.
+## Steps
 
-## Choose the mode
-
-- The human described the design units of a project with no code yet: greenfield.
-- The repository holds design documents (architecture notes, ADRs, an old SSOT, YAML or HTML maps): code-only plus adopt.
-- Otherwise: code-only.
-
-## Code-only
-
-1. List design unit candidates from the layout, entry points, manifests and schemas. A design unit is something a human would say "this change must not touch that" about: a responsibility (`MOD`), an external contract (`IF`, `EVT`, `DATA`, `CFG`), a user-facing feature (`FEAT`). Imports, calls and file placement are material for finding units, never units.
-2. Read and follow `<pstack>/skills/swarm/SKILL.md`, partitioned into slices of related candidates, with two changes. Give each worker a slice of the tree, such as a few packages or the plugin files, and at most five workers in all; a real repository has dozens of candidates, and one worker each costs more than it finds. Run every worker locally, with no worktree isolation, because a worktree checks out the last commit and the worker would not see uncommitted code. Each worker reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes and reports its unit in the extraction format below, with the relations it found by key, instead of `PASS`, `ISSUES` or `BLOCKED`. That is the one thing ABBD adds to how's explorer: every coupling and every unit the layout does not show comes with `via` and `evidence`, and a unit inside a module names it as `parent`.
-3. Build the lever. Write `.abbd/extractor/extract.<ext>`, a script that prints the extraction JSON from the code alone: imports, routes, schemas, manifests. It runs from the repository root, sorts its output, and uses no clock, network or model. Run it and diff against the swarm result. Every unit the swarm found must come out of the script with the same kind and at least one shared anchor, or be left out on purpose with the reason in the bootstrap summary you give the human. The script's anchors are the ones ABBD keeps, so pick them mechanically and stably: every non-test file of a package plus its directory, or a file plus the symbol that defines a contract. A worker's hand-picked symbols drift with every refactor. Have the script fail when a unit has fewer than two anchors or an anchor names a symbol its file does not declare. Fix the script until the diff is explained.
-4. Write `.abbd/extractor/supplement.json` in the same format with what only reading can tell: `purpose`, `responsibility`, and couplings the script cannot see, such as a shared table, an execution order, a trait used through generics, a callback, a flag passed through config, a cargo feature, or a convention two units must keep in step. Take them from the step 2 workers' reports, which follow how's explorer unchanged. Each unit repeats `key`, `kind`, `name` and at least one anchor of the script unit it describes. A coupling may end at a unit the script does not report, such as a shared type, a wire format or a build feature: give that unit `evidence` instead of a script anchor, and its containing module as `parent`. Every such coupling carries `via` and `evidence`. ABBD checks each quote against the code on every extraction, so quote it verbatim; a coupling whose quotes all disappear is reported as removed.
+1. List unit candidates from the layout, entry points, manifests and schemas. A unit is something a human would say "this change must not touch that" about: a responsibility (`MOD`), an external contract (`IF`, `EVT`, `DATA`, `CFG`), a user-facing feature (`FEAT`). Imports, calls and file placement are material for finding units, never units.
+2. Follow `<pstack>/skills/swarm/SKILL.md`, partitioned into slices of related candidates, at most five workers, each run locally without worktree isolation so it sees uncommitted code. Each worker reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes and reports in the extraction format below instead of `PASS`, `ISSUES` or `BLOCKED`. ABBD adds one thing to how's explorer: every coupling and every unit the layout does not show comes with `via` and verbatim `evidence`, and a unit inside a module names that module as `parent`.
+3. Build the lever, per `<pstack>/skills/principle-build-the-lever/SKILL.md`. Write `.abbd/extractor/extract.<ext>`, a script that prints the extraction JSON from the code alone: imports, routes, schemas, manifests, and each contract's `signature` and `digest`. It runs from the repository root, sorts its output, and uses no clock, network or model. Pick anchors mechanically and stably: every non-test file of a package plus its directory, or a file plus the symbol that defines a contract. Have it fail when a unit has fewer than two anchors or an anchor names a symbol its file does not declare. Diff its output against the swarm result until every difference is explained.
+4. Write `.abbd/extractor/supplement.json` with what only reading tells:
+   - `purpose` and `responsibility` for script units, repeating `key`, `kind`, `name` and one anchor of the unit they describe, with no `evidence`
+   - units the script cannot see, such as a shared table or a wire format, with `evidence` instead of anchors and their module as `parent`. Their quotes must not sit on an anchor a script unit of the same kind already holds, or setup refuses the unit and names both
+   - couplings the script cannot see, such as a shared table, an execution order, a trait used through generics, a callback, a flag passed through config, a build feature or a convention two units keep in step, each with `via` and `evidence`
 5. Run setup:
 
    ```
-   abbd setup --supplement .abbd/extractor/supplement.json --verify "<VERIFY-COMMAND>" -- <interpreter> .abbd/extractor/extract.<ext>
+   abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
    ```
 
-   `--verify` registers the command every turn verifies with, so the human sees it on the screen before any turn trusts it. Use the project's verify skill (`.claude/skills/verify-*/SKILL.md`) when it has one, otherwise the project's test command, such as `go test -count=1 ./...`. It must write nothing git does not ignore. Leave `--verify` out when the project has no verification yet. It registers once; setup refuses a different command later.
-
-   - Exit 1 `not deterministic`: the script printed different output across runs, one of them with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`. Sort what it prints, remove the source of variation, and rerun.
-   - Exit 1 `extraction script is fixed`: the project is aligned, and its script is the one `project.yaml` records. Rerun setup without `--`.
-   - Exit 1 `fix the script, or cite the code`: the supplement names a unit the script did not report and gives it no evidence. Teach the script that unit, add `evidence` to it, or drop it from the supplement.
-   - Exit 1 `is not a relation ABBD knows`: a relation kind does not fit its units. A module or feature `provides` a contract, anything `consumes` a contract, and anything `depends_on` any unit.
-6. Commit `.abbd/` with the code. The extraction script is the lever that `abbd mode on --session <ID>` reruns every time the mode turns on.
-7. Tell the human how many candidates there are and that they finish alignment on the screen: `abbd serve` in their own terminal prints a link, and the page lists the candidates to keep and the confirm queue. Give the terminal form too, for a human who prefers it: `abbd align --all`, `abbd align --confirm <IDS>`, or `abbd align --exclude <IDS>`, with IDs from `.abbd/bootstrap-report.md`.
-
-## Adopt
-
-Reconstruct the existing documents into the extraction format at `.abbd/extractor/adopt.json`. Take names, purposes, responsibilities, signatures and relations from the documents. Take anchors from the code each documented unit describes. A documented unit with no code gets the anchor where the document says it lives. Then add `--adopt .abbd/extractor/adopt.json` to the setup command in step 5.
-
-ABBD records adopted facts as ADOPTED and lists conflicts and gaps in the report. An unreadable adopt file only adds a warning. The code-only result stands either way.
-
-## Greenfield
-
-Write the units the human stated to `.abbd/extractor/stated.json` in the extraction format. Anchors are the paths where each unit will live. Run:
-
-```
-abbd setup --greenfield .abbd/extractor/stated.json
-```
-
-Setup refuses greenfield when the directory holds any file other than dotfiles, dot directories such as `.git/`, `.abbd/` and `.claude/`, and a root `CLAUDE.md` or `AGENTS.md`. Use code-only for a repository that has code.
-
-The project is aligned at once, with every fact USER_STATED. In the first turn that adds code, write the extraction script as in code-only step 3 and register it:
-
-```
-abbd setup -- <interpreter> .abbd/extractor/extract.<ext>
-```
-
-Setup runs it three times and refuses it if the output changes. Registration happens once. After that, setup refuses any other argv, because `abbd mode on --session <ID>` trusts the recorded script.
+   - `not deterministic`: the script printed different output across three runs, one with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`. Sort what it prints and remove the variation.
+   - `fix the script, or cite the code`: a supplement unit matches no script unit and cites no evidence. Teach the script the unit, add `evidence`, or drop it.
+   - `would merge into it`: a supplement unit with evidence shares an anchor with a script unit. Quote code of its own, or drop the evidence if it describes that script unit.
+   - `cites no evidence`: a supplement coupling has no quote. Add one or drop it.
+   - `is not a relation ABBD knows`: a module or feature `provides` a contract, anything `consumes` a contract, and anything `depends_on` any unit.
+6. For each top-level module, follow `<pstack>/skills/how/SKILL.md` unchanged and store its Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
+7. Open `.abbd/blueprint/index.html` and check that the overview and each inside read the way the swarm described the code. Fix the script or the supplement and rerun setup until they do.
+8. Commit `.abbd/` with the code, and tell the human where the blueprint is.
 
 ## Extraction format
 
@@ -68,45 +39,26 @@ Setup runs it three times and refuses it if the output changes. Registration hap
 {
   "units": [
     {"key": "billing", "kind": "MOD", "name": "billing",
-     "anchors": [{"path": "billing/charge.go", "symbol": "Charge"}],
-     "purpose": "takes payments", "responsibility": "owns the charges table"},
-    {"key": "api", "kind": "IF", "name": "http api", "signature": "GET /charges",
-     "anchors": [{"path": "api/http.go", "symbol": "Serve"}]}
-  ],
-  "relations": [
-    {"from": "billing", "to": "api", "kind": "provides"}
-  ]
-}
-```
-
-A supplement may add units and couplings only reading finds:
-
-```json
-{
-  "units": [
+     "anchors": [{"path": "billing"}, {"path": "billing/charge.go", "symbol": "Charge"}]},
+    {"key": "api", "kind": "IF", "name": "http api", "signature": "GET /charges", "digest": "3f9a1c0d",
+     "anchors": [{"path": "api/http.go", "symbol": "Serve"}, {"path": "api/http.go", "symbol": "Routes"}]},
     {"key": "charges", "kind": "DATA", "name": "charges table", "parent": "billing",
      "evidence": [{"path": "billing/charge.go", "lines": "41", "quote": "INSERT INTO charges"}]}
   ],
   "relations": [
+    {"from": "billing", "to": "api", "kind": "provides"},
     {"from": "ledger", "to": "charges", "kind": "consumes", "via": "data",
      "evidence": [{"path": "ledger/book.go", "lines": "12-13", "quote": "SELECT amount FROM charges"}]}
   ]
 }
 ```
 
-- `anchors` is required on every unit. A path is relative to the repository root, with forward slashes. Two shared anchors, or an identical anchor set, keep a unit's ID across re-extraction. Prefer two or more anchors per unit.
-- `kind` is one of `MOD`, `IF`, `EVT`, `DATA`, `CFG`, `FEAT`. `DOM`, `STATE`, `TRN` and `INV` are reserved.
-- `signature` is the observable shape of a contract, and only contracts carry one. Changing it later is a grade C change, so make it exact and stable.
-- `digest` is optional on a contract: a short fingerprint of the code its meaning lives in, such as a hash of the anchored declarations. A turn that changes a consumed contract's digest but not its signature leaves a grade B card for a human. Without one, a change of meaning under the same signature goes unseen.
-- `relations` name units by `key`. `kind` is `depends_on`, `consumes` or `provides`. Only a module or feature provides, and only a contract is provided or consumed.
-- `via` is optional on a relation and says how it arises: `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`.
-- `evidence` is a list of `{"path", "lines", "symbol", "quote"}`. `lines` (`"120"` or `"120-134"`) and `symbol` are optional. The quote is a short verbatim excerpt; whitespace does not matter, and it must start within three lines of `lines`. A relation or unit is live while any of its quotes is in its file.
-- `parent` names, by key, the module that contains a unit.
-- The script's output never carries `purpose` or `responsibility`. Those belong in the supplement, where they stay INFERRED until a human confirms them.
-- Unknown fields are rejected.
+- `kind` is one of `MOD`, `IF`, `EVT`, `DATA`, `CFG`, `FEAT`. Only contracts carry a `signature`.
+- `digest` fingerprints the code a contract's meaning lives in, so `abbd diff` sees a change of meaning under the same signature.
+- `relations` name units by `key`; `kind` is `depends_on`, `consumes` or `provides`.
+- `via` is `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`.
+- `evidence` is a list of `{"path", "lines", "symbol", "quote"}`; `lines` and `symbol` are optional. The quote is verbatim; whitespace does not matter, and it must sit within three lines of `lines`. A unit or coupling only a reader found lives while any of its quotes is in its file.
+- `parent` names, by key, the module that contains a unit. A unit with no parent is drawn on the overview; a unit with one is drawn inside its module.
+- The script's output carries no `purpose` or `responsibility`. Unknown fields are rejected.
 
-## After setup
-
-`abbd status` shows the phase and the size of the confirm queue. `abbd confirm --list` lists inferred items, design units first, named like `MOD-0001.purpose` or `MOD-0002.consumes.MOD-0001`. Neither blocks alignment.
-
-Rerunning setup replaces every guess the last supplement made that no human has confirmed. Put every guess you still stand by in the new supplement.
+Rerunning setup replaces every guess the last supplement made. What the human stated through abbd record fact stays.
