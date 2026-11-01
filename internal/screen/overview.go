@@ -505,13 +505,17 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design", Href: href(m)}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		y := r.Y + r.H/2 + 5 - (len(ls)-1)*nameLine/2
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
-		b.Title = fmt.Sprintf("%s %s. 누르면 이 모듈의 안을 봅니다", m, b.Name)
+		b.Title = fmt.Sprintf("%s %s", m, b.Name)
+		if viewOf(o.tree, m) != "" {
+			b.Href = href(m)
+			b.Title += ". 누르면 이 모듈의 안을 봅니다"
+		}
 		d.Boxes = append(d.Boxes, b)
 	}
 	// A folded "+N" chip stands for several contracts at one place: it is

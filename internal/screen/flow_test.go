@@ -154,3 +154,32 @@ func TestTheCheckerCountsLinesThatArriveApart(t *testing.T) {
 		t.Errorf("two lines into c drawn as one bundle are not: %s", m)
 	}
 }
+
+// Every box that links somewhere opens a view the page holds, so a
+// feature with no parts is drawn without a link, and one with parts opens
+// its view.
+func TestEveryLinkOpensAView(t *testing.T) {
+	step := inside("FEAT-0003", "FEAT-0002")
+	step.Kind = model.Feature
+	units := []model.Unit{called("MOD-0001", "cli"), unit("FEAT-0001"), unit("FEAT-0002"), step}
+	units[1].Kind, units[2].Kind = model.Feature, model.Feature
+	m := build(units)
+	have := map[string]bool{"#overview": true}
+	for _, ins := range m.Insides {
+		have["#m-"+ins.ID] = true
+	}
+	drawings := []Drawing{m.Overview}
+	for _, ins := range m.Insides {
+		drawings = append(drawings, ins.Drawing)
+	}
+	for _, d := range drawings {
+		for _, b := range d.Boxes {
+			if b.Href != "" && !have[b.Href] {
+				t.Errorf("box %s links to %s, which no view holds", b.ID, b.Href)
+			}
+		}
+	}
+	if b := boxes(m.Overview); b["FEAT-0001"].Href != "" || b["FEAT-0002"].Href != "#m-FEAT-0002" {
+		t.Errorf("a feature links to its view only when it holds parts: %+v", m.Overview.Boxes)
+	}
+}
