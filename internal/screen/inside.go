@@ -81,7 +81,7 @@ func (ln line) String() string {
 
 // inside draws m's view. With a focus, it draws the focus view of that
 // child instead: the child, the children it meets, and only its own lines.
-func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside {
+func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
@@ -277,7 +277,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside
 	if focus != "" {
 		budget = overviewBudget
 	}
-	l := arrange(nodes, edges, budget-12)
+	l := arrange(nodes, edges, budget-12, seatOf(focus, seat))
 
 	// A wired port sits on the side its lines flow from, rule 10: a contract
 	// the module provides and a caller from outside on top, what the module
@@ -360,6 +360,11 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside
 		}
 		for k := range l.pass {
 			l.pass[k] += shift
+		}
+		for _, as := range [][]attach{tops, bottoms} {
+			for i := range as {
+				as[i].other += shift
+			}
 		}
 		l.width = width
 	}

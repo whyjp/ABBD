@@ -75,9 +75,18 @@ const (
 	// Width budgets, rule 5: what the page shows of a drawing at 1440px wide.
 	overviewBudget = 1320
 	insideBudget   = 920
+	// minWidth is the narrowest an overview drawing is drawn.
+	minWidth = 320
 )
 
-func arrange(nodes []lnode, edges []ledge, budget int) layout {
+// focusSeat is what a focus view keeps of its full view: the focus, set at
+// the centre, and the x of every box there, which orders the ring.
+type focusSeat struct {
+	focus string
+	at    map[string]int
+}
+
+func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 	slices.SortFunc(nodes, func(a, b lnode) int { return strings.Compare(a.id, b.id) })
 	byID := map[string]lnode{}
 	for _, n := range nodes {
@@ -308,27 +317,38 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 	// Order the layers with their chains, wrap a layer wider than the room
 	// into rows in that order, and order the rows again with the chains the
 	// wrapping adds.
+	sortRows, split := (*layered).order, wrap
+	if seat != nil {
+		sortRows = func(g *layered) { g.seat(seat.at, seat.focus) }
+		split = brick
+	}
 	g := proper(ranks, w, pairs, lines)
-	g.order()
+	sortRows(&g)
 	room := budget - 2*padX
 	var rows [][]string
 	wrapped := false
 	for _, row := range g.rows {
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
-		rs := wrap(ids, byID, room)
+		rs := split(ids, byID, room)
 		wrapped = wrapped || len(rs) > 1
 		rows = append(rows, rs...)
 	}
 	if wrapped {
 		g = proper(rows, w, pairs, lines)
-		g.order()
+		sortRows(&g)
 	}
 
 	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
-	x, width := g.place(budget)
+	var x map[string]int
+	var width int
+	if seat != nil {
+		x, width = g.ring(seat.focus, budget)
+	} else {
+		x, width = g.place(budget)
+	}
 	l.width, l.chains = width, g.chains
 	for r, row := range g.rows {
 		var ids []string
@@ -409,6 +429,26 @@ func wrap(ids []string, byID map[string]lnode, room int) [][]string {
 		w += add
 	}
 	return append(out, cur)
+}
+
+// brick splits a ring layer wider than room into rows that each take every
+// k-th box, so each row spans the layer from left to right in its order and
+// a box of one row stands over a gap of the next, where the line of the box
+// above passes down.
+func brick(ids []string, byID map[string]lnode, room int) [][]string {
+	for k := 1; ; k++ {
+		rows := make([][]string, k)
+		for i, id := range ids {
+			rows[i%k] = append(rows[i%k], id)
+		}
+		fits := true
+		for _, r := range rows {
+			fits = fits && rowWidth(r, byID) <= room
+		}
+		if fits || k >= len(ids) {
+			return rows
+		}
+	}
 }
 
 // end is one end of a line: a node, or a port on the frame's top (row -1)

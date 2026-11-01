@@ -147,7 +147,7 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m)
+		f := planOverview(units, m, centres(full))
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
@@ -167,7 +167,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 	var out []Focus
 	for _, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
-		d := o.inside(scope, units, id).Drawing
+		d := o.inside(scope, units, id, centres(full.Drawing)).Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
 	}
 	return out
@@ -183,6 +183,26 @@ func (o *overview) focus(scope model.ID, of, ofName string, unit model.ID, d Dra
 		ID: focusID(scope, unit), Unit: string(unit), Name: o.name(unit),
 		Of: of, OfName: ofName, In: viewOf(o.tree, unit), Drawing: d, Ring: len(d.Boxes) - 1,
 	}
+}
+
+// centres gives the x of every box's centre in a full view, a twin's
+// included as its unit's.
+func centres(d Drawing) map[string]int {
+	at := map[string]int{}
+	for _, b := range d.Boxes {
+		at[b.ID] = b.X + b.W/2
+		at[string(twin(model.ID(b.ID)))] = b.X + b.W/2
+	}
+	return at
+}
+
+// seatOf is how a focus view on focus keeps its full view's map, nil for a
+// full view.
+func seatOf(focus model.ID, at map[string]int) *focusSeat {
+	if focus == "" {
+		return nil
+	}
+	return &focusSeat{focus: string(focus), at: at}
 }
 
 // linkFocus gives a copy of a full view whose boxes that open nothing else

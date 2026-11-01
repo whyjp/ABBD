@@ -269,8 +269,9 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 
 // planOverview lays out the overview. With a focus, it plans the whole
 // overview, then keeps only that module's part of it and lays that out: the
-// focus view (focus.go).
-func planOverview(units []model.Unit, focus model.ID) *overview {
+// focus view (focus.go), its ring ordered by at, the x of each box in the
+// full view.
+func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -400,7 +401,7 @@ func planOverview(units []model.Unit, focus model.ID) *overview {
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget)
+	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))
 	o.layout.top = padY
 	return o
 }
@@ -685,7 +686,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := l.route(reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, 320), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs)}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs)}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]

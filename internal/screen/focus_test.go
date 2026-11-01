@@ -183,3 +183,39 @@ func TestEveryLinkOpensASection(t *testing.T) {
 		}
 	}
 }
+
+// A focus view keeps the reader's map of its view: the focus stands at the
+// middle of the drawing, and the boxes of each row stand left to right in
+// the order they stand in the view.
+func TestFocusViewsKeepTheMapOfTheirView(t *testing.T) {
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		all := map[string][]Focus{"overview": m.Focus}
+		full := map[string]Drawing{"overview": m.Overview}
+		for _, ins := range m.Insides {
+			all[ins.ID], full[ins.ID] = ins.Focus, ins.Drawing
+		}
+		for v, fs := range all {
+			at := centres(full[v])
+			for _, f := range fs {
+				rows := map[int][]Box{}
+				for _, b := range f.Drawing.Boxes {
+					if b.ID == f.Unit {
+						if mid := b.X + b.W/2; abs(2*mid-f.Drawing.Width) > 4 {
+							t.Errorf("%s %s: the focus stands at %d in a drawing %d wide", name, f.ID, mid, f.Drawing.Width)
+						}
+					}
+					rows[b.Y] = append(rows[b.Y], b)
+				}
+				for _, row := range rows {
+					slices.SortFunc(row, func(a, b Box) int { return a.X - b.X })
+					for i := 1; i < len(row); i++ {
+						if at[row[i-1].ID] > at[row[i].ID] {
+							t.Errorf("%s %s: %s stands left of %s, which the view has the other way", name, f.ID, row[i-1].ID, row[i].ID)
+						}
+					}
+				}
+			}
+		}
+	}
+}

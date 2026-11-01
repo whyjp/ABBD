@@ -24,7 +24,7 @@ func TestGivingUpChainsKeepsEveryBoxOnTheCanvas(t *testing.T) {
 		}
 		edges = append(edges, ledge{"me", id})
 	}
-	l := arrange(nodes, edges, 920)
+	l := arrange(nodes, edges, 920, nil)
 	if l.width > 920 {
 		t.Errorf("width %d past the budget 920", l.width)
 	}
@@ -63,7 +63,7 @@ func TestALargeGraphLaysOutQuickly(t *testing.T) {
 		}
 	}
 	start := time.Now()
-	arrange(nodes, edges, 1320)
+	arrange(nodes, edges, 1320, nil)
 	if took := time.Since(start); took > time.Second {
 		t.Errorf("200 boxes and 400 lines took %v to lay out, past 1s", took)
 	}
