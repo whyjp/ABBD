@@ -16,8 +16,8 @@ type evidenceFlags []string
 func (f *evidenceFlags) String() string     { return strings.Join(*f, " ") }
 func (f *evidenceFlags) Set(s string) error { *f = append(*f, s); return nil }
 
-// citations parses --evidence and refuses any quote the tree does not hold
-// now, so a finding enters the state only with evidence that is live.
+// citations parses --evidence and refuses any quote the file it names does not
+// hold now, so a finding enters the state only with evidence that is live.
 func (e env) citations() ([]model.Evidence, error) {
 	var es []model.Evidence
 	for _, s := range e.evidence {
@@ -33,7 +33,7 @@ func (e env) citations() ([]model.Evidence, error) {
 	}
 	c := evidence.New(e.root)
 	for _, ev := range es {
-		if !c.Check(ev).Live {
+		if !c.Check(ev, nil).Live {
 			return nil, fmt.Errorf("the code does not hold %s; quote it verbatim from the working tree", ev)
 		}
 	}

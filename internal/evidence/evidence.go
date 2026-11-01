@@ -2,6 +2,12 @@
 // excerpts a reader cited for a semantic unit or relation. A reader finds a
 // coupling; this package only decides whether the same tree still shows it,
 // so the same tree always gives the same answer.
+//
+// A quote follows its code within its file, and into another file only when
+// that file is one git would commit (tracked, or untracked and not ignored,
+// as the state's fingerprint counts them), is not a test, and lies under an
+// anchor of the unit that owns the evidence. So a build output, a vendored
+// copy or a test never keeps a dead coupling alive.
 package evidence
 
 import (
@@ -15,6 +21,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
 )
 
@@ -51,8 +58,8 @@ type file struct {
 type Checker struct {
 	root  string
 	files map[string]*file
-	// paths lists the project's files once a quote must be looked for
-	// outside its own file.
+	// paths lists the project's committable files once a quote must be
+	// looked for outside its own file.
 	paths []string
 }
 
@@ -122,10 +129,10 @@ func (f *file) result(m match, moved string) Result {
 // Check finds e's quote, whitespace-insensitively. It looks within the lines
 // e names and the slack first. Code moves, so it then takes the quote's only
 // occurrence anywhere in the same file, and, when the file no longer holds it,
-// the only occurrence of a long enough quote in any file of the same kind. A
-// quote found twice is ambiguous and stays dead, so the same tree always gives
-// the same answer.
-func (c *Checker) Check(e model.Evidence) Result {
+// the only occurrence of a long enough quote in any other file of the same
+// kind under within, the anchors of the unit that owns e. A quote found twice
+// is ambiguous and stays dead, so the same tree always gives the same answer.
+func (c *Checker) Check(e model.Evidence, within []model.Anchor) Result {
 	q := normalize(e.Quote)
 	if q == "" {
 		return Result{}
@@ -150,7 +157,7 @@ func (c *Checker) Check(e model.Evidence) Result {
 	}
 	var found Result
 	n := 0
-	for _, p := range c.candidates(path.Ext(e.Path)) {
+	for _, p := range c.candidates(path.Ext(e.Path), within) {
 		if p == e.Path {
 			continue
 		}
@@ -172,45 +179,55 @@ func (c *Checker) Check(e model.Evidence) Result {
 	return Result{}
 }
 
-// candidates lists the project's files with extension ext, in a fixed order,
-// leaving out ABBD's state, git's, and dependency folders.
-func (c *Checker) candidates(ext string) []string {
+// candidates lists, in a fixed order, the committable non-test files with
+// extension ext under one of the anchors.
+func (c *Checker) candidates(ext string, within []model.Anchor) []string {
 	if c.paths == nil {
-		c.paths = []string{}
-		filepath.WalkDir(c.root, func(p string, d os.DirEntry, err error) error {
-			if err != nil {
-				return nil
-			}
-			if d.IsDir() {
-				switch d.Name() {
-				case ".git", ".abbd", "node_modules", "vendor", "testdata":
-					return filepath.SkipDir
-				}
-				return nil
-			}
-			if rel, err := filepath.Rel(c.root, p); err == nil {
-				c.paths = append(c.paths, filepath.ToSlash(rel))
-			}
-			return nil
-		})
-		slices.Sort(c.paths)
+		c.paths = slices.Sorted(slices.Values(gitx.WorkingFiles(c.root)))
+		if c.paths == nil {
+			c.paths = []string{}
+		}
 	}
 	var out []string
 	for _, p := range c.paths {
-		if path.Ext(p) == ext {
+		if path.Ext(p) == ext && !isTest(p) && covered(p, within) {
 			out = append(out, p)
 		}
 	}
 	return out
 }
 
+// covered says whether a file anchor names p or a directory anchor holds it.
+func covered(p string, within []model.Anchor) bool {
+	for _, a := range within {
+		d := strings.TrimSuffix(a.Path, "/")
+		if d == "" || d == "." || p == d || strings.HasPrefix(p, d+"/") {
+			return true
+		}
+	}
+	return false
+}
+
+// isTest says whether p is a test file or sits in a test folder.
+func isTest(p string) bool {
+	dirs := strings.Split(p, "/")
+	name := dirs[len(dirs)-1]
+	for _, d := range dirs[:len(dirs)-1] {
+		switch d {
+		case "test", "tests", "__tests__":
+			return true
+		}
+	}
+	return strings.HasSuffix(name, "_test.go") || strings.Contains(name, ".test.") || strings.Contains(name, ".spec.")
+}
+
 // all checks a fact's evidence: it is live while any item is, and its digest
 // covers every live item in order.
-func (c *Checker) all(es []model.Evidence) (live bool, digest string, moved []model.Evidence) {
+func (c *Checker) all(es []model.Evidence, within []model.Anchor) (live bool, digest string, moved []model.Evidence) {
 	var ds []string
 	moved = slices.Clone(es)
 	for i, e := range es {
-		if r := c.Check(e); r.Live {
+		if r := c.Check(e, within); r.Live {
 			live = true
 			ds = append(ds, r.Digest)
 			if e.Lines != "" {
@@ -227,19 +244,21 @@ func (c *Checker) all(es []model.Evidence) (live bool, digest string, moved []mo
 // Apply marks each semantic relation dead when none of its evidence is in the
 // tree, and each present semantic unit absent the same way. A relation or
 // unit without evidence is left as it is. Each live item's lines move to where
-// the quote is now, so edits above it never add up to a false removal.
+// the quote is now, so edits above it never add up to a false removal. A
+// relation's quote may move only within the anchors of its source unit, and a
+// unit's within its own.
 func (c *Checker) Apply(units []model.Unit) []model.Unit {
 	out := make([]model.Unit, len(units))
 	for i, u := range units {
 		if u.Semantic() && !u.Absent {
 			var live bool
-			live, _, u.Evidence = c.all(u.Evidence)
+			live, _, u.Evidence = c.all(u.Evidence, u.Anchors)
 			u.Absent = !live
 		}
 		// A reader's parent lives while the code it cites does.
 		if u.ParentOrigin == model.Inferred && len(u.ParentEvidence) > 0 {
 			var live bool
-			live, _, u.ParentEvidence = c.all(u.ParentEvidence)
+			live, _, u.ParentEvidence = c.all(u.ParentEvidence, u.Anchors)
 			if !live {
 				u.Parent, u.ParentOrigin, u.ParentEvidence = "", "", nil
 			}
@@ -247,7 +266,7 @@ func (c *Checker) Apply(units []model.Unit) []model.Unit {
 		u.Relations = slices.Clone(u.Relations)
 		for j, r := range u.Relations {
 			if r.Semantic() {
-				live, digest, es := c.all(r.Evidence)
+				live, digest, es := c.all(r.Evidence, u.Anchors)
 				u.Relations[j].Dead, u.Relations[j].Digest, u.Relations[j].Evidence = !live, digest, es
 			}
 		}

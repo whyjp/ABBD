@@ -38,7 +38,7 @@ func TestAQuoteIsFoundNearItsLinesOrAsItsFilesOnlyOccurrence(t *testing.T) {
 		{model.Evidence{Path: "src/mod.rs", Quote: "matcher_line_term == self.config.line_term"}, false, ""},
 		{model.Evidence{Path: "src/gone.rs", Quote: "impl Searcher"}, false, ""},
 	} {
-		r := c.Check(tc.e)
+		r := c.Check(tc.e, nil)
 		if r.Live != tc.live || r.At != tc.at {
 			t.Errorf("%s: got live=%v at %q, want live=%v at %q", tc.e, r.Live, r.At, tc.live, tc.at)
 		}
@@ -93,17 +93,8 @@ func TestEditingTheQuotedLinesChangesTheDigestOnly(t *testing.T) {
 // refactor can move it to another file. The quote follows only when there is
 // exactly one place it can be, so the same tree still gives the same answer.
 func TestAQuoteFollowsItsCodeOnlyToAUniquePlace(t *testing.T) {
-	root := t.TempDir()
-	write := func(p, body string) {
-		t.Helper()
-		full := filepath.Join(root, filepath.FromSlash(p))
-		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(full, []byte(body), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
+	root := repo(t)
+	write := func(p, body string) { write(t, root, p, body) }
 	long := "renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)"
 	write("cmd/main.go", strings.Repeat("// pad\n", 40)+long+"\n")
 	write("internal/path.go", "func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {\n")
@@ -124,7 +115,7 @@ func TestAQuoteFollowsItsCodeOnlyToAUniquePlace(t *testing.T) {
 		{"twice in its own file, far from its lines", model.Evidence{Path: "internal/dup.go", Lines: "90", Quote: long}, false, "", ""},
 		{"too short to follow out of its file", model.Evidence{Path: "internal/gone.go", Quote: "func Path("}, false, "", ""},
 	} {
-		r := c.Check(tc.e)
+		r := c.Check(tc.e, []model.Anchor{{Path: "cmd"}, {Path: "internal"}})
 		if r.Live != tc.live || r.At != tc.at || r.Path != tc.path {
 			t.Errorf("%s: got live=%v at %q path %q, want live=%v at %q path %q", tc.name, r.Live, r.At, r.Path, tc.live, tc.at, tc.path)
 		}

@@ -21,7 +21,7 @@ func reviewTree(t *testing.T, content string) string {
 // the coupling while its evidence stays live.
 func TestQuoteMustEndWhereTheWordEnds(t *testing.T) {
 	c := New(reviewTree(t, "package a\n\nconst q = `SELECT amount FROM charges_archive`\n"))
-	r := c.Check(model.Evidence{Path: "a.go", Lines: "3", Quote: "SELECT amount FROM charges"})
+	r := c.Check(model.Evidence{Path: "a.go", Lines: "3", Quote: "SELECT amount FROM charges"}, nil)
 	if r.Live {
 		t.Errorf("quote of table charges is live against charges_archive (At=%s)", r.At)
 	}
@@ -31,7 +31,7 @@ func TestQuoteMustEndWhereTheWordEnds(t *testing.T) {
 // formatter that adds spaces around an operator kills the evidence.
 func TestFormattingNeverKillsAQuote(t *testing.T) {
 	c := New(reviewTree(t, "package a\n\nfunc f() { if x != y { g() } }\n"))
-	r := c.Check(model.Evidence{Path: "a.go", Lines: "3", Quote: "if x!=y {"})
+	r := c.Check(model.Evidence{Path: "a.go", Lines: "3", Quote: "if x!=y {"}, nil)
 	if !r.Live {
 		t.Errorf("quote %q is dead after gofmt-style spacing", "if x!=y {")
 	}

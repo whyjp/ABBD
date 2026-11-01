@@ -20,8 +20,8 @@ func (e env) checkEvidence() error {
 	}
 	c := evidence.New(e.root)
 	live, dead := 0, 0
-	line := func(subject string, via model.Via, ev model.Evidence) {
-		r := c.Check(ev)
+	line := func(subject string, via model.Via, ev model.Evidence, within []model.Anchor) {
+		r := c.Check(ev, within)
 		state := "dead"
 		if r.Live {
 			state, live = "live", live+1
@@ -44,11 +44,11 @@ func (e env) checkEvidence() error {
 			continue
 		}
 		for _, ev := range u.Evidence {
-			line(string(u.ID)+" "+u.Name.Value, "", ev)
+			line(string(u.ID)+" "+u.Name.Value, "", ev, u.Anchors)
 		}
 		for _, r := range u.Relations {
 			for _, ev := range r.Evidence {
-				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev)
+				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev, u.Anchors)
 			}
 		}
 	}
