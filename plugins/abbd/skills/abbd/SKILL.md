@@ -17,10 +17,10 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
 ## Before work
 
 1. Open `.abbd/blueprint/index.html` for the modules the request touches: the overview, and each module's inside (`#m-<ID>`) with its contracts, inside units, a reader's couplings and how's text. Run `abbd status` if you need to know whether the state matches the working tree.
-2. Ask the topology before grepping the code:
-   - `abbd explain <ID|NAME>`: one unit at a glance, with its contracts, neighbours, inside units, a reader's couplings with their quotes, and how's text, STALE when the code moved on.
-   - `abbd path <A> <B>`: the shortest path between two units, each hop with its kind, via and origin, ending with the path's weakest origin.
-   - `abbd impact <IDS>`: what a change to those units reaches. Read the direct tier closely and the far tier briefly.
+2. Ask the topology before grepping the code. Each query takes what you have in hand: a unit ID or name, a file or directory path (`src/main/ipc/worktree-branch-name.ts`, or a bare file name such as `worktree-branch-name`), a symbol, or a few words such as `"plugin theme"`. When the query is not a unit's own ID or name, the answer first lists the units it matched, best first, with why: for a file, the units whose anchors or evidence hold it, innermost first. It then answers for the first. Pass an ID from that list to ask about another.
+   - `abbd explain <QUERY>`: one unit at a glance, with its contracts, neighbours, inside units, a reader's couplings with their quotes, and how's text, STALE when the code moved on.
+   - `abbd path <A> <B>`: how two units connect, each hop with its kind, via and origin, ending with the path's weakest origin. A `contains` hop steps between a module and a unit inside it. Two units that only use the same contract are not connected through it. The path goes through the contract's provider instead, and when it cannot, the hop says "both consume X".
+   - `abbd impact <QUERIES>`: what a change to those comma-separated units reaches. Read the direct tier closely and the far tier briefly. Starting from the files you will change finds the units to read first.
 3. Where the question needs the code itself, follow `<pstack>/skills/how/SKILL.md` unchanged, or `<pstack>/skills/blast-radius/SKILL.md` for a change that spans several modules. Start them from the units the queries named.
 4. Record each coupling or unit a reader found that the state lacks, with a verbatim quote:
    - `abbd record relation <FROM> <KIND> <TO> --via <VIA> --evidence <PATH:LINES:QUOTE>`
