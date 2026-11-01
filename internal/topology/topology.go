@@ -115,6 +115,30 @@ func actualEdges(present map[model.ID]model.Unit) map[Edge]bool {
 	return edges
 }
 
+// Coupling is a semantic relation of the actual topology that no human has
+// decided and whose evidence is live. It never gates, but the turn impact
+// follows it and the screen draws it.
+type Coupling struct {
+	Edge
+	Via      model.Via
+	Evidence []model.Evidence
+}
+
+// Couplings lists the live semantic guesses between present units, sorted by edge.
+func Couplings(units []model.Unit) []Coupling {
+	present := presentUnits(units)
+	var out []Coupling
+	for id, u := range present {
+		for _, r := range u.Relations {
+			if _, ok := present[r.To]; ok && r.Semantic() && !r.Dead && r.Guess() {
+				out = append(out, Coupling{Edge: Edge{id, r.To, r.Kind}, Via: r.Via, Evidence: r.Evidence})
+			}
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].String() < out[j].String() })
+	return out
+}
+
 func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 	present := map[model.ID]model.Unit{}
 	for _, u := range units {
@@ -294,6 +318,13 @@ func ParseKey(key string) (Item, error) {
 		return Item{}, fmt.Errorf("%s: unknown change %q", key, change)
 	}
 	return it, nil
+}
+
+// Joins checks the edge's kind against the kinds its IDs name.
+func (e Edge) Joins() error {
+	from, _, _ := model.ParseID(string(e.From))
+	to, _, _ := model.ParseID(string(e.To))
+	return e.Kind.Joins(from, to)
 }
 
 // ParseEdge reads an edge as Edge.String prints it.

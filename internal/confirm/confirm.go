@@ -52,8 +52,8 @@ func Queue(units []model.Unit, design map[model.ID]bool) []Item {
 			add(string(u.ID)+".responsibility", u.Responsibility.Value, design[u.ID])
 		}
 		for _, r := range u.Relations {
-			if !r.Counts() && r.Confirmation != model.Rejected {
-				add(relationKey(u.ID, r), string(r.Origin), design[u.ID] || design[r.To])
+			if !r.Counts() && !r.Dead && r.Confirmation != model.Rejected {
+				add(relationKey(u.ID, r), relationValue(r), design[u.ID] || design[r.To])
 			}
 		}
 	}
@@ -64,6 +64,19 @@ func Queue(units []model.Unit, design map[model.ID]bool) []Item {
 		return items[i].Key < items[j].Key
 	})
 	return items
+}
+
+// relationValue is what a human judges a guessed coupling by: how it arises
+// and the code it rests on.
+func relationValue(r model.Relation) string {
+	s := string(r.Origin)
+	if r.Via != "" {
+		s += " via " + string(r.Via)
+	}
+	if len(r.Evidence) > 0 {
+		s += ": " + r.Evidence[0].String()
+	}
+	return s
 }
 
 // Apply confirms one item. An empty value confirms the guess as written; a

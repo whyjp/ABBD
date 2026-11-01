@@ -68,12 +68,13 @@ const codeOnly = `{"units":[
  {"from":"billing","to":"ledger","kind":"depends_on"}
 ]}`
 
-// The swarm sees that ledger reads the table billing writes; no import shows it.
+// The swarm sees that ledger calls the http api; no import shows it.
 const supplement = `{"units":[
  {"key":"b","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}],"responsibility":"owns the charges table"},
- {"key":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}],"purpose":"keeps the books"}
+ {"key":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}],"purpose":"keeps the books"},
+ {"key":"a","kind":"IF","name":"http api","anchors":[{"path":"api/http.go","symbol":"Serve"}]}
 ],"relations":[
- {"from":"l","to":"b","kind":"consumes"}
+ {"from":"l","to":"a","kind":"consumes"}
 ]}`
 
 func TestCodeOnlyRepoReachesActiveByConfirmingDesignUnitsOnly(t *testing.T) {
@@ -114,10 +115,10 @@ func TestSupplementFeedsTheConfirmQueueAndSurvivesReextraction(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "4 item(s) in the confirm queue", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
-	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "origin: INFERRED") || !strings.Contains(md, "to: MOD-0001") {
+	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "origin: INFERRED") || !strings.Contains(md, "to: IF-0001") {
 		t.Fatalf("the supplement should add an inferred purpose and coupling:\n%s", md)
 	}
-	queue := p.want(0, "MOD-0002.consumes.MOD-0001", "confirm", "--list")
+	queue := p.want(0, "MOD-0002.consumes.IF-0001", "confirm", "--list")
 	if !strings.Contains(queue, "MOD-0001.responsibility") || !strings.Contains(queue, "MOD-0002.purpose") {
 		t.Fatalf("supplement why-fields should wait for confirmation:\n%s", queue)
 	}
@@ -142,7 +143,7 @@ func TestSupplementFeedsTheConfirmQueueAndSurvivesReextraction(t *testing.T) {
 	}
 
 	p.want(0, "confirmed MOD-0001.purpose", "confirm", "MOD-0001.purpose")
-	p.want(0, "approved new-relation:MOD-0002.consumes.MOD-0001", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "approved new-relation:MOD-0002.consumes.IF-0001", "confirm", "MOD-0002.consumes.IF-0001")
 	p.want(0, "active", "mode", "on", "--session", "s1")
 	if q := p.want(0, "", "confirm", "--list"); strings.TrimSpace(q) != "" {
 		t.Fatalf("every item was confirmed, queue:\n%s", q)
@@ -153,7 +154,7 @@ func TestConfirmedCouplingBeforeAlignmentBecomesIntended(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
-	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.IF-0001")
 	p.want(0, "aligned", "align", "--all")
 	if !strings.Contains(p.read("intended.yaml"), "kind: consumes") {
 		t.Fatalf("a coupling a human registered at alignment should be intended:\n%s", p.read("intended.yaml"))
@@ -328,7 +329,7 @@ func TestConfirmingACouplingAfterAlignmentApprovesIt(t *testing.T) {
 	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
 	p.want(0, "aligned", "align", "--all")
 	p.want(0, "active", "mode", "on", "--session", "s1")
-	p.want(0, "approved new-relation:MOD-0002.consumes.MOD-0001 as ADR-0001", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "approved new-relation:MOD-0002.consumes.IF-0001 as ADR-0001", "confirm", "MOD-0002.consumes.IF-0001")
 	if !strings.Contains(p.read("intended.yaml"), "kind: consumes") {
 		t.Fatalf("a confirmed coupling between design units should be intended:\n%s", p.read("intended.yaml"))
 	}
@@ -339,9 +340,10 @@ func TestConfirmingACouplingAfterAlignmentApprovesIt(t *testing.T) {
 func TestConfirmingACouplingToABelowTheLineUnitPointsAtRealign(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
-	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
+	dependsOn := strings.Replace(supplement, `{"from":"l","to":"a","kind":"consumes"}`, `{"from":"l","to":"b","kind":"depends_on"}`, 1)
+	p.setup(0, "", "--supplement", p.file(t, "sup.json", dependsOn), "--", exe)
 	p.want(0, "aligned", "align", "--exclude", "MOD-0001")
-	p.want(0, "REALIGN new-relation:MOD-0002.consumes.MOD-0001: run abbd align", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "REALIGN new-relation:MOD-0002.depends_on.MOD-0001: run abbd align", "confirm", "MOD-0002.depends_on.MOD-0001")
 	p.want(0, "aligned", "align")
 	p.want(0, "active", "mode", "on", "--session", "s1")
 }
@@ -462,7 +464,7 @@ func TestAdoptRelationAlsoGuessedBySupplementIsAdopted(t *testing.T) {
 	p.extract(codeOnly)
 	adopt := strings.ReplaceAll(supplement, `"responsibility":"owns the charges table"`, `"purpose":"x"`)
 	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", supplement), "--adopt", p.file(t, "a.json", adopt), "--", exe)
-	if r := p.read("bootstrap-report.md"); !strings.Contains(r, "adopt relation l -consumes-> b is not in the code") {
+	if r := p.read("bootstrap-report.md"); !strings.Contains(r, "adopt relation l -consumes-> a is not in the code") {
 		t.Fatalf("an adopted relation the code lacks is a conflict even when the supplement guessed it too:\n%s", r)
 	}
 	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, "kind: consumes\n      origin: ADOPTED") {
@@ -491,7 +493,7 @@ func TestConfirmedGuessesSurviveALaterSupplement(t *testing.T) {
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
-	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "confirmed", "confirm", "MOD-0002.consumes.IF-0001")
 	p.want(0, "confirmed", "confirm", "MOD-0002.purpose")
 	p.setup(0, "")
 	md := p.read("architecture/MOD-0002.md")

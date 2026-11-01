@@ -78,7 +78,7 @@ func TestRejectingAGuessKeepsTheReplacement(t *testing.T) {
 	if !strings.Contains(md, "value: posts journal entries\n    origin: USER_STATED\n    confirmation: REJECTED\n    rejected: keeps the books") {
 		t.Fatalf("a rejected guess keeps the replacement and the rejected value:\n%s", md)
 	}
-	p.want(0, "rejected MOD-0002.consumes.MOD-0001", "confirm", "MOD-0002.consumes.MOD-0001", "--reject")
+	p.want(0, "rejected MOD-0002.consumes.IF-0001", "confirm", "MOD-0002.consumes.IF-0001", "--reject")
 	p.want(1, "not a guess", "confirm", "MOD-0002.purpose", "--reject", "--value", "again")
 	if q := p.want(0, "", "confirm", "--list"); strings.Contains(q, "MOD-0002") {
 		t.Fatalf("rejected items leave the queue:\n%s", q)
@@ -95,8 +95,8 @@ func TestRejectingAGuessKeepsTheReplacement(t *testing.T) {
 
 func TestCoupleRegistersWhatTheScriptCannotSee(t *testing.T) {
 	p := aligned(t)
-	edge := "MOD-0002.consumes.MOD-0001"
-	p.want(1, "not a unit", "couple", "MOD-0002.consumes.MOD-0009")
+	edge := "MOD-0002.consumes.IF-0001"
+	p.want(1, "not a unit", "couple", "MOD-0002.consumes.IF-0009")
 	p.want(0, "approved new-relation:"+edge, "couple", edge)
 	if !strings.Contains(p.read("architecture/MOD-0002.md"), "origin: USER_STATED") || !strings.Contains(p.intended(), "kind: consumes") {
 		t.Fatalf("a registered coupling between design units should be stated and intended")

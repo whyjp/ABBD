@@ -232,7 +232,7 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 
 	s.decide(t, "do", "confirm", "key", "MOD-0001.responsibility")
 	s.decide(t, "do", "confirm", "key", "MOD-0002.purpose", "value", "posts journal entries")
-	html = s.decide(t, "do", "confirm-reject", "key", "MOD-0002.consumes.MOD-0001")
+	html = s.decide(t, "do", "confirm-reject", "key", "MOD-0002.consumes.IF-0001")
 	md1, md2 := p.read("architecture/MOD-0001.md"), p.read("architecture/MOD-0002.md")
 	if !strings.Contains(md1, "confirmation: CONFIRMED") || !strings.Contains(md2, "posts journal entries\n    origin: USER_STATED") || !strings.Contains(md2, "confirmation: REJECTED") {
 		t.Fatalf("each queue decision should reach the unit:\n%s\n%s", md1, md2)
@@ -248,8 +248,8 @@ func TestScreenAlignsAndWorksTheConfirmQueue(t *testing.T) {
 func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
 	p := aligned(t)
 	s := p.screen()
-	html := s.decide(t, "do", "couple", "from", "MOD-0002", "kind", "consumes", "to", "MOD-0001")
-	if !strings.Contains(p.intended(), "kind: consumes") || !strings.Contains(html, "사람이 등록한 결합 1개") {
+	html := s.decide(t, "do", "couple", "from", "MOD-0002", "kind", "depends_on", "to", "MOD-0001")
+	if !strings.Contains(p.intended(), "kind: depends_on") || !strings.Contains(html, "사람이 등록한 결합 1개") {
 		t.Fatalf("a coupling registered on the screen between design units should be intended")
 	}
 	p.editCode("ledger/book.go")
@@ -288,7 +288,7 @@ func TestGeneratedFilesCarryTheWatermarkAndStatusSaysStale(t *testing.T) {
 	p.want(0, "", "turn", "show")
 	p.want(1, "", "approve", "new-relation:MOD-0001.depends_on.MOD-0002")
 	p.want(0, "generated: STALE", "status")
-	p.want(0, "", "couple", "MOD-0002.consumes.MOD-0001")
+	p.want(0, "", "couple", "MOD-0002.consumes.IF-0001")
 	p.want(0, "generated: CURRENT", "status")
 	if !strings.Contains(p.read("generated/graph.json"), "payments") {
 		t.Fatalf("the regenerated graph should follow the Markdown")

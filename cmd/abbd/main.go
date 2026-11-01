@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/confirm"
+	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
@@ -354,6 +355,7 @@ func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.R
 		return identity.Result{}, fmt.Errorf("the extraction reported no units; refusing to mark every unit absent")
 	}
 	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, guesses)
+	res.Units = evidence.New(e.root).Apply(res.Units)
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}
@@ -585,6 +587,9 @@ func (e env) couple(key string) error {
 		return err
 	}
 	if _, err := knownUnits(view{units: v.units}, []string{string(edge.From), string(edge.To)}); err != nil {
+		return err
+	}
+	if err := edge.Joins(); err != nil {
 		return err
 	}
 	i := slices.IndexFunc(v.units, func(u model.Unit) bool { return u.ID == edge.From })
