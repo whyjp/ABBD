@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "099d17c142f0f7229cd35e748188e4e71a270fe4e38bfe1a883d93a00c85351c"
+    "inputs_hash": "824dd5318982d0c8e512cbde38e0562177003cc2b89f847fdc8226b7091eba86"
   },
   "units": [
     {
@@ -1302,7 +1302,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "cmd/abbd/main.go",
         "cmd/abbd/main.go runScript",
         "cmd/abbd/main.go syncActual"
       ],
@@ -1350,7 +1349,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "cmd/abbd/record.go",
         "cmd/abbd/record.go citations",
         "cmd/abbd/record.go recordRelation",
         "cmd/abbd/record.go statedFields",
@@ -1441,7 +1439,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/bootstrap/overlay.go",
         "internal/bootstrap/overlay.go Overlay"
       ],
       "Parent": "MOD-0009",
@@ -1504,7 +1501,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/evidence/evidence.go",
         "internal/evidence/evidence.go Apply",
         "internal/evidence/evidence.go all"
       ],
@@ -1615,7 +1611,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/extract/extract.go",
         "internal/extract/extract.go inferred"
       ],
       "Parent": "MOD-0017",
@@ -1804,7 +1799,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/identity/identity.go",
         "internal/identity/identity.go heldByHuman"
       ],
       "Parent": "MOD-0026",
@@ -1826,7 +1820,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/identity/identity.go",
         "internal/identity/identity.go merge",
         "internal/identity/identity.go setRelations"
       ],
@@ -1869,7 +1862,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/model/model.go",
         "internal/model/model.go Counts",
         "internal/model/model.go Semantic"
       ],
@@ -1915,7 +1907,6 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/model/model.go",
         "internal/model/model.go sourced",
         "internal/model/model.go validate"
       ],
@@ -10242,7 +10233,6 @@
           "Sentence": "Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.",
           "Guess": true,
           "Anchors": [
-            "cmd/abbd/main.go",
             "cmd/abbd/main.go runScript",
             "cmd/abbd/main.go syncActual"
           ]
@@ -10266,7 +10256,6 @@
           "Sentence": "Owns record relation, record unit, record fact and understand: checking every quote against the tree, the origin precedence EXTRACTED over USER_STATED over INFERRED, the duplicate-code refusal, and refusing to restamp unchanged how text onto changed code.",
           "Guess": true,
           "Anchors": [
-            "cmd/abbd/record.go",
             "cmd/abbd/record.go citations",
             "cmd/abbd/record.go recordRelation",
             "cmd/abbd/record.go statedFields",
@@ -11958,7 +11947,6 @@
           "Sentence": "Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.",
           "Guess": true,
           "Anchors": [
-            "internal/bootstrap/overlay.go",
             "internal/bootstrap/overlay.go Overlay"
           ]
         },
@@ -12793,7 +12781,6 @@
           "Sentence": "Marks a present semantic unit absent and a semantic relation dead when none of its evidence is live, leaves evidence-less items alone, and rewrites each live item's lines and the relation digest to the current location.",
           "Guess": true,
           "Anchors": [
-            "internal/evidence/evidence.go",
             "internal/evidence/evidence.go Apply",
             "internal/evidence/evidence.go all"
           ]
@@ -13922,7 +13909,6 @@
           "Sentence": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
           "Guess": true,
           "Anchors": [
-            "internal/extract/extract.go",
             "internal/extract/extract.go inferred"
           ]
         },
@@ -16160,7 +16146,6 @@
           "Sentence": "Computes, to a fixed point, the semantic units that carry a USER_STATED fact or relation or are pointed at by a stated relation from a unit that stays, and keeps them present as Stated.",
           "Guess": true,
           "Anchors": [
-            "internal/identity/identity.go",
             "internal/identity/identity.go heldByHuman"
           ]
         },
@@ -16171,7 +16156,6 @@
           "Sentence": "On a match the extraction replaces anchors, signature, digest and EXTRACTED names and relations; INFERRED guesses are replaced only by a setup (ReplaceGuesses); USER_STATED facts and relations always survive.",
           "Guess": true,
           "Anchors": [
-            "internal/identity/identity.go",
             "internal/identity/identity.go merge",
             "internal/identity/identity.go setRelations"
           ]
@@ -18048,7 +18032,6 @@
           "Sentence": "A unit is semantic when its name is INFERRED; a relation counts as topology only when it is live and EXTRACTED or USER_STATED, and is a guess when INFERRED.",
           "Guess": true,
           "Anchors": [
-            "internal/model/model.go",
             "internal/model/model.go Counts",
             "internal/model/model.go Semantic"
           ]
@@ -18071,7 +18054,6 @@
           "Sentence": "Defines the EXTRACTED, INFERRED and USER_STATED origins and enforces that a why-field is never EXTRACTED and that exactly the USER_STATED facts carry a source.",
           "Guess": true,
           "Anchors": [
-            "internal/model/model.go",
             "internal/model/model.go sourced",
             "internal/model/model.go validate"
           ]
