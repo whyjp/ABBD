@@ -52,12 +52,16 @@ func (e env) setup() error {
 	if err := e.st.SaveProject(p); err != nil {
 		return err
 	}
-	if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {
+	res, err := e.syncActual(ex, identity.ReplaceGuesses)
+	if err != nil {
 		return err
 	}
 	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
+	}
+	for _, id := range res.Stated {
+		fmt.Fprintf(e.stdout, "%s kept: the supplement no longer reports it, but a human stated something about it\n", id)
 	}
 	for _, c := range f.Conflicts {
 		fmt.Fprintln(e.stdout, "conflict:", c)

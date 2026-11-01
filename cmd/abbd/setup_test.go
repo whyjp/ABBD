@@ -139,3 +139,32 @@ func TestCommittedStateStaysCleanOnResync(t *testing.T) {
 		t.Fatalf("a resync after committing .abbd/ should change nothing git sees, got %v:\n%s", err, out)
 	}
 }
+
+// A setup's supplement owns the guesses, so it withdraws a recorded unit it no
+// longer reports. A unit a human stated something about stays: a stated fact,
+// a stated relation of its own, or a stated relation pointing at it would
+// otherwise sit where explain and record cannot reach it.
+func TestSetupKeepsARecordedUnitAHumanStatedAbout(t *testing.T) {
+	p := semanticProject(t)
+	src := "conversation 2026-11-01"
+	p.want(0, "recorded DATA-0002", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
+	p.want(0, "USER_STATED", "record", "fact", "DATA-0002.purpose", "--value", "reads charges for the books", "--source", src)
+	p.want(0, "recorded DATA-0003", "record", "unit", "DATA", "ledger rows", "--parent", "MOD-0002", "--evidence", "ledger/book.go:4:FROM charges")
+	p.want(0, "USER_STATED", "record", "relation", "MOD-0001", "consumes", "DATA-0003", "--source", src)
+	p.want(0, "recorded DATA-0004", "record", "unit", "DATA", "charge call", "--parent", "MOD-0001", "--evidence", "billing/charge.go:4:func Charge")
+	p.want(0, "USER_STATED", "record", "relation", "DATA-0004", "depends_on", "MOD-0002", "--source", src)
+	p.want(0, "recorded DATA-0005", "record", "unit", "DATA", "unsaid", "--parent", "MOD-0002", "--evidence", "ledger/book.go:6:func Post")
+
+	out := p.setup(0, "synced", "--supplement", p.file(t, "sup2.json", chargesTable))
+	for _, id := range []string{"DATA-0002", "DATA-0003", "DATA-0004"} {
+		if !strings.Contains(out, id+" kept") || strings.Contains(p.read("architecture/"+id+".md"), "absent: true") {
+			t.Errorf("setup should keep %s, which a human stated something about, and say so:\n%s", id, out)
+		}
+	}
+	if !strings.Contains(p.read("architecture/DATA-0005.md"), "absent: true") {
+		t.Errorf("a recorded unit no human stated anything about is withdrawn with the supplement's guesses")
+	}
+	contains(t, p.want(0, "", "explain", "DATA-0002"), "purpose: reads charges for the books (USER_STATED, "+src+")")
+	contains(t, p.want(0, "", "explain", "MOD-0001"), "DATA-0003 ledger rows (stated)")
+	contains(t, p.want(0, "", "explain", "DATA-0004"), "MOD-0002 ledger (stated)")
+}
