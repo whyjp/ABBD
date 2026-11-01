@@ -15,14 +15,11 @@ func (e env) impact(list string) error {
 	if err != nil {
 		return err
 	}
-	names := map[model.ID]string{}
-	for _, u := range model.Present(units) {
-		names[u.ID] = u.Name.Value
-	}
+	name := names(units)
 	var seeds []model.ID
 	for _, s := range strings.Split(list, ",") {
 		id := model.ID(strings.TrimSpace(s))
-		if _, ok := names[id]; !ok {
+		if _, ok := name[id]; !ok {
 			return fmt.Errorf("%q is not a unit of the state", id)
 		}
 		seeds = append(seeds, id)
@@ -33,7 +30,7 @@ func (e env) impact(list string) error {
 		items []topology.Item
 	}{{"direct", im.Direct}, {"far", im.Far}} {
 		for _, it := range t.items {
-			fmt.Fprintf(e.stdout, "%s %s %s: %s\n", t.name, it.Unit, names[it.Unit], it.Why)
+			fmt.Fprintf(e.stdout, "%s %s %s: %s\n", t.name, it.Unit, name[it.Unit], it.Why)
 		}
 	}
 	return nil

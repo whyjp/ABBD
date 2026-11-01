@@ -1,6 +1,7 @@
-// Package topology answers questions about the stored topology: what a change
-// to some units reaches, and how the topology differs between two revisions.
-// It reads units and never writes them.
+// Package topology answers questions about the stored topology: one unit at a
+// glance, the shortest path between two units, what a change to some units
+// reaches, and how the topology differs between two revisions. It reads
+// units and never writes them.
 package topology
 
 import (
@@ -11,14 +12,17 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// Link is one live relation the impact follows, with its origin.
+// Link is one live relation between present units, with its origin and, for
+// a reader's coupling, the code it rests on.
 type Link struct {
 	model.Edge
-	Origin model.Origin
-	Via    model.Via
+	Origin   model.Origin
+	Via      model.Via
+	Evidence []model.Evidence
 }
 
-func (l Link) how() string {
+// Label says where the link comes from and how it arises: " (inferred, via data)".
+func (l Link) Label() string {
 	s := map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}[l.Origin]
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
@@ -37,7 +41,7 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via})
+				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence})
 			}
 		}
 	}
@@ -98,17 +102,17 @@ func ImpactOf(units []model.Unit, seeds []model.ID) Impact {
 		for _, l := range links {
 			switch {
 			case l.To == u && (l.Kind == model.DependsOn || l.Kind == model.Consumes):
-				add(l.From, fmt.Sprintf("%s %s%s", l.Kind, u, l.how()), true)
+				add(l.From, fmt.Sprintf("%s %s%s", l.Kind, u, l.Label()), true)
 			case l.To == u && l.Kind == model.Provides && isContract(u):
-				add(l.From, "provides "+string(u)+l.how(), false)
+				add(l.From, "provides "+string(u)+l.Label(), false)
 			case l.From == u && l.Kind == model.Provides:
-				add(l.To, "provided by "+string(u)+l.how(), true)
+				add(l.To, "provided by "+string(u)+l.Label(), true)
 			}
 		}
 	}
 	for _, l := range links {
 		if slices.Contains(all, l.From) && (l.Kind == model.DependsOn || l.Kind == model.Consumes) {
-			add(l.To, fmt.Sprintf("%s by %s%s", map[model.RelationKind]string{model.DependsOn: "depended on", model.Consumes: "consumed"}[l.Kind], l.From, l.how()), false)
+			add(l.To, fmt.Sprintf("%s by %s%s", map[model.RelationKind]string{model.DependsOn: "depended on", model.Consumes: "consumed"}[l.Kind], l.From, l.Label()), false)
 		}
 	}
 

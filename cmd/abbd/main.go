@@ -23,7 +23,9 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
-abbd sync [--root DIR]               run the registered script, check every quote, keep the
+abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
+                                     which tells any assistant to ask the blueprint first
+abbd sync [--root DIR]              run the registered script, check every quote, keep the
                                      IDs, write the state and render the blueprint
 abbd record relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      a reader's coupling, INFERRED while its evidence is live
@@ -36,6 +38,10 @@ abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root 
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
+abbd explain ID|NAME [--root DIR]    one unit at a glance: its contracts, neighbours, inside
+                                     units, a reader's couplings with their quotes, how's text
+abbd path A B [--root DIR]           the shortest path between two units, each hop with its
+                                     origin, and the path's weakest origin
 abbd impact IDS [--root DIR]         what a change to the comma-separated units reaches, in a
                                      direct and a far tier; read before the work
 abbd diff [--base REV] [--json] [--check] [--root DIR]
@@ -120,6 +126,9 @@ var commands = map[string]command{
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
+	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
+	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
+	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
