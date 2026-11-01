@@ -18,11 +18,18 @@ func (e env) impact(list string) error {
 	name := names(units)
 	var seeds []model.ID
 	for _, s := range strings.Split(list, ",") {
-		u, err := e.resolve(units, strings.TrimSpace(s))
+		ms, err := e.find(units, strings.TrimSpace(s))
 		if err != nil {
 			return err
 		}
-		seeds = append(seeds, u.ID)
+		seeds = append(seeds, ms[0].Unit.ID)
+		// A change to a path changes every unit anchored there, not only
+		// the innermost one explain answers for.
+		for _, m := range ms[1:] {
+			if m.Anchored {
+				seeds = append(seeds, m.Unit.ID)
+			}
+		}
 	}
 	im := topology.ImpactOf(units, seeds)
 	for _, t := range []struct {
