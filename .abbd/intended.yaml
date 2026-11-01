@@ -1,0 +1,563 @@
+revision: 1
+units:
+    - id: CFG-0001
+      kind: CFG
+      signature: marketplace abbd {abbd=./plugins/abbd}; plugin abbd
+    - id: CFG-0002
+      kind: CFG
+      signature: '.abbd/project.yaml: extract,verify'
+    - id: CFG-0003
+      kind: CFG
+      signature: PostToolUse[Write|Edit|NotebookEdit] -> abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -> abbd hook PreToolUse; SessionStart -> abbd hook SessionStart; Stop -> abbd hook Stop; UserPromptSubmit -> abbd hook UserPromptSubmit
+    - id: DATA-0007
+      kind: DATA
+      signature: 'extraction json: relations{evidence{lines,path,quote,symbol},from,kind,to,via},units{anchors{path,symbol},digest,evidence{lines,path,quote,symbol},key,kind,name,parent,purpose,responsibility,signature}'
+    - id: DATA-0013
+      kind: DATA
+      signature: '.abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},digest,evidence{lines,path,quote,symbol},id,kind,name{confirmation,origin,rejected,value,verification},parent,purpose{confirmation,origin,rejected,value,verification},relations{confirmation,dead,digest,evidence{lines,path,quote,symbol},kind,origin,to,via},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}'
+    - id: DATA-0015
+      kind: DATA
+      signature: .abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,From,Kind,Quote,Title,To,Via},modules{Drawing{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},ID,Name,Understanding{Blocks{Kind,Parts{Bold,Code,Mark,Text}},By,Stale},Units{Anchors,Guess,ID,Kind,Name,Sentence},Unwired},overview{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},phase,units{Anchors,Couplings{Evidence,Key,Via},Design,Evidence,ID,Kind,Name,Parent,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}
+    - id: DATA-0016
+      kind: DATA
+      signature: '.abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn'
+    - id: DATA-0017
+      kind: DATA
+      signature: '.abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}'
+    - id: DATA-0018
+      kind: DATA
+      signature: '.abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why'
+    - id: DATA-0019
+      kind: DATA
+      signature: '.abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{digests,evidence,extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,scans{by,unit},seeds,session,state,verification'
+    - id: DATA-0020
+      kind: DATA
+      signature: '.abbd/requirements/ID.md frontmatter: id,origin,turn'
+    - id: FEAT-0001
+      kind: FEAT
+    - id: FEAT-0002
+      kind: FEAT
+    - id: IF-0001
+      kind: IF
+      signature: abbd hook[root] sub{*} pos{0}
+    - id: IF-0002
+      kind: IF
+      signature: abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}
+    - id: IF-0003
+      kind: IF
+      signature: abbd align[all,confirm,exclude,root] pos{0}
+    - id: IF-0004
+      kind: IF
+      signature: abbd approve[root] pos{1}
+    - id: IF-0005
+      kind: IF
+      signature: abbd confirm[list,reject,root,value] pos{0,1}
+    - id: IF-0006
+      kind: IF
+      signature: abbd couple[root] pos{1}
+    - id: IF-0007
+      kind: IF
+      signature: abbd ingest[root] pos{1}
+    - id: IF-0008
+      kind: IF
+      signature: abbd mode[root,session] sub{on,off} pos{0} needs-session
+    - id: IF-0009
+      kind: IF
+      signature: abbd reject[reason,root] pos{1}
+    - id: IF-0010
+      kind: IF
+      signature: abbd status[root,session] pos{0}
+    - id: IF-0011
+      kind: IF
+      signature: abbd evidence[root] pos{0}
+    - id: IF-0012
+      kind: IF
+      signature: abbd propose relation[evidence,root,via] pos{3}
+    - id: IF-0013
+      kind: IF
+      signature: abbd propose unit[evidence,parent,responsibility,root] pos{2}
+    - id: IF-0014
+      kind: IF
+      signature: abbd serve[addr,root] pos{0}
+    - id: IF-0015
+      kind: IF
+      signature: abbd setup[adopt,greenfield,root,supplement,verify] pos{0} --argv
+    - id: IF-0016
+      kind: IF
+      signature: abbd turn declare[changes,root,session,units] pos{0} needs-session
+    - id: IF-0017
+      kind: IF
+      signature: abbd turn diff[root,session] pos{0} needs-session
+    - id: IF-0018
+      kind: IF
+      signature: abbd turn end[root,session] pos{0} needs-session
+    - id: IF-0019
+      kind: IF
+      signature: abbd turn impact[add,root,session] pos{0} needs-session
+    - id: IF-0020
+      kind: IF
+      signature: abbd turn scan[by,root,session,unit] pos{0} needs-session
+    - id: IF-0021
+      kind: IF
+      signature: abbd turn show[root,session] pos{0}
+    - id: IF-0022
+      kind: IF
+      signature: abbd turn start[request,root,seeds,session] pos{0} needs-session
+    - id: IF-0023
+      kind: IF
+      signature: abbd turn verify[root,session] pos{0} --argv needs-session
+    - id: IF-0024
+      kind: IF
+      signature: abbd understand[root] pos{2}
+    - id: IF-0025
+      kind: IF
+      signature: exit error=1,needhuman=2,ok=0,usage=64
+    - id: IF-0026
+      kind: IF
+      signature: GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}
+    - id: IF-0027
+      kind: IF
+      signature: ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID
+    - id: IF-0028
+      kind: IF
+      signature: '{contract-changed,contract-touched,evidence-touched,new-relation,removed-relation,semantic-unscanned,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID'
+    - id: MOD-0001
+      kind: MOD
+    - id: MOD-0002
+      kind: MOD
+    - id: MOD-0017
+      kind: MOD
+    - id: MOD-0024
+      kind: MOD
+    - id: MOD-0028
+      kind: MOD
+    - id: MOD-0031
+      kind: MOD
+    - id: MOD-0035
+      kind: MOD
+    - id: MOD-0040
+      kind: MOD
+    - id: MOD-0046
+      kind: MOD
+    - id: MOD-0053
+      kind: MOD
+    - id: MOD-0056
+      kind: MOD
+    - id: MOD-0065
+      kind: MOD
+    - id: MOD-0072
+      kind: MOD
+    - id: MOD-0080
+      kind: MOD
+relations:
+    - from: CFG-0003
+      to: IF-0001
+      kind: consumes
+    - from: CFG-0003
+      to: IF-0002
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0004
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0008
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0009
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0012
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0013
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0014
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0015
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0016
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0017
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0018
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0019
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0020
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0021
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0022
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0023
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0025
+      kind: consumes
+    - from: FEAT-0001
+      to: IF-0028
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0003
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0005
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0008
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0010
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0014
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0015
+      kind: consumes
+    - from: FEAT-0002
+      to: IF-0025
+      kind: consumes
+    - from: MOD-0001
+      to: CFG-0002
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0007
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0013
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0015
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0016
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0017
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0018
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0019
+      kind: consumes
+    - from: MOD-0001
+      to: DATA-0020
+      kind: consumes
+    - from: MOD-0001
+      to: IF-0027
+      kind: consumes
+    - from: MOD-0001
+      to: IF-0028
+      kind: consumes
+    - from: MOD-0001
+      to: MOD-0002
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0017
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0024
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0028
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0031
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0035
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0040
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0046
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0056
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0065
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0072
+      kind: depends_on
+    - from: MOD-0001
+      to: MOD-0080
+      kind: depends_on
+    - from: MOD-0001
+      to: IF-0001
+      kind: provides
+    - from: MOD-0001
+      to: IF-0002
+      kind: provides
+    - from: MOD-0001
+      to: IF-0003
+      kind: provides
+    - from: MOD-0001
+      to: IF-0004
+      kind: provides
+    - from: MOD-0001
+      to: IF-0005
+      kind: provides
+    - from: MOD-0001
+      to: IF-0006
+      kind: provides
+    - from: MOD-0001
+      to: IF-0007
+      kind: provides
+    - from: MOD-0001
+      to: IF-0008
+      kind: provides
+    - from: MOD-0001
+      to: IF-0009
+      kind: provides
+    - from: MOD-0001
+      to: IF-0010
+      kind: provides
+    - from: MOD-0001
+      to: IF-0011
+      kind: provides
+    - from: MOD-0001
+      to: IF-0012
+      kind: provides
+    - from: MOD-0001
+      to: IF-0013
+      kind: provides
+    - from: MOD-0001
+      to: IF-0014
+      kind: provides
+    - from: MOD-0001
+      to: IF-0015
+      kind: provides
+    - from: MOD-0001
+      to: IF-0016
+      kind: provides
+    - from: MOD-0001
+      to: IF-0017
+      kind: provides
+    - from: MOD-0001
+      to: IF-0018
+      kind: provides
+    - from: MOD-0001
+      to: IF-0019
+      kind: provides
+    - from: MOD-0001
+      to: IF-0020
+      kind: provides
+    - from: MOD-0001
+      to: IF-0021
+      kind: provides
+    - from: MOD-0001
+      to: IF-0022
+      kind: provides
+    - from: MOD-0001
+      to: IF-0023
+      kind: provides
+    - from: MOD-0001
+      to: IF-0024
+      kind: provides
+    - from: MOD-0001
+      to: IF-0025
+      kind: provides
+    - from: MOD-0002
+      to: IF-0003
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0004
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0005
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0006
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0008
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0009
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0014
+      kind: consumes
+    - from: MOD-0002
+      to: IF-0015
+      kind: consumes
+    - from: MOD-0002
+      to: MOD-0001
+      kind: depends_on
+    - from: MOD-0017
+      to: IF-0003
+      kind: consumes
+    - from: MOD-0017
+      to: IF-0004
+      kind: consumes
+    - from: MOD-0017
+      to: IF-0005
+      kind: consumes
+    - from: MOD-0017
+      to: IF-0006
+      kind: consumes
+    - from: MOD-0017
+      to: IF-0009
+      kind: consumes
+    - from: MOD-0017
+      to: IF-0025
+      kind: consumes
+    - from: MOD-0017
+      to: MOD-0001
+      kind: depends_on
+    - from: MOD-0017
+      to: MOD-0056
+      kind: depends_on
+    - from: MOD-0017
+      to: IF-0026
+      kind: provides
+    - from: MOD-0024
+      to: IF-0027
+      kind: consumes
+    - from: MOD-0024
+      to: MOD-0028
+      kind: depends_on
+    - from: MOD-0024
+      to: MOD-0035
+      kind: depends_on
+    - from: MOD-0024
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0028
+      to: IF-0028
+      kind: consumes
+    - from: MOD-0028
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0028
+      to: MOD-0072
+      kind: depends_on
+    - from: MOD-0028
+      to: IF-0027
+      kind: provides
+    - from: MOD-0031
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0035
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0035
+      to: DATA-0007
+      kind: provides
+    - from: MOD-0046
+      to: MOD-0035
+      kind: depends_on
+    - from: MOD-0046
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0056
+      to: CFG-0002
+      kind: consumes
+    - from: MOD-0056
+      to: DATA-0013
+      kind: consumes
+    - from: MOD-0056
+      to: DATA-0016
+      kind: consumes
+    - from: MOD-0056
+      to: DATA-0017
+      kind: consumes
+    - from: MOD-0056
+      to: DATA-0018
+      kind: consumes
+    - from: MOD-0056
+      to: DATA-0019
+      kind: consumes
+    - from: MOD-0056
+      to: IF-0027
+      kind: consumes
+    - from: MOD-0056
+      to: IF-0028
+      kind: consumes
+    - from: MOD-0056
+      to: MOD-0028
+      kind: depends_on
+    - from: MOD-0056
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0056
+      to: MOD-0065
+      kind: depends_on
+    - from: MOD-0056
+      to: MOD-0072
+      kind: depends_on
+    - from: MOD-0056
+      to: MOD-0080
+      kind: depends_on
+    - from: MOD-0056
+      to: DATA-0015
+      kind: provides
+    - from: MOD-0065
+      to: MOD-0040
+      kind: depends_on
+    - from: MOD-0065
+      to: MOD-0046
+      kind: depends_on
+    - from: MOD-0065
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0065
+      to: MOD-0072
+      kind: depends_on
+    - from: MOD-0065
+      to: MOD-0080
+      kind: depends_on
+    - from: MOD-0065
+      to: CFG-0002
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0013
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0016
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0017
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0018
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0019
+      kind: provides
+    - from: MOD-0065
+      to: DATA-0020
+      kind: provides
+    - from: MOD-0072
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0072
+      to: IF-0028
+      kind: provides
+    - from: MOD-0080
+      to: IF-0028
+      kind: consumes
+    - from: MOD-0080
+      to: MOD-0053
+      kind: depends_on
+    - from: MOD-0080
+      to: MOD-0072
+      kind: depends_on

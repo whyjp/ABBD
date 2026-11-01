@@ -1,16 +1,16 @@
 {
   "watermark": {
-    "inputs_hash": "159a389fd58bf807d76726a36a12ae4fa773649be07fff78450a429b6e76a7b9",
-    "intended_revision": 0
+    "inputs_hash": "d61a34a75fa93ba3747c8006317d2f9fd2d0cdcb442df2b9c5a5fc88c3ac6838",
+    "intended_revision": 1
   },
-  "phase": "bootstrapped",
+  "phase": "aligned",
   "units": [
     {
       "ID": "CFG-0001",
       "Kind": "CFG",
       "Name": "plugin and marketplace manifest",
       "Signature": "marketplace abbd {abbd=./plugins/abbd}; plugin abbd",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "publishes ABBD as the Claude Code plugin abbd",
         "Badge": "inferred",
@@ -31,7 +31,7 @@
       "Kind": "CFG",
       "Name": "project.yaml",
       "Signature": ".abbd/project.yaml: extract,verify",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "registers the project's extraction and verify commands",
         "Badge": "inferred",
@@ -53,7 +53,7 @@
       "Kind": "CFG",
       "Name": "hook registration",
       "Signature": "PostToolUse[Write|Edit|NotebookEdit] -\u003e abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -\u003e abbd hook PreToolUse; SessionStart -\u003e abbd hook SessionStart; Stop -\u003e abbd hook Stop; UserPromptSubmit -\u003e abbd hook UserPromptSubmit",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "registers the abbd CLI on Claude Code's hook events",
         "Badge": "inferred",
@@ -272,7 +272,7 @@
       "Kind": "DATA",
       "Name": "extraction JSON",
       "Signature": "extraction json: relations{evidence{lines,path,quote,symbol},from,kind,to,via},units{anchors{path,symbol},digest,evidence{lines,path,quote,symbol},key,kind,name,parent,purpose,responsibility,signature}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "carries the topology an extractor reports",
         "Badge": "inferred",
@@ -411,7 +411,7 @@
       "Kind": "DATA",
       "Name": "unit files",
       "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},digest,evidence{lines,path,quote,symbol},id,kind,name{confirmation,origin,rejected,value,verification},parent,purpose{confirmation,origin,rejected,value,verification},relations{confirmation,dead,digest,evidence{lines,path,quote,symbol},kind,origin,to,via},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "stores each design unit as Markdown",
         "Badge": "inferred",
@@ -490,7 +490,7 @@
       "Kind": "DATA",
       "Name": "generated files",
       "Signature": ".abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,From,Kind,Quote,Title,To,Via},modules{Drawing{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},ID,Name,Understanding{Blocks{Kind,Parts{Bold,Code,Mark,Text}},By,Stale},Units{Anchors,Guess,ID,Kind,Name,Sentence},Unwired},overview{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},phase,units{Anchors,Couplings{Evidence,Key,Via},Design,Evidence,ID,Kind,Name,Parent,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "the derived explorer, confirm queue and graph.json under .abbd/generated/",
         "Badge": "inferred",
@@ -512,7 +512,7 @@
       "Kind": "DATA",
       "Name": "decision records",
       "Signature": ".abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records human decisions",
         "Badge": "inferred",
@@ -534,7 +534,7 @@
       "Kind": "DATA",
       "Name": "intended topology",
       "Signature": ".abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records the aligned intended topology",
         "Badge": "inferred",
@@ -556,7 +556,7 @@
       "Kind": "DATA",
       "Name": "verification runs",
       "Signature": ".abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records verification runs",
         "Badge": "inferred",
@@ -578,7 +578,7 @@
       "Kind": "DATA",
       "Name": "change records",
       "Signature": ".abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{digests,evidence,extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,scans{by,unit},seeds,session,state,verification",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records each turn of change",
         "Badge": "inferred",
@@ -600,7 +600,7 @@
       "Kind": "DATA",
       "Name": "requirements",
       "Signature": ".abbd/requirements/ID.md frontmatter: id,origin,turn",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "keeps the user's request verbatim",
         "Badge": "inferred",
@@ -716,7 +716,7 @@
       "Kind": "FEAT",
       "Name": "/abbd-mode",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "runs a pstack poteto-mode playbook inside a gated ABBD turn",
         "Badge": "inferred",
@@ -840,7 +840,7 @@
       "Kind": "FEAT",
       "Name": "/abbd-setup",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "bootstraps ABBD on a repository",
         "Badge": "inferred",
@@ -959,7 +959,7 @@
       "Kind": "IF",
       "Name": "abbd hook",
       "Signature": "abbd hook[root] sub{*} pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "the entry point Claude Code hooks call",
         "Badge": "inferred",
@@ -980,7 +980,7 @@
       "Kind": "IF",
       "Name": "Claude Code hook protocol",
       "Signature": "abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "the JSON exchange with Claude Code hooks",
         "Badge": "inferred",
@@ -1002,7 +1002,7 @@
       "Kind": "IF",
       "Name": "abbd align",
       "Signature": "abbd align[all,confirm,exclude,root] pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets a human choose or realign the design units",
         "Badge": "inferred",
@@ -1023,7 +1023,7 @@
       "Kind": "IF",
       "Name": "abbd approve",
       "Signature": "abbd approve[root] pos{1}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets a human allow one grade C change",
         "Badge": "inferred",
@@ -1044,7 +1044,7 @@
       "Kind": "IF",
       "Name": "abbd confirm",
       "Signature": "abbd confirm[list,reject,root,value] pos{0,1}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets a human settle an inferred fact",
         "Badge": "inferred",
@@ -1065,7 +1065,7 @@
       "Kind": "IF",
       "Name": "abbd couple",
       "Signature": "abbd couple[root] pos{1}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets a human register a coupling the script cannot see",
         "Badge": "inferred",
@@ -1086,7 +1086,7 @@
       "Kind": "IF",
       "Name": "abbd ingest",
       "Signature": "abbd ingest[root] pos{1}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "feeds an extraction result into .abbd by hand",
         "Badge": "inferred",
@@ -1107,7 +1107,7 @@
       "Kind": "IF",
       "Name": "abbd mode",
       "Signature": "abbd mode[root,session] sub{on,off} pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "switches ABBD mode on or off for a session",
         "Badge": "inferred",
@@ -1128,7 +1128,7 @@
       "Kind": "IF",
       "Name": "abbd reject",
       "Signature": "abbd reject[reason,root] pos{1}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets a human refuse one grade C change",
         "Badge": "inferred",
@@ -1149,7 +1149,7 @@
       "Kind": "IF",
       "Name": "abbd status",
       "Signature": "abbd status[root,session] pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "shows where the project stands",
         "Badge": "inferred",
@@ -1170,7 +1170,7 @@
       "Kind": "IF",
       "Name": "abbd evidence",
       "Signature": "abbd evidence[root] pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "reports whether semantic evidence is still in the code",
         "Badge": "inferred",
@@ -1191,7 +1191,7 @@
       "Kind": "IF",
       "Name": "abbd propose relation",
       "Signature": "abbd propose relation[evidence,root,via] pos{3}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records an agent's guess at a coupling",
         "Badge": "inferred",
@@ -1212,7 +1212,7 @@
       "Kind": "IF",
       "Name": "abbd propose unit",
       "Signature": "abbd propose unit[evidence,parent,responsibility,root] pos{2}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records an agent's guess at a unit",
         "Badge": "inferred",
@@ -1233,7 +1233,7 @@
       "Kind": "IF",
       "Name": "abbd serve",
       "Signature": "abbd serve[addr,root] pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "starts the human screen",
         "Badge": "inferred",
@@ -1254,7 +1254,7 @@
       "Kind": "IF",
       "Name": "abbd setup",
       "Signature": "abbd setup[adopt,greenfield,root,supplement,verify] pos{0} --argv",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "bootstraps ABBD on a repository",
         "Badge": "inferred",
@@ -1275,7 +1275,7 @@
       "Kind": "IF",
       "Name": "abbd turn declare",
       "Signature": "abbd turn declare[changes,root,session,units] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records what a turn intends to change",
         "Badge": "inferred",
@@ -1296,7 +1296,7 @@
       "Kind": "IF",
       "Name": "abbd turn diff",
       "Signature": "abbd turn diff[root,session] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "checks a turn's work between steps",
         "Badge": "inferred",
@@ -1317,7 +1317,7 @@
       "Kind": "IF",
       "Name": "abbd turn end",
       "Signature": "abbd turn end[root,session] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "concludes a turn",
         "Badge": "inferred",
@@ -1338,7 +1338,7 @@
       "Kind": "IF",
       "Name": "abbd turn impact",
       "Signature": "abbd turn impact[add,root,session] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "shows and widens a turn's impact",
         "Badge": "inferred",
@@ -1359,7 +1359,7 @@
       "Kind": "IF",
       "Name": "abbd turn scan",
       "Signature": "abbd turn scan[by,root,session,unit] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records a semantic-coupling scan of an impacted unit",
         "Badge": "inferred",
@@ -1380,7 +1380,7 @@
       "Kind": "IF",
       "Name": "abbd turn show",
       "Signature": "abbd turn show[root,session] pos{0}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "lets any session read the latest turn",
         "Badge": "inferred",
@@ -1401,7 +1401,7 @@
       "Kind": "IF",
       "Name": "abbd turn start",
       "Signature": "abbd turn start[request,root,seeds,session] pos{0} needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "opens a turn for a request",
         "Badge": "inferred",
@@ -1422,7 +1422,7 @@
       "Kind": "IF",
       "Name": "abbd turn verify",
       "Signature": "abbd turn verify[root,session] pos{0} --argv needs-session",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "records the project verification for a turn",
         "Badge": "inferred",
@@ -1443,7 +1443,7 @@
       "Kind": "IF",
       "Name": "abbd understand",
       "Signature": "abbd understand[root] pos{2}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "stores how's reading of a module",
         "Badge": "inferred",
@@ -1464,7 +1464,7 @@
       "Kind": "IF",
       "Name": "abbd exit codes",
       "Signature": "exit error=1,needhuman=2,ok=0,usage=64",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "tells a caller how an abbd command ended",
         "Badge": "inferred",
@@ -1486,7 +1486,7 @@
       "Kind": "IF",
       "Name": "screen HTTP",
       "Signature": "GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "the HTTP surface the screen page talks to",
         "Badge": "inferred",
@@ -1507,7 +1507,7 @@
       "Kind": "IF",
       "Name": "confirm item key",
       "Signature": "ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "names one guess in the confirm queue",
         "Badge": "inferred",
@@ -1529,7 +1529,7 @@
       "Kind": "IF",
       "Name": "change item key",
       "Signature": "{contract-changed,contract-touched,evidence-touched,new-relation,removed-relation,semantic-unscanned,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "names one topology change on the command line",
         "Badge": "inferred",
@@ -1551,7 +1551,7 @@
       "Kind": "MOD",
       "Name": "abbd CLI",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "runs every abbd command a human, an agent or a hook invokes",
         "Badge": "inferred",
@@ -1606,7 +1606,7 @@
       "Kind": "MOD",
       "Name": "PreToolUse guard",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "keeps an agent in ABBD mode away from the human's commands and files",
         "Badge": "inferred",
@@ -2222,7 +2222,7 @@
       "Kind": "MOD",
       "Name": "screen server",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "serves the human screen on loopback and runs its decisions as CLI commands",
         "Badge": "inferred",
@@ -2456,7 +2456,7 @@
       "Kind": "MOD",
       "Name": "internal/bootstrap",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "folds reader-written documents onto the extraction script's result at setup",
         "Badge": "inferred",
@@ -2568,7 +2568,7 @@
       "Kind": "MOD",
       "Name": "internal/confirm",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "queues agent guesses for a human to confirm or reject",
         "Badge": "inferred",
@@ -2649,7 +2649,7 @@
       "Kind": "MOD",
       "Name": "internal/evidence",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "decides whether cited code is still there",
         "Badge": "inferred",
@@ -2769,7 +2769,7 @@
       "Kind": "MOD",
       "Name": "internal/extract",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "turns extraction JSON into typed units",
         "Badge": "inferred",
@@ -2929,7 +2929,7 @@
       "Kind": "MOD",
       "Name": "internal/gitx",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "reads the few git facts ABBD needs",
         "Badge": "inferred",
@@ -3104,7 +3104,7 @@
       "Kind": "MOD",
       "Name": "internal/identity",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "keeps design-unit IDs stable across re-extraction",
         "Badge": "inferred",
@@ -3332,7 +3332,7 @@
       "Kind": "MOD",
       "Name": "internal/model",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "defines ABBD's vocabulary of design units",
         "Badge": "inferred",
@@ -3407,7 +3407,7 @@
       "Kind": "MOD",
       "Name": "internal/screen",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "builds what the human sees from the store",
         "Badge": "inferred",
@@ -3791,7 +3791,7 @@
       "Kind": "MOD",
       "Name": "internal/store",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "persists ABBD's state under .abbd/",
         "Badge": "inferred",
@@ -4016,7 +4016,7 @@
       "Kind": "MOD",
       "Name": "internal/topology",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "compares the intended topology with the extracted one",
         "Badge": "inferred",
@@ -4240,7 +4240,7 @@
       "Kind": "MOD",
       "Name": "internal/turn",
       "Signature": "",
-      "Design": false,
+      "Design": true,
       "Purpose": {
         "Value": "judges one unit of agent work under abbd mode",
         "Badge": "inferred",
@@ -4465,965 +4465,6 @@
     }
   ],
   "edges": [
-    {
-      "From": "CFG-0003",
-      "To": "IF-0001",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "CFG-0003.consumes.IF-0001: 선 아래"
-    },
-    {
-      "From": "CFG-0003",
-      "To": "IF-0002",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "CFG-0003.consumes.IF-0002: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0004",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0004: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0008",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0008: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0009",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0009: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0012",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0012: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0013",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0013: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0014",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0014: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0015",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0015: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0016",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0016: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0017",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0017: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0018",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0018: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0019",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0019: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0020",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0020: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0021",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0021: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0022",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0022: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0023",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0023: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0025",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0025: 선 아래"
-    },
-    {
-      "From": "FEAT-0001",
-      "To": "IF-0028",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0001.consumes.IF-0028: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0003",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0003: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0005",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0005: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0008",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0008: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0010",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0010: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0014",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0014: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0015",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0015: 선 아래"
-    },
-    {
-      "From": "FEAT-0002",
-      "To": "IF-0025",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "FEAT-0002.consumes.IF-0025: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "CFG-0002",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.CFG-0002: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0007",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0007: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0013",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0013: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0015",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0015: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0016",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0016: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0017",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0017: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0018",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0018: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0019",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0019: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0020",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.DATA-0020: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0027",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.IF-0027: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0028",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0001.consumes.IF-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0002",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0002: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0017",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0017: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0024",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0024: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0028",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0031",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0031: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0035",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0035: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0040",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0040: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0046",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0046: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0056",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0056: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0065",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0065: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0072",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0072: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "MOD-0080",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0001.depends_on.MOD-0080: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0001",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0001: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0002",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0002: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0003",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0003: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0004",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0004: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0005",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0005: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0006",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0006: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0007",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0007: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0008",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0008: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0009",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0009: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0010",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0010: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0011",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0011: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0012",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0012: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0013",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0013: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0014",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0014: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0015",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0015: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0016",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0016: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0017",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0017: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0018",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0018: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0019",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0019: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0020",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0020: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0021",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0021: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0022",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0022: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0023",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0023: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0024",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0024: 선 아래"
-    },
-    {
-      "From": "MOD-0001",
-      "To": "IF-0025",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0001.provides.IF-0025: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0003",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0003: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0004",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0004: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0005",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0005: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0006",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0006: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0008",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0008: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0009",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0009: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0014",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0014: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "IF-0015",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0002.consumes.IF-0015: 선 아래"
-    },
-    {
-      "From": "MOD-0002",
-      "To": "MOD-0001",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0002.depends_on.MOD-0001: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0003",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0003: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0004",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0004: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0005",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0005: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0006",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0006: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0009",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0009: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0025",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0017.consumes.IF-0025: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "MOD-0001",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0017.depends_on.MOD-0001: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "MOD-0056",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0017.depends_on.MOD-0056: 선 아래"
-    },
-    {
-      "From": "MOD-0017",
-      "To": "IF-0026",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0017.provides.IF-0026: 선 아래"
-    },
-    {
-      "From": "MOD-0024",
-      "To": "IF-0027",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0024.consumes.IF-0027: 선 아래"
-    },
-    {
-      "From": "MOD-0024",
-      "To": "MOD-0028",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0024.depends_on.MOD-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0024",
-      "To": "MOD-0035",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0024.depends_on.MOD-0035: 선 아래"
-    },
-    {
-      "From": "MOD-0024",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0024.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0028",
-      "To": "IF-0028",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0028.consumes.IF-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0028",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0028.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0028",
-      "To": "MOD-0072",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0028.depends_on.MOD-0072: 선 아래"
-    },
-    {
-      "From": "MOD-0028",
-      "To": "IF-0027",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0028.provides.IF-0027: 선 아래"
-    },
-    {
-      "From": "MOD-0031",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0031.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0035",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0035.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0035",
-      "To": "DATA-0007",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0035.provides.DATA-0007: 선 아래"
-    },
-    {
-      "From": "MOD-0046",
-      "To": "MOD-0035",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0046.depends_on.MOD-0035: 선 아래"
-    },
-    {
-      "From": "MOD-0046",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0046.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "CFG-0002",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.CFG-0002: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0013",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.DATA-0013: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0016",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.DATA-0016: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0017",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.DATA-0017: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0018",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.DATA-0018: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0019",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.DATA-0019: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "IF-0027",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.IF-0027: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "IF-0028",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0056.consumes.IF-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "MOD-0028",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0056.depends_on.MOD-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0056.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "MOD-0065",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0056.depends_on.MOD-0065: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "MOD-0072",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0056.depends_on.MOD-0072: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "MOD-0080",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0056.depends_on.MOD-0080: 선 아래"
-    },
-    {
-      "From": "MOD-0056",
-      "To": "DATA-0015",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0056.provides.DATA-0015: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "MOD-0040",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0065.depends_on.MOD-0040: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "MOD-0046",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0065.depends_on.MOD-0046: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0065.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "MOD-0072",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0065.depends_on.MOD-0072: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "MOD-0080",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0065.depends_on.MOD-0080: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "CFG-0002",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.CFG-0002: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0013",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0013: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0016",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0016: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0017",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0017: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0018",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0018: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0019",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0019: 선 아래"
-    },
-    {
-      "From": "MOD-0065",
-      "To": "DATA-0020",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0065.provides.DATA-0020: 선 아래"
-    },
-    {
-      "From": "MOD-0072",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0072.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0072",
-      "To": "IF-0028",
-      "Kind": "provides",
-      "Class": "below",
-      "Title": "MOD-0072.provides.IF-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0080",
-      "To": "IF-0028",
-      "Kind": "consumes",
-      "Class": "below",
-      "Title": "MOD-0080.consumes.IF-0028: 선 아래"
-    },
-    {
-      "From": "MOD-0080",
-      "To": "MOD-0053",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0080.depends_on.MOD-0053: 선 아래"
-    },
-    {
-      "From": "MOD-0080",
-      "To": "MOD-0072",
-      "Kind": "depends_on",
-      "Class": "below",
-      "Title": "MOD-0080.depends_on.MOD-0072: 선 아래"
-    },
     {
       "From": "CFG-0003",
       "To": "CFG-0001",
@@ -6881,6 +5922,965 @@
       "Title": "MOD-0086.depends_on.MOD-0081: 추정, 미확인, via data: internal/turn/turn.go:323 \"for _, i := range t.Impact {\"",
       "Via": "data",
       "Quote": "internal/turn/turn.go:323 \"for _, i := range t.Impact {\""
+    },
+    {
+      "From": "CFG-0003",
+      "To": "IF-0001",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "CFG-0003.consumes.IF-0001: 의도"
+    },
+    {
+      "From": "CFG-0003",
+      "To": "IF-0002",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "CFG-0003.consumes.IF-0002: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0004",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0004: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0008",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0008: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0009",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0009: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0012",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0012: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0013",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0013: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0014",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0014: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0015",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0015: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0016",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0016: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0017",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0017: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0018",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0018: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0019",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0019: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0020",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0020: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0021",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0021: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0022",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0022: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0023",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0023: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0025",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0025: 의도"
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0028: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0003",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0003: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0005",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0005: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0008",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0008: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0010",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0010: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0014",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0014: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0015",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0015: 의도"
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0025",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0025: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "CFG-0002",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.CFG-0002: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0007",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0007: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0013",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0013: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0015",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0015: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0016",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0016: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0017",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0017: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0018",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0018: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0019",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0019: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "DATA-0020",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.DATA-0020: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0027",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.IF-0027: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0001.consumes.IF-0028: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0002",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0002: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0017",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0017: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0024",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0024: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0028",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0028: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0031",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0031: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0035",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0035: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0040",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0040: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0046",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0046: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0056",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0056: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0065",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0065: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0072",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0072: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0080",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0001.depends_on.MOD-0080: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0001",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0001: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0002",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0002: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0003",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0003: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0004",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0004: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0005",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0005: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0006",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0006: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0007",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0007: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0008",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0008: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0009",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0009: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0010",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0010: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0011",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0011: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0012",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0012: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0013",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0013: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0014",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0014: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0015",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0015: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0016",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0016: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0017",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0017: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0018",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0018: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0019",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0019: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0020",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0020: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0021",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0021: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0022",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0022: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0023",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0023: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0024",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0024: 의도"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0025",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0025: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0003",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0003: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0004",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0004: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0005",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0005: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0006",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0006: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0008",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0008: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0009",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0009: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0014",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0014: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "IF-0015",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0015: 의도"
+    },
+    {
+      "From": "MOD-0002",
+      "To": "MOD-0001",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0002.depends_on.MOD-0001: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0003",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0003: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0004",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0004: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0005",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0005: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0006",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0006: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0009",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0009: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0025",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0017.consumes.IF-0025: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "MOD-0001",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0017.depends_on.MOD-0001: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "MOD-0056",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0017.depends_on.MOD-0056: 의도"
+    },
+    {
+      "From": "MOD-0017",
+      "To": "IF-0026",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0017.provides.IF-0026: 의도"
+    },
+    {
+      "From": "MOD-0024",
+      "To": "IF-0027",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0024.consumes.IF-0027: 의도"
+    },
+    {
+      "From": "MOD-0024",
+      "To": "MOD-0028",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0024.depends_on.MOD-0028: 의도"
+    },
+    {
+      "From": "MOD-0024",
+      "To": "MOD-0035",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0024.depends_on.MOD-0035: 의도"
+    },
+    {
+      "From": "MOD-0024",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0024.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0028",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0028.consumes.IF-0028: 의도"
+    },
+    {
+      "From": "MOD-0028",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0028.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0028",
+      "To": "MOD-0072",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0028.depends_on.MOD-0072: 의도"
+    },
+    {
+      "From": "MOD-0028",
+      "To": "IF-0027",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0028.provides.IF-0027: 의도"
+    },
+    {
+      "From": "MOD-0031",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0031.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0035",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0035.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0035",
+      "To": "DATA-0007",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0035.provides.DATA-0007: 의도"
+    },
+    {
+      "From": "MOD-0046",
+      "To": "MOD-0035",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0046.depends_on.MOD-0035: 의도"
+    },
+    {
+      "From": "MOD-0046",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0046.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "CFG-0002",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.CFG-0002: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0013",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.DATA-0013: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0016",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.DATA-0016: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0017",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.DATA-0017: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0018",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.DATA-0018: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0019",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.DATA-0019: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "IF-0027",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.IF-0027: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0056.consumes.IF-0028: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "MOD-0028",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0056.depends_on.MOD-0028: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0056.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "MOD-0065",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0056.depends_on.MOD-0065: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "MOD-0072",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0056.depends_on.MOD-0072: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "MOD-0080",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0056.depends_on.MOD-0080: 의도"
+    },
+    {
+      "From": "MOD-0056",
+      "To": "DATA-0015",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0056.provides.DATA-0015: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "MOD-0040",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0065.depends_on.MOD-0040: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "MOD-0046",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0065.depends_on.MOD-0046: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0065.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "MOD-0072",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0065.depends_on.MOD-0072: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "MOD-0080",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0065.depends_on.MOD-0080: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "CFG-0002",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.CFG-0002: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0013",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0013: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0016",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0016: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0017",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0017: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0018",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0018: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0019",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0019: 의도"
+    },
+    {
+      "From": "MOD-0065",
+      "To": "DATA-0020",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0065.provides.DATA-0020: 의도"
+    },
+    {
+      "From": "MOD-0072",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0072.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0072",
+      "To": "IF-0028",
+      "Kind": "provides",
+      "Class": "kept",
+      "Title": "MOD-0072.provides.IF-0028: 의도"
+    },
+    {
+      "From": "MOD-0080",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Class": "kept",
+      "Title": "MOD-0080.consumes.IF-0028: 의도"
+    },
+    {
+      "From": "MOD-0080",
+      "To": "MOD-0053",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0080.depends_on.MOD-0053: 의도"
+    },
+    {
+      "From": "MOD-0080",
+      "To": "MOD-0072",
+      "Kind": "depends_on",
+      "Class": "kept",
+      "Title": "MOD-0080.depends_on.MOD-0072: 의도"
     }
   ],
   "overview": {
@@ -20781,33 +20781,13 @@
     "CFG-0003.depends_on.MOD-0001",
     "CFG-0003.purpose",
     "CFG-0003.responsibility",
-    "DATA-0001.responsibility",
-    "DATA-0002.responsibility",
-    "DATA-0003.responsibility",
-    "DATA-0004.depends_on.DATA-0002",
-    "DATA-0004.depends_on.DATA-0003",
     "DATA-0004.depends_on.MOD-0001",
     "DATA-0004.depends_on.MOD-0028",
-    "DATA-0004.responsibility",
     "DATA-0005.consumes.IF-0028",
-    "DATA-0005.responsibility",
-    "DATA-0006.responsibility",
     "DATA-0007.purpose",
     "DATA-0007.responsibility",
-    "DATA-0008.responsibility",
-    "DATA-0009.responsibility",
-    "DATA-0010.responsibility",
-    "DATA-0011.responsibility",
-    "DATA-0012.depends_on.MOD-0055",
-    "DATA-0012.responsibility",
     "DATA-0013.purpose",
     "DATA-0013.responsibility",
-    "DATA-0014.depends_on.DATA-0010",
-    "DATA-0014.depends_on.DATA-0011",
-    "DATA-0014.depends_on.DATA-0012",
-    "DATA-0014.depends_on.MOD-0054",
-    "DATA-0014.depends_on.MOD-0055",
-    "DATA-0014.responsibility",
     "DATA-0015.purpose",
     "DATA-0015.responsibility",
     "DATA-0016.purpose",
@@ -20820,11 +20800,6 @@
     "DATA-0019.responsibility",
     "DATA-0020.purpose",
     "DATA-0020.responsibility",
-    "DATA-0021.depends_on.MOD-0071",
-    "DATA-0021.responsibility",
-    "DATA-0022.responsibility",
-    "DATA-0023.responsibility",
-    "DATA-0024.responsibility",
     "FEAT-0001.consumes.CFG-0001",
     "FEAT-0001.depends_on.DATA-0010",
     "FEAT-0001.depends_on.DATA-0023",
@@ -20919,41 +20894,115 @@
     "MOD-0002.purpose",
     "MOD-0002.responsibility",
     "MOD-0003.consumes.IF-0025",
+    "MOD-0004.consumes.IF-0015",
+    "MOD-0005.consumes.CFG-0002",
+    "MOD-0006.depends_on.MOD-0065",
+    "MOD-0010.consumes.CFG-0003",
+    "MOD-0010.consumes.IF-0018",
+    "MOD-0010.consumes.IF-0022",
+    "MOD-0010.depends_on.FEAT-0001",
+    "MOD-0010.depends_on.MOD-0065",
+    "MOD-0012.depends_on.MOD-0053",
+    "MOD-0013.depends_on.FEAT-0002",
+    "MOD-0017.consumes.IF-0027",
+    "MOD-0017.consumes.IF-0028",
+    "MOD-0017.depends_on.DATA-0022",
+    "MOD-0017.purpose",
+    "MOD-0017.responsibility",
+    "MOD-0018.depends_on.MOD-0001",
+    "MOD-0019.depends_on.MOD-0072",
+    "MOD-0021.depends_on.MOD-0056",
+    "MOD-0024.purpose",
+    "MOD-0024.responsibility",
+    "MOD-0028.purpose",
+    "MOD-0028.responsibility",
+    "MOD-0031.purpose",
+    "MOD-0031.responsibility",
+    "MOD-0035.purpose",
+    "MOD-0035.responsibility",
+    "MOD-0039.consumes.DATA-0007",
+    "MOD-0040.purpose",
+    "MOD-0040.responsibility",
+    "MOD-0046.purpose",
+    "MOD-0046.responsibility",
+    "MOD-0049.depends_on.MOD-0040",
+    "MOD-0053.depends_on.MOD-0066",
+    "MOD-0053.purpose",
+    "MOD-0053.responsibility",
+    "MOD-0056.consumes.IF-0026",
+    "MOD-0056.depends_on.DATA-0022",
+    "MOD-0056.depends_on.DATA-0024",
+    "MOD-0056.depends_on.MOD-0017",
+    "MOD-0056.depends_on.MOD-0076",
+    "MOD-0056.depends_on.MOD-0077",
+    "MOD-0056.depends_on.MOD-0084",
+    "MOD-0056.purpose",
+    "MOD-0056.responsibility",
+    "MOD-0060.depends_on.MOD-0072",
+    "MOD-0062.consumes.DATA-0015",
+    "MOD-0063.consumes.IF-0004",
+    "MOD-0063.depends_on.MOD-0072",
+    "MOD-0065.depends_on.MOD-0085",
+    "MOD-0065.purpose",
+    "MOD-0065.responsibility",
+    "MOD-0068.depends_on.MOD-0053",
+    "MOD-0072.purpose",
+    "MOD-0072.responsibility",
+    "MOD-0080.consumes.DATA-0018",
+    "MOD-0080.purpose",
+    "MOD-0080.responsibility",
+    "MOD-0081.depends_on.MOD-0072",
+    "MOD-0085.consumes.IF-0028",
+    "DATA-0001.responsibility",
+    "DATA-0002.responsibility",
+    "DATA-0003.responsibility",
+    "DATA-0004.depends_on.DATA-0002",
+    "DATA-0004.depends_on.DATA-0003",
+    "DATA-0004.responsibility",
+    "DATA-0005.responsibility",
+    "DATA-0006.responsibility",
+    "DATA-0008.responsibility",
+    "DATA-0009.responsibility",
+    "DATA-0010.responsibility",
+    "DATA-0011.responsibility",
+    "DATA-0012.depends_on.MOD-0055",
+    "DATA-0012.responsibility",
+    "DATA-0014.depends_on.DATA-0010",
+    "DATA-0014.depends_on.DATA-0011",
+    "DATA-0014.depends_on.DATA-0012",
+    "DATA-0014.depends_on.MOD-0054",
+    "DATA-0014.depends_on.MOD-0055",
+    "DATA-0014.responsibility",
+    "DATA-0021.depends_on.MOD-0071",
+    "DATA-0021.responsibility",
+    "DATA-0022.responsibility",
+    "DATA-0023.responsibility",
+    "DATA-0024.responsibility",
     "MOD-0003.depends_on.MOD-0009",
     "MOD-0003.depends_on.MOD-0019",
     "MOD-0003.responsibility",
-    "MOD-0004.consumes.IF-0015",
     "MOD-0004.depends_on.MOD-0003",
     "MOD-0004.depends_on.MOD-0006",
     "MOD-0004.depends_on.MOD-0007",
     "MOD-0004.depends_on.MOD-0008",
     "MOD-0004.depends_on.MOD-0009",
     "MOD-0004.responsibility",
-    "MOD-0005.consumes.CFG-0002",
     "MOD-0005.responsibility",
     "MOD-0006.depends_on.MOD-0005",
-    "MOD-0006.depends_on.MOD-0065",
     "MOD-0006.responsibility",
     "MOD-0007.depends_on.DATA-0001",
     "MOD-0007.responsibility",
     "MOD-0008.depends_on.MOD-0005",
     "MOD-0008.responsibility",
     "MOD-0009.responsibility",
-    "MOD-0010.consumes.CFG-0003",
-    "MOD-0010.consumes.IF-0018",
-    "MOD-0010.consumes.IF-0022",
-    "MOD-0010.depends_on.FEAT-0001",
     "MOD-0010.depends_on.MOD-0013",
-    "MOD-0010.depends_on.MOD-0065",
     "MOD-0010.responsibility",
     "MOD-0011.depends_on.MOD-0013",
     "MOD-0011.depends_on.MOD-0014",
     "MOD-0011.responsibility",
     "MOD-0012.depends_on.MOD-0010",
     "MOD-0012.depends_on.MOD-0015",
-    "MOD-0012.depends_on.MOD-0053",
     "MOD-0012.responsibility",
-    "MOD-0013.depends_on.FEAT-0002",
     "MOD-0013.depends_on.MOD-0014",
     "MOD-0013.depends_on.MOD-0015",
     "MOD-0013.responsibility",
@@ -20962,26 +21011,16 @@
     "MOD-0015.responsibility",
     "MOD-0016.depends_on.MOD-0014",
     "MOD-0016.responsibility",
-    "MOD-0017.consumes.IF-0027",
-    "MOD-0017.consumes.IF-0028",
-    "MOD-0017.depends_on.DATA-0022",
-    "MOD-0017.purpose",
-    "MOD-0017.responsibility",
-    "MOD-0018.depends_on.MOD-0001",
     "MOD-0018.depends_on.MOD-0019",
     "MOD-0018.depends_on.MOD-0020",
     "MOD-0018.responsibility",
-    "MOD-0019.depends_on.MOD-0072",
     "MOD-0019.responsibility",
     "MOD-0020.depends_on.MOD-0022",
     "MOD-0020.responsibility",
-    "MOD-0021.depends_on.MOD-0056",
     "MOD-0021.responsibility",
     "MOD-0022.responsibility",
     "MOD-0023.depends_on.MOD-0014",
     "MOD-0023.responsibility",
-    "MOD-0024.purpose",
-    "MOD-0024.responsibility",
     "MOD-0025.depends_on.DATA-0002",
     "MOD-0025.depends_on.DATA-0003",
     "MOD-0025.depends_on.MOD-0026",
@@ -20989,14 +21028,10 @@
     "MOD-0025.responsibility",
     "MOD-0026.responsibility",
     "MOD-0027.responsibility",
-    "MOD-0028.purpose",
-    "MOD-0028.responsibility",
     "MOD-0029.depends_on.DATA-0005",
     "MOD-0029.responsibility",
     "MOD-0030.depends_on.DATA-0005",
     "MOD-0030.responsibility",
-    "MOD-0031.purpose",
-    "MOD-0031.responsibility",
     "MOD-0032.depends_on.DATA-0014",
     "MOD-0032.depends_on.MOD-0033",
     "MOD-0032.responsibility",
@@ -21004,8 +21039,6 @@
     "MOD-0033.depends_on.MOD-0034",
     "MOD-0033.responsibility",
     "MOD-0034.responsibility",
-    "MOD-0035.purpose",
-    "MOD-0035.responsibility",
     "MOD-0036.responsibility",
     "MOD-0037.depends_on.DATA-0008",
     "MOD-0037.depends_on.DATA-0012",
@@ -21013,12 +21046,9 @@
     "MOD-0037.depends_on.MOD-0039",
     "MOD-0037.responsibility",
     "MOD-0038.responsibility",
-    "MOD-0039.consumes.DATA-0007",
     "MOD-0039.depends_on.MOD-0036",
     "MOD-0039.depends_on.MOD-0038",
     "MOD-0039.responsibility",
-    "MOD-0040.purpose",
-    "MOD-0040.responsibility",
     "MOD-0041.depends_on.MOD-0044",
     "MOD-0041.depends_on.MOD-0045",
     "MOD-0041.responsibility",
@@ -21030,8 +21060,6 @@
     "MOD-0044.depends_on.MOD-0045",
     "MOD-0044.responsibility",
     "MOD-0045.responsibility",
-    "MOD-0046.purpose",
-    "MOD-0046.responsibility",
     "MOD-0047.depends_on.DATA-0003",
     "MOD-0047.responsibility",
     "MOD-0048.depends_on.DATA-0009",
@@ -21041,27 +21069,14 @@
     "MOD-0048.depends_on.MOD-0051",
     "MOD-0048.depends_on.MOD-0052",
     "MOD-0048.responsibility",
-    "MOD-0049.depends_on.MOD-0040",
     "MOD-0049.responsibility",
     "MOD-0050.depends_on.MOD-0047",
     "MOD-0050.responsibility",
     "MOD-0051.responsibility",
     "MOD-0052.depends_on.MOD-0047",
     "MOD-0052.responsibility",
-    "MOD-0053.depends_on.MOD-0066",
-    "MOD-0053.purpose",
-    "MOD-0053.responsibility",
     "MOD-0054.responsibility",
     "MOD-0055.responsibility",
-    "MOD-0056.consumes.IF-0026",
-    "MOD-0056.depends_on.DATA-0022",
-    "MOD-0056.depends_on.DATA-0024",
-    "MOD-0056.depends_on.MOD-0017",
-    "MOD-0056.depends_on.MOD-0076",
-    "MOD-0056.depends_on.MOD-0077",
-    "MOD-0056.depends_on.MOD-0084",
-    "MOD-0056.purpose",
-    "MOD-0056.responsibility",
     "MOD-0057.depends_on.MOD-0058",
     "MOD-0057.responsibility",
     "MOD-0058.responsibility",
@@ -21069,7 +21084,6 @@
     "MOD-0059.responsibility",
     "MOD-0060.depends_on.MOD-0059",
     "MOD-0060.depends_on.MOD-0061",
-    "MOD-0060.depends_on.MOD-0072",
     "MOD-0060.responsibility",
     "MOD-0061.depends_on.MOD-0057",
     "MOD-0061.depends_on.MOD-0059",
@@ -21077,20 +21091,13 @@
     "MOD-0061.depends_on.MOD-0063",
     "MOD-0061.depends_on.MOD-0064",
     "MOD-0061.responsibility",
-    "MOD-0062.consumes.DATA-0015",
     "MOD-0062.responsibility",
-    "MOD-0063.consumes.IF-0004",
-    "MOD-0063.depends_on.MOD-0072",
     "MOD-0063.responsibility",
     "MOD-0064.responsibility",
-    "MOD-0065.depends_on.MOD-0085",
-    "MOD-0065.purpose",
-    "MOD-0065.responsibility",
     "MOD-0066.responsibility",
     "MOD-0067.depends_on.MOD-0068",
     "MOD-0067.depends_on.MOD-0069",
     "MOD-0067.responsibility",
-    "MOD-0068.depends_on.MOD-0053",
     "MOD-0068.depends_on.MOD-0071",
     "MOD-0068.responsibility",
     "MOD-0069.depends_on.MOD-0066",
@@ -21099,8 +21106,6 @@
     "MOD-0070.depends_on.MOD-0071",
     "MOD-0070.responsibility",
     "MOD-0071.responsibility",
-    "MOD-0072.purpose",
-    "MOD-0072.responsibility",
     "MOD-0073.depends_on.MOD-0077",
     "MOD-0073.responsibility",
     "MOD-0074.depends_on.DATA-0022",
@@ -21115,10 +21120,6 @@
     "MOD-0078.depends_on.MOD-0074",
     "MOD-0078.responsibility",
     "MOD-0079.responsibility",
-    "MOD-0080.consumes.DATA-0018",
-    "MOD-0080.purpose",
-    "MOD-0080.responsibility",
-    "MOD-0081.depends_on.MOD-0072",
     "MOD-0081.responsibility",
     "MOD-0082.responsibility",
     "MOD-0083.depends_on.DATA-0023",
@@ -21128,7 +21129,6 @@
     "MOD-0084.depends_on.DATA-0024",
     "MOD-0084.depends_on.MOD-0085",
     "MOD-0084.responsibility",
-    "MOD-0085.consumes.IF-0028",
     "MOD-0085.responsibility",
     "MOD-0086.depends_on.MOD-0081",
     "MOD-0086.responsibility"
