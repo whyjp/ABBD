@@ -28,6 +28,9 @@ type Match struct {
 	Unit model.Unit
 	Tier Tier
 	Why  string
+	// Anchored says one of the unit's anchors is the queried path or a
+	// directory that holds it, so a change to that path changes the unit.
+	Anchored bool
 }
 
 // Exact reports whether the query named the unit itself.
@@ -102,9 +105,10 @@ func places(u model.Unit) []place {
 // ranking keeps each unit's best match. A key compares larger first; ties
 // go to the unit deeper inside its modules, then to the smaller ID.
 type ranking struct {
-	units []model.Unit
-	depth map[model.ID]int
-	best  map[model.ID]ranked
+	units    []model.Unit
+	depth    map[model.ID]int
+	best     map[model.ID]ranked
+	anchored map[model.ID]bool
 }
 
 type ranked struct {
@@ -123,7 +127,7 @@ func newRanking(present []model.Unit) ranking {
 			depth[u.ID]++
 		}
 	}
-	return ranking{units: present, depth: depth, best: map[model.ID]ranked{}}
+	return ranking{units: present, depth: depth, best: map[model.ID]ranked{}, anchored: map[model.ID]bool{}}
 }
 
 func (r ranking) add(u model.Unit, tier Tier, why string, key ...int) {
@@ -147,6 +151,7 @@ func (r ranking) sorted() []Match {
 	out := make([]Match, len(rs))
 	for i, x := range rs {
 		out[i] = x.Match
+		out[i].Anchored = r.anchored[x.Unit.ID]
 	}
 	return out
 }
@@ -174,6 +179,9 @@ func (r ranking) byCode(files []string, q string) []Match {
 	for _, t := range r.targets(files, p) {
 		for _, u := range r.units {
 			for _, pl := range places(u) {
+				if pl.what == "anchor" && (pl.path == t || strings.HasPrefix(t, pl.path+"/")) {
+					r.anchored[u.ID] = true
+				}
 				switch {
 				case pl.path == t:
 					r.add(u, ByCode, fmt.Sprintf("%s %s", pl.what, pl.path), 1, 0, -len(t))

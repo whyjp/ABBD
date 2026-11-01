@@ -17,11 +17,22 @@ const shown = 5
 // or name, it prints what the query matched, best first, so the reader sees
 // why this unit and which others came close.
 func (e env) resolve(units []model.Unit, s string) (model.Unit, error) {
+	ms, err := e.find(units, s)
+	if err != nil {
+		return model.Unit{}, err
+	}
+	return ms[0].Unit, nil
+}
+
+// find lists the units s names, best first, printing the list when s is not
+// a unit's own ID or name. It errs when s names nothing or several units by
+// one name.
+func (e env) find(units []model.Unit, s string) ([]topology.Match, error) {
 	if _, _, err := model.ParseID(s); err == nil {
 		if u, ok := presentUnit(units, model.ID(s)); ok {
-			return u, nil
+			return []topology.Match{{Unit: u, Tier: topology.ByID}}, nil
 		}
-		return model.Unit{}, fmt.Errorf("%q is not a unit of the state", s)
+		return nil, fmt.Errorf("%q is not a unit of the state", s)
 	}
 	ms := topology.Find(units, func() []string { return gitx.WorkingFiles(e.root) }, s)
 	switch {
@@ -30,13 +41,13 @@ func (e env) resolve(units []model.Unit, s string) (model.Unit, error) {
 		for _, u := range topology.Nearest(units, s, shown) {
 			near = append(near, fmt.Sprintf("%s %s", u.ID, u.Name.Value))
 		}
-		return model.Unit{}, fmt.Errorf("%q names no unit, file, symbol or phrase of the state; nearest: %s", s, strings.Join(near, "; "))
+		return nil, fmt.Errorf("%q names no unit, file, symbol or phrase of the state; nearest: %s", s, strings.Join(near, "; "))
 	case ms[0].Tier == topology.ByName && len(ms) > 1:
 		var ids []string
 		for _, m := range ms {
 			ids = append(ids, string(m.Unit.ID))
 		}
-		return model.Unit{}, fmt.Errorf("%q names %s; pass the ID", s, strings.Join(ids, ", "))
+		return nil, fmt.Errorf("%q names %s; pass the ID", s, strings.Join(ids, ", "))
 	case !ms[0].Exact():
 		fmt.Fprintf(e.stdout, "%q is not a unit; it matches, best first:\n", s)
 		for _, m := range ms[:min(len(ms), shown)] {
@@ -47,7 +58,7 @@ func (e env) resolve(units []model.Unit, s string) (model.Unit, error) {
 		}
 		fmt.Fprintln(e.stdout)
 	}
-	return ms[0].Unit, nil
+	return ms, nil
 }
 
 func names(units []model.Unit) map[model.ID]string {

@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "a0691f9dd0a345d80abdca04bc48da41e437cbffbebd72fd61fa4def4b8f8d62"
+    "inputs_hash": "552f9a7c18f0679b4b71003fcb4ac26dbae13cc7156c1276f3e0e1fe0b43bf2f"
   },
   "units": [
     {
@@ -714,8 +714,8 @@
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/query.go:12 \"func resolve(units []model.Unit, s string) (model.Unit, error) {\"",
-        "cmd/abbd/query.go:160 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
-        "cmd/abbd/query.go:212 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
+        "cmd/abbd/query.go:171 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
+        "cmd/abbd/query.go:223 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
       ]
     },
     {
@@ -2312,7 +2312,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/query.go:150 \"texts, err := e.st.LoadUnderstandings()\""
+      "Quote": "cmd/abbd/query.go:161 \"texts, err := e.st.LoadUnderstandings()\""
     },
     {
       "From": "MOD-0005",
@@ -2328,7 +2328,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\""
+      "Quote": "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\""
     },
     {
       "From": "MOD-0006",
@@ -5160,7 +5160,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/query.go:150 \"texts, err := e.st.LoadUnderstandings()\""
+              "cmd/abbd/query.go:161 \"texts, err := e.st.LoadUnderstandings()\""
             ],
             "Marks": [
               {
@@ -5202,7 +5202,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\""
+              "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\""
             ],
             "Marks": [
               {
@@ -5570,7 +5570,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/query.go:150 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:161 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -5584,7 +5584,7 @@
             "Kind": "consumes",
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
-              "cmd/abbd/query.go:150 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:161 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -5674,7 +5674,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:31 \"d := topology.Compare(was, now)\"",
-              "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\""
+              "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0047",
@@ -5689,7 +5689,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:31 \"d := topology.Compare(was, now)\"",
-              "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\""
+              "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0047",
@@ -6308,7 +6308,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:160 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:171 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -6454,7 +6454,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/query.go:150 \"texts, err := e.st.LoadUnderstandings()\""
+            "cmd/abbd/query.go:161 \"texts, err := e.st.LoadUnderstandings()\""
           ]
         },
         {
@@ -6464,7 +6464,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:160 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:171 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -6473,8 +6473,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\"",
-            "cmd/abbd/impact.go:27 \"im := topology.ImpactOf(units, seeds)\""
+            "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\"",
+            "cmd/abbd/impact.go:34 \"im := topology.ImpactOf(units, seeds)\""
           ]
         },
         {
@@ -13815,7 +13815,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:160 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:171 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -15023,8 +15023,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/query.go:80 \"ex := topology.Explain(units, u.ID)\"",
-            "cmd/abbd/impact.go:27 \"im := topology.ImpactOf(units, seeds)\""
+            "cmd/abbd/query.go:91 \"ex := topology.Explain(units, u.ID)\"",
+            "cmd/abbd/impact.go:34 \"im := topology.ImpactOf(units, seeds)\""
           ]
         },
         {
