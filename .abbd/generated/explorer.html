@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash=a5765445ce2a6927123d0f1508c833d76f0a2e3adf03ac9ac236628c3da088d2 intended_revision=1">
+<meta name="abbd-watermark" content="inputs_hash=9092d515911ff4c1d51b7163cb9ceed8ed57f7431703e21b84288136b1bb726a intended_revision=1">
 <title>ABBD 화면</title>
 <style>
 :root {
@@ -121,21 +121,23 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 
 <section id="turn">
-  <h2>이번 턴 CHG-0006 <span class="pill SYNCED">SYNCED</span></h2>
-  <p><span class="muted">요청 REQ-0006:</span> Split computed impact into tiers. Direct = seeds, units with a relation to a seed, and consumers of contracts a seed provides or touches (one hop through a contract). Far = the rest of the transitive closure. The agent still cannot remove anything (scenario 20 stays). The gate is unchanged. Show tiers in `turn impact`, `turn show`, the screen, and the CHG record. Update the abbd-mode skill so the agent reads direct items closely and checks far ones briefly, and the evaluation can score precision on the direct tier. Doc ch6/ch9/ch12 updated with the evidence pointer to the evaluation. (Marking a far item `checked` with a reason is a separate turn, because it changes the CLI and change-record contracts.)</p>
+  <h2>이번 턴 CHG-0007 <span class="pill CLOSED">CLOSED</span></h2>
+  <p><span class="muted">요청 REQ-0007:</span> Let the agent mark a far impact item `checked` with a one-line reason; a direct item can never be marked, and nothing can be removed (scenario 20 stays). The gate is unchanged. Proposed form: `abbd turn impact --session ID --check UNIT --reason TEXT`, recorded on the impact item in the CHG record, shown in `turn impact`, `turn show`, the screen, and the record body. Tests first, mutation-check that direct items cannot be marked and nothing can be removed.</p>
   
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
-  <p>단위 <span class="key">MOD-0013 MOD-0001 MOD-0011 MOD-0010 FEAT-0001 </span></p>
+  <p>단위 <span class="key">MOD-0013 MOD-0001 MOD-0011 MOD-0010 FEAT-0001 </span> 변경 <span class="key">contract-changed:IF-0002, contract-changed:DATA-0007</span></p>
   
-  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0004</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0006</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0007</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0008</span></li></ul>
+  <h3>선언 대 실제</h3><ul class="plain"><li>선언했지만 하지 않음: <span class="key">FEAT-0001</span></li><li>선언했지만 하지 않음: <span class="key">MOD-0001</span></li><li>선언했지만 하지 않음: <span class="key">MOD-0010</span></li><li>선언했지만 하지 않음: <span class="key">MOD-0011</span></li><li>선언했지만 하지 않음: <span class="key">MOD-0013</span></li><li>선언했지만 하지 않음: <span class="key">contract-changed:DATA-0007</span></li><li>선언했지만 하지 않음: <span class="key">contract-changed:IF-0002</span></li></ul>
+  
+  <p><strong>the working tree never changed, so there was nothing to gate</strong></p>
   
   
   
-  
-  
-  <h3>영향 범위</h3><p class="key">MOD-0013 MOD-0001 MOD-0010 MOD-0011 IF-0001 IF-0002 MOD-0002 MOD-0003 DATA-0003 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 </p>
-  <p>검증 run-0006 <span class="pill PASSED">PASSED</span></p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0013 MOD-0001 MOD-0010 MOD-0011 FEAT-0001 </span></p>
+  <p class="muted">멀리 <span class="key">IF-0001 IF-0002 MOD-0002 MOD-0003 DATA-0003 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0002 IF-0003 </span></p>
+  <p class="muted">아직 검증하지 않았습니다.</p>
 
 </section>
 
@@ -646,7 +648,22 @@ svg marker path { fill: var(--muted); stroke: none; }
 
 <section id="history">
   <details><summary>이전 턴</summary>
-  <h3>CHG-0005 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 4 (doc ch12): make sure every chapter 12 acceptance scenario 1-24 maps to a passing test, write the table (scenario, test name, file) into the doc&#39;s chapter 12, add any missing test, and record stage 6a&#39;s decisions (promotion threshold, selective realign, self-application leftovers) in the design doc.</p>
+  <h3>CHG-0006 <span class="pill SYNCED">SYNCED</span></h3><p>Split computed impact into tiers. Direct = seeds, units with a relation to a seed, and consumers of contracts a seed provides or touches (one hop through a contract). Far = the rest of the transitive closure. The agent still cannot remove anything (scenario 20 stays). The gate is unchanged. Show tiers in `turn impact`, `turn show`, the screen, and the CHG record. Update the abbd-mode skill so the agent reads direct items closely and checks far ones briefly, and the evaluation can score precision on the direct tier. Doc ch6/ch9/ch12 updated with the evidence pointer to the evaluation. (Marking a far item `checked` with a reason is a separate turn, because it changes the CLI and change-record contracts.)</p>
+  <p class="muted">토폴로지 변경 없음.</p>
+  <h3>선언</h3>
+  <p>단위 <span class="key">MOD-0013 MOD-0001 MOD-0011 MOD-0010 FEAT-0001 </span></p>
+  
+  <h3>선언 대 실제</h3><ul class="plain"><li>했지만 선언하지 않음: <span class="key">DATA-0003</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0004</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0006</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0007</span></li><li>했지만 선언하지 않음: <span class="key">DATA-0008</span></li></ul>
+  
+  
+  
+  
+  
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0013 MOD-0001 MOD-0010 MOD-0011 FEAT-0001 </span></p>
+  <p class="muted">멀리 <span class="key">IF-0001 IF-0002 MOD-0002 MOD-0003 DATA-0003 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0002 IF-0003 </span></p>
+  <p>검증 run-0006 <span class="pill PASSED">PASSED</span></p>
+<h3>CHG-0005 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 4 (doc ch12): make sure every chapter 12 acceptance scenario 1-24 maps to a passing test, write the table (scenario, test name, file) into the doc&#39;s chapter 12, add any missing test, and record stage 6a&#39;s decisions (promotion threshold, selective realign, self-application leftovers) in the design doc.</p>
   <p class="muted">토폴로지 변경 없음.</p>
   <h3>선언</h3>
   <p>단위 <span class="key">MOD-0001 </span></p>
@@ -657,7 +674,9 @@ svg marker path { fill: var(--muted); stroke: none; }
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0001 IF-0001 IF-0002 MOD-0002 MOD-0003 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 </p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0001 IF-0001 IF-0002 MOD-0002 MOD-0003 CFG-0003 FEAT-0001 FEAT-0002 </span></p>
+  <p class="muted">멀리 <span class="key">IF-0003 </span></p>
   <p>검증 run-0005 <span class="pill PASSED">PASSED</span></p>
 <h3>CHG-0004 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 3b (doc ch11 남은 관찰): make the screen usable on a 31-unit repo; group and collapse the confirm queue and the candidate list by unit, design units first, so the first screen is short.</p>
   <p class="muted">토폴로지 변경 없음.</p>
@@ -670,7 +689,9 @@ svg marker path { fill: var(--muted); stroke: none; }
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0010 MOD-0001 MOD-0003 DATA-0003 IF-0001 IF-0002 MOD-0002 IF-0003 CFG-0003 FEAT-0001 FEAT-0002 </p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0010 MOD-0001 MOD-0003 DATA-0003 FEAT-0001 </span></p>
+  <p class="muted">멀리 <span class="key">IF-0001 IF-0002 MOD-0002 IF-0003 CFG-0003 FEAT-0002 </span></p>
   <p>검증 run-0004 <span class="pill PASSED">PASSED</span></p>
 <h3>CHG-0003 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 2 (doc ch5 짧은 재정렬): let the human pick which REALIGN rows to acknowledge on the screen instead of all or nothing, keeping BLOCKED first; abbd align --confirm KEYS is the terminal form on a drifted project.</p>
   <p class="muted">토폴로지 변경 없음.</p>
@@ -683,7 +704,9 @@ svg marker path { fill: var(--muted); stroke: none; }
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 IF-0003 DATA-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0012 MOD-0001 MOD-0003 MOD-0010 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 IF-0003 DATA-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </span></p>
+  
   <p>검증 run-0003 <span class="pill PASSED">PASSED</span></p>
 <h3>CHG-0002 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 1 (doc ch7 승격 절차, ch13 threshold): detect promotion candidates (a new module or contract, or a below-the-line unit that two or more design units relate to), show them on the screen with adopt and reject actions (adopt makes it a design unit in intended, reject keeps it below the line and stops re-proposing it until its relations change), give the human CLI equivalents, and keep adopt and reject on the guard&#39;s deny list.</p>
   <p class="muted">토폴로지 변경 없음.</p>
@@ -696,7 +719,9 @@ svg marker path { fill: var(--muted); stroke: none; }
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0012 MOD-0001 MOD-0010 MOD-0003 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 DATA-0003 IF-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0012 MOD-0001 MOD-0010 MOD-0003 MOD-0005 MOD-0011 IF-0005 MOD-0013 IF-0001 IF-0002 MOD-0002 DATA-0003 IF-0003 MOD-0004 IF-0004 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 FEAT-0001 CFG-0003 FEAT-0002 </span></p>
+  
   <p>검증 run-0002 <span class="pill PASSED">PASSED</span></p>
 <h3>CHG-0001 <span class="pill SYNCED">SYNCED</span></h3><p>Stage 6a item 3a: add .claude/ and .playwright-mcp/ to this repository&#39;s .gitignore so harness files do not make the actual topology STALE or block a turn after verification.</p>
   <p class="muted">토폴로지 변경 없음.</p>
@@ -709,14 +734,16 @@ svg marker path { fill: var(--muted); stroke: none; }
   
   
   
-  <h3>영향 범위</h3><p class="key">MOD-0007 MOD-0001 MOD-0011 IF-0001 IF-0002 MOD-0002 MOD-0003 MOD-0010 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 DATA-0003 </p>
+  <h3>영향 범위</h3>
+  <p>직접 <span class="key">MOD-0007 MOD-0001 MOD-0011 </span></p>
+  <p class="muted">멀리 <span class="key">IF-0001 IF-0002 MOD-0002 MOD-0003 MOD-0010 CFG-0002 DATA-0002 DATA-0004 DATA-0005 DATA-0006 DATA-0007 DATA-0008 CFG-0003 FEAT-0001 FEAT-0002 IF-0003 DATA-0003 </span></p>
   <p>검증 run-0001 <span class="pill PASSED">PASSED</span></p>
 
   </details>
 </section>
 
 
-<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>a5765445ce2a6927123d0f1508c833d76f0a2e3adf03ac9ac236628c3da088d2</code> r1</p>
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code> · 검증 <code>go test -count=1 ./...</code> · 워터마크 <code>9092d515911ff4c1d51b7163cb9ceed8ed57f7431703e21b84288136b1bb726a</code> r1</p>
 
 </main>
 
