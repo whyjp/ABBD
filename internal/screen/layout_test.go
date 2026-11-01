@@ -146,7 +146,7 @@ func TestADependencyThatBypassesEveryContractStandsOut(t *testing.T) {
 	kinds := map[string]int{}
 	var bypass []string
 	for _, w := range d.Wires {
-		kinds[w.Kind]++
+		kinds[w.Kind] += w.Carries
 		if w.Kind == "bypass" {
 			bypass = append(bypass, w.Title)
 		}
@@ -157,7 +157,7 @@ func TestADependencyThatBypassesEveryContractStandsOut(t *testing.T) {
 		t.Fatalf("want the 4 contract-free dependencies drawn as bypasses, got %d: %v", kinds["bypass"], bypass)
 	}
 	if kinds["contract"] != 4 {
-		t.Fatalf("want one contract line per user and provider of Matcher and Sink, got %d", kinds["contract"])
+		t.Fatalf("want one contract line per user and provider of Matcher and Sink, counting the lines a bundle carries, got %d", kinds["contract"])
 	}
 	exits, entries := 0, 0
 	for _, p := range d.Ports {
@@ -178,8 +178,10 @@ func TestLabelsFitTheirBoxes(t *testing.T) {
 	units[5].Name.Value = "trait AnExtremelyLongContractNameThatWouldOverflowItsChip"
 	d := build(units).Overview
 	for _, b := range d.Boxes {
-		if textWidth(b.Label, 13) > b.W-16 {
-			t.Errorf("box %s label %q is wider than the box", b.ID, b.Label)
+		for _, l := range b.Lines {
+			if textWidth(l.S, 13) > b.W-16 {
+				t.Errorf("box %s label %q is wider than the box", b.ID, l.S)
+			}
 		}
 	}
 	for _, p := range d.Ports {

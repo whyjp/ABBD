@@ -5,6 +5,7 @@ package screen
 
 import (
 	"encoding/json"
+	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
@@ -120,7 +121,10 @@ type Model struct {
 	// Overview is the first level: modules, their contracts as ports, and
 	// the lines between them. Insides are the second, one per module.
 	Overview Drawing
-	Insides  []Inside
+	// Links are relations between two contracts, which the overview draws
+	// as chips and so lists here instead.
+	Links   []Coupling
+	Insides []Inside
 	// Edges are every live relation between present units, for graph.json.
 	Edges     []Line
 	Actual    Freshness
@@ -152,7 +156,27 @@ func Build(in Input) Model {
 	m.Edges = lines(in.Units)
 	o := planOverview(in.Units)
 	m.Overview = o.draw(func(id model.ID) string { return "#m-" + string(id) })
-	for _, id := range o.modules {
+	for _, c := range o.contracts {
+		for _, r := range model.SortRelations(o.units[c].Relations) {
+			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
+				l := Coupling{From: o.name(c), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
+				for _, e := range r.Evidence {
+					l.Quotes = append(l.Quotes, e.String())
+				}
+				m.Links = append(m.Links, l)
+			}
+		}
+	}
+	// Every module of the top level, and every unit that holds others, has
+	// a view of its own.
+	var views []model.ID
+	for id, u := range o.tree.units {
+		if len(o.tree.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
+			views = append(views, id)
+		}
+	}
+	slices.Sort(views)
+	for _, id := range views {
 		ins := o.inside(id, in.Units)
 		if u, ok := in.Understandings[id]; ok {
 			ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}

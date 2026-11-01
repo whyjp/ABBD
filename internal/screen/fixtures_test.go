@@ -1,0 +1,211 @@
+package screen
+
+import (
+	"bytes"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
+)
+
+// fixtures are real states: this repository's own .abbd, ripgrep read by a
+// pstack reader, and Orca. Each holds only the unit files the drawings read.
+var fixtures = []string{"self", "ripgrep", "orca"}
+
+func fixture(t *testing.T, name string) Model {
+	t.Helper()
+	units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Build(Input{Units: units})
+}
+
+type view struct {
+	name   string
+	d      Drawing
+	budget int
+}
+
+func views(m Model) []view {
+	out := []view{{"overview", m.Overview, overviewWidth}}
+	for _, ins := range m.Insides {
+		out = append(out, view{ins.ID + " " + ins.Name, ins.Drawing, insideWidth})
+	}
+	return out
+}
+
+func measured(t *testing.T, d Drawing) Metrics {
+	t.Helper()
+	var b bytes.Buffer
+	if err := page.ExecuteTemplate(&b, "drawing", d); err != nil {
+		t.Fatal(err)
+	}
+	s, err := readSVG(b.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return measure(s)
+}
+
+// Every drawing of every real state keeps docs/blueprint-svg.md's rules.
+// With ABBD_BLUEPRINTS set to a directory, it also writes each fixture's page
+// there, for a person to look at.
+func TestEveryRealDrawingIsLegible(t *testing.T) {
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		if dir := os.Getenv("ABBD_BLUEPRINTS"); dir != "" {
+			var b bytes.Buffer
+			if err := Render(&b, m); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(dir, name+".html"), b.Bytes(), 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for _, v := range views(m) {
+			got := measured(t, v.d)
+			bad := got.violations(v.budget)
+			ceiling, owed := debt[name+" "+v.name]
+			switch {
+			case owed && len(bad) == 0:
+				t.Errorf("%s %s now keeps every rule; take it off the debt list", name, v.name)
+			case owed:
+				for _, over := range got.over(ceiling) {
+					t.Errorf("%s %s got worse than its recorded debt: %s", name, v.name, over)
+				}
+			default:
+				for _, b := range bad {
+					t.Errorf("%s %s: rule %s", name, v.name, b)
+				}
+			}
+			t.Logf("%s %s: %s", name, v.name, got)
+		}
+	}
+}
+
+// debt are the views of the real states that do not keep every rule yet,
+// with what they measure now. They may only improve. Each is a dense,
+// cyclic import graph among siblings that no grouping by directory splits;
+// it waits for a reader's grouping (docs/blueprint-svg.md, "Supplying
+// groups").
+var debt = map[string]Metrics{
+	"self MOD-0001 abbd CLI":                 {PortFar: 1},
+	"orca MOD-0007 mobile app (Expo)":        {MaxChannel: 6, TooClose: 13, Crossings: 214, PortFar: 1},
+	"orca MOD-0042 desktop main process":     {MaxChannel: 5, TooClose: 11, Crossings: 365},
+	"orca MOD-0056 Orca runtime (RPC host)":  {MaxChannel: 5, TooClose: 1, Crossings: 97, PortFar: 3},
+	"orca MOD-0072 desktop renderer UI":      {MaxChannel: 6, TooClose: 7, Crossings: 66},
+	"orca MOD-0081 shared types and schemas": {Width: 1027, TooClose: 1},
+	"orca MOD-0098 src/":                     {MaxChannel: 5, TooClose: 1, Crossings: 77},
+	"orca MOD-0099 src/main/":                {Width: 1701, TooClose: 2, Crossings: 44},
+	"orca MOD-0100 src/shared/":              {Boxes: 22, Crossings: 44},
+}
+
+// over names each measure that went past its recorded debt. A measure the
+// debt leaves at zero is held to the rules instead.
+func (m Metrics) over(d Metrics) []string {
+	var out []string
+	for _, c := range []struct {
+		name      string
+		got, owed int
+	}{
+		{"boxes", m.Boxes, d.Boxes}, {"width", m.Width, d.Width}, {"channel", m.MaxChannel, d.MaxChannel},
+		{"too-close pairs", m.TooClose, d.TooClose}, {"crossings", m.Crossings, d.Crossings}, {"far ports", m.PortFar, d.PortFar},
+	} {
+		if c.owed > 0 && c.got > c.owed {
+			out = append(out, fmt.Sprintf("%s %d, recorded %d", c.name, c.got, c.owed))
+		}
+	}
+	held := m
+	held.Boxes, held.Width, held.MaxChannel, held.TooClose, held.Crossings, held.PortFar = 0, 0, 0, 0, 0, 0
+	if d.Boxes == 0 {
+		held.Boxes = m.Boxes
+	}
+	if d.Width == 0 {
+		held.Width = m.Width
+	}
+	if d.MaxChannel == 0 {
+		held.MaxChannel = m.MaxChannel
+	}
+	if d.TooClose == 0 {
+		held.TooClose = m.TooClose
+	}
+	if d.Crossings == 0 {
+		held.Crossings = m.Crossings
+	}
+	if d.PortFar == 0 {
+		held.PortFar = m.PortFar
+	}
+	width := insideWidth
+	if strings.HasSuffix(fmt.Sprint(d), "overview") {
+		width = overviewWidth
+	}
+	return append(out, held.violations(max(width, overviewWidth))...)
+}
+
+// No relation is dropped: every live relation between present units is
+// drawn in some view, as a line, a bundle or a contract chip, or listed as
+// a reader's coupling where the overview leaves it out.
+func TestEveryRelationIsInSomeView(t *testing.T) {
+	for _, name := range fixtures {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		m := Build(Input{Units: units})
+		shown := map[string]bool{}
+		for _, v := range views(m) {
+			for _, w := range v.d.Wires {
+				for _, r := range w.Rels {
+					shown[r] = true
+				}
+			}
+			for _, p := range v.d.Ports {
+				for _, r := range p.Rels {
+					shown[r] = true
+				}
+			}
+		}
+		present := map[model.ID]model.Unit{}
+		for _, u := range model.Present(units) {
+			present[u.ID] = u
+		}
+		for _, c := range m.Links {
+			shown[c.From+"|"+c.Kind+"|"+c.To] = true
+		}
+		for _, ins := range m.Insides {
+			for _, c := range ins.Inferred {
+				shown[c.From+"|"+c.Kind+"|"+c.To] = true
+			}
+		}
+		missing := 0
+		for _, u := range present {
+			for _, r := range u.Relations {
+				if _, ok := present[r.To]; !ok || r.Dead {
+					continue
+				}
+				if shown[key(u.ID, r.Kind, r.To)] || shown[name4(present, u.ID)+"|"+string(r.Kind)+"|"+name4(present, r.To)] {
+					continue
+				}
+				missing++
+				if missing <= 5 {
+					t.Errorf("%s: %s is in no view", name, key(u.ID, r.Kind, r.To))
+				}
+			}
+		}
+		if missing > 5 {
+			t.Errorf("%s: %d relations in no view", name, missing)
+		}
+	}
+}
+
+func name4(units map[model.ID]model.Unit, id model.ID) string {
+	if u, ok := units[id]; ok && u.Name.Value != "" {
+		return u.Name.Value
+	}
+	return string(id)
+}
