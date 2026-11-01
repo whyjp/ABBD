@@ -18,11 +18,11 @@ func (e env) impact(list string) error {
 	name := names(units)
 	var seeds []model.ID
 	for _, s := range strings.Split(list, ",") {
-		id := model.ID(strings.TrimSpace(s))
-		if _, ok := name[id]; !ok {
-			return fmt.Errorf("%q is not a unit of the state", id)
+		u, err := e.resolve(units, strings.TrimSpace(s))
+		if err != nil {
+			return err
 		}
-		seeds = append(seeds, id)
+		seeds = append(seeds, u.ID)
 	}
 	im := topology.ImpactOf(units, seeds)
 	for _, t := range []struct {

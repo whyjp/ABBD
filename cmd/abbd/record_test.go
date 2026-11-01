@@ -6,13 +6,32 @@ import (
 	"testing"
 )
 
+// sync prints counts, then only what needs attention: units that are new,
+// units the script stopped reporting, and merge candidates. --verbose lists
+// every unit.
+func TestSyncSummarizesAndListsOnlyWhatNeedsAttention(t *testing.T) {
+	p := semanticProject(t)
+	if out := p.resync(); out != "synced: 3 unit(s), 2 matched, 0 new, 0 unmatched\n" {
+		t.Fatalf("an unchanged sync is one line of counts:\n%s", out)
+	}
+	contains(t, p.want(0, "", "sync", "--verbose"), "MOD-0001 matched\nMOD-0002 matched\n")
+
+	p.code("island/x.go", "package island\n\nfunc X() {}\n")
+	p.extract(`{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"island","kind":"MOD","name":"island","anchors":[{"path":"island/x.go","symbol":"X"}]}]}`)
+	if out := p.resync(); out != "synced: 3 unit(s), 1 matched, 1 new, 1 unmatched\nMOD-0003 new\nMOD-0002 unmatched\n" {
+		t.Fatalf("a sync that changes units names each change:\n%s", out)
+	}
+}
+
 // sync converges: run on the same tree it rewrites nothing, and after the
 // state is committed with the code it leaves the commit clean.
 func TestSyncIsIdempotent(t *testing.T) {
 	p := semanticProject(t)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "code and state")
-	first := p.want(0, "MOD-0001 matched", "sync")
+	first := p.want(0, "synced: 3 unit(s)", "sync")
 	before := snapshot(t, p.root)
 	if again := p.want(0, "", "sync"); again != first {
 		t.Fatalf("two syncs of one tree print different results:\n%s\n---\n%s", first, again)

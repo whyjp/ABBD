@@ -344,10 +344,13 @@ func dedupRelations(rs []model.Relation) []model.Relation {
 }
 
 // Extraction owns anchors, signatures and EXTRACTED names. Human-given values
-// and decided guesses survive.
+// and decided guesses survive, a reader's signature among them while the
+// script reads none.
 func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	u.Anchors = in.Anchors
-	u.Signature = in.Signature
+	if in.Signature != nil || guesses == ReplaceGuesses || !u.Signature.Guess() {
+		u.Signature = in.Signature
+	}
 	u.Digest = in.Digest
 	u.Evidence = in.Evidence
 	// A unit moves between the script and the reader whole: once the script

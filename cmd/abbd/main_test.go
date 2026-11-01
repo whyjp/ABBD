@@ -42,7 +42,7 @@ func syncWith(t *testing.T, root, extraction string) (code int, stdout, stderr s
 	}
 	write(t, filepath.Join(root, ".abbd", "project.yaml"), fmt.Sprintf("extract: [%q]\n", exe))
 	var out, errb bytes.Buffer
-	code = run([]string{"sync", "--root", root}, nil, &out, &errb)
+	code = run([]string{"sync", "--verbose", "--root", root}, nil, &out, &errb)
 	return code, out.String(), errb.String()
 }
 
@@ -102,7 +102,7 @@ func TestRerunPreservesIDsAndBytes(t *testing.T) {
  {"kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Refund"},{"path":"billing/charge.go","symbol":"Charge"}],"purpose":"takes payments"}
 ]}`
 	second := ingestOK(t, root, reordered)
-	if !strings.Contains(second, "MOD-0001 matched") || !strings.Contains(second, "IF-0001 matched") || strings.Contains(second, " new") {
+	if !strings.Contains(second, "MOD-0001 matched") || !strings.Contains(second, "IF-0001 matched") || strings.Contains(second, " new\n") {
 		t.Fatalf("re-ingest should only match existing ids, got:\n%s", second)
 	}
 	after := snapshot(t, root)
@@ -137,7 +137,7 @@ func TestExternalFileMoveKeepsIDs(t *testing.T) {
  {"kind":"IF","name":"http api","anchors":[{"path":"api/server.go","symbol":"Serve"}]}
 ]}`
 			out := ingestOK(t, root, moved)
-			if !strings.Contains(out, "MOD-0001 matched") || !strings.Contains(out, "IF-0001 matched") || strings.Contains(out, " new") {
+			if !strings.Contains(out, "MOD-0001 matched") || !strings.Contains(out, "IF-0001 matched") || strings.Contains(out, " new\n") {
 				t.Fatalf("moved files should keep their ids, got:\n%s", out)
 			}
 			mod := snapshot(t, root)["architecture/MOD-0001.md"]
@@ -226,7 +226,7 @@ func TestSecondMoveAfterUncommittedFirstMoveKeepsID(t *testing.T) {
 	git(t, root, "mv", "payments", "pay")
 	git(t, root, "commit", "-qm", "second move")
 	out := ingestOK(t, root, strings.ReplaceAll(extraction, "billing/", "pay/"))
-	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new") {
+	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new\n") {
 		t.Fatalf("second move should keep MOD-0001, got:\n%s", out)
 	}
 }
@@ -238,7 +238,7 @@ func TestPlainMoveWithoutGitKeepsID(t *testing.T) {
 		t.Fatal(err)
 	}
 	out := ingestOK(t, root, strings.ReplaceAll(extraction, "billing/", "payments/"))
-	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new") {
+	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new\n") {
 		t.Fatalf("a plain mv should keep MOD-0001, got:\n%s", out)
 	}
 }
@@ -296,7 +296,7 @@ func TestEquivalentPathSpellingsMatch(t *testing.T) {
 	odd := strings.Replace(extraction, `"billing/charge.go","symbol":"Charge"`, `"billing\\charge.go","symbol":"Charge"`, 1)
 	odd = strings.Replace(odd, `"billing/charge.go","symbol":"Refund"`, `"./billing/charge.go","symbol":" Refund "`, 1)
 	out := ingestOK(t, root, odd)
-	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new") {
+	if !strings.Contains(out, "MOD-0001 matched") || strings.Contains(out, " new\n") {
 		t.Fatalf("path spellings should normalise to the same anchor, got:\n%s", out)
 	}
 }

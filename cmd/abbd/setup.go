@@ -40,7 +40,7 @@ func (e env) setup() error {
 	}
 	var f bootstrap.Findings
 	if e.supplement != "" {
-		doc, err := e.readExtraction(e.supplement)
+		doc, err := e.readSupplement(e.supplement)
 		if err != nil {
 			return fmt.Errorf("supplement: %w", err)
 		}
@@ -121,9 +121,9 @@ func firstDiffLine(a, b []byte) int {
 	return min(len(la), len(lb)) + 1
 }
 
-// readExtraction resolves a relative path against the root, where the
+// readSupplement resolves a relative path against the root, where the
 // extraction script runs, not against the cwd of abbd.
-func (e env) readExtraction(path string) (extract.Result, error) {
+func (e env) readSupplement(path string) (extract.Result, error) {
 	if !filepath.IsAbs(path) {
 		path = filepath.Join(e.root, path)
 	}
@@ -132,5 +132,5 @@ func (e env) readExtraction(path string) (extract.Result, error) {
 		return extract.Result{}, err
 	}
 	defer f.Close()
-	return extract.Parse(f)
+	return extract.ParseSupplement(f)
 }
