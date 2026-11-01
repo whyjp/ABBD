@@ -1,0 +1,2509 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<meta name="abbd-watermark" content="inputs_hash=560fe1e574107505b7c0806bdd790d9a66bd779ac619a6efbda601ab892b5c6a intended_revision=0">
+<title>ABBD 확인 대기열</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --block: #b3261e; --block-bg: #fbeceb; --warn: #9a5b00; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1400px; margin: 0 auto; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+section.first { border-color: var(--block); }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.muted { color: var(--muted); }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+.pill.CURRENT, .pill.PASSED, .pill.SYNCED, .pill.CLOSED, .pill.stated, .pill.confirmed, .pill.aligned { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.STALE, .pill.DRAFT, .pill.drifted, .pill.REALIGN { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
+.pill.BLOCKED, .pill.OPEN, .pill.FAILED { color: var(--block); background: var(--block-bg); border-color: transparent; }
+.pill.inferred, .pill.adopted, .pill.UNCONFIRMED { color: var(--guess); background: var(--guess-bg); border: 1px dashed var(--guess); }
+.pill.PROMOTE { color: var(--accent); }
+.banner { border: 1px dashed var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 14px; }
+.flash { border-radius: 6px; padding: 8px 12px; margin: 0 0 10px; background: var(--ok-bg); white-space: pre-wrap; font-family: var(--mono); font-size: 13px; }
+.flash.fail { background: var(--block-bg); }
+form.inline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 0; }
+input[type=text], textarea, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 4px 8px; min-width: 0; max-width: 100%; }
+input[type=text] { flex: 1 1 160px; }
+button { white-space: nowrap; font: inherit; font-weight: 600; border-radius: 5px; border: 1px solid var(--line); padding: 4px 12px; background: var(--panel); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+button.danger { color: var(--block); border-color: var(--block); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+ul.plain { list-style: none; padding: 0; margin: 4px 0; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+ul.plain li:last-child { border-bottom: 0; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
+details > summary { cursor: pointer; font-weight: 600; }
+details.group { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; margin: 6px 0; }
+details.group[open] > summary { margin-bottom: 4px; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
+.coupling { font-size: 13px; color: var(--guess); margin-top: 2px; }
+.coupling q { color: var(--ink); font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+
+ 
+.strip h2 { display: flex; gap: 8px; align-items: baseline; }
+.cards { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px; }
+.card { flex: 0 0 min(440px, 100%); border: 1px solid var(--line); border-left: 4px solid var(--block); border-radius: 6px; padding: 8px 10px; background: var(--panel); min-width: 0; }
+.card.rejected { border-left-color: var(--warn); }
+.card .title { font-weight: 650; }
+.card .rec { margin: 2px 0; font-size: 14px; }
+.card .rec b { color: var(--accent); }
+.card details { margin-top: 6px; font-size: 14px; }
+.card details p { margin: 4px 0; }
+.card details summary { font-weight: 500; color: var(--muted); }
+.diff { font-family: var(--mono); font-size: 12px; margin: 6px 0; border: 1px solid var(--line); border-radius: 4px; max-height: 12em; overflow: auto; }
+.diff div { padding: 1px 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff .add { background: var(--ok-bg); }
+.diff .add::before { content: "+ "; color: var(--ok); font-weight: 700; }
+.diff .del { background: var(--block-bg); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--block) 50%, transparent); }
+.diff .del::before { content: "− "; color: var(--block); font-weight: 700; }
+.diff .same { color: var(--muted); font-family: system-ui, sans-serif; }
+.diff mark { color: inherit; border-radius: 2px; padding: 0 1px; }
+.diff .add mark { background: color-mix(in srgb, var(--ok) 32%, transparent); }
+.diff .del mark { background: color-mix(in srgb, var(--block) 30%, transparent); }
+.acts { display: flex; gap: 6px; align-items: flex-start; }
+.acts form.inline { margin-top: 4px; }
+.acts .grow { flex: 1 1 auto; flex-wrap: nowrap; min-width: 0; }
+.acts .grow input { min-width: 0; flex: 1 1 60px; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) {
+  .top.has-cards { grid-template-columns: minmax(0, 1fr) 390px; grid-template-areas: "map cards"; gap: 12px; align-items: start; }
+  .top.has-cards #pending { grid-area: cards; }
+  .top.has-cards #overview { grid-area: map; }
+  .top.has-cards .cards { flex-direction: column; overflow: visible; }
+  .top.has-cards .card { flex: none; }
+}
+.align-card { border-left: 4px solid var(--accent); padding: 4px 0 4px 10px; }
+
+ 
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.removed rect { stroke: var(--block); stroke-dasharray: 5 4; fill: var(--block-bg); }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.changed rect { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 2.4; }
+svg .port.changed text { fill: var(--warn); font-weight: 700; }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg .port.unwired { opacity: .55; }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.semantic { stroke: var(--guess); stroke-dasharray: 5 4; stroke-width: 1.2; stroke-opacity: .75; marker-end: url(#m-guess); }
+svg path.new { stroke: var(--block); stroke-width: 3; marker-end: url(#m-block); }
+svg path.realign { stroke: var(--warn); stroke-width: 2.4; stroke-dasharray: 8 3; marker-end: url(#m-warn); }
+svg path.removed { stroke: var(--block); stroke-dasharray: 2 5; stroke-width: 2; }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg path.guess { stroke-dasharray: 5 3; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+.turnnote { display: none; border: 1px solid var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 10px; margin: 6px 0 0; font-size: 14px; }
+.anchor { display: block; position: relative; top: -8px; }
+#this-turn:target ~ .turnnote { display: block; }
+#this-turn:target ~ .mapbox .q { opacity: .1; }
+#this-turn:target ~ .drawhead .v-turn, .drawhead .v-all { font-weight: 700; }
+
+ 
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 10px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+  .card { flex-basis: 86%; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>확인 대기열</h1>
+  <div class="pills">
+    <span class="pill bootstrapped" title="phase: bootstrapped">정렬 전</span>
+    
+    <span class="pill CURRENT" title=".abbd/generated/가 그리는 .abbd 파일과 맞는지">생성 파일 CURRENT</span>
+  </div>
+</header>
+
+
+
+
+
+
+<section id="trust">
+  <h2>확인할 추정</h2>
+  
+  <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
+  <details class="group" id="qg-CFG-0001"><summary>plugin and marketplace manifest <span class="key muted">CFG-0001</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0001.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.purpose</span></div>
+    <div class="why">publishes ABBD as the Claude Code plugin abbd</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0001.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0001.responsibility</span></div>
+    <div class="why">Owns the plugin and marketplace names, the plugin source path, its version and its stated requirements (pstack 0.15.36, abbd on PATH).</div>
+    
+  </div>
+  </details><details class="group" id="qg-CFG-0002"><summary>project.yaml <span class="key muted">CFG-0002</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0002.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.purpose</span></div>
+    <div class="why">registers the project&#39;s extraction and verify commands</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0002.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0002.responsibility</span></div>
+    <div class="why">Holds the argv of the extraction script that setup registered and of the verification command whose PASSED run a turn needs.</div>
+    
+  </div>
+  </details><details class="group" id="qg-CFG-0003"><summary>hook registration <span class="key muted">CFG-0003</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.consumes.CFG-0001">
+    <div><span class="pill inferred">inferred via config: .claude-plugin/marketplace.json:12 &#34;\&#34;source\&#34;: \&#34;./plugins/abbd\&#34;,&#34;</span> <span class="key">CFG-0003.consumes.CFG-0001</span></div>
+    <div class="why">hook registration: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.depends_on.FEAT-0001">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/hooks/hooks.json:2 &#34;each does nothing unless /abbd-mode turned the mode on for the session.&#34;</span> <span class="key">CFG-0003.depends_on.FEAT-0001</span></div>
+    <div class="why">hook registration: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.depends_on.MOD-0001">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/hooks/hooks.json:36 &#34;\&#34;matcher\&#34;: \&#34;bash|powershell|write|edit|notebookedit|webfetch|mcp__.*\&#34;,&#34;</span> <span class="key">CFG-0003.depends_on.MOD-0001</span></div>
+    <div class="why">hook registration: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.purpose</span></div>
+    <div class="why">registers the abbd CLI on Claude Code&#39;s hook events</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-CFG-0003.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">CFG-0003.responsibility</span></div>
+    <div class="why">Owns which events and tool matchers call abbd hook, and the timeout of each.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0001"><summary>Parsed command shape <span class="key muted">DATA-0001</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0001.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0001.responsibility</span></div>
+    <div class="why">The parser&#39;s output: segments with their words, redirects and pipeline number, stdin bodies with whether they expand, and substitutions.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0002"><summary>Overlay findings <span class="key muted">DATA-0002</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0002.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0002.responsibility</span></div>
+    <div class="why">Holds the matched count, the conflicts the code contradicts, and the gaps one side has and the other lacks.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0003"><summary>Overlay source <span class="key muted">DATA-0003</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0003.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0003.responsibility</span></div>
+    <div class="why">Says which document an overlay comes from, fixing the origin of its facts, whether a gap is fatal (Strict) and whether it may rename units.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0004"><summary>Bootstrap report <span class="key muted">DATA-0004</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.depends_on.DATA-0002">
+    <div><span class="pill inferred">inferred via data: internal/bootstrap/report.go:19 &#34;overlays  map[string]findings&#34;</span> <span class="key">DATA-0004.depends_on.DATA-0002</span></div>
+    <div class="why">Bootstrap report: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.depends_on.DATA-0003">
+    <div><span class="pill inferred">inferred via data: internal/bootstrap/report.go:41 &#34;for _, name := range []string{supplement.name, adopt.name} {&#34;</span> <span class="key">DATA-0004.depends_on.DATA-0003</span></div>
+    <div class="why">Bootstrap report: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.depends_on.MOD-0001">
+    <div><span class="pill inferred">inferred via convention: internal/bootstrap/report.go:28 &#34;three runs, the last with reseeded hash seeds, printed identical output&#34;</span> <span class="key">DATA-0004.depends_on.MOD-0001</span></div>
+    <div class="why">Bootstrap report: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.depends_on.MOD-0028">
+    <div><span class="pill inferred">inferred via import: internal/bootstrap/report.go:18 &#34;queue     []confirm.item&#34;</span> <span class="key">DATA-0004.depends_on.MOD-0028</span></div>
+    <div class="why">Bootstrap report: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0004.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0004.responsibility</span></div>
+    <div class="why">Renders what setup found as timestamp-free Markdown: candidates, overlay findings, the confirm queue and next steps.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0005"><summary>confirm item <span class="key muted">DATA-0005</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0005.consumes.IF-0028">
+    <div><span class="pill inferred">inferred via convention: internal/confirm/confirm.go:35 &#34;return topology.edge{from: from, to: r.to, kind: r.kind}.string()&#34;</span> <span class="key">DATA-0005.consumes.IF-0028</span></div>
+    <div class="why">confirm item: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0005.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0005.responsibility</span></div>
+    <div class="why">One pending guess named by its key, the unit it belongs to, the value a human judges, and whether it touches a design unit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0006"><summary>Evidence check result <span class="key muted">DATA-0006</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0006.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0006.responsibility</span></div>
+    <div class="why">Is one check&#39;s outcome: live or not, the lines it was found at, and a digest of those lines.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0007"><summary>extraction JSON <span class="key muted">DATA-0007</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0007.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.purpose</span></div>
+    <div class="why">carries the topology an extractor reports</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0007.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0007.responsibility</span></div>
+    <div class="why">Is the JSON shape of units and relations that the extraction script, a supplement, an adoption or a greenfield statement must print, with unknown fields rejected.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0008"><summary>Typed extraction result <span class="key muted">DATA-0008</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0008.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0008.responsibility</span></div>
+    <div class="why">Is the parsed Result: units with Facts instead of strings, still keyed by extractor-local keys, and relations with origin and via.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0009"><summary>Merge candidate <span class="key muted">DATA-0009</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0009.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0009.responsibility</span></div>
+    <div class="why">Records a leftover anchor overlap between a new unit and a stored unit it did not take over, for a human to resolve.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0010"><summary>Evidence and anchor records <span class="key muted">DATA-0010</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0010.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0010.responsibility</span></div>
+    <div class="why">Is the anchor and the evidence excerpt types, the lines span, the ban on citing .abbd/ or .git/, and the PATH:LINES:QUOTE command-line form.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0011"><summary>Fact with origin, verification and confirmation <span class="key muted">DATA-0011</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0011.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0011.responsibility</span></div>
+    <div class="why">Is a field value with its three independent evidence axes, the guess rule, and the why-field origin restriction.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0012"><summary>Relation, relation kinds and via <span class="key muted">DATA-0012</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0012.depends_on.MOD-0055">
+    <div><span class="pill inferred">inferred via data: internal/model/model.go:255 &#34;provides:  {from: implementer, to: kind.iscontract},&#34;</span> <span class="key">DATA-0012.depends_on.MOD-0055</span></div>
+    <div class="why">Relation, relation kinds and via: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0012.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0012.responsibility</span></div>
+    <div class="why">Is an edge with origin, confirmation, via, evidence, dead and digest, the table of which kinds each relation may join, and whether an edge counts in the actual topology.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0013"><summary>unit files <span class="key muted">DATA-0013</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0013.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0013.purpose</span></div>
+    <div class="why">stores each design unit as Markdown</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0013.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0013.responsibility</span></div>
+    <div class="why">Is one Markdown file per unit under architecture/ or features/, YAML frontmatter as the source of truth plus a user-owned Notes section.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0014"><summary>Design unit record <span class="key muted">DATA-0014</span> <span class="muted">6개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.depends_on.DATA-0010">
+    <div><span class="pill inferred">inferred via data: internal/model/model.go:152 &#34;evidence       []evidence `yaml:\&#34;evidence,omitempty\&#34;`&#34;</span> <span class="key">DATA-0014.depends_on.DATA-0010</span></div>
+    <div class="why">Design unit record: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.depends_on.DATA-0011">
+    <div><span class="pill inferred">inferred via call: internal/model/model.go:186 &#34;if err := u.name.validate(false); err != nil {&#34;</span> <span class="key">DATA-0014.depends_on.DATA-0011</span></div>
+    <div class="why">Design unit record: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.depends_on.DATA-0012">
+    <div><span class="pill inferred">inferred via data: internal/model/model.go:217 &#34;for _, r := range u.relations {&#34;</span> <span class="key">DATA-0014.depends_on.DATA-0012</span></div>
+    <div class="why">Design unit record: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.depends_on.MOD-0054">
+    <div><span class="pill inferred">inferred via call: internal/model/model.go:176 &#34;k, _, err := parseid(string(u.id))&#34;</span> <span class="key">DATA-0014.depends_on.MOD-0054</span></div>
+    <div class="why">Design unit record: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.depends_on.MOD-0055">
+    <div><span class="pill inferred">inferred via call: internal/model/model.go:173 &#34;if err := u.kind.validate(); err != nil {&#34;</span> <span class="key">DATA-0014.depends_on.MOD-0055</span></div>
+    <div class="why">Design unit record: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0014.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0014.responsibility</span></div>
+    <div class="why">Is the Unit as stored, with parent, evidence, relations and absent flag, and its validation including the semantic-needs-evidence rule.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0015"><summary>generated files <span class="key muted">DATA-0015</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0015.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0015.purpose</span></div>
+    <div class="why">the derived explorer, confirm queue and graph.json under .abbd/generated/</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0015.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0015.responsibility</span></div>
+    <div class="why">Holds the static explorer.html, confirm-queue.html and graph.json, each stamped with the watermark of the .abbd inputs it came from so a reader can tell when it is STALE.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0016"><summary>decision records <span class="key muted">DATA-0016</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0016.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0016.purpose</span></div>
+    <div class="why">records human decisions</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0016.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0016.responsibility</span></div>
+    <div class="why">Is decisions/ADR-*.md, each an approved or rejected question with grade, origin and reason, so a decided question is never asked again.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0017"><summary>intended topology <span class="key muted">DATA-0017</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0017.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0017.purpose</span></div>
+    <div class="why">records the aligned intended topology</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0017.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0017.responsibility</span></div>
+    <div class="why">Is .abbd/intended.yaml, the design units, signatures and relations a human aligned to, with a revision bumped on every content change.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0018"><summary>verification runs <span class="key muted">DATA-0018</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0018.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0018.purpose</span></div>
+    <div class="why">records verification runs</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0018.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0018.responsibility</span></div>
+    <div class="why">Is verification/runs/&lt;id&gt;.yaml plus its .log output, the command, tree, exit code and result a turn&#39;s completion rests on.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0019"><summary>change records <span class="key muted">DATA-0019</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0019.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0019.purpose</span></div>
+    <div class="why">records each turn of change</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0019.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0019.responsibility</span></div>
+    <div class="why">Is changes/CHG-*.md, the turn&#39;s frontmatter state with a rendered impact, rejections and gate report.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0020"><summary>requirements <span class="key muted">DATA-0020</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0020.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0020.purpose</span></div>
+    <div class="why">keeps the user&#39;s request verbatim</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0020.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0020.responsibility</span></div>
+    <div class="why">Is requirements/*.md, the text of a request as the user stated it, tied to the turn that serves it.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0021"><summary>Module understanding file <span class="key muted">DATA-0021</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0021.depends_on.MOD-0071">
+    <div><span class="pill inferred">inferred via call: internal/store/understanding.go:33 &#34;b, err := frontmatter(u, strings.trimspace(u.text)&#43;\&#34;\\n\&#34;)&#34;</span> <span class="key">DATA-0021.depends_on.MOD-0071</span></div>
+    <div class="why">Module understanding file: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0021.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0021.responsibility</span></div>
+    <div class="why">Is understanding/&lt;ID&gt;.md, a module&#39;s how-text with INFERRED origin and the digest of the code it describes, and computes that digest.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0022"><summary>change item and edge <span class="key muted">DATA-0022</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0022.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0022.responsibility</span></div>
+    <div class="why">The Item and Edge records with their printed forms, Item.Key and Edge.String, and the parsers ParseKey and ParseEdge that read them back.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0023"><summary>semantic scan record <span class="key muted">DATA-0023</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0023.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0023.responsibility</span></div>
+    <div class="why">Records that an agent checked one impacted unit for reader-only couplings, and names the pstack skills a scan may follow.</div>
+    
+  </div>
+  </details><details class="group" id="qg-DATA-0024"><summary>turn record <span class="key muted">DATA-0024</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-DATA-0024.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">DATA-0024.responsibility</span></div>
+    <div class="why">The Turn written to a change record: state, baseline, seeds, impact, declared IntentDelta, questions, approvals, rejections, scans and end report, with the lookups Approved, Rejected and Waiting.</div>
+    
+  </div>
+  </details><details class="group" id="qg-FEAT-0001"><summary>/abbd-mode <span class="key muted">FEAT-0001</span> <span class="muted">13개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.consumes.CFG-0001">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:10 &#34;`&lt;pstack&gt;` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`&#34;</span> <span class="key">FEAT-0001.consumes.CFG-0001</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.DATA-0010">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:66 &#34;--evidence \&#34;&lt;path&gt;:&lt;lines&gt;:&lt;quote&gt;\&#34;&#34;</span> <span class="key">FEAT-0001.depends_on.DATA-0010</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.DATA-0023">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:75 &#34;use `--by blast-radius` for a unit you scanned that way.&#34;</span> <span class="key">FEAT-0001.depends_on.DATA-0023</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.DATA-0024">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:120 &#34;- `draft`, exit 2: verification is missing, failed, or older than the tree.&#34;</span> <span class="key">FEAT-0001.depends_on.DATA-0024</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0002">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:18 &#34;a hook denies the abbd commands approve, reject, align, confirm, couple, setup, serve and mode off&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0002</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0012">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:14 &#34;when a command exits 2, a human decides next.&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0012</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0013">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:98 &#34;an `unexpected key` line is a relation change&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0013</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0053">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:69 &#34;`via` is one of `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0053</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0065">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:18 &#34;of the session state in `&lt;git-dir&gt;/abbd/sessions/`&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0065</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0069">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:18 &#34;`&lt;git-dir&gt;/abbd/sessions/`&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0069</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.depends_on.MOD-0084">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-mode/skill.md:83 &#34;- `a key` and `b proceed key`: proceed.&#34;</span> <span class="key">FEAT-0001.depends_on.MOD-0084</span></div>
+    <div class="why">/abbd-mode: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.purpose</span></div>
+    <div class="why">runs a pstack poteto-mode playbook inside a gated ABBD turn</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0001.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0001.responsibility</span></div>
+    <div class="why">Owns the agent-side turn protocol (mode on, start with seeds, impact and semantic scan, declare, diff between steps, verify and end before any PR) and the abbd-agent delegate rules.</div>
+    
+  </div>
+  </details><details class="group" id="qg-FEAT-0002"><summary>/abbd-setup <span class="key muted">FEAT-0002</span> <span class="muted">13개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.consumes.CFG-0001">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:8 &#34;abbd is pinned to that version.&#34;</span> <span class="key">FEAT-0002.consumes.CFG-0001</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.consumes.DATA-0007">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:106 &#34;unknown fields are rejected.&#34;</span> <span class="key">FEAT-0002.consumes.DATA-0007</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.consumes.IF-0027">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:110 &#34;named like `mod-0001.purpose` or `mod-0002.consumes.mod-0001`&#34;</span> <span class="key">FEAT-0002.consumes.IF-0027</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.DATA-0004">
+    <div><span class="pill inferred">inferred via data: plugins/abbd/skills/abbd-setup/skill.md:39 &#34;with ids from `.abbd/bootstrap-report.md`&#34;</span> <span class="key">FEAT-0002.depends_on.DATA-0004</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.DATA-0012">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:102 &#34;`via` is optional on a relation and says how it arises&#34;</span> <span class="key">FEAT-0002.depends_on.DATA-0012</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0001">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:34 &#34;one of them with a different `pythonhashseed` and `perl_hash_seed`&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0001</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0023">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:34 &#34;exit 1 `not deterministic`&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0023</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0025">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:36 &#34;exit 1 `fix the script, or cite the code`&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0025</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0027">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:25 &#34;give that unit `evidence` instead of a script anchor&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0027</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0033">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:103 &#34;it must start within three lines of&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0033</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.depends_on.MOD-0051">
+    <div><span class="pill inferred">inferred via convention: plugins/abbd/skills/abbd-setup/skill.md:97 &#34;two shared anchors, or an identical anchor set, keep a unit&#39;s id across re-extraction.&#34;</span> <span class="key">FEAT-0002.depends_on.MOD-0051</span></div>
+    <div class="why">/abbd-setup: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.purpose</span></div>
+    <div class="why">bootstraps ABBD on a repository</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-FEAT-0002.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">FEAT-0002.responsibility</span></div>
+    <div class="why">Owns the setup procedure: choosing the mode, the pstack swarm reading, writing the deterministic extraction script and supplement, running abbd setup and handing alignment to the human.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0001"><summary>abbd hook <span class="key muted">IF-0001</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0001.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.purpose</span></div>
+    <div class="why">the entry point Claude Code hooks call</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0001.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0001.responsibility</span></div>
+    <div class="why">Takes one hook event name, reads the hook JSON on stdin and always exits 0 so it never fails the host.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0002"><summary>Claude Code hook protocol <span class="key muted">IF-0002</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0002.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.purpose</span></div>
+    <div class="why">the JSON exchange with Claude Code hooks</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0002.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0002.responsibility</span></div>
+    <div class="why">The five hook events abbd handles, the stdin fields it reads and the stdout fields it writes to add context, deny a tool or block a stop.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0003"><summary>abbd align <span class="key muted">IF-0003</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0003.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.purpose</span></div>
+    <div class="why">lets a human choose or realign the design units</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0003.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0003.responsibility</span></div>
+    <div class="why">Confirms the first design units from the bootstrapped candidates, or realigns a drifted project by its REALIGN rows.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0004"><summary>abbd approve <span class="key muted">IF-0004</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0004.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.purpose</span></div>
+    <div class="why">lets a human allow one grade C change</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0004.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0004.responsibility</span></div>
+    <div class="why">Approves a blocked or questioned change, inside an open turn for that turn only, or adopts a promotion candidate as a design unit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0005"><summary>abbd confirm <span class="key muted">IF-0005</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0005.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.purpose</span></div>
+    <div class="why">lets a human settle an inferred fact</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0005.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0005.responsibility</span></div>
+    <div class="why">Lists the confirm queue, confirms or rejects one inferred item, and sets a contract&#39;s external_consumers flag.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0006"><summary>abbd couple <span class="key muted">IF-0006</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0006.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0006.purpose</span></div>
+    <div class="why">lets a human register a coupling the script cannot see</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0006.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0006.responsibility</span></div>
+    <div class="why">Adds a USER_STATED relation FROM.KIND.TO to the actual topology and acknowledges it when it would surface as drift.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0007"><summary>abbd ingest <span class="key muted">IF-0007</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0007.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0007.purpose</span></div>
+    <div class="why">feeds an extraction result into .abbd by hand</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0007.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0007.responsibility</span></div>
+    <div class="why">Reconciles an extraction JSON file or stdin into the actual topology and prints each unit&#39;s identity outcome.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0008"><summary>abbd mode <span class="key muted">IF-0008</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0008.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0008.purpose</span></div>
+    <div class="why">switches ABBD mode on or off for a session</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0008.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0008.responsibility</span></div>
+    <div class="why">Turns a session&#39;s mode on only when the project is aligned after re-extraction, resuming an unfinished turn, or turns it off.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0009"><summary>abbd reject <span class="key muted">IF-0009</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0009.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0009.purpose</span></div>
+    <div class="why">lets a human refuse one grade C change</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0009.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0009.responsibility</span></div>
+    <div class="why">Writes a rejection ADR with the required --reason, keeping the change blocked, or keeps a promotion candidate below the line.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0010"><summary>abbd status <span class="key muted">IF-0010</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0010.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0010.purpose</span></div>
+    <div class="why">shows where the project stands</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0010.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0010.responsibility</span></div>
+    <div class="why">Prints the phase, the confirm queue size, whether generated files and the actual topology are CURRENT, the session&#39;s mode and the drift.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0011"><summary>abbd evidence <span class="key muted">IF-0011</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0011.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0011.purpose</span></div>
+    <div class="why">reports whether semantic evidence is still in the code</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0011.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0011.responsibility</span></div>
+    <div class="why">Prints, for every semantic unit and relation, each quote as live with its location or dead, without writing anything.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0012"><summary>abbd propose relation <span class="key muted">IF-0012</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0012.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0012.purpose</span></div>
+    <div class="why">records an agent&#39;s guess at a coupling</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0012.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0012.responsibility</span></div>
+    <div class="why">Stores FROM KIND TO with --via and live --evidence as an INFERRED, UNCONFIRMED relation that joins the impact but never gates.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0013"><summary>abbd propose unit <span class="key muted">IF-0013</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0013.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0013.purpose</span></div>
+    <div class="why">records an agent&#39;s guess at a unit</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0013.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0013.responsibility</span></div>
+    <div class="why">Stores a unit the script cannot see, anchored by its live evidence and optionally placed under a parent module, as INFERRED.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0014"><summary>abbd serve <span class="key muted">IF-0014</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0014.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0014.purpose</span></div>
+    <div class="why">starts the human screen</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0014.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0014.responsibility</span></div>
+    <div class="why">Serves the loopback approval screen on --addr where a human approves, rejects, confirms and aligns.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0015"><summary>abbd setup <span class="key muted">IF-0015</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0015.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0015.purpose</span></div>
+    <div class="why">bootstraps ABBD on a repository</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0015.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0015.responsibility</span></div>
+    <div class="why">Registers and determinism-checks the extraction script, overlays supplement and adopt documents, registers --verify, or aligns a greenfield project at once.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0016"><summary>abbd turn declare <span class="key muted">IF-0016</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0016.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0016.purpose</span></div>
+    <div class="why">records what a turn intends to change</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0016.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0016.responsibility</span></div>
+    <div class="why">Stores the IntentDelta of units and change keys, grades each change and exits 2 while a grade C change waits for a human.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0017"><summary>abbd turn diff <span class="key muted">IF-0017</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0017.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0017.purpose</span></div>
+    <div class="why">checks a turn&#39;s work between steps</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0017.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0017.responsibility</span></div>
+    <div class="why">Re-extracts, judges the actual topology against the intended one plus approvals, and exits 2 on a boundary-crossing change.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0018"><summary>abbd turn end <span class="key muted">IF-0018</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0018.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0018.purpose</span></div>
+    <div class="why">concludes a turn</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0018.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0018.responsibility</span></div>
+    <div class="why">Gates the turn and records it as SYNCED or CLOSED, or exits 2 with DRAFT or BLOCKED.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0019"><summary>abbd turn impact <span class="key muted">IF-0019</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0019.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0019.purpose</span></div>
+    <div class="why">shows and widens a turn&#39;s impact</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0019.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0019.responsibility</span></div>
+    <div class="why">Prints the turn&#39;s impact in direct and far tiers and lets the agent only add units to it.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0020"><summary>abbd turn scan <span class="key muted">IF-0020</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0020.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0020.purpose</span></div>
+    <div class="why">records a semantic-coupling scan of an impacted unit</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0020.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0020.responsibility</span></div>
+    <div class="why">Marks a unit in the impact as scanned by how or blast-radius so turn end leaves no semantic-unscanned card for it.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0021"><summary>abbd turn show <span class="key muted">IF-0021</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0021.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0021.purpose</span></div>
+    <div class="why">lets any session read the latest turn</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0021.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0021.responsibility</span></div>
+    <div class="why">Prints the latest turn&#39;s impact, declaration, approvals, report and rejections.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0022"><summary>abbd turn start <span class="key muted">IF-0022</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0022.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0022.purpose</span></div>
+    <div class="why">opens a turn for a request</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0022.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0022.responsibility</span></div>
+    <div class="why">Records the request verbatim, fingerprints the tree and extractor, and computes the impact from the seeds in an aligned project.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0023"><summary>abbd turn verify <span class="key muted">IF-0023</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0023.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0023.purpose</span></div>
+    <div class="why">records the project verification for a turn</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0023.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0023.responsibility</span></div>
+    <div class="why">Runs the registered verify command, registering it once, and saves a run that fails when the command fails or edits the tree.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0024"><summary>abbd understand <span class="key muted">IF-0024</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0024.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0024.purpose</span></div>
+    <div class="why">stores how&#39;s reading of a module</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0024.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0024.responsibility</span></div>
+    <div class="why">Saves an INFERRED Overview and Key Concepts text for a top-level module, stamped with the module&#39;s code digest so the screen marks it STALE.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0025"><summary>abbd exit codes <span class="key muted">IF-0025</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0025.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0025.purpose</span></div>
+    <div class="why">tells a caller how an abbd command ended</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0025.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0025.responsibility</span></div>
+    <div class="why">The exit code contract every command shares: 0 done, 1 error, 2 a human decision is needed, 64 a malformed command line.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0026"><summary>screen HTTP <span class="key muted">IF-0026</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0026.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0026.purpose</span></div>
+    <div class="why">the HTTP surface the screen page talks to</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0026.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0026.responsibility</span></div>
+    <div class="why">GET / returns the rendered page and POST /act takes one decision form (do, key, token t and the action&#39;s fields) from the screen&#39;s own origin and answers with what the CLI printed.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0027"><summary>confirm item key <span class="key muted">IF-0027</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0027.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0027.purpose</span></div>
+    <div class="why">names one guess in the confirm queue</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0027.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0027.responsibility</span></div>
+    <div class="why">Fixes the ID.purpose, ID.responsibility and FROM.kind.TO strings that abbd confirm, the screen&#39;s confirm forms and the setup skill use to name a guess.</div>
+    
+  </div>
+  </details><details class="group" id="qg-IF-0028"><summary>change item key <span class="key muted">IF-0028</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0028.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0028.purpose</span></div>
+    <div class="why">names one topology change on the command line</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-IF-0028.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">IF-0028.responsibility</span></div>
+    <div class="why">Fixes the change:ID and change:FROM.kind.TO strings that approve, reject, turn declare, the gate lines and the screen use to name the same difference.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0001"><summary>abbd CLI <span class="key muted">MOD-0001</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.depends_on.MOD-0069">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:173 &#34;strings.contains(strings.tolower(in.raw), \&#34;serve.addr\&#34;)&#34;</span> <span class="key">MOD-0001.depends_on.MOD-0069</span></div>
+    <div class="why">abbd CLI: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.depends_on.MOD-0082">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/turn.go:506 &#34;output: \&#34;verification/runs/\&#34; &#43; id &#43; \&#34;.log\&#34;&#34;</span> <span class="key">MOD-0001.depends_on.MOD-0082</span></div>
+    <div class="why">abbd CLI: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.depends_on.MOD-0085">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/turn.go:625 &#34;grade: \&#34;b\&#34;, subject: vd.item.key()&#34;</span> <span class="key">MOD-0001.depends_on.MOD-0085</span></div>
+    <div class="why">abbd CLI: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.purpose</span></div>
+    <div class="why">runs every abbd command a human, an agent or a hook invokes</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0001.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0001.responsibility</span></div>
+    <div class="why">Owns the command table, flag parsing and exit codes, and turns each verb into reads and writes of the .abbd store through the internal packages.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0002"><summary>PreToolUse guard <span class="key muted">MOD-0002</span> <span class="muted">6개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.consumes.CFG-0002">
+    <div><span class="pill inferred">inferred via config: cmd/abbd/guard.go:435 &#34;p, err := e.st.loadproject()&#34;</span> <span class="key">MOD-0002.consumes.CFG-0002</span></div>
+    <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.depends_on.MOD-0017">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/serve.go:52 &#34;os.writefile(file, []byte(s.addr&#43;\&#34;\\n\&#34;), 0o644)&#34;</span> <span class="key">MOD-0002.depends_on.MOD-0017</span></div>
+    <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.depends_on.MOD-0066">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:506 &#34;if c == \&#34;.abbd\&#34; &amp;&amp; !g.extractor(cs[i&#43;1:]) {&#34;</span> <span class="key">MOD-0002.depends_on.MOD-0066</span></div>
+    <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.depends_on.MOD-0069">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:509 &#34;if c == \&#34;.git\&#34; &amp;&amp; (deleting || slices.contains(cs[i&#43;1:], \&#34;abbd\&#34;)) {&#34;</span> <span class="key">MOD-0002.depends_on.MOD-0069</span></div>
+    <div class="why">PreToolUse guard: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.purpose</span></div>
+    <div class="why">keeps an agent in ABBD mode away from the human&#39;s commands and files</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0002.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0002.responsibility</span></div>
+    <div class="why">Reads a Bash or PowerShell command the way a shell splits it and says why it is denied when it runs a human-only abbd command, writes or deletes a protected path, or reaches the running screen.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0003"><summary>Human-only abbd commands <span class="key muted">MOD-0003</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.consumes.IF-0025">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:380 &#34;\&#34;align\&#34;: true, \&#34;approve\&#34;: true, \&#34;reject\&#34;: true,&#34;</span> <span class="key">MOD-0003.consumes.IF-0025</span></div>
+    <div class="why">Human-only abbd commands: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.depends_on.MOD-0009">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:388 &#34;if readers[commandname(words[0])] {&#34;</span> <span class="key">MOD-0003.depends_on.MOD-0009</span></div>
+    <div class="why">Human-only abbd commands: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.depends_on.MOD-0019">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:380 &#34;\&#34;confirm\&#34;: true, \&#34;couple\&#34;: true,&#34;</span> <span class="key">MOD-0003.depends_on.MOD-0019</span></div>
+    <div class="why">Human-only abbd commands: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0003.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0003.responsibility</span></div>
+    <div class="why">Names the abbd subcommands only a human runs while the mode is on and finds which abbd subcommand a segment runs, past global flags.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0004"><summary>Command verdict <span class="key muted">MOD-0004</span> <span class="muted">7개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.consumes.IF-0015">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:733 &#34;commandname(w[0]) == \&#34;abbd\&#34; &amp;&amp; w[1] == \&#34;setup\&#34; &amp;&amp; w[2] == \&#34;--\&#34;&#34;</span> <span class="key">MOD-0004.consumes.IF-0015</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.depends_on.MOD-0003">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/guard.go:610 &#34;if sub := abbdcommand(words); humans[sub] {&#34;</span> <span class="key">MOD-0004.depends_on.MOD-0003</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.depends_on.MOD-0006">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/guard.go:602 &#34;if g.protected(cwd, r, false) {&#34;</span> <span class="key">MOD-0004.depends_on.MOD-0006</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.depends_on.MOD-0007">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/guard.go:581 &#34;p := parseshell(cmd)&#34;</span> <span class="key">MOD-0004.depends_on.MOD-0007</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.depends_on.MOD-0008">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/guard.go:617 &#34;slices.containsfunc(words, g.reachesscreen)&#34;</span> <span class="key">MOD-0004.depends_on.MOD-0008</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.depends_on.MOD-0009">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:626 &#34;case shells[name]:&#34;</span> <span class="key">MOD-0004.depends_on.MOD-0009</span></div>
+    <div class="why">Command verdict: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0004.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0004.responsibility</span></div>
+    <div class="why">Walks the parsed command, recursing into substitutions, executable bodies and nested shells up to maxDepth, and returns the first deny reason for a human command, a protected write, a screen request or a tree-wide git rewrite.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0005"><summary>Guard state <span class="key muted">MOD-0005</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0005.consumes.CFG-0002">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:435 &#34;p, err := e.st.loadproject()&#34;</span> <span class="key">MOD-0005.consumes.CFG-0002</span></div>
+    <div class="why">Guard state: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0005.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0005.responsibility</span></div>
+    <div class="why">Builds the guard for one hook call: the root and cwd, whether setup is still open, the registered script&#39;s files and every spelling of the running screen&#39;s address.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0006"><summary>Protected paths <span class="key muted">MOD-0006</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.depends_on.MOD-0005">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:532 &#34;return g.setupopen &amp;&amp; len(below) &gt; 0&#34;</span> <span class="key">MOD-0006.depends_on.MOD-0005</span></div>
+    <div class="why">Protected paths: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.depends_on.MOD-0065">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/guard.go:506 &#34;if c == \&#34;.abbd\&#34; &amp;&amp; !g.extractor(cs[i&#43;1:]) {&#34;</span> <span class="key">MOD-0006.depends_on.MOD-0065</span></div>
+    <div class="why">Protected paths: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0006.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0006.responsibility</span></div>
+    <div class="why">Decides whether a path, glob or argument text reaches .abbd/ (except the extractor while setup is open), session state under the git directory, or the registered script&#39;s files.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0007"><summary>Shell splitter <span class="key muted">MOD-0007</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0007.depends_on.DATA-0001">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:95 &#34;p.out.segs = append(p.out.segs, p.cur)&#34;</span> <span class="key">MOD-0007.depends_on.DATA-0001</span></div>
+    <div class="why">Shell splitter: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0007.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0007.responsibility</span></div>
+    <div class="why">Splits a command string into simple commands, redirect targets, heredoc and here-string bodies and command substitutions, for both POSIX shells and PowerShell.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0008"><summary>Screen request check <span class="key muted">MOD-0008</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.depends_on.MOD-0005">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/guard.go:449 &#34;return slices.containsfunc(g.screen,&#34;</span> <span class="key">MOD-0008.depends_on.MOD-0005</span></div>
+    <div class="why">Screen request check: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0008.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0008.responsibility</span></div>
+    <div class="why">Says whether any text names the running screen&#39;s address and holds the reason an agent is given when it does.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0009"><summary>Command classes <span class="key muted">MOD-0009</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0009.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0009.responsibility</span></div>
+    <div class="why">Classifies a command name as a reader, a shell that runs its arguments, a deleter, a directory change or a git subcommand that rewrites the working tree.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0010"><summary>Hook dispatch <span class="key muted">MOD-0010</span> <span class="muted">7개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.consumes.CFG-0003">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:175 &#34;case in.toolname == \&#34;bash\&#34; || in.toolname == \&#34;powershell\&#34;:&#34;</span> <span class="key">MOD-0010.consumes.CFG-0003</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.consumes.IF-0018">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:208 &#34;run abbd turn verify --session %s, then abbd turn end --session %s&#34;</span> <span class="key">MOD-0010.consumes.IF-0018</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.consumes.IF-0022">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:148 &#34;abbd turn start --session %s --seeds ids --request -&#34;</span> <span class="key">MOD-0010.consumes.IF-0022</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.depends_on.FEAT-0001">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:136 &#34;continue it under /abbd-mode&#34;</span> <span class="key">MOD-0010.depends_on.FEAT-0001</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.depends_on.MOD-0013">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/hook.go:203 &#34;tree, err := e.tree()&#34;</span> <span class="key">MOD-0010.depends_on.MOD-0013</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.depends_on.MOD-0065">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/hook.go:173 &#34;case strings.contains(strings.tolower(in.raw), \&#34;serve.addr\&#34;):&#34;</span> <span class="key">MOD-0010.depends_on.MOD-0065</span></div>
+    <div class="why">Hook dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0010.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0010.responsibility</span></div>
+    <div class="why">Reads Claude Code hook JSON, does nothing unless the session&#39;s mode is on, and routes each event to its handler: context on session start and prompt submit, the journal on edits, the guard before tools, the stop block.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0011"><summary>Human decision commands <span class="key muted">MOD-0011</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.depends_on.MOD-0013">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/main.go:739 &#34;return e.approveinturn(t, key)&#34;</span> <span class="key">MOD-0011.depends_on.MOD-0013</span></div>
+    <div class="why">Human decision commands: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.depends_on.MOD-0014">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/main.go:450 &#34;v, err := e.load()&#34;</span> <span class="key">MOD-0011.depends_on.MOD-0014</span></div>
+    <div class="why">Human decision commands: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0011.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0011.responsibility</span></div>
+    <div class="why">Applies a human&#39;s decisions outside a turn: align, confirm, approve, reject, couple and promotion adoption, each writing the intended topology or an ADR.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0012"><summary>Command table and dispatch <span class="key muted">MOD-0012</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.depends_on.MOD-0010">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/main.go:299 &#34;e.hook(inv.sub)&#34;</span> <span class="key">MOD-0012.depends_on.MOD-0010</span></div>
+    <div class="why">Command table and dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.depends_on.MOD-0015">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/main.go:308 &#34;if perr := e.publish(); perr != nil {&#34;</span> <span class="key">MOD-0012.depends_on.MOD-0015</span></div>
+    <div class="why">Command table and dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.depends_on.MOD-0053">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/main.go:173 &#34;how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call&#34;</span> <span class="key">MOD-0012.depends_on.MOD-0053</span></div>
+    <div class="why">Command table and dispatch: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0012.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0012.responsibility</span></div>
+    <div class="why">Parses a command line against the command table and flag definitions, runs the verb, republishes generated files when inputs changed, and maps the result to an exit code.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0013"><summary>Session mode and turn lifecycle <span class="key muted">MOD-0013</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.depends_on.FEAT-0002">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/turn.go:42 &#34;filepath.join(e.root, store.dir, \&#34;extractor\&#34;)&#34;</span> <span class="key">MOD-0013.depends_on.FEAT-0002</span></div>
+    <div class="why">Session mode and turn lifecycle: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.depends_on.MOD-0014">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/turn.go:436 &#34;if err := e.reextract(); err != nil {&#34;</span> <span class="key">MOD-0013.depends_on.MOD-0014</span></div>
+    <div class="why">Session mode and turn lifecycle: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.depends_on.MOD-0015">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/turn.go:642 &#34;return e.published()&#34;</span> <span class="key">MOD-0013.depends_on.MOD-0015</span></div>
+    <div class="why">Session mode and turn lifecycle: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0013.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0013.responsibility</span></div>
+    <div class="why">Turns a session&#39;s mode on or off, resumes an unfinished turn, and runs turn start, impact, scan, declare, diff, verify, end and show, including approvals and rejections inside a turn.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0014"><summary>Actual topology sync <span class="key muted">MOD-0014</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0014.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0014.responsibility</span></div>
+    <div class="why">Brings the actual topology up to the working tree: runs the registered extraction script, reconciles its result through identity and evidence, and loads the view the other commands read.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0015"><summary>Generated files and status <span class="key muted">MOD-0015</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0015.depends_on.MOD-0014">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/main.go:1046 &#34;if err := e.printfreshness(); err != nil {&#34;</span> <span class="key">MOD-0015.depends_on.MOD-0014</span></div>
+    <div class="why">Generated files and status: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0015.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0015.responsibility</span></div>
+    <div class="why">Regenerates .abbd/generated/ from the store with graph.json written last, checks it is CURRENT after a sync, and prints phase, queue and freshness for abbd status.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0016"><summary>Agent proposals, evidence and understanding <span class="key muted">MOD-0016</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0016.depends_on.MOD-0014">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/propose.go:76 &#34;v, err := e.load()&#34;</span> <span class="key">MOD-0016.depends_on.MOD-0014</span></div>
+    <div class="why">Agent proposals, evidence and understanding: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0016.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0016.responsibility</span></div>
+    <div class="why">Takes an agent&#39;s readings into the store as INFERRED: proposed units and relations with live citations, the evidence report, and how&#39;s per-module understanding text.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0017"><summary>screen server <span class="key muted">MOD-0017</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0017.consumes.IF-0027">
+    <div><span class="pill inferred">inferred via data: internal/screen/page.html:298 &#34;&lt;input type=\&#34;hidden\&#34; name=\&#34;do\&#34; value=\&#34;confirm\&#34;&gt;&lt;input type=\&#34;hidden\&#34; name=\&#34;key\&#34; value=\&#34;{{.key}}\&#34;&gt;&#34;</span> <span class="key">MOD-0017.consumes.IF-0027</span></div>
+    <div class="why">screen server: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0017.consumes.IF-0028">
+    <div><span class="pill inferred">inferred via data: internal/screen/page.html:211 &#34;&lt;input type=\&#34;hidden\&#34; name=\&#34;do\&#34; value=\&#34;approve\&#34;&gt;&lt;input type=\&#34;hidden\&#34; name=\&#34;key\&#34; value=\&#34;{{.key}}\&#34;&gt;&#34;</span> <span class="key">MOD-0017.consumes.IF-0028</span></div>
+    <div class="why">screen server: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0017.depends_on.DATA-0022">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/serve.go:105 &#34;f.set(\&#34;key\&#34;, f.get(\&#34;from\&#34;)&#43;\&#34;.\&#34;&#43;f.get(\&#34;kind\&#34;)&#43;\&#34;.\&#34;&#43;f.get(\&#34;to\&#34;))&#34;</span> <span class="key">MOD-0017.depends_on.DATA-0022</span></div>
+    <div class="why">screen server: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0017.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0017.purpose</span></div>
+    <div class="why">serves the human screen on loopback and runs its decisions as CLI commands</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0017.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0017.responsibility</span></div>
+    <div class="why">Owns the loopback listener, the per-launch token and serve.addr file, the origin and token checks, and the translation of each posted form into the abbd command line it stands for.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0018"><summary>Decision runner <span class="key muted">MOD-0018</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0018.depends_on.MOD-0001">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/serve.go:219 &#34;code := run(append(argv, \&#34;--root\&#34;, s.env.root)&#34;</span> <span class="key">MOD-0018.depends_on.MOD-0001</span></div>
+    <div class="why">Decision runner: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0018.depends_on.MOD-0019">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/serve.go:206 &#34;build, ok := actions[r.postform.get(\&#34;do\&#34;)]&#34;</span> <span class="key">MOD-0018.depends_on.MOD-0019</span></div>
+    <div class="why">Decision runner: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0018.depends_on.MOD-0020">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/serve.go:200 &#34;!s.fromscreen(r) || !s.valid(r.postform.get(\&#34;t\&#34;))&#34;</span> <span class="key">MOD-0018.depends_on.MOD-0020</span></div>
+    <div class="why">Decision runner: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0018.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0018.responsibility</span></div>
+    <div class="why">Runs one decision at a time as an in-process CLI call with --root, and answers with the command line and what it printed, failing with 422 on a CLI error.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0019"><summary>Form to command table <span class="key muted">MOD-0019</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0019.depends_on.MOD-0072">
+    <div><span class="pill inferred">inferred via convention: cmd/abbd/serve.go:105 &#34;f.set(\&#34;key\&#34;, f.get(\&#34;from\&#34;)&#43;\&#34;.\&#34;&#43;f.get(\&#34;kind\&#34;)&#43;\&#34;.\&#34;&#43;f.get(\&#34;to\&#34;))&#34;</span> <span class="key">MOD-0019.depends_on.MOD-0072</span></div>
+    <div class="why">Form to command table: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0019.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0019.responsibility</span></div>
+    <div class="why">Maps each do value to the abbd argv it stands for, refusing a key that looks like a flag.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0020"><summary>Origin and token check <span class="key muted">MOD-0020</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0020.depends_on.MOD-0022">
+    <div><span class="pill inferred">inferred via data: cmd/abbd/serve.go:155 &#34;subtle.constanttimecompare([]byte(t), []byte(s.token))&#34;</span> <span class="key">MOD-0020.depends_on.MOD-0022</span></div>
+    <div class="why">Origin and token check: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0020.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0020.responsibility</span></div>
+    <div class="why">Serves only the printed loopback Host, and accepts a decision only from the screen&#39;s own origin carrying the launch token, compared in constant time.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0021"><summary>Live page response <span class="key muted">MOD-0021</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0021.depends_on.MOD-0056">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/serve.go:183 &#34;screen.render(&amp;b, screen.build(in), o)&#34;</span> <span class="key">MOD-0021.depends_on.MOD-0056</span></div>
+    <div class="why">Live page response: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0021.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0021.responsibility</span></div>
+    <div class="why">Renders the live page under the decision lock with a fresh script nonce and sends it with a strict Content-Security-Policy and no-store, no-frame headers.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0022"><summary>Screen launch <span class="key muted">MOD-0022</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0022.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0022.responsibility</span></div>
+    <div class="why">Refuses a non-loopback --addr, draws the 24-byte token, prints the link with the token in its fragment, writes the address to serve.addr and removes it on exit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0023"><summary>Setup and bootstrap <span class="key muted">MOD-0023</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0023.depends_on.MOD-0014">
+    <div><span class="pill inferred">inferred via call: cmd/abbd/setup.go:106 &#34;if _, err := e.syncactual(ex, identity.replaceguesses); err != nil {&#34;</span> <span class="key">MOD-0023.depends_on.MOD-0014</span></div>
+    <div class="why">Setup and bootstrap: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0023.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0023.responsibility</span></div>
+    <div class="why">Runs setup: checks the extraction script is deterministic over three runs, overlays the supplement and adopt documents, registers the verify command, and handles greenfield setup on an empty directory.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0024"><summary>internal/bootstrap <span class="key muted">MOD-0024</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0024.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0024.purpose</span></div>
+    <div class="why">folds reader-written documents onto the extraction script&#39;s result at setup</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0024.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0024.responsibility</span></div>
+    <div class="why">Owns the overlay of a supplement or adopt document onto the script units, the findings it produces, and the bootstrap report setup writes.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0025"><summary>Overlay fold <span class="key muted">MOD-0025</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0025.depends_on.DATA-0002">
+    <div><span class="pill inferred">inferred via data: internal/bootstrap/overlay.go:51 &#34;var f findings&#34;</span> <span class="key">MOD-0025.depends_on.DATA-0002</span></div>
+    <div class="why">Overlay fold: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0025.depends_on.DATA-0003">
+    <div><span class="pill inferred">inferred via data: internal/bootstrap/overlay.go:89 &#34;if src.strict &amp;&amp; len(f.gaps) &gt; 0 {&#34;</span> <span class="key">MOD-0025.depends_on.DATA-0003</span></div>
+    <div class="why">Overlay fold: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0025.depends_on.MOD-0026">
+    <div><span class="pill inferred">inferred via call: internal/bootstrap/overlay.go:57 &#34;i, err := match(out.units[:scriptunits], d)&#34;</span> <span class="key">MOD-0025.depends_on.MOD-0026</span></div>
+    <div class="why">Overlay fold: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0025.depends_on.MOD-0027">
+    <div><span class="pill inferred">inferred via call: internal/bootstrap/overlay.go:59 &#34;out.units = append(out.units, semantic(d, fmt.sprintf(\&#34;%s#%d\&#34;, src.name, n)))&#34;</span> <span class="key">MOD-0025.depends_on.MOD-0027</span></div>
+    <div class="why">Overlay fold: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0025.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0025.responsibility</span></div>
+    <div class="why">Matches each document unit to a script unit, copies purpose and responsibility onto it, sets parents and appends the couplings the script did not extract.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0026"><summary>Anchor matcher <span class="key muted">MOD-0026</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0026.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0026.responsibility</span></div>
+    <div class="why">Picks the script unit of the same kind that shares the most anchors with a document unit, refusing no match and ties.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0027"><summary>Semantic unit admission <span class="key muted">MOD-0027</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0027.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0027.responsibility</span></div>
+    <div class="why">Admits a supplement unit the script cannot see when it carries evidence, as an INFERRED unconfirmed unit with no signature or digest.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0028"><summary>internal/confirm <span class="key muted">MOD-0028</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0028.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0028.purpose</span></div>
+    <div class="why">queues agent guesses for a human to confirm or reject</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0028.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0028.responsibility</span></div>
+    <div class="why">Owns the confirm queue of guessed purposes, responsibilities and couplings, and applies a human&#39;s confirmation or rejection of one item to a copy of its unit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0029"><summary>confirm and reject <span class="key muted">MOD-0029</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0029.depends_on.DATA-0005">
+    <div><span class="pill inferred">inferred via call: internal/confirm/confirm.go:148 &#34;if relationkey(u.id, r) != key || u.absent {&#34;</span> <span class="key">MOD-0029.depends_on.DATA-0005</span></div>
+    <div class="why">confirm and reject: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0029.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0029.responsibility</span></div>
+    <div class="why">Finds the item a key names and confirms it, replaces it with the human&#39;s value, or rejects it, always on a copy of the unit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0030"><summary>confirm queue <span class="key muted">MOD-0030</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0030.depends_on.DATA-0005">
+    <div><span class="pill inferred">inferred via call: internal/confirm/confirm.go:56 &#34;add(relationkey(u.id, r), relationvalue(r), design[u.id] || design[r.to])&#34;</span> <span class="key">MOD-0030.depends_on.DATA-0005</span></div>
+    <div class="why">confirm queue: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0030.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0030.responsibility</span></div>
+    <div class="why">Lists every guessed purpose, responsibility and uncounted, live, unrejected relation of the present units, design units first.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0031"><summary>internal/evidence <span class="key muted">MOD-0031</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0031.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0031.purpose</span></div>
+    <div class="why">decides whether cited code is still there</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0031.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0031.responsibility</span></div>
+    <div class="why">Owns the deterministic, whitespace-insensitive quote match that keeps a semantic unit present or a semantic relation alive, and the digest of the lines that hold each quote.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0032"><summary>Liveness application <span class="key muted">MOD-0032</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0032.depends_on.DATA-0014">
+    <div><span class="pill inferred">inferred via call: internal/evidence/evidence.go:138 &#34;if u.semantic() &amp;&amp; !u.absent {&#34;</span> <span class="key">MOD-0032.depends_on.DATA-0014</span></div>
+    <div class="why">Liveness application: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0032.depends_on.MOD-0033">
+    <div><span class="pill inferred">inferred via call: internal/evidence/evidence.go:120 &#34;if r := c.check(e); r.live {&#34;</span> <span class="key">MOD-0032.depends_on.MOD-0033</span></div>
+    <div class="why">Liveness application: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0032.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0032.responsibility</span></div>
+    <div class="why">Marks semantic units absent and semantic relations dead when none of their quotes survives, moves live lines, and records relation digests.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0033"><summary>Quote matching rule <span class="key muted">MOD-0033</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0033.depends_on.DATA-0006">
+    <div><span class="pill inferred">inferred via data: internal/evidence/evidence.go:107 &#34;return result{live: true, at: at, digest: hex.encodetostring(h[:8])}&#34;</span> <span class="key">MOD-0033.depends_on.DATA-0006</span></div>
+    <div class="why">Quote matching rule: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0033.depends_on.MOD-0034">
+    <div><span class="pill inferred">inferred via call: internal/evidence/evidence.go:84 &#34;f := c.load(e.path)&#34;</span> <span class="key">MOD-0033.depends_on.MOD-0034</span></div>
+    <div class="why">Quote matching rule: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0033.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0033.responsibility</span></div>
+    <div class="why">Finds a quote whitespace-insensitively, as a whole word at its ends, starting within Slack lines of the cited range, and returns where it is now.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0034"><summary>File cache and normal form <span class="key muted">MOD-0034</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0034.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0034.responsibility</span></div>
+    <div class="why">Reads each cited file once and keeps it as raw lines plus a whitespace-free string with per-byte line numbers and word-start gaps.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0035"><summary>internal/extract <span class="key muted">MOD-0035</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0035.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0035.purpose</span></div>
+    <div class="why">turns extraction JSON into typed units</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0035.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0035.responsibility</span></div>
+    <div class="why">Owns the strict parsing and validation of the extraction format: keys, parents, anchors, evidence paths, relation kinds, and which facts start EXTRACTED or INFERRED.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0036"><summary>Anchor and evidence path normalization <span class="key muted">MOD-0036</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0036.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0036.responsibility</span></div>
+    <div class="why">Makes every path forward-slash, cleaned and root-relative so it compares equal to git&#39;s paths, refusing absolute paths and escapes.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0037"><summary>Key, parent and relation validation <span class="key muted">MOD-0037</span> <span class="muted">5개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0037.depends_on.DATA-0008">
+    <div><span class="pill inferred">inferred via data: internal/extract/extract.go:113 &#34;res.relations = append(res.relations, relation{&#34;</span> <span class="key">MOD-0037.depends_on.DATA-0008</span></div>
+    <div class="why">Key, parent and relation validation: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0037.depends_on.DATA-0012">
+    <div><span class="pill inferred">inferred via call: internal/extract/extract.go:103 &#34;if err := rr.kind.joins(from, to); err != nil {&#34;</span> <span class="key">MOD-0037.depends_on.DATA-0012</span></div>
+    <div class="why">Key, parent and relation validation: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0037.depends_on.MOD-0036">
+    <div><span class="pill inferred">inferred via call: internal/extract/extract.go:109 &#34;evidence, err := normalizeevidence(rr.evidence)&#34;</span> <span class="key">MOD-0037.depends_on.MOD-0036</span></div>
+    <div class="why">Key, parent and relation validation: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0037.depends_on.MOD-0039">
+    <div><span class="pill inferred">inferred via call: internal/extract/extract.go:72 &#34;units, raw, err := parseunits(r)&#34;</span> <span class="key">MOD-0037.depends_on.MOD-0039</span></div>
+    <div class="why">Key, parent and relation validation: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0037.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0037.responsibility</span></div>
+    <div class="why">Rejects duplicate keys, parents that are not another module, parent cycles, dangling or self relations, and relation kinds the unit kinds cannot join.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0038"><summary>Origin assignment <span class="key muted">MOD-0038</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0038.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0038.responsibility</span></div>
+    <div class="why">Marks names and signatures EXTRACTED, purpose and responsibility INFERRED and UNCONFIRMED, and restates everything as a human&#39;s or an adopted document&#39;s.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0039"><summary>Unit decoding and checks <span class="key muted">MOD-0039</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0039.consumes.DATA-0007">
+    <div><span class="pill inferred">inferred via data: internal/extract/extract.go:137 &#34;var raw rawresult&#34;</span> <span class="key">MOD-0039.consumes.DATA-0007</span></div>
+    <div class="why">Unit decoding and checks: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0039.depends_on.MOD-0036">
+    <div><span class="pill inferred">inferred via call: internal/extract/extract.go:150 &#34;p, err := normalizepath(a.path)&#34;</span> <span class="key">MOD-0039.depends_on.MOD-0036</span></div>
+    <div class="why">Unit decoding and checks: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0039.depends_on.MOD-0038">
+    <div><span class="pill inferred">inferred via call: internal/extract/extract.go:181 &#34;inferred(ru.purpose)&#34;</span> <span class="key">MOD-0039.depends_on.MOD-0038</span></div>
+    <div class="why">Unit decoding and checks: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0039.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0039.responsibility</span></div>
+    <div class="why">Decodes strictly, checks kind and name, normalizes anchors, turns evidence into anchors, and allows a signature only on a contract.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0040"><summary>internal/gitx <span class="key muted">MOD-0040</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0040.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0040.purpose</span></div>
+    <div class="why">reads the few git facts ABBD needs</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0040.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0040.responsibility</span></div>
+    <div class="why">Owns every git invocation: the head commit, the git directory, working-tree snapshots as tree objects, and renames and changed paths between snapshots.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0041"><summary>Changed paths <span class="key muted">MOD-0041</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0041.depends_on.MOD-0044">
+    <div><span class="pill inferred">inferred via data: internal/gitx/gitx.go:94 &#34;if _, err := run(dir, nil, \&#34;cat-file\&#34;, \&#34;-e\&#34;, oldtree&#43;\&#34;^{tree}\&#34;); err != nil {&#34;</span> <span class="key">MOD-0041.depends_on.MOD-0044</span></div>
+    <div class="why">Changed paths: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0041.depends_on.MOD-0045">
+    <div><span class="pill inferred">inferred via call: internal/gitx/gitx.go:97 &#34;out, err := run(dir, nil, \&#34;diff-tree\&#34;, \&#34;-r\&#34;, \&#34;--no-renames\&#34;, \&#34;--name-only\&#34;,&#34;</span> <span class="key">MOD-0041.depends_on.MOD-0045</span></div>
+    <div class="why">Changed paths: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0041.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0041.responsibility</span></div>
+    <div class="why">Lists the paths that differ between two snapshot trees, a move listed under both names.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0042"><summary>Repository facts <span class="key muted">MOD-0042</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0042.depends_on.MOD-0045">
+    <div><span class="pill inferred">inferred via call: internal/gitx/gitx.go:23 &#34;out, err := run(dir, nil, \&#34;rev-parse\&#34;, \&#34;--verify\&#34;, \&#34;-q\&#34;, \&#34;head\&#34;)&#34;</span> <span class="key">MOD-0042.depends_on.MOD-0045</span></div>
+    <div class="why">Repository facts: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0042.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0042.responsibility</span></div>
+    <div class="why">Reports the current commit and the absolute git directory, or empty outside a repository.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0043"><summary>Rename map <span class="key muted">MOD-0043</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0043.depends_on.MOD-0044">
+    <div><span class="pill inferred">inferred via data: internal/gitx/gitx.go:65 &#34;if _, err := run(dir, nil, \&#34;cat-file\&#34;, \&#34;-e\&#34;, oldtree&#43;\&#34;^{tree}\&#34;); err != nil {&#34;</span> <span class="key">MOD-0043.depends_on.MOD-0044</span></div>
+    <div class="why">Rename map: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0043.depends_on.MOD-0045">
+    <div><span class="pill inferred">inferred via call: internal/gitx/gitx.go:68 &#34;out, err := run(dir, nil, \&#34;diff-tree\&#34;, \&#34;-r\&#34;, \&#34;-m\&#34;, \&#34;-l0\&#34;,&#34;</span> <span class="key">MOD-0043.depends_on.MOD-0045</span></div>
+    <div class="why">Rename map: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0043.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0043.responsibility</span></div>
+    <div class="why">Maps old to new paths between two snapshot trees with exhaustive rename detection, reporting not-ok when the old tree was collected.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0044"><summary>Working-tree snapshot <span class="key muted">MOD-0044</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0044.depends_on.MOD-0045">
+    <div><span class="pill inferred">inferred via call: internal/gitx/gitx.go:51 &#34;if _, err := run(dir, env, \&#34;add\&#34;, \&#34;-a\&#34;, \&#34;--\&#34;, \&#34;.\&#34;, \&#34;:(exclude)\&#34;&#43;exclude); err != nil {&#34;</span> <span class="key">MOD-0044.depends_on.MOD-0045</span></div>
+    <div class="why">Working-tree snapshot: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0044.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0044.responsibility</span></div>
+    <div class="why">Writes the working tree, untracked files included and one path excluded, as a git tree through a throwaway index so the user&#39;s index is untouched.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0045"><summary>git runner <span class="key muted">MOD-0045</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0045.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0045.responsibility</span></div>
+    <div class="why">Runs git -C dir with extra environment and returns its stdout.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0046"><summary>internal/identity <span class="key muted">MOD-0046</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0046.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0046.purpose</span></div>
+    <div class="why">keeps design-unit IDs stable across re-extraction</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0046.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0046.responsibility</span></div>
+    <div class="why">Owns reconciling a fresh extraction with the stored units: which stored ID each new unit takes over, which IDs are minted or go absent, merge candidates, and which facts and relations survive.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0047"><summary>Guess policy <span class="key muted">MOD-0047</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0047.depends_on.DATA-0003">
+    <div><span class="pill inferred">inferred via convention: internal/identity/identity.go:50 &#34;replaceguesses is a setup, whose supplement owns them&#34;</span> <span class="key">MOD-0047.depends_on.DATA-0003</span></div>
+    <div class="why">Guess policy: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0047.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0047.responsibility</span></div>
+    <div class="why">Decides whether undecided INFERRED facts and semantic units survive: kept on re-extraction, replaced on setup.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0048"><summary>Reconcile <span class="key muted">MOD-0048</span> <span class="muted">7개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.DATA-0009">
+    <div><span class="pill inferred">inferred via data: internal/identity/identity.go:164 &#34;fresh = append(fresh, candidate{new: ids[i], existing: u.id,&#34;</span> <span class="key">MOD-0048.depends_on.DATA-0009</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.MOD-0047">
+    <div><span class="pill inferred">inferred via call: internal/identity/identity.go:169 &#34;units[j].absent = !sttaken[j] &amp;&amp; !kept(u, guesses)&#34;</span> <span class="key">MOD-0048.depends_on.MOD-0047</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.MOD-0049">
+    <div><span class="pill inferred">inferred via call: internal/identity/identity.go:71 &#34;u.anchors = applyrenames(u.anchors, renames)&#34;</span> <span class="key">MOD-0048.depends_on.MOD-0049</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.MOD-0050">
+    <div><span class="pill inferred">inferred via call: internal/identity/identity.go:136 &#34;merge(&amp;units[j], in, guesses)&#34;</span> <span class="key">MOD-0048.depends_on.MOD-0050</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.MOD-0051">
+    <div><span class="pill inferred">inferred via data: internal/identity/identity.go:118 &#34;for _, p := range pairs {&#34;</span> <span class="key">MOD-0048.depends_on.MOD-0051</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.depends_on.MOD-0052">
+    <div><span class="pill inferred">inferred via call: internal/identity/identity.go:177 &#34;setrelations(res.units, input, ids, extraction.relations, guesses)&#34;</span> <span class="key">MOD-0048.depends_on.MOD-0052</span></div>
+    <div class="why">Reconcile: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0048.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0048.responsibility</span></div>
+    <div class="why">Pure entry point that applies renames, pairs units, mints new IDs above the per-kind high-water mark, marks absent units and returns the result with candidates.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0049"><summary>Anchor rename <span class="key muted">MOD-0049</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0049.depends_on.MOD-0040">
+    <div><span class="pill inferred">inferred via data: internal/identity/identity.go:62 &#34;renames maps old paths to new paths since the last sync&#34;</span> <span class="key">MOD-0049.depends_on.MOD-0040</span></div>
+    <div class="why">Anchor rename: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0049.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0049.responsibility</span></div>
+    <div class="why">Rewrites stored anchor paths through the old-to-new rename map before pairing.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0050"><summary>Fact merge <span class="key muted">MOD-0050</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0050.depends_on.MOD-0047">
+    <div><span class="pill inferred">inferred via data: internal/identity/identity.go:291 &#34;return f == nil || (guesses == replaceguesses &amp;&amp; f.guess())&#34;</span> <span class="key">MOD-0050.depends_on.MOD-0047</span></div>
+    <div class="why">Fact merge: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0050.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0050.responsibility</span></div>
+    <div class="why">Overwrites a matched unit&#39;s anchors, signature, digest and evidence from the extraction while keeping human-given and decided values.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0051"><summary>ID takeover rule <span class="key muted">MOD-0051</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0051.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0051.responsibility</span></div>
+    <div class="why">Pairs an extracted unit with a stored one of the same kind when they share two or more anchors or identical anchor sets, assigned globally best match first.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0052"><summary>Parent and relation carry-over <span class="key muted">MOD-0052</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0052.depends_on.MOD-0047">
+    <div><span class="pill inferred">inferred via data: internal/identity/identity.go:248 &#34;if r.origin != model.extracted &amp;&amp; !(guesses == replaceguesses &amp;&amp; r.guess()) {&#34;</span> <span class="key">MOD-0052.depends_on.MOD-0047</span></div>
+    <div class="why">Parent and relation carry-over: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0052.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0052.responsibility</span></div>
+    <div class="why">Resolves extraction keys to IDs for parents and relations; extracted relations are replaced, other origins survive unless guesses are replaced.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0053"><summary>internal/model <span class="key muted">MOD-0053</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0053.depends_on.MOD-0066">
+    <div><span class="pill inferred">inferred via convention: internal/model/model.go:336 &#34;case e.path == \&#34;.abbd\&#34; || strings.hasprefix(e.path, \&#34;.abbd/\&#34;)&#34;</span> <span class="key">MOD-0053.depends_on.MOD-0066</span></div>
+    <div class="why">internal/model: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0053.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0053.purpose</span></div>
+    <div class="why">defines ABBD&#39;s vocabulary of design units</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0053.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0053.responsibility</span></div>
+    <div class="why">Owns the Unit, Fact, Relation, Anchor and Evidence types, the kind and ID rules, the relation kinds each pair of unit kinds may join, and their validation.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0054"><summary>Unit ID format <span class="key muted">MOD-0054</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0054.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0054.responsibility</span></div>
+    <div class="why">Parses and formats KIND-NNNN IDs.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0055"><summary>Unit kinds and their directories <span class="key muted">MOD-0055</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0055.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0055.responsibility</span></div>
+    <div class="why">Defines the unit kinds, which directory each lives in, which are contracts, and the reserved domain-layer prefixes.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0056"><summary>internal/screen <span class="key muted">MOD-0056</span> <span class="muted">9개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.consumes.IF-0026">
+    <div><span class="pill inferred">inferred via call: internal/screen/page.html:375 &#34;const r = await fetch(\&#34;/act\&#34;, { method: \&#34;post\&#34;, body });&#34;</span> <span class="key">MOD-0056.consumes.IF-0026</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.DATA-0022">
+    <div><span class="pill inferred">inferred via convention: internal/screen/graph.go:79 &#34;switch effect[\&#34;new-relation:\&#34;&#43;e.string()] {&#34;</span> <span class="key">MOD-0056.depends_on.DATA-0022</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.DATA-0024">
+    <div><span class="pill inferred">inferred via convention: internal/screen/page.html:45 &#34;.pill.synced, .pill.closed&#34;</span> <span class="key">MOD-0056.depends_on.DATA-0024</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.MOD-0017">
+    <div><span class="pill inferred">inferred via convention: internal/screen/page.html:350 &#34;const m = /^#t=([0-9a-f]&#43;)$/.exec(location.hash);&#34;</span> <span class="key">MOD-0056.depends_on.MOD-0017</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.MOD-0076">
+    <div><span class="pill inferred">inferred via convention: internal/screen/page.go:43 &#34;\&#34;uninitialized\&#34;: \&#34;미초기화\&#34;, \&#34;bootstrapped\&#34;: \&#34;정렬 전\&#34;&#34;</span> <span class="key">MOD-0056.depends_on.MOD-0076</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.MOD-0077">
+    <div><span class="pill inferred">inferred via convention: internal/screen/page.html:274 &#34;{{if and $tick (eq .effect \&#34;realign\&#34;)}}&#34;</span> <span class="key">MOD-0056.depends_on.MOD-0077</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.depends_on.MOD-0084">
+    <div><span class="pill inferred">inferred via data: internal/screen/screen.go:489 &#34;if strings.contains(s, string(topology.promote)) {&#34;</span> <span class="key">MOD-0056.depends_on.MOD-0084</span></div>
+    <div class="why">internal/screen: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0056.purpose</span></div>
+    <div class="why">builds what the human sees from the store</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0056.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0056.responsibility</span></div>
+    <div class="why">Derives a deterministic Model from the .abbd inputs (pending cards, drift, trust badges, confirm queue, overview and module drawings) and renders it as the live page or the generated files, without ever writing the topology.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0057"><summary>Module inside drawing <span class="key muted">MOD-0057</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0057.depends_on.MOD-0058">
+    <div><span class="pill inferred">inferred via call: internal/screen/inside.go:60 &#34;l := arrange(nodes, edges, frametop&#43;chiph&#43;40)&#34;</span> <span class="key">MOD-0057.depends_on.MOD-0058</span></div>
+    <div class="why">Module inside drawing: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0057.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0057.responsibility</span></div>
+    <div class="why">Draws one module&#39;s inside units with the module&#39;s contracts on the frame and lines from the unit that provides or uses each one.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0058"><summary>Layered layout <span class="key muted">MOD-0058</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0058.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0058.responsibility</span></div>
+    <div class="why">Places nodes in layers by what uses what, sorted so the same graph always gives the same picture, and routes lines through the gaps between layers.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0059"><summary>Overview drawing <span class="key muted">MOD-0059</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0059.depends_on.MOD-0058">
+    <div><span class="pill inferred">inferred via call: internal/screen/overview.go:213 &#34;o.layout = arrange(nodes, edges, pady&#43;14)&#34;</span> <span class="key">MOD-0059.depends_on.MOD-0058</span></div>
+    <div class="why">Overview drawing: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0059.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0059.responsibility</span></div>
+    <div class="why">Lays out the modules and contracts from design units and approved relations only, and draws each wire by kind: through a contract, bypassing contracts, semantic, new, realign or removed.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0060"><summary>Page template and files <span class="key muted">MOD-0060</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0060.depends_on.MOD-0059">
+    <div><span class="pill inferred">inferred via convention: internal/screen/overview.go:534 &#34;plainwire(\&#34;semantic\&#34;, title&#34;</span> <span class="key">MOD-0060.depends_on.MOD-0059</span></div>
+    <div class="why">Page template and files: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0060.depends_on.MOD-0061">
+    <div><span class="pill inferred">inferred via convention: internal/screen/screen.go:616 &#34;return \&#34;stated, guess rejected\&#34;&#34;</span> <span class="key">MOD-0060.depends_on.MOD-0061</span></div>
+    <div class="why">Page template and files: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0060.depends_on.MOD-0072">
+    <div><span class="pill inferred">inferred via convention: internal/screen/page.html:274 &#34;(eq .effect \&#34;realign\&#34;)&#34;</span> <span class="key">MOD-0060.depends_on.MOD-0072</span></div>
+    <div class="why">Page template and files: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0060.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0060.responsibility</span></div>
+    <div class="why">Executes the embedded page.html with its Korean labels, as a live page with forms and a nonce script or as the static explorer and queue files, and writes graph.json.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0061"><summary>Model builder <span class="key muted">MOD-0061</span> <span class="muted">6개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.depends_on.MOD-0057">
+    <div><span class="pill inferred">inferred via call: internal/screen/screen.go:440 &#34;ins := o.inside(id, in.units, mk)&#34;</span> <span class="key">MOD-0061.depends_on.MOD-0057</span></div>
+    <div class="why">Model builder: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.depends_on.MOD-0059">
+    <div><span class="pill inferred">inferred via call: internal/screen/screen.go:423 &#34;o := planoverview(in.units, in.intended)&#34;</span> <span class="key">MOD-0061.depends_on.MOD-0059</span></div>
+    <div class="why">Model builder: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.depends_on.MOD-0062">
+    <div><span class="pill inferred">inferred via data: internal/screen/screen.go:311 &#34;phase: topology.derivephase(in.units, in.intended), actual: in.actualfreshness()&#34;</span> <span class="key">MOD-0061.depends_on.MOD-0062</span></div>
+    <div class="why">Model builder: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.depends_on.MOD-0063">
+    <div><span class="pill inferred">inferred via call: internal/screen/screen.go:472 &#34;return ask(it, o.name, users)&#34;</span> <span class="key">MOD-0061.depends_on.MOD-0063</span></div>
+    <div class="why">Model builder: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.depends_on.MOD-0064">
+    <div><span class="pill inferred">inferred via call: internal/screen/screen.go:442 &#34;blocks: blocks(u.text)&#34;</span> <span class="key">MOD-0061.depends_on.MOD-0064</span></div>
+    <div class="why">Model builder: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0061.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0061.responsibility</span></div>
+    <div class="why">Derives the deterministic Model: phase, pending grade C cards, drift, trust badges, align and queue groups, edges and the drawings of both levels.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0062"><summary>Store reader <span class="key muted">MOD-0062</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0062.consumes.DATA-0015">
+    <div><span class="pill inferred">inferred via data: internal/screen/screen.go:126 &#34;case *in.generated != in.current():&#34;</span> <span class="key">MOD-0062.consumes.DATA-0015</span></div>
+    <div class="why">Store reader: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0062.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0062.responsibility</span></div>
+    <div class="why">Loads everything the screen reads from the store and judges whether the generated files and the actual topology are CURRENT, STALE or UNKNOWN.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0063"><summary>Grade C card wording <span class="key muted">MOD-0063</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0063.consumes.IF-0004">
+    <div><span class="pill inferred">inferred via convention: internal/screen/words.go:127 &#34;approve: \&#34;이 결합을 의도한 토폴로지에 넣습니다.&#34;</span> <span class="key">MOD-0063.consumes.IF-0004</span></div>
+    <div class="why">Grade C card wording: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0063.depends_on.MOD-0072">
+    <div><span class="pill inferred">inferred via convention: internal/screen/words.go:109 &#34;case topology.contractchanged:&#34;</span> <span class="key">MOD-0063.depends_on.MOD-0072</span></div>
+    <div class="why">Grade C card wording: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0063.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0063.responsibility</span></div>
+    <div class="why">Puts a grade C item into a human&#39;s words, what changes, why ABBD asks, what approve and reject each do and the safe default, with a member-by-member signature diff.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0064"><summary>How-text blocks <span class="key muted">MOD-0064</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0064.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0064.responsibility</span></div>
+    <div class="why">Splits a module&#39;s pstack how text into heading, list and paragraph blocks with code and bold spans, so the page renders it without trusting any markup.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0065"><summary>internal/store <span class="key muted">MOD-0065</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0065.depends_on.MOD-0085">
+    <div><span class="pill inferred">inferred via convention: internal/store/store.go:326 &#34;case a.question != question:&#34;</span> <span class="key">MOD-0065.depends_on.MOD-0085</span></div>
+    <div class="why">internal/store: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0065.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0065.purpose</span></div>
+    <div class="why">persists ABBD&#39;s state under .abbd/</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0065.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0065.responsibility</span></div>
+    <div class="why">Owns the on-disk layout of .abbd/ and the session directory, and every read and write of unit Markdown, intended.yaml, turns, runs, decisions, requirements, understandings and the sync watermark.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0066"><summary>Store root and path layout <span class="key muted">MOD-0066</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0066.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0066.responsibility</span></div>
+    <div class="why">Roots every path at .abbd/ under the project and places session state in the git directory when there is one.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0067"><summary>Sync watermark and ID high water <span class="key muted">MOD-0067</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0067.depends_on.MOD-0068">
+    <div><span class="pill inferred">inferred via data: internal/store/store.go:174 &#34;for _, d := range s.unitdirs() {&#34;</span> <span class="key">MOD-0067.depends_on.MOD-0068</span></div>
+    <div class="why">Sync watermark and ID high water: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0067.depends_on.MOD-0069">
+    <div><span class="pill inferred">inferred via data: internal/store/store.go:193 &#34;p == s.path(\&#34;generated\&#34;) || p == s.sessions&#34;</span> <span class="key">MOD-0067.depends_on.MOD-0069</span></div>
+    <div class="why">Sync watermark and ID high water: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0067.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0067.responsibility</span></div>
+    <div class="why">Holds state.yaml (revision, tree fingerprint, Markdown hash, per-kind high water) and the hashes that make generated files and unit Markdown detectably stale; mints never-reused IDs.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0068"><summary>Unit Markdown codec <span class="key muted">MOD-0068</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0068.depends_on.MOD-0053">
+    <div><span class="pill inferred">inferred via convention: internal/store/store.go:56 &#34;return []string{\&#34;architecture\&#34;, \&#34;features\&#34;}&#34;</span> <span class="key">MOD-0068.depends_on.MOD-0053</span></div>
+    <div class="why">Unit Markdown codec: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0068.depends_on.MOD-0071">
+    <div><span class="pill inferred">inferred via call: internal/store/store.go:145 &#34;writefile(s.path(u.kind.dir(), string(u.id)&#43;\&#34;.md\&#34;), b)&#34;</span> <span class="key">MOD-0068.depends_on.MOD-0071</span></div>
+    <div class="why">Unit Markdown codec: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0068.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0068.responsibility</span></div>
+    <div class="why">Reads and renders unit files: frontmatter parsing, the file-name-equals-ID and kind-directory checks, duplicate IDs, and carrying the Notes section through.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0069"><summary>Session mode files, journal and screen address <span class="key muted">MOD-0069</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0069.depends_on.MOD-0066">
+    <div><span class="pill inferred">inferred via data: internal/store/store.go:44 &#34;s.sessions = filepath.join(g, \&#34;abbd\&#34;, \&#34;sessions\&#34;)&#34;</span> <span class="key">MOD-0069.depends_on.MOD-0066</span></div>
+    <div class="why">Session mode files, journal and screen address: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0069.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0069.responsibility</span></div>
+    <div class="why">Keeps per-session mode flags, journals and the running screen&#39;s address file in the sessions directory, validating session IDs.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0070"><summary>Turn, run, decision and requirement records <span class="key muted">MOD-0070</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0070.depends_on.MOD-0068">
+    <div><span class="pill inferred">inferred via call: internal/store/turn.go:79 &#34;units, err := s.loadunits()&#34;</span> <span class="key">MOD-0070.depends_on.MOD-0068</span></div>
+    <div class="why">Turn, run, decision and requirement records: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0070.depends_on.MOD-0071">
+    <div><span class="pill inferred">inferred via call: internal/store/turn.go:83 &#34;b, err := frontmatter(t, renderturn(t, turn.graphof(*in, units)))&#34;</span> <span class="key">MOD-0070.depends_on.MOD-0071</span></div>
+    <div class="why">Turn, run, decision and requirement records: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0070.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0070.responsibility</span></div>
+    <div class="why">Saves and loads turns (rendering their impact tiers), verification runs, ADRs with the standing-rejection rule, and requirement texts.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0071"><summary>Frontmatter and atomic file writes <span class="key muted">MOD-0071</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0071.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0071.responsibility</span></div>
+    <div class="why">Encodes records as YAML frontmatter over a Markdown body and writes every file through a skip-if-equal, temp-then-rename write.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0072"><summary>internal/topology <span class="key muted">MOD-0072</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0072.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0072.purpose</span></div>
+    <div class="why">compares the intended topology with the extracted one</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0072.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0072.responsibility</span></div>
+    <div class="why">Owns the intended topology type, the diff of intended against actual, the one rule that gives each difference its effect (BLOCKED, REALIGN, PROMOTE), the project phase, and every fold of a human decision into the intended topology.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0073"><summary>promotion candidates <span class="key muted">MOD-0073</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0073.depends_on.MOD-0077">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:536 &#34;was, _ := intended{units: before.units}.effect(it)&#34;</span> <span class="key">MOD-0073.depends_on.MOD-0077</span></div>
+    <div class="why">promotion candidates: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0073.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0073.responsibility</span></div>
+    <div class="why">Lists below-the-line units worth a human&#39;s decision with a question that changes when their relations change, and adopts one as a design unit without approving any of its relations.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0074"><summary>intended versus actual diff <span class="key muted">MOD-0074</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0074.depends_on.DATA-0022">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:207 &#34;return items[i].key() &lt; items[j].key()&#34;</span> <span class="key">MOD-0074.depends_on.DATA-0022</span></div>
+    <div class="why">intended versus actual diff: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0074.depends_on.MOD-0077">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:175 &#34;if effect, ok := in.effect(graded); ok {&#34;</span> <span class="key">MOD-0074.depends_on.MOD-0077</span></div>
+    <div class="why">intended versus actual diff: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0074.depends_on.MOD-0079">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:168 &#34;boundary := in.boundary(actual)&#34;</span> <span class="key">MOD-0074.depends_on.MOD-0079</span></div>
+    <div class="why">intended versus actual diff: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0074.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0074.responsibility</span></div>
+    <div class="why">Lists every difference between the intended topology and the present units: removed and added units, changed contract signatures, removed and new relations.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0075"><summary>live semantic couplings <span class="key muted">MOD-0075</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0075.depends_on.MOD-0074">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:141 &#34;present := presentunits(units)&#34;</span> <span class="key">MOD-0075.depends_on.MOD-0074</span></div>
+    <div class="why">live semantic couplings: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0075.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0075.responsibility</span></div>
+    <div class="why">Lists the semantic relations no human decided whose evidence is still live, for the turn impact to follow and the screen to draw.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0076"><summary>project phase <span class="key muted">MOD-0076</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0076.depends_on.MOD-0074">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:376 &#34;for _, it := range compare(*in, units) {&#34;</span> <span class="key">MOD-0076.depends_on.MOD-0074</span></div>
+    <div class="why">project phase: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0076.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0076.responsibility</span></div>
+    <div class="why">Derives uninitialized, bootstrapped, aligned or drifted from the present units and whether any non-PROMOTE difference remains.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0077"><summary>effect rule <span class="key muted">MOD-0077</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0077.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0077.responsibility</span></div>
+    <div class="why">The single rule that says who must act on a difference: BLOCKED for anything crossing a contract or two intended units, REALIGN for other changes to intended units, PROMOTE for a new unit.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0078"><summary>intended topology updates <span class="key muted">MOD-0078</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0078.depends_on.MOD-0074">
+    <div><span class="pill inferred">inferred via call: internal/topology/topology.go:435 &#34;items := compare(in, units)&#34;</span> <span class="key">MOD-0078.depends_on.MOD-0074</span></div>
+    <div class="why">intended topology updates: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0078.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0078.responsibility</span></div>
+    <div class="why">Folds human decisions into the intended topology: Select for first alignment, Approve for one grade C item, Accept for a synced turn, RealignTo for chosen REALIGN rows.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0079"><summary>module boundary lift <span class="key muted">MOD-0079</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0079.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0079.responsibility</span></div>
+    <div class="why">Grades a relation of an inside unit as its design module&#39;s own relation, drops relations that stay inside one module, and hides inside units from unit-added.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0080"><summary>internal/turn <span class="key muted">MOD-0080</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0080.consumes.DATA-0018">
+    <div><span class="pill inferred">inferred via convention: internal/turn/turn.go:592 &#34;output in .abbd/%s&#34;</span> <span class="key">MOD-0080.consumes.DATA-0018</span></div>
+    <div class="why">internal/turn: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0080.purpose">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0080.purpose</span></div>
+    <div class="why">judges one unit of agent work under abbd mode</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0080.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0080.responsibility</span></div>
+    <div class="why">Owns the turn record, its impact and tiers, the A/B/C grading of each topology change, the end gate&#39;s verdicts and grade B findings, and the rule that a verification run proves only the tree it ran on.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0081"><summary>impact graph <span class="key muted">MOD-0081</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0081.depends_on.MOD-0072">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:237 &#34;for _, c := range topology.couplings(units) {&#34;</span> <span class="key">MOD-0081.depends_on.MOD-0072</span></div>
+    <div class="why">impact graph: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0081.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0081.responsibility</span></div>
+    <div class="why">Builds the graph a turn follows (intended relations plus live semantic couplings) and computes the impact from the seeds, which the agent may add to but never shrink.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0082"><summary>verification evidence <span class="key muted">MOD-0082</span> <span class="muted">1개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0082.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0082.responsibility</span></div>
+    <div class="why">Decides whether a verification run lets a turn complete: it must exist, have passed, and have run on the current tree, and a run that edited the tree fails.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0083"><summary>grade B findings <span class="key muted">MOD-0083</span> <span class="muted">4개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0083.depends_on.DATA-0023">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:113 &#34;!t.scanned(i.unit)&#34;</span> <span class="key">MOD-0083.depends_on.DATA-0023</span></div>
+    <div class="why">grade B findings: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0083.depends_on.MOD-0084">
+    <div><span class="pill inferred">inferred via data: internal/turn/turn.go:144 &#34;out = append(out, verdict{item: topology.item{change: topology.contracttouched&#34;</span> <span class="key">MOD-0083.depends_on.MOD-0084</span></div>
+    <div class="why">grade B findings: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0083.depends_on.MOD-0086">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:111 &#34;direct, _ := t.tiers(g)&#34;</span> <span class="key">MOD-0083.depends_on.MOD-0086</span></div>
+    <div class="why">grade B findings: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0083.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0083.responsibility</span></div>
+    <div class="why">Finds what the gate cannot read: a consumed contract whose code changed under the same signature, a confirmed coupling whose quoted lines changed, and a direct design unit no one scanned.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0084"><summary>end gate <span class="key muted">MOD-0084</span> <span class="muted">3개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0084.depends_on.DATA-0024">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:483 &#34;v.adr = t.approved(it.key())&#34;</span> <span class="key">MOD-0084.depends_on.DATA-0024</span></div>
+    <div class="why">end gate: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0084.depends_on.MOD-0085">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:481 &#34;v := verdict{item: it, grade: gradeof(in, units, it)}&#34;</span> <span class="key">MOD-0084.depends_on.MOD-0085</span></div>
+    <div class="why">end gate: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0084.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0084.responsibility</span></div>
+    <div class="why">Judges the actual topology against the intended one plus this turn&#39;s approvals into verdicts, prints each verdict line, folds allowed changes on sync, and contrasts declared with done.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0085"><summary>grading and questions <span class="key muted">MOD-0085</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0085.consumes.IF-0028">
+    <div><span class="pill inferred">inferred via call: internal/turn/turn.go:421 &#34;it, err := topology.parsekey(key)&#34;</span> <span class="key">MOD-0085.consumes.IF-0028</span></div>
+    <div class="why">grading and questions: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0085.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0085.responsibility</span></div>
+    <div class="why">Adapts a topology effect to a turn grade (A, B, C), parses and grades a declared change key, and words the human question a grade C item asks.</div>
+    
+  </div>
+  </details><details class="group" id="qg-MOD-0086"><summary>impact tiers <span class="key muted">MOD-0086</span> <span class="muted">2개</span></summary>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0086.depends_on.MOD-0081">
+    <div><span class="pill inferred">inferred via data: internal/turn/turn.go:323 &#34;for _, i := range t.impact {&#34;</span> <span class="key">MOD-0086.depends_on.MOD-0081</span></div>
+    <div class="why">impact tiers: 추출 스크립트가 찾지 못한 결합</div>
+    
+  </div>
+  
+  <div class="card" style="border-left-color: var(--guess)" id="q-MOD-0086.responsibility">
+    <div><span class="pill inferred">추정</span> <span class="key">MOD-0086.responsibility</span></div>
+    <div class="why">Splits the recorded impact into direct items read closely and far items checked briefly, recomputed from the graph each time.</div>
+    
+  </div>
+  </details>
+  
+  
+</section>
+
+
+</main>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,530 @@
+# Bootstrap report
+
+Mode: code-only.
+Extraction script: `go run .abbd/extractor/extract.go`. Three runs, the last with reseeded hash seeds, printed identical output (sha256 f288b14a61c349a2).
+
+## Design unit candidates
+
+- CFG-0001 plugin and marketplace manifest (EXTRACTED), 2 anchor(s), signature `marketplace abbd {abbd=./plugins/abbd}; plugin abbd`, purpose INFERRED: publishes ABBD as the Claude Code plugin abbd
+- CFG-0002 project.yaml (EXTRACTED), 3 anchor(s), signature `.abbd/project.yaml: extract,verify`, purpose INFERRED: registers the project's extraction and verify commands
+- CFG-0003 hook registration (EXTRACTED), 2 anchor(s), signature `PostToolUse[Write|Edit|NotebookEdit] -> abbd hook PostToolUse; PreToolUse[Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*] -> abbd hook PreToolUse; SessionStart -> abbd hook SessionStart; Stop -> abbd hook Stop; UserPromptSubmit -> abbd hook UserPromptSubmit`, purpose INFERRED: registers the abbd CLI on Claude Code's hook events
+- DATA-0001 Parsed command shape (INFERRED), 2 anchor(s)
+- DATA-0002 Overlay findings (INFERRED), 1 anchor(s)
+- DATA-0003 Overlay source (INFERRED), 2 anchor(s)
+- DATA-0004 Bootstrap report (INFERRED), 2 anchor(s)
+- DATA-0005 confirm item (INFERRED), 2 anchor(s)
+- DATA-0006 Evidence check result (INFERRED), 1 anchor(s)
+- DATA-0007 extraction JSON (EXTRACTED), 3 anchor(s), signature `extraction json: relations{evidence{lines,path,quote,symbol},from,kind,to,via},units{anchors{path,symbol},digest,evidence{lines,path,quote,symbol},key,kind,name,parent,purpose,responsibility,signature}`, purpose INFERRED: carries the topology an extractor reports
+- DATA-0008 Typed extraction result (INFERRED), 2 anchor(s)
+- DATA-0009 Merge candidate (INFERRED), 1 anchor(s)
+- DATA-0010 Evidence and anchor records (INFERRED), 2 anchor(s)
+- DATA-0011 Fact with origin, verification and confirmation (INFERRED), 2 anchor(s)
+- DATA-0012 Relation, relation kinds and via (INFERRED), 2 anchor(s)
+- DATA-0013 unit files (EXTRACTED), 3 anchor(s), signature `.abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},digest,evidence{lines,path,quote,symbol},id,kind,name{confirmation,origin,rejected,value,verification},parent,purpose{confirmation,origin,rejected,value,verification},relations{confirmation,dead,digest,evidence{lines,path,quote,symbol},kind,origin,to,via},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}`, purpose INFERRED: stores each design unit as Markdown
+- DATA-0014 Design unit record (INFERRED), 1 anchor(s)
+- DATA-0015 generated files (EXTRACTED), 3 anchor(s), signature `.abbd/generated/{confirm-queue.html,explorer.html,graph.json}; graph.json {confirm_queue,drift{Detail,Effect,Key},edges{Class,From,Kind,Quote,Title,To,Via},modules{Drawing{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},ID,Name,Understanding{Blocks{Kind,Parts{Bold,Code,Mark,Text}},By,Stale},Units{Anchors,Guess,ID,Kind,Name,Sentence},Unwired},overview{Boxes{Class,H,Href,ID,Kind,Label,Name,Quiet,Sub,Title,W,X,Y},Frame{H,W,X,Y},Height,Ports{Class,Contract,Exit,Label,Quiet,Title,W,X,Y},Width,Wires{D,Kind,Quiet,Quotes,Title,Via}},phase,units{Anchors,Couplings{Evidence,Key,Via},Design,Evidence,ID,Kind,Name,Parent,Purpose{Badge,Rejected,Value},Responsibility{Badge,Rejected,Value},Signature},watermark{inputs_hash,intended_revision}}`, purpose INFERRED: the derived explorer, confirm queue and graph.json under .abbd/generated/
+- DATA-0016 decision records (EXTRACTED), 3 anchor(s), signature `.abbd/decisions/ADR-*.md frontmatter: confirmation,decision,grade,id,origin,question,reason,subject,turn`, purpose INFERRED: records human decisions
+- DATA-0017 intended topology (EXTRACTED), 3 anchor(s), signature `.abbd/intended.yaml: relations{from,kind,to},revision,units{external_consumers,id,kind,signature}`, purpose INFERRED: records the aligned intended topology
+- DATA-0018 verification runs (EXTRACTED), 3 anchor(s), signature `.abbd/verification/runs/run-*.yaml: command,exit_code,id,output,result,tree,turn,why`, purpose INFERRED: records verification runs
+- DATA-0019 change records (EXTRACTED), 3 anchor(s), signature `.abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{digests,evidence,extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,scans{by,unit},seeds,session,state,verification`, purpose INFERRED: records each turn of change
+- DATA-0020 requirements (EXTRACTED), 2 anchor(s), signature `.abbd/requirements/ID.md frontmatter: id,origin,turn`, purpose INFERRED: keeps the user's request verbatim
+- DATA-0021 Module understanding file (INFERRED), 2 anchor(s)
+- DATA-0022 change item and edge (INFERRED), 2 anchor(s)
+- DATA-0023 semantic scan record (INFERRED), 2 anchor(s)
+- DATA-0024 turn record (INFERRED), 1 anchor(s)
+- FEAT-0001 /abbd-mode (EXTRACTED), 3 anchor(s), purpose INFERRED: runs a pstack poteto-mode playbook inside a gated ABBD turn
+- FEAT-0002 /abbd-setup (EXTRACTED), 2 anchor(s), purpose INFERRED: bootstraps ABBD on a repository
+- IF-0001 abbd hook (EXTRACTED), 2 anchor(s), signature `abbd hook[root] sub{*} pos{0}`, purpose INFERRED: the entry point Claude Code hooks call
+- IF-0002 Claude Code hook protocol (EXTRACTED), 3 anchor(s), signature `abbd hook {PostToolUse,PreToolUse,SessionStart,Stop,UserPromptSubmit}; stdin {cwd,session_id,stop_hook_active,tool_input{command,file_path,notebook_path},tool_name}; stdout {decision,hookSpecificOutput{additionalContext,hookEventName,permissionDecision,permissionDecisionReason},reason}`, purpose INFERRED: the JSON exchange with Claude Code hooks
+- IF-0003 abbd align (EXTRACTED), 2 anchor(s), signature `abbd align[all,confirm,exclude,root] pos{0}`, purpose INFERRED: lets a human choose or realign the design units
+- IF-0004 abbd approve (EXTRACTED), 2 anchor(s), signature `abbd approve[root] pos{1}`, purpose INFERRED: lets a human allow one grade C change
+- IF-0005 abbd confirm (EXTRACTED), 2 anchor(s), signature `abbd confirm[list,reject,root,value] pos{0,1}`, purpose INFERRED: lets a human settle an inferred fact
+- IF-0006 abbd couple (EXTRACTED), 2 anchor(s), signature `abbd couple[root] pos{1}`, purpose INFERRED: lets a human register a coupling the script cannot see
+- IF-0007 abbd ingest (EXTRACTED), 2 anchor(s), signature `abbd ingest[root] pos{1}`, purpose INFERRED: feeds an extraction result into .abbd by hand
+- IF-0008 abbd mode (EXTRACTED), 2 anchor(s), signature `abbd mode[root,session] sub{on,off} pos{0} needs-session`, purpose INFERRED: switches ABBD mode on or off for a session
+- IF-0009 abbd reject (EXTRACTED), 2 anchor(s), signature `abbd reject[reason,root] pos{1}`, purpose INFERRED: lets a human refuse one grade C change
+- IF-0010 abbd status (EXTRACTED), 2 anchor(s), signature `abbd status[root,session] pos{0}`, purpose INFERRED: shows where the project stands
+- IF-0011 abbd evidence (EXTRACTED), 2 anchor(s), signature `abbd evidence[root] pos{0}`, purpose INFERRED: reports whether semantic evidence is still in the code
+- IF-0012 abbd propose relation (EXTRACTED), 2 anchor(s), signature `abbd propose relation[evidence,root,via] pos{3}`, purpose INFERRED: records an agent's guess at a coupling
+- IF-0013 abbd propose unit (EXTRACTED), 2 anchor(s), signature `abbd propose unit[evidence,parent,responsibility,root] pos{2}`, purpose INFERRED: records an agent's guess at a unit
+- IF-0014 abbd serve (EXTRACTED), 2 anchor(s), signature `abbd serve[addr,root] pos{0}`, purpose INFERRED: starts the human screen
+- IF-0015 abbd setup (EXTRACTED), 2 anchor(s), signature `abbd setup[adopt,greenfield,root,supplement,verify] pos{0} --argv`, purpose INFERRED: bootstraps ABBD on a repository
+- IF-0016 abbd turn declare (EXTRACTED), 2 anchor(s), signature `abbd turn declare[changes,root,session,units] pos{0} needs-session`, purpose INFERRED: records what a turn intends to change
+- IF-0017 abbd turn diff (EXTRACTED), 2 anchor(s), signature `abbd turn diff[root,session] pos{0} needs-session`, purpose INFERRED: checks a turn's work between steps
+- IF-0018 abbd turn end (EXTRACTED), 2 anchor(s), signature `abbd turn end[root,session] pos{0} needs-session`, purpose INFERRED: concludes a turn
+- IF-0019 abbd turn impact (EXTRACTED), 2 anchor(s), signature `abbd turn impact[add,root,session] pos{0} needs-session`, purpose INFERRED: shows and widens a turn's impact
+- IF-0020 abbd turn scan (EXTRACTED), 2 anchor(s), signature `abbd turn scan[by,root,session,unit] pos{0} needs-session`, purpose INFERRED: records a semantic-coupling scan of an impacted unit
+- IF-0021 abbd turn show (EXTRACTED), 2 anchor(s), signature `abbd turn show[root,session] pos{0}`, purpose INFERRED: lets any session read the latest turn
+- IF-0022 abbd turn start (EXTRACTED), 2 anchor(s), signature `abbd turn start[request,root,seeds,session] pos{0} needs-session`, purpose INFERRED: opens a turn for a request
+- IF-0023 abbd turn verify (EXTRACTED), 2 anchor(s), signature `abbd turn verify[root,session] pos{0} --argv needs-session`, purpose INFERRED: records the project verification for a turn
+- IF-0024 abbd understand (EXTRACTED), 2 anchor(s), signature `abbd understand[root] pos{2}`, purpose INFERRED: stores how's reading of a module
+- IF-0025 abbd exit codes (EXTRACTED), 3 anchor(s), signature `exit error=1,needhuman=2,ok=0,usage=64`, purpose INFERRED: tells a caller how an abbd command ended
+- IF-0026 screen HTTP (EXTRACTED), 2 anchor(s), signature `GET /; POST /act; act do={align,approve,confirm,confirm-reject,couple,realign,reject} form{do,from,id,key,kind,reason,t,to,value}`, purpose INFERRED: the HTTP surface the screen page talks to
+- IF-0027 confirm item key (EXTRACTED), 3 anchor(s), signature `ID.{purpose,responsibility} or ID.{consumes,depends_on,provides}.ID`, purpose INFERRED: names one guess in the confirm queue
+- IF-0028 change item key (EXTRACTED), 3 anchor(s), signature `{contract-changed,contract-touched,evidence-touched,new-relation,removed-relation,semantic-unscanned,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID`, purpose INFERRED: names one topology change on the command line
+- MOD-0001 abbd CLI (EXTRACTED), 8 anchor(s), purpose INFERRED: runs every abbd command a human, an agent or a hook invokes
+- MOD-0002 PreToolUse guard (EXTRACTED), 2 anchor(s), purpose INFERRED: keeps an agent in ABBD mode away from the human's commands and files
+- MOD-0003 Human-only abbd commands (INFERRED), 2 anchor(s)
+- MOD-0004 Command verdict (INFERRED), 2 anchor(s)
+- MOD-0005 Guard state (INFERRED), 1 anchor(s)
+- MOD-0006 Protected paths (INFERRED), 2 anchor(s)
+- MOD-0007 Shell splitter (INFERRED), 2 anchor(s)
+- MOD-0008 Screen request check (INFERRED), 2 anchor(s)
+- MOD-0009 Command classes (INFERRED), 2 anchor(s)
+- MOD-0010 Hook dispatch (INFERRED), 2 anchor(s)
+- MOD-0011 Human decision commands (INFERRED), 2 anchor(s)
+- MOD-0012 Command table and dispatch (INFERRED), 2 anchor(s)
+- MOD-0013 Session mode and turn lifecycle (INFERRED), 2 anchor(s)
+- MOD-0014 Actual topology sync (INFERRED), 2 anchor(s)
+- MOD-0015 Generated files and status (INFERRED), 2 anchor(s)
+- MOD-0016 Agent proposals, evidence and understanding (INFERRED), 2 anchor(s)
+- MOD-0017 screen server (EXTRACTED), 2 anchor(s), purpose INFERRED: serves the human screen on loopback and runs its decisions as CLI commands
+- MOD-0018 Decision runner (INFERRED), 1 anchor(s)
+- MOD-0019 Form to command table (INFERRED), 2 anchor(s)
+- MOD-0020 Origin and token check (INFERRED), 2 anchor(s)
+- MOD-0021 Live page response (INFERRED), 1 anchor(s)
+- MOD-0022 Screen launch (INFERRED), 1 anchor(s)
+- MOD-0023 Setup and bootstrap (INFERRED), 2 anchor(s)
+- MOD-0024 internal/bootstrap (EXTRACTED), 3 anchor(s), purpose INFERRED: folds reader-written documents onto the extraction script's result at setup
+- MOD-0025 Overlay fold (INFERRED), 1 anchor(s)
+- MOD-0026 Anchor matcher (INFERRED), 1 anchor(s)
+- MOD-0027 Semantic unit admission (INFERRED), 1 anchor(s)
+- MOD-0028 internal/confirm (EXTRACTED), 2 anchor(s), purpose INFERRED: queues agent guesses for a human to confirm or reject
+- MOD-0029 confirm and reject (INFERRED), 2 anchor(s)
+- MOD-0030 confirm queue (INFERRED), 1 anchor(s)
+- MOD-0031 internal/evidence (EXTRACTED), 2 anchor(s), purpose INFERRED: decides whether cited code is still there
+- MOD-0032 Liveness application (INFERRED), 2 anchor(s)
+- MOD-0033 Quote matching rule (INFERRED), 2 anchor(s)
+- MOD-0034 File cache and normal form (INFERRED), 2 anchor(s)
+- MOD-0035 internal/extract (EXTRACTED), 2 anchor(s), purpose INFERRED: turns extraction JSON into typed units
+- MOD-0036 Anchor and evidence path normalization (INFERRED), 2 anchor(s)
+- MOD-0037 Key, parent and relation validation (INFERRED), 2 anchor(s)
+- MOD-0038 Origin assignment (INFERRED), 2 anchor(s)
+- MOD-0039 Unit decoding and checks (INFERRED), 1 anchor(s)
+- MOD-0040 internal/gitx (EXTRACTED), 2 anchor(s), purpose INFERRED: reads the few git facts ABBD needs
+- MOD-0041 Changed paths (INFERRED), 1 anchor(s)
+- MOD-0042 Repository facts (INFERRED), 2 anchor(s)
+- MOD-0043 Rename map (INFERRED), 1 anchor(s)
+- MOD-0044 Working-tree snapshot (INFERRED), 1 anchor(s)
+- MOD-0045 git runner (INFERRED), 1 anchor(s)
+- MOD-0046 internal/identity (EXTRACTED), 2 anchor(s), purpose INFERRED: keeps design-unit IDs stable across re-extraction
+- MOD-0047 Guess policy (INFERRED), 2 anchor(s)
+- MOD-0048 Reconcile (INFERRED), 1 anchor(s)
+- MOD-0049 Anchor rename (INFERRED), 1 anchor(s)
+- MOD-0050 Fact merge (INFERRED), 1 anchor(s)
+- MOD-0051 ID takeover rule (INFERRED), 1 anchor(s)
+- MOD-0052 Parent and relation carry-over (INFERRED), 2 anchor(s)
+- MOD-0053 internal/model (EXTRACTED), 2 anchor(s), purpose INFERRED: defines ABBD's vocabulary of design units
+- MOD-0054 Unit ID format (INFERRED), 2 anchor(s)
+- MOD-0055 Unit kinds and their directories (INFERRED), 2 anchor(s)
+- MOD-0056 internal/screen (EXTRACTED), 8 anchor(s), purpose INFERRED: builds what the human sees from the store
+- MOD-0057 Module inside drawing (INFERRED), 1 anchor(s)
+- MOD-0058 Layered layout (INFERRED), 2 anchor(s)
+- MOD-0059 Overview drawing (INFERRED), 2 anchor(s)
+- MOD-0060 Page template and files (INFERRED), 1 anchor(s)
+- MOD-0061 Model builder (INFERRED), 2 anchor(s)
+- MOD-0062 Store reader (INFERRED), 2 anchor(s)
+- MOD-0063 Grade C card wording (INFERRED), 2 anchor(s)
+- MOD-0064 How-text blocks (INFERRED), 2 anchor(s)
+- MOD-0065 internal/store (EXTRACTED), 4 anchor(s), purpose INFERRED: persists ABBD's state under .abbd/
+- MOD-0066 Store root and path layout (INFERRED), 2 anchor(s)
+- MOD-0067 Sync watermark and ID high water (INFERRED), 2 anchor(s)
+- MOD-0068 Unit Markdown codec (INFERRED), 2 anchor(s)
+- MOD-0069 Session mode files, journal and screen address (INFERRED), 2 anchor(s)
+- MOD-0070 Turn, run, decision and requirement records (INFERRED), 2 anchor(s)
+- MOD-0071 Frontmatter and atomic file writes (INFERRED), 2 anchor(s)
+- MOD-0072 internal/topology (EXTRACTED), 2 anchor(s), purpose INFERRED: compares the intended topology with the extracted one
+- MOD-0073 promotion candidates (INFERRED), 2 anchor(s)
+- MOD-0074 intended versus actual diff (INFERRED), 1 anchor(s)
+- MOD-0075 live semantic couplings (INFERRED), 1 anchor(s)
+- MOD-0076 project phase (INFERRED), 1 anchor(s)
+- MOD-0077 effect rule (INFERRED), 1 anchor(s)
+- MOD-0078 intended topology updates (INFERRED), 2 anchor(s)
+- MOD-0079 module boundary lift (INFERRED), 1 anchor(s)
+- MOD-0080 internal/turn (EXTRACTED), 2 anchor(s), purpose INFERRED: judges one unit of agent work under abbd mode
+- MOD-0081 impact graph (INFERRED), 2 anchor(s)
+- MOD-0082 verification evidence (INFERRED), 2 anchor(s)
+- MOD-0083 grade B findings (INFERRED), 2 anchor(s)
+- MOD-0084 end gate (INFERRED), 2 anchor(s)
+- MOD-0085 grading and questions (INFERRED), 2 anchor(s)
+- MOD-0086 impact tiers (INFERRED), 1 anchor(s)
+
+## supplement
+
+143 unit(s) matched the code.
+Conflicts: none.
+Gaps: none.
+
+## Confirm queue
+
+360 item(s) wait for a human. None of them blocks alignment.
+- CFG-0001.purpose "publishes ABBD as the Claude Code plugin abbd"
+- CFG-0001.responsibility "Owns the plugin and marketplace names, the plugin source path, its version and its stated requirements (pstack 0.15.36, abbd on PATH)."
+- CFG-0002.purpose "registers the project's extraction and verify commands"
+- CFG-0002.responsibility "Holds the argv of the extraction script that setup registered and of the verification command whose PASSED run a turn needs."
+- CFG-0003.consumes.CFG-0001 "INFERRED via config: .claude-plugin/marketplace.json:12 \"\\\"source\\\": \\\"./plugins/abbd\\\",\""
+- CFG-0003.depends_on.FEAT-0001 "INFERRED via convention: plugins/abbd/hooks/hooks.json:2 \"Each does nothing unless /abbd-mode turned the mode on for the session.\""
+- CFG-0003.depends_on.MOD-0001 "INFERRED via convention: plugins/abbd/hooks/hooks.json:36 \"\\\"matcher\\\": \\\"Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*\\\",\""
+- CFG-0003.purpose "registers the abbd CLI on Claude Code's hook events"
+- CFG-0003.responsibility "Owns which events and tool matchers call abbd hook, and the timeout of each."
+- DATA-0001.responsibility "The parser's output: segments with their words, redirects and pipeline number, stdin bodies with whether they expand, and substitutions."
+- DATA-0002.responsibility "Holds the matched count, the conflicts the code contradicts, and the gaps one side has and the other lacks."
+- DATA-0003.responsibility "Says which document an overlay comes from, fixing the origin of its facts, whether a gap is fatal (Strict) and whether it may rename units."
+- DATA-0004.depends_on.DATA-0002 "INFERRED via data: internal/bootstrap/report.go:19 \"Overlays  map[string]Findings\""
+- DATA-0004.depends_on.DATA-0003 "INFERRED via data: internal/bootstrap/report.go:41 \"for _, name := range []string{Supplement.Name, Adopt.Name} {\""
+- DATA-0004.depends_on.MOD-0001 "INFERRED via convention: internal/bootstrap/report.go:28 \"Three runs, the last with reseeded hash seeds, printed identical output\""
+- DATA-0004.depends_on.MOD-0028 "INFERRED via import: internal/bootstrap/report.go:18 \"Queue     []confirm.Item\""
+- DATA-0004.responsibility "Renders what setup found as timestamp-free Markdown: candidates, overlay findings, the confirm queue and next steps."
+- DATA-0005.consumes.IF-0028 "INFERRED via convention: internal/confirm/confirm.go:35 \"return topology.Edge{From: from, To: r.To, Kind: r.Kind}.String()\""
+- DATA-0005.responsibility "One pending guess named by its key, the unit it belongs to, the value a human judges, and whether it touches a design unit."
+- DATA-0006.responsibility "Is one check's outcome: live or not, the lines it was found at, and a digest of those lines."
+- DATA-0007.purpose "carries the topology an extractor reports"
+- DATA-0007.responsibility "Is the JSON shape of units and relations that the extraction script, a supplement, an adoption or a greenfield statement must print, with unknown fields rejected."
+- DATA-0008.responsibility "Is the parsed Result: units with Facts instead of strings, still keyed by extractor-local keys, and relations with origin and via."
+- DATA-0009.responsibility "Records a leftover anchor overlap between a new unit and a stored unit it did not take over, for a human to resolve."
+- DATA-0010.responsibility "Is the anchor and the evidence excerpt types, the lines span, the ban on citing .abbd/ or .git/, and the PATH:LINES:QUOTE command-line form."
+- DATA-0011.responsibility "Is a field value with its three independent evidence axes, the guess rule, and the why-field origin restriction."
+- DATA-0012.depends_on.MOD-0055 "INFERRED via data: internal/model/model.go:255 \"Provides:  {from: implementer, to: Kind.IsContract},\""
+- DATA-0012.responsibility "Is an edge with origin, confirmation, via, evidence, dead and digest, the table of which kinds each relation may join, and whether an edge counts in the actual topology."
+- DATA-0013.purpose "stores each design unit as Markdown"
+- DATA-0013.responsibility "Is one Markdown file per unit under architecture/ or features/, YAML frontmatter as the source of truth plus a user-owned Notes section."
+- DATA-0014.depends_on.DATA-0010 "INFERRED via data: internal/model/model.go:152 \"Evidence       []Evidence `yaml:\\\"evidence,omitempty\\\"`\""
+- DATA-0014.depends_on.DATA-0011 "INFERRED via call: internal/model/model.go:186 \"if err := u.Name.validate(false); err != nil {\""
+- DATA-0014.depends_on.DATA-0012 "INFERRED via data: internal/model/model.go:217 \"for _, r := range u.Relations {\""
+- DATA-0014.depends_on.MOD-0054 "INFERRED via call: internal/model/model.go:176 \"k, _, err := ParseID(string(u.ID))\""
+- DATA-0014.depends_on.MOD-0055 "INFERRED via call: internal/model/model.go:173 \"if err := u.Kind.Validate(); err != nil {\""
+- DATA-0014.responsibility "Is the Unit as stored, with parent, evidence, relations and absent flag, and its validation including the semantic-needs-evidence rule."
+- DATA-0015.purpose "the derived explorer, confirm queue and graph.json under .abbd/generated/"
+- DATA-0015.responsibility "Holds the static explorer.html, confirm-queue.html and graph.json, each stamped with the watermark of the .abbd inputs it came from so a reader can tell when it is STALE."
+- DATA-0016.purpose "records human decisions"
+- DATA-0016.responsibility "Is decisions/ADR-*.md, each an approved or rejected question with grade, origin and reason, so a decided question is never asked again."
+- DATA-0017.purpose "records the aligned intended topology"
+- DATA-0017.responsibility "Is .abbd/intended.yaml, the design units, signatures and relations a human aligned to, with a revision bumped on every content change."
+- DATA-0018.purpose "records verification runs"
+- DATA-0018.responsibility "Is verification/runs/<id>.yaml plus its .log output, the command, tree, exit code and result a turn's completion rests on."
+- DATA-0019.purpose "records each turn of change"
+- DATA-0019.responsibility "Is changes/CHG-*.md, the turn's frontmatter state with a rendered impact, rejections and gate report."
+- DATA-0020.purpose "keeps the user's request verbatim"
+- DATA-0020.responsibility "Is requirements/*.md, the text of a request as the user stated it, tied to the turn that serves it."
+- DATA-0021.depends_on.MOD-0071 "INFERRED via call: internal/store/understanding.go:33 \"b, err := frontmatter(u, strings.TrimSpace(u.Text)+\\\"\\\\n\\\")\""
+- DATA-0021.responsibility "Is understanding/<ID>.md, a module's how-text with INFERRED origin and the digest of the code it describes, and computes that digest."
+- DATA-0022.responsibility "The Item and Edge records with their printed forms, Item.Key and Edge.String, and the parsers ParseKey and ParseEdge that read them back."
+- DATA-0023.responsibility "Records that an agent checked one impacted unit for reader-only couplings, and names the pstack skills a scan may follow."
+- DATA-0024.responsibility "The Turn written to a change record: state, baseline, seeds, impact, declared IntentDelta, questions, approvals, rejections, scans and end report, with the lookups Approved, Rejected and Waiting."
+- FEAT-0001.consumes.CFG-0001 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:10 \"`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`\""
+- FEAT-0001.depends_on.DATA-0010 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:66 \"--evidence \\\"<PATH>:<LINES>:<QUOTE>\\\"\""
+- FEAT-0001.depends_on.DATA-0023 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:75 \"Use `--by blast-radius` for a unit you scanned that way.\""
+- FEAT-0001.depends_on.DATA-0024 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:120 \"- `DRAFT`, exit 2: verification is missing, failed, or older than the tree.\""
+- FEAT-0001.depends_on.MOD-0002 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:18 \"a hook denies the abbd commands approve, reject, align, confirm, couple, setup, serve and mode off\""
+- FEAT-0001.depends_on.MOD-0012 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:14 \"When a command exits 2, a human decides next.\""
+- FEAT-0001.depends_on.MOD-0013 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:98 \"An `UNEXPECTED KEY` line is a relation change\""
+- FEAT-0001.depends_on.MOD-0053 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:69 \"`VIA` is one of `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`\""
+- FEAT-0001.depends_on.MOD-0065 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:18 \"of the session state in `<git-dir>/abbd/sessions/`\""
+- FEAT-0001.depends_on.MOD-0069 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:18 \"`<git-dir>/abbd/sessions/`\""
+- FEAT-0001.depends_on.MOD-0084 "INFERRED via convention: plugins/abbd/skills/abbd-mode/SKILL.md:83 \"- `A KEY` and `B PROCEED KEY`: proceed.\""
+- FEAT-0001.purpose "runs a pstack poteto-mode playbook inside a gated ABBD turn"
+- FEAT-0001.responsibility "Owns the agent-side turn protocol (mode on, start with seeds, impact and semantic scan, declare, diff between steps, verify and end before any PR) and the abbd-agent delegate rules."
+- FEAT-0002.consumes.CFG-0001 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:8 \"ABBD is pinned to that version.\""
+- FEAT-0002.consumes.DATA-0007 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:106 \"Unknown fields are rejected.\""
+- FEAT-0002.consumes.IF-0027 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:110 \"named like `MOD-0001.purpose` or `MOD-0002.consumes.MOD-0001`\""
+- FEAT-0002.depends_on.DATA-0004 "INFERRED via data: plugins/abbd/skills/abbd-setup/SKILL.md:39 \"with IDs from `.abbd/bootstrap-report.md`\""
+- FEAT-0002.depends_on.DATA-0012 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:102 \"`via` is optional on a relation and says how it arises\""
+- FEAT-0002.depends_on.MOD-0001 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:34 \"one of them with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`\""
+- FEAT-0002.depends_on.MOD-0023 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:34 \"Exit 1 `not deterministic`\""
+- FEAT-0002.depends_on.MOD-0025 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:36 \"Exit 1 `fix the script, or cite the code`\""
+- FEAT-0002.depends_on.MOD-0027 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:25 \"give that unit `evidence` instead of a script anchor\""
+- FEAT-0002.depends_on.MOD-0033 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:103 \"it must start within three lines of\""
+- FEAT-0002.depends_on.MOD-0051 "INFERRED via convention: plugins/abbd/skills/abbd-setup/SKILL.md:97 \"Two shared anchors, or an identical anchor set, keep a unit's ID across re-extraction.\""
+- FEAT-0002.purpose "bootstraps ABBD on a repository"
+- FEAT-0002.responsibility "Owns the setup procedure: choosing the mode, the pstack swarm reading, writing the deterministic extraction script and supplement, running abbd setup and handing alignment to the human."
+- IF-0001.purpose "the entry point Claude Code hooks call"
+- IF-0001.responsibility "Takes one hook event name, reads the hook JSON on stdin and always exits 0 so it never fails the host."
+- IF-0002.purpose "the JSON exchange with Claude Code hooks"
+- IF-0002.responsibility "The five hook events abbd handles, the stdin fields it reads and the stdout fields it writes to add context, deny a tool or block a stop."
+- IF-0003.purpose "lets a human choose or realign the design units"
+- IF-0003.responsibility "Confirms the first design units from the bootstrapped candidates, or realigns a drifted project by its REALIGN rows."
+- IF-0004.purpose "lets a human allow one grade C change"
+- IF-0004.responsibility "Approves a blocked or questioned change, inside an open turn for that turn only, or adopts a promotion candidate as a design unit."
+- IF-0005.purpose "lets a human settle an inferred fact"
+- IF-0005.responsibility "Lists the confirm queue, confirms or rejects one inferred item, and sets a contract's external_consumers flag."
+- IF-0006.purpose "lets a human register a coupling the script cannot see"
+- IF-0006.responsibility "Adds a USER_STATED relation FROM.KIND.TO to the actual topology and acknowledges it when it would surface as drift."
+- IF-0007.purpose "feeds an extraction result into .abbd by hand"
+- IF-0007.responsibility "Reconciles an extraction JSON file or stdin into the actual topology and prints each unit's identity outcome."
+- IF-0008.purpose "switches ABBD mode on or off for a session"
+- IF-0008.responsibility "Turns a session's mode on only when the project is aligned after re-extraction, resuming an unfinished turn, or turns it off."
+- IF-0009.purpose "lets a human refuse one grade C change"
+- IF-0009.responsibility "Writes a rejection ADR with the required --reason, keeping the change blocked, or keeps a promotion candidate below the line."
+- IF-0010.purpose "shows where the project stands"
+- IF-0010.responsibility "Prints the phase, the confirm queue size, whether generated files and the actual topology are CURRENT, the session's mode and the drift."
+- IF-0011.purpose "reports whether semantic evidence is still in the code"
+- IF-0011.responsibility "Prints, for every semantic unit and relation, each quote as live with its location or dead, without writing anything."
+- IF-0012.purpose "records an agent's guess at a coupling"
+- IF-0012.responsibility "Stores FROM KIND TO with --via and live --evidence as an INFERRED, UNCONFIRMED relation that joins the impact but never gates."
+- IF-0013.purpose "records an agent's guess at a unit"
+- IF-0013.responsibility "Stores a unit the script cannot see, anchored by its live evidence and optionally placed under a parent module, as INFERRED."
+- IF-0014.purpose "starts the human screen"
+- IF-0014.responsibility "Serves the loopback approval screen on --addr where a human approves, rejects, confirms and aligns."
+- IF-0015.purpose "bootstraps ABBD on a repository"
+- IF-0015.responsibility "Registers and determinism-checks the extraction script, overlays supplement and adopt documents, registers --verify, or aligns a greenfield project at once."
+- IF-0016.purpose "records what a turn intends to change"
+- IF-0016.responsibility "Stores the IntentDelta of units and change keys, grades each change and exits 2 while a grade C change waits for a human."
+- IF-0017.purpose "checks a turn's work between steps"
+- IF-0017.responsibility "Re-extracts, judges the actual topology against the intended one plus approvals, and exits 2 on a boundary-crossing change."
+- IF-0018.purpose "concludes a turn"
+- IF-0018.responsibility "Gates the turn and records it as SYNCED or CLOSED, or exits 2 with DRAFT or BLOCKED."
+- IF-0019.purpose "shows and widens a turn's impact"
+- IF-0019.responsibility "Prints the turn's impact in direct and far tiers and lets the agent only add units to it."
+- IF-0020.purpose "records a semantic-coupling scan of an impacted unit"
+- IF-0020.responsibility "Marks a unit in the impact as scanned by how or blast-radius so turn end leaves no semantic-unscanned card for it."
+- IF-0021.purpose "lets any session read the latest turn"
+- IF-0021.responsibility "Prints the latest turn's impact, declaration, approvals, report and rejections."
+- IF-0022.purpose "opens a turn for a request"
+- IF-0022.responsibility "Records the request verbatim, fingerprints the tree and extractor, and computes the impact from the seeds in an aligned project."
+- IF-0023.purpose "records the project verification for a turn"
+- IF-0023.responsibility "Runs the registered verify command, registering it once, and saves a run that fails when the command fails or edits the tree."
+- IF-0024.purpose "stores how's reading of a module"
+- IF-0024.responsibility "Saves an INFERRED Overview and Key Concepts text for a top-level module, stamped with the module's code digest so the screen marks it STALE."
+- IF-0025.purpose "tells a caller how an abbd command ended"
+- IF-0025.responsibility "The exit code contract every command shares: 0 done, 1 error, 2 a human decision is needed, 64 a malformed command line."
+- IF-0026.purpose "the HTTP surface the screen page talks to"
+- IF-0026.responsibility "GET / returns the rendered page and POST /act takes one decision form (do, key, token t and the action's fields) from the screen's own origin and answers with what the CLI printed."
+- IF-0027.purpose "names one guess in the confirm queue"
+- IF-0027.responsibility "Fixes the ID.purpose, ID.responsibility and FROM.kind.TO strings that abbd confirm, the screen's confirm forms and the setup skill use to name a guess."
+- IF-0028.purpose "names one topology change on the command line"
+- IF-0028.responsibility "Fixes the change:ID and change:FROM.kind.TO strings that approve, reject, turn declare, the gate lines and the screen use to name the same difference."
+- MOD-0001.depends_on.MOD-0069 "INFERRED via convention: cmd/abbd/hook.go:173 \"strings.Contains(strings.ToLower(in.raw), \\\"serve.addr\\\")\""
+- MOD-0001.depends_on.MOD-0082 "INFERRED via convention: cmd/abbd/turn.go:506 \"Output: \\\"verification/runs/\\\" + id + \\\".log\\\"\""
+- MOD-0001.depends_on.MOD-0085 "INFERRED via convention: cmd/abbd/turn.go:625 \"Grade: \\\"B\\\", Subject: vd.Item.Key()\""
+- MOD-0001.purpose "runs every abbd command a human, an agent or a hook invokes"
+- MOD-0001.responsibility "Owns the command table, flag parsing and exit codes, and turns each verb into reads and writes of the .abbd store through the internal packages."
+- MOD-0002.consumes.CFG-0002 "INFERRED via config: cmd/abbd/guard.go:435 \"p, err := e.st.LoadProject()\""
+- MOD-0002.depends_on.MOD-0017 "INFERRED via data: cmd/abbd/serve.go:52 \"os.WriteFile(file, []byte(s.addr+\\\"\\\\n\\\"), 0o644)\""
+- MOD-0002.depends_on.MOD-0066 "INFERRED via convention: cmd/abbd/guard.go:506 \"if c == \\\".abbd\\\" && !g.extractor(cs[i+1:]) {\""
+- MOD-0002.depends_on.MOD-0069 "INFERRED via convention: cmd/abbd/guard.go:509 \"if c == \\\".git\\\" && (deleting || slices.Contains(cs[i+1:], \\\"abbd\\\")) {\""
+- MOD-0002.purpose "keeps an agent in ABBD mode away from the human's commands and files"
+- MOD-0002.responsibility "Reads a Bash or PowerShell command the way a shell splits it and says why it is denied when it runs a human-only abbd command, writes or deletes a protected path, or reaches the running screen."
+- MOD-0003.consumes.IF-0025 "INFERRED via convention: cmd/abbd/guard.go:380 \"\\\"align\\\": true, \\\"approve\\\": true, \\\"reject\\\": true,\""
+- MOD-0003.depends_on.MOD-0009 "INFERRED via data: cmd/abbd/guard.go:388 \"if readers[commandName(words[0])] {\""
+- MOD-0003.depends_on.MOD-0019 "INFERRED via convention: cmd/abbd/guard.go:380 \"\\\"confirm\\\": true, \\\"couple\\\": true,\""
+- MOD-0003.responsibility "Names the abbd subcommands only a human runs while the mode is on and finds which abbd subcommand a segment runs, past global flags."
+- MOD-0004.consumes.IF-0015 "INFERRED via convention: cmd/abbd/guard.go:733 \"commandName(w[0]) == \\\"abbd\\\" && w[1] == \\\"setup\\\" && w[2] == \\\"--\\\"\""
+- MOD-0004.depends_on.MOD-0003 "INFERRED via call: cmd/abbd/guard.go:610 \"if sub := abbdCommand(words); humans[sub] {\""
+- MOD-0004.depends_on.MOD-0006 "INFERRED via call: cmd/abbd/guard.go:602 \"if g.protected(cwd, r, false) {\""
+- MOD-0004.depends_on.MOD-0007 "INFERRED via call: cmd/abbd/guard.go:581 \"p := parseShell(cmd)\""
+- MOD-0004.depends_on.MOD-0008 "INFERRED via call: cmd/abbd/guard.go:617 \"slices.ContainsFunc(words, g.reachesScreen)\""
+- MOD-0004.depends_on.MOD-0009 "INFERRED via data: cmd/abbd/guard.go:626 \"case shells[name]:\""
+- MOD-0004.responsibility "Walks the parsed command, recursing into substitutions, executable bodies and nested shells up to maxDepth, and returns the first deny reason for a human command, a protected write, a screen request or a tree-wide git rewrite."
+- MOD-0005.consumes.CFG-0002 "INFERRED via data: cmd/abbd/guard.go:435 \"p, err := e.st.LoadProject()\""
+- MOD-0005.responsibility "Builds the guard for one hook call: the root and cwd, whether setup is still open, the registered script's files and every spelling of the running screen's address."
+- MOD-0006.depends_on.MOD-0005 "INFERRED via data: cmd/abbd/guard.go:532 \"return g.setupOpen && len(below) > 0\""
+- MOD-0006.depends_on.MOD-0065 "INFERRED via convention: cmd/abbd/guard.go:506 \"if c == \\\".abbd\\\" && !g.extractor(cs[i+1:]) {\""
+- MOD-0006.responsibility "Decides whether a path, glob or argument text reaches .abbd/ (except the extractor while setup is open), session state under the git directory, or the registered script's files."
+- MOD-0007.depends_on.DATA-0001 "INFERRED via data: cmd/abbd/guard.go:95 \"p.out.segs = append(p.out.segs, p.cur)\""
+- MOD-0007.responsibility "Splits a command string into simple commands, redirect targets, heredoc and here-string bodies and command substitutions, for both POSIX shells and PowerShell."
+- MOD-0008.depends_on.MOD-0005 "INFERRED via data: cmd/abbd/guard.go:449 \"return slices.ContainsFunc(g.screen,\""
+- MOD-0008.responsibility "Says whether any text names the running screen's address and holds the reason an agent is given when it does."
+- MOD-0009.responsibility "Classifies a command name as a reader, a shell that runs its arguments, a deleter, a directory change or a git subcommand that rewrites the working tree."
+- MOD-0010.consumes.CFG-0003 "INFERRED via convention: cmd/abbd/hook.go:175 \"case in.ToolName == \\\"Bash\\\" || in.ToolName == \\\"PowerShell\\\":\""
+- MOD-0010.consumes.IF-0018 "INFERRED via convention: cmd/abbd/hook.go:208 \"Run abbd turn verify --session %s, then abbd turn end --session %s\""
+- MOD-0010.consumes.IF-0022 "INFERRED via convention: cmd/abbd/hook.go:148 \"abbd turn start --session %s --seeds IDS --request -\""
+- MOD-0010.depends_on.FEAT-0001 "INFERRED via convention: cmd/abbd/hook.go:136 \"Continue it under /abbd-mode\""
+- MOD-0010.depends_on.MOD-0013 "INFERRED via call: cmd/abbd/hook.go:203 \"tree, err := e.tree()\""
+- MOD-0010.depends_on.MOD-0065 "INFERRED via convention: cmd/abbd/hook.go:173 \"case strings.Contains(strings.ToLower(in.raw), \\\"serve.addr\\\"):\""
+- MOD-0010.responsibility "Reads Claude Code hook JSON, does nothing unless the session's mode is on, and routes each event to its handler: context on session start and prompt submit, the journal on edits, the guard before tools, the stop block."
+- MOD-0011.depends_on.MOD-0013 "INFERRED via call: cmd/abbd/main.go:739 \"return e.approveInTurn(t, key)\""
+- MOD-0011.depends_on.MOD-0014 "INFERRED via call: cmd/abbd/main.go:450 \"v, err := e.load()\""
+- MOD-0011.responsibility "Applies a human's decisions outside a turn: align, confirm, approve, reject, couple and promotion adoption, each writing the intended topology or an ADR."
+- MOD-0012.depends_on.MOD-0010 "INFERRED via call: cmd/abbd/main.go:299 \"e.hook(inv.sub)\""
+- MOD-0012.depends_on.MOD-0015 "INFERRED via call: cmd/abbd/main.go:308 \"if perr := e.publish(); perr != nil {\""
+- MOD-0012.depends_on.MOD-0053 "INFERRED via convention: cmd/abbd/main.go:173 \"how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call\""
+- MOD-0012.responsibility "Parses a command line against the command table and flag definitions, runs the verb, republishes generated files when inputs changed, and maps the result to an exit code."
+- MOD-0013.depends_on.FEAT-0002 "INFERRED via convention: cmd/abbd/turn.go:42 \"filepath.Join(e.root, store.Dir, \\\"extractor\\\")\""
+- MOD-0013.depends_on.MOD-0014 "INFERRED via call: cmd/abbd/turn.go:436 \"if err := e.reextract(); err != nil {\""
+- MOD-0013.depends_on.MOD-0015 "INFERRED via call: cmd/abbd/turn.go:642 \"return e.published()\""
+- MOD-0013.responsibility "Turns a session's mode on or off, resumes an unfinished turn, and runs turn start, impact, scan, declare, diff, verify, end and show, including approvals and rejections inside a turn."
+- MOD-0014.responsibility "Brings the actual topology up to the working tree: runs the registered extraction script, reconciles its result through identity and evidence, and loads the view the other commands read."
+- MOD-0015.depends_on.MOD-0014 "INFERRED via call: cmd/abbd/main.go:1046 \"if err := e.printFreshness(); err != nil {\""
+- MOD-0015.responsibility "Regenerates .abbd/generated/ from the store with graph.json written last, checks it is CURRENT after a sync, and prints phase, queue and freshness for abbd status."
+- MOD-0016.depends_on.MOD-0014 "INFERRED via call: cmd/abbd/propose.go:76 \"v, err := e.load()\""
+- MOD-0016.responsibility "Takes an agent's readings into the store as INFERRED: proposed units and relations with live citations, the evidence report, and how's per-module understanding text."
+- MOD-0017.consumes.IF-0027 "INFERRED via data: internal/screen/page.html:298 \"<input type=\\\"hidden\\\" name=\\\"do\\\" value=\\\"confirm\\\"><input type=\\\"hidden\\\" name=\\\"key\\\" value=\\\"{{.Key}}\\\">\""
+- MOD-0017.consumes.IF-0028 "INFERRED via data: internal/screen/page.html:211 \"<input type=\\\"hidden\\\" name=\\\"do\\\" value=\\\"approve\\\"><input type=\\\"hidden\\\" name=\\\"key\\\" value=\\\"{{.Key}}\\\">\""
+- MOD-0017.depends_on.DATA-0022 "INFERRED via convention: cmd/abbd/serve.go:105 \"f.Set(\\\"key\\\", f.Get(\\\"from\\\")+\\\".\\\"+f.Get(\\\"kind\\\")+\\\".\\\"+f.Get(\\\"to\\\"))\""
+- MOD-0017.purpose "serves the human screen on loopback and runs its decisions as CLI commands"
+- MOD-0017.responsibility "Owns the loopback listener, the per-launch token and serve.addr file, the origin and token checks, and the translation of each posted form into the abbd command line it stands for."
+- MOD-0018.depends_on.MOD-0001 "INFERRED via call: cmd/abbd/serve.go:219 \"code := run(append(argv, \\\"--root\\\", s.env.root)\""
+- MOD-0018.depends_on.MOD-0019 "INFERRED via data: cmd/abbd/serve.go:206 \"build, ok := actions[r.PostForm.Get(\\\"do\\\")]\""
+- MOD-0018.depends_on.MOD-0020 "INFERRED via call: cmd/abbd/serve.go:200 \"!s.fromScreen(r) || !s.valid(r.PostForm.Get(\\\"t\\\"))\""
+- MOD-0018.responsibility "Runs one decision at a time as an in-process CLI call with --root, and answers with the command line and what it printed, failing with 422 on a CLI error."
+- MOD-0019.depends_on.MOD-0072 "INFERRED via convention: cmd/abbd/serve.go:105 \"f.Set(\\\"key\\\", f.Get(\\\"from\\\")+\\\".\\\"+f.Get(\\\"kind\\\")+\\\".\\\"+f.Get(\\\"to\\\"))\""
+- MOD-0019.responsibility "Maps each do value to the abbd argv it stands for, refusing a key that looks like a flag."
+- MOD-0020.depends_on.MOD-0022 "INFERRED via data: cmd/abbd/serve.go:155 \"subtle.ConstantTimeCompare([]byte(t), []byte(s.token))\""
+- MOD-0020.responsibility "Serves only the printed loopback Host, and accepts a decision only from the screen's own origin carrying the launch token, compared in constant time."
+- MOD-0021.depends_on.MOD-0056 "INFERRED via call: cmd/abbd/serve.go:183 \"screen.Render(&b, screen.Build(in), o)\""
+- MOD-0021.responsibility "Renders the live page under the decision lock with a fresh script nonce and sends it with a strict Content-Security-Policy and no-store, no-frame headers."
+- MOD-0022.responsibility "Refuses a non-loopback --addr, draws the 24-byte token, prints the link with the token in its fragment, writes the address to serve.addr and removes it on exit."
+- MOD-0023.depends_on.MOD-0014 "INFERRED via call: cmd/abbd/setup.go:106 \"if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {\""
+- MOD-0023.responsibility "Runs setup: checks the extraction script is deterministic over three runs, overlays the supplement and adopt documents, registers the verify command, and handles greenfield setup on an empty directory."
+- MOD-0024.purpose "folds reader-written documents onto the extraction script's result at setup"
+- MOD-0024.responsibility "Owns the overlay of a supplement or adopt document onto the script units, the findings it produces, and the bootstrap report setup writes."
+- MOD-0025.depends_on.DATA-0002 "INFERRED via data: internal/bootstrap/overlay.go:51 \"var f Findings\""
+- MOD-0025.depends_on.DATA-0003 "INFERRED via data: internal/bootstrap/overlay.go:89 \"if src.Strict && len(f.Gaps) > 0 {\""
+- MOD-0025.depends_on.MOD-0026 "INFERRED via call: internal/bootstrap/overlay.go:57 \"i, err := match(out.Units[:scriptUnits], d)\""
+- MOD-0025.depends_on.MOD-0027 "INFERRED via call: internal/bootstrap/overlay.go:59 \"out.Units = append(out.Units, semantic(d, fmt.Sprintf(\\\"%s#%d\\\", src.Name, n)))\""
+- MOD-0025.responsibility "Matches each document unit to a script unit, copies purpose and responsibility onto it, sets parents and appends the couplings the script did not extract."
+- MOD-0026.responsibility "Picks the script unit of the same kind that shares the most anchors with a document unit, refusing no match and ties."
+- MOD-0027.responsibility "Admits a supplement unit the script cannot see when it carries evidence, as an INFERRED unconfirmed unit with no signature or digest."
+- MOD-0028.purpose "queues agent guesses for a human to confirm or reject"
+- MOD-0028.responsibility "Owns the confirm queue of guessed purposes, responsibilities and couplings, and applies a human's confirmation or rejection of one item to a copy of its unit."
+- MOD-0029.depends_on.DATA-0005 "INFERRED via call: internal/confirm/confirm.go:148 \"if relationKey(u.ID, r) != key || u.Absent {\""
+- MOD-0029.responsibility "Finds the item a key names and confirms it, replaces it with the human's value, or rejects it, always on a copy of the unit."
+- MOD-0030.depends_on.DATA-0005 "INFERRED via call: internal/confirm/confirm.go:56 \"add(relationKey(u.ID, r), relationValue(r), design[u.ID] || design[r.To])\""
+- MOD-0030.responsibility "Lists every guessed purpose, responsibility and uncounted, live, unrejected relation of the present units, design units first."
+- MOD-0031.purpose "decides whether cited code is still there"
+- MOD-0031.responsibility "Owns the deterministic, whitespace-insensitive quote match that keeps a semantic unit present or a semantic relation alive, and the digest of the lines that hold each quote."
+- MOD-0032.depends_on.DATA-0014 "INFERRED via call: internal/evidence/evidence.go:138 \"if u.Semantic() && !u.Absent {\""
+- MOD-0032.depends_on.MOD-0033 "INFERRED via call: internal/evidence/evidence.go:120 \"if r := c.Check(e); r.Live {\""
+- MOD-0032.responsibility "Marks semantic units absent and semantic relations dead when none of their quotes survives, moves live lines, and records relation digests."
+- MOD-0033.depends_on.DATA-0006 "INFERRED via data: internal/evidence/evidence.go:107 \"return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8])}\""
+- MOD-0033.depends_on.MOD-0034 "INFERRED via call: internal/evidence/evidence.go:84 \"f := c.load(e.Path)\""
+- MOD-0033.responsibility "Finds a quote whitespace-insensitively, as a whole word at its ends, starting within Slack lines of the cited range, and returns where it is now."
+- MOD-0034.responsibility "Reads each cited file once and keeps it as raw lines plus a whitespace-free string with per-byte line numbers and word-start gaps."
+- MOD-0035.purpose "turns extraction JSON into typed units"
+- MOD-0035.responsibility "Owns the strict parsing and validation of the extraction format: keys, parents, anchors, evidence paths, relation kinds, and which facts start EXTRACTED or INFERRED."
+- MOD-0036.responsibility "Makes every path forward-slash, cleaned and root-relative so it compares equal to git's paths, refusing absolute paths and escapes."
+- MOD-0037.depends_on.DATA-0008 "INFERRED via data: internal/extract/extract.go:113 \"res.Relations = append(res.Relations, Relation{\""
+- MOD-0037.depends_on.DATA-0012 "INFERRED via call: internal/extract/extract.go:103 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+- MOD-0037.depends_on.MOD-0036 "INFERRED via call: internal/extract/extract.go:109 \"evidence, err := NormalizeEvidence(rr.Evidence)\""
+- MOD-0037.depends_on.MOD-0039 "INFERRED via call: internal/extract/extract.go:72 \"units, raw, err := parseUnits(r)\""
+- MOD-0037.responsibility "Rejects duplicate keys, parents that are not another module, parent cycles, dangling or self relations, and relation kinds the unit kinds cannot join."
+- MOD-0038.responsibility "Marks names and signatures EXTRACTED, purpose and responsibility INFERRED and UNCONFIRMED, and restates everything as a human's or an adopted document's."
+- MOD-0039.consumes.DATA-0007 "INFERRED via data: internal/extract/extract.go:137 \"var raw rawResult\""
+- MOD-0039.depends_on.MOD-0036 "INFERRED via call: internal/extract/extract.go:150 \"p, err := normalizePath(a.Path)\""
+- MOD-0039.depends_on.MOD-0038 "INFERRED via call: internal/extract/extract.go:181 \"inferred(ru.Purpose)\""
+- MOD-0039.responsibility "Decodes strictly, checks kind and name, normalizes anchors, turns evidence into anchors, and allows a signature only on a contract."
+- MOD-0040.purpose "reads the few git facts ABBD needs"
+- MOD-0040.responsibility "Owns every git invocation: the head commit, the git directory, working-tree snapshots as tree objects, and renames and changed paths between snapshots."
+- MOD-0041.depends_on.MOD-0044 "INFERRED via data: internal/gitx/gitx.go:94 \"if _, err := run(dir, nil, \\\"cat-file\\\", \\\"-e\\\", oldTree+\\\"^{tree}\\\"); err != nil {\""
+- MOD-0041.depends_on.MOD-0045 "INFERRED via call: internal/gitx/gitx.go:97 \"out, err := run(dir, nil, \\\"diff-tree\\\", \\\"-r\\\", \\\"--no-renames\\\", \\\"--name-only\\\",\""
+- MOD-0041.responsibility "Lists the paths that differ between two snapshot trees, a move listed under both names."
+- MOD-0042.depends_on.MOD-0045 "INFERRED via call: internal/gitx/gitx.go:23 \"out, err := run(dir, nil, \\\"rev-parse\\\", \\\"--verify\\\", \\\"-q\\\", \\\"HEAD\\\")\""
+- MOD-0042.responsibility "Reports the current commit and the absolute git directory, or empty outside a repository."
+- MOD-0043.depends_on.MOD-0044 "INFERRED via data: internal/gitx/gitx.go:65 \"if _, err := run(dir, nil, \\\"cat-file\\\", \\\"-e\\\", oldTree+\\\"^{tree}\\\"); err != nil {\""
+- MOD-0043.depends_on.MOD-0045 "INFERRED via call: internal/gitx/gitx.go:68 \"out, err := run(dir, nil, \\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\",\""
+- MOD-0043.responsibility "Maps old to new paths between two snapshot trees with exhaustive rename detection, reporting not-ok when the old tree was collected."
+- MOD-0044.depends_on.MOD-0045 "INFERRED via call: internal/gitx/gitx.go:51 \"if _, err := run(dir, env, \\\"add\\\", \\\"-A\\\", \\\"--\\\", \\\".\\\", \\\":(exclude)\\\"+exclude); err != nil {\""
+- MOD-0044.responsibility "Writes the working tree, untracked files included and one path excluded, as a git tree through a throwaway index so the user's index is untouched."
+- MOD-0045.responsibility "Runs git -C dir with extra environment and returns its stdout."
+- MOD-0046.purpose "keeps design-unit IDs stable across re-extraction"
+- MOD-0046.responsibility "Owns reconciling a fresh extraction with the stored units: which stored ID each new unit takes over, which IDs are minted or go absent, merge candidates, and which facts and relations survive."
+- MOD-0047.depends_on.DATA-0003 "INFERRED via convention: internal/identity/identity.go:50 \"ReplaceGuesses is a setup, whose supplement owns them\""
+- MOD-0047.responsibility "Decides whether undecided INFERRED facts and semantic units survive: kept on re-extraction, replaced on setup."
+- MOD-0048.depends_on.DATA-0009 "INFERRED via data: internal/identity/identity.go:164 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID,\""
+- MOD-0048.depends_on.MOD-0047 "INFERRED via call: internal/identity/identity.go:169 \"units[j].Absent = !stTaken[j] && !kept(u, guesses)\""
+- MOD-0048.depends_on.MOD-0049 "INFERRED via call: internal/identity/identity.go:71 \"u.Anchors = applyRenames(u.Anchors, renames)\""
+- MOD-0048.depends_on.MOD-0050 "INFERRED via call: internal/identity/identity.go:136 \"merge(&units[j], in, guesses)\""
+- MOD-0048.depends_on.MOD-0051 "INFERRED via data: internal/identity/identity.go:118 \"for _, p := range pairs {\""
+- MOD-0048.depends_on.MOD-0052 "INFERRED via call: internal/identity/identity.go:177 \"setRelations(res.Units, input, ids, extraction.Relations, guesses)\""
+- MOD-0048.responsibility "Pure entry point that applies renames, pairs units, mints new IDs above the per-kind high-water mark, marks absent units and returns the result with candidates."
+- MOD-0049.depends_on.MOD-0040 "INFERRED via data: internal/identity/identity.go:62 \"renames maps old paths to new paths since the last sync\""
+- MOD-0049.responsibility "Rewrites stored anchor paths through the old-to-new rename map before pairing."
+- MOD-0050.depends_on.MOD-0047 "INFERRED via data: internal/identity/identity.go:291 \"return f == nil || (guesses == ReplaceGuesses && f.Guess())\""
+- MOD-0050.responsibility "Overwrites a matched unit's anchors, signature, digest and evidence from the extraction while keeping human-given and decided values."
+- MOD-0051.responsibility "Pairs an extracted unit with a stored one of the same kind when they share two or more anchors or identical anchor sets, assigned globally best match first."
+- MOD-0052.depends_on.MOD-0047 "INFERRED via data: internal/identity/identity.go:248 \"if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {\""
+- MOD-0052.responsibility "Resolves extraction keys to IDs for parents and relations; extracted relations are replaced, other origins survive unless guesses are replaced."
+- MOD-0053.depends_on.MOD-0066 "INFERRED via convention: internal/model/model.go:336 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\")\""
+- MOD-0053.purpose "defines ABBD's vocabulary of design units"
+- MOD-0053.responsibility "Owns the Unit, Fact, Relation, Anchor and Evidence types, the kind and ID rules, the relation kinds each pair of unit kinds may join, and their validation."
+- MOD-0054.responsibility "Parses and formats KIND-NNNN IDs."
+- MOD-0055.responsibility "Defines the unit kinds, which directory each lives in, which are contracts, and the reserved domain-layer prefixes."
+- MOD-0056.consumes.IF-0026 "INFERRED via call: internal/screen/page.html:375 \"const r = await fetch(\\\"/act\\\", { method: \\\"POST\\\", body });\""
+- MOD-0056.depends_on.DATA-0022 "INFERRED via convention: internal/screen/graph.go:79 \"switch effect[\\\"new-relation:\\\"+e.String()] {\""
+- MOD-0056.depends_on.DATA-0024 "INFERRED via convention: internal/screen/page.html:45 \".pill.SYNCED, .pill.CLOSED\""
+- MOD-0056.depends_on.MOD-0017 "INFERRED via convention: internal/screen/page.html:350 \"const m = /^#t=([0-9a-f]+)$/.exec(location.hash);\""
+- MOD-0056.depends_on.MOD-0076 "INFERRED via convention: internal/screen/page.go:43 \"\\\"uninitialized\\\": \\\"미초기화\\\", \\\"bootstrapped\\\": \\\"정렬 전\\\"\""
+- MOD-0056.depends_on.MOD-0077 "INFERRED via convention: internal/screen/page.html:274 \"{{if and $tick (eq .Effect \\\"REALIGN\\\")}}\""
+- MOD-0056.depends_on.MOD-0084 "INFERRED via data: internal/screen/screen.go:489 \"if strings.Contains(s, string(topology.Promote)) {\""
+- MOD-0056.purpose "builds what the human sees from the store"
+- MOD-0056.responsibility "Derives a deterministic Model from the .abbd inputs (pending cards, drift, trust badges, confirm queue, overview and module drawings) and renders it as the live page or the generated files, without ever writing the topology."
+- MOD-0057.depends_on.MOD-0058 "INFERRED via call: internal/screen/inside.go:60 \"l := arrange(nodes, edges, frameTop+chipH+40)\""
+- MOD-0057.responsibility "Draws one module's inside units with the module's contracts on the frame and lines from the unit that provides or uses each one."
+- MOD-0058.responsibility "Places nodes in layers by what uses what, sorted so the same graph always gives the same picture, and routes lines through the gaps between layers."
+- MOD-0059.depends_on.MOD-0058 "INFERRED via call: internal/screen/overview.go:213 \"o.layout = arrange(nodes, edges, padY+14)\""
+- MOD-0059.responsibility "Lays out the modules and contracts from design units and approved relations only, and draws each wire by kind: through a contract, bypassing contracts, semantic, new, realign or removed."
+- MOD-0060.depends_on.MOD-0059 "INFERRED via convention: internal/screen/overview.go:534 \"plainWire(\\\"semantic\\\", title\""
+- MOD-0060.depends_on.MOD-0061 "INFERRED via convention: internal/screen/screen.go:616 \"return \\\"stated, guess rejected\\\"\""
+- MOD-0060.depends_on.MOD-0072 "INFERRED via convention: internal/screen/page.html:274 \"(eq .Effect \\\"REALIGN\\\")\""
+- MOD-0060.responsibility "Executes the embedded page.html with its Korean labels, as a live page with forms and a nonce script or as the static explorer and queue files, and writes graph.json."
+- MOD-0061.depends_on.MOD-0057 "INFERRED via call: internal/screen/screen.go:440 \"ins := o.inside(id, in.Units, mk)\""
+- MOD-0061.depends_on.MOD-0059 "INFERRED via call: internal/screen/screen.go:423 \"o := planOverview(in.Units, in.Intended)\""
+- MOD-0061.depends_on.MOD-0062 "INFERRED via data: internal/screen/screen.go:311 \"Phase: topology.DerivePhase(in.Units, in.Intended), Actual: in.ActualFreshness()\""
+- MOD-0061.depends_on.MOD-0063 "INFERRED via call: internal/screen/screen.go:472 \"return ask(it, o.name, users)\""
+- MOD-0061.depends_on.MOD-0064 "INFERRED via call: internal/screen/screen.go:442 \"Blocks: blocks(u.Text)\""
+- MOD-0061.responsibility "Derives the deterministic Model: phase, pending grade C cards, drift, trust badges, align and queue groups, edges and the drawings of both levels."
+- MOD-0062.consumes.DATA-0015 "INFERRED via data: internal/screen/screen.go:126 \"case *in.Generated != in.Current():\""
+- MOD-0062.responsibility "Loads everything the screen reads from the store and judges whether the generated files and the actual topology are CURRENT, STALE or UNKNOWN."
+- MOD-0063.consumes.IF-0004 "INFERRED via convention: internal/screen/words.go:127 \"Approve: \\\"이 결합을 의도한 토폴로지에 넣습니다.\""
+- MOD-0063.depends_on.MOD-0072 "INFERRED via convention: internal/screen/words.go:109 \"case topology.ContractChanged:\""
+- MOD-0063.responsibility "Puts a grade C item into a human's words, what changes, why ABBD asks, what approve and reject each do and the safe default, with a member-by-member signature diff."
+- MOD-0064.responsibility "Splits a module's pstack how text into heading, list and paragraph blocks with code and bold spans, so the page renders it without trusting any markup."
+- MOD-0065.depends_on.MOD-0085 "INFERRED via convention: internal/store/store.go:326 \"case a.Question != question:\""
+- MOD-0065.purpose "persists ABBD's state under .abbd/"
+- MOD-0065.responsibility "Owns the on-disk layout of .abbd/ and the session directory, and every read and write of unit Markdown, intended.yaml, turns, runs, decisions, requirements, understandings and the sync watermark."
+- MOD-0066.responsibility "Roots every path at .abbd/ under the project and places session state in the git directory when there is one."
+- MOD-0067.depends_on.MOD-0068 "INFERRED via data: internal/store/store.go:174 \"for _, d := range s.unitDirs() {\""
+- MOD-0067.depends_on.MOD-0069 "INFERRED via data: internal/store/store.go:193 \"p == s.path(\\\"generated\\\") || p == s.sessions\""
+- MOD-0067.responsibility "Holds state.yaml (revision, tree fingerprint, Markdown hash, per-kind high water) and the hashes that make generated files and unit Markdown detectably stale; mints never-reused IDs."
+- MOD-0068.depends_on.MOD-0053 "INFERRED via convention: internal/store/store.go:56 \"return []string{\\\"architecture\\\", \\\"features\\\"}\""
+- MOD-0068.depends_on.MOD-0071 "INFERRED via call: internal/store/store.go:145 \"writeFile(s.path(u.Kind.Dir(), string(u.ID)+\\\".md\\\"), b)\""
+- MOD-0068.responsibility "Reads and renders unit files: frontmatter parsing, the file-name-equals-ID and kind-directory checks, duplicate IDs, and carrying the Notes section through."
+- MOD-0069.depends_on.MOD-0066 "INFERRED via data: internal/store/store.go:44 \"s.sessions = filepath.Join(g, \\\"abbd\\\", \\\"sessions\\\")\""
+- MOD-0069.responsibility "Keeps per-session mode flags, journals and the running screen's address file in the sessions directory, validating session IDs."
+- MOD-0070.depends_on.MOD-0068 "INFERRED via call: internal/store/turn.go:79 \"units, err := s.LoadUnits()\""
+- MOD-0070.depends_on.MOD-0071 "INFERRED via call: internal/store/turn.go:83 \"b, err := frontmatter(t, renderTurn(t, turn.GraphOf(*in, units)))\""
+- MOD-0070.responsibility "Saves and loads turns (rendering their impact tiers), verification runs, ADRs with the standing-rejection rule, and requirement texts."
+- MOD-0071.responsibility "Encodes records as YAML frontmatter over a Markdown body and writes every file through a skip-if-equal, temp-then-rename write."
+- MOD-0072.purpose "compares the intended topology with the extracted one"
+- MOD-0072.responsibility "Owns the intended topology type, the diff of intended against actual, the one rule that gives each difference its effect (BLOCKED, REALIGN, PROMOTE), the project phase, and every fold of a human decision into the intended topology."
+- MOD-0073.depends_on.MOD-0077 "INFERRED via call: internal/topology/topology.go:536 \"was, _ := Intended{Units: before.Units}.Effect(it)\""
+- MOD-0073.responsibility "Lists below-the-line units worth a human's decision with a question that changes when their relations change, and adopts one as a design unit without approving any of its relations."
+- MOD-0074.depends_on.DATA-0022 "INFERRED via call: internal/topology/topology.go:207 \"return items[i].Key() < items[j].Key()\""
+- MOD-0074.depends_on.MOD-0077 "INFERRED via call: internal/topology/topology.go:175 \"if effect, ok := in.Effect(graded); ok {\""
+- MOD-0074.depends_on.MOD-0079 "INFERRED via call: internal/topology/topology.go:168 \"boundary := in.boundary(actual)\""
+- MOD-0074.responsibility "Lists every difference between the intended topology and the present units: removed and added units, changed contract signatures, removed and new relations."
+- MOD-0075.depends_on.MOD-0074 "INFERRED via call: internal/topology/topology.go:141 \"present := presentUnits(units)\""
+- MOD-0075.responsibility "Lists the semantic relations no human decided whose evidence is still live, for the turn impact to follow and the screen to draw."
+- MOD-0076.depends_on.MOD-0074 "INFERRED via call: internal/topology/topology.go:376 \"for _, it := range Compare(*in, units) {\""
+- MOD-0076.responsibility "Derives uninitialized, bootstrapped, aligned or drifted from the present units and whether any non-PROMOTE difference remains."
+- MOD-0077.responsibility "The single rule that says who must act on a difference: BLOCKED for anything crossing a contract or two intended units, REALIGN for other changes to intended units, PROMOTE for a new unit."
+- MOD-0078.depends_on.MOD-0074 "INFERRED via call: internal/topology/topology.go:435 \"items := Compare(in, units)\""
+- MOD-0078.responsibility "Folds human decisions into the intended topology: Select for first alignment, Approve for one grade C item, Accept for a synced turn, RealignTo for chosen REALIGN rows."
+- MOD-0079.responsibility "Grades a relation of an inside unit as its design module's own relation, drops relations that stay inside one module, and hides inside units from unit-added."
+- MOD-0080.consumes.DATA-0018 "INFERRED via convention: internal/turn/turn.go:592 \"output in .abbd/%s\""
+- MOD-0080.purpose "judges one unit of agent work under abbd mode"
+- MOD-0080.responsibility "Owns the turn record, its impact and tiers, the A/B/C grading of each topology change, the end gate's verdicts and grade B findings, and the rule that a verification run proves only the tree it ran on."
+- MOD-0081.depends_on.MOD-0072 "INFERRED via call: internal/turn/turn.go:237 \"for _, c := range topology.Couplings(units) {\""
+- MOD-0081.responsibility "Builds the graph a turn follows (intended relations plus live semantic couplings) and computes the impact from the seeds, which the agent may add to but never shrink."
+- MOD-0082.responsibility "Decides whether a verification run lets a turn complete: it must exist, have passed, and have run on the current tree, and a run that edited the tree fails."
+- MOD-0083.depends_on.DATA-0023 "INFERRED via call: internal/turn/turn.go:113 \"!t.Scanned(i.Unit)\""
+- MOD-0083.depends_on.MOD-0084 "INFERRED via data: internal/turn/turn.go:144 \"out = append(out, Verdict{Item: topology.Item{Change: topology.ContractTouched\""
+- MOD-0083.depends_on.MOD-0086 "INFERRED via call: internal/turn/turn.go:111 \"direct, _ := t.Tiers(g)\""
+- MOD-0083.responsibility "Finds what the gate cannot read: a consumed contract whose code changed under the same signature, a confirmed coupling whose quoted lines changed, and a direct design unit no one scanned."
+- MOD-0084.depends_on.DATA-0024 "INFERRED via call: internal/turn/turn.go:483 \"v.ADR = t.Approved(it.Key())\""
+- MOD-0084.depends_on.MOD-0085 "INFERRED via call: internal/turn/turn.go:481 \"v := Verdict{Item: it, Grade: GradeOf(in, units, it)}\""
+- MOD-0084.responsibility "Judges the actual topology against the intended one plus this turn's approvals into verdicts, prints each verdict line, folds allowed changes on sync, and contrasts declared with done."
+- MOD-0085.consumes.IF-0028 "INFERRED via call: internal/turn/turn.go:421 \"it, err := topology.ParseKey(key)\""
+- MOD-0085.responsibility "Adapts a topology effect to a turn grade (A, B, C), parses and grades a declared change key, and words the human question a grade C item asks."
+- MOD-0086.depends_on.MOD-0081 "INFERRED via data: internal/turn/turn.go:323 \"for _, i := range t.Impact {\""
+- MOD-0086.responsibility "Splits the recorded impact into direct items read closely and far items checked briefly, recomputed from the graph each time."
+
+## Blind spots
+
+Couplings the script cannot see, such as a shared table or an execution order, may exist. Register one by confirming it from the queue, then have the script learn it.
+
+## Next
+
+- `abbd align --all`
+- `abbd align --confirm IDS`
+- `abbd align --exclude IDS`

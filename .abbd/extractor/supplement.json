@@ -1,6 +1,114 @@
 {
   "units": [
     {
+      "key": "bootstrap-findings",
+      "kind": "DATA",
+      "name": "Overlay findings",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Holds the matched count, the conflicts the code contradicts, and the gaps one side has and the other lacks.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "33",
+          "quote": "type Findings struct {",
+          "symbol": "Findings"
+        }
+      ]
+    },
+    {
+      "key": "bootstrap-match",
+      "kind": "MOD",
+      "name": "Anchor matcher",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Picks the script unit of the same kind that shares the most anchors with a document unit, refusing no match and ties.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "166",
+          "quote": "func match(units []extract.Unit, d extract.Unit) (int, error) {",
+          "symbol": "match"
+        }
+      ]
+    },
+    {
+      "key": "bootstrap-overlay",
+      "kind": "MOD",
+      "name": "Overlay fold",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Matches each document unit to a script unit, copies purpose and responsibility onto it, sets parents and appends the couplings the script did not extract.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "44",
+          "quote": "func Overlay(base, doc extract.Result, src Source) (extract.Result, Findings, error) {",
+          "symbol": "Overlay"
+        }
+      ]
+    },
+    {
+      "key": "bootstrap-report",
+      "kind": "DATA",
+      "name": "Bootstrap report",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Renders what setup found as timestamp-free Markdown: candidates, overlay findings, the confirm queue and next steps.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "13",
+          "quote": "type Report struct {",
+          "symbol": "Report"
+        },
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "24",
+          "quote": "func (r Report) Markdown() []byte {",
+          "symbol": "Markdown"
+        }
+      ]
+    },
+    {
+      "key": "bootstrap-semantic",
+      "kind": "MOD",
+      "name": "Semantic unit admission",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Admits a supplement unit the script cannot see when it carries evidence, as an INFERRED unconfirmed unit with no signature or digest.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "150",
+          "quote": "func semantic(d extract.Unit, key string) extract.Unit {",
+          "symbol": "semantic"
+        }
+      ]
+    },
+    {
+      "key": "bootstrap-source",
+      "kind": "DATA",
+      "name": "Overlay source",
+      "parent": "mod-bootstrap",
+      "anchors": [],
+      "responsibility": "Says which document an overlay comes from, fixing the origin of its facts, whether a gap is fatal (Strict) and whether it may rename units.",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "16",
+          "quote": "type Source struct {",
+          "symbol": "Source"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "27",
+          "quote": "Supplement = Source{Name: \"supplement\", Origin: model.Inferred, Strict: true}",
+          "symbol": "Supplement"
+        }
+      ]
+    },
+    {
       "key": "cfg-hooks",
       "kind": "CFG",
       "name": "hook registration",
@@ -9,8 +117,8 @@
           "path": "plugins/abbd/hooks/hooks.json"
         }
       ],
-      "purpose": "registers ABBD's hooks with Claude Code",
-      "responsibility": "fixes which events and tool matchers call abbd hook"
+      "purpose": "registers the abbd CLI on Claude Code's hook events",
+      "responsibility": "Owns which events and tool matchers call abbd hook, and the timeout of each."
     },
     {
       "key": "cfg-plugin",
@@ -18,11 +126,11 @@
       "name": "plugin and marketplace manifest",
       "anchors": [
         {
-          "path": ".claude-plugin/marketplace.json"
+          "path": "plugins/abbd/.claude-plugin/plugin.json"
         }
       ],
-      "purpose": "publishes ABBD as a Claude Code plugin from this repository",
-      "responsibility": "fixes the marketplace and plugin names and the plugin source path"
+      "purpose": "publishes ABBD as the Claude Code plugin abbd",
+      "responsibility": "Owns the plugin and marketplace names, the plugin source path, its version and its stated requirements (pstack 0.15.36, abbd on PATH)."
     },
     {
       "key": "cfg-project",
@@ -34,8 +142,244 @@
           "symbol": "Project"
         }
       ],
-      "purpose": "records the trusted extraction and verify argv",
-      "responsibility": "fixes project.yaml, which mode on and turn verify run without asking"
+      "purpose": "registers the project's extraction and verify commands",
+      "responsibility": "Holds the argv of the extraction script that setup registered and of the verification command whose PASSED run a turn needs."
+    },
+    {
+      "key": "cmd-decisions",
+      "kind": "MOD",
+      "name": "Human decision commands",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Applies a human's decisions outside a turn: align, confirm, approve, reject, couple and promotion adoption, each writing the intended topology or an ADR.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "449",
+          "quote": "func (e env) align() error {",
+          "symbol": "align"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "729",
+          "quote": "func (e env) approve(key string) error {",
+          "symbol": "approve"
+        }
+      ]
+    },
+    {
+      "key": "cmd-dispatch",
+      "kind": "MOD",
+      "name": "Command table and dispatch",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Parses a command line against the command table and flag definitions, runs the verb, republishes generated files when inputs changed, and maps the result to an exit code.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "205",
+          "quote": "var commands = map[string]command{",
+          "symbol": "commands"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "290",
+          "quote": "func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {",
+          "symbol": "run"
+        }
+      ]
+    },
+    {
+      "key": "cmd-hook",
+      "kind": "MOD",
+      "name": "Hook dispatch",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Reads Claude Code hook JSON, does nothing unless the session's mode is on, and routes each event to its handler: context on session start and prompt submit, the journal on edits, the guard before tools, the stop block.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "50",
+          "quote": "var hooks = map[string]func(e env, in hookInput) *hookOutput{",
+          "symbol": "hooks"
+        },
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "61",
+          "quote": "func (e env) hook(event string) {",
+          "symbol": "hook"
+        }
+      ]
+    },
+    {
+      "key": "cmd-propose",
+      "kind": "MOD",
+      "name": "Agent proposals, evidence and understanding",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Takes an agent's readings into the store as INFERRED: proposed units and relations with live citations, the evidence report, and how's per-module understanding text.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/propose.go",
+          "lines": "22",
+          "quote": "func (e env) citations() ([]model.Evidence, error) {",
+          "symbol": "citations"
+        },
+        {
+          "path": "cmd/abbd/understand.go",
+          "lines": "16",
+          "quote": "func (e env) understand(id model.ID, file string) error {",
+          "symbol": "understand"
+        }
+      ]
+    },
+    {
+      "key": "cmd-publish",
+      "kind": "MOD",
+      "name": "Generated files and status",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Regenerates .abbd/generated/ from the store with graph.json written last, checks it is CURRENT after a sync, and prints phase, queue and freshness for abbd status.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/screen.go",
+          "lines": "24",
+          "quote": "func (e env) publish() error {",
+          "symbol": "publish"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "1039",
+          "quote": "func (e env) status() error {",
+          "symbol": "status"
+        }
+      ]
+    },
+    {
+      "key": "cmd-setup",
+      "kind": "MOD",
+      "name": "Setup and bootstrap",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Runs setup: checks the extraction script is deterministic over three runs, overlays the supplement and adopt documents, registers the verify command, and handles greenfield setup on an empty directory.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "24",
+          "quote": "func (e env) setup(string, []string) error {",
+          "symbol": "setup"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "133",
+          "quote": "func (e env) deterministic(argv []string) ([]byte, error) {",
+          "symbol": "deterministic"
+        }
+      ]
+    },
+    {
+      "key": "cmd-sync",
+      "kind": "MOD",
+      "name": "Actual topology sync",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Brings the actual topology up to the working tree: runs the registered extraction script, reconciles its result through identity and evidence, and loads the view the other commands read.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "369",
+          "quote": "func (e env) syncActual(ex extract.Result, guesses identity.Guesses) (identity.Result, error) {",
+          "symbol": "syncActual"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "991",
+          "quote": "func (e env) reextract() error {",
+          "symbol": "reextract"
+        }
+      ]
+    },
+    {
+      "key": "cmd-turn",
+      "kind": "MOD",
+      "name": "Session mode and turn lifecycle",
+      "parent": "mod-cmd-abbd",
+      "anchors": [],
+      "responsibility": "Turns a session's mode on or off, resumes an unfinished turn, and runs turn start, impact, scan, declare, diff, verify, end and show, including approvals and rejections inside a turn.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "122",
+          "quote": "func (e env) turnStart() error {",
+          "symbol": "turnStart"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "890",
+          "quote": "func (e env) mode(on bool) error {",
+          "symbol": "mode"
+        }
+      ]
+    },
+    {
+      "key": "confirm-decide",
+      "kind": "MOD",
+      "name": "confirm and reject",
+      "parent": "mod-confirm",
+      "anchors": [],
+      "responsibility": "Finds the item a key names and confirms it, replaces it with the human's value, or rejects it, always on a copy of the unit.",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "84",
+          "symbol": "Apply",
+          "quote": "func Apply(units []model.Unit, key, value string) (model.Unit, error) {"
+        },
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "132",
+          "symbol": "decide",
+          "quote": "func decide(units []model.Unit, key string, field func(**model.Fact) error, relation func(*model.Relation) error) (model.Unit, error) {"
+        }
+      ]
+    },
+    {
+      "key": "confirm-item",
+      "kind": "DATA",
+      "name": "confirm item",
+      "parent": "mod-confirm",
+      "anchors": [],
+      "responsibility": "One pending guess named by its key, the unit it belongs to, the value a human judges, and whether it touches a design unit.",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "14",
+          "symbol": "Item",
+          "quote": "type Item struct {"
+        },
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "34",
+          "symbol": "relationKey",
+          "quote": "func relationKey(from model.ID, r model.Relation) string {"
+        }
+      ]
+    },
+    {
+      "key": "confirm-queue",
+      "kind": "MOD",
+      "name": "confirm queue",
+      "parent": "mod-confirm",
+      "anchors": [],
+      "responsibility": "Lists every guessed purpose, responsibility and uncounted, live, unrejected relation of the present units, design units first.",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "39",
+          "symbol": "Queue",
+          "quote": "func Queue(units []model.Unit, design map[model.ID]bool) []Item {"
+        }
+      ]
     },
     {
       "key": "data-changes",
@@ -47,8 +391,8 @@
           "symbol": "SaveTurn"
         }
       ],
-      "purpose": "is the record of each turn",
-      "responsibility": "fixes CHG frontmatter: request, seeds, impact, intent delta, approvals, rejections, verification and report"
+      "purpose": "records each turn of change",
+      "responsibility": "Is changes/CHG-*.md, the turn's frontmatter state with a rendered impact, rejections and gate report."
     },
     {
       "key": "data-decisions",
@@ -60,8 +404,8 @@
           "symbol": "WriteADR"
         }
       ],
-      "purpose": "is the record of each human decision on a grade C change",
-      "responsibility": "fixes ADR frontmatter: subject, decision, question, reason and turn"
+      "purpose": "records human decisions",
+      "responsibility": "Is decisions/ADR-*.md, each an approved or rejected question with grade, origin and reason, so a decided question is never asked again."
     },
     {
       "key": "data-extraction",
@@ -73,8 +417,8 @@
           "symbol": "rawResult"
         }
       ],
-      "purpose": "is what every project extraction script and supplement must print",
-      "responsibility": "fixes the units and relations JSON; unknown fields are rejected"
+      "purpose": "carries the topology an extractor reports",
+      "responsibility": "Is the JSON shape of units and relations that the extraction script, a supplement, an adoption or a greenfield statement must print, with unknown fields rejected."
     },
     {
       "key": "data-generated",
@@ -86,8 +430,8 @@
           "symbol": "Graph"
         }
       ],
-      "purpose": "lets tools and humans read the topology without the CLI",
-      "responsibility": "fixes the generated file names and graph.json, whose watermark tells CURRENT from STALE"
+      "purpose": "the derived explorer, confirm queue and graph.json under .abbd/generated/",
+      "responsibility": "Holds the static explorer.html, confirm-queue.html and graph.json, each stamped with the watermark of the .abbd inputs it came from so a reader can tell when it is STALE."
     },
     {
       "key": "data-intended",
@@ -99,8 +443,8 @@
           "symbol": "SaveIntended"
         }
       ],
-      "purpose": "is the human-approved topology every gate compares against",
-      "responsibility": "fixes intended.yaml: revision, units with signatures and external consumers, relations"
+      "purpose": "records the aligned intended topology",
+      "responsibility": "Is .abbd/intended.yaml, the design units, signatures and relations a human aligned to, with a revision bumped on every content change."
     },
     {
       "key": "data-requirements",
@@ -112,8 +456,8 @@
           "symbol": "WriteRequirement"
         }
       ],
-      "purpose": "keeps each user request verbatim",
-      "responsibility": "fixes the requirement file a turn points to"
+      "purpose": "keeps the user's request verbatim",
+      "responsibility": "Is requirements/*.md, the text of a request as the user stated it, tied to the turn that serves it."
     },
     {
       "key": "data-runs",
@@ -125,8 +469,8 @@
           "symbol": "SaveRun"
         }
       ],
-      "purpose": "is the evidence that a turn's verification passed on its tree",
-      "responsibility": "fixes the run record: command, tree, exit code, result and log path"
+      "purpose": "records verification runs",
+      "responsibility": "Is verification/runs/<id>.yaml plus its .log output, the command, tree, exit code and result a turn's completion rests on."
     },
     {
       "key": "data-units",
@@ -138,8 +482,194 @@
           "symbol": "SaveUnits"
         }
       ],
-      "purpose": "is the actual topology as reviewable files",
-      "responsibility": "fixes the unit file frontmatter: anchors, facts with their evidence, relations"
+      "purpose": "stores each design unit as Markdown",
+      "responsibility": "Is one Markdown file per unit under architecture/ or features/, YAML frontmatter as the source of truth plus a user-owned Notes section."
+    },
+    {
+      "key": "evidence-apply",
+      "kind": "MOD",
+      "name": "Liveness application",
+      "parent": "mod-evidence",
+      "anchors": [],
+      "responsibility": "Marks semantic units absent and semantic relations dead when none of their quotes survives, moves live lines, and records relation digests.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "135",
+          "symbol": "Apply",
+          "quote": "func (c *Checker) Apply(units []model.Unit) []model.Unit {"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "116",
+          "symbol": "all",
+          "quote": "func (c *Checker) all(es []model.Evidence) (live bool, digest string, moved []model.Evidence) {"
+        }
+      ]
+    },
+    {
+      "key": "evidence-checker",
+      "kind": "MOD",
+      "name": "File cache and normal form",
+      "parent": "mod-evidence",
+      "anchors": [],
+      "responsibility": "Reads each cited file once and keeps it as raw lines plus a whitespace-free string with per-byte line numbers and word-start gaps.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "43",
+          "symbol": "Checker",
+          "quote": "type Checker struct {"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "33",
+          "symbol": "file",
+          "quote": "type file struct {"
+        }
+      ]
+    },
+    {
+      "key": "evidence-match",
+      "kind": "MOD",
+      "name": "Quote matching rule",
+      "parent": "mod-evidence",
+      "anchors": [],
+      "responsibility": "Finds a quote whitespace-insensitively, as a whole word at its ends, starting within Slack lines of the cited range, and returns where it is now.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "83",
+          "symbol": "Check",
+          "quote": "func (c *Checker) Check(e model.Evidence) Result {"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "21",
+          "symbol": "Slack",
+          "quote": "const Slack = 3"
+        }
+      ]
+    },
+    {
+      "key": "evidence-result",
+      "kind": "DATA",
+      "name": "Evidence check result",
+      "parent": "mod-evidence",
+      "anchors": [],
+      "responsibility": "Is one check's outcome: live or not, the lines it was found at, and a digest of those lines.",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "23",
+          "symbol": "Result",
+          "quote": "type Result struct {"
+        }
+      ]
+    },
+    {
+      "key": "extract-graph-check",
+      "kind": "MOD",
+      "name": "Key, parent and relation validation",
+      "parent": "mod-extract",
+      "anchors": [],
+      "responsibility": "Rejects duplicate keys, parents that are not another module, parent cycles, dangling or self relations, and relation kinds the unit kinds cannot join.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "71",
+          "symbol": "Parse",
+          "quote": "func Parse(r io.Reader) (Result, error) {"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "240",
+          "symbol": "parentCycle",
+          "quote": "func parentCycle(units []Unit, key string) bool {"
+        }
+      ]
+    },
+    {
+      "key": "extract-origin",
+      "kind": "MOD",
+      "name": "Origin assignment",
+      "parent": "mod-extract",
+      "anchors": [],
+      "responsibility": "Marks names and signatures EXTRACTED, purpose and responsibility INFERRED and UNCONFIRMED, and restates everything as a human's or an adopted document's.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "208",
+          "symbol": "inferred",
+          "quote": "func inferred(v string) *model.Fact {"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "217",
+          "symbol": "StatedBy",
+          "quote": "func (r Result) StatedBy(origin model.Origin) Result {"
+        }
+      ]
+    },
+    {
+      "key": "extract-path-norm",
+      "kind": "MOD",
+      "name": "Anchor and evidence path normalization",
+      "parent": "mod-extract",
+      "anchors": [],
+      "responsibility": "Makes every path forward-slash, cleaned and root-relative so it compares equal to git's paths, refusing absolute paths and escapes.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "192",
+          "symbol": "normalizePath",
+          "quote": "func normalizePath(p string) (string, error) {"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "118",
+          "symbol": "NormalizeEvidence",
+          "quote": "func NormalizeEvidence(es []model.Evidence) ([]model.Evidence, error) {"
+        }
+      ]
+    },
+    {
+      "key": "extract-result",
+      "kind": "DATA",
+      "name": "Typed extraction result",
+      "parent": "mod-extract",
+      "anchors": [],
+      "responsibility": "Is the parsed Result: units with Facts instead of strings, still keyed by extractor-local keys, and relations with origin and via.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "43",
+          "symbol": "Result",
+          "quote": "type Result struct {"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "57",
+          "symbol": "Unit",
+          "quote": "type Unit struct {"
+        }
+      ]
+    },
+    {
+      "key": "extract-unit-parse",
+      "kind": "MOD",
+      "name": "Unit decoding and checks",
+      "parent": "mod-extract",
+      "anchors": [],
+      "responsibility": "Decodes strictly, checks kind and name, normalizes anchors, turns evidence into anchors, and allows a signature only on a contract.",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "134",
+          "symbol": "parseUnits",
+          "quote": "func parseUnits(r io.Reader) ([]Unit, rawResult, error) {"
+        }
+      ]
     },
     {
       "key": "feat-abbd-mode",
@@ -147,12 +677,11 @@
       "name": "/abbd-mode",
       "anchors": [
         {
-          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
-          "symbol": "abbd-mode"
+          "path": "plugins/abbd/skills/abbd-mode"
         }
       ],
-      "purpose": "runs a pstack playbook inside a gated ABBD turn",
-      "responsibility": "maps playbooks to turn shapes, sequences start, impact, declare, diff, verify and end, holds the PR until SYNCED or CLOSED, and briefs abbd-agent delegates"
+      "purpose": "runs a pstack poteto-mode playbook inside a gated ABBD turn",
+      "responsibility": "Owns the agent-side turn protocol (mode on, start with seeds, impact and semantic scan, declare, diff between steps, verify and end before any PR) and the abbd-agent delegate rules."
     },
     {
       "key": "feat-abbd-setup",
@@ -160,12 +689,391 @@
       "name": "/abbd-setup",
       "anchors": [
         {
-          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
-          "symbol": "abbd-setup"
+          "path": "plugins/abbd/skills/abbd-setup"
         }
       ],
-      "purpose": "bootstraps ABBD on a repository without asking the human",
-      "responsibility": "drives the pstack swarm, the extraction script, the supplement and abbd setup, and leaves alignment to the human"
+      "purpose": "bootstraps ABBD on a repository",
+      "responsibility": "Owns the setup procedure: choosing the mode, the pstack swarm reading, writing the deterministic extraction script and supplement, running abbd setup and handing alignment to the human."
+    },
+    {
+      "key": "gitx-changed",
+      "kind": "MOD",
+      "name": "Changed paths",
+      "parent": "mod-gitx",
+      "anchors": [],
+      "responsibility": "Lists the paths that differ between two snapshot trees, a move listed under both names.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "90",
+          "quote": "func Changed(dir, oldTree, newTree string) (paths []string, ok bool, err error) {",
+          "symbol": "Changed"
+        }
+      ]
+    },
+    {
+      "key": "gitx-renames",
+      "kind": "MOD",
+      "name": "Rename map",
+      "parent": "mod-gitx",
+      "anchors": [],
+      "responsibility": "Maps old to new paths between two snapshot trees with exhaustive rename detection, reporting not-ok when the old tree was collected.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "60",
+          "quote": "func Renames(dir, oldTree, newTree string) (renames map[string]string, ok bool, err error) {",
+          "symbol": "Renames"
+        }
+      ]
+    },
+    {
+      "key": "gitx-repo",
+      "kind": "MOD",
+      "name": "Repository facts",
+      "parent": "mod-gitx",
+      "anchors": [],
+      "responsibility": "Reports the current commit and the absolute git directory, or empty outside a repository.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "22",
+          "quote": "func Head(dir string) string {",
+          "symbol": "Head"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "31",
+          "quote": "func Dir(dir string) string {",
+          "symbol": "Dir"
+        }
+      ]
+    },
+    {
+      "key": "gitx-run",
+      "kind": "MOD",
+      "name": "git runner",
+      "parent": "mod-gitx",
+      "anchors": [],
+      "responsibility": "Runs git -C dir with extra environment and returns its stdout.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "12",
+          "quote": "func run(dir string, env []string, args ...string) (string, error) {",
+          "symbol": "run"
+        }
+      ]
+    },
+    {
+      "key": "gitx-snapshot",
+      "kind": "MOD",
+      "name": "Working-tree snapshot",
+      "parent": "mod-gitx",
+      "anchors": [],
+      "responsibility": "Writes the working tree, untracked files included and one path excluded, as a git tree through a throwaway index so the user's index is untouched.",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "41",
+          "quote": "func Snapshot(dir, exclude string) (string, error) {",
+          "symbol": "Snapshot"
+        }
+      ]
+    },
+    {
+      "key": "guard-check",
+      "kind": "MOD",
+      "name": "Command verdict",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Walks the parsed command, recursing into substitutions, executable bodies and nested shells up to maxDepth, and returns the first deny reason for a human command, a protected write, a screen request or a tree-wide git rewrite.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "577",
+          "symbol": "check",
+          "quote": "func (g guard) check(cmd, cwd string, depth int) string {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "685",
+          "symbol": "checkGit",
+          "quote": "func (g guard) checkGit(cwd string, args []string) string {"
+        }
+      ]
+    },
+    {
+      "key": "guard-humans",
+      "kind": "MOD",
+      "name": "Human-only abbd commands",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Names the abbd subcommands only a human runs while the mode is on and finds which abbd subcommand a segment runs, past global flags.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "379",
+          "symbol": "humans",
+          "quote": "var humans = map[string]bool{"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "387",
+          "symbol": "abbdCommand",
+          "quote": "func abbdCommand(words []string) string {"
+        }
+      ]
+    },
+    {
+      "key": "guard-parsed",
+      "kind": "DATA",
+      "name": "Parsed command shape",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "The parser's output: segments with their words, redirects and pipeline number, stdin bodies with whether they expand, and substitutions.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "20",
+          "symbol": "segment",
+          "quote": "type segment struct {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "36",
+          "symbol": "parsed",
+          "quote": "type parsed struct {"
+        }
+      ]
+    },
+    {
+      "key": "guard-parser",
+      "kind": "MOD",
+      "name": "Shell splitter",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Splits a command string into simple commands, redirect targets, heredoc and here-string bodies and command substitutions, for both POSIX shells and PowerShell.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "57",
+          "symbol": "parseShell",
+          "quote": "func parseShell(s string) parsed {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "43",
+          "symbol": "shellParser",
+          "quote": "type shellParser struct {"
+        }
+      ]
+    },
+    {
+      "key": "guard-paths",
+      "kind": "MOD",
+      "name": "Protected paths",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Decides whether a path, glob or argument text reaches .abbd/ (except the extractor while setup is open), session state under the git directory, or the registered script's files.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "502",
+          "symbol": "protected",
+          "quote": "func (g guard) protected(cwd, p string, deleting bool) bool {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "537",
+          "symbol": "mentions",
+          "quote": "func (g guard) mentions(arg string) bool {"
+        }
+      ]
+    },
+    {
+      "key": "guard-policy",
+      "kind": "MOD",
+      "name": "Guard state",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Builds the guard for one hook call: the root and cwd, whether setup is still open, the registered script's files and every spelling of the running screen's address.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "425",
+          "symbol": "env.guard",
+          "quote": "func (e env) guard(cwd string) guard {"
+        }
+      ]
+    },
+    {
+      "key": "guard-screen",
+      "kind": "MOD",
+      "name": "Screen request check",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Says whether any text names the running screen's address and holds the reason an agent is given when it does.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "447",
+          "symbol": "reachesScreen",
+          "quote": "func (g guard) reachesScreen(text string) bool {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "452",
+          "symbol": "screenReason",
+          "quote": "const screenReason ="
+        }
+      ]
+    },
+    {
+      "key": "guard-wordlists",
+      "kind": "MOD",
+      "name": "Command classes",
+      "parent": "mod-guard",
+      "anchors": [],
+      "responsibility": "Classifies a command name as a reader, a shell that runs its arguments, a deleter, a directory change or a git subcommand that rewrites the working tree.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "347",
+          "symbol": "readers",
+          "quote": "var readers = map[string]bool{"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "361",
+          "symbol": "shells",
+          "quote": "var shells = map[string]bool{"
+        }
+      ]
+    },
+    {
+      "key": "identity-candidate",
+      "kind": "DATA",
+      "name": "Merge candidate",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Records a leftover anchor overlap between a new unit and a stored unit it did not take over, for a human to resolve.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "18",
+          "quote": "type Candidate struct {",
+          "symbol": "Candidate"
+        }
+      ]
+    },
+    {
+      "key": "identity-guesses",
+      "kind": "MOD",
+      "name": "Guess policy",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Decides whether undecided INFERRED facts and semantic units survive: kept on re-extraction, replaced on setup.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "45",
+          "quote": "type Guesses int",
+          "symbol": "Guesses"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "187",
+          "quote": "func kept(u model.Unit, guesses Guesses) bool {",
+          "symbol": "kept"
+        }
+      ]
+    },
+    {
+      "key": "identity-merge",
+      "kind": "MOD",
+      "name": "Fact merge",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Overwrites a matched unit's anchors, signature, digest and evidence from the extraction while keeping human-given and decided values.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "274",
+          "quote": "func merge(u *model.Unit, in extract.Unit, guesses Guesses) {",
+          "symbol": "merge"
+        }
+      ]
+    },
+    {
+      "key": "identity-reconcile",
+      "kind": "MOD",
+      "name": "Reconcile",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Pure entry point that applies renames, pairs units, mints new IDs above the per-kind high-water mark, marks absent units and returns the result with candidates.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "64",
+          "quote": "func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result,",
+          "symbol": "Reconcile"
+        }
+      ]
+    },
+    {
+      "key": "identity-relations",
+      "kind": "MOD",
+      "name": "Parent and relation carry-over",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Resolves extraction keys to IDs for parents and relations; extracted relations are replaced, other origins survive unless guesses are replaced.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "220",
+          "quote": "func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, guesses Guesses) {",
+          "symbol": "setRelations"
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "202",
+          "quote": "func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {",
+          "symbol": "setParents"
+        }
+      ]
+    },
+    {
+      "key": "identity-rename",
+      "kind": "MOD",
+      "name": "Anchor rename",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Rewrites stored anchor paths through the old-to-new rename map before pairing.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "300",
+          "quote": "func applyRenames(as []model.Anchor, renames map[string]string) []model.Anchor {",
+          "symbol": "applyRenames"
+        }
+      ]
+    },
+    {
+      "key": "identity-takeover",
+      "kind": "MOD",
+      "name": "ID takeover rule",
+      "parent": "mod-identity",
+      "anchors": [],
+      "responsibility": "Pairs an extracted unit with a stored one of the same kind when they share two or more anchors or identical anchor sets, assigned globally best match first.",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "55",
+          "quote": "type pair struct {",
+          "symbol": "pair"
+        }
+      ]
     },
     {
       "key": "if-change-key",
@@ -177,8 +1085,8 @@
           "symbol": "Item"
         }
       ],
-      "purpose": "names one topology change so a human can approve or reject it",
-      "responsibility": "fixes the change kinds and the ID and edge syntax that the CLI, the screen, CHG and ADR files share"
+      "purpose": "names one topology change on the command line",
+      "responsibility": "Fixes the change:ID and change:FROM.kind.TO strings that approve, reject, turn declare, the gate lines and the screen use to name the same difference."
     },
     {
       "key": "if-cli",
@@ -187,11 +1095,310 @@
       "anchors": [
         {
           "path": "cmd/abbd/main.go",
-          "symbol": "exitNeedHuman"
+          "symbol": "parse"
         }
       ],
-      "purpose": "tells every caller whether a command succeeded, failed, or needs a human",
-      "responsibility": "fixes exit codes 0, 1, 2 and 64 and how a command line is parsed; each command's own shape is its own contract"
+      "purpose": "tells a caller how an abbd command ended",
+      "responsibility": "The exit code contract every command shares: 0 done, 1 error, 2 a human decision is needed, 64 a malformed command line."
+    },
+    {
+      "key": "if-cli-align",
+      "kind": "IF",
+      "name": "abbd align",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "align"
+        }
+      ],
+      "purpose": "lets a human choose or realign the design units",
+      "responsibility": "Confirms the first design units from the bootstrapped candidates, or realigns a drifted project by its REALIGN rows."
+    },
+    {
+      "key": "if-cli-approve",
+      "kind": "IF",
+      "name": "abbd approve",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "approve"
+        }
+      ],
+      "purpose": "lets a human allow one grade C change",
+      "responsibility": "Approves a blocked or questioned change, inside an open turn for that turn only, or adopts a promotion candidate as a design unit."
+    },
+    {
+      "key": "if-cli-confirm",
+      "kind": "IF",
+      "name": "abbd confirm",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "confirmItem"
+        }
+      ],
+      "purpose": "lets a human settle an inferred fact",
+      "responsibility": "Lists the confirm queue, confirms or rejects one inferred item, and sets a contract's external_consumers flag."
+    },
+    {
+      "key": "if-cli-couple",
+      "kind": "IF",
+      "name": "abbd couple",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "couple"
+        }
+      ],
+      "purpose": "lets a human register a coupling the script cannot see",
+      "responsibility": "Adds a USER_STATED relation FROM.KIND.TO to the actual topology and acknowledges it when it would surface as drift."
+    },
+    {
+      "key": "if-cli-evidence",
+      "kind": "IF",
+      "name": "abbd evidence",
+      "anchors": [
+        {
+          "path": "cmd/abbd/propose.go",
+          "symbol": "checkEvidence"
+        }
+      ],
+      "purpose": "reports whether semantic evidence is still in the code",
+      "responsibility": "Prints, for every semantic unit and relation, each quote as live with its location or dead, without writing anything."
+    },
+    {
+      "key": "if-cli-hook",
+      "kind": "IF",
+      "name": "abbd hook",
+      "anchors": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "symbol": "hook"
+        }
+      ],
+      "purpose": "the entry point Claude Code hooks call",
+      "responsibility": "Takes one hook event name, reads the hook JSON on stdin and always exits 0 so it never fails the host."
+    },
+    {
+      "key": "if-cli-ingest",
+      "kind": "IF",
+      "name": "abbd ingest",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "ingest"
+        }
+      ],
+      "purpose": "feeds an extraction result into .abbd by hand",
+      "responsibility": "Reconciles an extraction JSON file or stdin into the actual topology and prints each unit's identity outcome."
+    },
+    {
+      "key": "if-cli-mode",
+      "kind": "IF",
+      "name": "abbd mode",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "mode"
+        }
+      ],
+      "purpose": "switches ABBD mode on or off for a session",
+      "responsibility": "Turns a session's mode on only when the project is aligned after re-extraction, resuming an unfinished turn, or turns it off."
+    },
+    {
+      "key": "if-cli-propose-relation",
+      "kind": "IF",
+      "name": "abbd propose relation",
+      "anchors": [
+        {
+          "path": "cmd/abbd/propose.go",
+          "symbol": "proposeRelation"
+        }
+      ],
+      "purpose": "records an agent's guess at a coupling",
+      "responsibility": "Stores FROM KIND TO with --via and live --evidence as an INFERRED, UNCONFIRMED relation that joins the impact but never gates."
+    },
+    {
+      "key": "if-cli-propose-unit",
+      "kind": "IF",
+      "name": "abbd propose unit",
+      "anchors": [
+        {
+          "path": "cmd/abbd/propose.go",
+          "symbol": "proposeUnit"
+        }
+      ],
+      "purpose": "records an agent's guess at a unit",
+      "responsibility": "Stores a unit the script cannot see, anchored by its live evidence and optionally placed under a parent module, as INFERRED."
+    },
+    {
+      "key": "if-cli-reject",
+      "kind": "IF",
+      "name": "abbd reject",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "rejectChange"
+        }
+      ],
+      "purpose": "lets a human refuse one grade C change",
+      "responsibility": "Writes a rejection ADR with the required --reason, keeping the change blocked, or keeps a promotion candidate below the line."
+    },
+    {
+      "key": "if-cli-serve",
+      "kind": "IF",
+      "name": "abbd serve",
+      "anchors": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "symbol": "serve"
+        }
+      ],
+      "purpose": "starts the human screen",
+      "responsibility": "Serves the loopback approval screen on --addr where a human approves, rejects, confirms and aligns."
+    },
+    {
+      "key": "if-cli-setup",
+      "kind": "IF",
+      "name": "abbd setup",
+      "anchors": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "symbol": "setup"
+        }
+      ],
+      "purpose": "bootstraps ABBD on a repository",
+      "responsibility": "Registers and determinism-checks the extraction script, overlays supplement and adopt documents, registers --verify, or aligns a greenfield project at once."
+    },
+    {
+      "key": "if-cli-status",
+      "kind": "IF",
+      "name": "abbd status",
+      "anchors": [
+        {
+          "path": "cmd/abbd/main.go",
+          "symbol": "status"
+        }
+      ],
+      "purpose": "shows where the project stands",
+      "responsibility": "Prints the phase, the confirm queue size, whether generated files and the actual topology are CURRENT, the session's mode and the drift."
+    },
+    {
+      "key": "if-cli-turn-declare",
+      "kind": "IF",
+      "name": "abbd turn declare",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnDeclare"
+        }
+      ],
+      "purpose": "records what a turn intends to change",
+      "responsibility": "Stores the IntentDelta of units and change keys, grades each change and exits 2 while a grade C change waits for a human."
+    },
+    {
+      "key": "if-cli-turn-diff",
+      "kind": "IF",
+      "name": "abbd turn diff",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnDiff"
+        }
+      ],
+      "purpose": "checks a turn's work between steps",
+      "responsibility": "Re-extracts, judges the actual topology against the intended one plus approvals, and exits 2 on a boundary-crossing change."
+    },
+    {
+      "key": "if-cli-turn-end",
+      "kind": "IF",
+      "name": "abbd turn end",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnEnd"
+        }
+      ],
+      "purpose": "concludes a turn",
+      "responsibility": "Gates the turn and records it as SYNCED or CLOSED, or exits 2 with DRAFT or BLOCKED."
+    },
+    {
+      "key": "if-cli-turn-impact",
+      "kind": "IF",
+      "name": "abbd turn impact",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnImpact"
+        }
+      ],
+      "purpose": "shows and widens a turn's impact",
+      "responsibility": "Prints the turn's impact in direct and far tiers and lets the agent only add units to it."
+    },
+    {
+      "key": "if-cli-turn-scan",
+      "kind": "IF",
+      "name": "abbd turn scan",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnScan"
+        }
+      ],
+      "purpose": "records a semantic-coupling scan of an impacted unit",
+      "responsibility": "Marks a unit in the impact as scanned by how or blast-radius so turn end leaves no semantic-unscanned card for it."
+    },
+    {
+      "key": "if-cli-turn-show",
+      "kind": "IF",
+      "name": "abbd turn show",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnShow"
+        }
+      ],
+      "purpose": "lets any session read the latest turn",
+      "responsibility": "Prints the latest turn's impact, declaration, approvals, report and rejections."
+    },
+    {
+      "key": "if-cli-turn-start",
+      "kind": "IF",
+      "name": "abbd turn start",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnStart"
+        }
+      ],
+      "purpose": "opens a turn for a request",
+      "responsibility": "Records the request verbatim, fingerprints the tree and extractor, and computes the impact from the seeds in an aligned project."
+    },
+    {
+      "key": "if-cli-turn-verify",
+      "kind": "IF",
+      "name": "abbd turn verify",
+      "anchors": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "symbol": "turnVerify"
+        }
+      ],
+      "purpose": "records the project verification for a turn",
+      "responsibility": "Runs the registered verify command, registering it once, and saves a run that fails when the command fails or edits the tree."
+    },
+    {
+      "key": "if-cli-understand",
+      "kind": "IF",
+      "name": "abbd understand",
+      "anchors": [
+        {
+          "path": "cmd/abbd/understand.go",
+          "symbol": "understand"
+        }
+      ],
+      "purpose": "stores how's reading of a module",
+      "responsibility": "Saves an INFERRED Overview and Key Concepts text for a top-level module, stamped with the module's code digest so the screen marks it STALE."
     },
     {
       "key": "if-confirm-key",
@@ -204,7 +1411,7 @@
         }
       ],
       "purpose": "names one guess in the confirm queue",
-      "responsibility": "fixes the ID.field and edge syntax a human types to confirm or reject a guess"
+      "responsibility": "Fixes the ID.purpose, ID.responsibility and FROM.kind.TO strings that abbd confirm, the screen's confirm forms and the setup skill use to name a guess."
     },
     {
       "key": "if-hook",
@@ -213,11 +1420,11 @@
       "anchors": [
         {
           "path": "cmd/abbd/hook.go",
-          "symbol": "hookInput"
+          "symbol": "hooks"
         }
       ],
-      "purpose": "is how Claude Code hands ABBD each session event",
-      "responsibility": "fixes the hook events, the JSON fields read on stdin and the decision shape written on stdout"
+      "purpose": "the JSON exchange with Claude Code hooks",
+      "responsibility": "The five hook events abbd handles, the stdin fields it reads and the stdout fields it writes to add context, deny a tool or block a stop."
     },
     {
       "key": "if-serve-http",
@@ -229,8 +1436,8 @@
           "symbol": "ServeHTTP"
         }
       ],
-      "purpose": "is what the screen page posts to decide",
-      "responsibility": "fixes the routes and the act form: which decisions exist and which fields each reads"
+      "purpose": "the HTTP surface the screen page talks to",
+      "responsibility": "GET / returns the rendered page and POST /act takes one decision form (do, key, token t and the action's fields) from the screen's own origin and answers with what the CLI printed."
     },
     {
       "key": "mod-bootstrap",
@@ -241,8 +1448,8 @@
           "path": "internal/bootstrap"
         }
       ],
-      "purpose": "lays the supplement and adopted documents over the script result and writes the setup report",
-      "responsibility": "matches document units to script units by shared anchors, refuses ties, keeps code facts from the script, and renders a byte-stable bootstrap report"
+      "purpose": "folds reader-written documents onto the extraction script's result at setup",
+      "responsibility": "Owns the overlay of a supplement or adopt document onto the script units, the findings it produces, and the bootstrap report setup writes."
     },
     {
       "key": "mod-cmd-abbd",
@@ -253,8 +1460,8 @@
           "path": "cmd/abbd"
         }
       ],
-      "purpose": "lets the human and the agent drive ABBD from a terminal and from Claude Code hooks",
-      "responsibility": "parses argv against the command table, runs setup, align, confirm, approve, reject, couple, ingest, mode, status and the turn commands, maps outcomes to exit codes, and republishes .abbd/generated/ only when the inputs hash changes"
+      "purpose": "runs every abbd command a human, an agent or a hook invokes",
+      "responsibility": "Owns the command table, flag parsing and exit codes, and turns each verb into reads and writes of the .abbd store through the internal packages."
     },
     {
       "key": "mod-confirm",
@@ -265,8 +1472,20 @@
           "path": "internal/confirm"
         }
       ],
-      "purpose": "is the queue of agent guesses waiting for a human",
-      "responsibility": "lists pending purposes, responsibilities and relations design units first, names them, and applies confirm and reject"
+      "purpose": "queues agent guesses for a human to confirm or reject",
+      "responsibility": "Owns the confirm queue of guessed purposes, responsibilities and couplings, and applies a human's confirmation or rejection of one item to a copy of its unit."
+    },
+    {
+      "key": "mod-evidence",
+      "kind": "MOD",
+      "name": "internal/evidence",
+      "anchors": [
+        {
+          "path": "internal/evidence"
+        }
+      ],
+      "purpose": "decides whether cited code is still there",
+      "responsibility": "Owns the deterministic, whitespace-insensitive quote match that keeps a semantic unit present or a semantic relation alive, and the digest of the lines that hold each quote."
     },
     {
       "key": "mod-extract",
@@ -277,8 +1496,8 @@
           "path": "internal/extract"
         }
       ],
-      "purpose": "is the trust boundary where extraction JSON becomes typed units",
-      "responsibility": "validates kinds, names, anchors, unique keys and contract-only signatures, and marks code facts EXTRACTED and stated intent INFERRED"
+      "purpose": "turns extraction JSON into typed units",
+      "responsibility": "Owns the strict parsing and validation of the extraction format: keys, parents, anchors, evidence paths, relation kinds, and which facts start EXTRACTED or INFERRED."
     },
     {
       "key": "mod-gitx",
@@ -289,8 +1508,8 @@
           "path": "internal/gitx"
         }
       ],
-      "purpose": "reads the few git facts ABBD needs without touching the user's index",
-      "responsibility": "snapshots the working tree as a tree object through a temporary index, diffs snapshots for renames and changed paths, and reports HEAD and the git dir"
+      "purpose": "reads the few git facts ABBD needs",
+      "responsibility": "Owns every git invocation: the head commit, the git directory, working-tree snapshots as tree objects, and renames and changed paths between snapshots."
     },
     {
       "key": "mod-guard",
@@ -298,11 +1517,12 @@
       "name": "PreToolUse guard",
       "anchors": [
         {
-          "path": "cmd/abbd/guard.go"
+          "path": "cmd/abbd/guard.go",
+          "symbol": "guard"
         }
       ],
-      "purpose": "stops an agent in an active session from doing a human's step",
-      "responsibility": "splits shell text into simple commands and denies human-only abbd commands, writes under .abbd/, session state, the registered extraction script, and requests to the running screen"
+      "purpose": "keeps an agent in ABBD mode away from the human's commands and files",
+      "responsibility": "Reads a Bash or PowerShell command the way a shell splits it and says why it is denied when it runs a human-only abbd command, writes or deletes a protected path, or reaches the running screen."
     },
     {
       "key": "mod-identity",
@@ -313,8 +1533,8 @@
           "path": "internal/identity"
         }
       ],
-      "purpose": "keeps design unit IDs stable across re-extraction",
-      "responsibility": "matches units by kind and two shared anchors or an identical set, mints IDs from the high-water mark, follows renames, records merge candidates, and decides which facts re-extraction may overwrite"
+      "purpose": "keeps design-unit IDs stable across re-extraction",
+      "responsibility": "Owns reconciling a fresh extraction with the stored units: which stored ID each new unit takes over, which IDs are minted or go absent, merge candidates, and which facts and relations survive."
     },
     {
       "key": "mod-model",
@@ -325,8 +1545,8 @@
           "path": "internal/model"
         }
       ],
-      "purpose": "is the shared vocabulary of design units and their evidence",
-      "responsibility": "defines Unit, Fact, Relation and Anchor, the origin, verification and confirmation axes, the kinds and their directories, and KIND-NNNN IDs"
+      "purpose": "defines ABBD's vocabulary of design units",
+      "responsibility": "Owns the Unit, Fact, Relation, Anchor and Evidence types, the kind and ID rules, the relation kinds each pair of unit kinds may join, and their validation."
     },
     {
       "key": "mod-screen",
@@ -337,8 +1557,8 @@
           "path": "internal/screen"
         }
       ],
-      "purpose": "shows the human what needs a decision without opening Markdown",
-      "responsibility": "builds a deterministic view of pending C changes, drift, trust badges, the confirm queue and an ID-stable map, and renders the live page and the watermarked generated files"
+      "purpose": "builds what the human sees from the store",
+      "responsibility": "Derives a deterministic Model from the .abbd inputs (pending cards, drift, trust badges, confirm queue, overview and module drawings) and renders it as the live page or the generated files, without ever writing the topology."
     },
     {
       "key": "mod-serve",
@@ -346,11 +1566,12 @@
       "name": "screen server",
       "anchors": [
         {
-          "path": "cmd/abbd/serve.go"
+          "path": "cmd/abbd/serve.go",
+          "symbol": "screenServer"
         }
       ],
-      "purpose": "gives the human a browser screen for every decision",
-      "responsibility": "listens on loopback only, checks Host, Origin, Sec-Fetch-Site and the per-launch token, and turns each form into one CLI argv run in process"
+      "purpose": "serves the human screen on loopback and runs its decisions as CLI commands",
+      "responsibility": "Owns the loopback listener, the per-launch token and serve.addr file, the origin and token checks, and the translation of each posted form into the abbd command line it stands for."
     },
     {
       "key": "mod-store",
@@ -361,8 +1582,8 @@
           "path": "internal/store"
         }
       ],
-      "purpose": "persists all ABBD state as reviewable files under .abbd/ and the git dir",
-      "responsibility": "is the only reader and writer of every .abbd file layout: no-op-if-equal writes, ID high-water minting, the intended revision, input hashes and session mode files"
+      "purpose": "persists ABBD's state under .abbd/",
+      "responsibility": "Owns the on-disk layout of .abbd/ and the session directory, and every read and write of unit Markdown, intended.yaml, turns, runs, decisions, requirements, understandings and the sync watermark."
     },
     {
       "key": "mod-topology",
@@ -373,8 +1594,8 @@
           "path": "internal/topology"
         }
       ],
-      "purpose": "compares the approved intended topology with the actual one",
-      "responsibility": "owns the five change kinds, the single effect rule (BLOCKED, REALIGN, PROMOTE), phase derivation, and the select, approve and realign folds"
+      "purpose": "compares the intended topology with the extracted one",
+      "responsibility": "Owns the intended topology type, the diff of intended against actual, the one rule that gives each difference its effect (BLOCKED, REALIGN, PROMOTE), the project phase, and every fold of a human decision into the intended topology."
     },
     {
       "key": "mod-turn",
@@ -385,60 +1606,3607 @@
           "path": "internal/turn"
         }
       ],
-      "purpose": "models one unit of agent work under abbd mode",
-      "responsibility": "owns turn states, impact computation, grades A, B and C, approvals and rejections, the declared-versus-actual contrast, and the verification evidence rule"
+      "purpose": "judges one unit of agent work under abbd mode",
+      "responsibility": "Owns the turn record, its impact and tiers, the A/B/C grading of each topology change, the end gate's verdicts and grade B findings, and the rule that a verification run proves only the tree it ran on."
+    },
+    {
+      "key": "model-evidence",
+      "kind": "DATA",
+      "name": "Evidence and anchor records",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Is the anchor and the evidence excerpt types, the lines span, the ban on citing .abbd/ or .git/, and the PATH:LINES:QUOTE command-line form.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "299",
+          "symbol": "Evidence",
+          "quote": "type Evidence struct {"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "351",
+          "symbol": "ParseEvidence",
+          "quote": "func ParseEvidence(s string) (Evidence, error) {"
+        }
+      ]
+    },
+    {
+      "key": "model-fact",
+      "kind": "DATA",
+      "name": "Fact with origin, verification and confirmation",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Is a field value with its three independent evidence axes, the guess rule, and the why-field origin restriction.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "42",
+          "symbol": "Fact",
+          "quote": "type Fact struct {"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "10",
+          "symbol": "Origin",
+          "quote": "type Origin string"
+        }
+      ]
+    },
+    {
+      "key": "model-ids",
+      "kind": "MOD",
+      "name": "Unit ID format",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Parses and formats KIND-NNNN IDs.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "129",
+          "symbol": "idPattern",
+          "quote": "var idPattern = regexp.MustCompile("
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "141",
+          "symbol": "FormatID",
+          "quote": "func FormatID(k Kind, n int) ID"
+        }
+      ]
+    },
+    {
+      "key": "model-kinds",
+      "kind": "MOD",
+      "name": "Unit kinds and their directories",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Defines the unit kinds, which directory each lives in, which are contracts, and the reserved domain-layer prefixes.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "76",
+          "symbol": "Kind",
+          "quote": "type Kind string"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "87",
+          "symbol": "kinds",
+          "quote": "var kinds = map[Kind]string{"
+        }
+      ]
+    },
+    {
+      "key": "model-relation",
+      "kind": "DATA",
+      "name": "Relation, relation kinds and via",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Is an edge with origin, confirmation, via, evidence, dead and digest, the table of which kinds each relation may join, and whether an edge counts in the actual topology.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "362",
+          "symbol": "Relation",
+          "quote": "type Relation struct {"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "254",
+          "symbol": "ends",
+          "quote": "var ends = map[RelationKind]struct{ from, to func(Kind) bool }{"
+        }
+      ]
+    },
+    {
+      "key": "model-unit",
+      "kind": "DATA",
+      "name": "Design unit record",
+      "parent": "mod-model",
+      "anchors": [],
+      "responsibility": "Is the Unit as stored, with parent, evidence, relations and absent flag, and its validation including the semantic-needs-evidence rule.",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "172",
+          "symbol": "Validate",
+          "quote": "func (u Unit) Validate() error {"
+        }
+      ]
+    },
+    {
+      "key": "screen-build",
+      "kind": "MOD",
+      "name": "Model builder",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Derives the deterministic Model: phase, pending grade C cards, drift, trust badges, align and queue groups, edges and the drawings of both levels.",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "309",
+          "symbol": "Build",
+          "quote": "func Build(in Input) Model {"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "613",
+          "symbol": "Badge",
+          "quote": "func Badge(o model.Origin, c model.Confirmation) string {"
+        }
+      ]
+    },
+    {
+      "key": "screen-input",
+      "kind": "MOD",
+      "name": "Store reader",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Loads everything the screen reads from the store and judges whether the generated files and the actual topology are CURRENT, STALE or UNKNOWN.",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "51",
+          "symbol": "Load",
+          "quote": "func Load(st store.Store) (Input, error) {"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "122",
+          "symbol": "GeneratedFreshness",
+          "quote": "func (in Input) GeneratedFreshness() Freshness {"
+        }
+      ]
+    },
+    {
+      "key": "screen-inside",
+      "kind": "MOD",
+      "name": "Module inside drawing",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Draws one module's inside units with the module's contracts on the frame and lines from the unit that provides or uses each one.",
+      "evidence": [
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "35",
+          "symbol": "inside",
+          "quote": "func (o *overview) inside(m model.ID, units []model.Unit, mk marks) Inside {"
+        }
+      ]
+    },
+    {
+      "key": "screen-layout",
+      "kind": "MOD",
+      "name": "Layered layout",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Places nodes in layers by what uses what, sorted so the same graph always gives the same picture, and routes lines through the gaps between layers.",
+      "evidence": [
+        {
+          "path": "internal/screen/layout.go",
+          "lines": "45",
+          "symbol": "arrange",
+          "quote": "func arrange(nodes []lnode, edges []ledge, top int) layout {"
+        },
+        {
+          "path": "internal/screen/layout.go",
+          "lines": "274",
+          "symbol": "route",
+          "quote": "func (l *layout) route(from pt, a int, to pt, b int) string {"
+        }
+      ]
+    },
+    {
+      "key": "screen-overview",
+      "kind": "MOD",
+      "name": "Overview drawing",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Lays out the modules and contracts from design units and approved relations only, and draws each wire by kind: through a contract, bypassing contracts, semantic, new, realign or removed.",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "127",
+          "symbol": "planOverview",
+          "quote": "func planOverview(units []model.Unit, in *topology.Intended) *overview {"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "362",
+          "symbol": "draw",
+          "quote": "func (o *overview) draw(items []topology.Item, mk marks,"
+        }
+      ]
+    },
+    {
+      "key": "screen-page",
+      "kind": "MOD",
+      "name": "Page template and files",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Executes the embedded page.html with its Korean labels, as a live page with forms and a nonce script or as the static explorer and queue files, and writes graph.json.",
+      "evidence": [
+        {
+          "path": "internal/screen/page.go",
+          "lines": "86",
+          "symbol": "Files",
+          "quote": "func Files(m Model) (map[string][]byte, error) {"
+        }
+      ]
+    },
+    {
+      "key": "screen-questions",
+      "kind": "MOD",
+      "name": "Grade C card wording",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Puts a grade C item into a human's words, what changes, why ABBD asks, what approve and reject each do and the safe default, with a member-by-member signature diff.",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "107",
+          "symbol": "ask",
+          "quote": "func ask(it topology.Item, name func(model.ID) string, users []string) Question {"
+        },
+        {
+          "path": "internal/screen/words.go",
+          "lines": "155",
+          "symbol": "diffSignature",
+          "quote": "func diffSignature(old, new string) ([]DiffLine, int) {"
+        }
+      ]
+    },
+    {
+      "key": "screen-understanding",
+      "kind": "MOD",
+      "name": "How-text blocks",
+      "parent": "mod-screen",
+      "anchors": [],
+      "responsibility": "Splits a module's pstack how text into heading, list and paragraph blocks with code and bold spans, so the page renders it without trusting any markup.",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "52",
+          "symbol": "blocks",
+          "quote": "func blocks(text string) []Block {"
+        },
+        {
+          "path": "internal/screen/words.go",
+          "lines": "34",
+          "symbol": "spans",
+          "quote": "func spans(s string) []Span {"
+        }
+      ]
+    },
+    {
+      "key": "serve-act",
+      "kind": "MOD",
+      "name": "Decision runner",
+      "parent": "mod-serve",
+      "anchors": [],
+      "responsibility": "Runs one decision at a time as an in-process CLI call with --root, and answers with the command line and what it printed, failing with 422 on a CLI error.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "199",
+          "symbol": "act",
+          "quote": "func (s *screenServer) act(w http.ResponseWriter, r *http.Request) {"
+        }
+      ]
+    },
+    {
+      "key": "serve-actions",
+      "kind": "MOD",
+      "name": "Form to command table",
+      "parent": "mod-serve",
+      "anchors": [],
+      "responsibility": "Maps each do value to the abbd argv it stands for, refusing a key that looks like a flag.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "81",
+          "symbol": "actions",
+          "quote": "var actions = map[string]func(f url.Values) ([]string, error){"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "110",
+          "symbol": "keyed",
+          "quote": "func keyed(f url.Values, cmd string, flags ...string) ([]string, error) {"
+        }
+      ]
+    },
+    {
+      "key": "serve-gate",
+      "kind": "MOD",
+      "name": "Origin and token check",
+      "parent": "mod-serve",
+      "anchors": [],
+      "responsibility": "Serves only the printed loopback Host, and accepts a decision only from the screen's own origin carrying the launch token, compared in constant time.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "161",
+          "symbol": "fromScreen",
+          "quote": "func (s *screenServer) fromScreen(r *http.Request) bool {"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "154",
+          "symbol": "valid",
+          "quote": "func (s *screenServer) valid(t string) bool {"
+        }
+      ]
+    },
+    {
+      "key": "serve-launch",
+      "kind": "MOD",
+      "name": "Screen launch",
+      "parent": "mod-serve",
+      "anchors": [],
+      "responsibility": "Refuses a non-loopback --addr, draws the 24-byte token, prints the link with the token in its fragment, writes the address to serve.addr and removes it on exit.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "30",
+          "symbol": "serve",
+          "quote": "func (e env) serve() error {"
+        }
+      ]
+    },
+    {
+      "key": "serve-page",
+      "kind": "MOD",
+      "name": "Live page response",
+      "parent": "mod-serve",
+      "anchors": [],
+      "responsibility": "Renders the live page under the decision lock with a fresh script nonce and sends it with a strict Content-Security-Policy and no-store, no-frame headers.",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "168",
+          "symbol": "page",
+          "quote": "func (s *screenServer) page(w http.ResponseWriter) {"
+        }
+      ]
+    },
+    {
+      "key": "store-file-io",
+      "kind": "MOD",
+      "name": "Frontmatter and atomic file writes",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Encodes records as YAML frontmatter over a Markdown body and writes every file through a skip-if-equal, temp-then-rename write.",
+      "evidence": [
+        {
+          "path": "internal/store/turn.go",
+          "lines": "31",
+          "symbol": "frontmatter",
+          "quote": "func frontmatter(v any, body string) ([]byte, error) {"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "240",
+          "symbol": "writeFile",
+          "quote": "func writeFile(path string, b []byte) error {"
+        }
+      ]
+    },
+    {
+      "key": "store-layout",
+      "kind": "MOD",
+      "name": "Store root and path layout",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Roots every path at .abbd/ under the project and places session state in the git directory when there is one.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "24",
+          "symbol": "Dir",
+          "quote": "const Dir = \".abbd\""
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "40",
+          "symbol": "Open",
+          "quote": "func Open(projectRoot string) Store {"
+        }
+      ]
+    },
+    {
+      "key": "store-records",
+      "kind": "MOD",
+      "name": "Turn, run, decision and requirement records",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Saves and loads turns (rendering their impact tiers), verification runs, ADRs with the standing-rejection rule, and requirement texts.",
+      "evidence": [
+        {
+          "path": "internal/store/turn.go",
+          "lines": "71",
+          "symbol": "SaveTurn",
+          "quote": "func (s Store) SaveTurn(t turn.Turn) error {"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "336",
+          "symbol": "WriteADR",
+          "quote": "func (s Store) WriteADR(a ADR, body string) error {"
+        }
+      ]
+    },
+    {
+      "key": "store-session-state",
+      "kind": "MOD",
+      "name": "Session mode files, journal and screen address",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Keeps per-session mode flags, journals and the running screen's address file in the sessions directory, validating session IDs.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "355",
+          "symbol": "SetMode",
+          "quote": "func (s Store) SetMode(id string, on bool) error {"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "418",
+          "symbol": "ServeFile",
+          "quote": "func (s Store) ServeFile() string { return filepath.Join(s.sessions, \"serve.addr\") }"
+        }
+      ]
+    },
+    {
+      "key": "store-understanding",
+      "kind": "DATA",
+      "name": "Module understanding file",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Is understanding/<ID>.md, a module's how-text with INFERRED origin and the digest of the code it describes, and computes that digest.",
+      "evidence": [
+        {
+          "path": "internal/store/understanding.go",
+          "lines": "20",
+          "symbol": "Understanding",
+          "quote": "type Understanding struct {"
+        },
+        {
+          "path": "internal/store/understanding.go",
+          "lines": "68",
+          "symbol": "ModuleDigest",
+          "quote": "func (s Store) ModuleDigest(units []model.Unit, id model.ID) string {"
+        }
+      ]
+    },
+    {
+      "key": "store-unit-files",
+      "kind": "MOD",
+      "name": "Unit Markdown codec",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Reads and renders unit files: frontmatter parsing, the file-name-equals-ID and kind-directory checks, duplicate IDs, and carrying the Notes section through.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "58",
+          "symbol": "LoadUnits",
+          "quote": "func (s Store) LoadUnits() ([]model.Unit, error) {"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "111",
+          "symbol": "renderUnit",
+          "quote": "func renderUnit(u model.Unit) ([]byte, error) {"
+        }
+      ]
+    },
+    {
+      "key": "store-watermark",
+      "kind": "MOD",
+      "name": "Sync watermark and ID high water",
+      "parent": "mod-store",
+      "anchors": [],
+      "responsibility": "Holds state.yaml (revision, tree fingerprint, Markdown hash, per-kind high water) and the hashes that make generated files and unit Markdown detectably stale; mints never-reused IDs.",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "27",
+          "symbol": "State",
+          "quote": "type State struct {"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "187",
+          "symbol": "InputsHash",
+          "quote": "func (s Store) InputsHash() (string, error) {"
+        }
+      ]
+    },
+    {
+      "key": "topology-boundary",
+      "kind": "MOD",
+      "name": "module boundary lift",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Grades a relation of an inside unit as its design module's own relation, drops relations that stay inside one module, and hides inside units from unit-added.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "616",
+          "symbol": "boundary",
+          "quote": "func (in Intended) boundary(actual map[model.ID]model.Unit) func(Item) (Item, bool) {"
+        }
+      ]
+    },
+    {
+      "key": "topology-compare",
+      "kind": "MOD",
+      "name": "intended versus actual diff",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Lists every difference between the intended topology and the present units: removed and added units, changed contract signatures, removed and new relations.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "165",
+          "symbol": "Compare",
+          "quote": "func Compare(in Intended, units []model.Unit) []Item {"
+        }
+      ]
+    },
+    {
+      "key": "topology-couplings",
+      "kind": "MOD",
+      "name": "live semantic couplings",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Lists the semantic relations no human decided whose evidence is still live, for the turn impact to follow and the screen to draw.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "140",
+          "symbol": "Couplings",
+          "quote": "func Couplings(units []model.Unit) []Coupling {"
+        }
+      ]
+    },
+    {
+      "key": "topology-effect",
+      "kind": "MOD",
+      "name": "effect rule",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "The single rule that says who must act on a difference: BLOCKED for anything crossing a contract or two intended units, REALIGN for other changes to intended units, PROMOTE for a new unit.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "219",
+          "symbol": "Effect",
+          "quote": "func (in Intended) Effect(it Item) (effect Effect, ok bool) {"
+        }
+      ]
+    },
+    {
+      "key": "topology-folding",
+      "kind": "MOD",
+      "name": "intended topology updates",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Folds human decisions into the intended topology: Select for first alignment, Approve for one grade C item, Accept for a synced turn, RealignTo for chosen REALIGN rows.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "434",
+          "symbol": "RealignTo",
+          "quote": "func RealignTo(in Intended, units []model.Unit, keys []string) (Intended, error) {"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "552",
+          "symbol": "apply",
+          "quote": "func apply(in Intended, it Item) Intended {"
+        }
+      ]
+    },
+    {
+      "key": "topology-keys",
+      "kind": "DATA",
+      "name": "change item and edge",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "The Item and Edge records with their printed forms, Item.Key and Edge.String, and the parsers ParseKey and ParseEdge that read them back.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "101",
+          "symbol": "Key",
+          "quote": "func (it Item) Key() string {"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "316",
+          "symbol": "ParseKey",
+          "quote": "func ParseKey(key string) (Item, error) {"
+        }
+      ]
+    },
+    {
+      "key": "topology-phase",
+      "kind": "MOD",
+      "name": "project phase",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Derives uninitialized, bootstrapped, aligned or drifted from the present units and whether any non-PROMOTE difference remains.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "369",
+          "symbol": "DerivePhase",
+          "quote": "func DerivePhase(units []model.Unit, in *Intended) Phase {"
+        }
+      ]
+    },
+    {
+      "key": "topology-promotion",
+      "kind": "MOD",
+      "name": "promotion candidates",
+      "parent": "mod-topology",
+      "anchors": [],
+      "responsibility": "Lists below-the-line units worth a human's decision with a question that changes when their relations change, and adopts one as a design unit without approving any of its relations.",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "472",
+          "symbol": "Candidates",
+          "quote": "func Candidates(in Intended, units []model.Unit, rejected func(question string) bool) []Candidate {"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "519",
+          "symbol": "Adopt",
+          "quote": "func Adopt(in Intended, units []model.Unit, id model.ID) (Intended, error) {"
+        }
+      ]
+    },
+    {
+      "key": "turn-findings",
+      "kind": "MOD",
+      "name": "grade B findings",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Finds what the gate cannot read: a consumed contract whose code changed under the same signature, a confirmed coupling whose quoted lines changed, and a direct design unit no one scanned.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "134",
+          "symbol": "Touched",
+          "quote": "func Touched(in topology.Intended, baseline map[model.ID]string, units []model.Unit, vs []Verdict) []Verdict {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "79",
+          "symbol": "EvidenceTouched",
+          "quote": "func EvidenceTouched(baseline map[string]string, in topology.Intended, units []model.Unit) []Verdict {"
+        }
+      ]
+    },
+    {
+      "key": "turn-gate",
+      "kind": "MOD",
+      "name": "end gate",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Judges the actual topology against the intended one plus this turn's approvals into verdicts, prints each verdict line, folds allowed changes on sync, and contrasts declared with done.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "477",
+          "symbol": "Judge",
+          "quote": "func Judge(in topology.Intended, units []model.Unit, approvals []Approval) []Verdict {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "502",
+          "symbol": "Fold",
+          "quote": "func Fold(in topology.Intended, vs []Verdict) topology.Intended {"
+        }
+      ]
+    },
+    {
+      "key": "turn-grade",
+      "kind": "MOD",
+      "name": "grading and questions",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Adapts a topology effect to a turn grade (A, B, C), parses and grades a declared change key, and words the human question a grade C item asks.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "406",
+          "symbol": "GradeOf",
+          "quote": "func GradeOf(in topology.Intended, units []model.Unit, it topology.Item) Grade {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "442",
+          "symbol": "Question",
+          "quote": "func Question(in topology.Intended, it topology.Item) string {"
+        }
+      ]
+    },
+    {
+      "key": "turn-impact",
+      "kind": "MOD",
+      "name": "impact graph",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Builds the graph a turn follows (intended relations plus live semantic couplings) and computes the impact from the seeds, which the agent may add to but never shrink.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "232",
+          "symbol": "GraphOf",
+          "quote": "func GraphOf(in topology.Intended, units []model.Unit) Graph {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "251",
+          "symbol": "ComputeImpact",
+          "quote": "func ComputeImpact(g Graph, seeds []model.ID) []ImpactItem {"
+        }
+      ]
+    },
+    {
+      "key": "turn-record",
+      "kind": "DATA",
+      "name": "turn record",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "The Turn written to a change record: state, baseline, seeds, impact, declared IntentDelta, questions, approvals, rejections, scans and end report, with the lookups Approved, Rejected and Waiting.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "16",
+          "symbol": "State",
+          "quote": "type State string"
+        }
+      ]
+    },
+    {
+      "key": "turn-scan",
+      "kind": "DATA",
+      "name": "semantic scan record",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Records that an agent checked one impacted unit for reader-only couplings, and names the pstack skills a scan may follow.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "93",
+          "symbol": "Scan",
+          "quote": "type Scan struct {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "99",
+          "symbol": "Scanners",
+          "quote": "var Scanners = []string{\"how\", \"blast-radius\"}"
+        }
+      ]
+    },
+    {
+      "key": "turn-tiers",
+      "kind": "MOD",
+      "name": "impact tiers",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Splits the recorded impact into direct items read closely and far items checked briefly, recomputed from the graph each time.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "304",
+          "symbol": "Tiers",
+          "quote": "func (t Turn) Tiers(g Graph) (direct, far []ImpactItem) {"
+        }
+      ]
+    },
+    {
+      "key": "turn-verification",
+      "kind": "MOD",
+      "name": "verification evidence",
+      "parent": "mod-turn",
+      "anchors": [],
+      "responsibility": "Decides whether a verification run lets a turn complete: it must exist, have passed, and have run on the current tree, and a run that edited the tree fails.",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "585",
+          "symbol": "Evidence",
+          "quote": "func Evidence(run *Run, tree string) string {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "570",
+          "symbol": "EditedTree",
+          "quote": "func EditedTree(paths []string) string {"
+        }
+      ]
     }
   ],
   "relations": [
     {
-      "from": "mod-guard",
-      "to": "mod-store",
-      "kind": "depends_on"
+      "from": "bootstrap-overlay",
+      "to": "bootstrap-findings",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "51",
+          "quote": "var f Findings"
+        }
+      ]
     },
     {
-      "from": "mod-guard",
+      "from": "bootstrap-overlay",
+      "to": "bootstrap-match",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "57",
+          "quote": "i, err := match(out.Units[:scriptUnits], d)"
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-overlay",
+      "to": "bootstrap-semantic",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "59",
+          "quote": "out.Units = append(out.Units, semantic(d, fmt.Sprintf(\"%s#%d\", src.Name, n)))"
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-overlay",
+      "to": "bootstrap-source",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "89",
+          "quote": "if src.Strict && len(f.Gaps) > 0 {"
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-report",
+      "to": "bootstrap-findings",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "19",
+          "quote": "Overlays  map[string]Findings"
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-report",
+      "to": "bootstrap-source",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "41",
+          "quote": "for _, name := range []string{Supplement.Name, Adopt.Name} {"
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-report",
+      "to": "mod-cmd-abbd",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "28",
+          "quote": "Three runs, the last with reseeded hash seeds, printed identical output"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "144",
+          "quote": "{reseed, fmt.Sprintf(\"a run with %s printed different output\""
+        }
+      ]
+    },
+    {
+      "from": "bootstrap-report",
+      "to": "mod-confirm",
+      "kind": "depends_on",
+      "via": "import",
+      "evidence": [
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "18",
+          "quote": "Queue     []confirm.Item"
+        }
+      ]
+    },
+    {
+      "from": "cfg-hooks",
+      "to": "cfg-plugin",
+      "kind": "consumes",
+      "via": "config",
+      "evidence": [
+        {
+          "path": ".claude-plugin/marketplace.json",
+          "lines": "12",
+          "quote": "\"source\": \"./plugins/abbd\","
+        },
+        {
+          "path": "plugins/abbd/.claude-plugin/plugin.json",
+          "lines": "4",
+          "quote": "the abbd CLI on PATH"
+        },
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "9",
+          "quote": "\"command\": \"abbd\","
+        }
+      ]
+    },
+    {
+      "from": "cfg-hooks",
+      "to": "feat-abbd-mode",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "2",
+          "quote": "Each does nothing unless /abbd-mode turned the mode on for the session."
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "40",
+          "quote": "abbd mode on --session ${CLAUDE_SESSION_ID}"
+        }
+      ]
+    },
+    {
+      "from": "cfg-hooks",
+      "to": "mod-cmd-abbd",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "36",
+          "quote": "\"matcher\": \"Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*\","
+        },
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "175",
+          "quote": "case in.ToolName == \"Bash\" || in.ToolName == \"PowerShell\":"
+        },
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "52",
+          "quote": "\"matcher\": \"Write|Edit|NotebookEdit\","
+        },
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "152",
+          "quote": "file := in.ToolInput.FilePath"
+        }
+      ]
+    },
+    {
+      "from": "cmd-decisions",
+      "to": "cmd-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "450",
+          "quote": "v, err := e.load()"
+        }
+      ]
+    },
+    {
+      "from": "cmd-decisions",
+      "to": "cmd-turn",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "739",
+          "quote": "return e.approveInTurn(t, key)"
+        }
+      ]
+    },
+    {
+      "from": "cmd-dispatch",
+      "to": "cmd-hook",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "299",
+          "quote": "e.hook(inv.sub)"
+        }
+      ]
+    },
+    {
+      "from": "cmd-dispatch",
+      "to": "cmd-publish",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "308",
+          "quote": "if perr := e.publish(); perr != nil {"
+        }
+      ]
+    },
+    {
+      "from": "cmd-dispatch",
+      "to": "mod-model",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "173",
+          "quote": "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "287",
+          "quote": "\"build-feature\": true, \"data\": true, \"convention\": true, \"call\": true,"
+        }
+      ]
+    },
+    {
+      "from": "cmd-hook",
       "to": "cfg-hooks",
-      "kind": "consumes"
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "175",
+          "quote": "case in.ToolName == \"Bash\" || in.ToolName == \"PowerShell\":"
+        },
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "36",
+          "quote": "\"matcher\": \"Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*\","
+        },
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "51",
+          "quote": "\"SessionStart\":     env.hookSessionStart,"
+        },
+        {
+          "path": "plugins/abbd/hooks/hooks.json",
+          "lines": "52",
+          "quote": "\"matcher\": \"Write|Edit|NotebookEdit\","
+        }
+      ]
     },
     {
-      "from": "mod-turn",
-      "to": "mod-gitx",
-      "kind": "depends_on"
+      "from": "cmd-hook",
+      "to": "if-cli-turn-end",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "208",
+          "quote": "Run abbd turn verify --session %s, then abbd turn end --session %s"
+        }
+      ]
     },
     {
-      "from": "mod-identity",
-      "to": "mod-bootstrap",
-      "kind": "depends_on"
+      "from": "cmd-hook",
+      "to": "if-cli-turn-start",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "148",
+          "quote": "abbd turn start --session %s --seeds IDS --request -"
+        }
+      ]
     },
     {
-      "from": "feat-abbd-mode",
-      "to": "mod-guard",
-      "kind": "depends_on"
+      "from": "cmd-hook",
+      "to": "cmd-turn",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "203",
+          "quote": "tree, err := e.tree()"
+        }
+      ]
+    },
+    {
+      "from": "cmd-hook",
+      "to": "feat-abbd-mode",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "136",
+          "quote": "Continue it under /abbd-mode"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "2",
+          "quote": "name: abbd-mode"
+        }
+      ]
+    },
+    {
+      "from": "cmd-hook",
+      "to": "mod-store",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "173",
+          "quote": "case strings.Contains(strings.ToLower(in.raw), \"serve.addr\"):"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "418",
+          "quote": "filepath.Join(s.sessions, \"serve.addr\")"
+        }
+      ]
+    },
+    {
+      "from": "cmd-propose",
+      "to": "cmd-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/propose.go",
+          "lines": "76",
+          "quote": "v, err := e.load()"
+        }
+      ]
+    },
+    {
+      "from": "cmd-publish",
+      "to": "cmd-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "1046",
+          "quote": "if err := e.printFreshness(); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "cmd-setup",
+      "to": "cmd-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "106",
+          "quote": "if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "cmd-turn",
+      "to": "cmd-publish",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "642",
+          "quote": "return e.published()"
+        }
+      ]
+    },
+    {
+      "from": "cmd-turn",
+      "to": "cmd-sync",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "436",
+          "quote": "if err := e.reextract(); err != nil {"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "901",
+          "quote": "if err := e.refresh(); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "cmd-turn",
+      "to": "feat-abbd-setup",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "42",
+          "quote": "filepath.Join(e.root, store.Dir, \"extractor\")"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "24",
+          "quote": "Write `.abbd/extractor/extract.<ext>`"
+        }
+      ]
+    },
+    {
+      "from": "confirm-decide",
+      "to": "confirm-item",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "148",
+          "quote": "if relationKey(u.ID, r) != key || u.Absent {"
+        }
+      ]
+    },
+    {
+      "from": "confirm-item",
+      "to": "if-change-key",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "35",
+          "quote": "return topology.Edge{From: from, To: r.To, Kind: r.Kind}.String()"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "42",
+          "quote": "return fmt.Sprintf(\"%s.%s.%s\", e.From, e.Kind, e.To)"
+        }
+      ]
+    },
+    {
+      "from": "confirm-queue",
+      "to": "confirm-item",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "56",
+          "quote": "add(relationKey(u.ID, r), relationValue(r), design[u.ID] || design[r.To])"
+        }
+      ]
+    },
+    {
+      "from": "evidence-apply",
+      "to": "evidence-match",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "120",
+          "quote": "if r := c.Check(e); r.Live {"
+        }
+      ]
+    },
+    {
+      "from": "evidence-apply",
+      "to": "model-unit",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "138",
+          "quote": "if u.Semantic() && !u.Absent {"
+        }
+      ]
+    },
+    {
+      "from": "evidence-match",
+      "to": "evidence-checker",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "84",
+          "quote": "f := c.load(e.Path)"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "85",
+          "quote": "q := normalize(e.Quote)"
+        }
+      ]
+    },
+    {
+      "from": "evidence-match",
+      "to": "evidence-result",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "107",
+          "quote": "return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8])}"
+        }
+      ]
+    },
+    {
+      "from": "extract-graph-check",
+      "to": "extract-path-norm",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "109",
+          "quote": "evidence, err := NormalizeEvidence(rr.Evidence)"
+        }
+      ]
+    },
+    {
+      "from": "extract-graph-check",
+      "to": "extract-result",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "113",
+          "quote": "res.Relations = append(res.Relations, Relation{"
+        }
+      ]
+    },
+    {
+      "from": "extract-graph-check",
+      "to": "extract-unit-parse",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "72",
+          "quote": "units, raw, err := parseUnits(r)"
+        }
+      ]
+    },
+    {
+      "from": "extract-graph-check",
+      "to": "model-relation",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "103",
+          "quote": "if err := rr.Kind.Joins(from, to); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "extract-unit-parse",
+      "to": "data-extraction",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "137",
+          "quote": "var raw rawResult"
+        }
+      ]
+    },
+    {
+      "from": "extract-unit-parse",
+      "to": "extract-origin",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "181",
+          "quote": "inferred(ru.Purpose)"
+        }
+      ]
+    },
+    {
+      "from": "extract-unit-parse",
+      "to": "extract-path-norm",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "150",
+          "quote": "p, err := normalizePath(a.Path)"
+        }
+      ]
     },
     {
       "from": "feat-abbd-mode",
       "to": "cfg-plugin",
-      "kind": "consumes"
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "10",
+          "quote": "`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`"
+        },
+        {
+          "path": "plugins/abbd/agents/abbd-agent.md",
+          "lines": "9",
+          "quote": "`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "129",
+          "quote": "`subagent_type: \"abbd:abbd-agent\"`"
+        },
+        {
+          "path": "plugins/abbd/.claude-plugin/plugin.json",
+          "lines": "2",
+          "quote": "\"name\": \"abbd\","
+        },
+        {
+          "path": "plugins/abbd/.claude-plugin/plugin.json",
+          "lines": "4",
+          "quote": "Requires pstack 0.15.36"
+        }
+      ]
     },
     {
       "from": "feat-abbd-mode",
-      "to": "cfg-hooks",
-      "kind": "consumes"
+      "to": "cmd-dispatch",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "14",
+          "quote": "When a command exits 2, a human decides next."
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "96",
+          "quote": "exitNeedHuman = 2"
+        },
+        {
+          "path": "plugins/abbd/agents/abbd-agent.md",
+          "lines": "19",
+          "quote": "On exit 2, stop and report the `C BLOCKED` lines"
+        }
+      ]
     },
     {
       "from": "feat-abbd-mode",
-      "to": "data-intended",
-      "kind": "consumes"
+      "to": "cmd-turn",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "98",
+          "quote": "An `UNEXPECTED KEY` line is a relation change"
+        },
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "451",
+          "quote": "fmt.Fprintln(e.stdout, \"UNEXPECTED\", key)"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "85",
+          "quote": "`C QUESTION KEY`, exit 2"
+        },
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "307",
+          "quote": "\"C QUESTION %s: a human must run abbd approve"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "44",
+          "quote": "`active: resuming CHG-... (OPEN)`"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "957",
+          "quote": "\"active: resuming %s (%s)\\n\""
+        }
+      ]
     },
     {
       "from": "feat-abbd-mode",
-      "to": "data-changes",
-      "kind": "consumes"
+      "to": "mod-guard",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "18",
+          "quote": "a hook denies the abbd commands approve, reject, align, confirm, couple, setup, serve and mode off"
+        },
+        {
+          "path": "plugins/abbd/agents/abbd-agent.md",
+          "lines": "21",
+          "quote": "Never run the abbd commands approve, align, confirm, setup or mode off."
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "380",
+          "quote": "\"align\": true, \"approve\": true, \"reject\": true, \"confirm\": true, \"couple\": true, \"setup\": true, \"mode off\": true,"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "380-381",
+          "quote": "\"setup\": true, \"mode off\": true,"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "mod-model",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "69",
+          "quote": "`VIA` is one of `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "287",
+          "quote": "\"build-feature\": true, \"data\": true, \"convention\": true, \"call\": true,"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "mod-store",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "18",
+          "quote": "of the session state in `<git-dir>/abbd/sessions/`"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "44",
+          "quote": "s.sessions = filepath.Join(g, \"abbd\", \"sessions\")"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "model-evidence",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "66",
+          "quote": "--evidence \"<PATH>:<LINES>:<QUOTE>\""
+        },
+        {
+          "path": "plugins/abbd/agents/abbd-agent.md",
+          "lines": "24",
+          "quote": "one `PATH:LINES:QUOTE` of the code"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "351",
+          "quote": "func ParseEvidence(s string) (Evidence, error) {"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "store-session-state",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "18",
+          "quote": "`<git-dir>/abbd/sessions/`"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "44",
+          "quote": "s.sessions = filepath.Join(g, \"abbd\", \"sessions\")"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "turn-gate",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "83",
+          "quote": "- `A KEY` and `B PROCEED KEY`: proceed."
+        },
+        {
+          "path": "plugins/abbd/agents/abbd-agent.md",
+          "lines": "19",
+          "quote": "stop and report the `C BLOCKED` lines to your parent"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "468",
+          "quote": "return \"C BLOCKED \" + detail"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "turn-record",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "120",
+          "quote": "- `DRAFT`, exit 2: verification is missing, failed, or older than the tree."
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "22",
+          "quote": "Draft  State = \"DRAFT\""
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-mode",
+      "to": "turn-scan",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
+          "lines": "75",
+          "quote": "Use `--by blast-radius` for a unit you scanned that way."
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "99",
+          "quote": "var Scanners = []string{\"how\", \"blast-radius\"}"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "cfg-plugin",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "8",
+          "quote": "ABBD is pinned to that version."
+        },
+        {
+          "path": "plugins/abbd/.claude-plugin/plugin.json",
+          "lines": "4",
+          "quote": "Requires pstack 0.15.36"
+        }
+      ]
     },
     {
       "from": "feat-abbd-setup",
       "to": "data-extraction",
-      "kind": "consumes"
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "106",
+          "quote": "Unknown fields are rejected."
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "136",
+          "quote": "dec.DisallowUnknownFields()"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "105",
+          "quote": "where they stay INFERRED until a human confirms them"
+        },
+        {
+          "path": "internal/extract/extract.go",
+          "lines": "212",
+          "quote": "return &model.Fact{Value: v, Origin: model.Inferred, Confirmation: model.Unconfirmed}"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "if-confirm-key",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "110",
+          "quote": "named like `MOD-0001.purpose` or `MOD-0002.consumes.MOD-0001`"
+        },
+        {
+          "path": "internal/confirm/confirm.go",
+          "lines": "49",
+          "quote": "add(string(u.ID)+\".purpose\", u.Purpose.Value, design[u.ID])"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "bootstrap-overlay",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "36",
+          "quote": "Exit 1 `fix the script, or cite the code`"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "90",
+          "quote": "fix the script, or cite the code each one rests on"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "bootstrap-report",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "39",
+          "quote": "with IDs from `.abbd/bootstrap-report.md`"
+        },
+        {
+          "path": "internal/bootstrap/report.go",
+          "lines": "26",
+          "quote": "# Bootstrap report"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "116",
+          "quote": "rep.NextSteps = []string{\"abbd align --all\", \"abbd align --confirm IDS\", \"abbd align --exclude IDS\"}"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "bootstrap-semantic",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "25",
+          "quote": "give that unit `evidence` instead of a script anchor"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "58",
+          "quote": "if err != nil && src.Origin == model.Inferred && len(d.Evidence) > 0 {"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "cmd-setup",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "34",
+          "quote": "Exit 1 `not deterministic`"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "152",
+          "quote": "the extraction script is not deterministic"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "35",
+          "quote": "Exit 1 `extraction script is fixed`"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "50",
+          "quote": "its extraction script is fixed"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "255",
+          "quote": "var harnessFiles = map[string]bool{\"CLAUDE.md\": true, \"AGENTS.md\": true}"
+        },
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "55",
+          "quote": "a root `CLAUDE.md` or `AGENTS.md`"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "evidence-match",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "103",
+          "quote": "it must start within three lines of"
+        },
+        {
+          "path": "internal/evidence/evidence.go",
+          "lines": "21",
+          "quote": "const Slack = 3"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "identity-takeover",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "97",
+          "quote": "Two shared anchors, or an identical anchor set, keep a unit's ID across re-extraction."
+        },
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "96",
+          "quote": "if ov >= 2 || same {"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "mod-cmd-abbd",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "34",
+          "quote": "one of them with a different `PYTHONHASHSEED` and `PERL_HASH_SEED`"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "178",
+          "quote": "for _, name := range []string{\"PYTHONHASHSEED\", \"PERL_HASH_SEED\"} {"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "152",
+          "quote": "the extraction script is not deterministic"
+        }
+      ]
+    },
+    {
+      "from": "feat-abbd-setup",
+      "to": "model-relation",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "plugins/abbd/skills/abbd-setup/SKILL.md",
+          "lines": "102",
+          "quote": "`via` is optional on a relation and says how it arises"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "286",
+          "quote": "\"import\": true, \"trait\": true, \"callback\": true, \"macro\": true, \"config\": true,"
+        }
+      ]
+    },
+    {
+      "from": "gitx-changed",
+      "to": "gitx-run",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "97",
+          "quote": "out, err := run(dir, nil, \"diff-tree\", \"-r\", \"--no-renames\", \"--name-only\","
+        }
+      ]
+    },
+    {
+      "from": "gitx-changed",
+      "to": "gitx-snapshot",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "94",
+          "quote": "if _, err := run(dir, nil, \"cat-file\", \"-e\", oldTree+\"^{tree}\"); err != nil {"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "54",
+          "quote": "out, err := run(dir, env, \"write-tree\")"
+        }
+      ]
+    },
+    {
+      "from": "gitx-renames",
+      "to": "gitx-run",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "68",
+          "quote": "out, err := run(dir, nil, \"diff-tree\", \"-r\", \"-M\", \"-l0\","
+        }
+      ]
+    },
+    {
+      "from": "gitx-renames",
+      "to": "gitx-snapshot",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "65",
+          "quote": "if _, err := run(dir, nil, \"cat-file\", \"-e\", oldTree+\"^{tree}\"); err != nil {"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "54",
+          "quote": "out, err := run(dir, env, \"write-tree\")"
+        }
+      ]
+    },
+    {
+      "from": "gitx-repo",
+      "to": "gitx-run",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "23",
+          "quote": "out, err := run(dir, nil, \"rev-parse\", \"--verify\", \"-q\", \"HEAD\")"
+        }
+      ]
+    },
+    {
+      "from": "gitx-snapshot",
+      "to": "gitx-run",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "51",
+          "quote": "if _, err := run(dir, env, \"add\", \"-A\", \"--\", \".\", \":(exclude)\"+exclude); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "if-cli-setup",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "733",
+          "quote": "commandName(w[0]) == \"abbd\" && w[1] == \"setup\" && w[2] == \"--\""
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "206",
+          "quote": "dashArgv: true, run: env.setup"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "guard-humans",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "610",
+          "quote": "if sub := abbdCommand(words); humans[sub] {"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "guard-parser",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "581",
+          "quote": "p := parseShell(cmd)"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "guard-paths",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "602",
+          "quote": "if g.protected(cwd, r, false) {"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "guard-screen",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "617",
+          "quote": "slices.ContainsFunc(words, g.reachesScreen)"
+        }
+      ]
+    },
+    {
+      "from": "guard-check",
+      "to": "guard-wordlists",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "626",
+          "quote": "case shells[name]:"
+        }
+      ]
+    },
+    {
+      "from": "guard-humans",
+      "to": "if-cli",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "380",
+          "quote": "\"align\": true, \"approve\": true, \"reject\": true,"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "205",
+          "quote": "var commands = map[string]command{"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "397",
+          "quote": "if rest[0] == \"--root\" || rest[0] == \"--session\" {"
+        }
+      ]
+    },
+    {
+      "from": "guard-humans",
+      "to": "guard-wordlists",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "388",
+          "quote": "if readers[commandName(words[0])] {"
+        }
+      ]
+    },
+    {
+      "from": "guard-humans",
+      "to": "serve-actions",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "380",
+          "quote": "\"confirm\": true, \"couple\": true,"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "96",
+          "quote": "return []string{\"align\", \"--confirm=\" + strings.Join(f[\"id\"], \",\")}, nil"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "106",
+          "quote": "return keyed(f, \"couple\")"
+        }
+      ]
+    },
+    {
+      "from": "guard-parser",
+      "to": "guard-parsed",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "95",
+          "quote": "p.out.segs = append(p.out.segs, p.cur)"
+        }
+      ]
+    },
+    {
+      "from": "guard-paths",
+      "to": "guard-policy",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "532",
+          "quote": "return g.setupOpen && len(below) > 0"
+        }
+      ]
+    },
+    {
+      "from": "guard-paths",
+      "to": "mod-store",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "506",
+          "quote": "if c == \".abbd\" && !g.extractor(cs[i+1:]) {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "509",
+          "quote": "slices.Contains(cs[i+1:], \"abbd\")"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "24",
+          "quote": "const Dir = \".abbd\""
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "44",
+          "quote": "s.sessions = filepath.Join(g, \"abbd\", \"sessions\")"
+        }
+      ]
+    },
+    {
+      "from": "guard-policy",
+      "to": "cfg-project",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "435",
+          "quote": "p, err := e.st.LoadProject()"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "439",
+          "quote": "g.setupOpen = len(p.Extract) == 0"
+        }
+      ]
+    },
+    {
+      "from": "guard-screen",
+      "to": "guard-policy",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "449",
+          "quote": "return slices.ContainsFunc(g.screen,"
+        }
+      ]
+    },
+    {
+      "from": "identity-guesses",
+      "to": "bootstrap-source",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "50",
+          "quote": "ReplaceGuesses is a setup, whose supplement owns them"
+        },
+        {
+          "path": "internal/bootstrap/overlay.go",
+          "lines": "27",
+          "quote": "Supplement = Source{Name: \"supplement\", Origin: model.Inferred, Strict: true}"
+        },
+        {
+          "path": "cmd/abbd/setup.go",
+          "lines": "106",
+          "quote": "if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "identity-merge",
+      "to": "identity-guesses",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "291",
+          "quote": "return f == nil || (guesses == ReplaceGuesses && f.Guess())"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-candidate",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "164",
+          "quote": "fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID,"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-guesses",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "169",
+          "quote": "units[j].Absent = !stTaken[j] && !kept(u, guesses)"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-merge",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "136",
+          "quote": "merge(&units[j], in, guesses)"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-relations",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "177",
+          "quote": "setRelations(res.Units, input, ids, extraction.Relations, guesses)"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-rename",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "71",
+          "quote": "u.Anchors = applyRenames(u.Anchors, renames)"
+        }
+      ]
+    },
+    {
+      "from": "identity-reconcile",
+      "to": "identity-takeover",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "118",
+          "quote": "for _, p := range pairs {"
+        }
+      ]
+    },
+    {
+      "from": "identity-relations",
+      "to": "identity-guesses",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "248",
+          "quote": "if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {"
+        }
+      ]
+    },
+    {
+      "from": "identity-rename",
+      "to": "mod-gitx",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/identity/identity.go",
+          "lines": "62",
+          "quote": "renames maps old paths to new paths since the last sync"
+        },
+        {
+          "path": "internal/gitx/gitx.go",
+          "lines": "58",
+          "quote": "Renames maps old to new paths, relative to dir, between two snapshots."
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "store-session-state",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "173",
+          "quote": "strings.Contains(strings.ToLower(in.raw), \"serve.addr\")"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "418",
+          "quote": "filepath.Join(s.sessions, \"serve.addr\")"
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "turn-grade",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "625",
+          "quote": "Grade: \"B\", Subject: vd.Item.Key()"
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "765",
+          "quote": "Grade: \"C\","
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "40",
+          "quote": "B Grade = \"B\""
+        }
+      ]
+    },
+    {
+      "from": "mod-cmd-abbd",
+      "to": "turn-verification",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "506",
+          "quote": "Output: \"verification/runs/\" + id + \".log\""
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "592",
+          "quote": "output in .abbd/%s"
+        },
+        {
+          "path": "internal/store/turn.go",
+          "lines": "138",
+          "quote": "s.path(filepath.FromSlash(r.Output))"
+        }
+      ]
+    },
+    {
+      "from": "mod-guard",
+      "to": "cfg-project",
+      "kind": "consumes",
+      "via": "config",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "435",
+          "quote": "p, err := e.st.LoadProject()"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "439",
+          "quote": "g.setupOpen = len(p.Extract) == 0"
+        }
+      ]
+    },
+    {
+      "from": "mod-guard",
+      "to": "mod-serve",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "52",
+          "quote": "os.WriteFile(file, []byte(s.addr+\"\\n\"), 0o644)"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "430",
+          "quote": "net.SplitHostPort(e.st.ScreenAddr())"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "418",
+          "quote": "return filepath.Join(s.sessions, \"serve.addr\")"
+        },
+        {
+          "path": "cmd/abbd/hook.go",
+          "lines": "173",
+          "quote": "strings.Contains(strings.ToLower(in.raw), \"serve.addr\")"
+        }
+      ]
+    },
+    {
+      "from": "mod-guard",
+      "to": "store-layout",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "506",
+          "quote": "if c == \".abbd\" && !g.extractor(cs[i+1:]) {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "532",
+          "quote": "return g.setupOpen && len(below) > 0 && below[0] == \"extractor\""
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "24",
+          "quote": "const Dir = \".abbd\""
+        }
+      ]
+    },
+    {
+      "from": "mod-guard",
+      "to": "store-session-state",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "509",
+          "quote": "if c == \".git\" && (deleting || slices.Contains(cs[i+1:], \"abbd\")) {"
+        },
+        {
+          "path": "cmd/abbd/guard.go",
+          "lines": "548",
+          "quote": "return strings.Contains(l, \".git/abbd\")"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "44",
+          "quote": "s.sessions = filepath.Join(g, \"abbd\", \"sessions\")"
+        }
+      ]
+    },
+    {
+      "from": "mod-model",
+      "to": "store-layout",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "336",
+          "quote": "case e.Path == \".abbd\" || strings.HasPrefix(e.Path, \".abbd/\")"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "24",
+          "quote": "const Dir = \".abbd\""
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "if-serve-http",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "375",
+          "quote": "const r = await fetch(\"/act\", { method: \"POST\", body });"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "371",
+          "quote": "body.set(\"t\", token);"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "211",
+          "quote": "<input type=\"hidden\" name=\"do\" value=\"approve\">"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "135",
+          "quote": "case r.URL.Path == \"/act\" && r.Method == http.MethodPost:"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "82",
+          "quote": "\"approve\": func(f url.Values) ([]string, error)"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "mod-serve",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "350",
+          "quote": "const m = /^#t=([0-9a-f]+)$/.exec(location.hash);"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "47",
+          "quote": "link := fmt.Sprintf(\"http://%s/#t=%s\", s.authority(), s.token)"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "338",
+          "quote": "<script nonce=\"{{.O.Nonce}}\">"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "193",
+          "quote": "script-src 'nonce-%s'"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "topology-effect",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "274",
+          "quote": "{{if and $tick (eq .Effect \"REALIGN\")}}"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "47",
+          "quote": ".pill.BLOCKED, .pill.OPEN, .pill.FAILED"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "60",
+          "quote": "Realign Effect = \"REALIGN\""
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "topology-keys",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/graph.go",
+          "lines": "79",
+          "quote": "switch effect[\"new-relation:\"+e.String()] {"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "418",
+          "quote": "if mk.effect[\"removed-relation:\"+e.String()] != \"\" {"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "104",
+          "quote": "return string(it.Change) + \":\" + it.Edge.String()"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "topology-phase",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.go",
+          "lines": "43",
+          "quote": "\"uninitialized\": \"미초기화\", \"bootstrapped\": \"정렬 전\""
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "277",
+          "quote": "{{else}}<p class=\"muted\">{{if eq .M.Phase \"aligned\"}}"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "49",
+          "quote": "Aligned       Phase = \"aligned\""
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "turn-gate",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "489",
+          "quote": "if strings.Contains(s, string(topology.Promote)) {"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "530",
+          "quote": "for _, g := range t.Report.Gate {"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "472",
+          "quote": "return \"A \" + string(v.Item.Effect) + \" \" + detail"
+        },
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "574",
+          "quote": "rep.Gate = append(rep.Gate, vd.String())"
+        }
+      ]
+    },
+    {
+      "from": "mod-screen",
+      "to": "turn-record",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "45",
+          "quote": ".pill.SYNCED, .pill.CLOSED"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "263",
+          "quote": "<span class=\"pill {{.State}}\">{{.State}}</span>"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "23",
+          "quote": "Synced State = \"SYNCED\""
+        }
+      ]
+    },
+    {
+      "from": "mod-serve",
+      "to": "if-change-key",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "211",
+          "quote": "<input type=\"hidden\" name=\"do\" value=\"approve\"><input type=\"hidden\" name=\"key\" value=\"{{.Key}}\">"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "82",
+          "quote": "\"approve\": func(f url.Values) ([]string, error) { return keyed(f, \"approve\") },"
+        }
+      ]
+    },
+    {
+      "from": "mod-serve",
+      "to": "if-confirm-key",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "298",
+          "quote": "<input type=\"hidden\" name=\"do\" value=\"confirm\"><input type=\"hidden\" name=\"key\" value=\"{{.Key}}\">"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "87",
+          "quote": "return keyed(f, \"confirm\", valueFlag(f)...)"
+        }
+      ]
+    },
+    {
+      "from": "mod-serve",
+      "to": "topology-keys",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "105",
+          "quote": "f.Set(\"key\", f.Get(\"from\")+\".\"+f.Get(\"kind\")+\".\"+f.Get(\"to\"))"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "42",
+          "quote": "func (e Edge) String() string"
+        }
+      ]
+    },
+    {
+      "from": "mod-store",
+      "to": "turn-grade",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "326",
+          "quote": "case a.Question != question:"
+        },
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "446",
+          "quote": "return fmt.Sprintf(\"%s at intended revision %d\", it.Key(), in.Revision)"
+        },
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "380",
+          "quote": "Question: turn.Question(*v.intended, *item), Turn: t.ID,"
+        }
+      ]
+    },
+    {
+      "from": "mod-turn",
+      "to": "data-runs",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "592",
+          "quote": "output in .abbd/%s"
+        },
+        {
+          "path": "internal/store/turn.go",
+          "lines": "138",
+          "quote": "writeFile(s.path(filepath.FromSlash(r.Output)), output)"
+        },
+        {
+          "path": "cmd/abbd/turn.go",
+          "lines": "506",
+          "quote": "Output: \"verification/runs/\" + id + \".log\""
+        }
+      ]
+    },
+    {
+      "from": "model-relation",
+      "to": "model-kinds",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "255",
+          "quote": "Provides:  {from: implementer, to: Kind.IsContract},"
+        }
+      ]
+    },
+    {
+      "from": "model-unit",
+      "to": "model-evidence",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "152",
+          "quote": "Evidence       []Evidence `yaml:\"evidence,omitempty\"`"
+        }
+      ]
+    },
+    {
+      "from": "model-unit",
+      "to": "model-fact",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "186",
+          "quote": "if err := u.Name.validate(false); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "model-unit",
+      "to": "model-ids",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "176",
+          "quote": "k, _, err := ParseID(string(u.ID))"
+        }
+      ]
+    },
+    {
+      "from": "model-unit",
+      "to": "model-kinds",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "173",
+          "quote": "if err := u.Kind.Validate(); err != nil {"
+        }
+      ]
+    },
+    {
+      "from": "model-unit",
+      "to": "model-relation",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/model/model.go",
+          "lines": "217",
+          "quote": "for _, r := range u.Relations {"
+        }
+      ]
+    },
+    {
+      "from": "screen-build",
+      "to": "screen-input",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "311",
+          "quote": "Phase: topology.DerivePhase(in.Units, in.Intended), Actual: in.ActualFreshness()"
+        }
+      ]
+    },
+    {
+      "from": "screen-build",
+      "to": "screen-inside",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "440",
+          "quote": "ins := o.inside(id, in.Units, mk)"
+        }
+      ]
+    },
+    {
+      "from": "screen-build",
+      "to": "screen-overview",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "423",
+          "quote": "o := planOverview(in.Units, in.Intended)"
+        }
+      ]
+    },
+    {
+      "from": "screen-build",
+      "to": "screen-questions",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "472",
+          "quote": "return ask(it, o.name, users)"
+        }
+      ]
+    },
+    {
+      "from": "screen-build",
+      "to": "screen-understanding",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "442",
+          "quote": "Blocks: blocks(u.Text)"
+        }
+      ]
+    },
+    {
+      "from": "screen-input",
+      "to": "data-generated",
+      "kind": "consumes",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "127",
+          "quote": "case *in.Generated != in.Current():"
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "91",
+          "quote": "b, err := st.ReadGenerated(GraphFile)"
+        },
+        {
+          "path": "internal/screen/page.go",
+          "lines": "73",
+          "quote": "Watermark Watermark `json:\"watermark\"`"
+        }
+      ]
+    },
+    {
+      "from": "screen-inside",
+      "to": "screen-layout",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/inside.go",
+          "lines": "60",
+          "quote": "l := arrange(nodes, edges, frameTop+chipH+40)"
+        }
+      ]
+    },
+    {
+      "from": "screen-overview",
+      "to": "screen-layout",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "213",
+          "quote": "o.layout = arrange(nodes, edges, padY+14)"
+        }
+      ]
+    },
+    {
+      "from": "screen-page",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/page.html",
+          "lines": "274",
+          "quote": "(eq .Effect \"REALIGN\")"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "46",
+          "quote": ".pill.STALE, .pill.DRAFT, .pill.drifted, .pill.REALIGN"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "60",
+          "quote": "Realign Effect = \"REALIGN\""
+        }
+      ]
+    },
+    {
+      "from": "screen-page",
+      "to": "screen-build",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "617",
+          "quote": "return \"stated, guess rejected\""
+        },
+        {
+          "path": "internal/screen/page.go",
+          "lines": "44",
+          "quote": "\"stated\": \"사람이 명시\", \"stated, guess rejected\""
+        },
+        {
+          "path": "internal/screen/screen.go",
+          "lines": "438",
+          "quote": "return \"#m-\" + string(id)"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "239",
+          "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
+        }
+      ]
+    },
+    {
+      "from": "screen-page",
+      "to": "screen-overview",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "534",
+          "quote": "plainWire(\"semantic\", title"
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "138",
+          "quote": "svg path.semantic {"
+        },
+        {
+          "path": "internal/screen/overview.go",
+          "lines": "456",
+          "quote": "kind, title := \"bypass\""
+        },
+        {
+          "path": "internal/screen/page.html",
+          "lines": "137",
+          "quote": "svg path.bypass {"
+        }
+      ]
+    },
+    {
+      "from": "screen-questions",
+      "to": "if-cli-approve",
+      "kind": "consumes",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "127",
+          "quote": "Approve: \"이 결합을 의도한 토폴로지에 넣습니다."
+        },
+        {
+          "path": "cmd/abbd/main.go",
+          "lines": "209",
+          "quote": "return e.approve(pos[0])"
+        }
+      ]
+    },
+    {
+      "from": "screen-questions",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/screen/words.go",
+          "lines": "109",
+          "quote": "case topology.ContractChanged:"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "233-234",
+          "quote": "case ContractChanged:"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "214",
+          "quote": "// Grade C (Blocked) covers anything that changes what an intended contract"
+        }
+      ]
+    },
+    {
+      "from": "serve-act",
+      "to": "mod-cmd-abbd",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "219",
+          "quote": "code := run(append(argv, \"--root\", s.env.root)"
+        }
+      ]
+    },
+    {
+      "from": "serve-act",
+      "to": "serve-actions",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "206",
+          "quote": "build, ok := actions[r.PostForm.Get(\"do\")]"
+        }
+      ]
+    },
+    {
+      "from": "serve-act",
+      "to": "serve-gate",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "200",
+          "quote": "!s.fromScreen(r) || !s.valid(r.PostForm.Get(\"t\"))"
+        }
+      ]
+    },
+    {
+      "from": "serve-actions",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "105",
+          "quote": "f.Set(\"key\", f.Get(\"from\")+\".\"+f.Get(\"kind\")+\".\"+f.Get(\"to\"))"
+        },
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "42",
+          "quote": "return fmt.Sprintf(\"%s.%s.%s\", e.From, e.Kind, e.To)"
+        }
+      ]
+    },
+    {
+      "from": "serve-gate",
+      "to": "serve-launch",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "155",
+          "quote": "subtle.ConstantTimeCompare([]byte(t), []byte(s.token))"
+        },
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "46",
+          "quote": "token: hex.EncodeToString(raw)"
+        }
+      ]
+    },
+    {
+      "from": "serve-page",
+      "to": "mod-screen",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "cmd/abbd/serve.go",
+          "lines": "183",
+          "quote": "screen.Render(&b, screen.Build(in), o)"
+        }
+      ]
+    },
+    {
+      "from": "store-records",
+      "to": "store-file-io",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/store/turn.go",
+          "lines": "83",
+          "quote": "b, err := frontmatter(t, renderTurn(t, turn.GraphOf(*in, units)))"
+        }
+      ]
+    },
+    {
+      "from": "store-records",
+      "to": "store-unit-files",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/store/turn.go",
+          "lines": "79",
+          "quote": "units, err := s.LoadUnits()"
+        }
+      ]
+    },
+    {
+      "from": "store-session-state",
+      "to": "store-layout",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "44",
+          "quote": "s.sessions = filepath.Join(g, \"abbd\", \"sessions\")"
+        },
+        {
+          "path": "internal/store/store.go",
+          "lines": "367",
+          "quote": "if s.sessions == s.path(\"sessions\") {"
+        }
+      ]
+    },
+    {
+      "from": "store-understanding",
+      "to": "store-file-io",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/store/understanding.go",
+          "lines": "33",
+          "quote": "b, err := frontmatter(u, strings.TrimSpace(u.Text)+\"\\n\")"
+        }
+      ]
+    },
+    {
+      "from": "store-unit-files",
+      "to": "mod-model",
+      "kind": "depends_on",
+      "via": "convention",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "56",
+          "quote": "return []string{\"architecture\", \"features\"}"
+        },
+        {
+          "path": "internal/model/model.go",
+          "lines": "88",
+          "quote": "Module: \"architecture\", Interface: \"architecture\", Event: \"architecture\","
+        }
+      ]
+    },
+    {
+      "from": "store-unit-files",
+      "to": "store-file-io",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "145",
+          "quote": "writeFile(s.path(u.Kind.Dir(), string(u.ID)+\".md\"), b)"
+        }
+      ]
+    },
+    {
+      "from": "store-watermark",
+      "to": "store-session-state",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "193",
+          "quote": "p == s.path(\"generated\") || p == s.sessions"
+        }
+      ]
+    },
+    {
+      "from": "store-watermark",
+      "to": "store-unit-files",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/store/store.go",
+          "lines": "174",
+          "quote": "for _, d := range s.unitDirs() {"
+        }
+      ]
+    },
+    {
+      "from": "topology-compare",
+      "to": "topology-boundary",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "168",
+          "quote": "boundary := in.boundary(actual)"
+        }
+      ]
+    },
+    {
+      "from": "topology-compare",
+      "to": "topology-effect",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "175",
+          "quote": "if effect, ok := in.Effect(graded); ok {"
+        }
+      ]
+    },
+    {
+      "from": "topology-compare",
+      "to": "topology-keys",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "207",
+          "quote": "return items[i].Key() < items[j].Key()"
+        }
+      ]
+    },
+    {
+      "from": "topology-couplings",
+      "to": "topology-compare",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "141",
+          "quote": "present := presentUnits(units)"
+        }
+      ]
+    },
+    {
+      "from": "topology-folding",
+      "to": "topology-compare",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "435",
+          "quote": "items := Compare(in, units)"
+        }
+      ]
+    },
+    {
+      "from": "topology-phase",
+      "to": "topology-compare",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "376",
+          "quote": "for _, it := range Compare(*in, units) {"
+        }
+      ]
+    },
+    {
+      "from": "topology-promotion",
+      "to": "topology-effect",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/topology/topology.go",
+          "lines": "536",
+          "quote": "was, _ := Intended{Units: before.Units}.Effect(it)"
+        }
+      ]
+    },
+    {
+      "from": "turn-findings",
+      "to": "turn-gate",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "144",
+          "quote": "out = append(out, Verdict{Item: topology.Item{Change: topology.ContractTouched"
+        }
+      ]
+    },
+    {
+      "from": "turn-findings",
+      "to": "turn-scan",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "113",
+          "quote": "!t.Scanned(i.Unit)"
+        }
+      ]
+    },
+    {
+      "from": "turn-findings",
+      "to": "turn-tiers",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "111",
+          "quote": "direct, _ := t.Tiers(g)"
+        }
+      ]
+    },
+    {
+      "from": "turn-gate",
+      "to": "turn-grade",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "481",
+          "quote": "v := Verdict{Item: it, Grade: GradeOf(in, units, it)}"
+        }
+      ]
+    },
+    {
+      "from": "turn-gate",
+      "to": "turn-record",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "483",
+          "quote": "v.ADR = t.Approved(it.Key())"
+        }
+      ]
+    },
+    {
+      "from": "turn-grade",
+      "to": "if-change-key",
+      "kind": "consumes",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "421",
+          "quote": "it, err := topology.ParseKey(key)"
+        }
+      ]
+    },
+    {
+      "from": "turn-impact",
+      "to": "mod-topology",
+      "kind": "depends_on",
+      "via": "call",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "237",
+          "quote": "for _, c := range topology.Couplings(units) {"
+        }
+      ]
+    },
+    {
+      "from": "turn-tiers",
+      "to": "turn-impact",
+      "kind": "depends_on",
+      "via": "data",
+      "evidence": [
+        {
+          "path": "internal/turn/turn.go",
+          "lines": "323",
+          "quote": "for _, i := range t.Impact {"
+        }
+      ]
     }
   ]
 }
