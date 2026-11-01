@@ -112,7 +112,7 @@
         }
       ],
       "purpose": "lets the human and the agent work the lever from a terminal",
-      "responsibility": "parses argv against the command table, runs setup, sync, record, understand, impact, diff, evidence and status, and renders the blueprint after every write"
+      "responsibility": "parses argv against the command table, runs setup, install, sync, record, understand, explain, path, impact, diff, evidence and status, and renders the blueprint after every write"
     },
     {
       "key": "mod-extract",
@@ -196,7 +196,7 @@
         }
       ],
       "purpose": "answers questions about the stored topology",
-      "responsibility": "computes the impact of a change in direct and far tiers and the difference between two revisions' topologies"
+      "responsibility": "explains one unit, finds the shortest path between two units with its weakest origin, computes the impact of a change in direct and far tiers, and the difference between two revisions' topologies"
     }
   ]
 }
