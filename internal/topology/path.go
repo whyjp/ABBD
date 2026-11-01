@@ -57,7 +57,8 @@ func Path(units []model.Unit, a, b model.ID) (hops []Hop, ok bool) {
 const Contains model.RelationKind = "contains"
 
 // nesting is a link from each present unit's parent to it, as certain as
-// the unit itself.
+// the weaker of the unit itself and whoever placed it there. A parent with no
+// origin is the script's.
 func nesting(units []model.Unit) []Link {
 	present := map[model.ID]bool{}
 	for _, u := range model.Present(units) {
@@ -66,7 +67,11 @@ func nesting(units []model.Unit) []Link {
 	var out []Link
 	for _, u := range model.Present(units) {
 		if present[u.Parent] {
-			out = append(out, Link{Edge: model.Edge{From: u.Parent, To: u.ID, Kind: Contains}, Origin: u.Name.Origin})
+			origin := cmp.Or(u.ParentOrigin, model.Extracted)
+			if strength[u.Name.Origin] < strength[origin] {
+				origin = u.Name.Origin
+			}
+			out = append(out, Link{Edge: model.Edge{From: u.Parent, To: u.ID, Kind: Contains}, Origin: origin})
 		}
 	}
 	return out
