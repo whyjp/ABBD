@@ -97,7 +97,7 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 
 // route draws every request.
 func (l *layout) route(reqs []wireReq) []drawn {
-	l.lanes = map[[2]int]int{}
+	l.lanes, l.beside = map[[2]int]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
 	// side is +1 for a box's bottom, -1 for its top.

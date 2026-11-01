@@ -35,11 +35,13 @@ type layout struct {
 	width int
 	// top is where gap 0 begins. Gap g lies above row g; gap len(rows) lies
 	// below the last row.
-	top            int
-	gapTop, gapH   []int
-	rowTop, rowH   []int
-	height         int
-	lanes          map[[2]int]int
+	top          int
+	gapTop, gapH []int
+	rowTop, rowH []int
+	height       int
+	lanes        map[[2]int]int
+	// beside are where lines pass beside each row, left or right of it.
+	beside         map[int][]int
 	heights        map[string]int
 	minGap, endGap int
 }
@@ -51,6 +53,8 @@ const (
 	// share a channel before the next one starts a new channel, rule 2.
 	lane   = 8
 	bundle = 4
+	// channel is how close lines run before they read as one channel.
+	channel = 12
 	// busAt is how many lines into one box are drawn as one bundle.
 	busAt = 2
 	// frameTopNode and frameBottomNode stand for a frame's top and bottom
@@ -557,14 +561,41 @@ func (l *layout) gutter(r, x int) int {
 	g := gaps[best]
 	k := l.lanes[[2]int{r, best}]
 	l.lanes[[2]int{r, best}]++
-	step := k*lane + k/bundle*lane
-	switch best {
-	case 0:
-		return g.to - 12 - step
-	case len(gaps) - 1:
-		return g.from + 12 + step
+	if best > 0 && best < len(gaps)-1 {
+		return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane
 	}
-	return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane
+	// Beside the row a line passes straight on where it is headed. It
+	// steps a lane outward from any line already there, and once more
+	// past a channel that already holds bundle lines, rule 5.
+	out := -1
+	if best > 0 {
+		out = 1
+	}
+	at := clamp(x, g.from+12, g.to-12)
+	for !l.free(r, at) {
+		at += out * lane
+	}
+	l.beside[r] = append(l.beside[r], at)
+	return at
+}
+
+// free says a line may pass beside row r at x: no line passes within a
+// lane of it, and the channel it would join holds fewer than bundle lines.
+func (l *layout) free(r, x int) bool {
+	xs := append(slices.Clone(l.beside[r]), x)
+	slices.Sort(xs)
+	i := slices.Index(xs, x)
+	if i > 0 && xs[i]-xs[i-1] < lane || i+1 < len(xs) && xs[i+1]-xs[i] < lane {
+		return false
+	}
+	lo, hi := i, i
+	for lo > 0 && xs[lo]-xs[lo-1] <= channel {
+		lo--
+	}
+	for hi+1 < len(xs) && xs[hi+1]-xs[hi] <= channel {
+		hi++
+	}
+	return hi-lo+1 <= bundle
 }
 
 // offset spreads lanes outward from a space's centre: 0, 1, -1, 2, -2, ...
