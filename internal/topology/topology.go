@@ -165,8 +165,12 @@ func presentUnits(units []model.Unit) map[model.ID]model.Unit {
 func Compare(in Intended, units []model.Unit) []Item {
 	actual := presentUnits(units)
 	intended := in.byID()
+	inside := in.inside(actual)
 	var items []Item
 	add := func(it Item) {
+		if inside(it) {
+			return
+		}
 		if effect, ok := in.Effect(it); ok {
 			it.Effect = effect
 			items = append(items, it)
@@ -470,7 +474,7 @@ func Candidates(in Intended, units []model.Unit, rejected func(question string) 
 	intended := in.byID()
 	var out []Candidate
 	for _, u := range Present(units) {
-		if _, ok := intended[u.ID]; ok {
+		if _, ok := intended[u.ID]; ok || u.Parent != "" {
 			continue
 		}
 		c := Candidate{Unit: u.ID, Kind: u.Kind, Question: promotionQuestion(u.ID, edges)}
@@ -600,4 +604,43 @@ func (in Intended) normalized() Intended {
 		in.Relations = []Edge{}
 	}
 	return in
+}
+
+// inside reports whether a change stays within one module's inside: a new
+// below-the-line unit that a module contains, or a relation that starts at
+// one, or that ends at one from the module that contains it. The inside of a
+// module explains it to a human and never gates; the module's own relations
+// and contracts carry its boundary.
+func (in Intended) inside(actual map[model.ID]model.Unit) func(Item) bool {
+	intended := in.byID()
+	internal := func(id model.ID) (model.ID, bool) {
+		u, ok := actual[id]
+		if _, design := intended[id]; !ok || design || u.Parent == "" {
+			return "", false
+		}
+		return u.Parent, true
+	}
+	owner := func(id model.ID) model.ID {
+		if p, ok := internal(id); ok {
+			return p
+		}
+		if u, ok := actual[id]; ok && u.Parent != "" {
+			return u.Parent
+		}
+		return id
+	}
+	return func(it Item) bool {
+		switch it.Change {
+		case UnitAdded:
+			_, ok := internal(it.Unit)
+			return ok
+		case NewRelation, RemovedRelation:
+			if _, ok := internal(it.Edge.From); ok {
+				return true
+			}
+			p, ok := internal(it.Edge.To)
+			return ok && owner(it.Edge.From) == p
+		}
+		return false
+	}
 }
