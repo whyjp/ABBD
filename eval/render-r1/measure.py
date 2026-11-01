@@ -5,7 +5,8 @@
 checks REV out into a temporary worktree, gives its drawings the ids the
 checker reads (data-id on boxes and frame ports, and each wire's ends) when
 it lacks them, copies this branch's checker in, and writes the table of every
-fixture view to OUT.tsv. With REV set to the working tree (".") it measures
+fixture view to OUT.tsv. With ABBD_TRACE_STORE set to a repository's root,
+the measures of that repository's views go to OUT.tsv.store.txt. With REV set to the working tree (".") it measures
 the working tree as it is.
 """
 import os
@@ -60,6 +61,10 @@ def plumb(root):
 def run(root):
     env = dict(os.environ, ABBD_METRICS=out)
     subprocess.run(["go", "test", "./internal/screen/", "-run", "TestTraceEveryRealDrawing", "-count=1"], cwd=root, env=env)
+    if env.get("ABBD_TRACE_STORE"):
+        r = subprocess.run(["go", "test", "./internal/screen/", "-run", "TestTraceStore", "-count=1", "-v"], cwd=root, env=env, capture_output=True, text=True, encoding="utf8")
+        lines = [l.split(": ", 1)[1] for l in r.stdout.splitlines() if "trace_test.go" in l]
+        open(out + ".store.txt", "w", encoding="utf8", newline="\n").write("\n".join(lines) + "\n")
 
 
 if rev == ".":

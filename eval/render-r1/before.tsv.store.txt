@@ -1,0 +1,29 @@
+overview: relations 5, lost 0, phantom 0, bends median 2.0 max 4, path crossings median 0.0 max 0, unmarked T 4, count ambiguity 1, size spread 1.4, beside 10%
+MOD-0002 @orca-cloud/push: relations 2, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.2, beside 2%
+MOD-0003 @orca-cloud/relay: relations 6, lost 0, phantom 0, bends median 3.0 max 4, path crossings median 3.0 max 4, unmarked T 3, count ambiguity 0, size spread 1.4, beside 8%
+MOD-0007 mobile app (Expo): relations 71, lost 0, phantom 66, bends median 4.0 max 14, path crossings median 8.0 max 23, unmarked T 107, count ambiguity 19, size spread 1.0, beside 12%
+MOD-0009 orca-mobile-web-shell: relations 0, lost 0, phantom 0, bends median 0.0 max 0, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0010 orca-notification-dismissal: relations 1, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0013 @orca/expo-two-way-audio: relations 1, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0027 computer-use-macos: relations 0, lost 0, phantom 0, bends median 0.0 max 0, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0038 orca CLI: relations 3, lost 0, phantom 0, bends median 4.0 max 4, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 27%
+MOD-0042 desktop main process: relations 78, lost 0, phantom 114, bends median 5.0 max 12, path crossings median 8.5 max 29, unmarked T 91, count ambiguity 24, size spread 1.4, beside 13%
+MOD-0043 desktop-main/agent-hooks: relations 2, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 1, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0048 desktop-main/computer: relations 0, lost 0, phantom 0, bends median 0.0 max 0, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0052 desktop-main/ipc: relations 4, lost 0, phantom 1, bends median 2.0 max 2, path crossings median 0.5 max 1, unmarked T 3, count ambiguity 2, size spread 1.0, beside 0%
+MOD-0056 Orca runtime (RPC host): relations 49, lost 0, phantom 48, bends median 4.0 max 16, path crossings median 4.0 max 22, unmarked T 58, count ambiguity 18, size spread 1.0, beside 17%
+MOD-0063 desktop-runtime/rpc: relations 2, lost 0, phantom 0, bends median 4.0 max 4, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0064 desktop-runtime/runtime-rpc: relations 2, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 1, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0072 desktop renderer UI: relations 43, lost 0, phantom 14, bends median 4.0 max 10, path crossings median 4.0 max 20, unmarked T 47, count ambiguity 11, size spread 1.0, beside 12%
+MOD-0080 renderer/web: relations 3, lost 0, phantom 0, bends median 4.0 max 4, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 12%
+MOD-0081 shared types and schemas: relations 7, lost 0, phantom 1, bends median 2.0 max 2, path crossings median 0.0 max 1, unmarked T 4, count ambiguity 0, size spread 1.2, beside 2%
+MOD-0090 shared/rpc-contract: relations 3, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 1, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0094 WSL guest agent: relations 1, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 0, unmarked T 0, count ambiguity 0, size spread 1.0, beside 0%
+MOD-0095 cloud/: relations 12, lost 0, phantom 1, bends median 4.0 max 4, path crossings median 0.0 max 5, unmarked T 7, count ambiguity 4, size spread 1.2, beside 20%
+MOD-0096 mobile/: relations 11, lost 0, phantom 0, bends median 4.0 max 6, path crossings median 2.0 max 4, unmarked T 9, count ambiguity 1, size spread 1.4, beside 13%
+MOD-0097 native/: relations 13, lost 0, phantom 0, bends median 4.0 max 8, path crossings median 1.0 max 3, unmarked T 11, count ambiguity 1, size spread 1.4, beside 6%
+MOD-0098 src/: relations 23, lost 0, phantom 0, bends median 4.0 max 8, path crossings median 3.0 max 10, unmarked T 23, count ambiguity 4, size spread 1.0, beside 9%
+MOD-0098~1 서로 쓰는 5개: relations 26, lost 0, phantom 10, bends median 3.0 max 6, path crossings median 3.0 max 9, unmarked T 26, count ambiguity 7, size spread 1.0, beside 8%
+MOD-0099 src/: relations 7, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 0.0 max 1, unmarked T 5, count ambiguity 0, size spread 1.2, beside 2%
+MOD-0100 src/shared/: relations 15, lost 0, phantom 1, bends median 6.0 max 10, path crossings median 3.0 max 6, unmarked T 8, count ambiguity 2, size spread 1.2, beside 23%
+MOD-0100~1 서로 쓰는 9개: relations 25, lost 0, phantom 33, bends median 4.0 max 10, path crossings median 2.0 max 11, unmarked T 26, count ambiguity 8, size spread 1.4, beside 13%
