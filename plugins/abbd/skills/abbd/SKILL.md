@@ -1,0 +1,43 @@
+---
+name: abbd
+description: Read, query and keep current the repository's ABBD blueprint, the architecture topology of the merged code in .abbd/. Use for /abbd, for a question about the architecture, topology, modules, contracts or couplings of a repository that has .abbd/, before changing code there, and after the change to put the topology difference in the PR.
+argument-hint: "[unit or question]"
+---
+
+# ABBD
+
+`<pstack>` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`. Open files under it with the Read tool.
+
+`.abbd/` holds the architecture topology of the merged code as its final state: top-level modules and the contracts between them, the units inside each module, and pstack how's account of each module. `.abbd/blueprint/index.html` draws it for a human. `abbd` is a lever that extracts, checks evidence, keeps IDs, stores the topology, answers queries and renders the blueprint. It never judges, blocks or asks. If the repository has no `.abbd/`, run the abbd-setup skill first.
+
+This skill works under whatever mode is active. It adds the blueprint to the work and leaves analysis, design, decisions and implementation to that mode and the pstack skills it uses.
+
+Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER_STATED` (a human said it, with where), `INFERRED` (a pstack reader found it, with a verbatim quote that keeps it alive). Weigh an answer by its weakest origin.
+
+## Before work
+
+1. Open `.abbd/blueprint/index.html` for the modules the request touches: the overview, and each module's inside (`#m-<ID>`) with its contracts, inside units, a reader's couplings and how's text. Run `abbd status` if you need to know whether the state matches the working tree.
+2. Ask the topology before grepping the code:
+   - `abbd explain <ID|NAME>`: one unit at a glance, with its contracts, neighbours, inside units, a reader's couplings with their quotes, and how's text, STALE when the code moved on.
+   - `abbd path <A> <B>`: the shortest path between two units, each hop with its kind, via and origin, ending with the path's weakest origin.
+   - `abbd impact <IDS>`: what a change to those units reaches. Read the direct tier closely and the far tier briefly.
+3. Where the question needs the code itself, follow `<pstack>/skills/how/SKILL.md` unchanged, or `<pstack>/skills/blast-radius/SKILL.md` for a change that spans several modules. Start them from the units the queries named.
+4. Record each coupling or unit a reader found that the state lacks, with a verbatim quote:
+   - `abbd record relation <FROM> <KIND> <TO> --via <VIA> --evidence <PATH:LINES:QUOTE>`
+   - `abbd record unit <KIND> <NAME> --parent <MOD-ID> --evidence <PATH:LINES:QUOTE>`
+5. When a module's text in the blueprint is STALE and how read it again, store the new Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
+
+## What the human states
+
+When the human states a purpose, a responsibility or a coupling in the conversation, record it with where they said it. `<REF>` is the PR URL, or `conversation <date>` before a PR exists.
+
+- `abbd record fact <ID.FIELD> --value "<text>" --source <REF>`, where the field is `purpose` or `responsibility`
+- `abbd record relation <FROM> <KIND> <TO> --source <REF>`, for a coupling the code does not show
+
+## After work
+
+1. Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.
+2. Put the topology difference in the reply and in the PR description under its own heading, in plain words: which units came and went, which contracts changed shape or code, which relations between modules appeared or went, which couplings a reader added.
+3. Commit `.abbd/` with the code, so the PR shows the blueprint's change.
+
+`abbd evidence` lists each quote and whether the code still holds it. `abbd diff --check` exits 1 when a contract changed or a relation between modules appeared, for a CI job that labels the PR.

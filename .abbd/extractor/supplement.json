@@ -65,17 +65,17 @@
       "responsibility": "fixes the unit file frontmatter: anchors, facts with their origin and source, relations with their evidence"
     },
     {
-      "key": "feat-abbd-mode",
+      "key": "feat-abbd",
       "kind": "FEAT",
-      "name": "/abbd-mode",
+      "name": "/abbd",
       "anchors": [
         {
-          "path": "plugins/abbd/skills/abbd-mode/SKILL.md",
-          "symbol": "abbd-mode"
+          "path": "plugins/abbd/skills/abbd/SKILL.md",
+          "symbol": "abbd"
         }
       ],
-      "purpose": "wraps pstack's playbooks with the stored topology",
-      "responsibility": "reads the blueprint and abbd impact before the work, records readers' couplings and the human's statements, and ends with abbd sync and abbd diff in the PR"
+      "purpose": "brings the stored topology into work under any mode, without routing it",
+      "responsibility": "queries the blueprint with abbd explain, path and impact before the work, records readers' couplings and the human's statements, and ends with abbd sync and abbd diff in the PR"
     },
     {
       "key": "feat-abbd-setup",

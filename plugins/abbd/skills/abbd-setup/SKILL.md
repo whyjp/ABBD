@@ -1,6 +1,6 @@
 ---
 name: abbd-setup
-description: Set ABBD up on a repository. Writes the deterministic extraction script with pstack, supplements it with what pstack's readers find, and stores and renders the topology. Use for /abbd-setup, "set up abbd", or a repository with no .abbd directory.
+description: Set ABBD up on a repository. Writes the deterministic extraction script with pstack, supplements it with what pstack's readers find, stores and renders the topology, and adds the always-on block to the project's CLAUDE.md. Use for /abbd-setup, "set up abbd", or a repository with no .abbd directory.
 ---
 
 # ABBD setup
@@ -31,7 +31,8 @@ Setup never asks the human anything. The first state you commit is the baseline;
    - `is not a relation ABBD knows`: a module or feature `provides` a contract, anything `consumes` a contract, and anything `depends_on` any unit.
 6. For each top-level module, follow `<pstack>/skills/how/SKILL.md` unchanged and store its Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
 7. Open `.abbd/blueprint/index.html` and check that the overview and each inside read the way the swarm described the code. Fix the script or the supplement and rerun setup until they do.
-8. Commit `.abbd/` with the code, and tell the human where the blueprint is.
+8. Run `abbd install`. It writes a short block between `<!-- abbd:begin -->` and `<!-- abbd:end -->` into `CLAUDE.md` at the project root, so any assistant asks `abbd explain <ID|NAME>`, `abbd path <A> <B>` and `abbd impact <IDS>` before it greps, and runs `abbd sync` and puts `abbd diff` in the PR after it changes code. A rerun replaces the block and keeps the rest of the file.
+9. Commit `.abbd/` and `CLAUDE.md` with the code, and tell the human where the blueprint is. From here on the abbd skill reads and queries the blueprint.
 
 ## Extraction format
 

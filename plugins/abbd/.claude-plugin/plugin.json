@@ -1,6 +1,6 @@
 {
   "name": "abbd",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Keeps the architecture topology of the merged code and renders it as a blueprint a human reads. Requires pstack 0.15.36 and the abbd CLI on PATH.",
   "author": {
     "name": "whyjp"
