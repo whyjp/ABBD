@@ -39,10 +39,16 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	for k, v := range hw {
 		next[k] = v
 	}
-	made := map[string]int{}
+	// A group is the fallback's by the container it sits in and its directory:
+	// two containers can each have a group of the same directory.
+	type place struct {
+		in  model.ID
+		dir string
+	}
+	made := map[place]int{}
 	for i, u := range out {
 		if Made(u) {
-			made[u.Anchors[0].Path] = i
+			made[place{u.Parent, u.Anchors[0].Path}] = i
 			out[i].Absent = true
 		}
 	}
@@ -93,10 +99,10 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 			is := keys[dir]
 			// The units right in the directory of the group being split stay
 			// in it rather than form a group of the same directory.
-			if g, ok := made[dir]; len(is) < 2 || ok && out[g].ID == container {
+			if g, ok := made[place{container, dir}]; len(is) < 2 || ok && out[g].ID == container {
 				continue
 			}
-			g, ok := made[dir]
+			g, ok := made[place{container, dir}]
 			if !ok {
 				next[model.Module]++
 				out = append(out, model.Unit{
@@ -106,7 +112,7 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 					Anchors: []model.Anchor{{Path: dir, Symbol: marker}},
 				})
 				g = len(out) - 1
-				made[dir] = g
+				made[place{container, dir}] = g
 			}
 			out[g].Absent, out[g].Parent = false, container
 			out[g].ParentOrigin, out[g].ParentSource, out[g].ParentEvidence = "", "", nil
@@ -115,7 +121,7 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 			}
 		}
 		for _, dir := range names {
-			if g, ok := made[dir]; ok && !out[g].Absent && out[g].Parent == container {
+			if g, ok := made[place{container, dir}]; ok && !out[g].Absent && out[g].Parent == container {
 				split(out[g].ID)
 			}
 		}

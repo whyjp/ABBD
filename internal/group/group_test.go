@@ -96,6 +96,46 @@ func TestAGroupNeverHoldsItself(t *testing.T) {
 	}
 }
 
+// A module inside a group may need a group of the same directory as the
+// top level's; each stays in its own container.
+func TestSameDirectoryGroupsInTwoContainersStayApart(t *testing.T) {
+	var us []model.Unit
+	for i := 1; i <= 20; i++ {
+		dir := "src"
+		if i > 10 {
+			dir = "web"
+		}
+		us = append(us, module(i, fmt.Sprintf("%s/p%d/m.go", dir, i)))
+	}
+	for i := 21; i <= 38; i++ {
+		dir := "src"
+		if i > 29 {
+			dir = "docs"
+		}
+		u := module(i, fmt.Sprintf("%s/k%d/c.go", dir, i))
+		u.Parent = "MOD-0001"
+		us = append(us, u)
+	}
+	got, _ := Fallback(us, map[model.Kind]int{model.Module: 38})
+	if model.ParentCycle(got) != "" {
+		t.Fatalf("the groups form a cycle: %v", parents(got))
+	}
+	for _, u := range model.Present(got) {
+		if Made(u) && u.Name.Value == "src/" && u.Parent != "" && u.Parent != "MOD-0001" {
+			t.Fatalf("a src/ group moved into another container: %s in %s", u.ID, u.Parent)
+		}
+	}
+	tops := 0
+	for _, u := range model.Present(got) {
+		if Made(u) && u.Parent == "" {
+			tops++
+		}
+	}
+	if tops != 2 {
+		t.Fatalf("want the src/ and web/ groups at the top, got %d: %v", tops, parents(got))
+	}
+}
+
 // The overview draws a top-level contract as a chip, so contracts do not
 // count against the budget there.
 func TestTopLevelContractsDoNotCrowdTheOverview(t *testing.T) {
