@@ -5,7 +5,6 @@ package topology
 import (
 	"errors"
 	"fmt"
-	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -71,6 +70,9 @@ const (
 	ContractChanged Change = "contract-changed"
 	UnitRemoved     Change = "unit-removed"
 	UnitAdded       Change = "unit-added"
+	// ContractTouched is a turn's finding, never a difference Compare reports:
+	// a consumed contract's code changed while its signature stayed the same.
+	ContractTouched Change = "contract-touched"
 )
 
 // Item is one difference between intended and actual.
@@ -279,7 +281,7 @@ func ParseKey(key string) (Item, error) {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
 		it.Edge = e
-	case ContractChanged, UnitRemoved, UnitAdded:
+	case ContractChanged, UnitRemoved, UnitAdded, ContractTouched:
 		if _, _, err := model.ParseID(rest); err != nil {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
@@ -374,9 +376,9 @@ func Accept(in Intended, it Item) Intended { return apply(in, it) }
 // ErrPending means a grade C change waits for a human, so realignment must wait too.
 var ErrPending = errors.New("pending approval")
 
-// RealignTo acknowledges the REALIGN items a human chose by key, or every one
-// when keys is empty. It refuses while any grade C item is pending, because
-// blocked changes come first.
+// RealignTo acknowledges the REALIGN items a human chose by key. It refuses
+// while any grade C item is pending, because blocked changes come first, and
+// when keys names no row, so an empty choice never acknowledges them all.
 func RealignTo(in Intended, units []model.Unit, keys []string) (Intended, error) {
 	items := Compare(in, units)
 	realign := map[string]Item{}
@@ -389,7 +391,7 @@ func RealignTo(in Intended, units []model.Unit, keys []string) (Intended, error)
 		}
 	}
 	if len(keys) == 0 {
-		keys = slices.Sorted(maps.Keys(realign))
+		return in, errors.New("name at least one REALIGN row to acknowledge")
 	}
 	for _, k := range keys {
 		it, ok := realign[k]
@@ -456,27 +458,28 @@ func promotionQuestion(id model.ID, edges map[Edge]bool) string {
 	return fmt.Sprintf("promote %s with relations [%s]", id, strings.Join(touching, " "))
 }
 
-// Adopt makes a below-the-line unit a design unit, with the relations it has
-// now. A grade C change touching it stays pending, so adoption never approves one.
+// Adopt makes a below-the-line unit a design unit, with its relations to other
+// below-the-line units. A relation to a design unit enters only if a human
+// already acknowledged it; any other stays a row of its own, graded once the
+// unit is a design unit, so adoption never approves or realigns one.
 func Adopt(in Intended, units []model.Unit, id model.ID) (Intended, error) {
 	actual := presentUnits(units)
 	u, ok := actual[id]
-	switch _, design := in.byID()[id]; {
-	case design:
+	design := in.byID()
+	switch _, isDesign := design[id]; {
+	case isDesign:
 		return in, fmt.Errorf("%s is already a design unit", id)
 	case !ok:
 		return in, fmt.Errorf("%s is not in the actual topology", id)
 	}
-	waiting := map[Edge]bool{}
-	for _, it := range Compare(in, units) {
-		if it.Effect == Blocked && it.Change == NewRelation {
-			waiting[it.Edge] = true
-		}
-	}
 	in.Units = append(slices.Clone(in.Units), IntendedUnit{ID: id, Kind: u.Kind, Signature: signature(u)})
 	in.Relations = slices.Clone(in.Relations)
 	for e := range actualEdges(actual) {
-		if (e.From == id || e.To == id) && !waiting[e] {
+		other := e.To
+		if e.To == id {
+			other = e.From
+		}
+		if _, toDesign := design[other]; (e.From == id || e.To == id) && !toDesign {
 			in.Relations = append(in.Relations, e)
 		}
 	}

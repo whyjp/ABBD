@@ -81,6 +81,7 @@ Setup runs it three times and refuses it if the output changes. Registration hap
 - `anchors` is required on every unit. A path is relative to the repository root, with forward slashes. Two shared anchors, or an identical anchor set, keep a unit's ID across re-extraction. Prefer two or more anchors per unit.
 - `kind` is one of `MOD`, `IF`, `EVT`, `DATA`, `CFG`, `FEAT`. `DOM`, `STATE`, `TRN` and `INV` are reserved.
 - `signature` is the observable shape of a contract, and only contracts carry one. Changing it later is a grade C change, so make it exact and stable.
+- `digest` is optional on a contract: a short fingerprint of the code its meaning lives in, such as a hash of the anchored declarations. A turn that changes a consumed contract's digest but not its signature leaves a grade B card for a human. Without one, a change of meaning under the same signature goes unseen.
 - `relations` name units by `key`. `kind` is `depends_on`, `consumes` or `provides`.
 - The script's output never carries `purpose` or `responsibility`. Those belong in the supplement, where they stay INFERRED until a human confirms them.
 - Unknown fields are rejected.

@@ -142,7 +142,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			Anchors: in.Anchors, Purpose: in.Purpose, Responsibility: in.Responsibility,
-			Signature: in.Signature,
+			Signature: in.Signature, Digest: in.Digest,
 		}
 		created = append(created, nu)
 		ids[i] = nu.ID
@@ -246,6 +246,7 @@ func dedupRelations(rs []model.Relation) []model.Relation {
 func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
 	u.Anchors = in.Anchors
 	u.Signature = in.Signature
+	u.Digest = in.Digest
 	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
 		confirmation := u.Name.Confirmation
 		u.Name = in.Name

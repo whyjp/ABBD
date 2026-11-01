@@ -148,7 +148,10 @@ type Unit struct {
 	Purpose        *Fact    `yaml:"purpose,omitempty"`
 	Responsibility *Fact    `yaml:"responsibility,omitempty"`
 	// Signature is the observable shape of an external contract.
-	Signature *Fact      `yaml:"signature,omitempty"`
+	Signature *Fact `yaml:"signature,omitempty"`
+	// Digest fingerprints the code behind a contract's anchors, so a turn sees
+	// a change of meaning the signature cannot show.
+	Digest    string     `yaml:"digest,omitempty"`
 	Relations []Relation `yaml:"relations,omitempty"`
 	// Absent marks a unit the latest extraction did not report.
 	Absent bool `yaml:"absent,omitempty"`

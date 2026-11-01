@@ -76,3 +76,22 @@ func TestScreenHidesRealignWhileAChangeIsBlocked(t *testing.T) {
 		t.Fatalf("the short realignment waits for the blocked change:\n%s", html)
 	}
 }
+
+func TestAnEmptyChoiceAcknowledgesNoRealignRow(t *testing.T) {
+	p := aligned(t)
+	p.editCode("audit/log.go")
+	p.extract(twoRealignRows)
+	p.want(2, "drifted", "mode", "on", "--session", "s1")
+	before := p.intended()
+	for _, choice := range []string{",", " , ", ""} {
+		p.want(1, "name at least one REALIGN row", "align", "--confirm="+choice)
+	}
+	s := p.screen()
+	if out := s.decide(t, "do", "realign", "key", ""); !strings.Contains(out, "name at least one REALIGN row") {
+		t.Fatalf("an empty key from the screen must acknowledge nothing:\n%s", out)
+	}
+	if p.intended() != before {
+		t.Fatalf("an empty choice changed the intended topology:\n%s", p.intended())
+	}
+	p.want(0, "aligned: 2 design unit(s)", "align")
+}

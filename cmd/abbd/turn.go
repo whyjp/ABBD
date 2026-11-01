@@ -173,7 +173,7 @@ func (e env) turnStart() error {
 	}
 	t := turn.Turn{
 		ID: string(chg), Requirement: string(req), Session: e.session, State: turn.Open,
-		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script},
+		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.ConsumedDigests(*v.intended, v.units)},
 		Seeds:    seeds, Impact: turn.ComputeImpact(*v.intended, seeds),
 	}
 	if err := e.st.WriteRequirement(store.Requirement{ID: string(req), Origin: model.UserStated, Turn: t.ID}, text); err != nil {
@@ -535,6 +535,7 @@ func (e env) turnEnd() error {
 		return err
 	}
 	vs := turn.Judge(*v.intended, v.units, t.Approvals)
+	vs = append(vs, turn.Touched(t.Baseline.Digests, v.units, vs)...)
 	touched, known, err := e.touched(t.Baseline.Fingerprint, tree, v.units)
 	if err != nil {
 		return fmt.Errorf("listing the files the turn changed: %w", err)

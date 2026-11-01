@@ -51,6 +51,37 @@ type Baseline struct {
 	// Extractor fingerprints the registered extraction script, which the tree
 	// fingerprint leaves out with the rest of .abbd/. It is empty while none is registered.
 	Extractor string `yaml:"extractor,omitempty"`
+	// Digests are the consumed design contracts' code fingerprints at the start.
+	Digests map[model.ID]string `yaml:"digests,omitempty"`
+}
+
+// ConsumedDigests fingerprints every design contract something consumes, for
+// a turn's baseline. A contract the extraction gives no digest is left out.
+func ConsumedDigests(in topology.Intended, units []model.Unit) map[model.ID]string {
+	out := map[model.ID]string{}
+	for _, u := range topology.Present(units) {
+		if iu, ok := in.Unit(u.ID); ok && iu.Kind.IsContract() && u.Digest != "" && in.HasConsumers(units, u.ID) {
+			out[u.ID] = u.Digest
+		}
+	}
+	return out
+}
+
+// Touched finds the consumed design contracts whose code changed during a
+// turn while their signature did not. The gate cannot read a change of
+// meaning, so each is grade B: the turn proceeds, and a human sees it.
+func Touched(baseline map[model.ID]string, units []model.Unit, vs []Verdict) []Verdict {
+	var out []Verdict
+	for _, u := range topology.Present(units) {
+		was, ok := baseline[u.ID]
+		if !ok || u.Digest == was || slices.ContainsFunc(vs, func(v Verdict) bool {
+			return v.Item.Change == topology.ContractChanged && v.Item.Unit == u.ID
+		}) {
+			continue
+		}
+		out = append(out, Verdict{Item: topology.Item{Change: topology.ContractTouched, Unit: u.ID, Old: was, New: u.Digest}, Grade: B})
+	}
+	return out
 }
 
 const (

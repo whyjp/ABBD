@@ -105,6 +105,8 @@ type opts struct {
 	changes, add                  string
 	all, list                     bool
 	argv                          []string
+	// given names the flags the command line set, even to an empty value.
+	given map[string]bool
 }
 
 var flagDefs = map[string]func(*flag.FlagSet, *opts){
@@ -231,6 +233,8 @@ func parse(args []string, stderr io.Writer) (invocation, error) {
 	if err != nil {
 		return inv, err
 	}
+	inv.o.given = map[string]bool{}
+	fs.Visit(func(f *flag.Flag) { inv.o.given[f.Name] = true })
 	if !slices.Contains(c.pos, len(pos)) {
 		return inv, fmt.Errorf("%s takes %v positional arguments, got %d", inv.name, c.pos, len(pos))
 	}
@@ -424,7 +428,16 @@ func (e env) align() error {
 	case e.all || e.exclude != "":
 		return fmt.Errorf("the project is %s; --all and --exclude choose the first design units only, and --confirm KEYS picks REALIGN rows", v.phase)
 	default:
-		next, err = topology.RealignTo(*v.intended, v.units, splitList(e.confirm))
+		keys := splitList(e.confirm)
+		if !e.given["confirm"] {
+			for _, it := range realignRows(v.items) {
+				keys = append(keys, it.Key())
+			}
+		}
+		next, err = topology.RealignTo(*v.intended, v.units, keys)
+		if !e.given["confirm"] && len(keys) == 0 && len(blocked(v.items)) == 0 {
+			next, err = *v.intended, nil
+		}
 		if errors.Is(err, topology.ErrPending) {
 			e.printItems(blocked(v.items))
 			fmt.Fprintln(e.stderr, "abbd:", err)
@@ -806,6 +819,11 @@ func (e env) promote(id model.ID, adopt bool) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "adopted %s as %s; %s is a design unit\n", key, adr.ID, id)
+	for _, it := range topology.Compare(next, v.units) {
+		if it.Edge.From == id || it.Edge.To == id {
+			fmt.Fprintln(e.stdout, "now waiting:", it)
+		}
+	}
 	return nil
 }
 

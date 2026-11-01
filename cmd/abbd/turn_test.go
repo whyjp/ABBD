@@ -649,3 +649,38 @@ func TestSyncedTurnPublishesCurrentFilesForTheNewDesign(t *testing.T) {
 		t.Fatalf("the explorer should show the synced contract")
 	}
 }
+
+var withDigest = func(topo, digest string) string {
+	return strings.Replace(topo, `"signature":"GET /charges",`, `"signature":"GET /charges","digest":"`+digest+`",`, 1)
+}
+
+// A turn that rewrites a consumed contract's code without changing its
+// signature may still change what it means; the gate cannot read meaning, so
+// it proceeds and leaves a human a grade B card.
+func TestSilentChangeToAConsumedContractLeavesAGradeBCard(t *testing.T) {
+	p := activeTurnProject(t, withDigest(topoConsumed, "d1"))
+	p.start("MOD-0001")
+	p.editCode("api/http.go")
+	p.extract(withDigest(topoConsumed, "d2"))
+	p.verify("pass", 0, "PASSED")
+	out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+	for _, want := range []string{"B PROCEED contract-touched:IF-0001", "done but not declared: contract-touched:IF-0001"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("want %q in:\n%s", want, out)
+		}
+	}
+	if adr := p.read("decisions/ADR-0001.md"); !strings.Contains(adr, "subject: contract-touched:IF-0001") || !strings.Contains(adr, "grade: B") {
+		t.Fatalf("the silent change should be on record for a human:\n%s", adr)
+	}
+}
+
+func TestChangeToAContractNobodyConsumesLeavesNoCard(t *testing.T) {
+	p := activeTurnProject(t, withDigest(topoV1, "d1"))
+	p.start("MOD-0001")
+	p.editCode("api/http.go")
+	p.extract(withDigest(topoV1, "d2"))
+	p.verify("pass", 0, "PASSED")
+	if out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1"); strings.Contains(out, "contract-touched") {
+		t.Fatalf("a contract no one consumes can change its code freely:\n%s", out)
+	}
+}

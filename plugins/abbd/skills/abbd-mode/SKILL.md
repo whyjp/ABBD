@@ -103,7 +103,7 @@ When the declaration or a diff printed a grade B or C line, read and follow `<ps
    abbd turn end --session ${CLAUDE_SESSION_ID}
    ```
 
-   - `SYNCED` or `CLOSED`: done.
+   - `SYNCED` or `CLOSED`: done. A `B PROCEED contract-touched:<ID>` line means the turn changed a consumed contract's code while its signature stayed the same. Name it in the reply with what its meaning now is, so the human can judge it on the screen.
    - `DRAFT`, exit 2: verification is missing, failed, or older than the tree. Fix it, verify, and end again. If it cannot pass, report the DRAFT turn.
    - `BLOCKED`, exit 2: report the `C BLOCKED` lines and send the human to the `abbd serve` screen to approve or reject each. When a `REJECTED` line comes back, undo that change, verify, and end again.
 3. Ship. Only now run the playbook's **Opening a PR** step, and only when the turn ended `SYNCED` or `CLOSED`. Never open a PR on a `DRAFT` or `BLOCKED` turn. Commit `.abbd/` with the code, so the PR carries the turn record `.abbd/changes/<CHG>.md` and what the sync wrote to `.abbd/intended.yaml` and `.abbd/decisions/`.

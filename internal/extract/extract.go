@@ -21,6 +21,7 @@ type rawUnit struct {
 	Anchors        []model.Anchor `json:"anchors"`
 	Purpose        string         `json:"purpose,omitempty"`
 	Responsibility string         `json:"responsibility,omitempty"`
+	Digest         string         `json:"digest,omitempty"`
 }
 
 type rawRelation struct {
@@ -55,6 +56,7 @@ type Unit struct {
 	Anchors        []model.Anchor
 	Purpose        *model.Fact
 	Responsibility *model.Fact
+	Digest         string
 }
 
 func Parse(r io.Reader) (Result, error) {
@@ -128,6 +130,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Anchors:        anchors,
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
+			Digest:         ru.Digest,
 		})
 	}
 	return out, raw, nil

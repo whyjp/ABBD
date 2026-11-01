@@ -22,18 +22,39 @@ func TestAdoptingANewModuleMakesItADesignUnit(t *testing.T) {
 	p.want(2, "REALIGN new-relation:MOD-0001.depends_on.MOD-0003", "mode", "on", "--session", "s1")
 	p.want(0, "PROMOTE unit-added:MOD-0003 (relates to MOD-0001)", "status")
 
-	p.want(0, "adopted unit-added:MOD-0003 as ADR-0001; MOD-0003 is a design unit", "approve", "unit-added:MOD-0003")
+	p.want(0, "adopted unit-added:MOD-0003 as ADR-0001; MOD-0003 is a design unit\nnow waiting: BLOCKED new-relation:MOD-0001.depends_on.MOD-0003", "approve", "unit-added:MOD-0003")
 	in := p.intended()
-	if !strings.Contains(in, "id: MOD-0003") || !strings.Contains(in, "from: MOD-0001\n      to: MOD-0003\n      kind: depends_on") {
-		t.Fatalf("adoption should take the unit and the relations it has now:\n%s", in)
+	if !strings.Contains(in, "id: MOD-0003") || strings.Contains(in, "to: MOD-0003") {
+		t.Fatalf("adoption takes the unit, and its new coupling to a design unit waits for its own decision:\n%s", in)
 	}
 	if adr := p.read("decisions/ADR-0001.md"); !strings.Contains(adr, "decision: approved") || !strings.Contains(adr, "origin: USER_STATED") {
 		t.Fatalf("adoption is a human's decision on record:\n%s", adr)
+	}
+	p.want(0, "approved", "approve", "new-relation:MOD-0001.depends_on.MOD-0003")
+	if !strings.Contains(p.intended(), "from: MOD-0001\n      to: MOD-0003\n      kind: depends_on") {
+		t.Fatalf("the approved coupling enters the intended topology:\n%s", p.intended())
 	}
 	if out := p.want(0, "active", "mode", "on", "--session", "s1"); strings.Contains(out, "PROMOTE") {
 		t.Fatalf("an adopted unit is no longer a candidate:\n%s", out)
 	}
 	p.want(1, "already a design unit", "approve", "unit-added:MOD-0003")
+}
+
+// A contract left below the line gains a consumer among the design units; once
+// the contract is adopted, that consumer is a grade C change of its own.
+func TestAdoptingAContractLeavesItsNewConsumerBlocked(t *testing.T) {
+	p := newProject(t)
+	p.extract(topoV1)
+	p.want(0, "new", "ingest", p.extraction)
+	p.want(0, "aligned", "align", "--confirm", "MOD-0001,MOD-0002")
+	p.editCode("ledger/book.go")
+	p.extract(withRelations(topoV1, `{"from":"ledger","to":"api","kind":"consumes"}`))
+	p.want(2, "REALIGN new-relation:MOD-0002.consumes.IF-0001", "mode", "on", "--session", "s1")
+	p.want(0, "now waiting: BLOCKED new-relation:MOD-0002.consumes.IF-0001", "approve", "unit-added:IF-0001")
+	if strings.Contains(p.intended(), "from: MOD-0002\n      to: IF-0001") {
+		t.Fatalf("adopting the contract must not approve its new consumer:\n%s", p.intended())
+	}
+	p.want(0, "BLOCKED new-relation:MOD-0002.consumes.IF-0001", "status")
 }
 
 func TestRejectedCandidateStaysBelowTheLineUntilItsRelationsChange(t *testing.T) {
