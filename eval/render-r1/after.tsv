@@ -50,15 +50,15 @@ orca	MOD-0095 cloud/	12	0	1	4.0	4	0.0	3	0	0	1.15	0.198
 orca	MOD-0096 mobile/	11	0	0	4.0	6	1.0	4	0	0	1.36	0.122
 orca	MOD-0097 native/	13	0	0	4.0	8	1.0	3	0	0	1.36	0.062
 orca	MOD-0098 src/	23	0	0	4.0	8	3.0	10	0	1	1.00	0.080
-orca	MOD-0098~1 서로 쓰는 5개	26	0	5	2.0	6	3.0	10	0	3	1.00	0.077
+orca	MOD-0098~1 서로 쓰는 5개	33	0	2	2.0	6	3.0	10	0	3	1.00	0.077
 orca	MOD-0099 src/	7	0	0	2.0	2	1.0	3	0	0	1.15	0.015
 orca	MOD-0100 src/shared/	15	0	0	6.0	10	3.0	6	0	0	1.15	0.221
 orca	MOD-0100~1 서로 쓰는 9개	25	0	1	4.0	10	2.0	8	0	0	1.36	0.119
 pstack	overview	61	0	52	6.0	14	7.0	23	0	0	1.27	0.163
-pstack	MOD-0001 setup and help	22	0	0	6.0	6	3.0	7	0	3	1.36	0.060
+pstack	MOD-0001 setup and help	35	0	0	6.0	6	3.0	7	0	3	1.36	0.060
 pstack	MOD-0002 parallel fan-out and multi-model review	18	0	4	3.0	4	1.0	3	0	0	1.00	0.057
-pstack	MOD-0003 principles	30	0	9	4.0	6	3.0	9	0	0	1.36	0.080
-pstack	MOD-0004 poteto-mode, the front door	15	0	0	2.0	2	1.0	2	0	0	1.15	0.004
+pstack	MOD-0003 principles	36	0	5	4.0	6	3.0	9	0	0	1.36	0.080
+pstack	MOD-0004 poteto-mode, the front door	19	0	0	2.0	2	1.0	2	0	0	1.15	0.004
 pstack	MOD-0005 writing and prose	10	0	0	4.0	4	2.0	3	0	0	1.00	0.031
 pstack	MOD-0006 restate and catch up	10	0	4	2.0	6	1.0	4	0	0	1.00	0.072
 pstack	MOD-0007 understand code	28	0	21	4.0	6	1.0	5	0	0	1.00	0.086
@@ -67,7 +67,7 @@ pstack	MOD-0009 build and clean the diff	13	0	7	2.0	2	0.0	2	0	0	1.36	0.018
 pstack	MOD-0010 verification	27	0	7	4.0	6	2.0	6	0	0	1.00	0.104
 pstack	MOD-0011 unattended runs	16	0	1	3.0	4	0.0	3	0	0	1.36	0.033
 pstack	MOD-0012 make it yours	15	0	3	2.0	4	1.0	4	0	0	1.36	0.088
-pstack	MOD-0013 core principles	24	0	12	4.0	6	2.5	11	0	0	1.00	0.096
+pstack	MOD-0013 core principles	34	0	9	4.0	6	3.0	11	0	0	1.00	0.096
 pstack	MOD-0014 architecture principles	17	0	3	4.0	6	2.0	6	0	0	1.00	0.091
 pstack	MOD-0015 verification principles	22	0	14	2.0	4	0.5	3	0	0	1.00	0.035
 pstack	MOD-0016 delegation principles	5	0	1	2.0	2	0.0	0	0	0	1.00	0.000

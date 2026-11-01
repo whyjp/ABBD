@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "86565c723dfa9ed53409424a3b7e6a2409d64442d9b252fd12179f8351337cc9"
+    "inputs_hash": "2caee8fe55c48e5f7c32d1d6abf683d6a7624130aa2ac26067ed6a2e47d450be"
   },
   "units": [
     {
@@ -1964,7 +1964,7 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/inside.go:78 \"func (o *overview) inside(m model.ID, units []model.Unit) Inside {\"",
-        "internal/screen/inside.go:510 \"func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {\""
+        "internal/screen/inside.go:511 \"func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {\""
       ]
     },
     {
@@ -2013,7 +2013,7 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/overview.go:110 \"if present[u.ID] \u0026\u0026 present[r.To] \u0026\u0026 r.Counts() {\"",
-        "internal/screen/overview.go:265 \"func planOverview(units []model.Unit) *overview {\"",
+        "internal/screen/overview.go:269 \"func planOverview(units []model.Unit) *overview {\"",
         "internal/screen/overview.go:377 \"k := fmt.Sprintf(\\\"bypass\u003e%s\\\", e)\""
       ]
     },
@@ -3793,7 +3793,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:203 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+      "Quote": "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
     },
     {
       "From": "MOD-0034",
@@ -3809,7 +3809,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:226 \"return Badge(model.Extracted)\""
+      "Quote": "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
     },
     {
       "From": "MOD-0034",
@@ -3825,7 +3825,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:380 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -3833,7 +3833,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:292 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -3899,7 +3899,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:211 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+      "Quote": "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
       "From": "MOD-0037",
@@ -3907,7 +3907,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+      "Quote": "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
     },
     {
       "From": "MOD-0038",
@@ -19817,7 +19817,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:203 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -19826,8 +19826,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:211 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:226 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -20184,7 +20184,7 @@
             "Title": "overview plan depends_on internal/model (via data), 판독",
             "Via": "data",
             "Quotes": [
-              "internal/screen/overview.go:211 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+              "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0030"
@@ -20197,7 +20197,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -20422,8 +20422,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/overview.go:211 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Marks": [
               {
@@ -20553,7 +20553,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\"",
-              "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20567,7 +20567,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
               "internal/screen/inside.go:236 \"l := arrange(nodes, edges, insideBudget-12)\"",
-              "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -21349,7 +21349,23 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". On an inside frame, two ports that land on one spot share a chip, and its ",
+                "Code": false
+              },
+              {
+                "Text": "Keys",
+                "Code": true
+              },
+              {
+                "Text": " name every port it stands for. ",
+                "Code": false
+              },
+              {
+                "Text": "Drawing.Relations",
+                "Code": true
+              },
+              {
+                "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to. ",
                 "Code": false
               },
               {
@@ -21527,7 +21543,7 @@
                 "Code": true
               },
               {
-                "Text": " wherever ink of one colour goes three or more ways, and where a line crosses onto a trunk that runs past it. ",
+                "Text": " wherever ink of one colour goes three or more ways, and where a line crosses onto a trunk of its own kind that runs past it. ",
                 "Code": false
               },
               {
@@ -21794,7 +21810,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:203 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -21812,7 +21828,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:226 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -21831,7 +21847,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:380 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -21840,7 +21856,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:292 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -21898,8 +21914,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:211 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:226 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -21908,7 +21924,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:386 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+            "internal/screen/overview.go:390 \"o.layout = arrange(nodes, edges, overviewBudget)\""
           ]
         },
         {
@@ -21927,9 +21943,9 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.html:92 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-            "internal/screen/inside.go:428 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
+            "internal/screen/inside.go:429 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
             "internal/screen/page.html:148 \"{{if .Unwired}}\"",
-            "internal/screen/inside.go:384 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
+            "internal/screen/inside.go:385 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
         {
@@ -21939,7 +21955,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\"",
-            "internal/screen/overview.go:558 \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
+            "internal/screen/overview.go:562 \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
             "internal/screen/screen.go:158 \"return \\\"#m-\\\" + string(id)\"",
             "internal/screen/page.html:141 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
@@ -25712,7 +25728,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:226 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -25721,7 +25737,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:292 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:296 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -26042,7 +26058,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:380 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:384 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {

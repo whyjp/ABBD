@@ -27,8 +27,8 @@ def line(pts, kind, title, joins=False, back=False, both=False):
     out.append(f'<path class="{cls}" d="{d}"><title>{title}</title></path>')
 
 
-def dot(x, y):
-    out.append(f'<circle class="junction" cx="{x}" cy="{y}" r="3"/>')
+def dot(x, y, kind="bypass"):
+    out.append(f'<circle class="junction {kind}" cx="{x}" cy="{y}" r="3"/>')
 
 
 def count(x, y, n):
@@ -85,25 +85,25 @@ dot(tr, rail)
 # Screen and identity read sync state back from the CLI: dashed, merged.
 line([(392, r2), (392, r1 + B)], "contract", "internal/identity → abbd CLI", back=True)
 line([(40, r2), (40, 250), (392, 250)], "contract", "internal/screen → abbd CLI", joins=True, back=True)
-dot(392, 250)
+dot(392, 250, "contract")
 
 # The CLI's own contracts go down one trunk in the gap after evidence.
 ct = 816
 line([(ct, r1 + B), (ct, r4)], "contract", "abbd CLI → internal/model")
 line([(ct, 410), (300, 410)], "contract", "abbd CLI → store, extract", joins=True)
-dot(ct, 410)
+dot(ct, 410, "contract")
 line([(560, 410), (560, r3)], "contract", "abbd CLI → internal/extract")
-dot(560, 410)
+dot(560, 410, "contract")
 # Store is reached by identity, the CLI and screen: one arrival.
 line([(300, r2 + B), (300, r3)], "contract", "internal/identity → internal/store")
-dot(300, 410)
+dot(300, 410, "contract")
 line([(170, r2 + B), (170, 578), (ct, 578)], "contract", "internal/screen → store, model", joins=True)
 line([(170, 422), (300, 422)], "contract", "internal/screen → internal/store", joins=True)
-dot(170, 422)
-dot(300, 422)
+dot(170, 422, "contract")
+dot(300, 422, "contract")
 count(306, 446, 3)
 line([(1116, r2 + B), (1116, 578), (ct, 578)], "contract", "internal/topology → internal/model", joins=True)
-dot(ct, 578)
+dot(ct, 578, "contract")
 
 # Bootstrap reads extract straight down; identity merges into the CLI's
 # trunk, which branches to extract on the way to the base.

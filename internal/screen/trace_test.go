@@ -92,10 +92,10 @@ func inkGraph(s sheet) ink {
 	seen := map[[2]inkKey]bool{}
 	for i, r := range raws {
 		cuts := []fpt{r.a, r.b}
-		// A dot where two lines cross says they join there.
-		for _, p := range s.junctions {
-			if segDist(p, r.a, r.b) < 1 {
-				cuts = append(cuts, p)
+		// A dot where two lines of its colour cross says they join there.
+		for _, j := range s.junctions {
+			if j.kind == r.colour && segDist(j.at, r.a, r.b) < 1 {
+				cuts = append(cuts, j.at)
 			}
 		}
 		for j, o := range raws {
@@ -148,9 +148,9 @@ const maxSpread = 1.5
 
 // Trace is what tracing every relation of one drawing measures.
 type Trace struct {
-	// Relations is how many drawn relations there are, Lost how many of them
-	// no path of ink carries, and Phantom how many pairs of places the ink
-	// joins that no relation joins.
+	// Relations is how many relations the view stands for, Lost how many
+	// of them no path of ink carries, and Phantom how many pairs of places
+	// the ink joins that no relation joins.
 	Relations, Lost, Phantom int
 	// Bends and Crossings are, per traced relation, how often its path turns
 	// and how many other lines it crosses on the way.
@@ -191,19 +191,20 @@ func (t Trace) String() string {
 }
 
 // shapeOf is the place a point on a drawing belongs to: the box it lies on,
-// or a chip on no box, by its id.
-func shapeOf(s sheet, p fpt) string {
-	for _, sh := range s.shapes {
-		if sh.kind == "box" && sh.r.grow(5).contains(p, 0) {
-			return sh.id
+// or a chip on no box, by its index in s.shapes, or -1 for none. A chip
+// with no id is no place.
+func shapeOf(s sheet, p fpt) int {
+	for _, kind := range []string{"box", "port"} {
+		for i, sh := range s.shapes {
+			if sh.kind == kind && sh.r.grow(5).contains(p, 0) {
+				if sh.id == "" {
+					return -1
+				}
+				return i
+			}
 		}
 	}
-	for _, sh := range s.shapes {
-		if sh.kind == "port" && sh.r.grow(5).contains(p, 0) {
-			return sh.id
-		}
-	}
-	return ""
+	return -1
 }
 
 // trace measures one drawing against the relations it should draw, each a
@@ -212,7 +213,7 @@ func trace(s sheet, rels [][2]string) Trace {
 	g := inkGraph(s)
 	var t Trace
 	// Where lines leave and reach each place.
-	starts, heads := map[string][]inkKey{}, map[string][]inkKey{}
+	starts, heads := map[int][]inkKey{}, map[int][]inkKey{}
 	for _, w := range s.strokes {
 		if len(w.pts) < 2 {
 			continue
@@ -220,20 +221,20 @@ func trace(s sheet, rels [][2]string) Trace {
 		c := colour(w.class)
 		first, last := w.pts[0], w.pts[len(w.pts)-1]
 		both := strings.Contains(" "+w.class+" ", " mutual ")
-		if id := shapeOf(s, first); id != "" {
+		if id := shapeOf(s, first); id >= 0 {
 			starts[id] = append(starts[id], keyOf(c, first))
 			if both {
 				heads[id] = append(heads[id], keyOf(c, first))
 			}
 		}
-		if id := shapeOf(s, last); id != "" && !strings.Contains(" "+w.class+" ", " joins ") {
+		if id := shapeOf(s, last); id >= 0 && !strings.Contains(" "+w.class+" ", " joins ") {
 			heads[id] = append(heads[id], keyOf(c, last))
 			if both {
 				starts[id] = append(starts[id], keyOf(c, last))
 			}
 		}
 	}
-	headAt := map[inkKey]string{}
+	headAt := map[inkKey]int{}
 	for id, ks := range heads {
 		for _, k := range ks {
 			headAt[k] = id
@@ -254,7 +255,7 @@ func trace(s sheet, rels [][2]string) Trace {
 		bends int
 		path  []int
 	}
-	reach := func(from string) map[string]best {
+	reach := func(from int) map[int]best {
 		dist := map[state]int{}
 		prev := map[state]struct {
 			s   state
@@ -266,7 +267,7 @@ func trace(s sheet, rels [][2]string) Trace {
 			dist[st] = 0
 			queue = append(queue, st)
 		}
-		found := map[string]best{}
+		found := map[int]best{}
 		// Bends cost 1 and straight steps 0: a 0-1 search.
 		for len(queue) > 0 {
 			bi := 0
@@ -306,7 +307,7 @@ func trace(s sheet, rels [][2]string) Trace {
 					nd++
 				}
 				// A line does not run on through a place it reaches.
-				if id := shapeOf(s, g.pos[cur.k]); id != "" && id != from && cur.dir != (fpt{}) {
+				if id := shapeOf(s, g.pos[cur.k]); id >= 0 && id != from && cur.dir != (fpt{}) {
 					continue
 				}
 				ns := state{nk, dir}
@@ -322,59 +323,49 @@ func trace(s sheet, rels [][2]string) Trace {
 		}
 		return found
 	}
-	shapes := map[string]bool{}
-	for _, sh := range s.shapes {
-		shapes[sh.id] = true
-	}
-	var froms []string
+	var froms []int
 	for id := range starts {
 		froms = append(froms, id)
 	}
-	sort.Strings(froms)
+	sort.Ints(froms)
 	traced := map[[2]string]bool{}
 	for _, f := range froms {
 		for to, b := range reach(f) {
-			pair := [2]string{f, to}
-			if !want[pair] {
+			// A chip that stands for several ports joins each of them, so
+			// ink between two places traces every relation between them.
+			joined := false
+			for _, fi := range strings.Fields(s.shapes[f].id) {
+				for _, ti := range strings.Fields(s.shapes[to].id) {
+					if pair := [2]string{fi, ti}; want[pair] {
+						traced[pair], joined = true, true
+					}
+				}
+			}
+			if !joined {
 				t.Phantom++
 				continue
 			}
-			traced[pair] = true
 			t.Bends = append(t.Bends, b.bends)
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
+	// A relation with an end the drawing has no shape for is lost too.
+	t.Relations = len(want)
 	for r := range want {
-		if !shapes[r[0]] || !shapes[r[1]] {
-			continue
-		}
-		t.Relations++
 		if !traced[r] {
 			t.Lost++
 		}
 	}
 	// A point where ink of one colour goes three or more ways is a split or
 	// a merge, and needs its dot.
-	var marked []fpt
 	for k, arms := range g.arms {
 		if len(arms) < 3 {
 			continue
 		}
 		p := g.pos[k]
-		if shapeOf(s, p) != "" {
-			continue
-		}
-		dup := false
-		for _, q := range marked {
-			dup = dup || dist(p, q) < 4
-		}
-		if dup {
-			continue
-		}
-		marked = append(marked, p)
 		dot := false
 		for _, j := range s.junctions {
-			dot = dot || dist(p, j) < 3
+			dot = dot || j.kind == k.colour && dist(p, j.at) < 3
 		}
 		if !dot {
 			t.UnmarkedT++
@@ -528,21 +519,6 @@ func rectSegDist(r frect, a, b fpt) float64 {
 	return best
 }
 
-// relations are the pairs of places a drawing's lines stand for: a line
-// between two modules that use each other stands for both directions.
-func relations(d Drawing) [][2]string {
-	var out [][2]string
-	for _, w := range d.Wires {
-		for _, e := range w.Ends {
-			out = append(out, e)
-			if w.Kind == "mutual" {
-				out = append(out, [2]string{e[1], e[0]})
-			}
-		}
-	}
-	return out
-}
-
 func traced(t *testing.T, d Drawing) Trace {
 	t.Helper()
 	var b bytes.Buffer
@@ -553,7 +529,7 @@ func traced(t *testing.T, d Drawing) Trace {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return trace(s, relations(d))
+	return trace(s, d.Relations)
 }
 
 // Every relation a drawing stands for can be traced along its ink. With
@@ -600,7 +576,7 @@ func TestReferenceRanksFirst(t *testing.T) {
 		t.Fatal(err)
 	}
 	m := fixture(t, "self")
-	ref, got := trace(s, relations(m.Overview)), traced(t, m.Overview)
+	ref, got := trace(s, m.Overview.Relations), traced(t, m.Overview)
 	t.Logf("reference: %s", ref)
 	t.Logf("renderer:  %s", got)
 	if ref.Lost > 0 || ref.Relations != got.Relations {
@@ -639,5 +615,121 @@ func TestTraceStore(t *testing.T) {
 	}
 	for _, v := range views(Build(Input{Units: units})) {
 		t.Logf("%s: %s", v.name, traced(t, v.d))
+	}
+}
+
+// sketch reads a hand-written drawing: boxes as "id x y w h", then the
+// rest of the SVG body.
+func sketch(t *testing.T, boxes []string, body string) sheet {
+	t.Helper()
+	var b strings.Builder
+	b.WriteString(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">`)
+	for _, bx := range boxes {
+		var id string
+		var x, y, w, h int
+		fmt.Sscan(bx, &id, &x, &y, &w, &h)
+		fmt.Fprintf(&b, `<g class="box design" data-id="%s"><rect x="%d" y="%d" width="%d" height="%d"/></g>`, id, x, y, w, h)
+	}
+	b.WriteString(body + `</svg>`)
+	s, err := readSVG(b.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
+}
+
+// A relation whose end the drawing has no shape for is lost, not left
+// uncounted.
+func TestRelationWithoutItsShapeIsLost(t *testing.T) {
+	s := sketch(t, []string{"A 0 0 40 20"}, ``)
+	got := trace(s, [][2]string{{"A", "port|gone"}})
+	if got.Relations != 1 || got.Lost != 1 {
+		t.Fatalf("relations %d, lost %d; want 1 and 1", got.Relations, got.Lost)
+	}
+}
+
+// One chip that stands for several frame ports carries each port's key, so
+// a line to it traces as the relation it draws.
+func TestSharedChipTracesEachKey(t *testing.T) {
+	s := sketch(t, []string{"A 0 0 40 20", "B 100 0 40 20"},
+		`<g class="port other entry" data-id="port|x port|y"><rect x="40" y="150" width="40" height="17"/></g>`+
+			`<path class="w bypass" d="M20 20 V160 H40"/><path class="w bypass" d="M120 20 V160 H80"/>`)
+	got := trace(s, [][2]string{{"A", "port|x"}, {"B", "port|y"}})
+	if got.Relations != 2 || got.Lost != 0 || got.Phantom != 0 {
+		t.Fatalf("%s; want 2 relations, none lost or phantom", got)
+	}
+}
+
+// Two lines of one colour that cross where a dot of another colour sits do
+// not join: the dot marks a split of its own colour's ink only.
+func TestDotJoinsOnlyItsOwnColour(t *testing.T) {
+	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20", "R 180 90 20 20"},
+		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass" d="M20 100 H180"/>`+
+			`<circle class="junction contract" cx="50" cy="100" r="3"/>`)
+	got := trace(s, [][2]string{{"T", "B"}, {"L", "R"}})
+	if got.Phantom != 0 || got.Lost != 0 {
+		t.Fatalf("%s; want no phantom pair through the other colour's dot", got)
+	}
+}
+
+// A split marked only by a dot of another colour is unmarked.
+func TestSplitNeedsADotOfItsColour(t *testing.T) {
+	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20"},
+		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass joins" d="M20 100 H50"/>`+
+			`<circle class="junction contract" cx="50" cy="100" r="3"/>`)
+	if got := trace(s, nil); got.UnmarkedT != 1 {
+		t.Fatalf("unmarked T %d; want 1", got.UnmarkedT)
+	}
+}
+
+// Two undotted splits a few pixels apart are two, not one.
+func TestCloseSplitsCountApart(t *testing.T) {
+	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20", "R 180 90 20 20"},
+		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass joins" d="M20 100 H50"/>`+
+			`<path class="w bypass joins" d="M180 103 H50"/>`)
+	if got := trace(s, nil); got.UnmarkedT != 2 {
+		t.Fatalf("unmarked T %d; want 2", got.UnmarkedT)
+	}
+}
+
+// The checker expects the relations a view stands for, whatever the
+// routing drew.
+func TestExpectedRelationsDoNotComeFromTheWires(t *testing.T) {
+	d := Drawing{Width: 200, Height: 200, Relations: [][2]string{{"A", "B"}},
+		Boxes: []Box{{ID: "A", W: 40, H: 20}, {ID: "B", X: 100, W: 40, H: 20}}}
+	if got := traced(t, d); got.Relations != 1 || got.Lost != 1 {
+		t.Fatalf("%s; want the one undrawn relation lost", got)
+	}
+}
+
+// Every place a view's relations join is a shape on its drawing, a frame
+// port that shares its chip with others included.
+func TestEveryRelationEndIsDrawn(t *testing.T) {
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			var b bytes.Buffer
+			if err := page.ExecuteTemplate(&b, "drawing", v.d); err != nil {
+				t.Fatal(err)
+			}
+			s, err := readSVG(b.String())
+			if err != nil {
+				t.Fatal(err)
+			}
+			drawn := map[string]bool{}
+			for _, sh := range s.shapes {
+				for _, id := range strings.Fields(sh.id) {
+					drawn[id] = true
+				}
+			}
+			missing := 0
+			for _, r := range v.d.Relations {
+				if !drawn[r[0]] || !drawn[r[1]] {
+					missing++
+				}
+			}
+			if missing > 0 {
+				t.Errorf("%s %s: %d relations end on no shape", name, v.name, missing)
+			}
+		}
 	}
 }

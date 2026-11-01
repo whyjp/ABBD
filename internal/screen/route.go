@@ -46,11 +46,9 @@ type drawn struct {
 	// or left within a row. A line that provides a contract reads from the
 	// contract to its unit, so it runs the other way.
 	back bool
-	// ends name what each request's line joins: a box, or a frame port.
-	ends [][2]string
-	// joins are where a line steps off its departure track onto an
+	// joinsAt are where a line steps off its departure track onto an
 	// arrival trunk.
-	joinsAt []pt
+	joinsAt []join
 	kind    string
 	// own is the stretch of ink the count stands beside.
 	own [2]pt
@@ -754,7 +752,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	}
 	for i := range reqs {
 		if p := &plans[i]; p.dep >= 0 && p.arr >= 0 && p.ride < len(p.gaps)-1 && len(out) > 0 {
-			out[0].joinsAt = append(out[0].joinsAt, pt{p.xs[p.ride+1], trackY(p.gaps[p.ride], busOwner(p.dep))})
+			at := pt{p.xs[p.ride+1], trackY(p.gaps[p.ride], busOwner(p.dep))}
+			out[0].joinsAt = append(out[0].joinsAt, join{at, hue(reqs[i].kind)})
 		}
 	}
 	var boxes []box
@@ -765,15 +764,24 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
 	anchor(out, pieces(out), boxes)
-	endID := func(e end) string {
+	return out
+}
+
+// wanted are the pairs of places the requests join: a box, or a frame
+// port. A line between two modules that use each other stands for both
+// directions.
+func wanted(reqs []wireReq) [][2]string {
+	id := func(e end) string {
 		if e.node != "" {
 			return e.node
 		}
 		return e.key
 	}
-	for k := range out {
-		for _, i := range out[k].reqs {
-			out[k].ends = append(out[k].ends, [2]string{endID(reqs[i].from), endID(reqs[i].to)})
+	var out [][2]string
+	for _, r := range reqs {
+		out = append(out, [2]string{id(r.from), id(r.to)})
+		if r.kind == "mutual" {
+			out = append(out, [2]string{id(r.to), id(r.from)})
 		}
 	}
 	return out

@@ -183,3 +183,15 @@ func TestEveryLinkOpensAView(t *testing.T) {
 		t.Errorf("a feature links to its view only when it holds parts: %+v", m.Overview.Boxes)
 	}
 }
+
+// Where a line of one kind joins its trunk, lines of another kind that only
+// cross there get no dot.
+func TestAJoinMarksOnlyItsOwnKind(t *testing.T) {
+	ps := []piece{{pt{0, 10}, pt{20, 10}, "bypass"}, {pt{10, 0}, pt{10, 20}, "bypass"}}
+	if got := junctions(ps, []join{{pt{10, 10}, "contract"}}); len(got) != 0 {
+		t.Fatalf("two crossing bypass lines got dots %v from a contract join", got)
+	}
+	if got := junctions(ps, []join{{pt{10, 10}, "bypass"}}); len(got) != 1 {
+		t.Fatalf("a bypass join on crossing bypass lines got dots %v; want one", got)
+	}
+}

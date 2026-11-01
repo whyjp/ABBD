@@ -65,31 +65,31 @@ text.count { font-size: 11px; font-weight: 700; fill: #a29e93; }
 <g class="box design" data-id="MOD-0030"><title>MOD-0030 internal/model</title><rect x="740" y="590" width="160" height="56" rx="6"/><text class="name" x="820" y="623" text-anchor="middle">internal/model</text></g>
 <g class="port design exit"><title>relation key</title><rect x="748" y="593" width="80" height="15" rx="3"/><text class="chip" x="752" y="604">relation key</text></g>
 <g class="box loose design" data-id="CFG-0001"><title>CFG-0001 plugin manifest</title><rect x="1040" y="590" width="150" height="40" rx="6"/><text class="name" x="1115" y="615" text-anchor="middle">plugin manifest</text></g>
-<circle class="junction" cx="300" cy="130" r="3"/>
-<circle class="junction" cx="116" cy="268" r="3"/>
-<circle class="junction" cx="316" cy="268" r="3"/>
-<circle class="junction" cx="516" cy="268" r="3"/>
-<circle class="junction" cx="916" cy="268" r="3"/>
-<circle class="junction" cx="1116" cy="268" r="3"/>
-<circle class="junction" cx="716" cy="268" r="3"/>
+<circle class="junction bypass" cx="300" cy="130" r="3"/>
+<circle class="junction bypass" cx="116" cy="268" r="3"/>
+<circle class="junction bypass" cx="316" cy="268" r="3"/>
+<circle class="junction bypass" cx="516" cy="268" r="3"/>
+<circle class="junction bypass" cx="916" cy="268" r="3"/>
+<circle class="junction bypass" cx="1116" cy="268" r="3"/>
+<circle class="junction bypass" cx="716" cy="268" r="3"/>
 <text class="count" x="722" y="246">×7</text>
-<circle class="junction" cx="416" cy="268" r="3"/>
-<circle class="junction" cx="392" cy="250" r="3"/>
-<circle class="junction" cx="816" cy="410" r="3"/>
-<circle class="junction" cx="560" cy="410" r="3"/>
-<circle class="junction" cx="300" cy="410" r="3"/>
-<circle class="junction" cx="170" cy="422" r="3"/>
-<circle class="junction" cx="300" cy="422" r="3"/>
+<circle class="junction bypass" cx="416" cy="268" r="3"/>
+<circle class="junction contract" cx="392" cy="250" r="3"/>
+<circle class="junction contract" cx="816" cy="410" r="3"/>
+<circle class="junction contract" cx="560" cy="410" r="3"/>
+<circle class="junction contract" cx="300" cy="410" r="3"/>
+<circle class="junction contract" cx="170" cy="422" r="3"/>
+<circle class="junction contract" cx="300" cy="422" r="3"/>
 <text class="count" x="306" y="446">×3</text>
-<circle class="junction" cx="816" cy="578" r="3"/>
-<circle class="junction" cx="416" cy="380" r="3"/>
-<circle class="junction" cx="416" cy="425" r="3"/>
-<circle class="junction" cx="330" cy="530" r="3"/>
-<circle class="junction" cx="416" cy="530" r="3"/>
-<circle class="junction" cx="460" cy="530" r="3"/>
-<circle class="junction" cx="520" cy="530" r="3"/>
-<circle class="junction" cx="716" cy="530" r="3"/>
+<circle class="junction contract" cx="816" cy="578" r="3"/>
+<circle class="junction bypass" cx="416" cy="380" r="3"/>
+<circle class="junction bypass" cx="416" cy="425" r="3"/>
+<circle class="junction bypass" cx="330" cy="530" r="3"/>
+<circle class="junction bypass" cx="416" cy="530" r="3"/>
+<circle class="junction bypass" cx="460" cy="530" r="3"/>
+<circle class="junction bypass" cx="520" cy="530" r="3"/>
+<circle class="junction bypass" cx="716" cy="530" r="3"/>
 <text class="count" x="466" y="552">×6</text>
 <text class="count" x="786" y="550">×8</text>
-<circle class="junction" cx="780" cy="566" r="3"/>
+<circle class="junction bypass" cx="780" cy="566" r="3"/>
 </svg>

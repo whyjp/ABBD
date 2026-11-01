@@ -90,8 +90,14 @@ type sheet struct {
 	strokes       []stroke
 	groups        int
 	markers       []fpt
-	junctions     []fpt
+	junctions     []junction
 	counts        []countLabel
+}
+
+// junction is a dot that marks a split or merge of one kind's ink.
+type junction struct {
+	at   fpt
+	kind string
 }
 
 // countLabel is a ×N drawn beside a bundle.
@@ -191,7 +197,13 @@ func readSVG(src string) (sheet, error) {
 				case hasClass(t, "origin"):
 					s.markers = append(s.markers, fpt{num(attr(t, "cx")), num(attr(t, "cy"))})
 				case hasClass(t, "junction"):
-					s.junctions = append(s.junctions, fpt{num(attr(t, "cx")), num(attr(t, "cy"))})
+					j := junction{at: fpt{num(attr(t, "cx")), num(attr(t, "cy"))}}
+					for _, c := range strings.Fields(attr(t, "class")) {
+						if c != "junction" {
+							j.kind = c
+						}
+					}
+					s.junctions = append(s.junctions, j)
 				}
 			case "title":
 				if group != nil {

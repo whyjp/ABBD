@@ -23,7 +23,7 @@ MOD-0095 cloud/: relations 12, lost 0, phantom 1, bends median 4.0 max 4, path c
 MOD-0096 mobile/: relations 11, lost 0, phantom 0, bends median 4.0 max 6, path crossings median 1.0 max 4, unmarked T 0, count ambiguity 0, size spread 1.4, beside 12%
 MOD-0097 native/: relations 13, lost 0, phantom 0, bends median 4.0 max 8, path crossings median 1.0 max 3, unmarked T 0, count ambiguity 0, size spread 1.4, beside 6%
 MOD-0098 src/: relations 23, lost 0, phantom 0, bends median 4.0 max 8, path crossings median 3.0 max 10, unmarked T 0, count ambiguity 1, size spread 1.0, beside 8%
-MOD-0098~1 서로 쓰는 5개: relations 26, lost 0, phantom 5, bends median 2.0 max 6, path crossings median 3.0 max 10, unmarked T 0, count ambiguity 3, size spread 1.0, beside 8%
+MOD-0098~1 서로 쓰는 5개: relations 33, lost 0, phantom 2, bends median 2.0 max 6, path crossings median 3.0 max 10, unmarked T 0, count ambiguity 3, size spread 1.0, beside 8%
 MOD-0099 src/: relations 7, lost 0, phantom 0, bends median 2.0 max 2, path crossings median 1.0 max 3, unmarked T 0, count ambiguity 0, size spread 1.2, beside 1%
 MOD-0100 src/shared/: relations 15, lost 0, phantom 0, bends median 6.0 max 10, path crossings median 3.0 max 6, unmarked T 0, count ambiguity 0, size spread 1.2, beside 22%
 MOD-0100~1 서로 쓰는 9개: relations 25, lost 0, phantom 1, bends median 4.0 max 10, path crossings median 2.0 max 8, unmarked T 0, count ambiguity 0, size spread 1.4, beside 12%

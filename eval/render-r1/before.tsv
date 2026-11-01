@@ -34,14 +34,14 @@ orca	MOD-0010 orca-notification-dismissal	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
 orca	MOD-0013 @orca/expo-two-way-audio	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
 orca	MOD-0027 computer-use-macos	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
 orca	MOD-0038 orca CLI	3	0	0	4.0	4	0.0	0	0	0	1.00	0.270
-orca	MOD-0042 desktop main process	78	0	114	5.0	12	8.5	29	91	24	1.36	0.129
+orca	MOD-0042 desktop main process	78	0	114	5.0	12	8.5	29	92	24	1.36	0.129
 orca	MOD-0043 desktop-main/agent-hooks	2	0	0	2.0	2	0.0	0	1	0	1.00	0.000
 orca	MOD-0048 desktop-main/computer	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
 orca	MOD-0052 desktop-main/ipc	4	0	1	2.0	2	0.5	1	3	2	1.00	0.000
 orca	MOD-0056 Orca runtime (RPC host)	49	0	48	4.0	16	4.0	22	58	18	1.00	0.172
 orca	MOD-0063 desktop-runtime/rpc	2	0	0	4.0	4	0.0	0	0	0	1.00	0.000
 orca	MOD-0064 desktop-runtime/runtime-rpc	2	0	0	2.0	2	0.0	0	1	0	1.00	0.000
-orca	MOD-0072 desktop renderer UI	43	0	14	4.0	10	4.0	20	47	11	1.00	0.115
+orca	MOD-0072 desktop renderer UI	43	0	14	4.0	10	4.0	20	49	11	1.00	0.115
 orca	MOD-0080 renderer/web	3	0	0	4.0	4	0.0	0	0	0	1.00	0.123
 orca	MOD-0081 shared types and schemas	7	0	1	2.0	2	0.0	1	4	0	1.15	0.018
 orca	MOD-0090 shared/rpc-contract	3	0	0	2.0	2	0.0	0	1	0	1.00	0.000
@@ -50,25 +50,25 @@ orca	MOD-0095 cloud/	12	0	1	4.0	4	0.0	5	7	4	1.15	0.203
 orca	MOD-0096 mobile/	11	0	0	4.0	6	2.0	4	9	1	1.36	0.128
 orca	MOD-0097 native/	13	0	0	4.0	8	1.0	3	11	1	1.36	0.062
 orca	MOD-0098 src/	23	0	0	4.0	8	3.0	10	23	4	1.00	0.086
-orca	MOD-0098~1 서로 쓰는 5개	26	0	10	3.0	6	3.0	9	26	7	1.00	0.079
+orca	MOD-0098~1 서로 쓰는 5개	33	0	7	2.0	6	3.0	9	26	7	1.00	0.079
 orca	MOD-0099 src/	7	0	0	2.0	2	0.0	1	5	0	1.15	0.018
 orca	MOD-0100 src/shared/	15	0	1	6.0	10	3.0	6	8	2	1.15	0.229
-orca	MOD-0100~1 서로 쓰는 9개	25	0	33	4.0	10	2.0	11	26	8	1.36	0.129
+orca	MOD-0100~1 서로 쓰는 9개	25	0	33	4.0	10	2.0	11	27	8	1.36	0.129
 pstack	overview	61	0	57	6.0	14	5.0	17	41	7	1.27	0.197
-pstack	MOD-0001 setup and help	22	0	19	6.0	6	1.0	5	46	11	1.36	0.065
-pstack	MOD-0002 parallel fan-out and multi-model review	18	0	16	3.0	4	1.0	3	18	8	1.00	0.062
-pstack	MOD-0003 principles	30	0	19	4.0	6	3.0	8	36	9	1.36	0.084
-pstack	MOD-0004 poteto-mode, the front door	15	0	6	2.0	2	0.0	2	14	1	1.15	0.005
+pstack	MOD-0001 setup and help	35	0	19	6.0	6	1.0	5	46	11	1.36	0.065
+pstack	MOD-0002 parallel fan-out and multi-model review	18	0	16	3.0	4	1.0	3	19	8	1.00	0.062
+pstack	MOD-0003 principles	36	0	15	4.0	6	3.0	8	36	9	1.36	0.084
+pstack	MOD-0004 poteto-mode, the front door	19	0	6	2.0	2	0.0	2	14	1	1.15	0.005
 pstack	MOD-0005 writing and prose	10	0	4	4.0	4	2.0	3	10	2	1.00	0.034
-pstack	MOD-0006 restate and catch up	10	0	4	2.0	6	1.0	3	9	4	1.00	0.091
+pstack	MOD-0006 restate and catch up	10	0	4	2.0	6	1.0	3	10	4	1.00	0.091
 pstack	MOD-0007 understand code	28	0	17	4.0	6	1.0	5	34	6	1.00	0.097
 pstack	MOD-0008 design	8	0	0	2.0	2	0.0	0	6	1	1.00	0.000
 pstack	MOD-0009 build and clean the diff	13	0	8	2.0	2	0.0	2	10	3	1.36	0.022
 pstack	MOD-0010 verification	27	0	37	4.0	6	2.0	6	28	8	1.00	0.109
 pstack	MOD-0011 unattended runs	16	0	3	3.0	4	0.0	2	16	3	1.36	0.036
 pstack	MOD-0012 make it yours	15	0	6	2.0	4	1.0	3	13	6	1.36	0.115
-pstack	MOD-0013 core principles	24	0	19	4.0	6	2.0	11	32	11	1.00	0.120
+pstack	MOD-0013 core principles	34	0	16	4.0	6	2.0	11	32	11	1.00	0.120
 pstack	MOD-0014 architecture principles	17	0	8	4.0	6	1.0	5	18	4	1.00	0.110
 pstack	MOD-0015 verification principles	22	0	22	2.0	4	0.0	2	19	6	1.00	0.048
-pstack	MOD-0016 delegation principles	5	0	3	2.0	2	0.0	0	3	2	1.00	0.000
+pstack	MOD-0016 delegation principles	5	0	3	2.0	2	0.0	0	4	2	1.00	0.000
 pstack	MOD-0017 meta principles	6	0	0	2.0	2	0.0	0	5	1	1.00	0.000

@@ -19,6 +19,11 @@ type Drawing struct {
 	Dots []Dot `json:",omitempty"`
 	// Frame is the module's own boundary on its inside drawing.
 	Frame *rect `json:",omitempty"`
+	// Relations are the pairs of places the view's lines stand for, as it
+	// requested them before routing. The checker holds the ink to them, so
+	// a relation the routing drops is lost; one the view never requests is
+	// not caught there.
+	Relations [][2]string `json:"-"`
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -53,8 +58,9 @@ type Port struct {
 	Href string `json:",omitempty"`
 	// Rels are the stored relations the chip stands for.
 	Rels []string `json:",omitempty"`
-	// Key names a frame port as the lines that join it do.
-	Key string `json:"-"`
+	// Keys name a frame port as the lines that join it do: one chip that
+	// stands for several ports carries every one's key.
+	Keys []string `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
@@ -78,8 +84,6 @@ type Wire struct {
 	Marks  []Mark   `json:",omitempty"`
 	// Rels are the stored relations the line stands for.
 	Rels []string `json:",omitempty"`
-	// Ends name what each line it draws joins, for the checker.
-	Ends [][2]string `json:"-"`
 	// Count is how many lines a bundle carries, drawn at LX, LY. Net groups
 	// the paths of one bundle drawn as several paths.
 	Count  int `json:",omitempty"`
@@ -645,7 +649,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := l.route(reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, 320), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths))}
+	d := Drawing{Width: max(l.width, 320), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs)}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -735,7 +739,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
-		w.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends
+		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		d.Wires = append(d.Wires, w)
 	}
 	return d

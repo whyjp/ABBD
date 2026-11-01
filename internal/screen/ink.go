@@ -17,6 +17,12 @@ type Dot struct {
 	Kind string
 }
 
+// join is where a line of one kind crosses onto a trunk of its kind.
+type join struct {
+	at   pt
+	kind string
+}
+
 type piece struct {
 	a, b pt
 	kind string
@@ -64,7 +70,7 @@ func sign(v int) int {
 // junctions are the points where ink of one colour leaves in three or more
 // directions, and the points where a line crosses onto a trunk that runs on
 // past it: there two pieces cross, and only the dot says they join.
-func junctions(ps []piece, joins []pt) []Dot {
+func junctions(ps []piece, joins []join) []Dot {
 	arms := map[string]map[pt]bool{}
 	where := map[string]Dot{}
 	arm := func(k string, p, to pt) {
@@ -76,8 +82,8 @@ func junctions(ps []piece, joins []pt) []Dot {
 		arms[key][pt{sign(to.x - p.x), sign(to.y - p.y)}] = true
 	}
 	for _, s := range ps {
-		for _, p := range joins {
-			if p != s.a && p != s.b && on(p, s.a, s.b) {
+		for _, j := range joins {
+			if p := j.at; j.kind == s.kind && p != s.a && p != s.b && on(p, s.a, s.b) {
 				arm(s.kind, p, s.a)
 				arm(s.kind, p, s.b)
 			}
@@ -175,8 +181,8 @@ func mine(p piece, a, b pt) bool {
 	return on(p.a, a, b) && on(p.b, a, b) || on(a, p.a, p.b) && on(b, p.a, p.b)
 }
 
-func joinPoints(out []drawn) []pt {
-	var ps []pt
+func joinPoints(out []drawn) []join {
+	var ps []join
 	for _, d := range out {
 		ps = append(ps, d.joinsAt...)
 	}

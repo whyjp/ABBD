@@ -2,12 +2,13 @@
 
     python eval/render-r1/measure.py REV OUT.tsv
 
-checks REV out into a temporary worktree, gives its drawings the ids the
-checker reads (data-id on boxes and frame ports, and each wire's ends) when
-it lacks them, copies this branch's checker in, and writes the table of every
-fixture view to OUT.tsv. With ABBD_TRACE_STORE set to a repository's root,
-the measures of that repository's views go to OUT.tsv.store.txt. With REV set to the working tree (".") it measures
-the working tree as it is.
+checks REV out into a temporary worktree, gives its drawings the ids and
+relations the checker reads (data-id on boxes and frame ports, and each
+view's requested relations) when it lacks them, copies this branch's checker in, and
+writes the table of every fixture view to OUT.tsv. With ABBD_TRACE_STORE set
+to a repository's root, the measures of that repository's views go to
+OUT.tsv.store.txt. With REV set to the working tree (".") it measures the
+working tree as it is.
 """
 import os
 import shutil
@@ -32,30 +33,46 @@ def edit(root, path, pairs):
 
 
 def plumb(root):
-    """Give an older renderer the ids the checker reads; geometry is untouched."""
+    """Give an older renderer the ids and relations the checker reads; geometry is untouched."""
     edit(root, "internal/screen/page.html", [
         ('<g class="box {{.Class}}">', '<g class="box {{.Class}}" data-id="{{.ID}}">'),
         ('<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}">',
-         '<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{if .Key}} data-id="{{.Key}}"{{end}}>'),
+         '<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}>'),
     ])
     edit(root, "internal/screen/overview.go", [
-        ("\t// Rels are the stored relations the line stands for.\n\tRels []string `json:\",omitempty\"`\n",
-         "\t// Rels are the stored relations the line stands for.\n\tRels []string `json:\",omitempty\"`\n\tEnds [][2]string `json:\"-\"`\n"),
+        ("\tFrame *rect `json:\",omitempty\"`\n}", "\tFrame *rect `json:\",omitempty\"`\n\tRelations [][2]string `json:\"-\"`\n}"),
         ("\t// Rels are the stored relations the chip stands for.\n\tRels []string `json:\",omitempty\"`\n}",
-         "\t// Rels are the stored relations the chip stands for.\n\tRels []string `json:\",omitempty\"`\n\tKey string `json:\"-\"`\n}"),
-        ("\t\tw.Net, w.Joins, w.Back = p.net, p.joins, p.back\n",
-         "\t\tw.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends\n"),
+         "\t// Rels are the stored relations the chip stands for.\n\tRels []string `json:\",omitempty\"`\n\tKeys []string `json:\"-\"`\n}"),
+        ("\td := Drawing{", "\td := Drawing{Relations: wanted(reqs), "),
     ])
     edit(root, "internal/screen/inside.go", [
-        ("w.Net, w.Joins, w.Back = p.net, p.joins, p.back", "w.Net, w.Joins, w.Back, w.Ends = p.net, p.joins, p.back, p.ends"),
         ("pt.Contract, pt.Exit, pt.Class, pt.Title = string(p.id), p.exit, p.cls, p.title\n",
-         "pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Key = string(p.id), p.exit, p.cls, p.title, \"port|\"+k\n"),
+         "pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Keys = string(p.id), p.exit, p.cls, p.title, []string{\"port|\" + k}\n"),
+        ("\t\t\tq.Contract, q.Href = \"\", \"\"\n", "\t\t\tq.Contract, q.Href = \"\", \"\"\n\t\t\tq.Keys = append(q.Keys, pt.Keys...)\n"),
+        ("\td := Drawing{", "\td := Drawing{Relations: wanted(reqs), "),
     ])
-    edit(root, "internal/screen/route.go", [
-        ("\tback bool\n}", "\tback bool\n\tends [][2]string\n}"),
-        ("\t\ttaken = append(taken, out[k].label)\n\t}\n\treturn out\n}",
-         "\t\ttaken = append(taken, out[k].label)\n\t}\n\tfor k := range out {\n\t\tfor _, i := range out[k].reqs {\n\t\t\tf, t := reqs[i].from, reqs[i].to\n\t\t\ta, b := f.node, t.node\n\t\t\tif a == \"\" {\n\t\t\t\ta = f.key\n\t\t\t}\n\t\t\tif b == \"\" {\n\t\t\t\tb = t.key\n\t\t\t}\n\t\t\tout[k].ends = append(out[k].ends, [2]string{a, b})\n\t\t}\n\t}\n\treturn out\n}"),
-    ])
+    with open(os.path.join(root, "internal/screen/route.go"), "a", encoding="utf8", newline="\n") as f:
+        f.write(WANTED)
+
+
+WANTED = """
+func wanted(reqs []wireReq) [][2]string {
+	id := func(e end) string {
+		if e.node != "" {
+			return e.node
+		}
+		return e.key
+	}
+	var out [][2]string
+	for _, r := range reqs {
+		out = append(out, [2]string{id(r.from), id(r.to)})
+		if r.kind == "mutual" {
+			out = append(out, [2]string{id(r.to), id(r.from)})
+		}
+	}
+	return out
+}
+"""
 
 
 def run(root):
