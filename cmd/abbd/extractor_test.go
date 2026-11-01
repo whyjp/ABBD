@@ -65,34 +65,38 @@ func editFile(t *testing.T, path, old, new string) {
 	write(t, path, strings.Replace(string(b), old, new, 1))
 }
 
-// A new command changes no existing contract, but a design module now
-// provides a new contract, and that is a grade C question.
-func TestANewCommandIsAGradeCQuestion(t *testing.T) {
+// A new command changes no existing contract: it is one new contract the
+// CLI provides, so the repository's own diff shows exactly that.
+func TestANewCommandIsOneNewContract(t *testing.T) {
 	dir := repoCopy(t)
-	before, r1 := runExtractor(t, dir)
-	editFile(t, filepath.Join(dir, "cmd", "abbd", "main.go"), "\t\"turn show\":",
-		"\t\"turn ok\":     {flags: []string{\"root\", \"session\"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnOk() }},\n\t\"turn show\":")
-	write(t, filepath.Join(dir, "cmd", "abbd", "turnok.go"), "package main\n\nfunc (e env) turnOk() error { return e.turnShow() }\n")
-	after, r2 := runExtractor(t, dir)
+	_, r1 := runExtractor(t, dir)
+	editFile(t, filepath.Join(dir, "cmd", "abbd", "main.go"), "\t\"status\":",
+		"\t\"ok\": {flags: []string{\"root\"}, pos: []int{0}, run: func(e env, _ []string) error { return e.ok() }},\n\t\"status\":")
+	write(t, filepath.Join(dir, "cmd", "abbd", "ok.go"), "package main\n\nfunc (e env) ok() error { return e.status() }\n")
+	_, r2 := runExtractor(t, dir)
 	old := map[string]xunit{}
 	for _, u := range r1.Units {
 		old[u.Key] = u
 	}
+	var added []string
 	for _, u := range r2.Units {
-		if o, ok := old[u.Key]; ok && (o.Signature != u.Signature || o.Digest != u.Digest) {
+		o, ok := old[u.Key]
+		switch {
+		case !ok:
+			added = append(added, u.Key)
+		case o.Signature != u.Signature || o.Digest != u.Digest:
 			t.Fatalf("%s changed: %+v -> %+v", u.Key, o, u)
 		}
 	}
-	// Gate it end to end: everything aligned, a turn adds the command.
-	p := activeTurnProject(t, before)
-	p.start("MOD-0001")
-	p.editCode("cmd/abbd/main.go")
-	p.extract(after)
-	p.verify("pass", 0, "PASSED")
-	code, out := p.cmd("", "turn", "end", "--session", "s1")
-	t.Logf("turn end exit %d:\n%s", code, out)
-	if code != 2 || strings.Count(out, "C BLOCKED new-relation:MOD-0001.provides.IF-") != 1 {
-		t.Errorf("adding `abbd turn ok` must ask a human:\n%s", out)
+	if len(added) != 1 || added[0] != "if-cli-ok" {
+		t.Fatalf("want one new contract if-cli-ok, got %v", added)
+	}
+	provided := false
+	for _, r := range r2.Relations {
+		provided = provided || r == (xrel{"mod-cmd-abbd", "if-cli-ok", "provides"})
+	}
+	if !provided {
+		t.Fatalf("the CLI should provide the new command")
 	}
 }
 
@@ -101,7 +105,7 @@ func TestANewCommandIsAGradeCQuestion(t *testing.T) {
 func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
 	dir := repoCopy(t)
 	write(t, filepath.Join(dir, "plugins", "abbd", "skills", "zz", "SKILL.md"),
-		"---\nname: zz\n---\n\n```bash\nabbd status\nabbd turn end --session S\n```\n")
+		"---\nname: zz\n---\n\n```bash\nabbd status\nabbd propose unit MOD x --evidence a.go:1:x\n```\n")
 	_, r := runExtractor(t, dir)
 	got := map[string]bool{}
 	for _, rel := range r.Relations {
@@ -113,8 +117,8 @@ func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
 	if !got["if-cli-status"] {
 		t.Fatalf("status not found at all")
 	}
-	if !got["if-cli-turn-end"] {
-		t.Errorf("feat-zz runs `abbd turn end` but is not its consumer")
+	if !got["if-cli-propose-unit"] {
+		t.Errorf("feat-zz runs `abbd propose unit` but is not its consumer")
 	}
 }
 

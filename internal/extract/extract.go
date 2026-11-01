@@ -209,31 +209,7 @@ func inferred(v string) *model.Fact {
 	if v == "" {
 		return nil
 	}
-	return &model.Fact{Value: v, Origin: model.Inferred, Confirmation: model.Unconfirmed}
-}
-
-// StatedBy marks every fact in r as coming from origin instead of from code,
-// for a topology a human stated or a document ABBD adopted.
-func (r Result) StatedBy(origin model.Origin) Result {
-	restate := func(f *model.Fact) *model.Fact {
-		if f == nil {
-			return nil
-		}
-		return &model.Fact{Value: f.Value, Origin: origin}
-	}
-	out := Result{Units: make([]Unit, len(r.Units))}
-	for i, u := range r.Units {
-		u.Name = *restate(&u.Name)
-		u.Signature = restate(u.Signature)
-		u.Purpose = restate(u.Purpose)
-		u.Responsibility = restate(u.Responsibility)
-		out.Units[i] = u
-	}
-	for _, rel := range r.Relations {
-		rel.Origin = origin
-		out.Relations = append(out.Relations, rel)
-	}
-	return out
+	return &model.Fact{Value: v, Origin: model.Inferred}
 }
 
 // parentCycle reports whether following parents from key ever comes back.

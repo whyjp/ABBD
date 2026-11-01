@@ -41,7 +41,7 @@ func TestFormattingNeverKillsAQuote(t *testing.T) {
 // slack accumulates across syncs until the evidence dies.
 func TestApplyMovesLinesToWhereTheQuoteIs(t *testing.T) {
 	root := reviewTree(t, "package a\n\n\n\n\nfunc Charge() {}\n")
-	rel := model.Relation{To: "MOD-0002", Kind: model.DependsOn, Origin: model.Inferred, Confirmation: model.Confirmed,
+	rel := model.Relation{To: "MOD-0002", Kind: model.DependsOn, Origin: model.Inferred,
 		Evidence: []model.Evidence{{Path: "a.go", Lines: "3", Quote: "func Charge() {}"}}}
 	u := model.Unit{ID: "MOD-0001", Kind: model.Module, Name: model.Fact{Value: "a", Origin: model.Extracted}, Relations: []model.Relation{rel}}
 	out := New(root).Apply([]model.Unit{u})[0]

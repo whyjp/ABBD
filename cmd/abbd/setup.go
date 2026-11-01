@@ -2,37 +2,21 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/bootstrap"
-	"github.com/whyjp/abbd/internal/confirm"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
-// setup never asks. It ends bootstrapped, except greenfield, where the human
-// already stated the design units and the project is aligned at once.
-func (e env) setup(string, []string) error {
-	if e.greenfield != "" {
-		if len(e.argv) > 0 || e.supplement != "" || e.adopt != "" || e.verify != "" {
-			return fmt.Errorf("--greenfield takes no extraction script, --supplement, --adopt or --verify")
-		}
-		return e.setupGreenfield()
-	}
+// setup registers the extraction script, proves it deterministic, folds in
+// the semantic supplement and syncs. It never asks.
+func (e env) setup() error {
 	p, err := e.st.LoadProject()
-	if err != nil {
-		return err
-	}
-	intended, err := e.st.LoadIntended()
 	if err != nil {
 		return err
 	}
@@ -42,19 +26,6 @@ func (e env) setup(string, []string) error {
 	}
 	if len(argv) == 0 {
 		return fmt.Errorf("name the extraction script after --, for example: abbd setup -- python .abbd/extractor/extract.py")
-	}
-	// mode on trusts whatever script project.yaml names. Once a human has
-	// approved a topology, swapping the script could freeze or rewrite the
-	// actual topology the gate compares against it.
-	if intended != nil && len(p.Extract) > 0 && !slices.Equal(argv, p.Extract) {
-		return fmt.Errorf("the project is aligned, so its extraction script is fixed: project.yaml records %q; run abbd setup without -- to rerun it", p.Extract)
-	}
-	// A greenfield project is aligned before it has code. Its first script
-	// is registered here, still under the determinism check.
-	registering := intended != nil && len(p.Extract) == 0
-	verify, err := verifyArgv(e.verify, p.Verify)
-	if err != nil {
-		return err
 	}
 	out, err := e.deterministic(argv)
 	if err != nil {
@@ -67,69 +38,38 @@ func (e env) setup(string, []string) error {
 	if len(ex.Units) == 0 {
 		return fmt.Errorf("the extraction script reported no units")
 	}
-	rep := bootstrap.Report{Mode: "code-only", Extract: argv, Overlays: map[string]bootstrap.Findings{}, Failures: map[string]string{}}
-	sum := sha256.Sum256(out)
-	rep.Digest = hex.EncodeToString(sum[:8])
-
+	var f bootstrap.Findings
 	if e.supplement != "" {
 		doc, err := e.readExtraction(e.supplement)
 		if err != nil {
 			return fmt.Errorf("supplement: %w", err)
 		}
-		next, f, err := bootstrap.Overlay(ex, doc, bootstrap.Supplement)
-		if err != nil {
+		if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {
 			return err
 		}
-		ex, rep.Overlays[bootstrap.Supplement.Name] = next, f
 	}
-	if e.adopt != "" {
-		rep.Mode = "adopt"
-		if next, f, err := e.adoptDoc(ex); err != nil {
-			rep.Failures[bootstrap.Adopt.Name] = err.Error()
-			fmt.Fprintln(e.stderr, "abbd: warning: adopt not applied:", err)
-		} else {
-			ex, rep.Overlays[bootstrap.Adopt.Name] = next, f
-		}
-	}
-
-	newVerify := len(verify) > 0 && len(p.Verify) == 0
 	p.Extract = argv
-	if newVerify {
-		p.Verify = verify
-	}
 	if err := e.st.SaveProject(p); err != nil {
 		return err
-	}
-	if newVerify {
-		fmt.Fprintf(e.stdout, "registered the verify command %q\n", verify)
 	}
 	if _, err := e.syncActual(ex, identity.ReplaceGuesses); err != nil {
 		return err
 	}
-	v, err := e.load()
+	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
-	rep.Units = topology.Present(v.units)
-	rep.Queue = confirm.Queue(v.units, v.designIDs())
-	if v.phase == topology.Bootstrapped {
-		rep.NextSteps = []string{"abbd align --all", "abbd align --confirm IDS", "abbd align --exclude IDS"}
+	for _, c := range f.Conflicts {
+		fmt.Fprintln(e.stdout, "conflict:", c)
 	}
-	if err := e.st.SaveBootstrapReport(rep.Markdown()); err != nil {
-		return err
-	}
-	if registering {
-		fmt.Fprintf(e.stdout, "registered the extraction script %q\n", argv)
-	}
-	fmt.Fprintf(e.stdout, "%s: %d design unit candidate(s), %d item(s) in the confirm queue, report in .abbd/bootstrap-report.md\n",
-		v.phase, len(rep.Units), len(rep.Queue))
+	fmt.Fprintf(e.stdout, "synced: %d unit(s), %d matched by the supplement\n", len(model.Present(units)), f.Matched)
 	return nil
 }
 
 // deterministic runs the script three times. A script whose output changes
-// while the code does not would make every later gate decision noise. The
-// third run changes the hash seeds that interpreters use to randomize iteration
-// order per process, which two runs miss when the environment pins the seed.
+// while the code does not would make every diff noise. The third run changes
+// the hash seeds that interpreters use to randomize iteration order per
+// process, which two runs miss when the environment pins the seed.
 func (e env) deterministic(argv []string) ([]byte, error) {
 	first, err := e.runScript(argv)
 	if err != nil {
@@ -155,24 +95,6 @@ func (e env) deterministic(argv []string) ([]byte, error) {
 	return first, nil
 }
 
-// verifyArgv splits --verify the way a shell would. Registering it at setup
-// puts the command in front of the human at alignment, before any turn trusts
-// it. Like turn verify --, it registers once and refuses a different argv.
-func verifyArgv(text string, recorded []string) ([]string, error) {
-	if strings.TrimSpace(text) == "" {
-		return nil, nil
-	}
-	ps := parseShell(text)
-	if len(ps.segs) != 1 || len(ps.subs) > 0 || len(ps.bodies) > 0 || len(ps.segs[0].redirects) > 0 || len(ps.segs[0].words) == 0 {
-		return nil, fmt.Errorf("--verify takes one plain command, without pipes, redirects or substitutions: %q", text)
-	}
-	argv := ps.segs[0].words
-	if len(recorded) > 0 && !slices.Equal(argv, recorded) {
-		return nil, fmt.Errorf("the verify command is fixed: project.yaml records %q", recorded)
-	}
-	return argv, nil
-}
-
 func reseeded() []string {
 	var env []string
 	for _, name := range []string{"PYTHONHASHSEED", "PERL_HASH_SEED"} {
@@ -193,95 +115,6 @@ func firstDiffLine(a, b []byte) int {
 		}
 	}
 	return min(len(la), len(lb)) + 1
-}
-
-func (e env) adoptDoc(ex extract.Result) (extract.Result, bootstrap.Findings, error) {
-	doc, err := e.readExtraction(e.adopt)
-	if err != nil {
-		return ex, bootstrap.Findings{}, err
-	}
-	return bootstrap.Overlay(ex, doc, bootstrap.Adopt)
-}
-
-func (e env) setupGreenfield() error {
-	v, err := e.load()
-	if err != nil {
-		return err
-	}
-	if v.phase != topology.Uninitialized {
-		return fmt.Errorf("greenfield setup needs a project with no design units; this one is %s", v.phase)
-	}
-	// Stated units become USER_STATED and intended at once. On a directory
-	// that already holds code, that would let an agent pass its own reading
-	// of the code off as a human's statement.
-	f, err := firstFile(e.root)
-	if err != nil {
-		return err
-	}
-	if f != "" {
-		return fmt.Errorf("greenfield setup needs an empty directory, but %s is already there; use abbd setup -- EXTRACT-ARGV", f)
-	}
-	doc, err := e.readExtraction(e.greenfield)
-	if err != nil {
-		return err
-	}
-	if len(doc.Units) == 0 {
-		return fmt.Errorf("state at least one design unit")
-	}
-	if _, err := e.syncActual(doc.StatedBy(model.UserStated), identity.KeepGuesses); err != nil {
-		return err
-	}
-	v, err = e.load()
-	if err != nil {
-		return err
-	}
-	present := topology.Present(v.units)
-	all := map[model.ID]bool{}
-	for _, u := range present {
-		all[u.ID] = true
-	}
-	if err := e.st.SaveIntended(topology.Select(v.units, all)); err != nil {
-		return err
-	}
-	rep := bootstrap.Report{Mode: "greenfield", Units: present, Queue: confirm.Queue(v.units, all)}
-	if err := e.st.SaveBootstrapReport(rep.Markdown()); err != nil {
-		return err
-	}
-	fmt.Fprintf(e.stdout, "aligned: %d design unit(s) stated by a human\n", len(present))
-	return nil
-}
-
-// harnessFiles are what a fresh agent project holds before any code.
-var harnessFiles = map[string]bool{"CLAUDE.md": true, "AGENTS.md": true}
-
-// firstFile returns a file under root that counts as code, or "". Dotfiles,
-// dot directories (.git, .abbd, .claude) and the agent instruction files at
-// the root do not count.
-func firstFile(root string) (string, error) {
-	found := ""
-	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		rel, err := filepath.Rel(root, p)
-		if err != nil {
-			return err
-		}
-		switch {
-		case rel == ".":
-			return nil
-		case strings.HasPrefix(d.Name(), "."):
-			if d.IsDir() {
-				return filepath.SkipDir
-			}
-			return nil
-		case d.IsDir(), harnessFiles[rel]:
-			return nil
-		}
-		found = filepath.ToSlash(rel)
-		return fs.SkipAll
-	})
-	return found, err
 }
 
 // readExtraction resolves a relative path against the root, where the

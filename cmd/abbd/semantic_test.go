@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,77 +25,73 @@ const ledgerTopo = `{"units":[
  {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}
 ]}`
 
-func (p *project) code(rel, content string) { write(p.t, filepath.Join(p.root, rel), content) }
-
-func semanticProject(t *testing.T) (*project, string) {
+func semanticProject(t *testing.T) *project {
 	t.Helper()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
 	p.extract(ledgerTopo)
-	return p, exe
+	p.setup(0, "synced: 3 unit(s)", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
+	return p
 }
 
-func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
-	p, exe := semanticProject(t)
-	bare := strings.Replace(chargesTable, `
-  "evidence":[{"path":"billing/charge.go","lines":"3","quote":"INSERT INTO charges"}]},`, `"anchors":[{"path":"db/schema.sql"}]},`, 1)
-	p.setup(1, "cite the code each one rests on", "--supplement", p.file(t, "bare.json", bare), "--", exe)
+func (p *project) resync() string { p.t.Helper(); return p.want(0, "", "ingest", p.extraction) }
 
-	p.setup(0, "bootstrapped: 3 design unit candidate(s)", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
+func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
+	p.extract(ledgerTopo)
+	noEvidence := strings.Replace(chargesTable, `
+  "evidence":[{"path":"billing/charge.go","lines":"3","quote":"INSERT INTO charges"}]},`, `"anchors":[{"path":"db/schema.sql"}]},`, 1)
+	p.setup(1, "cite the code each one rests on", "--supplement", p.file(t, "bare.json", noEvidence), "--", exe)
+
+	p = semanticProject(t)
 	md := p.read("architecture/DATA-0001.md")
 	for _, want := range []string{"value: charges table\n    origin: INFERRED", "parent: MOD-0001", "quote: INSERT INTO charges", "path: billing/charge.go"} {
 		if !strings.Contains(md, want) {
 			t.Fatalf("a unit only the reader found should be stored with its evidence and parent; missing %q:\n%s", want, md)
 		}
 	}
-	q := p.want(0, "MOD-0002.consumes.DATA-0001", "confirm", "--list")
-	if !strings.Contains(q, `INFERRED via data: ledger/book.go:3-4 \"SELECT amount FROM charges\"`) {
-		t.Fatalf("the queue should show how the coupling arises and the code it rests on:\n%s", q)
-	}
-	p.want(0, "aligned", "align", "--all")
-	p.want(0, "active", "mode", "on", "--session", "s1")
-	if !strings.Contains(p.read("architecture/DATA-0001.md"), "charges table") || strings.Contains(p.read("architecture/DATA-0001.md"), "absent") {
-		t.Fatalf("re-extraction by the script must keep a semantic unit whose evidence is live")
+	p.resync()
+	if md := p.read("architecture/DATA-0001.md"); !strings.Contains(md, "charges table") || strings.Contains(md, "absent") {
+		t.Fatalf("re-extraction by the script must keep a semantic unit whose evidence is live:\n%s", md)
 	}
 }
 
-func TestDeletingTheEvidenceRemovesTheCoupling(t *testing.T) {
-	p, exe := semanticProject(t)
-	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
-	p.want(0, "aligned", "align", "--all")
-	p.want(0, "approved new-relation:MOD-0002.consumes.DATA-0001", "confirm", "MOD-0002.consumes.DATA-0001")
-	p.want(0, "active", "mode", "on", "--session", "s1")
-	p.want(0, "off", "mode", "off", "--session", "s1")
-
+func TestDeletingTheEvidenceKillsTheCoupling(t *testing.T) {
+	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
-	out := p.want(2, "BLOCKED removed-relation:MOD-0002.consumes.DATA-0001", "mode", "on", "--session", "s1")
-	if strings.Contains(out, "provides.DATA-0001") || strings.Contains(out, "unit-removed") {
-		t.Fatalf("only the coupling whose evidence went away is removed:\n%s", out)
-	}
+	p.resync()
 	if !strings.Contains(p.read("architecture/MOD-0002.md"), "dead: true") {
 		t.Fatalf("the dead coupling stays on record, marked dead:\n%s", p.read("architecture/MOD-0002.md"))
 	}
-
+	if strings.Contains(p.read("architecture/MOD-0001.md"), "dead: true") {
+		t.Fatalf("only the coupling whose evidence went away dies:\n%s", p.read("architecture/MOD-0001.md"))
+	}
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
-	out = p.want(2, "BLOCKED unit-removed:DATA-0001", "mode", "on", "--session", "s1")
+	p.resync()
 	if !strings.Contains(p.read("architecture/DATA-0001.md"), "absent: true") {
-		t.Fatalf("a semantic unit whose evidence is gone is absent:\n%s", out)
+		t.Fatalf("a semantic unit whose evidence is gone is absent:\n%s", p.read("architecture/DATA-0001.md"))
 	}
 }
 
-func TestAnUnconfirmedCouplingWithDeadEvidenceLeavesTheQueue(t *testing.T) {
-	p, exe := semanticProject(t)
-	p.setup(0, "bootstrapped", "--supplement", p.file(t, "sup.json", chargesTable), "--", exe)
-	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
-	p.want(2, "bootstrapped", "mode", "on", "--session", "s1")
-	if q := p.want(0, "MOD-0001.provides.DATA-0001", "confirm", "--list"); strings.Contains(q, "MOD-0002.consumes") {
-		t.Fatalf("a guess whose evidence is gone has nothing left to confirm:\n%s", q)
+// Line drift within the slack is written back, so small edits above a quote
+// never add up to a false removal.
+func TestEvidenceFollowsAQuoteThatDriftsAcrossSyncs(t *testing.T) {
+	p := semanticProject(t)
+	p.code("ledger/book.go", "package ledger\n\n// a\n// b\n// c\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
+	p.resync()
+	p.code("ledger/book.go", "package ledger\n\n// a\n// b\n// c\n// d\n// e\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
+	p.resync()
+	if strings.Contains(p.read("architecture/MOD-0002.md"), "dead: true") {
+		t.Errorf("the quote is still in ledger/book.go, 2 lines from where the last sync found it:\n%s", p.read("architecture/MOD-0002.md"))
 	}
 }
 
 func TestRelationKindsMustFitTheUnitsTheyJoin(t *testing.T) {
-	p, exe := semanticProject(t)
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
+	p.extract(ledgerTopo)
 	modProvidesMod := `{"units":[
  {"key":"b","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
  {"key":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}
@@ -105,7 +102,106 @@ func TestRelationKindsMustFitTheUnitsTheyJoin(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "architecture")); err == nil {
 		t.Fatalf("a refused supplement must write nothing")
 	}
-	p.setup(0, "bootstrapped", "--", exe)
-	p.want(0, "aligned", "align", "--all")
-	p.want(1, "MOD consumes MOD is not a relation ABBD knows", "couple", "MOD-0002.consumes.MOD-0001")
+}
+
+type graphFile struct {
+	Units []struct {
+		ID, Parent string
+		Evidence   []string
+	} `json:"units"`
+	Edges []struct {
+		From, To, Origin, Via, Quote string
+	} `json:"edges"`
+	Overview struct {
+		Wires []struct{ Kind, Title string }
+	} `json:"overview"`
+	Modules []struct {
+		ID       string
+		Inferred []struct {
+			From, To, Via string
+			Quotes        []string
+		}
+	} `json:"modules"`
+}
+
+func (p *project) graph() graphFile {
+	p.t.Helper()
+	var g graphFile
+	if err := json.Unmarshal([]byte(p.read("generated/graph.json")), &g); err != nil {
+		p.t.Fatal(err)
+	}
+	return g
+}
+
+// A human judges a guessed coupling by how it arises and the code it rests
+// on. The overview draws none; the inside of each module it touches lists it.
+func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
+	p := semanticProject(t)
+	html := p.read("generated/explorer.html")
+	for _, want := range []string{
+		`ledger → charges table <span class="muted">(consumes, via data)</span>`,
+		`<q>ledger/book.go:3-4 &#34;SELECT amount FROM charges&#34;</q>`,
+		`근거 <q>billing/charge.go:3 &#34;INSERT INTO charges&#34;</q>`,
+		`MOD-0001 안`,
+	} {
+		if !strings.Contains(html, want) {
+			t.Fatalf("the blueprint should list the coupling with its via and quote; missing %s", want)
+		}
+	}
+	g := p.graph()
+	for _, w := range g.Overview.Wires {
+		if strings.Contains(w.Title, "charges table") || w.Kind != "contract" && w.Kind != "bypass" {
+			t.Fatalf("the overview draws only extracted and stated relations, got %+v", w)
+		}
+	}
+	listed := map[string]int{}
+	for _, m := range g.Modules {
+		for _, c := range m.Inferred {
+			if c.Via == "data" && len(c.Quotes) == 1 {
+				listed[m.ID]++
+			}
+		}
+	}
+	if listed["MOD-0001"] != 2 || listed["MOD-0002"] != 1 {
+		t.Fatalf("billing's inside lists both couplings of its table, ledger's its own: %v", listed)
+	}
+	inferred := 0
+	for _, e := range g.Edges {
+		if e.Origin == "INFERRED" && e.Via == "data" && strings.Contains(e.Quote, "charges") {
+			inferred++
+		}
+	}
+	if inferred != 2 {
+		t.Fatalf("graph.json should carry both couplings with origin, via and quote: %+v", g.Edges)
+	}
+
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.resync()
+	if strings.Contains(p.read("generated/explorer.html"), "ledger → charges table") {
+		t.Fatalf("a coupling whose evidence is gone leaves the blueprint")
+	}
+}
+
+// A module's text comes from pstack's how. The blueprint shows it beside the
+// module's inside and marks it STALE once the module's code moves on.
+func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
+	p := semanticProject(t)
+	text := p.file(t, "how.md", "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n")
+	p.want(1, "is not a top-level module", "understand", "DATA-0001", text)
+	p.want(0, "understood MOD-0001 billing, INFERRED", "understand", "MOD-0001", text)
+	html := p.read("generated/explorer.html")
+	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `pstack how가 쓴 설명`} {
+		if !strings.Contains(html, want) {
+			t.Fatalf("the module's inside should carry how's text; missing %s", want)
+		}
+	}
+	if strings.Contains(html, `title="이 설명을 쓴 뒤`) {
+		t.Fatalf("a text written against the code as it is must not be STALE")
+	}
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge(currency string) {}\n")
+	p.resync()
+	if !strings.Contains(p.read("generated/explorer.html"), `title="이 설명을 쓴 뒤`) {
+		t.Fatalf("the text should turn STALE once the module's code changes")
+	}
+	p.want(1, "code changed since this text was written", "understand", "MOD-0001", text)
 }

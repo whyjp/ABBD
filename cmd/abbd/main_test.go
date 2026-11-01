@@ -232,17 +232,18 @@ func TestPlainMoveWithoutGitKeepsID(t *testing.T) {
 	}
 }
 
-func TestConfirmationAndNotesSurviveReingest(t *testing.T) {
+func TestStatedPurposeAndNotesSurviveReingest(t *testing.T) {
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	p := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
 	b, _ := os.ReadFile(p)
-	edited := strings.Replace(string(b), "origin: EXTRACTED\n", "origin: EXTRACTED\n    confirmation: CONFIRMED\n", 1) + "\n## Notes\n\nkeep this\n"
+	stated := "value: posts entries\n    origin: USER_STATED\n    source: conversation 2026-11-01\n"
+	edited := strings.Replace(string(b), "value: takes payments\n    origin: INFERRED\n", stated, 1) + "\n## Notes\n\nkeep this\n"
 	write(t, p, edited)
 	ingestOK(t, root, extraction)
 	b, _ = os.ReadFile(p)
-	if !strings.Contains(string(b), "confirmation: CONFIRMED") || !strings.Contains(string(b), "## Notes\n\nkeep this\n") {
-		t.Fatalf("confirmation and notes should survive re-ingest:\n%s", b)
+	if !strings.Contains(string(b), stated) || !strings.Contains(string(b), "## Notes\n\nkeep this\n") {
+		t.Fatalf("a stated purpose and notes should survive re-ingest:\n%s", b)
 	}
 }
 

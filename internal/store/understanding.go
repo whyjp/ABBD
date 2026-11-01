@@ -20,7 +20,6 @@ import (
 type Understanding struct {
 	Unit   model.ID     `yaml:"unit"`
 	Origin model.Origin `yaml:"origin"`
-	By     string       `yaml:"by"`
 	Digest string       `yaml:"digest"`
 	Text   string       `yaml:"-"`
 }

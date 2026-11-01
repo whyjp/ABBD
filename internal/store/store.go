@@ -9,16 +9,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
 const Dir = ".abbd"
@@ -33,21 +29,9 @@ type State struct {
 
 const notesHeading = "## Notes"
 
-type Store struct{ root, sessions string }
+type Store struct{ root string }
 
-// Open keeps session state in the git directory when there is one. git clean
-// and checkout never reach it there, so they cannot turn a session's mode off.
-func Open(projectRoot string) Store {
-	s := Store{root: filepath.Join(projectRoot, Dir)}
-	s.sessions = s.path("sessions")
-	if g := gitx.Dir(projectRoot); g != "" {
-		s.sessions = filepath.Join(g, "abbd", "sessions")
-	}
-	return s
-}
-
-// SessionsDir holds each session's mode file and journal.
-func (s Store) SessionsDir() string { return s.sessions }
+func Open(projectRoot string) Store { return Store{root: filepath.Join(projectRoot, Dir)} }
 
 func (s Store) path(parts ...string) string {
 	return filepath.Join(append([]string{s.root}, parts...)...)
@@ -183,14 +167,14 @@ func (s Store) MDHash() (string, error) {
 
 // InputsHash fingerprints every file under .abbd that a page can render, so
 // a generated file is STALE whenever any of them changed. The generated files
-// and session state are not inputs.
+// are not inputs.
 func (s Store) InputsHash() (string, error) {
 	var files []string
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
 		switch {
 		case err != nil:
 			return err
-		case d.IsDir() && (p == s.path("generated") || p == s.sessions):
+		case d.IsDir() && p == s.path("generated"):
 			return filepath.SkipDir
 		case !d.IsDir():
 			files = append(files, p)
@@ -256,9 +240,6 @@ type Project struct {
 	// Extract is the argv of the project extraction script pstack generated.
 	// It prints an extraction result on stdout.
 	Extract []string `yaml:"extract,omitempty"`
-	// Verify is the argv of the project verification, normally the verify
-	// skill's script. A turn completes only on its PASSED evidence.
-	Verify []string `yaml:"verify,omitempty"`
 }
 
 func (s Store) LoadProject() (Project, error) {
@@ -268,135 +249,17 @@ func (s Store) LoadProject() (Project, error) {
 
 func (s Store) SaveProject(p Project) error { return writeYAML(s.path("project.yaml"), p) }
 
-// LoadIntended returns nil before the first alignment.
-func (s Store) LoadIntended() (*topology.Intended, error) {
-	if _, err := os.Stat(s.path("intended.yaml")); os.IsNotExist(err) {
-		return nil, nil
-	}
-	var in topology.Intended
-	if err := readYAML(s.path("intended.yaml"), &in); err != nil {
-		return nil, err
-	}
-	return &in, nil
-}
-
-// SaveIntended bumps the revision whenever the content changes, whatever
-// revision the caller carried.
-func (s Store) SaveIntended(in topology.Intended) error {
-	old, err := s.LoadIntended()
+// NextID mints the next number of kind and records it, so it is never reused.
+func (s Store) NextID(kind model.Kind) (model.ID, error) {
+	st, err := s.LoadState()
 	if err != nil {
-		return err
+		return "", err
 	}
-	in.Revision = 1
-	if old != nil {
-		in.Revision = old.Revision
-		was, _ := yaml.Marshal(old)
-		now, _ := yaml.Marshal(in)
-		if !bytes.Equal(was, now) {
-			in.Revision++
-		}
+	if st.HighWater == nil {
+		st.HighWater = map[model.Kind]int{}
 	}
-	return writeYAML(s.path("intended.yaml"), in)
-}
-
-type ADR struct {
-	ID       string       `yaml:"id"`
-	Grade    string       `yaml:"grade"`
-	Subject  string       `yaml:"subject"`
-	Decision string       `yaml:"decision"`
-	Origin   model.Origin `yaml:"origin"`
-	// Confirmation is UNCONFIRMED on a grade B default no human has seen.
-	Confirmation model.Confirmation `yaml:"confirmation,omitempty"`
-	// Question identifies what a human answered, so it is never asked again.
-	Question string `yaml:"question,omitempty"`
-	Turn     string `yaml:"turn,omitempty"`
-	// Reason is why a human rejected the change.
-	Reason string `yaml:"reason,omitempty"`
-}
-
-// Rejected is the decision of an ADR in which a human refused a change.
-const Rejected = "rejected"
-
-// Rejection returns the standing rejection of question: the latest ADR that
-// rejected it, unless a later one approved it.
-func Rejection(adrs []ADR, question string) *ADR {
-	var out *ADR
-	for i, a := range adrs {
-		switch {
-		case a.Question != question:
-		case a.Decision == Rejected:
-			out = &adrs[i]
-		case a.Decision == "approved":
-			out = nil
-		}
-	}
-	return out
-}
-
-func (s Store) WriteADR(a ADR, body string) error {
-	front, err := yaml.Marshal(a)
-	if err != nil {
-		return err
-	}
-	return writeFile(s.path("decisions", a.ID+".md"), []byte("---\n"+string(front)+"---\n\n"+body+"\n"))
-}
-
-var sessionID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
-
-func (s Store) sessionPath(id string) (string, error) {
-	if !sessionID.MatchString(id) {
-		return "", fmt.Errorf("invalid session id %q", id)
-	}
-	return filepath.Join(s.sessions, id+".on"), nil
-}
-
-// Session state is local to this machine, so outside a git directory
-// sessions/ is kept out of git.
-func (s Store) SetMode(id string, on bool) error {
-	p, err := s.sessionPath(id)
-	if err != nil {
-		return err
-	}
-	if !on {
-		if err := os.Remove(p); err != nil && !os.IsNotExist(err) {
-			return err
-		}
-		return nil
-	}
-	// Only sessions kept under .abbd/, outside a git repository, need ignoring.
-	if s.sessions == s.path("sessions") {
-		if err := writeFile(s.path(".gitignore"), []byte("sessions/\n")); err != nil {
-			return err
-		}
-	}
-	return writeFile(p, nil)
-}
-
-func (s Store) ModeOn(id string) bool {
-	p, err := s.sessionPath(id)
-	if err != nil {
-		return false
-	}
-	_, err = os.Stat(p)
-	return err == nil
-}
-
-func (s Store) AppendJournal(id, line string) error {
-	p, err := s.sessionPath(id)
-	if err != nil {
-		return err
-	}
-	f, err := os.OpenFile(strings.TrimSuffix(p, ".on")+".journal", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	_, err = fmt.Fprintln(f, line)
-	return err
-}
-
-func (s Store) SaveBootstrapReport(b []byte) error {
-	return writeFile(s.path("bootstrap-report.md"), b)
+	st.HighWater[kind]++
+	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
 // Generated files derive from the unit Markdown and are rewritten freely.
@@ -413,15 +276,27 @@ func (s Store) ReadGenerated(name string) ([]byte, error) {
 	return b, err
 }
 
-// ServeFile holds the address of the screen abbd serve runs, never its
-// token, so the guard can deny an agent's requests to it.
-func (s Store) ServeFile() string { return filepath.Join(s.sessions, "serve.addr") }
-
-// ScreenAddr returns the address of the running screen, or "".
-func (s Store) ScreenAddr() string {
-	b, err := os.ReadFile(s.ServeFile())
+func frontmatter(v any, body string) ([]byte, error) {
+	front, err := yaml.Marshal(v)
 	if err != nil {
-		return ""
+		return nil, err
 	}
-	return strings.TrimSpace(string(b))
+	return []byte("---\n" + string(front) + "---\n\n" + body), nil
+}
+
+func readFrontmatter(path string, v any) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
+	if !ok {
+		return fmt.Errorf("%s: missing frontmatter", path)
+	}
+	front, _, ok := bytes.Cut(rest, []byte("\n---\n"))
+	if !ok {
+		return fmt.Errorf("%s: unterminated frontmatter", path)
+	}
+	return yaml.Unmarshal(front, v)
 }

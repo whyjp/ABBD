@@ -10,65 +10,47 @@ import (
 type Origin string
 
 const (
+	// Extracted facts come from the project's deterministic script.
+	Extracted Origin = "EXTRACTED"
+	// Inferred facts come from a pstack reader and rest on evidence.
+	Inferred Origin = "INFERRED"
+	// UserStated facts are what a human said.
 	UserStated Origin = "USER_STATED"
-	Adopted    Origin = "ADOPTED"
-	Extracted  Origin = "EXTRACTED"
-	Observed   Origin = "OBSERVED"
-	Inferred   Origin = "INFERRED"
 )
 
-type Verification string
+var origins = map[Origin]bool{UserStated: true, Extracted: true, Inferred: true}
 
-const (
-	NotRun       Verification = "NOT_RUN"
-	Passed       Verification = "PASSED"
-	Failed       Verification = "FAILED"
-	Unverifiable Verification = "UNVERIFIABLE"
-)
-
-type Confirmation string
-
-const (
-	Unconfirmed Confirmation = "UNCONFIRMED"
-	Confirmed   Confirmation = "CONFIRMED"
-	Rejected    Confirmation = "REJECTED"
-)
-
-var origins = map[Origin]bool{UserStated: true, Adopted: true, Extracted: true, Observed: true, Inferred: true}
-var verifications = map[Verification]bool{"": true, NotRun: true, Passed: true, Failed: true, Unverifiable: true}
-var confirmations = map[Confirmation]bool{"": true, Unconfirmed: true, Confirmed: true, Rejected: true}
-
-// Fact is one field value with its evidence recorded on three independent axes.
+// Fact is one field value and where it came from.
 type Fact struct {
-	Value        string       `yaml:"value"`
-	Origin       Origin       `yaml:"origin"`
-	Verification Verification `yaml:"verification,omitempty"`
-	Confirmation Confirmation `yaml:"confirmation,omitempty"`
-	// Rejected is the guess a human rejected, kept beside the value that replaced it.
-	Rejected string `yaml:"rejected,omitempty"`
+	Value  string `yaml:"value"`
+	Origin Origin `yaml:"origin"`
+	// Source is where a human stated a USER_STATED value, such as a PR URL.
+	Source string `yaml:"source,omitempty"`
 }
 
-// guess reports whether only an agent vouches for a value: INFERRED, and no
-// human has confirmed or rejected it.
-func guess(o Origin, c Confirmation) bool {
-	return o == Inferred && c != Confirmed && c != Rejected
-}
-
-func (f *Fact) Guess() bool { return f != nil && guess(f.Origin, f.Confirmation) }
+// Guess reports whether only a reader vouches for the value.
+func (f *Fact) Guess() bool { return f != nil && f.Origin == Inferred }
 
 // A why-field states intent, which code can never prove.
 func (f Fact) validate(why bool) error {
-	if !origins[f.Origin] {
-		return fmt.Errorf("unknown origin %q", f.Origin)
+	if err := sourced(f.Origin, f.Source); err != nil {
+		return err
 	}
-	if !verifications[f.Verification] {
-		return fmt.Errorf("unknown verification %q", f.Verification)
+	if why && f.Origin == Extracted {
+		return fmt.Errorf("why-field origin must be USER_STATED or INFERRED, got %s", f.Origin)
 	}
-	if !confirmations[f.Confirmation] {
-		return fmt.Errorf("unknown confirmation %q", f.Confirmation)
-	}
-	if why && f.Origin != UserStated && f.Origin != Adopted && f.Origin != Inferred {
-		return fmt.Errorf("why-field origin must be USER_STATED, ADOPTED or INFERRED, got %s", f.Origin)
+	return nil
+}
+
+// sourced checks that a fact a human stated says where, and only such a fact.
+func sourced(o Origin, source string) error {
+	switch {
+	case !origins[o]:
+		return fmt.Errorf("unknown origin %q", o)
+	case o == UserStated && strings.TrimSpace(source) == "":
+		return fmt.Errorf("a USER_STATED fact needs a source, such as a PR URL or \"conversation 2026-11-01\"")
+	case o != UserStated && source != "":
+		return fmt.Errorf("only a USER_STATED fact carries a source, not %s", o)
 	}
 	return nil
 }
@@ -154,7 +136,7 @@ type Unit struct {
 	Responsibility *Fact      `yaml:"responsibility,omitempty"`
 	// Signature is the observable shape of an external contract.
 	Signature *Fact `yaml:"signature,omitempty"`
-	// Digest fingerprints the code behind a contract's anchors, so a turn sees
+	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest    string     `yaml:"digest,omitempty"`
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -226,11 +208,11 @@ func (u Unit) Validate() error {
 				return fmt.Errorf("%s relation evidence: %w", u.ID, err)
 			}
 		}
-		if !origins[r.Origin] {
-			return fmt.Errorf("%s relation: unknown origin %q", u.ID, r.Origin)
+		if err := sourced(r.Origin, r.Source); err != nil {
+			return fmt.Errorf("%s relation: %w", u.ID, err)
 		}
-		if !confirmations[r.Confirmation] {
-			return fmt.Errorf("%s relation: unknown confirmation %q", u.ID, r.Confirmation)
+		if r.Origin == Inferred && len(r.Evidence) == 0 {
+			return fmt.Errorf("%s relation to %s: an INFERRED coupling needs evidence", u.ID, r.To)
 		}
 	}
 	return nil
@@ -360,31 +342,73 @@ func ParseEvidence(s string) (Evidence, error) {
 
 // Relation is an edge from the unit that holds it.
 type Relation struct {
-	To           ID           `yaml:"to"`
-	Kind         RelationKind `yaml:"kind"`
-	Origin       Origin       `yaml:"origin"`
-	Confirmation Confirmation `yaml:"confirmation,omitempty"`
-	Via          Via          `yaml:"via,omitempty"`
-	Evidence     []Evidence   `yaml:"evidence,omitempty"`
+	To       ID           `yaml:"to"`
+	Kind     RelationKind `yaml:"kind"`
+	Origin   Origin       `yaml:"origin"`
+	Source   string       `yaml:"source,omitempty"`
+	Via      Via          `yaml:"via,omitempty"`
+	Evidence []Evidence   `yaml:"evidence,omitempty"`
 	// Dead marks a semantic relation whose evidence the code no longer holds.
 	Dead bool `yaml:"dead,omitempty"`
-	// Digest fingerprints the lines that hold the live evidence, so a turn
-	// sees an edit to them while the quote survives.
+	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
 }
 
-// Counts reports whether the edge is part of the actual topology. A coupling
-// the script cannot see enters it only once a human states or confirms it,
-// and leaves it when its evidence is gone.
+// Counts reports whether the edge is drawn as the topology: the script read
+// it or a human stated it. A reader's coupling is listed beside it instead.
 func (r Relation) Counts() bool {
-	return !r.Dead && (r.Origin == Extracted || r.Origin == UserStated || r.Confirmation == Confirmed)
+	return !r.Dead && (r.Origin == Extracted || r.Origin == UserStated)
 }
 
 // Semantic reports whether a reader found the relation and left the evidence
 // that keeps it alive.
 func (r Relation) Semantic() bool { return len(r.Evidence) > 0 }
 
-func (r Relation) Guess() bool { return guess(r.Origin, r.Confirmation) }
+func (r Relation) Guess() bool { return r.Origin == Inferred }
+
+// Edge names a relation by its ends and kind.
+type Edge struct {
+	From, To ID
+	Kind     RelationKind
+}
+
+// String names the edge on the command line, so it holds no character a shell
+// treats specially.
+func (e Edge) String() string { return fmt.Sprintf("%s.%s.%s", e.From, e.Kind, e.To) }
+
+// Joins checks the edge's kind against the kinds its IDs name.
+func (e Edge) Joins() error {
+	from, _, _ := ParseID(string(e.From))
+	to, _, _ := ParseID(string(e.To))
+	return e.Kind.Joins(from, to)
+}
+
+// ParseEdge reads an edge as Edge.String prints it.
+func ParseEdge(s string) (Edge, error) {
+	parts := strings.Split(s, ".")
+	if len(parts) != 3 {
+		return Edge{}, fmt.Errorf("%q is not an edge such as MOD-0001.depends_on.MOD-0002", s)
+	}
+	e := Edge{From: ID(parts[0]), Kind: RelationKind(parts[1]), To: ID(parts[2])}
+	for _, id := range []ID{e.From, e.To} {
+		if _, _, err := ParseID(string(id)); err != nil {
+			return Edge{}, err
+		}
+	}
+	return e, e.Kind.Validate()
+}
+
+// Present lists the units the latest sync found, sorted by ID.
+func Present(units []Unit) []Unit {
+	var out []Unit
+	for _, u := range units {
+		if !u.Absent {
+			out = append(out, u)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	return out
+}
 
 func SortRelations(rs []Relation) []Relation {
 	out := append([]Relation(nil), rs...)

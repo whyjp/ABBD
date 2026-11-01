@@ -1,9 +1,8 @@
 // Command extract prints the ABBD extraction result for the ABBD repository.
 // Run it from the repository root: go run .abbd/extractor/extract.go
 //
-// Modules are Go packages, except that cmd/abbd splits by file into the CLI,
-// the PreToolUse guard and the screen server. Contracts are read from the
-// code that defines their shape; each CLI command is a contract of its own.
+// Modules are Go packages, and cmd/abbd is the CLI. Contracts are read from
+// the code that defines their shape; each CLI command is a contract of its own.
 // Relations come from the symbols each unit references, the command names
 // other cmd/abbd modules spell out, and the `abbd ...` commands the skills quote.
 package main
@@ -60,13 +59,6 @@ type srcFile struct {
 	ast     *ast.File
 	src     []byte
 	imports map[string]string // local name -> repo-relative package dir
-}
-
-// module groups: which files of cmd/abbd belong to which unit. The CLI takes
-// every file no other group names, so a new file lands there.
-var mainGroups = []struct{ key, name, file, symbol string }{
-	{"mod-guard", "PreToolUse guard", "cmd/abbd/guard.go", "guard"},
-	{"mod-serve", "screen server", "cmd/abbd/serve.go", "screenServer"},
 }
 
 var (
@@ -142,10 +134,6 @@ func run() error {
 	}
 	for _, r := range featRels {
 		rels[r] = true
-	}
-	if hooksCallAbbdHook() {
-		rels[relation{"cfg-hooks", "if-hook", "consumes"}] = true
-		rels[relation{"cfg-hooks", "if-cli-hook", "consumes"}] = true
 	}
 
 	out := result{Units: units}
@@ -255,11 +243,6 @@ func moduleOwners() map[string]string {
 		switch {
 		case f.dir == "cmd/abbd":
 			owners[p] = "mod-cmd-abbd"
-			for _, g := range mainGroups {
-				if g.file == p {
-					owners[p] = g.key
-				}
-			}
 		case strings.HasPrefix(f.dir, "internal/"):
 			owners[p] = "mod-" + strings.TrimPrefix(f.dir, "internal/")
 		}
@@ -285,19 +268,9 @@ func modules() []unit {
 	}
 	cli := unit{Key: "mod-cmd-abbd", Kind: "MOD", Name: "abbd CLI", Anchors: []anchor{{Path: "cmd/abbd"}}}
 	for _, p := range byDir["cmd/abbd"] {
-		owned := false
-		for _, g := range mainGroups {
-			owned = owned || g.file == p
-		}
-		if !owned {
-			cli.Anchors = append(cli.Anchors, anchor{Path: p})
-		}
+		cli.Anchors = append(cli.Anchors, anchor{Path: p})
 	}
-	out = append(out, cli)
-	for _, g := range mainGroups {
-		out = append(out, unit{Key: g.key, Kind: "MOD", Name: g.name, Anchors: []anchor{{Path: g.file}, {Path: g.file, Symbol: g.symbol}}})
-	}
-	return out
+	return append(out, cli)
 }
 
 // references maps each module to the modules whose symbols it uses.
@@ -377,21 +350,14 @@ func contractTable() []contract {
 		}
 	}
 	return append(commandContracts(), []contract{
-		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitNeedHuman"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil},
-		{"if-hook", "IF", "Claude Code hook protocol", []anchor{{"cmd/abbd/hook.go", "hookInput"}, {"cmd/abbd/hook.go", "hookOutput"}, {"cmd/abbd/hook.go", "hooks"}}, "mod-cmd-abbd", hookSig, nil},
-		{"if-serve-http", "IF", "screen HTTP", []anchor{{"cmd/abbd/serve.go", "ServeHTTP"}, {"cmd/abbd/serve.go", "actions"}}, "mod-serve", serveSig, nil},
-		{"if-change-key", "IF", "change item key", []anchor{{"internal/topology/topology.go", "Item"}, {"internal/topology/topology.go", "ParseKey"}, {"internal/topology/topology.go", "Edge"}}, "mod-topology", changeKeySig, nil},
-		{"if-confirm-key", "IF", "confirm item key", []anchor{{"internal/confirm/confirm.go", "Item"}, {"internal/confirm/confirm.go", "Queue"}, {"internal/confirm/confirm.go", "Apply"}}, "mod-confirm", confirmKeySig, nil},
+		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil},
+		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil},
 		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", fields("extraction json", "internal/extract.rawResult", "json"), nil},
 		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", fields(".abbd/project.yaml", "internal/store.Project", "yaml"), nil},
-		{"data-intended", "DATA", "intended topology", []anchor{{"internal/store/store.go", "SaveIntended"}, {"internal/store/store.go", "LoadIntended"}, {"internal/topology/topology.go", "Intended"}}, "mod-store", fields(".abbd/intended.yaml", "internal/topology.Intended", "yaml"), nil},
 		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", fields(".abbd/{architecture,features}/ID.md frontmatter", "internal/model.Unit", "yaml"), nil},
-		{"data-changes", "DATA", "change records", []anchor{{"internal/store/turn.go", "SaveTurn"}, {"internal/store/turn.go", "LoadTurns"}, {"internal/turn/turn.go", "Turn"}}, "mod-store", fields(".abbd/changes/CHG-*.md frontmatter", "internal/turn.Turn", "yaml"), nil},
-		{"data-decisions", "DATA", "decision records", []anchor{{"internal/store/store.go", "WriteADR"}, {"internal/store/turn.go", "LoadADRs"}, {"internal/store/store.go", "ADR"}}, "mod-store", fields(".abbd/decisions/ADR-*.md frontmatter", "internal/store.ADR", "yaml"), nil},
-		{"data-requirements", "DATA", "requirements", []anchor{{"internal/store/turn.go", "WriteRequirement"}, {"internal/store/turn.go", "Requirement"}}, "mod-store", fields(".abbd/requirements/ID.md frontmatter", "internal/store.Requirement", "yaml"), nil},
-		{"data-runs", "DATA", "verification runs", []anchor{{"internal/store/turn.go", "SaveRun"}, {"internal/store/turn.go", "LoadRun"}, {"internal/turn/turn.go", "Run"}}, "mod-store", fields(".abbd/verification/runs/run-*.yaml", "internal/turn.Run", "yaml"), nil},
+		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", fields(".abbd/understanding/MOD.md frontmatter", "internal/store.Understanding", "yaml"), nil},
+		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", fields(".abbd/state.yaml", "internal/store.State", "yaml"), nil},
 		{"data-generated", "DATA", "generated files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", generatedSig, nil},
-		{"cfg-hooks", "CFG", "hook registration", []anchor{{"plugins/abbd/hooks/hooks.json", ""}, {"plugins/abbd/hooks/hooks.json", "hooks"}}, "", hooksJSONSig, nil},
 		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil},
 	}...)
 }
@@ -459,7 +425,7 @@ func consumers(u unit, owners map[string]string) []string {
 }
 
 // spellsCommand reports whether a file of package main names a command as a
-// string, as the screen does to build a command line and the guard to deny one.
+// string, as a message that tells the reader what to run next does.
 func spellsCommand(f *srcFile, name string) bool {
 	found := false
 	ast.Inspect(f.ast, func(n ast.Node) bool {
@@ -830,81 +796,6 @@ func digestOf(parts ...string) string {
 	return hex.EncodeToString(h.Sum(nil))[:16]
 }
 
-func hookSig() (string, error) {
-	cl, err := varLit("cmd/abbd/hook.go", "hooks")
-	if err != nil {
-		return "", err
-	}
-	in, err := structSig("cmd/abbd.hookInput", "json", map[string]bool{})
-	if err != nil {
-		return "", err
-	}
-	out, err := structSig("cmd/abbd.hookOutput", "json", map[string]bool{})
-	if err != nil {
-		return "", err
-	}
-	return "abbd hook {" + strings.Join(mapKeys(cl), ",") + "}; stdin {" + in + "}; stdout {" + out + "}", nil
-}
-
-func serveSig() (string, error) {
-	f := files["cmd/abbd/serve.go"]
-	var routes []string
-	for _, d := range f.ast.Decls {
-		fd, ok := d.(*ast.FuncDecl)
-		if !ok || fd.Name.Name != "ServeHTTP" {
-			continue
-		}
-		ast.Inspect(fd.Body, func(n ast.Node) bool {
-			cc, ok := n.(*ast.CaseClause)
-			if !ok {
-				return true
-			}
-			var p, m string
-			for _, e := range cc.List {
-				ast.Inspect(e, func(n ast.Node) bool {
-					be, ok := n.(*ast.BinaryExpr)
-					if !ok || be.Op != token.EQL {
-						return true
-					}
-					switch exprText(be.X) {
-					case "r.URL.Path":
-						p = lit(be.Y)
-					case "r.Method":
-						m = strings.ToUpper(strings.TrimPrefix(exprText(be.Y), "http.Method"))
-					}
-					return true
-				})
-			}
-			if p != "" {
-				routes = append(routes, m+" "+p)
-			}
-			return true
-		})
-	}
-	sort.Strings(routes)
-	cl, err := varLit("cmd/abbd/serve.go", "actions")
-	if err != nil {
-		return "", err
-	}
-	// The form is f inside the actions and their helpers, and r.PostForm in the handler.
-	form := map[string]bool{"f": true, "r.PostForm": true}
-	formFields := map[string]bool{}
-	ast.Inspect(f.ast, func(n ast.Node) bool {
-		switch n := n.(type) {
-		case *ast.CallExpr:
-			if s, ok := n.Fun.(*ast.SelectorExpr); ok && s.Sel.Name == "Get" && form[exprText(s.X)] && len(n.Args) == 1 && lit(n.Args[0]) != "" {
-				formFields[lit(n.Args[0])] = true
-			}
-		case *ast.IndexExpr:
-			if v := lit(n.Index); v != "" && form[exprText(n.X)] {
-				formFields[v] = true
-			}
-		}
-		return true
-	})
-	return strings.Join(routes, "; ") + "; act do={" + strings.Join(mapKeys(cl), ",") + "} form{" + strings.Join(sortedKeys(formFields), ",") + "}", nil
-}
-
 func exprText(e ast.Expr) string {
 	switch e := e.(type) {
 	case *ast.Ident:
@@ -939,41 +830,12 @@ func constValues(file, typ string) []string {
 	return out
 }
 
-func changeKeySig() (string, error) {
-	changes := constValues("internal/topology/topology.go", "Change")
+func edgeKeySig() (string, error) {
 	kinds := constValues("internal/model/model.go", "RelationKind")
-	if len(changes) == 0 || len(kinds) == 0 {
-		return "", fmt.Errorf("no Change or RelationKind constants")
+	if len(kinds) == 0 {
+		return "", fmt.Errorf("no RelationKind constants")
 	}
-	return "{" + strings.Join(changes, ",") + "}:ID or :ID.{" + strings.Join(kinds, ",") + "}.ID", nil
-}
-
-// confirmKeySig reads the ".field" suffixes Queue names its fact items with.
-func confirmKeySig() (string, error) {
-	var suffixes []string
-	for _, d := range files["internal/confirm/confirm.go"].ast.Decls {
-		fd, ok := d.(*ast.FuncDecl)
-		if !ok || fd.Name.Name != "Queue" {
-			continue
-		}
-		ast.Inspect(fd.Body, func(n ast.Node) bool {
-			if v := lit(asExpr(n)); strings.HasPrefix(v, ".") {
-				suffixes = append(suffixes, strings.TrimPrefix(v, "."))
-			}
-			return true
-		})
-	}
-	sort.Strings(suffixes)
-	kinds := constValues("internal/model/model.go", "RelationKind")
-	if len(suffixes) == 0 {
-		return "", fmt.Errorf("Queue names no fact items")
-	}
-	return "ID.{" + strings.Join(suffixes, ",") + "} or ID.{" + strings.Join(kinds, ",") + "}.ID", nil
-}
-
-func asExpr(n ast.Node) ast.Expr {
-	e, _ := n.(ast.Expr)
-	return e
+	return "ID.{" + strings.Join(kinds, ",") + "}.ID", nil
 }
 
 func generatedSig() (string, error) {
@@ -998,63 +860,6 @@ func generatedSig() (string, error) {
 		return "", err
 	}
 	return ".abbd/generated/{" + strings.Join(names, ",") + "}; graph.json {" + graph + "}", nil
-}
-
-type hookFile struct {
-	Hooks map[string][]struct {
-		Matcher string `json:"matcher"`
-		Hooks   []struct {
-			Command string   `json:"command"`
-			Args    []string `json:"args"`
-		} `json:"hooks"`
-	} `json:"hooks"`
-}
-
-func readHooks() (hookFile, error) {
-	var h hookFile
-	b, err := os.ReadFile("plugins/abbd/hooks/hooks.json")
-	if err != nil {
-		return h, err
-	}
-	return h, json.Unmarshal(b, &h)
-}
-
-func hooksJSONSig() (string, error) {
-	h, err := readHooks()
-	if err != nil {
-		return "", err
-	}
-	var parts []string
-	for _, ev := range sortedKeys(h.Hooks) {
-		for _, g := range h.Hooks[ev] {
-			for _, c := range g.Hooks {
-				s := ev
-				if g.Matcher != "" {
-					s += "[" + g.Matcher + "]"
-				}
-				parts = append(parts, s+" -> "+strings.Join(append([]string{c.Command}, c.Args...), " "))
-			}
-		}
-	}
-	sort.Strings(parts)
-	return strings.Join(parts, "; "), nil
-}
-
-func hooksCallAbbdHook() bool {
-	h, err := readHooks()
-	if err != nil {
-		return false
-	}
-	for _, gs := range h.Hooks {
-		for _, g := range gs {
-			for _, c := range g.Hooks {
-				if c.Command == "abbd" && len(c.Args) > 0 && c.Args[0] == "hook" {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 func pluginSig() (string, error) {
@@ -1091,20 +896,14 @@ var (
 	abbdCmd   = regexp.MustCompile(`\babbd[ \t]+([a-z]+)(?:[ \t]+([a-z]+))?`)
 )
 
-// features are the plugin skills. A skill owns an agent file when it names
-// the agent as abbd:<name>. A skill consumes the CLI when its code spans run
-// an abbd command, and the change key when they quote one.
+// features are the plugin skills. A skill consumes the CLI when its code
+// spans run an abbd command.
 func features() ([]unit, []relation, error) {
 	skills, err := filepath.Glob("plugins/abbd/skills/*/SKILL.md")
 	if err != nil {
 		return nil, nil, err
 	}
-	agents, err := filepath.Glob("plugins/abbd/agents/*.md")
-	if err != nil {
-		return nil, nil, err
-	}
 	sort.Strings(skills)
-	sort.Strings(agents)
 	cmds, err := varLit("cmd/abbd/main.go", "commands")
 	if err != nil {
 		return nil, nil, err
@@ -1113,7 +912,6 @@ func features() ([]unit, []relation, error) {
 	for _, k := range mapKeys(cmds) {
 		known[k] = true
 	}
-	changes := constValues("internal/topology/topology.go", "Change")
 	var units []unit
 	var rels []relation
 	for _, s := range skills {
@@ -1129,15 +927,8 @@ func features() ([]unit, []relation, error) {
 		}
 		key := "feat-" + m[1]
 		u := unit{Key: key, Kind: "FEAT", Name: "/" + m[1], Anchors: []anchor{{Path: s, Symbol: m[1]}, {Path: path.Dir(s)}}}
-		for _, a := range agents {
-			a = filepath.ToSlash(a)
-			am := frontName.FindStringSubmatch(readOrEmpty(a))
-			if am != nil && strings.Contains(text, "abbd:"+am[1]) {
-				u.Anchors = append(u.Anchors, anchor{Path: a, Symbol: am[1]})
-			}
-		}
 		units = append(units, u)
-		usesCLI, usesKey := false, false
+		usesCLI := false
 		for _, span := range codeSpan.FindAllString(text, -1) {
 			for _, cm := range abbdCmd.FindAllStringSubmatch(span, -1) {
 				cmd := cm[1] + " " + cm[2]
@@ -1149,21 +940,10 @@ func features() ([]unit, []relation, error) {
 					rels = append(rels, relation{key, "if-cli-" + strings.ReplaceAll(cmd, " ", "-"), "consumes"})
 				}
 			}
-			for _, c := range changes {
-				usesKey = usesKey || strings.Contains(span, c+":")
-			}
 		}
 		if usesCLI {
 			rels = append(rels, relation{key, "if-cli", "consumes"})
 		}
-		if usesKey {
-			rels = append(rels, relation{key, "if-change-key", "consumes"})
-		}
 	}
 	return units, rels, nil
-}
-
-func readOrEmpty(p string) string {
-	b, _ := os.ReadFile(p)
-	return string(b)
 }

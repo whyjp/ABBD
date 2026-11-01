@@ -8,7 +8,6 @@ import (
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/topology"
 )
 
 // evidenceFlags collects every --evidence on the command line.
@@ -44,19 +43,11 @@ func (e env) citations() ([]model.Evidence, error) {
 	return es, nil
 }
 
-func presentUnit(v view, id model.ID) (model.Unit, bool) {
-	i := slices.IndexFunc(v.units, func(u model.Unit) bool { return u.ID == id && !u.Absent })
-	if i < 0 {
-		return model.Unit{}, false
-	}
-	return v.units[i], true
-}
-
 // proposeRelation records an agent's guess at a coupling. It stays INFERRED
 // and UNCONFIRMED: the impact follows it while its evidence is live, and only
 // a human's confirm lets it gate.
 func (e env) proposeRelation(pos []string) error {
-	edge, err := topology.ParseEdge(strings.Join(pos, "."))
+	edge, err := model.ParseEdge(strings.Join(pos, "."))
 	if err != nil {
 		return err
 	}
@@ -73,29 +64,25 @@ func (e env) proposeRelation(pos []string) error {
 	if err := edge.Joins(); err != nil {
 		return err
 	}
-	v, err := e.load()
+	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
-	u, ok := presentUnit(v, edge.From)
-	if _, okTo := presentUnit(v, edge.To); !ok || !okTo {
+	u, ok := presentUnit(units, edge.From)
+	if _, okTo := presentUnit(units, edge.To); !ok || !okTo {
 		return fmt.Errorf("%s names a unit the actual topology does not have", edge)
 	}
 	es, err := e.citations()
 	if err != nil {
 		return err
 	}
-	rel := model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.Inferred, Confirmation: model.Unconfirmed, Via: via, Evidence: es}
+	rel := model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.Inferred, Via: via, Evidence: es}
 	rels := slices.Clone(u.Relations)
 	switch i := slices.IndexFunc(rels, func(r model.Relation) bool { return r.To == edge.To && r.Kind == edge.Kind }); {
 	case i < 0:
 		rels = append(rels, rel)
-	case rels[i].Counts():
-		return fmt.Errorf("%s is already part of the actual topology", edge)
-	case rels[i].Confirmation == model.Rejected:
-		return fmt.Errorf("a human rejected %s; it stays rejected", edge)
-	case rels[i].Confirmation == model.Confirmed:
-		return fmt.Errorf("a human confirmed %s; its evidence is gone, so it waits for that human as a removed relation", edge)
+	case rels[i].Origin != model.Inferred:
+		return fmt.Errorf("%s is already %s", edge, rels[i].Origin)
 	default:
 		rels[i] = rel
 	}
@@ -104,7 +91,7 @@ func (e env) proposeRelation(pos []string) error {
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "proposed %s via %s, INFERRED and UNCONFIRMED; a human confirms it with abbd confirm %s\n", edge, via, edge)
+	fmt.Fprintf(e.stdout, "proposed %s via %s, INFERRED\n", edge, via)
 	return nil
 }
 
@@ -118,12 +105,12 @@ func (e env) proposeUnit(pos []string) error {
 	if name == "" {
 		return fmt.Errorf("name the unit")
 	}
-	v, err := e.load()
+	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
 	parent := model.ID(e.parent)
-	if p, ok := presentUnit(v, parent); parent != "" && (!ok || p.Kind != model.Module) {
+	if p, ok := presentUnit(units, parent); parent != "" && (!ok || p.Kind != model.Module) {
 		return fmt.Errorf("--parent %s is not a module of the actual topology", parent)
 	}
 	es, err := e.citations()
@@ -135,7 +122,7 @@ func (e env) proposeUnit(pos []string) error {
 		anchors = append(anchors, ev.Anchor())
 	}
 	anchors = model.SortAnchors(anchors)
-	for _, u := range topology.Present(v.units) {
+	for _, u := range model.Present(units) {
 		// Many units can live in one file, so the same file alone does not
 		// make the same unit; the same quoted code does.
 		if u.Kind == kind && slices.Equal(u.Anchors, anchors) && slices.Equal(u.Evidence, es) {
@@ -149,7 +136,7 @@ func (e env) proposeUnit(pos []string) error {
 	if state.HighWater == nil {
 		state.HighWater = map[model.Kind]int{}
 	}
-	for _, u := range v.units {
+	for _, u := range units {
 		if k, n, err := model.ParseID(string(u.ID)); err == nil && k == kind && n > state.HighWater[kind] {
 			state.HighWater[kind] = n
 		}
@@ -157,10 +144,10 @@ func (e env) proposeUnit(pos []string) error {
 	state.HighWater[kind]++
 	u := model.Unit{
 		ID: model.FormatID(kind, state.HighWater[kind]), Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,
-		Name: model.Fact{Value: name, Origin: model.Inferred, Confirmation: model.Unconfirmed},
+		Name: model.Fact{Value: name, Origin: model.Inferred},
 	}
 	if r := strings.TrimSpace(e.responsibility); r != "" {
-		u.Responsibility = &model.Fact{Value: r, Origin: model.Inferred, Confirmation: model.Unconfirmed}
+		u.Responsibility = &model.Fact{Value: r, Origin: model.Inferred}
 	}
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
@@ -176,7 +163,7 @@ func (e env) proposeUnit(pos []string) error {
 // quote is in the working tree now and where. It reads and never writes, so
 // the same tree prints the same lines.
 func (e env) checkEvidence() error {
-	v, err := e.load()
+	stored, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
@@ -199,7 +186,7 @@ func (e env) checkEvidence() error {
 			fmt.Fprintf(e.stdout, "%s %s: %s\n", state, subject, ev)
 		}
 	}
-	units := slices.Clone(v.units)
+	units := slices.Clone(stored)
 	slices.SortFunc(units, func(a, b model.Unit) int { return strings.Compare(string(a.ID), string(b.ID)) })
 	for _, u := range units {
 		if u.Absent && !u.Semantic() {
@@ -210,7 +197,7 @@ func (e env) checkEvidence() error {
 		}
 		for _, r := range u.Relations {
 			for _, ev := range r.Evidence {
-				line(topology.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev)
+				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev)
 			}
 		}
 	}
