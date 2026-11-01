@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -125,18 +126,13 @@ func (c *Checker) Apply(units []model.Unit) []model.Unit {
 			live, _ := c.all(u.Evidence)
 			u.Absent = !live
 		}
-		rels := make([]model.Relation, len(u.Relations))
+		u.Relations = slices.Clone(u.Relations)
 		for j, r := range u.Relations {
 			if r.Semantic() {
 				live, digest := c.all(r.Evidence)
-				r.Dead, r.Digest = !live, digest
+				u.Relations[j].Dead, u.Relations[j].Digest = !live, digest
 			}
-			rels[j] = r
 		}
-		if u.Relations == nil {
-			rels = nil
-		}
-		u.Relations = rels
 		out[i] = u
 	}
 	return out
