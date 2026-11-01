@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "1cccbcb6b53c6410c7dcb3d1935b5a5eb6c0a0270f013f79b8a946f6d79c8b82"
+    "inputs_hash": "b5224a9f84b56a1284a987e9d6dccdb1c5ad71bdba51b7defdd86939d1995cf4"
   },
   "units": [
     {
@@ -993,7 +993,7 @@
       "Evidence": [
         "cmd/abbd/record.go:36 \"if !c.Check(ev).Live {\"",
         "cmd/abbd/record.go:89 \"case rels[i].Origin == model.UserStated \u0026\u0026 rel.Origin == model.Inferred:\"",
-        "cmd/abbd/record.go:206 \"var statedFields = map[string]func(*model.Unit) **model.Fact{\"",
+        "cmd/abbd/record.go:209 \"var statedFields = map[string]func(*model.Unit) **model.Fact{\"",
         "cmd/abbd/understand.go:45 \"if prev, ok := old[id]; ok \u0026\u0026 prev.Digest != digest \u0026\u0026 strings.TrimSpace(prev.Text) == text {\""
       ]
     },
@@ -2225,14 +2225,6 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Quote": "cmd/abbd/main.go:347 \"return u.ID == id \u0026\u0026 !u.Absent })\""
-    },
-    {
-      "From": "MOD-0001",
-      "To": "DATA-0016",
-      "Kind": "provides",
-      "Origin": "INFERRED",
-      "Via": "data",
-      "Quote": "cmd/abbd/record.go:145 \"ID: id, Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,\""
     },
     {
       "From": "MOD-0001",
@@ -6595,7 +6587,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -7369,7 +7361,6 @@
             "top-level unit rule",
             "unit kind directories",
             "unit absent flag",
-            "empty parent origin means extracted",
             "evidence citation"
           ]
         }
@@ -7423,15 +7414,6 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/main.go:347 \"return u.ID == id \u0026\u0026 !u.Absent })\""
-          ]
-        },
-        {
-          "From": "abbd CLI",
-          "To": "empty parent origin means extracted",
-          "Kind": "provides",
-          "Via": "data",
-          "Quotes": [
-            "cmd/abbd/record.go:145 \"ID: id, Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,\""
           ]
         },
         {
@@ -12625,7 +12607,7 @@
       "Name": "internal/model",
       "Drawing": {
         "Width": 710,
-        "Height": 716,
+        "Height": 708,
         "Boxes": [
           {
             "ID": "DATA-0010",
@@ -12637,21 +12619,21 @@
               {
                 "S": "drawn versus listed",
                 "X": 68,
-                "Y": 369
+                "Y": 361
               },
               {
                 "S": "relation rule",
                 "X": 68,
-                "Y": 385
+                "Y": 377
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 68,
-              "Y": 402
+              "Y": 394
             },
             "X": 60,
-            "Y": 350,
+            "Y": 342,
             "W": 174,
             "H": 60
           },
@@ -12665,16 +12647,16 @@
               {
                 "S": "unit kind directories",
                 "X": 282,
-                "Y": 377
+                "Y": 369
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 282,
-              "Y": 394
+              "Y": 386
             },
             "X": 274,
-            "Y": 358,
+            "Y": 350,
             "W": 188,
             "H": 44
           },
@@ -12688,16 +12670,16 @@
               {
                 "S": "unit absent flag",
                 "X": 510,
-                "Y": 377
+                "Y": 369
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 510,
-              "Y": 394
+              "Y": 386
             },
             "X": 502,
-            "Y": 358,
+            "Y": 350,
             "W": 148,
             "H": 44
           },
@@ -12711,21 +12693,21 @@
               {
                 "S": "empty parent origin",
                 "X": 32,
-                "Y": 465
+                "Y": 457
               },
               {
                 "S": "means extracted",
                 "X": 32,
-                "Y": 481
+                "Y": 473
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 32,
-              "Y": 498
+              "Y": 490
             },
             "X": 24,
-            "Y": 446,
+            "Y": 438,
             "W": 174,
             "H": 60
           },
@@ -12739,16 +12721,16 @@
               {
                 "S": "evidence line range text",
                 "X": 246,
-                "Y": 473
+                "Y": 465
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 246,
-              "Y": 490
+              "Y": 482
             },
             "X": 238,
-            "Y": 454,
+            "Y": 446,
             "W": 212,
             "H": 44
           },
@@ -12762,16 +12744,16 @@
               {
                 "S": "citable evidence paths",
                 "X": 498,
-                "Y": 473
+                "Y": 465
               }
             ],
             "Sub": {
               "S": "데이터",
               "X": 498,
-              "Y": 490
+              "Y": 482
             },
             "X": 490,
-            "Y": 454,
+            "Y": 446,
             "W": 196,
             "H": 44
           },
@@ -12785,16 +12767,16 @@
               {
                 "S": "unit ID format",
                 "X": 203,
-                "Y": 649
+                "Y": 641
               }
             ],
             "Sub": {
               "S": "인터페이스",
               "X": 203,
-              "Y": 666
+              "Y": 658
             },
             "X": 195,
-            "Y": 630,
+            "Y": 622,
             "W": 140,
             "H": 44
           },
@@ -12808,16 +12790,16 @@
               {
                 "S": "evidence citation",
                 "X": 99,
-                "Y": 565
+                "Y": 557
               }
             ],
             "Sub": {
               "S": "인터페이스",
               "X": 99,
-              "Y": 582
+              "Y": 574
             },
             "X": 91,
-            "Y": 546,
+            "Y": 538,
             "W": 156,
             "H": 44
           },
@@ -12831,21 +12813,21 @@
               {
                 "S": "guess versus",
                 "X": 295,
-                "Y": 557
+                "Y": 549
               },
               {
                 "S": "topology rule",
                 "X": 295,
-                "Y": 573
+                "Y": 565
               }
             ],
             "Sub": {
               "S": "모듈",
               "X": 295,
-              "Y": 590
+              "Y": 582
             },
             "X": 287,
-            "Y": 538,
+            "Y": 530,
             "W": 140,
             "H": 60
           },
@@ -12859,16 +12841,16 @@
               {
                 "S": "relation grammar",
                 "X": 475,
-                "Y": 565
+                "Y": 557
               }
             ],
             "Sub": {
               "S": "모듈",
               "X": 475,
-              "Y": 582
+              "Y": 574
             },
             "X": 467,
-            "Y": 546,
+            "Y": 538,
             "W": 152,
             "H": 44
           },
@@ -12882,16 +12864,16 @@
               {
                 "S": "fact origins",
                 "X": 383,
-                "Y": 649
+                "Y": 641
               }
             ],
             "Sub": {
               "S": "모듈",
               "X": 383,
-              "Y": 666
+              "Y": 658
             },
             "X": 375,
-            "Y": 630,
+            "Y": 622,
             "W": 140,
             "H": 44
           }
@@ -12903,7 +12885,7 @@
             "Class": "other",
             "Title": "계약 없이 abbd CLI와 닿는 곳",
             "Exit": true,
-            "X": 346,
+            "X": 483,
             "Y": 18,
             "W": 74,
             "Href": "#m-MOD-0001"
@@ -12925,7 +12907,7 @@
             "Class": "other",
             "Title": "계약 없이 internal/evidence와 닿는 곳",
             "Exit": true,
-            "X": 489,
+            "X": 411,
             "Y": 18,
             "W": 68,
             "Href": "#m-MOD-0013"
@@ -12936,7 +12918,7 @@
             "Class": "other",
             "Title": "계약 없이 internal/extract와 닿는 곳",
             "Exit": true,
-            "X": 424,
+            "X": 346,
             "Y": 18,
             "W": 61,
             "Href": "#m-MOD-0017"
@@ -13010,26 +12992,7 @@
         ],
         "Wires": [
           {
-            "D": "M361 38 L361 86 L682 86",
-            "Kind": "provides",
-            "Title": "abbd CLI provides empty parent origin means extracted (via data), 판독",
-            "Origin": "inferred",
-            "Joins": true,
-            "Back": true,
-            "Via": "data",
-            "Marks": [
-              {
-                "X": 361,
-                "Y": 38,
-                "Origin": "inferred"
-              }
-            ],
-            "Rels": [
-              "MOD-0001.provides.DATA-0016"
-            ]
-          },
-          {
-            "D": "M405 38 L405 102 L658 102",
+            "D": "M536 38 L536 62 L674 62",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on relation grammar (via call), 판독",
             "Origin": "inferred",
@@ -13037,7 +13000,7 @@
             "Via": "call",
             "Marks": [
               {
-                "X": 405,
+                "X": 536,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13047,7 +13010,7 @@
             ]
           },
           {
-            "D": "M51 38 L51 190 L682 190",
+            "D": "M51 38 L51 182 L658 182",
             "Kind": "provides",
             "Title": "internal/bootstrap provides empty parent origin means extracted (via data), 판독",
             "Origin": "inferred",
@@ -13066,7 +13029,7 @@
             ]
           },
           {
-            "D": "M634 110 L634 258 L490 258 L490 418 L393 418 L393 454",
+            "D": "M634 102 L634 250 L490 250 L490 410 L393 410 L393 446",
             "Kind": "provides",
             "Title": "internal/evidence provides evidence line range text (via data), 판독",
             "Back": true,
@@ -13076,7 +13039,7 @@
             ]
           },
           {
-            "D": "M523 38 L523 126 L610 126",
+            "D": "M445 38 L445 110 L610 110",
             "Kind": "depends_on",
             "Title": "liveness and line moves depends_on guess versus topology rule (via call), 판독",
             "Origin": "inferred",
@@ -13084,7 +13047,7 @@
             "Via": "call",
             "Marks": [
               {
-                "X": 523,
+                "X": 445,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13094,7 +13057,7 @@
             ]
           },
           {
-            "D": "M467 38 L467 94 L658 94",
+            "D": "M389 38 L389 86 L674 86",
             "Kind": "depends_on",
             "Title": "key and parent checks depends_on relation grammar (via call), 판독",
             "Origin": "inferred",
@@ -13102,7 +13065,7 @@
             "Via": "call",
             "Marks": [
               {
-                "X": 467,
+                "X": 389,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13112,7 +13075,7 @@
             ]
           },
           {
-            "D": "M441 38 L441 54 L674 54",
+            "D": "M363 38 L363 70 L682 70",
             "Kind": "consumes",
             "Title": "untrusted-output gate consumes evidence citation (via call), 판독",
             "Origin": "inferred",
@@ -13120,7 +13083,7 @@
             "Via": "call",
             "Marks": [
               {
-                "X": 441,
+                "X": 363,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13130,7 +13093,7 @@
             ]
           },
           {
-            "D": "M632 38 L632 62 L618 62",
+            "D": "M632 38 L632 94 L618 94",
             "Kind": "consumes",
             "Title": "internal/gitx consumes citable evidence paths (via data), 판독",
             "Origin": "inferred",
@@ -13148,7 +13111,7 @@
             ]
           },
           {
-            "D": "M323 38 L323 174 L610 174",
+            "D": "M323 38 L323 166 L610 166",
             "Kind": "depends_on",
             "Title": "internal/identity depends_on guess versus topology rule (via call), 판독",
             "Origin": "inferred",
@@ -13166,7 +13129,7 @@
             ]
           },
           {
-            "D": "M120 38 L120 214 L602 214",
+            "D": "M120 38 L120 206 L602 206",
             "Kind": "consumes",
             "Title": "internal/screen consumes drawn versus listed relation rule (via data), 판독",
             "Origin": "inferred",
@@ -13184,7 +13147,7 @@
             ]
           },
           {
-            "D": "M594 206 L594 250 L270 250 L270 418 L295 418 L295 454",
+            "D": "M594 190 L594 242 L270 242 L270 410 L295 410 L295 446",
             "Kind": "consumes",
             "Title": "internal/topology consumes evidence line range text (via data), 판독",
             "Via": "data",
@@ -13193,7 +13156,7 @@
             ]
           },
           {
-            "D": "M200 38 L200 182 L610 182",
+            "D": "M200 38 L200 174 L610 174",
             "Kind": "depends_on",
             "Title": "internal/topology depends_on guess versus topology rule (via call), 판독",
             "Origin": "inferred",
@@ -13230,7 +13193,7 @@
             ]
           },
           {
-            "D": "M236 38 L236 166 L642 166",
+            "D": "M236 38 L236 150 L642 150",
             "Kind": "consumes",
             "Title": "internal/group consumes empty parent origin means extracted (via data), 판독",
             "Origin": "inferred",
@@ -13248,24 +13211,24 @@
             ]
           },
           {
-            "D": "M383 38 L383 70 M383 70 L698 70",
+            "D": "M503 38 L503 54 M503 54 L698 54",
             "Kind": "consumes",
             "Title": "abbd CLI consumes unit kind directories (via data), 판독\nabbd CLI consumes unit absent flag (via data), 판독\nabbd CLI consumes evidence citation (via call), 판독",
             "Origin": "inferred",
             "Joins": true,
             "Marks": [
               {
-                "X": 383,
+                "X": 503,
                 "Y": 38,
                 "Origin": "inferred"
               },
               {
-                "X": 383,
+                "X": 503,
                 "Y": 38,
                 "Origin": "inferred"
               },
               {
-                "X": 383,
+                "X": 503,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13277,28 +13240,28 @@
             ],
             "Count": 3,
             "Net": 1,
-            "LX": 388,
+            "LX": 508,
             "LY": 52
           },
           {
-            "D": "M503 38 L503 150 M503 150 L674 150",
+            "D": "M425 38 L425 134 M425 134 L682 134",
             "Kind": "consumes",
             "Title": "internal/evidence consumes empty parent origin means extracted (via data), 판독\ninternal/evidence consumes citable evidence paths (via data), 판독\nquote matching consumes evidence citation (via call), 판독",
             "Origin": "inferred",
             "Joins": true,
             "Marks": [
               {
-                "X": 503,
+                "X": 425,
                 "Y": 38,
                 "Origin": "inferred"
               },
               {
-                "X": 503,
+                "X": 425,
                 "Y": 38,
                 "Origin": "inferred"
               },
               {
-                "X": 503,
+                "X": 425,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13310,11 +13273,11 @@
             ],
             "Count": 3,
             "Net": 2,
-            "LX": 508,
+            "LX": 430,
             "LY": 52
           },
           {
-            "D": "M543 38 L543 110 M543 110 L650 110",
+            "D": "M465 38 L465 102 M465 102 L650 102",
             "Kind": "provides",
             "Title": "internal/evidence provides unit absent flag (via data), 판독\ninternal/evidence provides evidence line range text (via data), 판독",
             "Origin": "inferred",
@@ -13322,12 +13285,12 @@
             "Back": true,
             "Marks": [
               {
-                "X": 543,
+                "X": 465,
                 "Y": 38,
                 "Origin": "inferred"
               },
               {
-                "X": 543,
+                "X": 465,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -13338,11 +13301,11 @@
             ],
             "Count": 2,
             "Net": 3,
-            "LX": 548,
+            "LX": 470,
             "LY": 52
           },
           {
-            "D": "M293 38 L293 134 M293 134 L682 134",
+            "D": "M293 38 L293 126 M293 126 L658 126",
             "Kind": "provides",
             "Title": "internal/identity provides unit absent flag (via data), 판독\ninternal/identity provides empty parent origin means extracted (via data), 판독",
             "Origin": "inferred",
@@ -13397,7 +13360,7 @@
             "LY": 52
           },
           {
-            "D": "M170 38 L170 206 M170 206 L642 206",
+            "D": "M170 38 L170 190 M170 190 L642 190",
             "Kind": "consumes",
             "Title": "internal/topology consumes drawn versus listed relation rule (via data), 판독\ninternal/topology consumes empty parent origin means extracted (via data), 판독\ninternal/topology consumes evidence line range text (via data), 판독",
             "Origin": "inferred",
@@ -13430,7 +13393,7 @@
             "LY": 52
           },
           {
-            "D": "M602 206 L602 234 M147 234 L602 234",
+            "D": "M602 190 L602 226 M147 226 L602 226",
             "Kind": "consumes",
             "Title": "internal/screen consumes drawn versus listed relation rule (via data), 판독\ninternal/topology consumes drawn versus listed relation rule (via data), 판독",
             "Joins": true,
@@ -13441,7 +13404,7 @@
             "Net": 7
           },
           {
-            "D": "M147 234 L147 350",
+            "D": "M147 226 L147 342",
             "Kind": "consumes",
             "Title": "internal/screen consumes drawn versus listed relation rule (via data), 판독\ninternal/topology consumes drawn versus listed relation rule (via data), 판독",
             "Rels": [
@@ -13451,10 +13414,10 @@
             "Count": 2,
             "Net": 7,
             "LX": 152,
-            "LY": 296
+            "LY": 288
           },
           {
-            "D": "M698 46 L698 322 M368 322 L698 322",
+            "D": "M698 46 L698 314 M368 314 L698 314",
             "Kind": "consumes",
             "Title": "abbd CLI consumes unit kind directories (via data), 판독\ninternal/store consumes unit kind directories (via data), 판독",
             "Joins": true,
@@ -13465,7 +13428,7 @@
             "Net": 8
           },
           {
-            "D": "M368 322 L368 358",
+            "D": "M368 314 L368 350",
             "Kind": "consumes",
             "Title": "abbd CLI consumes unit kind directories (via data), 판독\ninternal/store consumes unit kind directories (via data), 판독",
             "Rels": [
@@ -13475,10 +13438,10 @@
             "Count": 2,
             "Net": 8,
             "LX": 373,
-            "LY": 344
+            "LY": 336
           },
           {
-            "D": "M690 46 L690 330 M609 330 L690 330",
+            "D": "M690 46 L690 322 M609 322 L690 322",
             "Kind": "consumes",
             "Title": "abbd CLI consumes unit absent flag (via data), 판독\ninternal/store consumes unit absent flag (via data), 판독",
             "Joins": true,
@@ -13489,7 +13452,7 @@
             "Net": 9
           },
           {
-            "D": "M609 330 L609 358",
+            "D": "M609 322 L609 350",
             "Kind": "consumes",
             "Title": "abbd CLI consumes unit absent flag (via data), 판독\ninternal/store consumes unit absent flag (via data), 판독",
             "Rels": [
@@ -13499,10 +13462,10 @@
             "Count": 2,
             "Net": 9,
             "LX": 614,
-            "LY": 348
+            "LY": 340
           },
           {
-            "D": "M650 110 L650 314 M543 314 L650 314",
+            "D": "M650 102 L650 306 M543 306 L650 306",
             "Kind": "provides",
             "Title": "internal/evidence provides unit absent flag (via data), 판독\ninternal/identity provides unit absent flag (via data), 판독\ninternal/group provides unit absent flag (via data), 판독",
             "Joins": true,
@@ -13515,7 +13478,7 @@
             "Net": 10
           },
           {
-            "D": "M543 314 L543 358",
+            "D": "M543 306 L543 350",
             "Kind": "provides",
             "Title": "internal/evidence provides unit absent flag (via data), 판독\ninternal/identity provides unit absent flag (via data), 판독\ninternal/group provides unit absent flag (via data), 판독",
             "Back": true,
@@ -13527,10 +13490,10 @@
             "Count": 3,
             "Net": 10,
             "LX": 548,
-            "LY": 340
+            "LY": 332
           },
           {
-            "D": "M642 150 L642 274 M642 274 L262 274 M262 274 L262 426 M150 426 L262 426",
+            "D": "M642 134 L642 274 M642 274 L262 274 M262 274 L262 418 M150 418 L262 418",
             "Kind": "consumes",
             "Title": "internal/evidence consumes empty parent origin means extracted (via data), 판독\ninternal/topology consumes empty parent origin means extracted (via data), 판독\ninternal/group consumes empty parent origin means extracted (via data), 판독",
             "Joins": true,
@@ -13542,7 +13505,7 @@
             "Net": 11
           },
           {
-            "D": "M150 426 L150 446",
+            "D": "M150 418 L150 438",
             "Kind": "consumes",
             "Title": "internal/evidence consumes empty parent origin means extracted (via data), 판독\ninternal/topology consumes empty parent origin means extracted (via data), 판독\ninternal/group consumes empty parent origin means extracted (via data), 판독",
             "Rels": [
@@ -13553,38 +13516,36 @@
             "Count": 3,
             "Net": 11,
             "LX": 155,
-            "LY": 440
+            "LY": 432
           },
           {
-            "D": "M682 86 L682 282 M682 282 L48 282 M48 282 L48 418 M48 418 L71 418",
+            "D": "M658 126 L658 266 M658 266 L48 266 M48 266 L48 410 M48 410 L71 410",
             "Kind": "provides",
-            "Title": "abbd CLI provides empty parent origin means extracted (via data), 판독\ninternal/bootstrap provides empty parent origin means extracted (via data), 판독\ninternal/identity provides empty parent origin means extracted (via data), 판독",
+            "Title": "internal/bootstrap provides empty parent origin means extracted (via data), 판독\ninternal/identity provides empty parent origin means extracted (via data), 판독",
             "Joins": true,
             "Back": true,
             "Rels": [
-              "MOD-0001.provides.DATA-0016",
               "MOD-0009.provides.DATA-0016",
               "MOD-0026.provides.DATA-0016"
             ],
             "Net": 12
           },
           {
-            "D": "M71 418 L71 446",
+            "D": "M71 410 L71 438",
             "Kind": "provides",
-            "Title": "abbd CLI provides empty parent origin means extracted (via data), 판독\ninternal/bootstrap provides empty parent origin means extracted (via data), 판독\ninternal/identity provides empty parent origin means extracted (via data), 판독",
+            "Title": "internal/bootstrap provides empty parent origin means extracted (via data), 판독\ninternal/identity provides empty parent origin means extracted (via data), 판독",
             "Back": true,
             "Rels": [
-              "MOD-0001.provides.DATA-0016",
               "MOD-0009.provides.DATA-0016",
               "MOD-0026.provides.DATA-0016"
             ],
-            "Count": 3,
+            "Count": 2,
             "Net": 12,
             "LX": 76,
-            "LY": 436
+            "LY": 428
           },
           {
-            "D": "M618 62 L618 338 M618 338 L662 338 M662 338 L662 418 M588 418 L662 418",
+            "D": "M618 94 L618 330 M618 330 L662 330 M662 330 L662 410 M588 410 L662 410",
             "Kind": "consumes",
             "Title": "internal/evidence consumes citable evidence paths (via data), 판독\ninternal/gitx consumes citable evidence paths (via data), 판독",
             "Joins": true,
@@ -13595,7 +13556,7 @@
             "Net": 13
           },
           {
-            "D": "M588 418 L588 454",
+            "D": "M588 410 L588 446",
             "Kind": "consumes",
             "Title": "internal/evidence consumes citable evidence paths (via data), 판독\ninternal/gitx consumes citable evidence paths (via data), 판독",
             "Rels": [
@@ -13605,10 +13566,10 @@
             "Count": 2,
             "Net": 13,
             "LX": 593,
-            "LY": 440
+            "LY": 432
           },
           {
-            "D": "M674 54 L674 290 M674 290 L254 290 M254 290 L254 418 M254 418 L218 418 M218 418 L218 514 M169 514 L218 514",
+            "D": "M682 54 L682 282 M682 282 L254 282 M254 282 L254 410 M254 410 L218 410 M218 410 L218 506 M169 506 L218 506",
             "Kind": "consumes",
             "Title": "abbd CLI consumes evidence citation (via call), 판독\nquote matching consumes evidence citation (via call), 판독\nuntrusted-output gate consumes evidence citation (via call), 판독",
             "Joins": true,
@@ -13620,7 +13581,7 @@
             "Net": 14
           },
           {
-            "D": "M169 514 L169 546",
+            "D": "M169 506 L169 538",
             "Kind": "consumes",
             "Title": "abbd CLI consumes evidence citation (via call), 판독\nquote matching consumes evidence citation (via call), 판독\nuntrusted-output gate consumes evidence citation (via call), 판독",
             "Rels": [
@@ -13631,10 +13592,10 @@
             "Count": 3,
             "Net": 14,
             "LX": 174,
-            "LY": 534
+            "LY": 526
           },
           {
-            "D": "M610 126 L610 242 M610 242 L246 242 M246 242 L246 434 M246 434 L478 434 M478 434 L478 514 M357 514 L478 514",
+            "D": "M610 110 L610 234 M610 234 L246 234 M246 234 L246 426 M246 426 L478 426 M478 426 L478 506 M357 506 L478 506",
             "Kind": "depends_on",
             "Title": "liveness and line moves depends_on guess versus topology rule (via call), 판독\ninternal/identity depends_on guess versus topology rule (via call), 판독\ninternal/topology depends_on guess versus topology rule (via call), 판독",
             "Joins": true,
@@ -13646,7 +13607,7 @@
             "Net": 15
           },
           {
-            "D": "M357 514 L357 538",
+            "D": "M357 506 L357 530",
             "Kind": "depends_on",
             "Title": "liveness and line moves depends_on guess versus topology rule (via call), 판독\ninternal/identity depends_on guess versus topology rule (via call), 판독\ninternal/topology depends_on guess versus topology rule (via call), 판독",
             "Rels": [
@@ -13657,10 +13618,10 @@
             "Count": 3,
             "Net": 15,
             "LX": 362,
-            "LY": 530
+            "LY": 522
           },
           {
-            "D": "M658 94 L658 298 M658 298 L482 298 M482 298 L482 426 M482 426 L470 426 M470 426 L470 522 M470 522 L543 522",
+            "D": "M674 62 L674 290 M674 290 L482 290 M482 290 L482 418 M482 418 L470 418 M470 418 L470 514 M470 514 L543 514",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on relation grammar (via call), 판독\nkey and parent checks depends_on relation grammar (via call), 판독",
             "Joins": true,
@@ -13671,7 +13632,7 @@
             "Net": 16
           },
           {
-            "D": "M543 522 L543 546",
+            "D": "M543 514 L543 538",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on relation grammar (via call), 판독\nkey and parent checks depends_on relation grammar (via call), 판독",
             "Rels": [
@@ -13681,14 +13642,14 @@
             "Count": 2,
             "Net": 16,
             "LX": 548,
-            "LY": 538
+            "LY": 530
           }
         ],
         "Frame": {
           "X": 6,
           "Y": 18,
           "W": 698,
-          "H": 680
+          "H": 672
         }
       },
       "Units": [
@@ -14942,15 +14903,6 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/main.go:347 \"return u.ID == id \u0026\u0026 !u.Absent })\""
-          ]
-        },
-        {
-          "From": "abbd CLI",
-          "To": "empty parent origin means extracted",
-          "Kind": "provides",
-          "Via": "data",
-          "Quotes": [
-            "cmd/abbd/record.go:145 \"ID: id, Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,\""
           ]
         },
         {

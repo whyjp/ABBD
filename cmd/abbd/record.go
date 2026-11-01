@@ -142,8 +142,11 @@ func (e env) recordUnit(pos []string) error {
 		return err
 	}
 	u := model.Unit{
-		ID: id, Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,
+		ID: id, Kind: kind, Anchors: anchors, Evidence: es,
 		Name: model.Fact{Value: name, Origin: model.Inferred},
+	}
+	if parent != "" {
+		u.Parent, u.ParentOrigin, u.ParentEvidence = parent, model.Inferred, es
 	}
 	if r := strings.TrimSpace(e.responsibility); r != "" {
 		u.Responsibility = &model.Fact{Value: r, Origin: model.Inferred}
