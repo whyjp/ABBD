@@ -27,6 +27,10 @@ type Inside struct {
 	// Inferred are the couplings a reader found that touch this module, which
 	// the overview does not draw.
 	Inferred []Coupling
+	// Focus are the views derived from this one when it is dense, one per
+	// box (focus.go). graph.json leaves them out: they hold nothing the
+	// stored graph does not.
+	Focus []Focus `json:"-"`
 }
 
 // Group is a run of names that share a first word, shown once as Head.
@@ -75,7 +79,9 @@ func (ln line) String() string {
 	return fmt.Sprintf("%s %s %s", ln.from, ln.kind, ln.to)
 }
 
-func (o *overview) inside(m model.ID, units []model.Unit) Inside {
+// inside draws m's view. With a focus, it draws the focus view of that
+// child instead: the child, the children it meets, and only its own lines.
+func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
@@ -211,11 +217,43 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 	}
 
+	if focus != "" {
+		lines = slices.DeleteFunc(lines, func(ln line) bool { return ln.from != focus && !(ln.inner && ln.to == focus) })
+		calls := map[model.ID]bool{}
+		for _, ln := range lines {
+			if ln.inner && ln.to == focus {
+				calls[ln.from] = true
+			}
+		}
+		ring := map[model.ID]bool{focus: true}
+		for i, ln := range lines {
+			if !ln.inner {
+				continue
+			}
+			if ln.from == focus && calls[ln.to] {
+				tw := twin(ln.to)
+				if !ring[tw] {
+					u := t.units[ln.to]
+					u.ID = tw
+					inner = append(inner, u)
+				}
+				lines[i].to = tw
+			}
+			ring[lines[i].from], ring[lines[i].to] = true, true
+		}
+		inner = slices.DeleteFunc(inner, func(u model.Unit) bool { return !ring[u.ID] })
+	}
 	var nodes []lnode
 	var edges []ledge
 	names := map[model.ID][]string{}
 	for _, u := range inner {
-		ls, w := lines2(u.Name.Value)
+		// A focus view names its boxes by their last path segment, as
+		// frame ports are; the tooltip keeps the whole name.
+		label := u.Name.Value
+		if focus != "" {
+			label = lastPart(label)
+		}
+		ls, w := lines2(label)
 		names[u.ID] = ls
 		nodes = append(nodes, lnode{id: string(u.ID), w: w, h: 26 + len(ls)*nameLine + 2})
 	}
@@ -233,7 +271,13 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 	}
 	nodes = append(nodes, lnode{id: frameTopNode}, lnode{id: frameBottomNode})
-	l := arrange(nodes, edges, insideBudget-12)
+	// A focus view stands on its own, with no text beside it, so it takes
+	// the overview's width.
+	budget := insideBudget
+	if focus != "" {
+		budget = overviewBudget
+	}
+	l := arrange(nodes, edges, budget-12)
 
 	// A wired port sits on the side its lines flow from, rule 10: a contract
 	// the module provides and a caller from outside on top, what the module
@@ -291,14 +335,14 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 		return best
 	}
-	for need(tops) > insideBudget || need(bottoms) > insideBudget {
+	for need(tops) > budget || need(bottoms) > budget {
 		from, to, down := &tops, &bottoms, 1
-		if need(bottoms) > insideBudget {
+		if need(bottoms) > budget {
 			from, to, down = &bottoms, &tops, -1
 		}
 		i := least(*from, down)
 		a := (*from)[i]
-		if need(append(slices.Clone(*to), a)) > insideBudget {
+		if need(append(slices.Clone(*to), a)) > budget {
 			break
 		}
 		*from = slices.Delete(*from, i, i+1)
@@ -307,7 +351,7 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 	}
 	// The frame never grows past the budget, rule 3: chips that still do
 	// not fit fold into one "+N" chip that names them all.
-	width := max(l.width, min(insideBudget, max(need(tops), need(bottoms))), 360)
+	width := max(l.width, min(budget, max(need(tops), need(bottoms))), 360)
 	if width > l.width {
 		shift := (width - l.width) / 2
 		for id, p := range l.pos {
@@ -388,23 +432,38 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		}
 		d.Ports = append(d.Ports, pt)
 	}
-	ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })
+	if focus == "" {
+		ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })
+	}
 	for _, u := range inner {
 		r := l.pos[string(u.ID)]
 		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
 		if len(t.children[u.ID]) > 0 {
 			b.Href, b.Class = "#m-"+string(u.ID), "inner has"
 		}
+		if focus != "" && u.ID != focus {
+			b.Href = "#" + focusID(m, base(u.ID))
+		}
 		ls := names[u.ID]
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + 8, Y: r.Y + 19 + i*nameLine})
 		}
 		b.Sub = &Text{S: o.kindWord(u), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
-		b.Title = fmt.Sprintf("%s %s", u.ID, u.Name.Value)
+		if base(u.ID) != u.ID {
+			b.Sub.S += " · 위에도 있음"
+			b.Class += " twin"
+		}
+		b.Title = fmt.Sprintf("%s %s", base(u.ID), u.Name.Value)
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
 		}
+		if base(u.ID) != u.ID {
+			b.Title += "\n" + twinNote
+		}
 		d.Boxes = append(d.Boxes, b)
+		if base(u.ID) != u.ID {
+			continue
+		}
 		iu := InsideUnit{ID: string(u.ID), Name: u.Name.Value, Kind: o.kindWord(u), Anchors: anchors(u)}
 		if f := sentence(u); f != nil {
 			iu.Sentence, iu.Guess = f.Value, f.Guess()
@@ -455,13 +514,15 @@ func (o *overview) inside(m model.ID, units []model.Unit) Inside {
 		d.Wires = append(d.Wires, w)
 	}
 	ins.Drawing = d
-	ins.Inferred = o.inferred(m, units)
+	if focus == "" {
+		ins.Inferred = o.inferred(m, units)
+	}
 	return ins
 }
 
 // kindWord names a unit's kind under its name; a folded cycle says so.
 func (o *overview) kindWord(u model.Unit) string {
-	if o.tree.folds[u.ID] {
+	if o.tree.folds[base(u.ID)] {
 		return "순환 묶음"
 	}
 	return kindWord(u.Kind)

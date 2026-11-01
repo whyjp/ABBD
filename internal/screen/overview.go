@@ -168,7 +168,6 @@ func chipsWidth(labels []string) int { return chipRowWidth(shorten(labels)) }
 type overview struct {
 	tree      tree
 	units     map[model.ID]model.Unit
-	design    []model.ID
 	relations []model.Edge
 	modules   []model.ID
 	contracts []model.ID
@@ -182,6 +181,8 @@ type overview struct {
 	// user and the provider it joins, in the order lines are drawn.
 	carry map[[2]model.ID][]model.ID
 	pairs [][2]model.ID
+	// unreached are the contracts each module provides that no module uses.
+	unreached map[model.ID][]model.ID
 	// chips sit on each module's top, where lines arrive at what it
 	// provides, and on its bottom, where lines leave for what it uses.
 	chips map[model.ID][2][]chip
@@ -266,7 +267,10 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 	return ch
 }
 
-func planOverview(units []model.Unit) *overview {
+// planOverview lays out the overview. With a focus, it plans the whole
+// overview, then keeps only that module's part of it and lays that out: the
+// focus view (focus.go).
+func planOverview(units []model.Unit, focus model.ID) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -274,11 +278,12 @@ func planOverview(units []model.Unit) *overview {
 	for id := range o.tree.folds {
 		o.units[id] = o.tree.units[id]
 	}
-	o.design, o.relations, o.rels, o.origins = top(o.tree)
-	slices.Sort(o.design)
+	design, relations, rels, origins := top(o.tree)
+	o.relations, o.rels, o.origins = relations, rels, origins
+	slices.Sort(design)
 	isModule := map[model.ID]bool{}
-	for _, id := range o.design {
-		k, _, _ := model.ParseID(string(id))
+	for _, id := range design {
+		k := o.units[id].Kind
 		switch {
 		case k == model.Module || k == model.Feature:
 			o.modules = append(o.modules, id)
@@ -313,7 +318,6 @@ func planOverview(units []model.Unit) *overview {
 		o.users[c] = slices.DeleteFunc(o.users[c], func(u model.ID) bool { return slices.Contains(o.providers[c], u) })
 	}
 
-	var edges []ledge
 	for _, c := range o.contracts {
 		targets := o.providers[c]
 		if len(targets) == 0 {
@@ -324,11 +328,28 @@ func planOverview(units []model.Unit) *overview {
 				k := [2]model.ID{u, p}
 				if len(o.carry[k]) == 0 {
 					o.pairs = append(o.pairs, k)
-					edges = append(edges, ledge{string(u), string(p)})
 				}
 				o.carry[k] = append(o.carry[k], c)
 			}
 		}
+	}
+	o.unreached = map[model.ID][]model.ID{}
+	for _, c := range o.contracts {
+		if len(o.users[c]) == 0 {
+			for _, p := range o.providers[c] {
+				o.unreached[p] = append(o.unreached[p], c)
+			}
+		}
+	}
+	if focus != "" {
+		o.around(focus)
+		for _, id := range o.modules {
+			isModule[id] = true
+		}
+	}
+	var edges []ledge
+	for _, k := range o.pairs {
+		edges = append(edges, ledge{string(k[0]), string(k[1])})
 	}
 	put := func(m model.ID, side int, ch chip) {
 		cs := o.chips[m]
@@ -343,16 +364,8 @@ func planOverview(units []model.Unit) *overview {
 			put(k[1], 0, o.chipFor(k[1], o.carry[k], true))
 		}
 	}
-	unreached := map[model.ID][]model.ID{}
-	for _, c := range o.contracts {
-		if len(o.users[c]) == 0 {
-			for _, p := range o.providers[c] {
-				unreached[p] = append(unreached[p], c)
-			}
-		}
-	}
 	for _, m := range o.modules {
-		if cs := unreached[m]; len(cs) > 0 {
+		if cs := o.unreached[m]; len(cs) > 0 {
 			ch := o.chipFor(m, cs, true)
 			ch.key, ch.label = fmt.Sprint(m, "+"), fmt.Sprintf("+%d\u00a0계약", len(cs))
 			put(m, 0, ch)
@@ -393,7 +406,7 @@ func planOverview(units []model.Unit) *overview {
 }
 
 func (o *overview) name(id model.ID) string {
-	if u, ok := o.units[id]; ok && u.Name.Value != "" {
+	if u, ok := o.units[base(id)]; ok && u.Name.Value != "" {
 		return u.Name.Value
 	}
 	return string(id)
@@ -570,14 +583,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			}
 		}
 	}
-	covered := func(a, b model.ID) bool {
-		for _, c := range o.contracts {
-			if slices.Contains(o.users[c], a) && slices.Contains(o.providers[c], b) {
-				return true
-			}
-		}
-		return false
-	}
+	covered := func(a, b model.ID) bool { return len(o.carry[[2]model.ID{a, b}]) > 0 }
 	// A dependency a contract line already carries is drawn by that line.
 	carried := map[[2]model.ID][]string{}
 	for _, e := range o.relations {
@@ -690,10 +696,18 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
-		b.Title = fmt.Sprintf("%s %s", m, b.Name)
-		if viewOf(o.tree, m) != "" {
-			b.Href = href(m)
-			b.Title += ". 누르면 이 모듈의 안을 봅니다"
+		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
+		if base(m) != m {
+			b.Title += "\n" + twinNote
+			b.Class += " twin"
+		}
+		if h := href(m); h != "" {
+			b.Href = h
+			if strings.HasPrefix(h, "#m-") {
+				b.Title += ". 누르면 이 모듈의 안을 봅니다"
+			} else {
+				b.Title += ". 누르면 이 모듈을 중심으로 봅니다"
+			}
 		}
 		d.Boxes = append(d.Boxes, b)
 	}
@@ -777,7 +791,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 
 // viewOf is the link to the view that shows id's inside, when it has one.
 func viewOf(t tree, id model.ID) string {
-	if len(t.children[id]) > 0 || t.units[id].Kind == model.Module {
+	if u := t.units[id]; len(t.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
 		return "#m-" + string(id)
 	}
 	return ""

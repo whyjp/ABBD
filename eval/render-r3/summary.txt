@@ -1,0 +1,36 @@
+fixture full views: 73 views, 23 miss; phantom sum 71, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 9.0, lost 0, unmarked 0
+   miss self overview phantom 0 bends 4.0 cross 3.0
+   miss self MOD-0030 internal/model phantom 0 bends 4.0 cross 4.0
+   miss self MOD-0034 internal/screen phantom 1 bends 2.0 cross 0.0
+   miss self MOD-0041 internal/store phantom 1 bends 2.0 cross 1.0
+   miss self MOD-0047 internal/topology phantom 0 bends 4.0 cross 1.0
+   miss ripgrep MOD-0007 ignore phantom 0 bends 3.0 cross 0.0
+   miss orca MOD-0007 mobile app (Expo) phantom 0 bends 4.0 cross 5.0
+   miss orca MOD-0042 desktop main process phantom 0 bends 4.0 cross 9.0
+   miss orca MOD-0056 Orca runtime (RPC host) phantom 1 bends 4.0 cross 3.0
+   miss orca MOD-0072 desktop renderer UI phantom 1 bends 2.0 cross 5.0
+   miss orca MOD-0097 native/ phantom 0 bends 4.0 cross 0.0
+   miss orca MOD-0098~1 서로 쓰는 5개 phantom 2 bends 2.0 cross 4.0
+   miss orca MOD-0100 src/shared/ phantom 0 bends 4.0 cross 2.0
+   miss orca MOD-0100~1 서로 쓰는 9개 phantom 1 bends 2.0 cross 1.0
+   miss pstack overview phantom 52 bends 4.0 cross 4.0
+   miss pstack MOD-0001 setup and help phantom 2 bends 4.0 cross 3.0
+   miss pstack MOD-0003 principles phantom 0 bends 3.0 cross 3.0
+   miss pstack MOD-0005 writing and prose phantom 0 bends 4.0 cross 0.5
+   miss pstack MOD-0007 understand code phantom 0 bends 4.0 cross 3.5
+   miss pstack MOD-0009 build and clean the diff phantom 5 bends 2.0 cross 0.0
+   miss pstack MOD-0010 verification phantom 1 bends 2.0 cross 2.0
+   miss pstack MOD-0013 core principles phantom 0 bends 4.0 cross 6.0
+   miss pstack MOD-0014 architecture principles phantom 4 bends 4.0 cross 1.0
+fixture focus views: 215 views, 3 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 2.0, lost 0, unmarked 0
+   miss orca MOD-0056 focus DATA-0003 orca-runtime.json phantom 0 bends 3.0 cross 0.0
+   miss pstack MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill phantom 0 bends 3.0 cross 0.0
+   miss pstack MOD-0010 focus FEAT-0059 /statechart phantom 0 bends 3.0 cross 0.0
+pstack overview focus: 12 views, 0 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 0.0, lost 0, unmarked 0
+fixture desktop-main focus: 15 views, 0 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 2.0, lost 0, unmarked 0
+orca store desktop-main focus: 15 views, 0 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 2.0, lost 0, unmarked 0
+orca store focus views: 73 views, 1 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 2.0, lost 0, unmarked 0
+   miss orca-store MOD-0056 focus DATA-0003 orca-runtime.json phantom 0 bends 3.0 cross 0.0
+pstack all focus: 70 views, 2 miss; phantom sum 0, median of bends medians 2.0, median of crossing medians 0.0, max crossing median 0.0, lost 0, unmarked 0
+   miss pstack MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill phantom 0 bends 3.0 cross 0.0
+   miss pstack MOD-0010 focus FEAT-0059 /statechart phantom 0 bends 3.0 cross 0.0

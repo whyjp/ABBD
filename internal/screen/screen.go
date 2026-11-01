@@ -123,7 +123,9 @@ type Model struct {
 	Overview Drawing
 	// Links are relations between two contracts, which the overview draws
 	// as chips and so lists here instead.
-	Links   []Coupling
+	Links []Coupling
+	// Focus are the views derived from the overview when it is dense.
+	Focus   []Focus
 	Insides []Inside
 	// Edges are every live relation between present units, for graph.json.
 	Edges     []Line
@@ -154,8 +156,9 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
-	o := planOverview(in.Units)
-	m.Overview = o.draw(func(id model.ID) string { return "#m-" + string(id) })
+	o := planOverview(in.Units, "")
+	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
+	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
@@ -170,14 +173,15 @@ func Build(in Input) Model {
 	// Every module of the top level, and every unit that holds others, has
 	// a view of its own.
 	var views []model.ID
-	for id, u := range o.tree.units {
-		if len(o.tree.children[id]) > 0 || u.Parent == "" && u.Kind == model.Module {
+	for id := range o.tree.units {
+		if viewOf(o.tree, id) != "" {
 			views = append(views, id)
 		}
 	}
 	slices.Sort(views)
 	for _, id := range views {
-		ins := o.inside(id, in.Units)
+		ins := o.inside(id, in.Units, "")
+		ins.Focus = o.insideFocus(id, in.Units, ins)
 		if u, ok := in.Understandings[id]; ok {
 			ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
 		}

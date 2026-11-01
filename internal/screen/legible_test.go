@@ -374,7 +374,8 @@ func (m Metrics) String() string {
 func measure(s sheet) Metrics {
 	m := Metrics{Width: int(s.width), Wires: s.groups}
 	for _, sh := range s.shapes {
-		if sh.kind == "box" {
+		// A twin is a unit the focus view draws a second time.
+		if sh.kind == "box" && !strings.HasSuffix(sh.id, twinMark) {
 			m.Boxes++
 		}
 	}
