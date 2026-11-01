@@ -70,6 +70,7 @@ type shape struct {
 	lines []string
 	px    []int
 	title string
+	id    string
 }
 
 func (s shape) is(c string) bool { return strings.Contains(" "+s.class+" ", " "+c+" ") }
@@ -89,6 +90,20 @@ type sheet struct {
 	strokes       []stroke
 	groups        int
 	markers       []fpt
+	junctions     []junction
+	counts        []countLabel
+}
+
+// junction is a dot that marks a split or merge of one kind's ink.
+type junction struct {
+	at   fpt
+	kind string
+}
+
+// countLabel is a ×N drawn beside a bundle.
+type countLabel struct {
+	at   fpt
+	text string
 }
 
 func num(s string) float64 {
@@ -117,6 +132,7 @@ func readSVG(src string) (sheet, error) {
 	nets := map[string]int{}
 	var inText bool
 	var title *string
+	var count *countLabel
 	for {
 		tok, err := dec.Token()
 		if err != nil {
@@ -130,7 +146,7 @@ func readSVG(src string) (sheet, error) {
 			case "g":
 				for _, k := range []string{"box", "port"} {
 					if hasClass(t, k) {
-						group = &shape{kind: k, class: attr(t, "class")}
+						group = &shape{kind: k, class: attr(t, "class"), id: attr(t, "data-id")}
 					}
 				}
 			case "rect":
@@ -142,6 +158,10 @@ func readSVG(src string) (sheet, error) {
 					group.r = r
 				}
 			case "text":
+				if hasClass(t, "count") {
+					s.counts = append(s.counts, countLabel{at: fpt{num(attr(t, "x")), num(attr(t, "y"))}})
+					count = &s.counts[len(s.counts)-1]
+				}
 				inText = group != nil && !hasClass(t, "sub")
 				if inText {
 					px := 13
@@ -173,8 +193,17 @@ func readSVG(src string) (sheet, error) {
 					}
 				}
 			case "circle":
-				if hasClass(t, "origin") {
+				switch {
+				case hasClass(t, "origin"):
 					s.markers = append(s.markers, fpt{num(attr(t, "cx")), num(attr(t, "cy"))})
+				case hasClass(t, "junction"):
+					j := junction{at: fpt{num(attr(t, "cx")), num(attr(t, "cy"))}}
+					for _, c := range strings.Fields(attr(t, "class")) {
+						if c != "junction" {
+							j.kind = c
+						}
+					}
+					s.junctions = append(s.junctions, j)
 				}
 			case "title":
 				if group != nil {
@@ -185,6 +214,8 @@ func readSVG(src string) (sheet, error) {
 			switch {
 			case title != nil:
 				*title += string(t)
+			case count != nil:
+				count.text += string(t)
 			case inText:
 				group.lines[len(group.lines)-1] += string(t)
 			}
@@ -197,6 +228,7 @@ func readSVG(src string) (sheet, error) {
 				}
 			case "text":
 				inText = false
+				count = nil
 			case "title":
 				title = nil
 			}

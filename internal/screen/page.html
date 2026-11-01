@@ -91,6 +91,10 @@ svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); 
 svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
+svg circle.junction { fill: var(--ink); }
+svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
+svg circle.junction.bypass { fill: var(--bypass); }
+svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg path.w.joins { marker-end: none; }
 svg path.w.back { stroke-dasharray: 6 4; }
@@ -176,8 +180,9 @@ svg marker path { stroke: none; }
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
 {{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
 {{.}}{{end}}</title></path>{{range .Marks}}<circle class="origin {{.Origin}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
-{{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
-{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Dots}}<circle class="junction {{.Kind}}" cx="{{.X}}" cy="{{.Y}}" r="3"/>{{end}}
+{{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}" data-id="{{.ID}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
 </svg>{{end}}
 {{define "legend"}}<div class="legend">{{if eq . "overview"}}
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--accent)"/></svg>제공하는 계약 (출구)</span>

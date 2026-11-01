@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1232" height="680" viewBox="0 0 1232 680"><style>
+svg { background: #161614; } text { fill: #ecebe6; font: 13px system-ui, sans-serif; } text.name { font-weight: 650; }
+.box rect { fill: #201f1c; stroke: #ecebe6; stroke-width: 1.6; } .box.loose rect { stroke-dasharray: 3 3; stroke: #a29e93; }
+.port rect { stroke-width: 1.2; } .port.exit rect { fill: #7fb0e0; stroke: #7fb0e0; } .port.exit text { fill: #161614; font-weight: 600; }
+.port.entry rect { fill: #201f1c; stroke: #7fb0e0; } .port.entry text { fill: #7fb0e0; } text.chip { font-size: 11px; }
+path.w { fill: none; stroke-width: 1.5; } path.contract { stroke: #7fb0e0; marker-end: url(#m-contract); }
+path.bypass, path.mutual { stroke: #fb923c; stroke-width: 2; marker-end: url(#m-bypass); } path.w.both { marker-start: url(#m-bypass); }
+path.w.joins { marker-end: none; } path.w.back { stroke-dasharray: 6 4; } circle.junction { fill: #ecebe6; }
+text.count { font-size: 11px; font-weight: 700; fill: #a29e93; }
+</style><defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: #7fb0e0"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: #fb923c"/></marker></defs>
+<path class="w mutual both" d="M450 68 L690 68"><title>/abbd-setup ↔ /abbd</title></path>
+<path class="w contract" d="M420 96 L420 170"><title>/abbd → abbd CLI</title></path>
+<path class="w contract" d="M720 96 L720 170"><title>/abbd-setup → abbd CLI</title></path>
+<path class="w bypass back" d="M400 170 L400 96"><title>abbd CLI → /abbd</title></path>
+<path class="w bypass" d="M300 96 L300 170"><title>/abbd → pstack</title></path>
+<path class="w bypass joins" d="M705 96 L705 130 L300 130"><title>/abbd-setup → pstack</title></path>
+<path class="w bypass joins" d="M716 226 L716 268"><title>abbd CLI → six modules</title></path>
+<path class="w bypass joins" d="M116 268 L1116 268"><title>rail</title></path>
+<path class="w bypass" d="M116 268 L116 310"><title>drop</title></path>
+<path class="w bypass" d="M316 268 L316 310"><title>drop</title></path>
+<path class="w bypass" d="M516 268 L516 310"><title>drop</title></path>
+<path class="w bypass" d="M716 268 L716 310"><title>drop</title></path>
+<path class="w bypass" d="M916 268 L916 310"><title>drop</title></path>
+<path class="w bypass" d="M1116 268 L1116 310"><title>drop</title></path>
+<path class="w bypass joins" d="M416 268 L416 530"><title>abbd CLI → gitx, model</title></path>
+<path class="w contract back" d="M392 310 L392 226"><title>internal/identity → abbd CLI</title></path>
+<path class="w contract joins back" d="M40 310 L40 250 L392 250"><title>internal/screen → abbd CLI</title></path>
+<path class="w contract" d="M816 226 L816 590"><title>abbd CLI → internal/model</title></path>
+<path class="w contract joins" d="M816 410 L300 410"><title>abbd CLI → store, extract</title></path>
+<path class="w contract" d="M560 410 L560 450"><title>abbd CLI → internal/extract</title></path>
+<path class="w contract" d="M300 366 L300 450"><title>internal/identity → internal/store</title></path>
+<path class="w contract joins" d="M170 366 L170 578 L816 578"><title>internal/screen → store, model</title></path>
+<path class="w contract joins" d="M170 422 L300 422"><title>internal/screen → internal/store</title></path>
+<path class="w contract joins" d="M1116 366 L1116 578 L816 578"><title>internal/topology → internal/model</title></path>
+<path class="w bypass" d="M530 366 L530 450"><title>internal/bootstrap → internal/extract</title></path>
+<path class="w bypass joins" d="M380 366 L380 380 L416 380"><title>internal/identity → trunk</title></path>
+<path class="w bypass" d="M416 425 L480 425 L480 450"><title>trunk → internal/extract</title></path>
+<path class="w bypass joins" d="M40 366 L40 530"><title>internal/screen → gitx, model</title></path>
+<path class="w bypass joins" d="M330 506 L330 530"><title>internal/store → gitx, model</title></path>
+<path class="w bypass joins" d="M520 506 L520 530"><title>internal/extract → gitx, model</title></path>
+<path class="w bypass joins" d="M716 366 L716 530"><title>internal/evidence → gitx, model</title></path>
+<path class="w bypass joins" d="M40 530 L780 530"><title>bus</title></path>
+<path class="w bypass" d="M460 530 L460 590"><title>→ internal/gitx</title></path>
+<path class="w bypass" d="M780 530 L780 590"><title>→ internal/model</title></path>
+<path class="w bypass joins" d="M596 366 L596 566 L780 566"><title>internal/bootstrap → internal/model</title></path>
+<path class="w bypass joins" d="M880 366 L880 566 L780 566"><title>internal/group → internal/model</title></path>
+<path class="w bypass back" d="M390 450 L390 440 L396 440 L396 366"><title>internal/store → internal/identity</title></path>
+<g class="box design" data-id="FEAT-0001"><title>FEAT-0001 /abbd</title><rect x="290" y="40" width="160" height="56" rx="6"/><text class="name" x="370" y="73" text-anchor="middle">/abbd</text></g>
+<g class="box design" data-id="FEAT-0002"><title>FEAT-0002 /abbd-setup</title><rect x="690" y="40" width="160" height="56" rx="6"/><text class="name" x="770" y="73" text-anchor="middle">/abbd-setup</text></g>
+<g class="box design" data-id="MOD-0055"><title>MOD-0055 pstack (external)</title><rect x="150" y="170" width="164" height="56" rx="6"/><text class="name" x="232" y="203" text-anchor="middle">pstack (external)</text></g>
+<g class="box design" data-id="MOD-0001"><title>MOD-0001 abbd CLI</title><rect x="380" y="170" width="480" height="56" rx="6"/><text class="name" x="620" y="203" text-anchor="middle">abbd CLI</text></g>
+<g class="port design exit"><title>계약 11개</title><rect x="500" y="173" width="70" height="15" rx="3"/><text class="chip" x="504" y="184">계약 11개</text></g>
+<g class="port design exit"><title>계약 13개</title><rect x="740" y="173" width="70" height="15" rx="3"/><text class="chip" x="744" y="184">계약 13개</text></g>
+<g class="port design exit"><title>sync state</title><rect x="408" y="208" width="80" height="15" rx="3"/><text class="chip" x="412" y="219">sync state</text></g>
+<g class="box design" data-id="MOD-0034"><title>MOD-0034 internal/screen</title><rect x="30" y="310" width="172" height="56" rx="6"/><text class="name" x="116" y="343" text-anchor="middle">internal/screen</text></g>
+<g class="box design" data-id="MOD-0026"><title>MOD-0026 internal/identity</title><rect x="230" y="310" width="172" height="56" rx="6"/><text class="name" x="316" y="343" text-anchor="middle">internal/identity</text></g>
+<g class="box design" data-id="MOD-0009"><title>MOD-0009 internal/bootstrap</title><rect x="430" y="310" width="172" height="56" rx="6"/><text class="name" x="516" y="343" text-anchor="middle">internal/bootstrap</text></g>
+<g class="box design" data-id="MOD-0013"><title>MOD-0013 internal/evidence</title><rect x="630" y="310" width="172" height="56" rx="6"/><text class="name" x="716" y="343" text-anchor="middle">internal/evidence</text></g>
+<g class="box design" data-id="MOD-0054"><title>MOD-0054 internal/group</title><rect x="830" y="310" width="172" height="56" rx="6"/><text class="name" x="916" y="343" text-anchor="middle">internal/group</text></g>
+<g class="box design" data-id="MOD-0047"><title>MOD-0047 internal/topology</title><rect x="1030" y="310" width="172" height="56" rx="6"/><text class="name" x="1116" y="343" text-anchor="middle">internal/topology</text></g>
+<g class="box design" data-id="MOD-0041"><title>MOD-0041 internal/store</title><rect x="210" y="450" width="190" height="56" rx="6"/><text class="name" x="305" y="483" text-anchor="middle">internal/store</text></g>
+<g class="port design exit"><title>계약 4개</title><rect x="218" y="453" width="70" height="15" rx="3"/><text class="chip" x="222" y="464">계약 4개</text></g>
+<g class="box design" data-id="MOD-0017"><title>MOD-0017 internal/extract</title><rect x="440" y="450" width="150" height="56" rx="6"/><text class="name" x="515" y="483" text-anchor="middle">internal/extract</text></g>
+<g class="box design" data-id="MOD-0022"><title>MOD-0022 internal/gitx</title><rect x="380" y="590" width="160" height="56" rx="6"/><text class="name" x="460" y="623" text-anchor="middle">internal/gitx</text></g>
+<g class="box design" data-id="MOD-0030"><title>MOD-0030 internal/model</title><rect x="740" y="590" width="160" height="56" rx="6"/><text class="name" x="820" y="623" text-anchor="middle">internal/model</text></g>
+<g class="port design exit"><title>relation key</title><rect x="748" y="593" width="80" height="15" rx="3"/><text class="chip" x="752" y="604">relation key</text></g>
+<g class="box loose design" data-id="CFG-0001"><title>CFG-0001 plugin manifest</title><rect x="1040" y="590" width="150" height="40" rx="6"/><text class="name" x="1115" y="615" text-anchor="middle">plugin manifest</text></g>
+<circle class="junction bypass" cx="300" cy="130" r="3"/>
+<circle class="junction bypass" cx="116" cy="268" r="3"/>
+<circle class="junction bypass" cx="316" cy="268" r="3"/>
+<circle class="junction bypass" cx="516" cy="268" r="3"/>
+<circle class="junction bypass" cx="916" cy="268" r="3"/>
+<circle class="junction bypass" cx="1116" cy="268" r="3"/>
+<circle class="junction bypass" cx="716" cy="268" r="3"/>
+<text class="count" x="722" y="246">×7</text>
+<circle class="junction bypass" cx="416" cy="268" r="3"/>
+<circle class="junction contract" cx="392" cy="250" r="3"/>
+<circle class="junction contract" cx="816" cy="410" r="3"/>
+<circle class="junction contract" cx="560" cy="410" r="3"/>
+<circle class="junction contract" cx="300" cy="410" r="3"/>
+<circle class="junction contract" cx="170" cy="422" r="3"/>
+<circle class="junction contract" cx="300" cy="422" r="3"/>
+<text class="count" x="306" y="446">×3</text>
+<circle class="junction contract" cx="816" cy="578" r="3"/>
+<circle class="junction bypass" cx="416" cy="380" r="3"/>
+<circle class="junction bypass" cx="416" cy="425" r="3"/>
+<circle class="junction bypass" cx="330" cy="530" r="3"/>
+<circle class="junction bypass" cx="416" cy="530" r="3"/>
+<circle class="junction bypass" cx="460" cy="530" r="3"/>
+<circle class="junction bypass" cx="520" cy="530" r="3"/>
+<circle class="junction bypass" cx="716" cy="530" r="3"/>
+<text class="count" x="466" y="552">×6</text>
+<text class="count" x="786" y="550">×8</text>
+<circle class="junction bypass" cx="780" cy="566" r="3"/>
+</svg>
