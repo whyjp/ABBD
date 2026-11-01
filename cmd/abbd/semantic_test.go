@@ -150,7 +150,7 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 	}
 	g := p.graph()
 	for _, w := range g.Overview.Wires {
-		if strings.Contains(w.Title, "charges table") || w.Kind != "contract" && w.Kind != "bypass" {
+		if strings.Contains(w.Title, "charges table") || w.Kind != "contract" && w.Kind != "bypass" && w.Kind != "mutual" {
 			t.Fatalf("the overview draws only extracted and stated relations, got %+v", w)
 		}
 	}

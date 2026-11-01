@@ -105,7 +105,6 @@ var debt = map[string]Metrics{
 	"orca MOD-0098~1 서로 쓰는 5개":                    {SplitIn: 2},
 	"orca MOD-0099 src/":                          {Back: 2},
 	"orca MOD-0100~1 서로 쓰는 9개":                    {Back: 3},
-	"pstack overview":                             {MaxChannel: 5, TooClose: 2, Back: 9},
 	"pstack MOD-0001 setup and help":              {TooClose: 1, SplitIn: 4},
 	"pstack MOD-0003 principles":                  {Back: 3},
 	"pstack MOD-0004 poteto-mode, the front door": {SplitIn: 4},

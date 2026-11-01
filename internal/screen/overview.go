@@ -65,7 +65,10 @@ type Wire struct {
 	Joins bool `json:",omitempty"`
 	// Back says the line runs against the reading direction: up, or left
 	// within a row. The page draws it dashed.
-	Back   bool     `json:",omitempty"`
+	Back bool `json:",omitempty"`
+	// Both says the path starts at a box that the line also reaches: two
+	// modules that use each other. The page draws a head at its start too.
+	Both   bool     `json:",omitempty"`
 	Via    string   `json:",omitempty"`
 	Quotes []string `json:",omitempty"`
 	Marks  []Mark   `json:",omitempty"`
@@ -507,6 +510,43 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		keys[pair] = append(keys[pair], [2]string{s.fromKey, s.toKey})
 	}
+	// Two modules that use each other directly are joined by one line with
+	// a head at each end, drawn the way the eye reads, instead of two lines
+	// of which one would climb.
+	before := func(a, b model.ID) bool {
+		if ra, rb := l.row[string(a)], l.row[string(b)]; ra != rb {
+			return ra < rb
+		}
+		return l.pos[string(a)].X < l.pos[string(b)].X
+	}
+	bypasses := map[[2]model.ID]int{}
+	for i, s := range merged {
+		if s.kind == "bypass" {
+			bypasses[[2]model.ID{s.from, s.to}] = i
+		}
+	}
+	gone := map[int]bool{}
+	for i, s := range merged {
+		j, ok := bypasses[[2]model.ID{s.to, s.from}]
+		if s.kind != "bypass" || !ok || gone[i] || gone[j] {
+			continue
+		}
+		keep, drop := i, j
+		if !before(s.from, s.to) {
+			keep, drop = j, i
+		}
+		merged[keep].kind = "mutual"
+		merged[keep].title += "\n" + merged[drop].title
+		merged[keep].rels = append(merged[keep].rels, merged[drop].rels...)
+		gone[drop] = true
+	}
+	kept := merged[:0:0]
+	for i, s := range merged {
+		if !gone[i] {
+			kept = append(kept, s)
+		}
+	}
+	merged = kept
 	span := func(ks []string) (int, int) {
 		lo, hi := 1<<30, -1<<30
 		for _, k := range ks {
@@ -601,6 +641,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			titles = append(titles, merged[i].title)
 		}
 		w := Wire{D: p.D, Kind: merged[p.reqs[0]].kind}
+		w.Both = w.Kind == "mutual" && p.starts[0] != noStart
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			w.Rels = append(w.Rels, merged[i].rels...)
