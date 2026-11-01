@@ -251,10 +251,11 @@ func TestInstallKeepsOneBlockInClaudeMD(t *testing.T) {
 		t.Fatalf("the block follows the file's line endings, after a blank line:\n%q", got)
 	}
 
-	broken := "# Project\n" + blockBegin + "\nhalf a block\n"
-	write(t, filepath.Join(p.root, "CLAUDE.md"), broken)
-	p.want(1, "unmatched", "install")
-	if got := claudeMD(t, p.root); got != broken {
-		t.Fatalf("an unmatched marker leaves the file untouched:\n%s", got)
+	for _, broken := range []string{"# Project\n" + blockBegin + "\nhalf a block\n", "# Project\nhalf a block\n" + blockEnd + "\n"} {
+		write(t, filepath.Join(p.root, "CLAUDE.md"), broken)
+		p.want(1, "unmatched", "install")
+		if got := claudeMD(t, p.root); got != broken {
+			t.Fatalf("an unmatched marker leaves the file untouched:\n%s", got)
+		}
 	}
 }
