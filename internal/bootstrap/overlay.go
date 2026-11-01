@@ -95,8 +95,8 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if !ok {
 			p, ok = sc.key[d.Parent]
 		}
-		if !ok || out.Units[p].Kind != model.Module {
-			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
+		if !ok || !out.Units[p].Kind.Holds() {
+			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module or feature in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
 		}
 		es := d.ParentEvidence
 		if len(es) == 0 {

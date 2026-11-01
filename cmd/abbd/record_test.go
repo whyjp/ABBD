@@ -88,6 +88,19 @@ func TestRecordUnitNeedsLiveEvidence(t *testing.T) {
 	}
 }
 
+// A reader who records a unit inside a module placed it there, so the
+// placement is the reader's: it outlives the script taking the unit over
+// without a parent of its own, as any reader's parent does.
+func TestARecordedUnitsParentIsTheReaders(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "recorded DATA-0002", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
+	p.extract(strings.Replace(ledgerTopo, "\n]}", `,
+ {"key":"q","kind":"DATA","name":"ledger query","anchors":[{"path":"ledger/book.go"}]}
+]}`, 1))
+	p.resync()
+	contains(t, p.want(0, "", "explain", "DATA-0002"), "DATA-0002 ledger query (DATA, EXTRACTED)\ninside MOD-0002 ledger\n")
+}
+
 // What a human states needs where they said it, and outlives a later setup
 // whose supplement guesses otherwise.
 func TestRecordFactNeedsASourceAndOutlivesTheSupplement(t *testing.T) {

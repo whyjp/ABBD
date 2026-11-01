@@ -47,9 +47,21 @@ type relation struct {
 	Kind string `json:"kind"`
 }
 
+// cited is a relation as printed, with the lines of text that state it.
+type cited struct {
+	relation
+	Evidence []evidence `json:"evidence,omitempty"`
+}
+
+type evidence struct {
+	Path  string `json:"path"`
+	Lines string `json:"lines"`
+	Quote string `json:"quote"`
+}
+
 type result struct {
-	Units     []unit     `json:"units"`
-	Relations []relation `json:"relations"`
+	Units     []unit  `json:"units"`
+	Relations []cited `json:"relations"`
 }
 
 // srcFile is one parsed non-test Go file.
@@ -101,7 +113,7 @@ func run() error {
 		return err
 	}
 	units = append(units, cs...)
-	feats, featRels, err := features()
+	feats, featRels, featCites, err := features()
 	if err != nil {
 		return err
 	}
@@ -138,7 +150,7 @@ func run() error {
 
 	out := result{Units: units}
 	for r := range rels {
-		out.Relations = append(out.Relations, r)
+		out.Relations = append(out.Relations, cited{r, featCites[r]})
 	}
 	sort.Slice(out.Units, func(i, j int) bool { return out.Units[i].Key < out.Units[j].Key })
 	sort.Slice(out.Relations, func(i, j int) bool {
@@ -897,16 +909,16 @@ var (
 )
 
 // features are the plugin skills. A skill consumes the CLI when its code
-// spans run an abbd command.
-func features() ([]unit, []relation, error) {
+// spans run an abbd command, cited at the first line of each file that does.
+func features() ([]unit, []relation, map[relation][]evidence, error) {
 	skills, err := filepath.Glob("plugins/abbd/skills/*/SKILL.md")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	sort.Strings(skills)
 	cmds, err := varLit("cmd/abbd/main.go", "commands")
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	known := map[string]bool{}
 	for _, k := range mapKeys(cmds) {
@@ -914,30 +926,44 @@ func features() ([]unit, []relation, error) {
 	}
 	var units []unit
 	var rels []relation
+	cites := map[relation][]evidence{}
 	for _, s := range skills {
 		s = filepath.ToSlash(s)
 		b, err := os.ReadFile(s)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		text := string(b)
 		m := frontName.FindStringSubmatch(text)
 		if m == nil {
-			return nil, nil, fmt.Errorf("%s has no frontmatter name", s)
+			return nil, nil, nil, fmt.Errorf("%s has no frontmatter name", s)
 		}
 		key := "feat-" + m[1]
 		u := unit{Key: key, Kind: "FEAT", Name: "/" + m[1], Anchors: []anchor{{Path: s, Symbol: m[1]}, {Path: path.Dir(s)}}}
 		units = append(units, u)
 		usesCLI := false
-		for _, span := range codeSpan.FindAllString(text, -1) {
-			for _, cm := range abbdCmd.FindAllStringSubmatch(span, -1) {
+		for _, loc := range codeSpan.FindAllStringIndex(text, -1) {
+			span := text[loc[0]:loc[1]]
+			for _, cl := range abbdCmd.FindAllStringSubmatchIndex(span, -1) {
+				cm := []string{span[cl[0]:cl[1]], span[cl[2]:cl[3]], ""}
+				if cl[4] >= 0 {
+					cm[2] = span[cl[4]:cl[5]]
+				}
 				cmd := cm[1] + " " + cm[2]
+				quote := cm[0]
 				if !known[cmd] {
 					cmd = cm[1]
+					quote = "abbd " + cm[1]
 				}
-				if known[cmd] {
-					usesCLI = true
-					rels = append(rels, relation{key, "if-cli-" + strings.ReplaceAll(cmd, " ", "-"), "consumes"})
+				if !known[cmd] {
+					continue
+				}
+				usesCLI = true
+				r := relation{key, "if-cli-" + strings.ReplaceAll(cmd, " ", "-"), "consumes"}
+				if _, ok := cites[r]; !ok {
+					rels = append(rels, r)
+					line := strings.Count(text[:loc[0]+cl[0]], "\n") + 1
+					cites[r] = []evidence{{Path: s, Lines: strconv.Itoa(line), Quote: quote}}
 				}
 			}
 		}
@@ -945,5 +971,5 @@ func features() ([]unit, []relation, error) {
 			rels = append(rels, relation{key, "if-cli", "consumes"})
 		}
 	}
-	return units, rels, nil
+	return units, rels, cites, nil
 }
