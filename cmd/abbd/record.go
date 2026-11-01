@@ -17,11 +17,8 @@ func (f *evidenceFlags) String() string     { return strings.Join(*f, " ") }
 func (f *evidenceFlags) Set(s string) error { *f = append(*f, s); return nil }
 
 // citations parses --evidence and refuses any quote the tree does not hold
-// now, so a guess enters the store only with evidence that is live.
+// now, so a finding enters the state only with evidence that is live.
 func (e env) citations() ([]model.Evidence, error) {
-	if len(e.evidence) == 0 {
-		return nil, fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE")
-	}
 	var es []model.Evidence
 	for _, s := range e.evidence {
 		ev, err := model.ParseEvidence(s)
@@ -43,22 +40,29 @@ func (e env) citations() ([]model.Evidence, error) {
 	return es, nil
 }
 
-// proposeRelation records an agent's guess at a coupling. It stays INFERRED
-// and UNCONFIRMED: the impact follows it while its evidence is live, and only
-// a human's confirm lets it gate.
-func (e env) proposeRelation(pos []string) error {
+// source is what a USER_STATED fact rests on: where the human said it.
+func (e env) sourceRef() string { return strings.TrimSpace(e.src) }
+
+// recordRelation writes a coupling. A reader's finding is INFERRED and rests
+// on live evidence; with --source it is what a human stated.
+func (e env) recordRelation(pos []string) error {
 	edge, err := model.ParseEdge(strings.Join(pos, "."))
 	if err != nil {
 		return err
 	}
-	via := model.Via(e.via)
+	rel := model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.Inferred, Via: model.Via(e.via)}
+	if e.sourceRef() != "" {
+		rel.Origin, rel.Source = model.UserStated, e.sourceRef()
+	}
 	switch {
 	case edge.From == edge.To:
 		return fmt.Errorf("%s couples a unit to itself", edge)
-	case via == "":
+	case rel.Origin == model.Inferred && rel.Via == "":
 		return fmt.Errorf("say how the coupling arises with --via")
+	case rel.Origin == model.Inferred && len(e.evidence) == 0:
+		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE, or give the --source where a human stated it")
 	}
-	if err := via.Validate(); err != nil {
+	if err := rel.Via.Validate(); err != nil {
 		return err
 	}
 	if err := edge.Joins(); err != nil {
@@ -70,19 +74,19 @@ func (e env) proposeRelation(pos []string) error {
 	}
 	u, ok := presentUnit(units, edge.From)
 	if _, okTo := presentUnit(units, edge.To); !ok || !okTo {
-		return fmt.Errorf("%s names a unit the actual topology does not have", edge)
+		return fmt.Errorf("%s names a unit the state does not have", edge)
 	}
-	es, err := e.citations()
-	if err != nil {
+	if rel.Evidence, err = e.citations(); err != nil {
 		return err
 	}
-	rel := model.Relation{To: edge.To, Kind: edge.Kind, Origin: model.Inferred, Via: via, Evidence: es}
 	rels := slices.Clone(u.Relations)
 	switch i := slices.IndexFunc(rels, func(r model.Relation) bool { return r.To == edge.To && r.Kind == edge.Kind }); {
 	case i < 0:
 		rels = append(rels, rel)
-	case rels[i].Origin != model.Inferred:
-		return fmt.Errorf("%s is already %s", edge, rels[i].Origin)
+	case rels[i].Origin == model.Extracted:
+		return fmt.Errorf("%s is already EXTRACTED from the code", edge)
+	case rels[i].Origin == model.UserStated && rel.Origin == model.Inferred:
+		return fmt.Errorf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, rels[i].Source)
 	default:
 		rels[i] = rel
 	}
@@ -91,13 +95,13 @@ func (e env) proposeRelation(pos []string) error {
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "proposed %s via %s, INFERRED\n", edge, via)
+	fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, rel.Origin)
 	return nil
 }
 
-// proposeUnit records an agent's guess at a unit the extraction script cannot
-// see. Its evidence anchors its ID and keeps it present.
-func (e env) proposeUnit(pos []string) error {
+// recordUnit writes a unit the extraction script cannot see. Its evidence
+// anchors its ID and keeps it present.
+func (e env) recordUnit(pos []string) error {
 	kind, name := model.Kind(pos[0]), strings.TrimSpace(pos[1])
 	if err := kind.Validate(); err != nil {
 		return err
@@ -105,13 +109,16 @@ func (e env) proposeUnit(pos []string) error {
 	if name == "" {
 		return fmt.Errorf("name the unit")
 	}
+	if len(e.evidence) == 0 {
+		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE")
+	}
 	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
 	parent := model.ID(e.parent)
 	if p, ok := presentUnit(units, parent); parent != "" && (!ok || p.Kind != model.Module) {
-		return fmt.Errorf("--parent %s is not a module of the actual topology", parent)
+		return fmt.Errorf("--parent %s is not a module of the state", parent)
 	}
 	es, err := e.citations()
 	if err != nil {
@@ -129,21 +136,12 @@ func (e env) proposeUnit(pos []string) error {
 			return fmt.Errorf("%s %s already rests on the same code", u.ID, u.Name.Value)
 		}
 	}
-	state, err := e.st.LoadState()
+	id, err := e.st.NextID(kind)
 	if err != nil {
 		return err
 	}
-	if state.HighWater == nil {
-		state.HighWater = map[model.Kind]int{}
-	}
-	for _, u := range units {
-		if k, n, err := model.ParseID(string(u.ID)); err == nil && k == kind && n > state.HighWater[kind] {
-			state.HighWater[kind] = n
-		}
-	}
-	state.HighWater[kind]++
 	u := model.Unit{
-		ID: model.FormatID(kind, state.HighWater[kind]), Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,
+		ID: id, Kind: kind, Anchors: anchors, Parent: parent, Evidence: es,
 		Name: model.Fact{Value: name, Origin: model.Inferred},
 	}
 	if r := strings.TrimSpace(e.responsibility); r != "" {
@@ -152,55 +150,40 @@ func (e env) proposeUnit(pos []string) error {
 	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
 		return err
 	}
-	if err := e.st.SaveState(state); err != nil {
-		return err
-	}
-	fmt.Fprintf(e.stdout, "proposed %s %s, INFERRED; it stays while its evidence is in the code\n", u.ID, name)
+	fmt.Fprintf(e.stdout, "recorded %s %s, INFERRED; it stays while its evidence is in the code\n", u.ID, name)
 	return nil
 }
 
-// checkEvidence prints, for every semantic unit and relation, whether each
-// quote is in the working tree now and where. It reads and never writes, so
-// the same tree prints the same lines.
-func (e env) checkEvidence() error {
-	stored, err := e.st.LoadUnits()
+// statedFields are the why-fields a human states; code facts come from the script.
+var statedFields = map[string]func(*model.Unit) **model.Fact{
+	"purpose":        func(u *model.Unit) **model.Fact { return &u.Purpose },
+	"responsibility": func(u *model.Unit) **model.Fact { return &u.Responsibility },
+}
+
+// recordFact writes what a human stated about a unit, with where they said it.
+func (e env) recordFact(key string) error {
+	id, field, _ := strings.Cut(key, ".")
+	at, ok := statedFields[field]
+	switch {
+	case !ok:
+		return fmt.Errorf("%q is not ID.purpose or ID.responsibility", key)
+	case strings.TrimSpace(e.value) == "":
+		return fmt.Errorf("give the stated text with --value")
+	case e.sourceRef() == "":
+		return fmt.Errorf("give where the human stated it with --source, such as a PR URL or \"conversation 2026-11-01\"")
+	}
+	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
 	}
-	c := evidence.New(e.root)
-	live, dead := 0, 0
-	line := func(subject string, via model.Via, ev model.Evidence) {
-		r := c.Check(ev)
-		state := "dead"
-		if r.Live {
-			state, live = "live", live+1
-		} else {
-			dead++
-		}
-		if via != "" {
-			subject += " via " + string(via)
-		}
-		if r.Live {
-			fmt.Fprintf(e.stdout, "%s %s: %s found at %s\n", state, subject, ev, r.At)
-		} else {
-			fmt.Fprintf(e.stdout, "%s %s: %s\n", state, subject, ev)
-		}
+	u, ok := presentUnit(units, model.ID(id))
+	if !ok {
+		return fmt.Errorf("%s is not a unit of the state", id)
 	}
-	units := slices.Clone(stored)
-	slices.SortFunc(units, func(a, b model.Unit) int { return strings.Compare(string(a.ID), string(b.ID)) })
-	for _, u := range units {
-		if u.Absent && !u.Semantic() {
-			continue
-		}
-		for _, ev := range u.Evidence {
-			line(string(u.ID)+" "+u.Name.Value, "", ev)
-		}
-		for _, r := range u.Relations {
-			for _, ev := range r.Evidence {
-				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Via, ev)
-			}
-		}
+	*at(&u) = &model.Fact{Value: strings.TrimSpace(e.value), Origin: model.UserStated, Source: e.sourceRef()}
+	if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+		return err
 	}
-	fmt.Fprintf(e.stdout, "%d live, %d dead\n", live, dead)
+	fmt.Fprintf(e.stdout, "recorded %s, USER_STATED from %s\n", key, e.sourceRef())
 	return nil
 }

@@ -37,7 +37,12 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 	for n, d := range doc.Units {
 		label := fmt.Sprintf("%s %q", d.Kind, d.Name.Value)
 		i, err := match(out.Units[:scriptUnits], d)
-		if err != nil && len(d.Evidence) > 0 {
+		if len(d.Evidence) > 0 {
+			// Evidence says the script cannot see the unit. Folding it into a
+			// script unit that shares an anchor would drop it without a word.
+			if err == nil {
+				return base, f, fmt.Errorf("supplement %s cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's %s %q and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes %q", label, out.Units[i].Kind, out.Units[i].Name.Value, out.Units[i].Name.Value)
+			}
 			out.Units = append(out.Units, semantic(d, fmt.Sprintf("supplement#%d", n)))
 			i, err = len(out.Units)-1, nil
 		}

@@ -35,7 +35,7 @@ func semanticProject(t *testing.T) *project {
 	return p
 }
 
-func (p *project) resync() string { p.t.Helper(); return p.want(0, "", "ingest", p.extraction) }
+func (p *project) resync() string { p.t.Helper(); return p.want(0, "", "sync") }
 
 func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 	p, exe := bare(t)

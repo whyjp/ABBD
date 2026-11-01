@@ -17,17 +17,27 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-const usage = `abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
+const usage = `abbd is a lever: it extracts, checks evidence, keeps IDs, stores the topology
+and renders the blueprint. It never judges, blocks, asks or records a decision.
+
+abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
-abbd ingest [--root DIR] FILE|-     reconcile an extraction result into .abbd
-abbd propose relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
-abbd propose unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
+abbd sync [--root DIR]               run the registered script, check every quote, keep the
+                                     IDs, write the state and render the blueprint
+abbd record relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     a reader's coupling, INFERRED while its evidence is live
+abbd record relation FROM KIND TO --source REF [--via VIA] [--evidence ...] [--root DIR]
+                                     a coupling a human stated, USER_STATED
+abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
+                                     a unit the script cannot see, INFERRED
+abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root DIR]
+                                     what a human stated, USER_STATED with where they said it
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code
 abbd evidence [--root DIR]           check every quote against the working tree
-abbd status [--root DIR]             whether the state and the blueprint are CURRENT or STALE`
+abbd status [--root DIR]             whether the state and the blueprint are CURRENT, and counts`
 
 const (
 	exitOK    = 0
@@ -50,6 +60,7 @@ type opts struct {
 	root, supplement string
 	via, parent      string
 	responsibility   string
+	value, src       string
 	evidence         evidenceFlags
 	argv             []string
 }
@@ -71,24 +82,31 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"responsibility": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.responsibility, "responsibility", "", "the one sentence a reader says the unit is responsible for")
 	},
+	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
+	"source": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.src, "source", "", `where the human stated it, such as a PR URL or "conversation 2026-11-01"`)
+	},
 }
 
 // command is one CLI verb. pos is the allowed number of positional arguments.
+// writes says the command changes the state, so the blueprint is rendered after it.
 type command struct {
 	flags    []string
 	pos      []int
 	dashArgv bool
+	writes   bool
 	run      func(e env, pos []string) error
 }
 
 var commands = map[string]command{
-	"setup":            {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, run: func(e env, _ []string) error { return e.setup() }},
-	"ingest":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.ingest(pos[0]) }},
-	"propose relation": {flags: []string{"root", "via", "evidence"}, pos: []int{3}, run: func(e env, pos []string) error { return e.proposeRelation(pos) }},
-	"propose unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, run: func(e env, pos []string) error { return e.proposeUnit(pos) }},
-	"understand":       {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
-	"evidence":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
-	"status":           {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"setup":           {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, writes: true, run: func(e env, _ []string) error { return e.setup() }},
+	"sync":            {flags: []string{"root"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
+	"record relation": {flags: []string{"root", "via", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
+	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
+	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
+	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
+	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
+	"status":          {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 }
 
 type invocation struct {
@@ -146,16 +164,15 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		return exitUsage
 	}
 	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
-	// Only a command that changed what the blueprint renders publishes, so a
-	// hand edit stays STALE until a command writes over it.
-	before, _ := e.st.InputsHash()
-	if err := commands[inv.name].run(e, inv.pos); err != nil {
+	c := commands[inv.name]
+	if err := c.run(e, inv.pos); err != nil {
 		fmt.Fprintln(stderr, "abbd:", err)
 		return exitError
 	}
-	if after, _ := e.st.InputsHash(); after != before {
+	if c.writes {
 		if err := e.publish(); err != nil {
-			fmt.Fprintln(stderr, "abbd: warning: rendering the blueprint:", err)
+			fmt.Fprintln(stderr, "abbd: rendering the blueprint:", err)
+			return exitError
 		}
 	}
 	return exitOK
@@ -176,29 +193,28 @@ func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {
 	}
 }
 
-func (e env) ingest(src string) error {
-	in := e.stdin
-	if src != "-" {
-		f, err := os.Open(src)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		in = f
-	}
-	ex, err := extract.Parse(in)
+// sync brings the state up to the working tree. It always runs the registered
+// script, so the state rests on the deterministic extraction alone.
+func (e env) sync() error {
+	p, err := e.st.LoadProject()
 	if err != nil {
 		return err
+	}
+	if len(p.Extract) == 0 {
+		return fmt.Errorf("project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first")
+	}
+	out, err := e.runScript(p.Extract)
+	if err != nil {
+		return err
+	}
+	ex, err := extract.Parse(bytes.NewReader(out))
+	if err != nil {
+		return fmt.Errorf("extraction script output: %w", err)
 	}
 	res, err := e.syncActual(ex, identity.KeepGuesses)
 	if err != nil {
 		return err
 	}
-	e.printEvents(res)
-	return nil
-}
-
-func (e env) printEvents(res identity.Result) {
 	for _, ev := range res.Events {
 		fmt.Fprintf(e.stdout, "%s %s\n", ev.ID, ev.Outcome)
 	}
@@ -208,6 +224,7 @@ func (e env) printEvents(res identity.Result) {
 	for _, id := range res.Unmatched {
 		fmt.Fprintf(e.stdout, "%s unmatched\n", id)
 	}
+	return nil
 }
 
 // syncActual writes the state from one extraction. It only ever touches EXTRACTED facts.
@@ -281,13 +298,4 @@ func presentUnit(units []model.Unit, id model.ID) (model.Unit, bool) {
 		return model.Unit{}, false
 	}
 	return units[i], true
-}
-
-func (e env) status() error {
-	units, err := e.st.LoadUnits()
-	if err != nil {
-		return err
-	}
-	fmt.Fprintln(e.stdout, "units:", len(model.Present(units)))
-	return e.printFreshness()
 }

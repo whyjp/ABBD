@@ -105,7 +105,7 @@ func TestANewCommandIsOneNewContract(t *testing.T) {
 func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
 	dir := repoCopy(t)
 	write(t, filepath.Join(dir, "plugins", "abbd", "skills", "zz", "SKILL.md"),
-		"---\nname: zz\n---\n\n```bash\nabbd status\nabbd propose unit MOD x --evidence a.go:1:x\n```\n")
+		"---\nname: zz\n---\n\n```bash\nabbd status\nabbd record unit MOD x --evidence a.go:1:x\n```\n")
 	_, r := runExtractor(t, dir)
 	got := map[string]bool{}
 	for _, rel := range r.Relations {
@@ -117,8 +117,8 @@ func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
 	if !got["if-cli-status"] {
 		t.Fatalf("status not found at all")
 	}
-	if !got["if-cli-propose-unit"] {
-		t.Errorf("feat-zz runs `abbd propose unit` but is not its consumer")
+	if !got["if-cli-record-unit"] {
+		t.Errorf("feat-zz runs `abbd record unit` but is not its consumer")
 	}
 }
 

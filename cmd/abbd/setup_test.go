@@ -46,7 +46,7 @@ func TestSupplementAddsInferredFactsThatSurviveReextraction(t *testing.T) {
 	if !strings.Contains(md, "keeps the books\n    origin: INFERRED") || !strings.Contains(md, "to: IF-0001") || !strings.Contains(md, "quote: func Serve()") {
 		t.Fatalf("the supplement should add an inferred purpose and a coupling with its evidence:\n%s", md)
 	}
-	p.want(0, "MOD-0002 matched", "ingest", p.extraction)
+	p.want(0, "MOD-0002 matched", "sync")
 	if !strings.Contains(p.read("architecture/MOD-0002.md"), "kind: consumes") {
 		t.Fatalf("re-extraction by the script must keep a coupling the script cannot see")
 	}
@@ -133,7 +133,7 @@ func TestCommittedStateStaysCleanOnResync(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "state")
-	p.want(0, "matched", "ingest", p.extraction)
+	p.want(0, "matched", "sync")
 	out, err := exec.Command("git", "-C", p.root, "status", "--porcelain").CombinedOutput()
 	if err != nil || len(out) != 0 {
 		t.Fatalf("a resync after committing .abbd/ should change nothing git sees, got %v:\n%s", err, out)
