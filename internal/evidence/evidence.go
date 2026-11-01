@@ -32,10 +32,12 @@ type Result struct {
 
 type file struct {
 	raw []string
-	// norm is the file with every run of whitespace folded to one space, and
-	// line holds the line number of each byte of norm.
+	// norm is the file with all whitespace removed, so formatting never kills
+	// a quote. line holds the line number of each byte of norm, and gap says
+	// whether whitespace stood before it, which is where a word may end.
 	norm string
 	line []int
+	gap  []bool
 }
 
 // Checker reads each file once.
@@ -46,7 +48,11 @@ type Checker struct {
 
 func New(root string) *Checker { return &Checker{root: root, files: map[string]*file{}} }
 
-func normalize(s string) string { return strings.Join(strings.Fields(s), " ") }
+func normalize(s string) string { return strings.Join(strings.Fields(s), "") }
+
+func word(b byte) bool {
+	return b == '_' || b >= '0' && b <= '9' || b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= 0x80
+}
 
 func (c *Checker) load(path string) *file {
 	if f, ok := c.files[path]; ok {
@@ -59,13 +65,10 @@ func (c *Checker) load(path string) *file {
 		var norm strings.Builder
 		for i, l := range f.raw {
 			for _, w := range strings.Fields(l) {
-				if norm.Len() > 0 {
-					norm.WriteByte(' ')
-					f.line = append(f.line, i+1)
-				}
 				norm.WriteString(w)
-				for range len(w) {
+				for k := range len(w) {
 					f.line = append(f.line, i+1)
+					f.gap = append(f.gap, k == 0)
 				}
 			}
 		}
@@ -89,8 +92,13 @@ func (c *Checker) Check(e model.Evidence) Result {
 		if i < 0 {
 			break
 		}
-		start, end := f.line[from+i], f.line[from+i+len(q)-1]
-		if !bounded || (start <= last+Slack && end >= first-Slack) {
+		at, after := from+i, from+i+len(q)
+		start, end := f.line[at], f.line[after-1]
+		// A quote ending in a word must end where the code's word ends, so
+		// "charges" does not live on in "charges_archive".
+		whole := (at == 0 || f.gap[at] || !word(f.norm[at-1]) || !word(q[0])) &&
+			(after == len(f.norm) || f.gap[after] || !word(f.norm[after]) || !word(q[len(q)-1]))
+		if whole && (!bounded || (start <= last+Slack && end >= first-Slack)) {
 			h := sha256.Sum256([]byte(strings.Join(f.raw[start-1:end], "\n")))
 			at := fmt.Sprint(start)
 			if end != start {
@@ -105,32 +113,38 @@ func (c *Checker) Check(e model.Evidence) Result {
 
 // all checks a fact's evidence: it is live while any item is, and its digest
 // covers every live item in order.
-func (c *Checker) all(es []model.Evidence) (live bool, digest string) {
+func (c *Checker) all(es []model.Evidence) (live bool, digest string, moved []model.Evidence) {
 	var ds []string
-	for _, e := range es {
+	moved = slices.Clone(es)
+	for i, e := range es {
 		if r := c.Check(e); r.Live {
 			live = true
 			ds = append(ds, r.Digest)
+			if e.Lines != "" {
+				moved[i].Lines = r.At
+			}
 		}
 	}
-	return live, strings.Join(ds, ",")
+	return live, strings.Join(ds, ","), moved
 }
 
 // Apply marks each semantic relation dead when none of its evidence is in the
 // tree, and each present semantic unit absent the same way. A relation or
-// unit without evidence is left as it is.
+// unit without evidence is left as it is. Each live item's lines move to where
+// the quote is now, so edits above it never add up to a false removal.
 func (c *Checker) Apply(units []model.Unit) []model.Unit {
 	out := make([]model.Unit, len(units))
 	for i, u := range units {
 		if u.Semantic() && !u.Absent {
-			live, _ := c.all(u.Evidence)
+			var live bool
+			live, _, u.Evidence = c.all(u.Evidence)
 			u.Absent = !live
 		}
 		u.Relations = slices.Clone(u.Relations)
 		for j, r := range u.Relations {
 			if r.Semantic() {
-				live, digest := c.all(r.Evidence)
-				u.Relations[j].Dead, u.Relations[j].Digest = !live, digest
+				live, digest, es := c.all(r.Evidence)
+				u.Relations[j].Dead, u.Relations[j].Digest, u.Relations[j].Evidence = !live, digest, es
 			}
 		}
 		out[i] = u

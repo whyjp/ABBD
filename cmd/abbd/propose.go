@@ -94,6 +94,8 @@ func (e env) proposeRelation(pos []string) error {
 		return fmt.Errorf("%s is already part of the actual topology", edge)
 	case rels[i].Confirmation == model.Rejected:
 		return fmt.Errorf("a human rejected %s; it stays rejected", edge)
+	case rels[i].Confirmation == model.Confirmed:
+		return fmt.Errorf("a human confirmed %s; its evidence is gone, so it waits for that human as a removed relation", edge)
 	default:
 		rels[i] = rel
 	}

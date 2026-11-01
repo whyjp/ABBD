@@ -331,7 +331,13 @@ func simpleCommand(words []string) []string {
 		words = words[1:]
 	}
 	if len(words) > 0 && (words[0] == "for" || words[0] == "select") {
-		return nil
+		// The header is a name and a word list; the body after do runs. POSIX
+		// allows "for x do ...", so the body can share the header's segment.
+		i := slices.Index(words, "do")
+		if i < 0 {
+			return nil
+		}
+		return simpleCommand(words[i+1:])
 	}
 	return words
 }

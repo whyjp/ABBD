@@ -333,6 +333,8 @@ func (e Evidence) Validate() error {
 	switch {
 	case e.Path == "":
 		return fmt.Errorf("evidence needs a path")
+	case e.Path == ".abbd" || strings.HasPrefix(e.Path, ".abbd/") || e.Path == ".git" || strings.HasPrefix(e.Path, ".git/"):
+		return fmt.Errorf("evidence %s must cite the code, not ABBD's or git's own files, which repeat the quote", e.Path)
 	case strings.TrimSpace(e.Quote) == "":
 		return fmt.Errorf("evidence %s needs a quote", e.Path)
 	case e.Lines != "":
