@@ -104,3 +104,38 @@ func TestSupplementInsideModuleNeedsAnAnchorItsParentLacks(t *testing.T) {
  {"key":"serve","kind":"MOD","name":"serve","parent":"app",
   "evidence":[{"path":"app/main.py","lines":"2","quote":"return 'GET /x'"}]}]}`), "--", exe)
 }
+
+// A contract only a reader found has no signature in the code, so the one
+// the reader documents is the only one there is. It stays, INFERRED.
+func TestReaderFoundContractKeepsItsSignature(t *testing.T) {
+	p, out := nestedProject(t, `{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]},
+ {"key":"api","kind":"IF","name":"http api","parent":"app","signature":"GET /x",
+  "evidence":[{"path":"app/main.py","lines":"2","quote":"return 'GET /x'"}]}]}`)
+	if p.setupCode(out) != 0 || strings.Contains(out, "conflict") {
+		t.Fatalf("setup should keep the reader's signature without a conflict:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /x (INFERRED)")
+	p.want(0, "", "sync")
+	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /x (INFERRED)")
+}
+
+// The same holds for a contract the script reports without a signature. A
+// signature the script does read still wins, and a different one the
+// supplement documents is a conflict.
+func TestScriptContractWithoutSignatureTakesTheReaders(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(codeOnly)
+	sup := strings.Replace(supplement, `"name":"http api",`, `"name":"http api","signature":"GET /charges?all",`, 1)
+	contains(t, p.setup(0, "", "--supplement", p.file(t, "sup.json", sup), "--", exe), `documents signature "GET /charges?all", code has "GET /charges"`)
+	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /charges (EXTRACTED)")
+
+	p.extract(strings.Replace(codeOnly, `"signature":"GET /charges",`, "", 1))
+	out := p.setup(0, "", "--supplement", p.file(t, "sup2.json", sup))
+	if strings.Contains(out, "conflict") {
+		t.Fatalf("a signature the script cannot read is no conflict:\n%s", out)
+	}
+	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /charges?all (INFERRED)")
+	p.want(0, "", "sync")
+	contains(t, p.want(0, "", "explain", "http api"), "signature: GET /charges?all (INFERRED)")
+}

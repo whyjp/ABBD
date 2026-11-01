@@ -64,8 +64,14 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		}
 		f.Matched++
 		u := &out.Units[i]
-		if d.Signature != nil && (u.Signature == nil || u.Signature.Value != d.Signature.Value) {
-			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, sig(u.Signature)))
+		// The code's signature wins. Where the script reads none, the
+		// reader's is the only one there is, and it is a guess.
+		switch {
+		case d.Signature == nil:
+		case u.Signature == nil || u.Signature.Origin == model.Inferred:
+			u.Signature = &model.Fact{Value: d.Signature.Value, Origin: model.Inferred}
+		case u.Signature.Value != d.Signature.Value:
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement %s documents signature %q, code has %q", label, d.Signature.Value, u.Signature.Value))
 		}
 		if d.Purpose != nil {
 			u.Purpose = &model.Fact{Value: d.Purpose.Value, Origin: model.Inferred}
@@ -230,11 +236,4 @@ func overlap(a, b []model.Anchor) int {
 		}
 	}
 	return n
-}
-
-func sig(f *model.Fact) string {
-	if f == nil {
-		return ""
-	}
-	return f.Value
 }
