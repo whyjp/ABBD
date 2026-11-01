@@ -127,7 +127,7 @@ svg marker path { stroke: none; }
   {{template "legend" "overview"}}
   {{if .Links}}<h3>계약 사이의 관계</h3>
   <ul class="plain">{{range .Links}}<li>{{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span></li>{{end}}</ul>{{end}}
-  <p class="muted" style="margin:6px 0 0">코드에서 추출했거나 사람이 명시한 관계만 그립니다. 리더가 판독한 결합은 각 모듈의 안에 근거와 함께 나열합니다.</p>
+  <p class="muted" style="margin:6px 0 0">리더가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 확인하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 닿는 모듈의 안에 나열합니다.</p>
 </section>
 
 {{range .Insides}}
@@ -181,13 +181,14 @@ svg marker path { stroke: none; }
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>계약을 거친 사용</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--bypass);stroke-width:2.6"/></svg>계약을 거치지 않는 직접 의존</span>
-<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+{{template "origins"}}
 {{else}}
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
-<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+{{template "origins"}}
+{{end}}</div>{{end}}
+{{define "origins"}}<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
 <span title="{{tip "stated"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
-<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
-{{end}}</div>{{end}}
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>{{end}}

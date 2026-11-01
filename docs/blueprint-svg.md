@@ -10,7 +10,7 @@ A person should understand and judge an architecture from `.abbd/blueprint/index
 ## Decomposition
 
 1. **At most 16 boxes per view.** Top-level contracts don't count, because they are drawn as chips. A level that holds more is split into groups (see Supplying groups).
-2. **No relation is dropped.** Every live relation between present units appears in some view. It can be a line, a bundle, a contract chip, the list of a reader's couplings that the overview leaves out, or the list of relations between two contracts. Each wire and chip records the stored relations it stands for, and the test compares those records with the state.
+2. **No relation is dropped.** Every live relation between present units appears in some view. It can be a line, a bundle, a contract chip, the list of a reader's couplings under a module's inside, or the list of relations between two contracts. Each wire and chip records the stored relations it stands for, and the test compares those records with the state.
 3. **Width budget.** The overview is at most 1320px wide and a unit's view at most 920px. That is what a 1440px screen shows of each. A layer that is too wide wraps into rows. Frame ports that don't fit on their side move to the other side. On a 390px screen the drawing scrolls inside its box and the page itself never scrolls sideways.
 
 ## Convergence
@@ -28,7 +28,7 @@ A person should understand and judge an architecture from `.abbd/blueprint/index
 11. **A line's style shows its kind, not its origin.** Lines are solid, and their colour shows the relation kind. A line a pstack reader found (판독) starts with a hollow purple dot. A line a human stated (확인) starts with a filled green dot. A line with no dot was extracted from the code (추출). The dot's tooltip says what the word means. 판독 means a reader read the relation, ABBD checks on every sync that the quoted code still exists, and no human has confirmed it.
 12. **Unwired contracts are grouped.** A contract that no inside unit is recorded as meeting is not spread along the frame. It is listed under the drawing as a chip group, with a shared first word shown once (`abbd`: diff, evidence, ...).
 
-Every view is deterministic, so the same state renders as identical bytes. The overview draws only EXTRACTED and USER_STATED relations. A group's view draws its members' relations as the group's own, but the overview never draws a module's inside, so changing a module's inside never moves the overview.
+Every view is deterministic, so the same state renders as identical bytes. Every view, the overview included, draws every live relation whatever its origin. A reader's coupling (판독) carries its hollow dot there too, because sync re-checks its quote on every run. A dead coupling, whose quote is gone, is drawn nowhere. The overview used to leave reader's couplings out, and on Orca (evaluation round 5) that erased every real platform boundary: the phone-to-relay WebSocket, the E2EE handshake, the push gateway and the native helper sockets were all found by readers. A group's view draws its members' relations as the group's own, but the overview never draws a module's inside, so changing a module's inside never moves the overview.
 
 ## Supplying groups
 

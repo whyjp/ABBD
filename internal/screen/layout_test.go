@@ -86,47 +86,63 @@ func TestTheSameDataAlwaysDrawsTheSamePicture(t *testing.T) {
 }
 
 // A human compares two screenshots of the overview, so what happens inside a
-// module, and any guess a reader records, must not move a box or a port, and
-// the overview draws no guess at all: each module's inside lists them.
+// module must not move a box, a port or a line.
 func TestAModulesInsideNeverMovesTheOverview(t *testing.T) {
 	before := build(ripgrep()).Overview
-
 	grown := append(ripgrep(),
 		inside("MOD-0006", "MOD-0003", rel("IF-0001", model.Consumes), rel("MOD-0007", model.DependsOn)),
 		inside("MOD-0007", "MOD-0003", rel("IF-0002", model.Provides)),
 		inside("DATA-0001", "MOD-0004"),
 	)
-	grown[0].Relations = append(grown[0].Relations, guess("IF-0002", model.Consumes, model.Via("trait")), guess("MOD-0005", model.DependsOn, model.Via("import")))
 	grown[2].Relations = append(grown[2].Relations, guess("DATA-0001", model.Consumes, model.Via("convention")))
-	// A guess that grep-matcher uses grep-printer would put the printer
-	// under the matcher if guesses moved boxes.
-	grown[3].Relations = append(grown[3].Relations, guess("MOD-0005", model.DependsOn, model.Via("convention")))
-	m := build(grown)
-	after := m.Overview
-
-	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(before.Ports, after.Ports) {
-		t.Fatalf("the overview moved when only insides and guesses changed:\nbefore %+v\nafter  %+v", before.Boxes, after.Boxes)
+	after := build(grown).Overview
+	if !reflect.DeepEqual(boxes(before), boxes(after)) || !reflect.DeepEqual(before.Ports, after.Ports) || !reflect.DeepEqual(before.Wires, after.Wires) {
+		t.Fatalf("the overview moved when only insides changed:\nbefore %+v\nafter  %+v", before.Boxes, after.Boxes)
 	}
 	if strings.Contains(svg(t, after), "MOD-0006") || strings.Contains(svg(t, after), "DATA-0001\"") {
 		t.Fatalf("an inside unit must never be drawn on the overview")
 	}
-	if !reflect.DeepEqual(before.Wires, after.Wires) {
-		t.Fatalf("the overview drew a reader's guess:\nbefore %+v\nafter  %+v", before.Wires, after.Wires)
+}
+
+// A coupling a reader found is drawn on the overview with the reader's mark
+// where it starts, because sync re-checks its quote every time. A dead one,
+// whose quote is gone, is drawn nowhere. Each module's inside still lists
+// the reader's couplings that touch it, with their quotes.
+func TestAReadersCouplingIsDrawnWithItsMark(t *testing.T) {
+	units := ripgrep()
+	units[0].Relations = append(units[0].Relations, guess("MOD-0005", model.DependsOn, model.Via("import")))
+	dead := guess("MOD-0004", model.DependsOn, model.Via("import"))
+	dead.Dead = true
+	units[4].Relations = append(units[4].Relations, dead)
+	m := build(units)
+	var found bool
+	for _, w := range m.Overview.Wires {
+		for _, r := range w.Rels {
+			if r == "MOD-0001.depends_on.MOD-0005" {
+				found = true
+				if w.Origin != "inferred" || len(w.Marks) != 1 || w.Marks[0].Origin != "inferred" {
+					t.Errorf("the reader's line carries no reader's mark: %+v", w)
+				}
+			}
+			if r == "MOD-0005.depends_on.MOD-0004" {
+				t.Errorf("a dead coupling is drawn: %+v", w)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("the overview leaves out the reader's coupling ripgrep → grep-printer")
 	}
 	listed := map[string]int{}
 	for _, ins := range m.Insides {
 		for _, c := range ins.Inferred {
 			if c.Via == "" || len(c.Quotes) == 0 {
-				t.Errorf("%s lists a guess without its via and quote: %+v", ins.ID, c)
+				t.Errorf("%s lists a coupling without its via and quote: %+v", ins.ID, c)
 			}
 			listed[ins.ID]++
 		}
 	}
-	// ripgrep's two guesses, the searcher's guess into the matcher's inside,
-	// and the matcher's guess, each listed in every module it touches.
-	want := map[string]int{"MOD-0001": 2, "MOD-0003": 1, "MOD-0004": 2, "MOD-0005": 2}
-	if !reflect.DeepEqual(listed, want) {
-		t.Fatalf("each module's inside lists the guesses that touch it: got %v, want %v", listed, want)
+	if want := map[string]int{"MOD-0001": 1, "MOD-0005": 1}; !reflect.DeepEqual(listed, want) {
+		t.Fatalf("each module's inside lists the couplings that touch it: got %v, want %v", listed, want)
 	}
 }
 

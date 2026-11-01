@@ -144,9 +144,10 @@ func chipsWidth(labels []string) int {
 }
 
 // overview is what the overview's layout may depend on: the top-level units
-// and the relations the script read or a human stated between them, a group's
-// members' relations drawn as the group's. A module's inside or a reader's
-// guess never moves a box.
+// and the live relations between them, a group's members' relations drawn as
+// the group's. A reader's coupling is drawn too, because sync checks its
+// quote every time; a dead one, whose quote is gone, is not. A module's
+// inside never moves a box.
 type overview struct {
 	tree      tree
 	units     map[model.ID]model.Unit
@@ -158,21 +159,24 @@ type overview struct {
 	users     map[model.ID][]model.ID
 	layout    layout
 	names     map[model.ID][]string
-	// rels are the stored relations each drawn edge stands for, by edge.
-	rels map[string][]string
+	// rels are the stored relations each drawn edge stands for, by edge,
+	// and origins say where each stored relation came from.
+	rels    map[string][]string
+	origins map[string]model.Origin
 }
 
 // top lists the top-level units, those with no parent, and the drawn
 // relations between them, with the stored relations each one stands for.
-func top(t tree) ([]model.ID, []model.Edge, map[string][]string) {
+func top(t tree) ([]model.ID, []model.Edge, map[string][]string, map[string]model.Origin) {
 	ids := slices.Clone(t.children[""])
 	var rels []model.Edge
 	via := map[string][]string{}
+	origins := map[string]model.Origin{}
 	for _, id := range ids {
 		for _, s := range t.sources(id) {
 			for _, r := range t.units[s].Relations {
 				to, ok := t.within(r.To, "")
-				if _, live := t.units[r.To]; !live || !ok || to == id || !r.Counts() {
+				if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {
 					continue
 				}
 				e := model.Edge{From: id, To: to, Kind: r.Kind}
@@ -180,11 +184,27 @@ func top(t tree) ([]model.ID, []model.Edge, map[string][]string) {
 					rels = append(rels, e)
 				}
 				via[e.String()] = append(via[e.String()], key(s, r.Kind, r.To))
+				origins[key(s, r.Kind, r.To)] = r.Origin
 			}
 		}
 	}
 	sort.Slice(rels, func(i, j int) bool { return rels[i].String() < rels[j].String() })
-	return ids, rels, via
+	return ids, rels, via, origins
+}
+
+// origin is what a drawn edge rests on: the code when the script read any
+// relation it stands for, else a human's word, else a reader's reading.
+func (o *overview) origin(rels []string) string {
+	best := model.Inferred
+	for _, r := range rels {
+		switch o.origins[r] {
+		case model.Extracted:
+			return Badge(model.Extracted)
+		case model.UserStated:
+			best = model.UserStated
+		}
+	}
+	return Badge(best)
 }
 
 func planOverview(units []model.Unit) *overview {
@@ -192,7 +212,7 @@ func planOverview(units []model.Unit) *overview {
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
-	o.design, o.relations, o.rels = top(o.tree)
+	o.design, o.relations, o.rels, o.origins = top(o.tree)
 	slices.Sort(o.design)
 	isModule := map[model.ID]bool{}
 	for _, id := range o.design {
@@ -525,10 +545,22 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for _, i := range p.reqs {
 			titles = append(titles, merged[i].title)
 		}
-		w := Wire{D: p.D, Kind: merged[p.reqs[0]].kind, Title: strings.Join(titles, "\n")}
-		for _, i := range p.reqs {
+		w := Wire{D: p.D, Kind: merged[p.reqs[0]].kind}
+		origins := map[string]bool{}
+		for j, i := range p.reqs {
 			w.Rels = append(w.Rels, merged[i].rels...)
+			og := o.origin(merged[i].rels)
+			origins[og] = true
+			w.Origin = og
+			if og != Badge(model.Extracted) {
+				w.Marks = append(w.Marks, Mark{X: p.starts[j].x, Y: p.starts[j].y, Origin: og})
+				titles[j] += ", " + labels[og]
+			}
 		}
+		if len(origins) > 1 {
+			w.Origin = "mixed"
+		}
+		w.Title = strings.Join(titles, "\n")
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}

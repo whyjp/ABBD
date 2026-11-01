@@ -94,6 +94,8 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // it waits for a reader's grouping (docs/blueprint-svg.md, "Supplying
 // groups").
 var debt = map[string]Metrics{
+	"self overview":                         {Crossings: 35},
+	"ripgrep overview":                      {TooClose: 1, Crossings: 39},
 	"self MOD-0001 abbd CLI":                {PortFar: 1},
 	"orca MOD-0007 mobile app (Expo)":       {MaxChannel: 5, TooClose: 10, Crossings: 189},
 	"orca MOD-0042 desktop main process":    {MaxChannel: 5, TooClose: 11, Crossings: 365},

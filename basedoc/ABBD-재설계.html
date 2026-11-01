@@ -415,7 +415,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ul>
 <li>최상위 단위(<code>parent</code> 없음)만 그린다. 모듈은 상자이고, 계약은 상자 경계의 포트다. 제공하는 계약은 출구, 소비하는 계약은 입구다.</li>
 <li>모듈 사이의 선은 계약을 거쳐서만 잇는다. 계약을 거치지 않는 직접 의존은 다르게 그린다. 경계를 우회하는 결합이기 때문이다.</li>
-<li>EXTRACTED와 USER_STATED 관계만 그린다. INFERRED 결합은 겉층에 그리지 않는다. 대신 각 모듈의 속층이 그 결합을 &quot;판독&quot;으로, <code>via</code>와 증거 인용을 붙여 나열한다.</li>
+<li>살아 있는 관계는 origin과 상관없이 모두 그린다. INFERRED 결합은 선이 시작하는 곳의 빈 점(&quot;판독&quot;)으로, USER_STATED는 채운 점(&quot;확인&quot;)으로 가른다. 각 모듈의 속층은 그 결합을 <code>via</code>와 증거 인용과 함께 나열한다. 인용이 사라진 죽은 결합은 어디에도 그리지 않는다. Orca 5회차에서 INFERRED를 겉층에서 빼자 폰과 relay의 WebSocket, E2EE, 푸시 게이트웨이, 네이티브 헬퍼 소켓 같은 진짜 플랫폼 경계가 모두 사라졌고, sync가 인용을 매번 다시 확인하므로 판독한 결합도 겉층에 둘 만큼 믿을 수 있다.</li>
 </ul>
 <h3>속층은 모듈 하나의 안이다</h3>
 <ul>
@@ -634,7 +634,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>코드가 바뀐 모듈에 바뀌지 않은 글을 다시 찍는 <code>abbd understand</code>는 거부되고, 낡은 글은 설계도에 STALE로 보인다.</li>
 <li><code>parent</code> 순환은 거부된다.</li>
 <li><code>abbd diff</code>는 단위의 추가와 삭제, 계약 시그니처 변경, 같은 시그니처의 digest 변경, 최상위 모듈 사이 관계의 변화, 새 추정 결합을 보고하고 exit 0이다. <code>--check</code>는 계약의 시그니처 변경, 계약의 추가나 삭제, 최상위 모듈 사이 관계의 추가나 삭제가 있을 때만 exit 1이다. 같은 시그니처의 digest 변경으로는 exit 1이 아니다.</li>
-<li>겉층은 최상위 단위와 EXTRACTED, USER_STATED 관계만 그린다. INFERRED 결합은 그 모듈의 속층에 &quot;추정&quot;으로 나열된다.</li>
+<li>겉층은 최상위 단위와 그 사이의 살아 있는 관계를 그린다. INFERRED 결합은 판독 점을 달고 그려지며, 그 모듈의 속층에 증거 인용과 함께 나열된다. 죽은 결합은 그려지지 않는다(Orca 5회차에서 INFERRED를 빼자 플랫폼 경계가 겉층에서 사라졌다).</li>
 <li>모듈 하나의 안이 바뀌어도 겉층의 배치는 같다. 390px에서 가로 스크롤이 없다.</li>
 <li>설계도에는 승인 버튼, 폼, 큐, 턴, 기록이 없다.</li>
 <li><code>abbd explain</code>은 작업 트리와 <code>.abbd/</code>를 바꾸지 않고, 단위의 종류, <code>parent</code>, 책임과 origin, 시그니처, 계약, 직접 이웃, INFERRED 결합의 증거 인용을 낸다. 모듈이면 속 단위와 how의 글을 내고, 낡은 글에는 STALE이 붙는다.</li>
