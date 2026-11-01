@@ -95,8 +95,8 @@ a { color: var(--accent); }
 .diff .del mark { background: color-mix(in srgb, var(--block) 30%, transparent); }
 .acts { display: flex; gap: 6px; align-items: flex-start; }
 .acts form.inline { margin-top: 4px; }
-.acts .grow { flex: 1 1 auto; flex-wrap: nowrap; }
-.acts .grow input { min-width: 0; }
+.acts .grow { flex: 1 1 auto; flex-wrap: nowrap; min-width: 0; }
+.acts .grow input { min-width: 0; flex: 1 1 60px; }
 .top { display: grid; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1100px) {
   .top.has-cards { grid-template-columns: minmax(0, 1fr) 390px; grid-template-areas: "map cards"; gap: 12px; align-items: start; }
@@ -228,7 +228,7 @@ svg marker path { stroke: none; }
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
     <div class="views"><a class="v-all" href="#overview">전체</a>{{if .M.TurnShown}}<a class="v-turn" href="#this-turn">마지막 턴이 바꾼 것만</a>{{end}}</div>
   </div>
-  {{with .M.Turn}}<div class="turnnote"><strong>{{.ID}}가 바꾼 것</strong>{{if .Request}} <span class="muted">({{.Request}})</span>{{end}}: {{if $.M.Changed}}{{join $.M.Changed ", "}}{{else}}토폴로지에 닿은 변경이 없습니다{{end}}. 흐린 것은 이 턴과 무관합니다.</div>{{end}}
+  {{with .M.Turn}}<div class="turnnote"><strong>{{.ID}}가 바꾼 것</strong>{{if .Request}} <span class="muted">({{short .Request 90}})</span>{{end}}: {{if $.M.Changed}}{{join $.M.Changed ", "}}{{else}}토폴로지에 닿은 변경이 없습니다{{end}}. 흐린 것은 이 턴과 무관합니다.</div>{{end}}
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .M.Overview}}</div>
   {{template "legend" "overview"}}
@@ -248,7 +248,7 @@ svg marker path { stroke: none; }
     <div class="text">
       {{with .Understanding}}
       <div><span class="pill inferred">추정</span> <span class="muted">pstack {{.By}}가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}</div>
-      {{range .Blocks}}{{if eq .Kind "h"}}<h4>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</h4>{{else if eq .Kind "li"}}<ul><li>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</li></ul>{{else}}<p>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</p>{{end}}{{end}}
+      {{range .Blocks}}{{if eq .Kind "h"}}<h4>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</h4>{{else if eq .Kind "li"}}<ul><li>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</li></ul>{{else}}<p>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}</p>{{end}}{{end}}
       {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
       {{if .Units}}<h3>안의 단위</h3>
       <ul class="plain units-list">{{range .Units}}<li><strong>{{.Name}}</strong> <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred">추정</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details></li>{{end}}</ul>

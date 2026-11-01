@@ -25,15 +25,25 @@ type Block struct {
 type Span struct {
 	Text string
 	Code bool
+	Bold bool `json:",omitempty"`
 	// Mark highlights the words a change touched.
 	Mark bool `json:",omitempty"`
 }
 
+// spans reads the inline marks how's text uses: `code` and **bold**.
 func spans(s string) []Span {
 	var out []Span
 	for i, part := range strings.Split(s, "`") {
-		if part != "" {
-			out = append(out, Span{Text: part, Code: i%2 == 1})
+		if i%2 == 1 {
+			if part != "" {
+				out = append(out, Span{Text: part, Code: true})
+			}
+			continue
+		}
+		for j, piece := range strings.Split(part, "**") {
+			if piece != "" {
+				out = append(out, Span{Text: piece, Bold: j%2 == 1})
+			}
 		}
 	}
 	return out

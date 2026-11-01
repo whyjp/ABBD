@@ -18,6 +18,12 @@ var page = template.Must(template.New("page").Funcs(template.FuncMap{
 	// badge is the CSS class of a trust badge: its first word.
 	"badge": func(b string) string { return strings.TrimSuffix(strings.Fields(b + " x")[0], ",") },
 	"half":  func(n int) int { return n / 2 },
+	"short": func(s string, n int) string {
+		if r := []rune(s); len(r) > n {
+			return string(r[:n]) + "…"
+		}
+		return s
+	},
 	"plus":  func(a, b int) int { return a + b },
 	"marks": func() []string { return []string{"contract", "bypass", "guess", "block", "warn", "ink", "ok"} },
 	"markColor": func(k string) string {

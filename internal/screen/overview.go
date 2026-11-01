@@ -315,7 +315,11 @@ func spread(r rect, top bool, items []attach) map[string]Port {
 	// folds the rest into one "+N" chip; their lines all meet it.
 	const least = 64
 	fold := 0
-	if fits := max(1, (r.W-8)/(least+4)); len(chips) > fits {
+	need := 0
+	for _, c := range chips {
+		need += min(chipWidth(c.label), least) + 4
+	}
+	if fits := max(1, (r.W-8)/(least+4)); need > r.W-8 && len(chips) > fits {
 		fold = len(chips) - (fits - 1)
 	}
 	shown := chips[:len(chips)-fold]
