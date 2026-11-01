@@ -62,3 +62,25 @@ func TestTheScreenShowsASemanticCouplingWithItsEvidence(t *testing.T) {
 		t.Fatalf("a coupling whose evidence is gone leaves the screen")
 	}
 }
+
+// A module's text comes from pstack's how. The screen shows it beside the
+// module's inside and marks it STALE once the module's code moves on.
+func TestTheScreenShowsHowsTextAndMarksItStale(t *testing.T) {
+	p := activeSemanticProject(t)
+	text := p.file(t, "how.md", "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n")
+	p.want(1, "is not a top-level module", "understand", "DATA-0001", text)
+	p.want(0, "understood MOD-0001 billing, INFERRED", "understand", "MOD-0001", text)
+	html := p.screen().view(t)
+	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `pstack how가 쓴 설명`} {
+		if !strings.Contains(html, want) {
+			t.Fatalf("the module's inside should carry how's text; missing %s", want)
+		}
+	}
+	if strings.Contains(html, `title="이 설명을 쓴 뒤`) {
+		t.Fatalf("a text written against the code as it is must not be STALE")
+	}
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge(currency string) {}\n")
+	if !strings.Contains(p.screen().view(t), `title="이 설명을 쓴 뒤`) {
+		t.Fatalf("the text should turn STALE once the module's code changes")
+	}
+}

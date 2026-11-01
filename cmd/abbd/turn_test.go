@@ -190,6 +190,7 @@ func TestImpactSplitsIntoDirectAndFarTiers(t *testing.T) {
 	}
 
 	html := p.screen().view(t)
+	html = html[strings.Index(html, `<section id="turn">`):]
 	at := func(s string) int {
 		i := strings.Index(html, s)
 		if i < 0 {

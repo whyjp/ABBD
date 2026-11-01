@@ -87,9 +87,12 @@ func TestScreenPutsTheBlockedChangeFirstAndApprovesIt(t *testing.T) {
 	p, edge := blockedTurn(t)
 	s := p.screen()
 	html := s.view(t)
-	waiting, thisTurn, drift, mapAt := strings.Index(html, "결정 대기"), strings.Index(html, "이번 턴 CHG-0001"), strings.Index(html, "의도 대 실제"), strings.Index(html, "전체 지도")
-	if !(waiting < strings.Index(html, edge) && strings.Index(html, edge) < thisTurn && thisTurn < drift && drift < mapAt) {
-		t.Fatalf("the blocked change comes first, then the turn, drift and the map")
+	waiting, card, overview, thisTurn, drift := strings.Index(html, "결정 대기"), strings.Index(html, `id="card-`+edge), strings.Index(html, "모듈과 계약"), strings.Index(html, "마지막 턴 CHG-0001"), strings.Index(html, "의도 대 실제")
+	if !(waiting < card && card < overview && overview < thisTurn && thisTurn < drift) {
+		t.Fatalf("the blocked change comes first, then the overview, the turn and drift")
+	}
+	if !strings.Contains(html, "billing이(가) 이제 ledger에 직접 의존합니다") {
+		t.Fatalf("the card should say the change in words, naming the units")
 	}
 	if !strings.Contains(html, "make the change") || !strings.Contains(html, "했지만 선언하지 않음: <span class=\"key\">MOD-0001") {
 		t.Fatalf("the turn should show its request and the declared-versus-actual report")
@@ -258,7 +261,7 @@ func TestScreenRealignsAndRegistersACoupling(t *testing.T) {
  {"key":"api","kind":"IF","name":"http api","signature":"GET /charges","anchors":[{"path":"api/http.go","symbol":"Serve"}]}
 ],"relations":[{"from":"billing","to":"api","kind":"provides"}]}`)
 	p.want(2, "REALIGN unit-removed:MOD-0002", "mode", "on", "--session", "s1")
-	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="removed"`) {
+	if html := s.view(t); !strings.Contains(html, "REALIGN 행 인정") || !strings.Contains(html, `class="box removed`) {
 		t.Fatalf("a drifted project should offer the short realignment and draw the removed unit")
 	}
 	s.decide(t, "do", "realign", "key", "unit-removed:MOD-0002")

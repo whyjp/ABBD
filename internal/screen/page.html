@@ -9,35 +9,36 @@
 <style>
 :root {
   --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
-  --accent: #2f5d8a; --block: #b3261e; --block-bg: #fbeceb; --warn: #9a5b00; --warn-bg: #fdf3e1;
-  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --block: #b3261e; --block-bg: #fbeceb; --warn: #9a5b00; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
-    --accent: #7fb0e0; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
-    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
-  --accent: #7fb0e0; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
-  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --block: #f2867e; --block-bg: #3a1f1d; --warn: #e8b35a; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 1040px; margin: 0 auto; padding: 16px; }
-header { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
-h1 { font-size: 20px; margin: 0; }
-h2 { font-size: 16px; margin: 0 0 8px; }
+main { max-width: 1400px; margin: 0 auto; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
 h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
-section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin: 0 0 14px; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
 section.first { border-color: var(--block); }
-code, .key { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
 .muted { color: var(--muted); }
 .pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
@@ -46,17 +47,13 @@ code, .key { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere;
 .pill.BLOCKED, .pill.OPEN, .pill.FAILED { color: var(--block); background: var(--block-bg); border-color: transparent; }
 .pill.inferred, .pill.adopted, .pill.UNCONFIRMED { color: var(--guess); background: var(--guess-bg); border: 1px dashed var(--guess); }
 .pill.PROMOTE { color: var(--accent); }
-.card { border: 1px solid var(--line); border-left: 4px solid var(--block); border-radius: 6px; padding: 10px 12px; margin: 8px 0; }
-.card.rejected { border-left-color: var(--warn); }
-.card .why { margin: 4px 0 8px; }
-.banner { border: 1px dashed var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 8px 12px; margin: 8px 0; }
-.flash { border-radius: 6px; padding: 8px 12px; margin: 0 0 12px; background: var(--ok-bg); white-space: pre-wrap; font-family: var(--mono); font-size: 13px; }
+.banner { border: 1px dashed var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 14px; }
+.flash { border-radius: 6px; padding: 8px 12px; margin: 0 0 10px; background: var(--ok-bg); white-space: pre-wrap; font-family: var(--mono); font-size: 13px; }
 .flash.fail { background: var(--block-bg); }
 form.inline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 0; }
-input[type=text], textarea, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 5px 8px; min-width: 0; }
-input[type=text] { flex: 1 1 200px; }
-textarea { width: 100%; min-height: 54px; }
-button { font: inherit; font-weight: 600; border-radius: 5px; border: 1px solid var(--line); padding: 5px 12px; background: var(--panel); color: var(--ink); cursor: pointer; }
+input[type=text], textarea, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 4px 8px; min-width: 0; max-width: 100%; }
+input[type=text] { flex: 1 1 160px; }
+button { white-space: nowrap; font: inherit; font-weight: 600; border-radius: 5px; border: 1px solid var(--line); padding: 4px 12px; background: var(--panel); color: var(--ink); cursor: pointer; }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 button.danger { color: var(--block); border-color: var(--block); }
 button:disabled { opacity: .4; cursor: not-allowed; }
@@ -65,38 +62,112 @@ ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
 ul.plain li:last-child { border-bottom: 0; }
 table { border-collapse: collapse; width: 100%; }
 td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
 details > summary { cursor: pointer; font-weight: 600; }
 details.group { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; margin: 6px 0; }
 details.group[open] > summary { margin-bottom: 4px; }
-.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 8px; }
-.mapbox svg { display: block; }
-svg text { fill: var(--ink); font: 12px system-ui, sans-serif; }
-svg text.id { font: 600 11px var(--mono); fill: var(--muted); }
-svg text.col { font-weight: 700; fill: var(--muted); }
-svg rect { fill: var(--panel); stroke: var(--muted); stroke-width: 1; }
-svg rect.design { stroke: var(--ink); stroke-width: 2; }
-svg rect.removed { stroke: var(--block); stroke-dasharray: 5 4; fill: var(--block-bg); }
-svg rect.changed { stroke: var(--warn); stroke-width: 2.5; fill: var(--warn-bg); }
-svg rect.added { stroke: var(--ok); stroke-dasharray: 5 4; }
-svg circle.guess { fill: var(--guess); }
-svg path { fill: none; stroke-width: 1.6; marker-end: url(#arrow); }
-svg path.kept { stroke: var(--muted); }
-svg path.below { stroke: var(--line); }
-svg path.removed { stroke: var(--block); stroke-dasharray: 6 4; }
-svg path.blocked { stroke: var(--block); stroke-width: 2.6; }
-svg path.realign { stroke: var(--warn); stroke-width: 2.2; }
-svg path.guess { stroke: var(--guess); stroke-dasharray: 2 4; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
 .coupling { font-size: 13px; color: var(--guess); margin-top: 2px; }
 .coupling q { color: var(--ink); font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
-svg marker path { fill: var(--muted); stroke: none; }
-.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; margin-top: 6px; }
-.legend span::before { content: ""; display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--muted); vertical-align: middle; margin-right: 5px; }
-.legend .l-blocked::before { border-color: var(--block); border-top-width: 3px; }
-.legend .l-realign::before { border-color: var(--warn); }
-.legend .l-removed::before { border-color: var(--block); border-top-style: dashed; }
-.legend .l-guess::before { border-color: var(--guess); border-top-style: dotted; }
-.legend .l-below::before { border-color: var(--line); }
-@media (max-width: 560px) { body { font-size: 14px; } section { padding: 12px; } td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } }
+
+/* Decision strip: one compact card per grade C question. */
+.strip h2 { display: flex; gap: 8px; align-items: baseline; }
+.cards { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px; }
+.card { flex: 0 0 min(440px, 100%); border: 1px solid var(--line); border-left: 4px solid var(--block); border-radius: 6px; padding: 8px 10px; background: var(--panel); min-width: 0; }
+.card.rejected { border-left-color: var(--warn); }
+.card .title { font-weight: 650; }
+.card .rec { margin: 2px 0; font-size: 14px; }
+.card .rec b { color: var(--accent); }
+.card details { margin-top: 6px; font-size: 14px; }
+.card details p { margin: 4px 0; }
+.card details summary { font-weight: 500; color: var(--muted); }
+.diff { font-family: var(--mono); font-size: 12px; margin: 6px 0; border: 1px solid var(--line); border-radius: 4px; max-height: 12em; overflow: auto; }
+.diff div { padding: 1px 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff .add { background: var(--ok-bg); }
+.diff .add::before { content: "+ "; color: var(--ok); font-weight: 700; }
+.diff .del { background: var(--block-bg); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--block) 50%, transparent); }
+.diff .del::before { content: "− "; color: var(--block); font-weight: 700; }
+.diff .same { color: var(--muted); font-family: system-ui, sans-serif; }
+.diff mark { color: inherit; border-radius: 2px; padding: 0 1px; }
+.diff .add mark { background: color-mix(in srgb, var(--ok) 32%, transparent); }
+.diff .del mark { background: color-mix(in srgb, var(--block) 30%, transparent); }
+.acts { display: flex; gap: 6px; align-items: flex-start; }
+.acts form.inline { margin-top: 4px; }
+.acts .grow { flex: 1 1 auto; flex-wrap: nowrap; }
+.acts .grow input { min-width: 0; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) {
+  .top.has-cards { grid-template-columns: minmax(0, 1fr) 390px; grid-template-areas: "map cards"; gap: 12px; align-items: start; }
+  .top.has-cards #pending { grid-area: cards; }
+  .top.has-cards #overview { grid-area: map; }
+  .top.has-cards .cards { flex-direction: column; overflow: visible; }
+  .top.has-cards .card { flex: none; }
+}
+.align-card { border-left: 4px solid var(--accent); padding: 4px 0 4px 10px; }
+
+/* Drawings. */
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.removed rect { stroke: var(--block); stroke-dasharray: 5 4; fill: var(--block-bg); }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.changed rect { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 2.4; }
+svg .port.changed text { fill: var(--warn); font-weight: 700; }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg .port.unwired { opacity: .55; }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.semantic { stroke: var(--guess); stroke-dasharray: 5 4; stroke-width: 1.2; stroke-opacity: .75; marker-end: url(#m-guess); }
+svg path.new { stroke: var(--block); stroke-width: 3; marker-end: url(#m-block); }
+svg path.realign { stroke: var(--warn); stroke-width: 2.4; stroke-dasharray: 8 3; marker-end: url(#m-warn); }
+svg path.removed { stroke: var(--block); stroke-dasharray: 2 5; stroke-width: 2; }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg path.guess { stroke-dasharray: 5 3; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+.turnnote { display: none; border: 1px solid var(--warn); background: var(--warn-bg); border-radius: 6px; padding: 6px 10px; margin: 6px 0 0; font-size: 14px; }
+.anchor { display: block; position: relative; top: -8px; }
+#this-turn:target ~ .turnnote { display: block; }
+#this-turn:target ~ .mapbox .q { opacity: .1; }
+#this-turn:target ~ .drawhead .v-turn, .drawhead .v-all { font-weight: 700; }
+
+/* Second level: hidden until its link is followed. */
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 10px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+  .card { flex-basis: 86%; }
+}
 </style>
 </head>
 <body>
@@ -112,38 +183,84 @@ svg marker path { fill: var(--muted); stroke: none; }
 </header>
 {{if not $static}}<div id="flash" class="flash" role="status" hidden></div>
 <div class="banner" id="readonly">읽기 전용입니다. 승인, 반려, 확인을 하려면 터미널에 <code>abbd serve</code>가 출력한 링크로 여세요.</div>{{end}}
-{{if eq .M.Actual "STALE"}}<div class="banner"><strong>실제 토폴로지가 STALE입니다.</strong> 트리 <code>{{.M.Synced.Fingerprint}}</code>에서 추출했는데 지금 작업 트리는 <code>{{.M.Tree}}</code>입니다. <code>abbd turn diff</code>나 <code>abbd mode on</code>으로 다시 추출하기 전까지 아래 어긋남에는 최근 편집이 빠져 있을 수 있습니다.</div>{{end}}
-{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/가 STALE입니다.</strong> 워터마크가 그 파일이 그리는 .abbd 파일과 다릅니다. 이 화면은 .abbd를 직접 읽습니다. 생성 파일은 무언가를 기록하는 다음 abbd 명령에서 갱신됩니다.</div>{{end}}
+{{if eq .M.Actual "STALE"}}<div class="banner"><strong>실제 토폴로지가 STALE입니다.</strong> 트리 <code>{{.M.Synced.Fingerprint}}</code>에서 추출했는데 지금 작업 트리는 <code>{{.M.Tree}}</code>입니다. <code>abbd turn diff</code>나 <code>abbd mode on</code>으로 다시 추출하기 전까지 아래에는 최근 편집이 빠져 있을 수 있습니다.</div>{{end}}
+{{if eq .M.Generated "STALE"}}<div class="banner"><strong>.abbd/generated/가 STALE입니다.</strong> 이 화면은 .abbd를 직접 읽습니다. 생성 파일은 무언가를 기록하는 다음 abbd 명령에서 갱신됩니다.</div>{{end}}
 
 {{if ne .O.Only "queue"}}
-<section class="{{if or .M.Pending .M.Align}}first{{end}}" id="pending">
-  <h2>결정 대기</h2>
+<div class="top{{if .M.Pending}} has-cards{{end}}">
+<section class="strip{{if or .M.Pending .M.Align}} first{{end}}" id="pending">
+  <h2>결정 대기 {{if .M.Pending}}<span class="pill BLOCKED">{{len .M.Pending}}개</span>{{end}}</h2>
   {{if .M.Align}}
-  <div class="card">
-    <strong>첫 정렬.</strong> setup이 묻지 않고 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다. 후보는 종류별로 접혀 있고 처음에는 모두 골라져 있습니다.
+  <div class="align-card">
+    <strong>첫 정렬.</strong> setup이 찾아낸 설계 단위 후보입니다. 설계 결정을 내리는 단위만 남기세요. 나머지는 선 아래에 둡니다.
     {{if not $static}}<form method="post" action="/act">
       <input type="hidden" name="do" value="align">
-      {{range .M.AlignGroups}}<details class="group"><summary>{{label .Title}} <span class="muted">{{len .Rows}}개</span></summary><ul class="plain">{{range .Rows}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> <span class="key">{{.ID}}</span> {{.Name}}</label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{end}}<div class="muted key">{{join .Anchors ", "}}</div></li>{{end}}</ul></details>{{end}}
+      {{range .M.AlignGroups}}<details class="group"><summary>{{label .Title}} <span class="muted">{{len .Rows}}개</span></summary><ul class="plain">{{range .Rows}}<li><label><input type="checkbox" name="id" value="{{.ID}}" checked> {{.Name}} <span class="muted key">{{.ID}}</span></label>{{if .Purpose}} <span class="muted">{{.Purpose}}</span> <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{end}}</li>{{end}}</ul></details>{{end}}
       <button class="primary" disabled>이 설계 단위로 확정</button>
-    </form>{{else}}<ul class="plain">{{range .M.Align}}<li><span class="key">{{.ID}}</span> {{.Name}}</li>{{end}}</ul>{{end}}
+    </form>{{else}}<ul class="plain">{{range .M.Align}}<li>{{.Name}} <span class="muted key">{{.ID}}</span></li>{{end}}</ul>{{end}}
   </div>
   {{end}}
+  {{if .M.Pending}}<div class="cards">
   {{range .M.Pending}}
-  <div class="card{{if .Rejection}} rejected{{end}}" id="card-{{.Key}}">
-    <div><span class="pill BLOCKED">C</span> <span class="key">{{.Key}}</span>{{if .Turn}} <span class="muted">{{.Turn}}</span>{{end}}</div>
-    <div class="why">{{.Detail}}{{if .Question}}. 에이전트가 편집 전에 물었습니다.{{end}}</div>
+  <article class="card{{if .Rejection}} rejected{{end}}" id="card-{{.Key}}">
+    <div class="title"><span class="pill BLOCKED">C</span> {{.Ask.Title}}</div>
+    {{if .Ask.Default}}<p class="rec"><b>추천</b> {{.Ask.Default}}</p>{{end}}
+    {{if .Ask.Diff}}<div class="diff" aria-label="시그니처에서 바뀐 멤버">{{range .Ask.Diff}}<div class="{{if eq .Op "+"}}add{{else}}del{{end}}">{{range .Parts}}{{if .Mark}}<mark>{{.Text}}</mark>{{else}}{{.Text}}{{end}}{{end}}</div>{{end}}{{if .Ask.Same}}<div class="same">바뀌지 않은 멤버 {{.Ask.Same}}개는 생략했습니다.</div>{{end}}</div>{{end}}
     {{if .Rejection}}<div class="banner">{{.Rejection.ADR}}로 반려했습니다: {{.Rejection.Reason}}. 에이전트가 이유를 읽고 되돌려야 합니다.</div>{{end}}
-    {{if not $static}}
+    {{if not $static}}<div class="acts">
     <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" disabled>승인</button></form>
-    {{if not .Rejection}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="반려 이유 (에이전트가 읽습니다)"><button class="danger" disabled>반려</button></form>{{end}}
-    {{end}}
-  </div>
-  {{else}}{{if not .M.Align}}<p class="muted">결정할 것이 없습니다.</p>{{end}}{{end}}
+    {{if not .Rejection}}<form class="inline grow" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="반려 이유 (에이전트가 읽습니다)"><button class="danger" disabled>반려</button></form>{{end}}
+    </div>{{end}}
+    <details><summary>왜 묻는지, 각 답이 하는 일</summary>
+      <p><b>왜 묻나.</b> {{.Ask.Why}}{{if .Question}} 에이전트가 편집 전에 선언했습니다.{{end}}</p>
+      <p><b>승인하면.</b> {{.Ask.Approve}}</p>
+      <p><b>반려하면.</b> {{.Ask.Reject}}</p>
+      <p class="muted">키 <span class="key">{{.Key}}</span>{{if .Turn}} · {{.Turn}}{{end}} · {{.Detail}}</p>
+    </details>
+  </article>
+  {{end}}</div>
+  {{else}}{{if not .M.Align}}<p class="muted" style="margin:0">결정할 것이 없습니다.</p>{{end}}{{end}}
 </section>
+
+<section id="overview">
+  <span class="anchor" id="this-turn"></span>
+  <div class="drawhead">
+    <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
+    <div class="views"><a class="v-all" href="#overview">전체</a>{{if .M.TurnShown}}<a class="v-turn" href="#this-turn">마지막 턴이 바꾼 것만</a>{{end}}</div>
+  </div>
+  {{with .M.Turn}}<div class="turnnote"><strong>{{.ID}}가 바꾼 것</strong>{{if .Request}} <span class="muted">({{.Request}})</span>{{end}}: {{if $.M.Changed}}{{join $.M.Changed ", "}}{{else}}토폴로지에 닿은 변경이 없습니다{{end}}. 흐린 것은 이 턴과 무관합니다.</div>{{end}}
+  <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
+  <div class="mapbox">{{template "drawing" .M.Overview}}</div>
+  {{template "legend" "overview"}}
+</section>
+</div>
+
+{{range .M.Insides}}
+<section class="inside" id="m-{{.ID}}">
+  <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="#overview">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">위 테두리의 칸은 이 모듈이 내놓는 계약, 아래 칸은 쓰는 계약입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  <div class="cols">
+    <div>
+      <div class="mapbox">{{template "drawing" .Drawing}}</div>
+      {{template "legend" "inside"}}
+      {{if .Unwired}}<p class="muted">안의 어느 단위가 맡는지 기록이 없는 계약: {{join .Unwired ", "}}.</p>{{end}}
+    </div>
+    <div class="text">
+      {{with .Understanding}}
+      <div><span class="pill inferred">추정</span> <span class="muted">pstack {{.By}}가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}</div>
+      {{range .Blocks}}{{if eq .Kind "h"}}<h4>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</h4>{{else if eq .Kind "li"}}<ul><li>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</li></ul>{{else}}<p>{{range .Parts}}{{if .Code}}<code>{{.Text}}</code>{{else}}{{.Text}}{{end}}{{end}}</p>{{end}}{{end}}
+      {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
+      {{if .Units}}<h3>안의 단위</h3>
+      <ul class="plain units-list">{{range .Units}}<li><strong>{{.Name}}</strong> <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred">추정</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details></li>{{end}}</ul>
+      {{else}}<p class="muted">안의 단위가 아직 없습니다. how가 찾은 단위를 <code>abbd propose unit KIND NAME --parent {{.ID}}</code>로 넣으면 그려집니다.</p>{{end}}
+    </div>
+  </div>
+</section>
+{{end}}
 
 {{with .M.Turn}}
 <section id="turn">
-  <h2>이번 턴 {{.ID}} <span class="pill {{.State}}">{{.State}}</span></h2>
+  <h2>마지막 턴 {{.ID}} <span class="pill {{.State}}">{{.State}}</span></h2>
   {{if .Request}}<p><span class="muted">요청 {{.Requirement}}:</span> {{.Request}}</p>{{end}}
   {{template "turnbody" .}}
 </section>
@@ -154,14 +271,14 @@ svg marker path { fill: var(--muted); stroke: none; }
   {{if .M.Drift}}
   {{$tick := and .M.Realign (not .M.Waiting) (not $static)}}
   {{if $tick}}<form method="post" action="/act"><input type="hidden" name="do" value="realign">{{end}}
-  <table>{{range .M.Drift}}<tr><td>{{if and $tick (eq .Effect "REALIGN")}}<input type="checkbox" name="key" value="{{.Key}}" checked aria-label="이 행 인정"> {{end}}<span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
+  <table>{{range .M.Drift}}<tr><td class="id">{{if and $tick (eq .Effect "REALIGN")}}<input type="checkbox" name="key" value="{{.Key}}" checked aria-label="이 행 인정"> {{end}}<span class="pill {{.Effect}}">{{.Effect}}</span></td><td class="key">{{.Key}}</td><td class="muted">{{.Detail}}</td></tr>{{end}}</table>
   {{if $tick}}<div class="inline"><button disabled>고른 REALIGN 행 인정</button> <span class="muted">짧은 재정렬입니다. 고른 행만 의도한 토폴로지에 들어가고, 나머지는 어긋남으로 남습니다.</span></div></form>
   {{else if and .M.Realign .M.Waiting}}<p class="muted">REALIGN 행은 위의 C 변경을 먼저 결정한 뒤에 인정할 수 있습니다.</p>{{end}}
   {{else}}<p class="muted">{{if eq .M.Phase "aligned"}}코드가 의도한 토폴로지와 맞습니다.{{else}}아직 의도한 토폴로지가 없습니다.{{end}}</p>{{end}}
   {{if .M.Promote}}<h3 id="promote">승격 후보</h3>
   <p class="muted">선 아래에서 자란 구조입니다. 채택하면 의도한 토폴로지의 설계 단위가 되고, 거부하면 관계가 바뀔 때까지 다시 올라오지 않습니다.{{if not $idle}} 끝나지 않은 턴이 있어 그 턴이 끝난 뒤에 결정할 수 있습니다.{{end}}</p>
   {{range .M.Promote}}<details class="group"><summary>{{label .Title}} <span class="muted">{{len .Rows}}개</span></summary>
-  <ul class="plain">{{range .Rows}}<li id="promote-{{.ID}}"><span class="key">{{.ID}}</span> {{.Name}}{{if .Design}} <span class="muted">설계 단위 {{join .Design ", "}}와 관계</span>{{end}}
+  <ul class="plain">{{range .Rows}}<li id="promote-{{.ID}}">{{.Name}} <span class="key muted">{{.ID}}</span>{{if .Design}} <span class="muted">설계 단위 {{join .Design ", "}}와 관계</span>{{end}}
     {{if and $idle (not $static)}}<form class="inline" method="post" action="/act"><input type="hidden" name="do" value="approve"><input type="hidden" name="key" value="{{.Key}}"><button class="primary" disabled>채택</button></form>
     <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="reject"><input type="hidden" name="key" value="{{.Key}}"><input type="text" name="reason" required placeholder="거부 이유 (선 아래에 두는 까닭)"><button class="danger" disabled>거부</button></form>{{end}}</li>{{end}}</ul>
   </details>{{end}}{{end}}
@@ -172,7 +289,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   <h2>{{if eq .O.Only "queue"}}확인할 추정{{else}}신뢰: 확인할 추정{{end}}</h2>
   {{if .M.Queue}}
   <p class="muted">에이전트만 보증한 값입니다. 결정하기 전까지 의도한 토폴로지에 들어가지 않습니다. 설계 단위가 먼저 나옵니다.</p>
-  {{range .M.QueueGroups}}<details class="group" id="qg-{{.Title}}"><summary><span class="key">{{.Title}}</span> {{(index .Rows 0).Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}} <span class="muted">{{len .Rows}}개</span></summary>
+  {{range .M.QueueGroups}}<details class="group" id="qg-{{.Title}}"><summary>{{(index .Rows 0).Name}} <span class="key muted">{{.Title}}</span>{{if .Design}} <span class="pill aligned">설계</span>{{end}} <span class="muted">{{len .Rows}}개</span></summary>
   {{range .Rows}}
   <div class="card" style="border-left-color: var(--guess)" id="q-{{.Key}}">
     <div><span class="pill inferred">{{if .Field}}{{label "inferred"}}{{else}}{{label (lower .Value)}}{{end}}</span> <span class="key">{{.Key}}</span>{{if .Design}} <span class="muted">설계 단위</span>{{end}}</div>
@@ -188,17 +305,10 @@ svg marker path { fill: var(--muted); stroke: none; }
 </section>
 
 {{if ne .O.Only "queue"}}
-<section id="map">
-  <details{{if not .M.Pending}}{{if not .M.Turn}} open{{end}}{{end}}>
-  <summary>전체 지도</summary>
-  <div class="banner"><strong>사각지대.</strong> 추출 스크립트는 코드만 읽습니다. 공유 테이블, 파일, 환경 변수, 실행 순서를 거치는 결합은 있어도 여기 나오지 않을 수 있습니다. 사람이 등록한 결합 {{.M.Registered}}개.</div>
-  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="{{.M.Map.Width}}" height="{{.M.Map.Height}}" viewBox="0 0 {{.M.Map.Width}} {{.M.Map.Height}}" role="img" aria-label="토폴로지 지도">
-    <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
-    {{range .M.Map.Columns}}<text class="col" x="{{.X}}" y="16">{{.Text}}</text>{{end}}
-    {{range .M.Map.Edges}}<path class="{{.Class}}" d="{{.D}}"><title>{{.Title}}</title></path>{{end}}
-    {{range .M.Map.Nodes}}<g><title>{{.ID}} {{.Name}}: {{.Title}}</title><rect class="{{.Class}}" x="{{.X}}" y="{{.Y}}" width="152" height="46" rx="{{.R}}"/><text class="id" x="{{.X}}" dx="10" y="{{.Y}}" dy="17">{{.ID}}</text><text x="{{.X}}" dx="10" y="{{.Y}}" dy="35">{{.Name}}</text>{{if .Guess}}<circle class="guess" cx="{{.X}}" cy="{{.Y}}" r="5" transform="translate(140 12)"/>{{end}}</g>{{end}}
-  </svg></div>
-  <div class="legend"><span>의도</span><span class="l-blocked">새 결합, 경계를 넘음</span><span class="l-realign">새 결합, 설계 단위에 닿음</span><span class="l-removed">의도했으나 사라짐</span><span class="l-guess">추정, 미확인</span><span class="l-below">선 아래</span></div>
+<section id="units">
+  <details>
+  <summary>모든 단위 <span class="muted" style="font-weight:400">{{len .M.Units}}개</span></summary>
+  <div class="banner"><strong>사각지대.</strong> 추출 스크립트는 코드만 읽습니다. 공유 테이블, 파일, 환경 변수, 실행 순서를 거치는 결합은 있어도 나오지 않을 수 있습니다. 사람이 등록한 결합 {{.M.Registered}}개.</div>
   {{if not $static}}
   <h3>스크립트가 못 보는 결합 등록</h3>
   <form class="inline" method="post" action="/act"><input type="hidden" name="do" value="couple">
@@ -208,8 +318,9 @@ svg marker path { fill: var(--muted); stroke: none; }
     <button disabled>등록</button>
   </form>
   {{end}}
-  <h3>단위</h3>
-  <table>{{range .M.Units}}<tr><td class="key">{{.ID}}</td><td>{{.Name}}{{if .Design}} <span class="pill aligned">설계</span>{{end}}{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{if .Parent}}<div class="muted">{{.Parent}} 안</div>{{end}}{{range .Evidence}}<div class="coupling">근거 <q>{{.}}</q></div>{{end}}{{range .Couplings}}<div class="coupling">추정 결합 <span class="key">{{.Key}}</span>{{if .Via}} via {{.Via}}{{end}}{{range .Evidence}}<div><q>{{.}}</q></div>{{end}}</div>{{end}}</td><td>{{with .Purpose}}{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{if .Rejected}} <span class="muted">(반려된 추정: {{.Rejected}})</span>{{end}}{{end}}{{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span></div>{{end}}</td></tr>{{end}}</table>
+  <table>{{range .M.Units}}<tr><td class="id key">{{.ID}}</td><td><strong>{{.Name}}</strong>{{if .Design}} <span class="pill aligned">설계</span>{{end}}{{if .Parent}} <span class="muted">{{.Parent}} 안</span>{{end}}
+    {{with .Responsibility}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span></div>{{else}}{{with .Purpose}}<div>{{.Value}} <span class="pill {{badge .Badge}}">{{label .Badge}}</span>{{if .Rejected}} <span class="muted">(반려된 추정: {{.Rejected}})</span>{{end}}</div>{{end}}{{end}}
+    {{if or .Signature .Evidence .Couplings}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="coupling">근거 <q>{{.}}</q></div>{{end}}{{range .Couplings}}<div class="coupling">추정 결합 <span class="key">{{.Key}}</span>{{if .Via}} via {{.Via}}{{end}}{{range .Evidence}}<div><q>{{.}}</q></div>{{end}}</div>{{end}}</details>{{end}}</td></tr>{{end}}</table>
   </details>
 </section>
 
@@ -234,7 +345,8 @@ svg marker path { fill: var(--muted); stroke: none; }
     drop(k) { try { sessionStorage.removeItem(k); } catch (e) {} },
   };
   // Pasting the link into a tab already on the page changes only the hash.
-  addEventListener("hashchange", () => location.reload());
+  // Other fragments open a module's inside or the turn's view and stay put.
+  addEventListener("hashchange", () => { if (/^#t=/.test(location.hash)) location.reload(); });
   const m = /^#t=([0-9a-f]+)$/.exec(location.hash);
   if (m) {
     store.set("abbd_t", m[1]);
@@ -275,6 +387,28 @@ svg marker path { fill: var(--muted); stroke: none; }
 </script>{{end}}
 </body>
 </html>
+{{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
+<defs>{{range $k := marks}}<marker id="m-{{$k}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--{{markColor $k}})"/></marker>{{end}}</defs>
+{{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
+{{range .Wires}}<path class="w {{.Kind}}{{if .Quiet}} q{{end}}" d="{{.D}}"><title>{{.Title}}{{range .Quotes}}
+{{.}}{{end}}</title></path>{{end}}
+{{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}{{if .Quiet}} q{{end}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{if .Sub}}<text class="name" x="{{.X}}" dx="8" y="{{.Y}}" dy="20">{{.Label}}</text><text class="sub" x="{{.X}}" dx="8" y="{{.Y}}" dy="37">{{.Sub}}</text>{{else}}<text class="name" x="{{.X}}" dx="{{half .W}}" y="{{.Y}}" dy="{{plus (half .H) 5}}" text-anchor="middle">{{.Label}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Ports}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}{{if .Quiet}} q{{end}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Exit}}{{plus .Y 3}}{{else}}{{plus .Y -20}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Exit}}{{plus .Y 3}}{{else}}{{plus .Y -20}}{{end}}" dy="12.5">{{.Label}}</text></g>{{end}}
+</svg>{{end}}
+{{define "legend"}}<div class="legend">{{if eq . "overview"}}
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--accent)"/></svg>제공하는 계약 (출구)</span>
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>계약을 거친 사용</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--bypass);stroke-width:2.6"/></svg>계약을 거치지 않는 직접 의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--guess);stroke-width:1.4;stroke-dasharray:5 4"/></svg>추정 결합 (via, 미확인)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--block);stroke-width:3"/></svg>새 결합, 승인 필요</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--block);stroke-width:2;stroke-dasharray:2 5"/></svg>사라진 결합</span>
+{{else}}
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 3"/></svg>점선: 추정, 미확인</span>
+{{end}}</div>{{end}}
 {{define "turnbody"}}
   {{if .Verdicts}}<h3>현재 게이트</h3><ul class="plain">{{range .Verdicts}}<li class="key">{{.}}</li>{{end}}</ul>
   {{else if .Report}}{{if .Report.Gate}}<h3>게이트</h3><ul class="plain">{{range .Report.Gate}}<li class="key">{{.}}</li>{{end}}</ul>{{else}}<p class="muted">토폴로지 변경 없음.</p>{{end}}{{end}}
@@ -288,7 +422,7 @@ svg marker path { fill: var(--muted); stroke: none; }
   {{if .Approvals}}<h3>승인</h3><ul class="plain">{{range .Approvals}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span></li>{{end}}</ul>{{end}}
   {{if .Standing}}<h3>반려</h3><ul class="plain">{{range .Standing}}<li><span class="key">{{.Item}}</span> <span class="muted">{{.ADR}}</span>: {{.Reason}}</li>{{end}}</ul>{{end}}
   <h3>영향 범위</h3>
-  <p>직접 <span class="key">{{range .Direct}}{{.Unit}} {{end}}</span></p>
-  {{if .Far}}<p class="muted">멀리 <span class="key">{{range .Far}}{{.Unit}} {{end}}</span></p>{{end}}
+  <p>직접 {{range .DirectNames}}<span title="{{.ID}}">{{.Name}}</span>{{if not .Last}}, {{end}}{{end}}</p>
+  {{if .FarNames}}<p class="muted">멀리 {{range .FarNames}}<span title="{{.ID}}">{{.Name}}</span>{{if not .Last}}, {{end}}{{end}}</p>{{end}}
   {{if .Run}}<p>검증 {{.Run}} <span class="pill {{.Verified}}">{{.Verified}}</span></p>{{else}}<p class="muted">아직 검증하지 않았습니다.</p>{{end}}
 {{end}}
