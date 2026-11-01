@@ -71,3 +71,14 @@ func TestPathNamesEachHopAndTheWeakestOrigin(t *testing.T) {
 	p.want(0, "no path from MOD-0002 ledger to MOD-0003 island", "path", "MOD-0002", "island")
 	p.want(1, "are the same unit", "path", "ledger", "MOD-0002")
 }
+
+// diff counts an inside unit's relation to another module as its module's;
+// explain of the module lists it too, marked with the inside unit it comes from.
+func TestExplainModuleListsItsInsideUnitsLinksToOtherModules(t *testing.T) {
+	p, base := diffProject(t)
+	p.want(0, "+ relation MOD-0001 depends_on MOD-0004", "diff", "--base", base)
+	contains(t, p.want(0, "MOD-0001 billing", "explain", "MOD-0001"),
+		"depends on:\n  MOD-0004 notify (extracted) via inside MOD-0003 charger\n")
+	contains(t, p.want(0, "", "explain", "MOD-0004"),
+		"used by:\n  MOD-0003 charger depends_on (extracted)\n")
+}

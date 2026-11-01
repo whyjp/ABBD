@@ -7,8 +7,11 @@ import (
 )
 
 // Explanation is one unit at a glance. Out and In are the drawn links, the
-// ones the script read or a human stated, that leave and reach the unit.
-// Inferred are a reader's live couplings that touch the unit or a unit inside it.
+// ones the script read or a human stated, that leave and reach the unit. They
+// also hold the drawn links between a unit inside it and a unit outside it,
+// counted as the unit's own the way Compare counts them, so Out's From or
+// In's To is then the inside unit. Inferred are a reader's live couplings
+// that touch the unit or a unit inside it.
 type Explanation struct {
 	Unit     model.Unit
 	Inside   []Ref
@@ -19,25 +22,34 @@ type Explanation struct {
 // Explain gathers what the topology holds about one present unit.
 func Explain(units []model.Unit, id model.ID) Explanation {
 	ex := Explanation{}
-	own := map[model.ID]bool{id: true}
+	parent := map[model.ID]model.ID{}
 	for _, u := range model.Present(units) {
+		parent[u.ID] = u.Parent
 		switch {
 		case u.ID == id:
 			ex.Unit = u
 		case u.Parent == id:
 			ex.Inside = append(ex.Inside, ref(u))
-			own[u.ID] = true
 		}
+	}
+	own := func(x model.ID) bool {
+		for seen := map[model.ID]bool{}; x != "" && !seen[x]; x = parent[x] {
+			if x == id {
+				return true
+			}
+			seen[x] = true
+		}
+		return false
 	}
 	for _, l := range Links(units) {
 		switch {
 		case l.Origin == model.Inferred:
-			if own[l.From] || own[l.To] {
+			if own(l.From) || own(l.To) {
 				ex.Inferred = append(ex.Inferred, l)
 			}
-		case l.From == id:
+		case l.From == id, own(l.From) && !own(l.To):
 			ex.Out = append(ex.Out, l)
-		case l.To == id:
+		case l.To == id, own(l.To) && !own(l.From):
 			ex.In = append(ex.In, l)
 		}
 	}

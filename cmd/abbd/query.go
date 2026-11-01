@@ -94,15 +94,21 @@ func (e env) explain(s string) error {
 	}
 	section("inside", inside)
 	out := map[model.RelationKind][]string{}
+	through := func(inside model.ID) string {
+		if inside == u.ID {
+			return ""
+		}
+		return fmt.Sprintf(" via inside %s %s", inside, name[inside])
+	}
 	for _, l := range ex.Out {
-		out[l.Kind] = append(out[l.Kind], fmt.Sprintf("%s %s%s", l.To, name[l.To], l.Label()))
+		out[l.Kind] = append(out[l.Kind], fmt.Sprintf("%s %s%s%s", l.To, name[l.To], l.Label(), through(l.From)))
 	}
 	section("provides", out[model.Provides])
 	section("consumes", out[model.Consumes])
 	section("depends on", out[model.DependsOn])
 	var in []string
 	for _, l := range ex.In {
-		in = append(in, fmt.Sprintf("%s %s %s%s", l.From, name[l.From], l.Kind, l.Label()))
+		in = append(in, fmt.Sprintf("%s %s %s%s%s", l.From, name[l.From], l.Kind, l.Label(), through(l.To)))
 	}
 	section("used by", in)
 	var guesses []string
