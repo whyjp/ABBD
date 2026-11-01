@@ -65,7 +65,10 @@ type Wire struct {
 	Joins bool `json:",omitempty"`
 	// Back says the line runs against the reading direction: up, or left
 	// within a row. The page draws it dashed.
-	Back   bool     `json:",omitempty"`
+	Back bool `json:",omitempty"`
+	// Both says the path starts at a box that the line also reaches: two
+	// modules that use each other. The page draws a head at its start too.
+	Both   bool     `json:",omitempty"`
 	Via    string   `json:",omitempty"`
 	Quotes []string `json:",omitempty"`
 	Marks  []Mark   `json:",omitempty"`
@@ -86,6 +89,12 @@ type Mark struct {
 
 const (
 	boxH, chipH = 60, 17
+	// chipRow is how far each further row of chips sits inside a box. A
+	// module whose chips need more than chipWrap wraps them into at most
+	// chipRowsMax rows instead of widening, so lines can pass beside it.
+	chipRow     = 20
+	chipWrap    = 480
+	chipRowsMax = 3
 	chipPx      = 11
 	nameLine    = 16
 	// chipMax and boxMax are the hard widths past which a label is cut and
@@ -139,13 +148,7 @@ func shorten(labels []string) []string {
 	return out
 }
 
-func chipsWidth(labels []string) int {
-	sum := 8
-	for _, l := range shorten(labels) {
-		sum += chipWidth(l) + 4
-	}
-	return sum
-}
+func chipsWidth(labels []string) int { return chipRowWidth(shorten(labels)) }
 
 // overview is what the overview's layout may depend on: the top-level units
 // and the live relations between them, a group's members' relations drawn as
@@ -163,6 +166,8 @@ type overview struct {
 	users     map[model.ID][]model.ID
 	layout    layout
 	names     map[model.ID][]string
+	// chipRows are how many rows of chips each module's top and bottom hold.
+	chipRows map[model.ID][2]int
 	// rels are the stored relations each drawn edge stands for, by edge,
 	// and origins say where each stored relation came from.
 	rels    map[string][]string
@@ -214,7 +219,7 @@ func (o *overview) origin(rels []string) string {
 }
 
 func planOverview(units []model.Unit) *overview {
-	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}}
+	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -285,8 +290,10 @@ func planOverview(units []model.Unit) *overview {
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
 		o.names[m] = ls
-		w = max(w, min(overviewBudget-2*padX, max(chipsWidth(exits[m]), chipsWidth(entries[m]))))
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine})
+		w = max(w, min(chipWrap, max(chipsWidth(exits[m]), chipsWidth(entries[m]))))
+		rows := [2]int{max(1, chipRows(exits[m], w, chipRowsMax)), max(1, chipRows(entries[m], w, chipRowsMax))}
+		o.chipRows[m] = rows
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + (rows[0]+rows[1]-2)*chipRow})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -316,43 +323,79 @@ type attach struct {
 }
 
 // spread sets the chips on one edge of r, left to right in the order of
-// what they lead to. A side with more chips than the widest box holds keeps
-// the first ones and folds the rest into one "+N" chip.
-func spread(r rect, below bool, items []attach) map[string]Port {
+// what they lead to, in at most rows rows: a full row starts the next one
+// further inside the box. The last row keeps what fits and folds the rest
+// into one "+N" chip.
+func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 	sort.SliceStable(items, func(i, j int) bool {
 		if items[i].other != items[j].other {
 			return items[i].other < items[j].other
 		}
 		return items[i].key < items[j].key
 	})
-	out := map[string]Port{}
-	y := r.Y
-	if below {
-		y = r.Y + r.H
-	}
 	labels := make([]string, len(items))
 	for i, a := range items {
 		labels[i] = a.label
 	}
 	labels = shorten(labels)
-	shown := len(labels)
-	for shown > 1 && chipsWidth(labels[:shown])+chipWidth(fmt.Sprintf("+%d", len(labels)-shown)) > r.W && chipsWidth(labels) > r.W {
-		shown--
-	}
-	x := r.X + 4
-	for i := range labels {
-		l := labels[i]
-		if i >= shown {
-			l = fmt.Sprintf("+%d", len(labels)-shown)
+	out := map[string]Port{}
+	for row, start := 0, 0; start < len(labels); row++ {
+		end := len(labels)
+		if row < rows-1 {
+			end = rowEnd(labels, start, r.W)
 		}
-		w := chipWidth(l)
-		p := Port{X: x + 4, Y: y, W: w, Label: fit(l, w-12, chipPx), Below: below}
-		out[items[i].key] = p
-		if i < shown {
-			x += w + 4
+		shown := end
+		for shown > start+1 && chipRowWidth(labels[start:shown])+chipWidth(fmt.Sprintf("+%d", end-shown)) > r.W && chipRowWidth(labels[start:end]) > r.W {
+			shown--
 		}
+		y := r.Y + row*chipRow
+		if below {
+			y = r.Y + r.H - row*chipRow
+		}
+		x := r.X + 4
+		for i := start; i < end; i++ {
+			l := labels[i]
+			if i >= shown {
+				l = fmt.Sprintf("+%d", end-shown)
+			}
+			w := chipWidth(l)
+			out[items[i].key] = Port{X: x + 4, Y: y, W: w, Label: fit(l, w-12, chipPx), Below: below}
+			if i < shown {
+				x += w + 4
+			}
+		}
+		start = end
 	}
 	return out
+}
+
+// rowEnd is where a row of chips that starts at labels[start] ends, at w
+// wide: it always holds one.
+func rowEnd(labels []string, start, w int) int {
+	end := start + 1
+	for end < len(labels) && chipRowWidth(labels[start:end+1]) <= w {
+		end++
+	}
+	return end
+}
+
+// chipRows is how many rows spread sets labels in at w wide.
+func chipRows(labels []string, w, rows int) int {
+	labels = shorten(labels)
+	n := 0
+	for start := 0; start < len(labels) && n < rows; n++ {
+		start = rowEnd(labels, start, w)
+	}
+	return n
+}
+
+// chipRowWidth is how wide one row of chips is, labels already shortened.
+func chipRowWidth(labels []string) int {
+	sum := 8
+	for _, l := range labels {
+		sum += chipWidth(l) + 4
+	}
+	return sum
 }
 
 func (o *overview) draw(href func(model.ID) string) Drawing {
@@ -435,10 +478,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		at := map[string]Port{}
 		for _, m := range o.modules {
 			r := l.pos[string(m)]
-			for k, p := range spread(r, false, tops[m]) {
+			for k, p := range spread(r, false, tops[m], chipRowsMax) {
 				at[k] = p
 			}
-			for k, p := range spread(r, true, bottoms[m]) {
+			for k, p := range spread(r, true, bottoms[m], chipRowsMax) {
 				at[k] = p
 			}
 		}
@@ -467,6 +510,43 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		keys[pair] = append(keys[pair], [2]string{s.fromKey, s.toKey})
 	}
+	// Two modules that use each other directly are joined by one line with
+	// a head at each end, drawn the way the eye reads, instead of two lines
+	// of which one would climb.
+	before := func(a, b model.ID) bool {
+		if ra, rb := l.row[string(a)], l.row[string(b)]; ra != rb {
+			return ra < rb
+		}
+		return l.pos[string(a)].X < l.pos[string(b)].X
+	}
+	bypasses := map[[2]model.ID]int{}
+	for i, s := range merged {
+		if s.kind == "bypass" {
+			bypasses[[2]model.ID{s.from, s.to}] = i
+		}
+	}
+	gone := map[int]bool{}
+	for i, s := range merged {
+		j, ok := bypasses[[2]model.ID{s.to, s.from}]
+		if s.kind != "bypass" || !ok || gone[i] || gone[j] {
+			continue
+		}
+		keep, drop := i, j
+		if !before(s.from, s.to) {
+			keep, drop = j, i
+		}
+		merged[keep].kind = "mutual"
+		merged[keep].title += "\n" + merged[drop].title
+		merged[keep].rels = append(merged[keep].rels, merged[drop].rels...)
+		gone[drop] = true
+	}
+	kept := merged[:0:0]
+	for i, s := range merged {
+		if !gone[i] {
+			kept = append(kept, s)
+		}
+	}
+	merged = kept
 	span := func(ks []string) (int, int) {
 		lo, hi := 1<<30, -1<<30
 		for _, k := range ks {
@@ -507,7 +587,8 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		u := o.units[m]
 		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
-		y := r.Y + r.H/2 + 5 - (len(ls)-1)*nameLine/2
+		rows := o.chipRows[m]
+		y := r.Y + (r.H+(rows[0]-rows[1])*chipRow)/2 + 5 - (len(ls)-1)*nameLine/2
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
@@ -560,6 +641,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			titles = append(titles, merged[i].title)
 		}
 		w := Wire{D: p.D, Kind: merged[p.reqs[0]].kind}
+		w.Both = w.Kind == "mutual" && p.starts[0] != noStart
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			w.Rels = append(w.Rels, merged[i].rels...)
