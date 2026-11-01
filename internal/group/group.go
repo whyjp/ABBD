@@ -27,10 +27,10 @@ func Made(u model.Unit) bool {
 	return u.Kind == model.Module && len(u.Anchors) == 1 && u.Anchors[0].Symbol == marker
 }
 
-// Fallback groups the modules of every container that holds more than
-// Budget of them, by the deepest directory that still splits them, and
-// returns the units with its groups present and the high-water marks moved
-// past any ID it took. Groups it made earlier are reused by directory, and
+// Fallback groups the units of every container that holds more boxes than
+// Budget (at the top level, its modules), by the shallowest directory that
+// splits them, and returns the units with its groups present and the
+// high-water marks moved past any ID it took. Groups it made earlier are reused by directory, and
 // left absent when no longer needed.
 func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[model.Kind]int) {
 	out := make([]model.Unit, len(units))
@@ -61,7 +61,7 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	split = func(container model.ID) {
 		var members []int
 		for i, u := range out {
-			if !u.Absent && u.Parent == container && u.Kind == model.Module && !Made(u) && placedByScript(u) {
+			if !u.Absent && u.Parent == container && (u.Kind == model.Module || container != "") && !Made(u) && placedByScript(u) {
 				members = append(members, i)
 			}
 		}
