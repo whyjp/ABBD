@@ -306,11 +306,12 @@ func (e env) attention(units []model.Unit) {
 	}
 }
 
-// evidenceCounts counts the items of present units by status.
+// evidenceCounts counts the items of the claims that show on present units,
+// by status.
 func evidenceCounts(units []model.Unit) map[model.Status]int {
 	n := map[model.Status]int{}
 	for _, u := range model.Present(units) {
-		u.EachEvidence(func(w model.Writer, ev *model.Evidence) {
+		u.EachShownEvidence(func(w model.Writer, ev *model.Evidence) {
 			if w != model.Script || ev.Status != model.Live {
 				n[ev.Status]++
 			}

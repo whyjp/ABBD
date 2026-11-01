@@ -215,6 +215,28 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 	}
 }
 
+// EachShownEvidence visits the items of the claims that show: the unit's
+// own, its winning parent claim's and each shown relation's. An outranked
+// claim's items cannot change what anyone sees.
+func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
+	for i := range u.Evidence {
+		f(u.Name.Writer, &u.Evidence[i])
+	}
+	for i := range u.Parents {
+		if c := u.Parents[i]; c.To == u.Parent && c.Writer.Origin() == u.ParentOrigin {
+			for j := range c.Evidence {
+				f(c.Writer, &u.Parents[i].Evidence[j])
+			}
+			break
+		}
+	}
+	for i := range u.Relations {
+		for j := range u.Relations[i].Evidence {
+			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+		}
+	}
+}
+
 func (u Unit) Validate() error {
 	if err := u.Kind.Validate(); err != nil {
 		return err

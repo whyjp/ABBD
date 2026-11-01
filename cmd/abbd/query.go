@@ -103,7 +103,7 @@ func (e env) explain(s string) error {
 		}
 	}
 	for _, ev := range u.Evidence {
-		fmt.Fprintf(w, "evidence: %s%s\n", ev, status(ev))
+		fmt.Fprintf(w, "evidence: %s%s\n", ev, mark(ev))
 	}
 	if len(u.Parents) > 1 {
 		var cs []string
@@ -154,7 +154,7 @@ func (e env) explain(s string) error {
 			line += " (drifted: refresh or retract it)"
 		}
 		for _, ev := range l.Evidence {
-			line += "\n    " + ev.String() + status(ev)
+			line += "\n    " + ev.String() + mark(ev)
 		}
 		guesses = append(guesses, line)
 	}
@@ -162,8 +162,8 @@ func (e env) explain(s string) error {
 	return e.explainHow(units, u)
 }
 
-// status marks an item that is not live.
-func status(ev model.Evidence) string {
+// mark notes an item that is not live.
+func mark(ev model.Evidence) string {
 	switch ev.Status {
 	case model.Drifted:
 		return " (drifted)"

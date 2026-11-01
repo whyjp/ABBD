@@ -10,7 +10,7 @@ import (
 	"github.com/whyjp/abbd/internal/screen"
 )
 
-// checkEvidence prints, for every claim that cites evidence, whether each
+// checkEvidence prints, for every claim that shows and cites evidence, whether each
 // quote is in the working tree now and where: live, drifted or dead. It reads
 // and never writes, so the same tree prints the same lines, and it never
 // moves a drifted item to dead; only a sync at a later revision does.
@@ -43,18 +43,22 @@ func (e env) checkEvidence() error {
 	units := slices.Clone(stored)
 	slices.SortFunc(units, func(a, b model.Unit) int { return strings.Compare(string(a.ID), string(b.ID)) })
 	for _, u := range units {
-		if u.Absent && !u.Semantic() {
+		if u.Absent && u.AbsentReason != model.EvidenceDead {
 			continue
 		}
 		for _, ev := range u.Evidence {
 			line(string(u.ID)+" "+u.Name.Value, u.Name.Writer, "", ev)
 		}
 		for _, p := range u.Parents {
+			if p.To != u.Parent || p.Writer.Origin() != u.ParentOrigin {
+				continue
+			}
 			for _, ev := range p.Evidence {
 				line(string(u.ID)+".parent "+string(p.To), p.Writer, "", ev)
 			}
+			break
 		}
-		for _, r := range u.Claims() {
+		for _, r := range u.Relations {
 			for _, ev := range r.Evidence {
 				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Writer, r.Via, ev)
 			}
