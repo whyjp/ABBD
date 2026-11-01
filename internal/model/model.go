@@ -128,8 +128,15 @@ type Unit struct {
 	Kind    Kind     `yaml:"kind"`
 	Name    Fact     `yaml:"name"`
 	Anchors []Anchor `yaml:"anchors"`
-	// Parent is the module that contains this unit.
-	Parent ID `yaml:"parent,omitempty"`
+	// Parent is the module that contains this unit. ParentOrigin says who
+	// placed it there, the way a relation's origin does: the script
+	// (EXTRACTED, also when empty), a reader citing ParentEvidence
+	// (INFERRED), or a human naming ParentSource (USER_STATED). A sync keeps
+	// a reader's or a human's parent unless the script reports one.
+	Parent         ID         `yaml:"parent,omitempty"`
+	ParentOrigin   Origin     `yaml:"parent_origin,omitempty"`
+	ParentSource   string     `yaml:"parent_source,omitempty"`
+	ParentEvidence []Evidence `yaml:"parent_evidence,omitempty"`
 	// Evidence is what a semantic unit, one the script did not report, rests on.
 	Evidence       []Evidence `yaml:"evidence,omitempty"`
 	Purpose        *Fact      `yaml:"purpose,omitempty"`
@@ -188,6 +195,22 @@ func (u Unit) Validate() error {
 			return fmt.Errorf("%s: parent %s is not another module", u.ID, u.Parent)
 		}
 	}
+	switch {
+	case u.Parent == "" && (u.ParentOrigin != "" || u.ParentSource != "" || len(u.ParentEvidence) > 0):
+		return fmt.Errorf("%s: a parent origin without a parent", u.ID)
+	case u.ParentOrigin != "":
+		if err := sourced(u.ParentOrigin, u.ParentSource); err != nil {
+			return fmt.Errorf("%s parent: %w", u.ID, err)
+		}
+		if u.ParentOrigin == Inferred && len(u.ParentEvidence) == 0 {
+			return fmt.Errorf("%s: a reader's parent %s needs evidence", u.ID, u.Parent)
+		}
+	}
+	for _, e := range u.ParentEvidence {
+		if err := e.Validate(); err != nil {
+			return fmt.Errorf("%s parent evidence: %w", u.ID, err)
+		}
+	}
 	if u.Semantic() && len(u.Evidence) == 0 {
 		return fmt.Errorf("%s: a unit the script did not report needs evidence", u.ID)
 	}
@@ -216,6 +239,30 @@ func (u Unit) Validate() error {
 		}
 	}
 	return nil
+}
+
+// ParentCycle names a present unit whose chain of parents comes back to
+// itself, or "" when the parents form a tree.
+func ParentCycle(units []Unit) ID {
+	parent := map[ID]ID{}
+	for _, u := range Present(units) {
+		parent[u.ID] = u.Parent
+	}
+	ids := make([]ID, 0, len(parent))
+	for id := range parent {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	for _, id := range ids {
+		seen := map[ID]bool{}
+		for k := id; k != ""; k = parent[k] {
+			if seen[k] {
+				return id
+			}
+			seen[k] = true
+		}
+	}
+	return ""
 }
 
 func (k Kind) IsContract() bool {

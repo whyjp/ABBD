@@ -243,17 +243,46 @@ func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
 	return byKey
 }
 
-// setParents gives each reported unit the module its extraction names, by key.
+// setParents gives each reported unit the module its extraction names, by
+// key. A unit the extraction places nowhere keeps a parent a reader or a
+// human gave it, so structure a reader found survives a script that cannot
+// see it; a parent the script gave earlier goes when the script drops it.
+// A kept parent that would close a cycle with the script's parents is
+// dropped, since the script's word on code it reads wins.
 func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 	byKey := keyed(input, ids)
-	parent := map[model.ID]model.ID{}
-	for i, in := range input {
-		parent[ids[i]] = byKey[in.Parent]
+	type placed struct {
+		id       model.ID
+		origin   model.Origin
+		evidence []model.Evidence
 	}
+	parent := map[model.ID]placed{}
+	for i, in := range input {
+		parent[ids[i]] = placed{byKey[in.Parent], in.ParentOrigin, in.ParentEvidence}
+	}
+	var kept []int
 	for i := range units {
-		if p, ok := parent[units[i].ID]; ok {
-			units[i].Parent = p
+		u := &units[i]
+		p, ok := parent[u.ID]
+		switch {
+		case !ok:
+		case p.id != "":
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = p.id, p.origin, p.evidence, ""
+			if p.origin == model.Extracted {
+				u.ParentOrigin = ""
+			}
+		case u.Parent != "" && (u.ParentOrigin == model.Inferred || u.ParentOrigin == model.UserStated):
+			kept = append(kept, i)
+		default:
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 		}
+	}
+	for _, i := range kept {
+		if model.ParentCycle(units) == "" {
+			break
+		}
+		u := &units[i]
+		u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 	}
 }
 

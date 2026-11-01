@@ -140,6 +140,14 @@ func (c *Checker) Apply(units []model.Unit) []model.Unit {
 			live, _, u.Evidence = c.all(u.Evidence)
 			u.Absent = !live
 		}
+		// A reader's parent lives while the code it cites does.
+		if u.ParentOrigin == model.Inferred && len(u.ParentEvidence) > 0 {
+			var live bool
+			live, _, u.ParentEvidence = c.all(u.ParentEvidence)
+			if !live {
+				u.Parent, u.ParentOrigin, u.ParentEvidence = "", "", nil
+			}
+		}
 		u.Relations = slices.Clone(u.Relations)
 		for j, r := range u.Relations {
 			if r.Semantic() {

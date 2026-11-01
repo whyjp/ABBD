@@ -127,6 +127,7 @@ var commands = map[string]command{
 	"sync":            {flags: []string{"root"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
 	"record relation": {flags: []string{"root", "via", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
+	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
 	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},

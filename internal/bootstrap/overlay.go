@@ -74,10 +74,20 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
+	// A parent the supplement gives is a reader's, INFERRED: it rests on
+	// the parent evidence the reader cites, or on the unit's own evidence.
 	for _, d := range doc.Units {
 		if i, ok := docTo[d.Key]; ok && d.Parent != "" {
 			if p, ok := docTo[d.Parent]; ok {
-				out.Units[i].Parent = out.Units[p].Key
+				es := d.ParentEvidence
+				if len(es) == 0 {
+					es = d.Evidence
+				}
+				if len(es) == 0 {
+					return base, f, fmt.Errorf("supplement %s %q puts it in %q without evidence; cite parent_evidence, the code that shows it belongs there", d.Kind, d.Name.Value, d.Parent)
+				}
+				u := &out.Units[i]
+				u.Parent, u.ParentOrigin, u.ParentEvidence = out.Units[p].Key, model.Inferred, es
 			}
 		}
 	}
@@ -114,7 +124,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 func semantic(d extract.Unit, key string) extract.Unit {
 	d.Key = key
 	d.Name = model.Fact{Value: d.Name.Value, Origin: model.Inferred}
-	d.Signature, d.Digest, d.Parent = nil, "", ""
+	d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, "", "", nil
 	return d
 }
 

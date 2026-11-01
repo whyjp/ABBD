@@ -23,6 +23,7 @@ type rawUnit struct {
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
+	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
 }
 
@@ -63,9 +64,13 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
-	// Parent is the key of the module that contains the unit.
-	Parent   string
-	Evidence []model.Evidence
+	// Parent is the key of the module that contains the unit. A parent the
+	// script reports has no ParentOrigin; one a supplement gives is INFERRED
+	// and rests on ParentEvidence.
+	Parent         string
+	ParentOrigin   model.Origin
+	ParentEvidence []model.Evidence
+	Evidence       []model.Evidence
 }
 
 func Parse(r io.Reader) (Result, error) {
@@ -157,6 +162,10 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
 		}
+		parentEvidence, err := NormalizeEvidence(ru.ParentEvidence)
+		if err != nil {
+			return nil, raw, fmt.Errorf("unit %d (%s) parent: %w", i, ru.Name, err)
+		}
 		// Evidence locates a unit the script cannot see, so it anchors the unit's ID.
 		for _, e := range evidence {
 			ru.Anchors = append(ru.Anchors, e.Anchor())
@@ -182,6 +191,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
 			Parent:         ru.Parent,
+			ParentEvidence: parentEvidence,
 			Evidence:       evidence,
 		})
 	}
