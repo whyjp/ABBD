@@ -35,6 +35,9 @@ const (
 	// endZone is how close to a line's end two lines may meet or run
 	// together: lines that share a port converge there by design.
 	endZone = 26.0
+	// braidGap is how close two lines of different bundles run before they
+	// read as one braid: the width of a channel.
+	braidGap = channelGap
 )
 
 type fpt struct{ x, y float64 }
@@ -317,11 +320,16 @@ type Metrics struct {
 	// and SplitIn the lines of one kind that arrive at one edge of a box
 	// apart from the bundle of their kind.
 	Forward, Back, BackPlain, SplitIn int
+	// Braid is how far, in pixels, lines of different bundles run side by
+	// side within braidGap of each other, away from their ends: a run a
+	// shared trunk would draw once. Detour is how much longer, in pixels,
+	// the lines are than the shortest grid path between their ends.
+	Braid, Detour int
 }
 
 func (m Metrics) String() string {
 	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox)
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx", m.Braid, m.Detour)
 }
 
 func measure(s sheet) Metrics {
@@ -469,6 +477,15 @@ func measure(s sheet) Metrics {
 		}
 	}
 	m.ThroughBox = len(through)
+	m.Braid = braid(ws)
+	for _, w := range ws {
+		run := 0.0
+		for a := 1; a < len(w.pts); a++ {
+			run += dist(w.pts[a-1], w.pts[a])
+		}
+		a, b := w.pts[0], w.pts[len(w.pts)-1]
+		m.Detour += int(run - math.Abs(b.x-a.x) - math.Abs(b.y-a.y))
+	}
 	// 12: an unwired contract is listed under the drawing, not on the frame.
 	if s.frame != nil {
 		for _, sh := range s.shapes {
@@ -583,6 +600,34 @@ func measure(s sheet) Metrics {
 	}
 	m.OriginDashed, m.Unmarked = len(dashed), len(unmarked)
 	return m
+}
+
+// braid sums, over each pair of lines of different bundles, how far one
+// runs beside the other within braidGap, away from both lines' ends.
+func braid(ws []stroke) int {
+	total := 0.0
+	for i := range ws {
+		for j := i + 1; j < len(ws); j++ {
+			if ws[i].group == ws[j].group {
+				continue
+			}
+			si := samples(ws[i].pts, 2)
+			for k, sm := range si {
+				if k == 0 || nearEnds(sm.p, ws[i], endZone) || nearEnds(sm.p, ws[j], endZone) {
+					continue
+				}
+				for b := 1; b < len(ws[j].pts); b++ {
+					a, c := ws[j].pts[b-1], ws[j].pts[b]
+					l := dist(a, c)
+					if l > 0 && segDist(sm.p, a, c) < braidGap && math.Abs(sm.dir.x*(c.x-a.x)/l+sm.dir.y*(c.y-a.y)/l) > 0.9 {
+						total += sm.at - si[k-1].at
+						break
+					}
+				}
+			}
+		}
+	}
+	return int(total)
 }
 
 func (m Metrics) violations(width int) []string {
