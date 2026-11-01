@@ -120,11 +120,34 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 // each followed by swapping neighbours while that crosses less, keeping the
 // best order seen.
 func (g *layered) order() {
-	pos := map[string]float64{}
+	// The sweeps work on item numbers, not names: they look up every
+	// item's neighbours many times over.
+	var ids []string
+	num := map[string]int{}
+	rows := make([][]int, len(g.rows))
+	for r, row := range g.rows {
+		for _, id := range row {
+			num[id] = len(ids)
+			rows[r] = append(rows[r], len(ids))
+			ids = append(ids, id)
+		}
+	}
+	type link struct{ o, n int }
+	links := func(side map[string]map[string]int) [][]link {
+		out := make([][]link, len(ids))
+		for i, id := range ids {
+			for o, n := range side[id] {
+				out[i] = append(out[i], link{num[o], n})
+			}
+		}
+		return out
+	}
+	up, down := links(g.up), links(g.down)
+	pos := make([]float64, len(ids))
 	index := func() {
-		for _, row := range g.rows {
-			for i, id := range row {
-				pos[id] = float64(i)
+		for _, row := range rows {
+			for i, v := range row {
+				pos[v] = float64(i)
 			}
 		}
 	}
@@ -134,9 +157,9 @@ func (g *layered) order() {
 			n    int
 		}
 		var es []e
-		for _, v := range g.rows[r] {
-			for w, n := range g.down[v] {
-				es = append(es, e{pos[v], pos[w], n})
+		for _, v := range rows[r] {
+			for _, l := range down[v] {
+				es = append(es, e{pos[v], pos[l.o], l.n})
 			}
 		}
 		total := 0
@@ -152,44 +175,44 @@ func (g *layered) order() {
 	all := func() int {
 		index()
 		t := 0
-		for r := 0; r+1 < len(g.rows); r++ {
+		for r := 0; r+1 < len(rows); r++ {
 			t += crossings(r)
 		}
 		return t
 	}
-	sweep := func(r int, side, other map[string]map[string]int) {
-		key := map[string]float64{}
-		for _, id := range g.rows[r] {
+	key := make([]float64, len(ids))
+	sweep := func(r int, side, other [][]link) {
+		for _, v := range rows[r] {
 			sum, k := 0.0, 0
 			// An item joined only the other way, as a chain from the
 			// frame is, follows that side.
-			near := side[id]
+			near := side[v]
 			if len(near) == 0 {
-				near = other[id]
+				near = other[v]
 			}
-			for o, n := range near {
-				sum += pos[o] * float64(n)
-				k += n
+			for _, l := range near {
+				sum += pos[l.o] * float64(l.n)
+				k += l.n
 			}
-			key[id] = pos[id]
+			key[v] = pos[v]
 			if k > 0 {
-				key[id] = sum / float64(k)
+				key[v] = sum / float64(k)
 			}
 		}
-		sort.SliceStable(g.rows[r], func(i, j int) bool { return key[g.rows[r][i]] < key[g.rows[r][j]] })
-		for i, id := range g.rows[r] {
-			pos[id] = float64(i)
+		sort.SliceStable(rows[r], func(i, j int) bool { return key[rows[r][i]] < key[rows[r][j]] })
+		for i, v := range rows[r] {
+			pos[v] = float64(i)
 		}
 	}
 	// pair is how many crossings the lines of u and v make when u lies
 	// left of v.
-	pair := func(u, v string) int {
+	pair := func(u, v int) int {
 		c := 0
-		for _, side := range []map[string]map[string]int{g.up, g.down} {
-			for a, na := range side[u] {
-				for b, nb := range side[v] {
-					if pos[a] > pos[b] {
-						c += na * nb
+		for _, side := range [][][]link{up, down} {
+			for _, a := range side[u] {
+				for _, b := range side[v] {
+					if pos[a.o] > pos[b.o] {
+						c += a.n * b.n
 					}
 				}
 			}
@@ -199,7 +222,7 @@ func (g *layered) order() {
 	transpose := func() {
 		for again, rounds := true, 0; again && rounds < 8; rounds++ {
 			again = false
-			for _, row := range g.rows {
+			for _, row := range rows {
 				for i := 0; i+1 < len(row); i++ {
 					u, v := row[i], row[i+1]
 					if pair(v, u) < pair(u, v) {
@@ -211,9 +234,9 @@ func (g *layered) order() {
 			}
 		}
 	}
-	snapshot := func() [][]string {
-		out := make([][]string, len(g.rows))
-		for i, r := range g.rows {
+	snapshot := func() [][]int {
+		out := make([][]int, len(rows))
+		for i, r := range rows {
 			out[i] = slices.Clone(r)
 		}
 		return out
@@ -223,12 +246,12 @@ func (g *layered) order() {
 	best, bestN := snapshot(), all()
 	for i := 0; i < 12; i++ {
 		if i%2 == 0 {
-			for r := 1; r < len(g.rows); r++ {
-				sweep(r, g.up, g.down)
+			for r := 1; r < len(rows); r++ {
+				sweep(r, up, down)
 			}
 		} else {
-			for r := len(g.rows) - 2; r >= 0; r-- {
-				sweep(r, g.down, g.up)
+			for r := len(rows) - 2; r >= 0; r-- {
+				sweep(r, down, up)
 			}
 		}
 		transpose()
@@ -236,28 +259,105 @@ func (g *layered) order() {
 			best, bestN = snapshot(), c
 		}
 	}
-	g.rows = best
+	for r, row := range best {
+		for i, v := range row {
+			g.rows[r][i] = ids[v]
+		}
+	}
 }
 
-// drop takes chain c out of the rows: its lines will pass them in the
-// gaps between boxes, as they would with no chain.
-func (g *layered) drop(c int) {
-	ch := &g.chains[c]
-	for r := ch.top; r <= ch.bottom; r++ {
-		d := dummy(c, r)
-		g.rows[r] = slices.DeleteFunc(g.rows[r], func(id string) bool { return id == d })
-		for o := range g.up[d] {
-			delete(g.down[o], d)
+// shed takes the shortest chains out of the rows, one at a time, while the
+// rows with every chain crooked are still wider than budget: their lines
+// pass those rows in the gaps between boxes, as they would with no chain.
+// Setting chains straight only widens a drawing, so the rows with every
+// chain crooked are the narrowest place can make them. The chains left
+// are numbered afresh, so every chain the graph holds has its dummies.
+func (g *layered) shed(budget int) {
+	width := func(row []string) int {
+		w := 2 * padX
+		for i, id := range row {
+			w += g.w[id]
+			if i > 0 {
+				w += g.sep(row[i-1], id)
+			}
 		}
-		for o := range g.down[d] {
-			delete(g.up[o], d)
-		}
-		delete(g.up, d)
-		delete(g.down, d)
-		delete(g.chainOf, d)
-		delete(g.w, d)
+		return w
 	}
-	ch.lanes = 0
+	widths := make([]int, len(g.rows))
+	for r, row := range g.rows {
+		widths[r] = width(row)
+	}
+	byLength := make([]int, len(g.chains))
+	for c := range byLength {
+		byLength[c] = c
+	}
+	sort.SliceStable(byLength, func(i, j int) bool {
+		a, b := g.chains[byLength[i]], g.chains[byLength[j]]
+		return a.bottom-a.top < b.bottom-b.top
+	})
+	gone := make([]bool, len(g.chains))
+	shed := false
+	for _, c := range byLength {
+		if slices.Max(append([]int{0}, widths...)) <= budget {
+			break
+		}
+		gone[c], shed = true, true
+		ch := g.chains[c]
+		for r := ch.top; r <= ch.bottom; r++ {
+			d := dummy(c, r)
+			g.rows[r] = slices.DeleteFunc(g.rows[r], func(id string) bool { return id == d })
+			widths[r] = width(g.rows[r])
+		}
+	}
+	if !shed {
+		return
+	}
+	rename, chainOf := map[string]string{}, map[string]int{}
+	var kept []chain
+	for c, ch := range g.chains {
+		for r := ch.top; r <= ch.bottom; r++ {
+			rename[dummy(c, r)] = ""
+			if !gone[c] {
+				rename[dummy(c, r)] = dummy(len(kept), r)
+				chainOf[dummy(len(kept), r)] = len(kept)
+			}
+		}
+		if !gone[c] {
+			kept = append(kept, ch)
+		}
+	}
+	name := func(id string) (string, bool) {
+		n, ok := rename[id]
+		if !ok {
+			return id, true
+		}
+		return n, n != ""
+	}
+	relink := func(side map[string]map[string]int) map[string]map[string]int {
+		out := map[string]map[string]int{}
+		for a, near := range side {
+			na, ok := name(a)
+			if !ok {
+				continue
+			}
+			out[na] = map[string]int{}
+			for b, n := range near {
+				if nb, ok := name(b); ok {
+					out[na][nb] = n
+				}
+			}
+		}
+		return out
+	}
+	w := map[string]int{}
+	for _, row := range g.rows {
+		for i, id := range row {
+			row[i], _ = name(id)
+			w[row[i]] = g.w[id]
+		}
+	}
+	g.w, g.chainOf, g.chains = w, chainOf, kept
+	g.up, g.down = relink(g.up), relink(g.down)
 }
 
 // sep is how far apart two adjacent items of a row stand.
@@ -281,62 +381,25 @@ func (g *layered) sep(a, b string) int {
 // neighbours leave it, toward the weighted median of what it is joined to:
 // a chain toward an x it can run straight down from one of its ends.
 func (g *layered) place(budget int) (map[string]int, int) {
-	var blocks [][]string
-	blockOf := map[string]int{}
+	at := map[string]int{}
 	for _, row := range g.rows {
-		for _, id := range row {
-			blockOf[id] = len(blocks)
-			blocks = append(blocks, []string{id})
+		for i, id := range row {
+			at[id] = i
 		}
 	}
-	type edge struct{ to, d int }
-	// constraints are, per block, the blocks that must lie to its right
-	// and how far its left x must stay from theirs.
-	constraints := func() []map[int]int {
-		succ := make([]map[int]int, len(blocks))
-		for b := range succ {
-			succ[b] = map[int]int{}
-		}
-		for _, row := range g.rows {
-			for i := 1; i < len(row); i++ {
-				a, b := row[i-1], row[i]
-				ba, bb := blockOf[a], blockOf[b]
-				succ[ba][bb] = max(succ[ba][bb], g.w[a]+g.sep(a, b))
+	// Blocks that each lie in a run of rows, and keep their order in every
+	// row two of them share, can always be set side by side: so a chain
+	// can be one block unless it swaps sides with a straight one.
+	swaps := func(a, b int) bool {
+		ca, cb := g.chains[a], g.chains[b]
+		lo, hi := max(ca.top, cb.top), min(ca.bottom, cb.bottom)
+		left := func(r int) bool { return at[dummy(a, r)] < at[dummy(b, r)] }
+		for r := lo + 1; r <= hi; r++ {
+			if left(r) != left(lo) {
+				return true
 			}
 		}
-		return succ
-	}
-	acyclic := func(succ []map[int]int) bool {
-		in := make([]int, len(blocks))
-		for b := range succ {
-			for c := range succ[b] {
-				in[c]++
-			}
-		}
-		var q []int
-		for b := range in {
-			if in[b] == 0 && len(blocks[b]) > 0 {
-				q = append(q, b)
-			}
-		}
-		seen := 0
-		for len(q) > 0 {
-			b := q[0]
-			q = q[1:]
-			seen++
-			for c := range succ[b] {
-				if in[c]--; in[c] == 0 {
-					q = append(q, c)
-				}
-			}
-		}
-		live := 0
-		for _, bl := range blocks {
-			if len(bl) > 0 {
-				live++
-			}
-		}
-		return seen == live
+		return false
 	}
 	cs := make([]int, len(g.chains))
 	for c := range cs {
@@ -346,43 +409,75 @@ func (g *layered) place(budget int) (map[string]int, int) {
 		a, b := g.chains[cs[i]], g.chains[cs[j]]
 		return a.bottom-a.top > b.bottom-b.top
 	})
-	split := func(c int) {
-		ch := g.chains[c]
-		head := blockOf[dummy(c, ch.top)]
-		blocks[head] = blocks[head][:1]
-		for r := ch.top + 1; r <= ch.bottom; r++ {
-			d := dummy(c, r)
-			blockOf[d] = len(blocks)
-			blocks = append(blocks, []string{d})
-		}
-	}
-	var merged []int
+	var straight, crooked []int
 	for _, c := range cs {
-		ch := g.chains[c]
-		if ch.bottom == ch.top {
-			continue
-		}
-		head := blockOf[dummy(c, ch.top)]
-		for r := ch.top + 1; r <= ch.bottom; r++ {
-			d := dummy(c, r)
-			blocks[blockOf[d]] = nil
-			blockOf[d] = head
-			blocks[head] = append(blocks[head], d)
-		}
-		if acyclic(constraints()) {
-			merged = append(merged, c)
-		} else {
-			split(c)
+		switch {
+		case g.chains[c].bottom == g.chains[c].top:
+		case slices.ContainsFunc(straight, func(s int) bool { return swaps(c, s) }):
+			crooked = append(crooked, c)
+		default:
+			straight = append(straight, c)
 		}
 	}
+	// blocksWith builds the blocks with the first k straight chains kept
+	// straight. A crooked chain's dummies below its top become blocks of
+	// their own after every row's items, the crooked chains first, then
+	// the straight chains given up, shortest first.
+	blocksWith := func(k int) ([][]string, map[string]int) {
+		var blocks [][]string
+		blockOf := map[string]int{}
+		for _, row := range g.rows {
+			for _, id := range row {
+				blockOf[id] = len(blocks)
+				blocks = append(blocks, []string{id})
+			}
+		}
+		for _, c := range cs {
+			for r := g.chains[c].top + 1; r <= g.chains[c].bottom; r++ {
+				blocks[blockOf[dummy(c, r)]] = nil
+			}
+		}
+		for _, c := range straight[:k] {
+			ch := g.chains[c]
+			head := blockOf[dummy(c, ch.top)]
+			for r := ch.top + 1; r <= ch.bottom; r++ {
+				blockOf[dummy(c, r)] = head
+				blocks[head] = append(blocks[head], dummy(c, r))
+			}
+		}
+		apart := slices.Clone(crooked)
+		for i := len(straight) - 1; i >= k; i-- {
+			apart = append(apart, straight[i])
+		}
+		for _, c := range apart {
+			for r := g.chains[c].top + 1; r <= g.chains[c].bottom; r++ {
+				blockOf[dummy(c, r)] = len(blocks)
+				blocks = append(blocks, []string{dummy(c, r)})
+			}
+		}
+		return blocks, blockOf
+	}
+	var blocks [][]string
+	var blockOf map[string]int
 	var succ, pred []map[int]int
 	var topo, bw, left []int
 	width := 0
-	compact := func() {
-		succ = constraints()
+	// compact packs the blocks as far left as their order lets them: succ
+	// holds, per block, the blocks that must lie to its right and how far
+	// its left x must stay from theirs.
+	compact := func(k int) {
+		blocks, blockOf = blocksWith(k)
+		succ = make([]map[int]int, len(blocks))
 		pred = make([]map[int]int, len(blocks))
-		for b := range pred {
-			pred[b] = map[int]int{}
+		for b := range succ {
+			succ[b], pred[b] = map[int]int{}, map[int]int{}
+		}
+		for _, row := range g.rows {
+			for i := 1; i < len(row); i++ {
+				a, b := row[i-1], row[i]
+				ba, bb := blockOf[a], blockOf[b]
+				succ[ba][bb] = max(succ[ba][bb], g.w[a]+g.sep(a, b))
+			}
 		}
 		in := make([]int, len(blocks))
 		for b := range succ {
@@ -424,13 +519,18 @@ func (g *layered) place(budget int) (map[string]int, int) {
 		}
 	}
 	// A drawing kept straight past its width budget gives up its shortest
-	// straight chains first.
-	compact()
-	for width > budget && len(merged) > 0 {
-		split(merged[len(merged)-1])
-		merged = merged[:len(merged)-1]
-		compact()
+	// straight chains first. Each chain set straight can only widen it, so
+	// the most chains that fit are found by halving.
+	lo, hi := 0, len(straight)
+	for lo < hi {
+		mid := (lo + hi + 1) / 2
+		if compact(mid); width <= budget {
+			lo = mid
+		} else {
+			hi = mid - 1
+		}
 	}
+	compact(lo)
 	right := make([]int, len(blocks))
 	for k := len(topo) - 1; k >= 0; k-- {
 		b := topo[k]

@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "fd17ba5afe07c5015e362d3a6a7dd8b23e9a28a64d5d9952540a9a5f7d20f7a7"
+    "inputs_hash": "5b0ac0aa0a91bfe3f1a81d7819ad2d5500c9de7fc0b46bd3d48e846711a27e79"
   },
   "units": [
     {
@@ -1990,7 +1990,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:600 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:588 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -21376,7 +21376,23 @@
                 "Code": true
               },
               {
-                "Text": " treats each box and each chain as one block, Brandes and Köpf style, so a chain runs at one x and boxes step aside for it. It gives up the shortest chains when the drawing would pass its budget. ",
+                "Text": " treats each box and each chain as one block, Brandes and Köpf style, so a chain runs at one x and boxes step aside for it. ",
+                "Code": false
+              },
+              {
+                "Text": "shed",
+                "Code": true
+              },
+              {
+                "Text": " then takes the shortest chains out while the rows, every chain crooked, are still wider than the budget, and renumbers the rest, so every chain left has its dummies. ",
+                "Code": false
+              },
+              {
+                "Text": "place",
+                "Code": true
+              },
+              {
+                "Text": " keeps straight as many chains as fit the budget, found by halving, since each straight chain can only widen the drawing. ",
                 "Code": false
               },
               {
@@ -21406,7 +21422,23 @@
                 "Code": true
               },
               {
-                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain, or between two boxes or beside the row where it has none. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Lines of one kind that reach one box share an arrival bus, and boxes side by side in one row share one only when exactly the same places reach them. Each trunk runs down the chain of its lead line, with its stub or drop right over it. A line that changes buses steps between them where no reader can follow other lines the wrong way. Lines that leave and reach one box edge share its slots. Each bus is drawn once with its line count. ",
+                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain, or between two boxes or beside the row where it has none. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Lines of one kind that reach one box share an arrival bus, and boxes side by side in one row share one only when exactly the same places reach them. Each trunk runs down the chain of its lead line, with its stub or drop right over it. A line that changes buses steps between them where no reader can follow other lines the wrong way: ",
+                "Code": false
+              },
+              {
+                "Text": "viaX",
+                "Code": true
+              },
+              {
+                "Text": " keeps a step off a departure track between the two trunks, and ",
+                "Code": false
+              },
+              {
+                "Text": "stepX",
+                "Code": true
+              },
+              {
+                "Text": " finds a step onto an arrival track the nearest x no other line uses. Lines that leave and reach one box edge share its slots. Each bus is drawn once with its line count. ",
                 "Code": false
               },
               {

@@ -173,9 +173,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	{
 		byPair := map[[2]string]int{}
 		for c, ch := range l.chains {
-			if ch.lanes > 0 {
-				byPair[pairKey(ch.upper, ch.lower)] = c
-			}
+			byPair[pairKey(ch.upper, ch.lower)] = c
 		}
 		id := func(e end) string {
 			switch {
@@ -687,18 +685,11 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				}
 				return true
 			}
-			base, dir := p.xs[k-1], 1
+			base := p.xs[k-1]
 			if buses[st.dep].deep > p.ride {
 				base = p.tx
 			}
-			if p.tx < base {
-				dir = -1
-			}
-			n := 0
-			for !free(base+dir*n*lane) && n < 32 {
-				n++
-			}
-			at[st] = base + dir*n*lane
+			at[st] = stepX(base, p.tx, free)
 		}
 		for i := range plans {
 			p := &plans[i]
@@ -747,14 +738,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				top = q.dep
 				continue
 			}
-			// The step stands two lanes or more off the trunk, toward the
-			// departure trunk, clear of every line passing the rows on
-			// either side of the gap and of the other steps there.
 			t, d := q.xs[q.ride+1], q.xs[q.ride]
-			dir := -1
-			if d > t {
-				dir = 1
-			}
 			free := func(x int) bool {
 				for _, r := range []int{g - 1, g} {
 					for _, y := range l.passes[r] {
@@ -770,11 +754,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				}
 				return true
 			}
-			n := 2
-			for !free(t+dir*n*lane) && n < 32 {
-				n++
-			}
-			q.via = t + dir*n*lane
+			q.via = viaX(t, d, free)
 			vias[g] = append(vias[g], q.via)
 		}
 	}
@@ -1306,4 +1286,58 @@ func (l *layout) place(tracks []int, room [][2]int) {
 		y += rh
 	}
 	l.height = y
+}
+
+// walk is the first x that free says is clear, going a lane at a time in
+// direction dir from a without passing b.
+func walk(a, b, dir int, free func(int) bool) (int, bool) {
+	for x := a; (x-b)*dir <= 0; x += dir * lane {
+		if free(x) {
+			return x, true
+		}
+	}
+	return 0, false
+}
+
+// stepX is where a line that rides its departure trunk into its last gap
+// steps down onto its arrival track: from base toward its end at x end,
+// at the first x free says is clear. Past either of those it costs the
+// line twice the overshoot, so it then takes the clear x nearest to them,
+// up to 32 lanes out. With none clear it steps at base.
+func stepX(base, end int, free func(int) bool) int {
+	dir := 1
+	if end < base {
+		dir = -1
+	}
+	if x, ok := walk(base, end, dir, free); ok {
+		return x
+	}
+	for m := 1; m <= 32; m++ {
+		for _, x := range []int{end + dir*m*lane, base - dir*m*lane} {
+			if free(x) {
+				return x
+			}
+		}
+	}
+	return base
+}
+
+// viaX is where a line steps down off its departure track at x d onto a
+// track of its own that ends on the arrival trunk at x t: two lanes or
+// more off the trunk toward d, at the first x free says is clear, then
+// one lane off it. It never reaches d, past which its track would hook
+// back under the departure trunk. With no clear x between them it steps
+// halfway.
+func viaX(t, d int, free func(int) bool) int {
+	dir := 1
+	if d < t {
+		dir = -1
+	}
+	if x, ok := walk(t+2*dir*lane, d-dir, dir, free); ok {
+		return x
+	}
+	if x := t + dir*lane; (x-d)*dir < 0 && free(x) {
+		return x
+	}
+	return (t + d) / 2
 }

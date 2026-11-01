@@ -327,20 +327,8 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
+	g.shed(budget)
 	x, width := g.place(budget)
-	for width > budget {
-		c := -1
-		for i, ch := range g.chains {
-			if ch.lanes > 0 && (c < 0 || ch.bottom-ch.top < g.chains[c].bottom-g.chains[c].top) {
-				c = i
-			}
-		}
-		if c < 0 {
-			break
-		}
-		g.drop(c)
-		x, width = g.place(budget)
-	}
 	l.width, l.chains = width, g.chains
 	for r, row := range g.rows {
 		var ids []string
@@ -372,7 +360,7 @@ func arrange(nodes []lnode, edges []ledge, budget int) layout {
 // centre. A frame's top and bottom are places too.
 func (l *layout) toward(id, other string) int {
 	for c, ch := range l.chains {
-		if ch.lanes > 0 && pairKey(ch.upper, ch.lower) == pairKey(id, other) {
+		if pairKey(ch.upper, ch.lower) == pairKey(id, other) {
 			if ch.upper == id {
 				return l.pass[[2]int{c, ch.top}]
 			}

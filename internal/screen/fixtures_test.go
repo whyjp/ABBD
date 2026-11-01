@@ -99,14 +99,13 @@ var debt = map[string]Metrics{
 	"self MOD-0030 internal/model":            {Back: 3},
 	"self MOD-0047 internal/topology":         {Back: 2},
 	"orca MOD-0007 mobile app (Expo)":         {Back: 11},
-	"orca MOD-0042 desktop main process":      {Crossings: 96, Back: 10, MaxDetour: 244},
+	"orca MOD-0042 desktop main process":      {Crossings: 87, Back: 10, MaxDetour: 244},
 	"orca MOD-0056 Orca runtime (RPC host)":   {Back: 7},
 	"orca MOD-0072 desktop renderer UI":       {Back: 6},
 	"orca MOD-0099 src/":                      {Back: 2},
 	"orca MOD-0100~1 서로 쓰는 9개":                {Back: 3, MaxDetour: 344},
-	"pstack MOD-0001 setup and help":          {Braid: 2270},
+	"pstack MOD-0001 setup and help":          {Braid: 2278},
 	"pstack MOD-0003 principles":              {Back: 3},
-	"pstack MOD-0013 core principles":         {Braid: 2602},
 	"pstack MOD-0015 verification principles": {Truncated: 1},
 }
 
