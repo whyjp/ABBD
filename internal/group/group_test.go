@@ -12,12 +12,12 @@ func module(n int, file string) model.Unit {
 	return model.Unit{ID: model.FormatID(model.Module, n), Kind: model.Module, Name: model.Fact{Value: file, Origin: model.Extracted}, Anchors: []model.Anchor{{Path: file}}}
 }
 
-// Fourteen top-level modules, eight under apps/ and six under native/.
+// Twenty top-level modules, ten under apps/ and ten under native/.
 func flat() []model.Unit {
 	var us []model.Unit
-	for i := 1; i <= 14; i++ {
+	for i := 1; i <= 20; i++ {
 		dir := "apps"
-		if i > 8 {
+		if i > 10 {
 			dir = "native"
 		}
 		us = append(us, module(i, fmt.Sprintf("%s/m%d/main.go", dir, i)))
@@ -34,12 +34,12 @@ func parents(us []model.Unit) map[model.ID]model.ID {
 }
 
 func TestTooManyModulesAreGroupedByDirectory(t *testing.T) {
-	us, hw := Fallback(flat(), map[model.Kind]int{model.Module: 14})
+	us, hw := Fallback(flat(), map[model.Kind]int{model.Module: 20})
 	p := parents(us)
-	if p["MOD-0001"] != "MOD-0015" || p["MOD-0009"] != "MOD-0016" || p["MOD-0015"] != "" || p["MOD-0016"] != "" {
+	if p["MOD-0001"] != "MOD-0021" || p["MOD-0011"] != "MOD-0022" || p["MOD-0021"] != "" || p["MOD-0022"] != "" {
 		t.Fatalf("want apps/ and native/ groups at the top: %v", p)
 	}
-	if hw[model.Module] != 16 {
+	if hw[model.Module] != 22 {
 		t.Fatalf("the groups take the next IDs: %v", hw)
 	}
 	for _, u := range us {
@@ -55,17 +55,17 @@ func TestTooManyModulesAreGroupedByDirectory(t *testing.T) {
 
 func TestAReadersGroupingIsNeverMoved(t *testing.T) {
 	us := flat()
-	for i := range us[:13] {
-		us[i].Parent, us[i].ParentOrigin = "MOD-0014", model.Inferred
+	for i := range us[:19] {
+		us[i].Parent, us[i].ParentOrigin = "MOD-0020", model.Inferred
 		us[i].ParentEvidence = []model.Evidence{{Path: "README.md", Lines: "1", Quote: "x"}}
 	}
-	got, _ := Fallback(us, map[model.Kind]int{model.Module: 14})
-	for _, u := range got[:13] {
-		if u.Parent != "MOD-0014" {
+	got, _ := Fallback(us, map[model.Kind]int{model.Module: 20})
+	for _, u := range got[:19] {
+		if u.Parent != "MOD-0020" {
 			t.Fatalf("the fallback moved %s out of the reader's group: %v", u.ID, parents(got))
 		}
 	}
-	if len(got) != 14 {
+	if len(got) != 20 {
 		t.Fatalf("no group is needed beside a reader's grouping, got %d units", len(got))
 	}
 }

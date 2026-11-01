@@ -17,7 +17,7 @@ import (
 
 // Budget is how many boxes one blueprint view holds, docs/blueprint-svg.md
 // rule 1.
-const Budget = 12
+const Budget = 16
 
 // marker is the anchor symbol of a group this package made.
 const marker = "(group)"
