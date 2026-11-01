@@ -46,14 +46,15 @@ func Show(dir, rev, path string) ([]byte, error) {
 	return []byte(out), nil
 }
 
-// MergeBase returns where HEAD left the default branch: origin's HEAD, else
-// main, else master.
+// MergeBase returns where HEAD left the default branch, trying origin's HEAD,
+// the upstream, origin/main, origin/master, main and master in turn. A CI
+// checkout often has origin/main and nothing else.
 func MergeBase(dir string) (string, error) {
 	var candidates []string
 	if out, err := run(dir, nil, "symbolic-ref", "-q", "--short", "refs/remotes/origin/HEAD"); err == nil {
 		candidates = append(candidates, strings.TrimSpace(out))
 	}
-	for _, b := range append(candidates, "main", "master") {
+	for _, b := range append(candidates, "@{upstream}", "origin/main", "origin/master", "main", "master") {
 		if out, err := run(dir, nil, "merge-base", "HEAD", b); err == nil {
 			return strings.TrimSpace(out), nil
 		}

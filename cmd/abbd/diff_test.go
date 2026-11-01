@@ -123,3 +123,16 @@ func TestDiffAgainstARevisionWithoutState(t *testing.T) {
 		t.Fatalf("a revision before ABBD has no units to remove:\n%s", out)
 	}
 }
+
+// A CI checkout such as actions/checkout leaves origin/main but no origin/HEAD
+// and no local main; the default base still finds the merge base.
+func TestDiffDefaultBaseFindsOriginMainWithoutOriginHead(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(diffBase)
+	p.setup(0, "synced", "--", exe)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "base")
+	git(t, p.root, "update-ref", "refs/remotes/origin/main", "HEAD")
+	git(t, p.root, "branch", "-M", "work")
+	p.want(0, "topology since", "diff")
+}
