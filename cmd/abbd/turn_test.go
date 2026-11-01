@@ -664,7 +664,7 @@ func TestSilentChangeToAConsumedContractLeavesAGradeBCard(t *testing.T) {
 	p.extract(withDigest(topoConsumed, "d2"))
 	p.verify("pass", 0, "PASSED")
 	out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
-	for _, want := range []string{"B PROCEED contract-touched:IF-0001", "done but not declared: contract-touched:IF-0001"} {
+	for _, want := range []string{"B PROCEED contract-touched:IF-0001"} {
 		if !strings.Contains(out, want) {
 			t.Fatalf("want %q in:\n%s", want, out)
 		}
@@ -682,5 +682,20 @@ func TestChangeToAContractNobodyConsumesLeavesNoCard(t *testing.T) {
 	p.verify("pass", 0, "PASSED")
 	if out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1"); strings.Contains(out, "contract-touched") {
 		t.Fatalf("a contract no one consumes can change its code freely:\n%s", out)
+	}
+}
+
+// Units that share a file are told apart by digest: only the one whose code
+// changed counts as touched.
+func TestDigestTellsApartUnitsThatShareAFile(t *testing.T) {
+	admin := `{"key":"admin","kind":"IF","name":"admin api","signature":"GET /admin","digest":"a1","anchors":[{"path":"api/http.go","symbol":"Admin"}]},`
+	p := activeTurnProject(t, withUnit(withDigest(topoV1, "d1"), admin))
+	p.start("MOD-0001")
+	p.editCode("api/http.go")
+	p.extract(withUnit(withDigest(topoV1, "d2"), admin))
+	p.verify("pass", 0, "PASSED")
+	out := p.want(0, "CHG-0001 SYNCED", "turn", "end", "--session", "s1")
+	if strings.Count(out, "done but not declared: IF-") != 1 {
+		t.Fatalf("only the unit whose digest changed was touched:\n%s", out)
 	}
 }

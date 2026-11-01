@@ -171,12 +171,15 @@ func Compare(in Intended, units []model.Unit) []Item {
 // change does not touch the intended topology at all.
 //
 // Grade C (Blocked) covers anything that changes what an intended contract
-// promises or who depends on it, and any new coupling between two intended
-// units. Other changes that touch an intended unit need a short realignment.
+// promises or who depends on it, any new coupling between two intended units,
+// and any relation between an intended unit and a contract, intended or not:
+// a contract's consumers and providers are its boundary even before a human
+// adopts it. Other changes that touch an intended unit need a short realignment.
 func (in Intended) Effect(it Item) (effect Effect, ok bool) {
 	intended := in.byID()
 	_, has := intended[it.Unit]
 	isContract := func(id model.ID) bool { u, ok := intended[id]; return ok && u.Kind.IsContract() }
+	anyContract := func(id model.ID) bool { k, _, err := model.ParseID(string(id)); return err == nil && k.IsContract() }
 	switch it.Change {
 	case UnitRemoved:
 		switch {
@@ -194,7 +197,7 @@ func (in Intended) Effect(it Item) (effect Effect, ok bool) {
 		if !slices.Contains(in.Relations, it.Edge) {
 			return "", false
 		}
-		if isContract(it.Edge.From) || isContract(it.Edge.To) {
+		if anyContract(it.Edge.From) || anyContract(it.Edge.To) {
 			return Blocked, true
 		}
 		return Realign, true
@@ -205,9 +208,10 @@ func (in Intended) Effect(it Item) (effect Effect, ok bool) {
 		_, from := intended[it.Edge.From]
 		_, to := intended[it.Edge.To]
 		switch {
-		case (from && to) || isContract(it.Edge.From) || isContract(it.Edge.To):
+		case !from && !to:
+		case (from && to) || anyContract(it.Edge.From) || anyContract(it.Edge.To):
 			return Blocked, true
-		case from || to:
+		default:
 			return Realign, true
 		}
 	}
@@ -460,8 +464,10 @@ func promotionQuestion(id model.ID, edges map[Edge]bool) string {
 
 // Adopt makes a below-the-line unit a design unit, with its relations to other
 // below-the-line units. A relation to a design unit enters only if a human
-// already acknowledged it; any other stays a row of its own, graded once the
-// unit is a design unit, so adoption never approves or realigns one.
+// already acknowledged it at the grade it has once the unit is a design unit;
+// one acknowledged at a lower grade, such as a realigned coupling between two
+// modules, leaves the intended topology and is asked again. Adoption never
+// approves or realigns a relation.
 func Adopt(in Intended, units []model.Unit, id model.ID) (Intended, error) {
 	actual := presentUnits(units)
 	u, ok := actual[id]
@@ -472,8 +478,17 @@ func Adopt(in Intended, units []model.Unit, id model.ID) (Intended, error) {
 	case !ok:
 		return in, fmt.Errorf("%s is not in the actual topology", id)
 	}
+	before := in
 	in.Units = append(slices.Clone(in.Units), IntendedUnit{ID: id, Kind: u.Kind, Signature: signature(u)})
-	in.Relations = slices.Clone(in.Relations)
+	in.Relations = slices.DeleteFunc(slices.Clone(in.Relations), func(e Edge) bool {
+		if e.From != id && e.To != id {
+			return false
+		}
+		it := Item{Change: NewRelation, Edge: e}
+		was, _ := Intended{Units: before.Units}.Effect(it)
+		now, _ := Intended{Units: in.Units}.Effect(it)
+		return now == Blocked && was != Blocked
+	})
 	for e := range actualEdges(actual) {
 		other := e.To
 		if e.To == id {

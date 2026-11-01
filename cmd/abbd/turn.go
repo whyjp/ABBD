@@ -173,7 +173,7 @@ func (e env) turnStart() error {
 	}
 	t := turn.Turn{
 		ID: string(chg), Requirement: string(req), Session: e.session, State: turn.Open,
-		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.ConsumedDigests(*v.intended, v.units)},
+		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.Digests(v.units)},
 		Seeds:    seeds, Impact: turn.ComputeImpact(*v.intended, seeds),
 	}
 	if err := e.st.WriteRequirement(store.Requirement{ID: string(req), Origin: model.UserStated, Turn: t.ID}, text); err != nil {
@@ -535,8 +535,8 @@ func (e env) turnEnd() error {
 		return err
 	}
 	vs := turn.Judge(*v.intended, v.units, t.Approvals)
-	vs = append(vs, turn.Touched(t.Baseline.Digests, v.units, vs)...)
-	touched, known, err := e.touched(t.Baseline.Fingerprint, tree, v.units)
+	vs = append(vs, turn.Touched(*v.intended, t.Baseline.Digests, v.units, vs)...)
+	touched, known, err := e.touched(t.Baseline, tree, v.units)
 	if err != nil {
 		return fmt.Errorf("listing the files the turn changed: %w", err)
 	}
@@ -613,14 +613,21 @@ func (e env) sync(t *turn.Turn, in topology.Intended, vs []turn.Verdict) error {
 	return e.published()
 }
 
-// touched lists the units whose anchored files changed. known is false when
-// the baseline snapshot is gone and the changed files cannot be listed.
-func (e env) touched(from, to string, units []model.Unit) (ids []model.ID, known bool, err error) {
-	paths, ok, err := gitx.Changed(e.root, from, to)
+// touched lists the units the turn changed: by digest when the baseline has
+// one, since files can hold many units, and by anchored file otherwise. known
+// is false when the baseline snapshot is gone and the changed files cannot be listed.
+func (e env) touched(base turn.Baseline, to string, units []model.Unit) (ids []model.ID, known bool, err error) {
+	paths, ok, err := gitx.Changed(e.root, base.Fingerprint, to)
 	if err != nil || !ok {
 		return nil, false, err
 	}
 	for _, u := range units {
+		if was, ok := base.Digests[u.ID]; ok && u.Digest != "" {
+			if u.Digest != was {
+				ids = append(ids, u.ID)
+			}
+			continue
+		}
 		if slices.ContainsFunc(u.Anchors, func(a model.Anchor) bool {
 			return slices.ContainsFunc(paths, func(p string) bool { return turn.Touches(a, p) })
 		}) {

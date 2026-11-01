@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -49,12 +51,45 @@ func TestAdoptingAContractLeavesItsNewConsumerBlocked(t *testing.T) {
 	p.want(0, "aligned", "align", "--confirm", "MOD-0001,MOD-0002")
 	p.editCode("ledger/book.go")
 	p.extract(withRelations(topoV1, `{"from":"ledger","to":"api","kind":"consumes"}`))
-	p.want(2, "REALIGN new-relation:MOD-0002.consumes.IF-0001", "mode", "on", "--session", "s1")
+	p.want(2, "BLOCKED new-relation:MOD-0002.consumes.IF-0001", "mode", "on", "--session", "s1")
+	p.want(2, "pending approval", "align")
 	p.want(0, "now waiting: BLOCKED new-relation:MOD-0002.consumes.IF-0001", "approve", "unit-added:IF-0001")
 	if strings.Contains(p.intended(), "from: MOD-0002\n      to: IF-0001") {
 		t.Fatalf("adopting the contract must not approve its new consumer:\n%s", p.intended())
 	}
 	p.want(0, "BLOCKED new-relation:MOD-0002.consumes.IF-0001", "status")
+}
+
+// A coupling a human realigned while one end was below the line is asked
+// again once both ends are design units, since it is grade C from then on.
+func TestAdoptionAsksAgainForARealignedCouplingThatBecomesGradeC(t *testing.T) {
+	p := aligned(t)
+	p.editCode("audit/log.go")
+	p.extract(withRelations(withUnit(topoV1, auditUnit), `{"from":"billing","to":"audit","kind":"depends_on"}`))
+	p.want(2, "REALIGN new-relation:MOD-0001.depends_on.MOD-0003", "mode", "on", "--session", "s1")
+	p.want(0, "aligned", "align")
+	p.want(0, "now waiting: BLOCKED new-relation:MOD-0001.depends_on.MOD-0003", "approve", "unit-added:MOD-0003")
+	if strings.Contains(p.intended(), "to: MOD-0003") {
+		t.Fatalf("the realigned coupling must wait for a grade C decision:\n%s", p.intended())
+	}
+}
+
+// A turn may not make a design module a contract's consumer at grade B, even
+// while the contract is below the line.
+func TestATurnCannotAddAConsumerOfABelowTheLineContract(t *testing.T) {
+	p := newProject(t)
+	p.extract(topoV1)
+	p.want(0, "new", "ingest", p.extraction)
+	p.want(0, "aligned", "align", "--confirm", "MOD-0001,MOD-0002")
+	p.want(0, "active", "mode", "on", "--session", "s1")
+	exe, _ := os.Executable()
+	tp := &turnProject{project: p, exe: exe, verifyFile: filepath.Join(t.TempDir(), "verify")}
+	t.Setenv("ABBD_FAKE_VERIFY", tp.verifyFile)
+	tp.start("MOD-0002")
+	p.editCode("ledger/book.go")
+	p.extract(withRelations(topoV1, `{"from":"ledger","to":"api","kind":"consumes"}`))
+	tp.verify("pass", 0, "PASSED")
+	p.want(2, "C BLOCKED new-relation:MOD-0002.consumes.IF-0001", "turn", "end", "--session", "s1")
 }
 
 func TestRejectedCandidateStaysBelowTheLineUntilItsRelationsChange(t *testing.T) {
