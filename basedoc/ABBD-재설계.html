@@ -216,11 +216,11 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <div class="page">
 <nav class="toc" aria-label="목차">
 <p class="toc-title">목차</p>
-<ol><li><a href="#sec-1">1. 배경</a></li><li><a href="#sec-2">2. 핵심 입장</a></li><li><a href="#sec-3">3. 구조</a></li><li><a href="#sec-4">4. 토폴로지 모델</a></li><li><a href="#sec-5">5. 설정과 동기화</a></li><li><a href="#sec-6">6. abbd-mode가 pstack을 감싼다</a></li><li><a href="#sec-7">7. 사람이 읽는 설계도</a></li><li><a href="#sec-8">8. pstack 연동</a></li><li><a href="#sec-9">9. 평가</a></li><li><a href="#sec-10">10. 하지 않을 것</a></li><li><a href="#sec-11">11. 재시작 단계</a></li><li><a href="#sec-12">12. 계승 사양</a></li><li><a href="#sec-13">13. 열린 결정</a></li><li><a href="#sec-15">14. 개선 계획</a></li><li><a href="#sec-a">부록. v2 기록</a></li><li><a href="#sec-14">출처</a></li></ol>
+<ol><li><a href="#sec-1">1. 배경</a></li><li><a href="#sec-2">2. 핵심 입장</a></li><li><a href="#sec-3">3. 구조</a></li><li><a href="#sec-4">4. 토폴로지 모델</a></li><li><a href="#sec-5">5. 설정과 동기화</a></li><li><a href="#sec-6">6. /abbd 스킬과 상시 지침</a></li><li><a href="#sec-7">7. 사람이 읽는 설계도</a></li><li><a href="#sec-8">8. pstack 연동</a></li><li><a href="#sec-9">9. 평가</a></li><li><a href="#sec-10">10. 하지 않을 것</a></li><li><a href="#sec-11">11. 재시작 단계</a></li><li><a href="#sec-12">12. 계승 사양</a></li><li><a href="#sec-13">13. 열린 결정</a></li><li><a href="#sec-15">14. 개선 계획</a></li><li><a href="#sec-a">부록. v2 기록</a></li><li><a href="#sec-14">출처</a></li></ol>
 </nav>
 <main>
 <header class="doc-head">
-<h1>ABBD 재설계, pstack을 감싸는 아키텍처 설계도</h1>
+<h1>ABBD 재설계, pstack 위의 아키텍처 설계도</h1>
 <p class="byline">2026-11-01 기준 · v3</p>
 </header>
 <h2 id="sec-1">1. 배경</h2>
@@ -235,27 +235,41 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 </ul>
 <p>v2(11장의 재시작 1~6단계와 개선 계획 1, 2)는 이 근거 위에 턴 엔진, 등급, 승인, confirm 큐, 정렬, 훅과 가드, 사람 화면 서버를 지었다. ABBD를 자기 저장소에 적용해 보니, 이 장치들은 pstack 플레이북과 대화와 PR이 이미 하는 일을 한 번 더 했다(10장). v3는 그 장치를 모두 걷어 내고, 토폴로지를 지니고 그리는 일만 남긴다.</p>
 <h2 id="sec-2">2. 핵심 입장</h2>
-<p>ABBD는 pstack을 사용자에 맞게 감싼 것이다. pstack의 automate-me가 사용자의 작업 방식을 <code>&lt;이름&gt;-mode</code> 스킬로 만들듯, ABBD는 <code>abbd-mode</code> 스킬 하나와 지렛대 역할만 하는 CLI <code>abbd</code> 하나다. 분석, 설계, 결정, 구현은 모두 pstack의 몫이다. ABBD는 병합된 코드의 아키텍처 토폴로지를 최종 상태로 지니고, 사람에게 그려 보여 준다.</p>
+<p>ABBD는 pstack 위에 얹는 기능 스킬이다. <code>/abbd</code> 스킬, 설정 스킬 <code>abbd-setup</code>, 지렛대 역할만 하는 CLI <code>abbd</code>로 이루어진다. 분석, 설계, 결정, 구현은 모두 pstack과 지금 켜진 모드의 몫이다. ABBD는 병합된 코드의 아키텍처 토폴로지를 최종 상태로 지니고, 사람에게 그려 보여 주고, 사람과 에이전트의 질문에 답한다.</p>
 <ol>
 <li><strong>계획이 아니라 상태다.</strong> 토폴로지는 앞으로 할 일도, 작업 과정의 기록도 아니다. 병합된 코드에서 확인한 지금의 구조다. 코드가 명세라는 pstack의 입장과 충돌하지 않는다. 토폴로지는 그 명세에서 뽑은 색인이고, 증거로 다시 확인할 수 있다.</li>
 <li><strong>첫째 일은 사람의 이해와 판단이다.</strong> 사람이 아키텍처를 보고 빨리 이해하고 판단하게 돕는 것이 첫째다. 에이전트가 더 잘 일하게 하는 것은 둘째다. 사람은 코드 디테일을 몰라도 되지만 모듈과 계약 수준은 알아야 한다. 그래야 &quot;이 변경이 왜 저 모듈을 건드리지?&quot;라고 물을 수 있다.</li>
 <li><strong>코드 이해는 pstack에서만 나온다.</strong> 구조와 설명은 pstack의 이해 스킬(how, swarm, blast-radius)에서만 나온다. ABBD가 더하는 것은 결과 형식, 결정적 증거 확인, ID, 저장, 렌더링뿐이다. 화면을 그리려고 읽은 구조와 작업하면서 읽은 구조가 같은 절차에서 나와야, 사람이 보는 지도와 에이전트가 보는 지도가 갈라지지 않는다.</li>
-<li><strong>결정은 대화와 PR에서 한다.</strong> ABBD는 결정을 묻지도, 기다리지도, 막지도 않는다. 언제 사람에게 물을지는 poteto-mode의 Autonomy 절이 정하고, 사람은 대화와 PR 리뷰에서 판단한다. ABBD는 사람이 말한 사실을 출처와 함께 적을 뿐이다.</li>
+<li><strong>결정은 대화와 PR에서 한다.</strong> ABBD는 결정을 묻지도, 기다리지도, 막지도 않는다. 언제 사람에게 물을지는 지금 켜진 모드가 정하고(poteto-mode라면 Autonomy 절), 사람은 대화와 PR 리뷰에서 판단한다. ABBD는 사람이 말한 사실을 출처와 함께 적을 뿐이다.</li>
 <li><strong>그림 하나로 모두 그리지 않는다.</strong> 모듈 사이의 인터페이스를 보는 겉층과, 모듈 하나의 안을 보는 속층을 따로 그린다(7장).</li>
 <li><strong>문제는 층마다 나눠 잡는다.</strong> 엉뚱한 곳을 건드림, 책임이 섞임, 계약이 깨짐 같은 구조 문제는 토폴로지에서 보인다. 동시성, 경계값, 오류 처리 같은 디테일 결함은 pstack의 검증이 맡는다.</li>
 </ol>
-<h3>automate-me가 만드는 모드와 같은 모양이다</h3>
-<p>automate-me는 사용자의 작업 규칙을 poteto-mode의 형제 스킬로 만든다. 그 스킬은 pstack 스킬을 경로로 가리키고, 내용을 붙여 넣지 않으며, 자기 엔진이나 큐나 결정 절차를 갖지 않는다. abbd-mode도 같은 규칙을 따른다.</p>
+<h3>모드가 아니라 기능 스킬이다</h3>
+<p>automate-me는 사용자가 일하는 방식을 <code>&lt;이름&gt;-mode</code> 스킬로 만든다. 그 스킬은 poteto-mode 옆의 SKILL.md 하나다. pstack 스킬을 경로로 가리키고, 응답, 위임, 검증의 규칙을 사용자에 맞게 바꾼다. 상태를 남기지 않고, 새 기능을 더하지 않는다. ABBD는 기능과 상태를 더한다. 그래서 ABBD는 모드가 아니라 pstack의 기능 스킬을 따른다. statechart는 스크립트를 지렛대로 가진 스킬이고, create-verification-skill은 프로젝트 안에 자산을 만들어 두는 스킬이다. ABBD는 두 모양을 함께 쓴다.</p>
 <div class="table-wrap"><table>
-<thead><tr><th>항목</th><th>automate-me가 만드는 모드</th><th>abbd-mode</th></tr></thead>
+<thead><tr><th>항목</th><th>automate-me가 만드는 모드</th><th>statechart, create-verification-skill</th><th>ABBD</th></tr></thead>
 <tbody>
-<tr><td>자리</td><td>poteto-mode 옆의 형제 SKILL.md</td><td>같다. <code>/abbd-mode</code>로 부른다</td></tr>
-<tr><td>pstack 스킬</td><td>경로로 참조하고 붙여 넣지 않는다</td><td>같다. 0.15.36에 고정한 경로를 참조한다</td></tr>
-<tr><td>자기 엔진</td><td>없다</td><td>없다. 턴, 큐, 승인, 게이트를 두지 않는다</td></tr>
-<tr><td>더하는 것</td><td>사용자의 응답, 위임, 검증 규칙</td><td>작업 앞의 토폴로지 읽기와 결합 기록, 작업 뒤의 sync와 diff</td></tr>
-<tr><td>남기는 것</td><td>없다</td><td><code>.abbd/</code>의 토폴로지 상태와 설계도</td></tr>
+<tr><td>하는 일</td><td>사용자가 일하는 방식을 바꾼다</td><td>기능 하나를 더한다</td><td>토폴로지를 지니고, 그리고, 질문에 답한다</td></tr>
+<tr><td>이루는 것</td><td>SKILL.md 하나</td><td>SKILL.md와 스크립트, 또는 프로젝트에 만드는 스킬</td><td><code>/abbd</code>, <code>abbd-setup</code>, CLI <code>abbd</code>, CLAUDE.md의 상시 지침 블록</td></tr>
+<tr><td>남기는 것</td><td>없다</td><td>create-verification-skill은 프로젝트의 verify 스킬을 남긴다</td><td><code>.abbd/</code>의 토폴로지 상태와 설계도</td></tr>
+<tr><td>모드와의 관계</td><td>그 자체가 모드다</td><td>어느 모드 아래서도 부른다</td><td>같다. poteto-mode 아래서도, 사용자의 <code>-mode</code> 아래서도 쓴다</td></tr>
 </tbody></table></div>
-<p>차이는 마지막 줄 하나다. 상태를 모델의 기억으로 다루면 실행마다 달라지므로, 결정적인 부분만 CLI로 뺐다. CLI는 build-the-lever 원칙의 지렛대다. 판단하지 않고, 막지 않고, 묻지 않고, 결정을 기록하지 않는다.</p>
+<p>결정적인 부분은 CLI로 뺐다. 상태를 모델의 기억으로 다루면 실행마다 달라지기 때문이다. CLI는 build-the-lever 원칙의 지렛대다. 판단하지 않고, 막지 않고, 묻지 않고, 결정을 기록하지 않는다.</p>
+<h3>에이전트와 잇는 방식은 graphify를 따른다</h3>
+<p><a href="https://github.com/Graphify-Labs/graphify">graphify</a>는 코드베이스를 질문할 수 있는 그래프로 만든다. <code>/graphify</code> 스킬과 CLI(<code>query</code>, <code>path</code>, <code>explain</code>)가 있고, 어시스턴트가 코드를 뒤지기 전에 그래프에 먼저 묻게 하는 상시 설정이 있다. 구현에는 끼어들지 않는다. ABBD도 같은 모양으로 에이전트와 잇는다. 다른 점은 독자와 해상도다.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>항목</th><th>graphify</th><th>ABBD</th></tr></thead>
+<tbody>
+<tr><td>역할</td><td>코드와 문서를 질문할 수 있는 지식 그래프로 만든다</td><td>병합된 코드의 아키텍처 토폴로지를 최종 상태로 지니고 그린다</td></tr>
+<tr><td>첫 독자</td><td>코딩 어시스턴트와 그 어시스턴트를 쓰는 개발자</td><td>아키텍처를 판단하는 사람. 에이전트는 둘째다</td></tr>
+<tr><td>해상도</td><td>클래스, 메서드, 파일, 개념 노드</td><td>모듈, 기능, 계약. 겉층과 속층 두 단계로 그린다</td></tr>
+<tr><td>추출</td><td>tree-sitter AST로 언어 공통 추출. 문서와 그림은 모델이 읽는다</td><td>프로젝트 전용 결정적 스크립트, 그리고 pstack 이해 스킬의 의미 보완</td></tr>
+<tr><td>origin 표시</td><td>EXTRACTED와 INFERRED. 경로는 가장 약한 홉의 신뢰도를 보고한다</td><td>EXTRACTED, INFERRED, USER_STATED. INFERRED는 증거 인용을, USER_STATED는 출처를 가진다</td></tr>
+<tr><td>ABBD에만 있는 것</td><td>해당 없음</td><td>계약을 경계의 포트로 그리는 두 층 설계도, sync마다 다시 확인하는 증거 인용, 재추출 뒤에도 유지되는 ID, 모듈 설명의 STALE 표시, PR에 넣는 <code>abbd diff</code></td></tr>
+<tr><td>에이전트 연동</td><td><code>/graphify</code> 스킬, CLI, 상시 설정(Claude Code에서는 검색과 읽기 앞에 그래프를 권하는 훅)</td><td><code>/abbd</code> 스킬, CLI, <code>abbd-setup</code>이 CLAUDE.md에 쓰는 상시 지침 블록. 훅은 없다</td></tr>
+<tr><td>구현 참여</td><td>하지 않는다</td><td>하지 않는다</td></tr>
+</tbody></table></div>
+<p>규칙은 하나다. ABBD는 문서로 남기고 질문에 답한다. 작업을 라우팅하지 않고, 결정하지 않고, 막지 않고, 코드를 고치지 않는다.</p>
 <p>하네스의 구성 요소는 모델이 발전할 때 어떻게 되는지에 따라 네 가지로 나눠 다룬다.</p>
 <div class="table-wrap"><table>
 <thead><tr><th>층</th><th>예</th><th>모델이 좋아지면</th><th>처리</th></tr></thead>
@@ -267,25 +281,27 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 </tbody></table></div>
 <p>마지막 줄이 ABBD의 가장 오래 가는 가치다. 에이전트가 코드를 빨리 쓸수록 사람이 구조를 놓치는 속도도 빨라지기 때문이다.</p>
 <h2 id="sec-3">3. 구조</h2>
-<figure class="diagram"><svg viewBox="0 0 760 528" role="img" aria-label="ABBD는 병합된 코드의 구조를 지니고 그려 보여 준다" font-size="13"><defs><marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="34" font-size="15" font-weight="600" fill="var(--cds-text-primary)">ABBD는 병합된 코드의 구조를 지니고 그려 보여 준다</text><g><rect x="184" y="56" width="392" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="200" y="80" font-weight="600" fill="var(--cds-text-primary)">사람</text><text x="200" y="96" font-size="11.5" fill="var(--cds-text-secondary)">설계도를 읽고, 대화와 PR에서 판단한다</text></g><g><rect x="24" y="148" width="712" height="152" rx="8" fill="var(--cds-chart-reference-tint)" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="170" font-weight="600" fill="var(--cds-text-primary)">ABBD · pstack을 감싸는 모드</text></g><g><rect x="40" y="180" width="216" height="104" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="204" font-weight="600" fill="var(--cds-text-primary)">abbd-mode 스킬</text><text x="56" y="224" font-size="11.5" fill="var(--cds-text-secondary)">pstack 스킬을 경로로 참조</text><text x="56" y="242" font-size="11.5" fill="var(--cds-text-secondary)">시작: impact, how, record</text><text x="56" y="260" font-size="11.5" fill="var(--cds-text-secondary)">끝: sync, diff</text></g><g><rect x="272" y="180" width="216" height="104" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="204" font-weight="600" fill="var(--cds-text-primary)">abbd CLI (지렛대)</text><text x="288" y="224" font-size="11.5" fill="var(--cds-text-secondary)">추출, 증거 확인, ID, 차이</text><text x="288" y="242" font-size="11.5" fill="var(--cds-text-secondary)">판단하지 않고 막지 않음</text></g><g><rect x="504" y="180" width="216" height="104" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="520" y="204" font-weight="600" fill="var(--cds-text-primary)">.abbd/ 상태</text><text x="520" y="224" font-size="11.5" fill="var(--cds-text-primary)">병합된 코드의 최종 구조</text><text x="520" y="242" font-size="11.5" fill="var(--cds-text-primary)">blueprint/index.html</text></g><g><rect x="24" y="340" width="712" height="96" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25" stroke-dasharray="4 4"></rect><text x="720" y="360" text-anchor="end" font-weight="600" fill="var(--cds-text-primary)">pstack 0.15.36 (고치지 않음)</text></g><g><rect x="40" y="368" width="216" height="52" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="390" font-weight="600" fill="var(--cds-text-primary)">poteto-mode 플레이북</text><text x="56" y="406" font-size="11.5" fill="var(--cds-text-secondary)">분석, 설계, 결정, 구현</text></g><g><rect x="272" y="368" width="216" height="52" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="390" font-weight="600" fill="var(--cds-text-primary)">how · swarm · blast-radius</text><text x="288" y="406" font-size="11.5" fill="var(--cds-text-secondary)">코드 이해의 유일한 원천</text></g><g><rect x="504" y="368" width="216" height="52" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="520" y="390" font-weight="600" fill="var(--cds-text-primary)">verify 스킬</text><text x="520" y="406" font-size="11.5" fill="var(--cds-text-secondary)">앱을 돌려 증명</text></g><g><rect x="184" y="472" width="392" height="44" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="380" y="499" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">코드베이스 · 명세는 코드</text></g><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M220 112V180" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></path><path d="M560 180V112" marker-end="url(#arch-arrow)"></path><path d="M256 232H272" marker-end="url(#arch-arrow)"></path><path d="M488 232H504" marker-end="url(#arch-arrow)"></path><path d="M148 284V368" marker-end="url(#arch-arrow)"></path><path d="M380 368V284" marker-end="url(#arch-arrow)"></path><path d="M380 436V472" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></path><path d="M576 494H748V232H720" marker-end="url(#arch-arrow)"></path></g><text x="228" y="136" font-size="11.5" fill="var(--cds-text-secondary)">요청, 대화, PR 리뷰</text><text x="568" y="136" font-size="11.5" fill="var(--cds-text-secondary)">설계도 읽기</text><text x="156" y="326" font-size="11.5" fill="var(--cds-text-secondary)">플레이북으로 넘김</text><text x="388" y="326" font-size="11.5" fill="var(--cds-text-secondary)">읽은 결과를 증거와 함께 기록</text><text x="392" y="458" font-size="11.5" fill="var(--cds-text-secondary)">코드 읽기와 변경</text><text x="740" y="458" text-anchor="end" font-size="11.5" fill="var(--cds-text-secondary)">추출 스크립트</text></svg><figcaption>그림 1. ABBD의 구성. 사람, ABBD, pstack, 코드의 네 층</figcaption></figure>
-<p>사람은 설계도를 읽고, 요청과 판단은 대화와 PR로 한다. abbd-mode는 작업을 pstack 플레이북에 넘기고, pstack 이해 스킬이 읽은 결과를 <code>abbd</code>로 기록한다. <code>.abbd/</code> 상태는 추출 스크립트의 출력과 기록된 결과로 만들어지고, 설계도는 그 상태에서 그려진다.</p>
+<figure class="diagram"><svg viewBox="0 0 760 588" role="img" aria-label="ABBD는 어느 모드 아래서나 쓰는 기능 스킬이다" font-size="13"><defs><marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="34" font-size="15" font-weight="600" fill="var(--cds-text-primary)">ABBD는 어느 모드 아래서나 쓰는 기능 스킬이다</text><g><rect x="184" y="56" width="392" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="200" y="80" font-weight="600" fill="var(--cds-text-primary)">사람</text><text x="200" y="96" font-size="11.5" fill="var(--cds-text-secondary)">설계도를 읽고, 대화와 PR에서 판단한다</text></g><g><rect x="24" y="148" width="712" height="200" rx="8" fill="var(--cds-chart-reference-tint)" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="170" font-weight="600" fill="var(--cds-text-primary)">ABBD · 기능 스킬과 지렛대</text></g><g><rect x="40" y="180" width="216" height="80" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="204" font-weight="600" fill="var(--cds-text-primary)">/abbd 스킬</text><text x="56" y="224" font-size="11.5" fill="var(--cds-text-secondary)">작업 앞 explain, path, impact</text><text x="56" y="242" font-size="11.5" fill="var(--cds-text-secondary)">작업 뒤 sync, diff</text></g><g><rect x="272" y="180" width="216" height="80" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="204" font-weight="600" fill="var(--cds-text-primary)">abbd CLI (지렛대)</text><text x="288" y="224" font-size="11.5" fill="var(--cds-text-secondary)">추출, 증거 확인, ID, 질의</text><text x="288" y="242" font-size="11.5" fill="var(--cds-text-secondary)">판단하지 않고 막지 않음</text></g><g><rect x="504" y="180" width="216" height="80" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="520" y="204" font-weight="600" fill="var(--cds-text-primary)">.abbd/ 상태</text><text x="520" y="224" font-size="11.5" fill="var(--cds-text-primary)">병합된 코드의 최종 구조</text><text x="520" y="242" font-size="11.5" fill="var(--cds-text-primary)">blueprint/index.html</text></g><g><rect x="272" y="276" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="300" font-weight="600" fill="var(--cds-text-primary)">abbd-setup</text><text x="288" y="318" font-size="11.5" fill="var(--cds-text-secondary)">처음 한 번, 끝에 지침 블록</text></g><g><rect x="504" y="276" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="520" y="300" font-weight="600" fill="var(--cds-text-primary)">CLAUDE.md 상시 지침</text><text x="520" y="318" font-size="11.5" fill="var(--cds-text-secondary)">구조 질문은 설계도부터</text></g><g><rect x="24" y="388" width="712" height="104" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25" stroke-dasharray="4 4"></rect><text x="720" y="408" text-anchor="end" font-weight="600" fill="var(--cds-text-primary)">pstack 0.15.36 (고치지 않음)</text></g><g><rect x="40" y="420" width="216" height="60" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="442" font-weight="600" fill="var(--cds-text-primary)">지금 켜진 모드</text><text x="56" y="460" font-size="11.5" fill="var(--cds-text-secondary)">poteto-mode나 사용자의 -mode</text><text x="56" y="475" font-size="11.5" fill="var(--cds-text-secondary)">분석, 설계, 결정, 구현</text></g><g><rect x="272" y="420" width="216" height="60" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="442" font-weight="600" fill="var(--cds-text-primary)">how · swarm · blast-radius</text><text x="288" y="460" font-size="11.5" fill="var(--cds-text-secondary)">코드 이해의 유일한 원천</text></g><g><rect x="504" y="420" width="216" height="60" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="520" y="442" font-weight="600" fill="var(--cds-text-primary)">verify 스킬</text><text x="520" y="460" font-size="11.5" fill="var(--cds-text-secondary)">앱을 돌려 증명</text></g><g><rect x="184" y="528" width="392" height="44" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="380" y="555" text-anchor="middle" font-weight="600" fill="var(--cds-text-primary)">코드베이스 · 명세는 코드</text></g><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M184 92H12V450H40" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></path><path d="M560 180V112" marker-end="url(#arch-arrow)"></path><path d="M148 420V260" marker-end="url(#arch-arrow)"></path><path d="M256 220H272" marker-end="url(#arch-arrow)"></path><path d="M488 220H504" marker-end="url(#arch-arrow)"></path><path d="M380 276V260" marker-end="url(#arch-arrow)"></path><path d="M488 304H504" marker-end="url(#arch-arrow)"></path><path d="M612 332V388" marker-end="url(#arch-arrow)"></path><path d="M380 492V528" marker-start="url(#arch-arrow)" marker-end="url(#arch-arrow)"></path><path d="M576 550H748V220H720" marker-end="url(#arch-arrow)"></path></g><text x="24" y="80" font-size="11.5" fill="var(--cds-text-secondary)">요청, 대화, PR 리뷰</text><text x="568" y="136" font-size="11.5" fill="var(--cds-text-secondary)">설계도 읽기</text><text x="156" y="304" font-size="11.5" fill="var(--cds-text-secondary)">작업 앞뒤에 따름</text><text x="620" y="368" font-size="11.5" fill="var(--cds-text-secondary)">늘 읽히는 지침</text><text x="388" y="514" font-size="11.5" fill="var(--cds-text-secondary)">코드 읽기와 변경</text><text x="740" y="514" text-anchor="end" font-size="11.5" fill="var(--cds-text-secondary)">추출 스크립트</text></svg><figcaption>그림 1. ABBD의 구성. 사람, ABBD, pstack과 지금 켜진 모드, 코드의 네 층. ABBD는 자기 모드를 두지 않는다</figcaption></figure>
+<p>사람은 설계도를 읽고, 요청과 판단은 대화와 PR로 한다. 작업은 지금 켜진 모드(poteto-mode나 사용자의 <code>-mode</code>)가 pstack 플레이북으로 돌린다. 그 모드 아래서 에이전트는 <code>/abbd</code>를 따라 작업 앞에 설계도에 묻고, pstack 이해 스킬이 읽은 결과를 <code>abbd</code>로 기록하고, 작업 뒤에 sync와 diff를 돌린다. CLAUDE.md의 상시 지침은 <code>/abbd</code>를 부르지 않은 대화에서도 같은 순서를 권한다. <code>.abbd/</code> 상태는 추출 스크립트의 출력과 기록된 결과로 만들어지고, 설계도는 그 상태에서 그려진다.</p>
 <div class="table-wrap"><table>
 <thead><tr><th>책임</th><th>맡는 곳</th></tr></thead>
 <tbody>
 <tr><td>아키텍처 판단과 설계 결정</td><td>사람 (대화와 PR 리뷰)</td></tr>
+<tr><td>작업을 어디로 보낼지, 언제 사람에게 물을지</td><td>지금 켜진 모드</td></tr>
 <tr><td>분석, 설계, 구현, 검증</td><td>pstack 플레이북과 프로젝트 verify 스킬</td></tr>
 <tr><td>코드 이해 (구조와 설명)</td><td>pstack how, swarm, blast-radius</td></tr>
-<tr><td>결과 형식, 증거 확인, ID, 저장, 차이, 렌더링</td><td>ABBD (<code>abbd</code>)</td></tr>
+<tr><td>결과 형식, 증거 확인, ID, 저장, 질의, 차이, 렌더링</td><td>ABBD (<code>abbd</code>)</td></tr>
 <tr><td>명세</td><td>코드</td></tr>
 </tbody></table></div>
 <h3>구성 요소</h3>
 <ul>
-<li><code>abbd-mode</code>는 제품 자체다. poteto-mode의 형제 스킬로, 작업 앞뒤에 토폴로지를 읽고 기록하는 단계를 더한다(6장).</li>
-<li><code>abbd-setup</code>은 새 저장소에 ABBD를 처음 얹는 스킬이다(6장).</li>
-<li><code>abbd</code>는 지렛대 CLI다. 추출하고, 증거를 확인하고, ID를 유지하고, 상태를 저장하고, 이웃과 차이를 계산하고, 설계도를 그린다(12장).</li>
+<li><code>/abbd</code>는 기능 스킬이다. 작업 앞에 설계도를 읽고 묻는 법, pstack 이해 스킬이 찾은 결합을 기록하는 법, 작업 뒤에 sync와 diff를 돌리는 법을 적는다. 어느 모드 아래서도 쓴다(6장).</li>
+<li><code>abbd-setup</code>은 새 저장소에 ABBD를 처음 얹는 스킬이다. 마지막 단계에서 CLAUDE.md에 상시 지침 블록을 쓴다(6장).</li>
+<li>CLAUDE.md의 상시 지침 블록은 몇 줄짜리 지시다. 구조 질문은 설계도에 먼저 묻고, 코드를 바꾼 뒤에는 sync하고 diff를 PR에 넣으라고 적는다. 에이전트가 늘 읽는 자리라 <code>/abbd</code>를 부르지 않아도 닿는다(6장).</li>
+<li><code>abbd</code>는 지렛대 CLI다. 추출하고, 증거를 확인하고, ID를 유지하고, 상태를 저장하고, 질문에 답하고, 이웃과 경로와 차이를 계산하고, 설계도를 그린다(12장).</li>
 </ul>
 <h3>층의 순서</h3>
-<p>abbd-mode가 poteto-mode 플레이북을 부르고, 플레이북이 코드를 바꾼다. ABBD는 pstack이 설치되어 있다는 것을 전제로 하고, pstack 없이 혼자 도는 경로는 만들지 않는다.</p>
+<p>지금 켜진 모드가 pstack 플레이북을 부르고, 플레이북이 코드를 바꾼다. <code>/abbd</code>는 그 앞뒤에서 읽고 기록할 뿐이고, 플레이북을 고르거나 부르지 않는다. ABBD는 pstack이 설치되어 있다는 것을 전제로 하고, pstack 없이 혼자 도는 경로는 만들지 않는다.</p>
 <h2 id="sec-4">4. 토폴로지 모델</h2>
 <p>ABBD는 토폴로지를 한 벌만 둔다. 병합된 코드의 최종 상태다. v2처럼 의도와 실제를 나눠 비교하지 않는다. 의도는 사람의 머리와 대화와 PR에 있고, ABBD는 코드에 있는 구조와 사람이 말한 사실을 적는다.</p>
 <h3>단위와 관계</h3>
@@ -351,22 +367,22 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <p><code>abbd sync</code>는 등록된 추출기를 돌리고, 모든 증거 인용을 확인하고, ID를 이어 붙이고, 상태를 쓰고, 설계도를 그린다. 멱등이다. 같은 작업 트리에서 다시 돌리면 같은 바이트가 나온다. sync는 아무것도 막지 않는다. 바뀐 구조는 그대로 상태에 들어간다.</p>
 <h3>병합된 상태</h3>
 <p>기본 브랜치의 <code>.abbd/</code>가 아키텍처의 최종 상태다. 작업 브랜치의 <code>.abbd/</code>는 PR이 병합되기 전까지 그 브랜치의 구조일 뿐이다. 사람은 PR 리뷰에서 코드와 함께 설계도의 차이를 보고 판단한다. 병합되면 그 상태가 다음 <code>abbd diff</code>의 기준이 된다.</p>
-<p>abbd-mode 밖에서 바꾼 코드도 따로 다루지 않는다. 다음 sync가 그 변경을 담고, <code>abbd diff</code>가 기준과의 차이로 보여 준다. 모드를 켜고 끄는 상태, 세션 파일, 훅은 없다.</p>
-<h2 id="sec-6">6. abbd-mode가 pstack을 감싼다</h2>
-<p>abbd-mode는 automate-me가 만드는 모드와 같은 모양의 운영 스킬이다. pstack 스킬을 고정 버전의 경로(<code>&lt;pstack&gt;/skills/...</code>, 0.15.36)로 가리키고, 어느 것도 붙여 넣지 않는다. 플레이북을 고르고 돌리는 일은 poteto-mode가 하는 그대로다. abbd-mode가 더하는 것은 작업 앞의 읽기와 기록, 작업 중 설계 결정을 알아보는 기준, 작업 뒤의 sync와 diff뿐이다.</p>
-<figure class="diagram"><svg viewBox="0 0 760 470" role="img" aria-label="abbd-mode는 플레이북 앞뒤에 읽기와 기록만 더한다" font-size="13"><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="34" font-size="15" font-weight="600" fill="var(--cds-text-primary)">abbd-mode는 플레이북 앞뒤에 읽기와 기록만 더한다</text><g><rect x="24" y="56" width="712" height="112" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="78" font-weight="600" fill="var(--cds-text-primary)">시작 · abbd-mode</text></g><g><rect x="40" y="88" width="160" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="112" font-weight="600" fill="var(--cds-text-primary)">설계도 읽기</text><text x="56" y="130" font-size="11.5" fill="var(--cds-text-secondary)">요청이 닿는 모듈</text></g><g><rect x="216" y="88" width="160" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="232" y="112" font-weight="600" fill="var(--cds-text-primary)">abbd impact</text><text x="232" y="130" font-size="11.5" fill="var(--cds-text-secondary)">직접과 멀리 두 층</text></g><g><rect x="392" y="88" width="160" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="408" y="112" font-weight="600" fill="var(--cds-text-primary)">pstack how</text><text x="408" y="130" font-size="11.5" fill="var(--cds-text-secondary)">직접 모듈마다 그대로</text></g><g><rect x="568" y="88" width="152" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="584" y="112" font-weight="600" fill="var(--cds-text-primary)">abbd record</text><text x="584" y="130" font-size="11.5" fill="var(--cds-text-secondary)">찾은 결합과 증거</text></g><g><rect x="24" y="208" width="712" height="104" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25" stroke-dasharray="4 4"></rect><text x="40" y="230" font-weight="600" fill="var(--cds-text-primary)">작업 중 · poteto-mode 플레이북 그대로</text></g><g><rect x="40" y="240" width="440" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="264" font-weight="600" fill="var(--cds-text-primary)">플레이북</text><text x="56" y="282" font-size="11.5" fill="var(--cds-text-secondary)">분석, 설계, 구현, 검증은 pstack</text></g><g><rect x="496" y="240" width="224" height="56" rx="8" fill="var(--cds-chart-status-warning)" fill-opacity="0.12" stroke="var(--cds-chart-status-warning)" stroke-width="2"></rect><text x="512" y="264" font-weight="600" fill="var(--cds-text-primary)">설계 결정은 사람에게</text><text x="512" y="282" font-size="11.5" fill="var(--cds-text-primary)">계약 변경, 모듈 사이 새 결합</text></g><g><rect x="24" y="352" width="712" height="100" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="374" font-weight="600" fill="var(--cds-text-primary)">끝 · abbd-mode</text></g><g><rect x="40" y="384" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="408" font-weight="600" fill="var(--cds-text-primary)">abbd sync</text><text x="56" y="426" font-size="11.5" fill="var(--cds-text-secondary)">상태와 설계도 갱신</text></g><g><rect x="272" y="384" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="408" font-weight="600" fill="var(--cds-text-primary)">abbd diff</text><text x="288" y="426" font-size="11.5" fill="var(--cds-text-secondary)">기준과의 토폴로지 차이</text></g><g><rect x="504" y="384" width="216" height="56" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="520" y="408" font-weight="600" fill="var(--cds-text-primary)">PR</text><text x="520" y="426" font-size="11.5" fill="var(--cds-text-primary)">차이와 .abbd/를 코드와 함께</text></g><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M200 120H216" marker-end="url(#flow-arrow)"></path><path d="M376 120H392" marker-end="url(#flow-arrow)"></path><path d="M552 120H568" marker-end="url(#flow-arrow)"></path><path d="M380 168V208" marker-end="url(#flow-arrow)"></path><path d="M380 312V352" marker-end="url(#flow-arrow)"></path><path d="M256 412H272" marker-end="url(#flow-arrow)"></path><path d="M488 412H504" marker-end="url(#flow-arrow)"></path></g><text x="388" y="192" font-size="11.5" fill="var(--cds-text-secondary)">플레이북으로 넘김</text><text x="388" y="336" font-size="11.5" fill="var(--cds-text-secondary)">작업 결과</text></svg><figcaption>그림 3. abbd-mode의 흐름. 결정은 대화와 PR에서 사람이 한다</figcaption></figure>
-<h3>시작</h3>
+<p><code>/abbd</code>를 따르지 않고 바꾼 코드도 따로 다루지 않는다. 다음 sync가 그 변경을 담고, <code>abbd diff</code>가 기준과의 차이로 보여 준다. ABBD를 켜고 끄는 상태, 세션 파일, 훅은 없다.</p>
+<h2 id="sec-6">6. /abbd 스킬과 상시 지침</h2>
+<p><code>/abbd</code>는 토폴로지를 읽고, 묻고, 기록하는 법을 적은 기능 스킬이다. pstack 스킬을 고정 버전의 경로(<code>&lt;pstack&gt;/skills/...</code>, 0.15.36)로 가리키고, 어느 것도 붙여 넣지 않는다. 플레이북을 고르지도 부르지도 않는다. 그 일은 지금 켜진 모드가 한다. poteto-mode 아래서도, 사용자가 automate-me로 만든 <code>-mode</code> 아래서도 같은 스킬을 쓴다.</p>
+<figure class="diagram"><svg viewBox="0 0 760 470" role="img" aria-label="/abbd는 작업 앞뒤에 읽기와 기록만 더한다" font-size="13"><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--cds-chart-axis)"></path></marker></defs><text x="24" y="34" font-size="15" font-weight="600" fill="var(--cds-text-primary)">/abbd는 작업 앞뒤에 읽기와 기록만 더한다</text><g><rect x="24" y="56" width="712" height="112" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="78" font-weight="600" fill="var(--cds-text-primary)">작업 앞 · /abbd</text></g><g><rect x="40" y="88" width="124" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="52" y="112" font-weight="600" fill="var(--cds-text-primary)">설계도 읽기</text><text x="52" y="130" font-size="11.5" fill="var(--cds-text-secondary)">요청이 닿는 모듈</text></g><g><rect x="179" y="88" width="124" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="191" y="112" font-weight="600" fill="var(--cds-text-primary)">explain, path</text><text x="191" y="130" font-size="11.5" fill="var(--cds-text-secondary)">단위와 경로 묻기</text></g><g><rect x="318" y="88" width="124" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="330" y="112" font-weight="600" fill="var(--cds-text-primary)">abbd impact</text><text x="330" y="130" font-size="11.5" fill="var(--cds-text-secondary)">직접과 멀리</text></g><g><rect x="457" y="88" width="124" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="469" y="112" font-weight="600" fill="var(--cds-text-primary)">pstack how</text><text x="469" y="130" font-size="11.5" fill="var(--cds-text-secondary)">고치지 않고 따름</text></g><g><rect x="596" y="88" width="124" height="64" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="608" y="112" font-weight="600" fill="var(--cds-text-primary)">abbd record</text><text x="608" y="130" font-size="11.5" fill="var(--cds-text-secondary)">찾은 결합과 증거</text></g><g><rect x="24" y="208" width="712" height="104" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25" stroke-dasharray="4 4"></rect><text x="40" y="230" font-weight="600" fill="var(--cds-text-primary)">작업 중 · 지금 켜진 모드가 정한 대로</text></g><g><rect x="40" y="240" width="440" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="264" font-weight="600" fill="var(--cds-text-primary)">플레이북</text><text x="56" y="282" font-size="11.5" fill="var(--cds-text-secondary)">분석, 설계, 구현, 검증, 사람에게 묻는 시점은 모드와 pstack</text></g><g><rect x="496" y="240" width="224" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="512" y="264" font-weight="600" fill="var(--cds-text-primary)">사람이 말한 사실</text><text x="512" y="282" font-size="11.5" fill="var(--cds-text-secondary)">abbd record ... --source</text></g><g><rect x="24" y="352" width="712" height="100" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="40" y="374" font-weight="600" fill="var(--cds-text-primary)">작업 뒤 · /abbd</text></g><g><rect x="40" y="384" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="56" y="408" font-weight="600" fill="var(--cds-text-primary)">abbd sync</text><text x="56" y="426" font-size="11.5" fill="var(--cds-text-secondary)">상태와 설계도 갱신</text></g><g><rect x="272" y="384" width="216" height="56" rx="8" fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"></rect><text x="288" y="408" font-weight="600" fill="var(--cds-text-primary)">abbd diff</text><text x="288" y="426" font-size="11.5" fill="var(--cds-text-secondary)">기준과의 토폴로지 차이</text></g><g><rect x="504" y="384" width="216" height="56" rx="8" fill="var(--cds-chart-categorical-1)" fill-opacity="0.12" stroke="var(--cds-chart-categorical-1)" stroke-width="2"></rect><text x="520" y="408" font-weight="600" fill="var(--cds-text-primary)">응답과 PR</text><text x="520" y="426" font-size="11.5" fill="var(--cds-text-primary)">차이와 .abbd/를 코드와 함께</text></g><g fill="none" stroke="var(--cds-chart-axis)" stroke-width="1.25"><path d="M164 120H179" marker-end="url(#flow-arrow)"></path><path d="M303 120H318" marker-end="url(#flow-arrow)"></path><path d="M442 120H457" marker-end="url(#flow-arrow)"></path><path d="M581 120H596" marker-end="url(#flow-arrow)"></path><path d="M380 168V208" marker-end="url(#flow-arrow)"></path><path d="M380 312V352" marker-end="url(#flow-arrow)"></path><path d="M256 412H272" marker-end="url(#flow-arrow)"></path><path d="M488 412H504" marker-end="url(#flow-arrow)"></path></g><text x="388" y="192" font-size="11.5" fill="var(--cds-text-secondary)">모드의 플레이북이 일한다</text><text x="388" y="336" font-size="11.5" fill="var(--cds-text-secondary)">작업 결과</text></svg><figcaption>그림 3. /abbd의 흐름. 작업을 어디로 보낼지와 언제 사람에게 물을지는 지금 켜진 모드가 정한다</figcaption></figure>
+<h3>작업 앞</h3>
 <ol>
 <li>요청이 닿는 모듈의 설계도(겉층과 그 모듈의 속층)를 읽는다.</li>
+<li><code>abbd explain ID|NAME</code>로 단위 하나를 한눈에 본다. 두 단위가 어떻게 이어지는지는 <code>abbd path A B</code>로 묻는다.</li>
 <li><code>abbd impact &lt;seeds&gt;</code>로 이웃을 본다. 결과는 직접과 멀리 두 층이다. 직접 항목은 꼼꼼히 읽고, 멀리 항목은 짧게 확인한다.</li>
-<li>직접 층의 모듈마다 pstack how를 바꾸지 않고 따른다. 변경이 크면 blast-radius도 따른다.</li>
+<li>더 깊이 읽어야 하는 곳은 pstack how를 바꾸지 않고 따른다. 변경이 크면 blast-radius도 따른다. 두 스킬 모두 경로로 가리킨다.</li>
 <li>새로 찾은 결합은 <code>abbd record relation</code>으로 증거와 함께 적는다.</li>
-<li>poteto-mode가 하듯 플레이북으로 넘긴다.</li>
 </ol>
-<h3>작업 중</h3>
-<p>플레이북은 pstack이 정한 대로 돈다. 작업이 계약의 시그니처나 의미를 바꾸거나 최상위 모듈 사이에 새 결합을 더하면, 그것은 설계 결정이다. abbd-mode는 그 결정을 poteto-mode의 Autonomy 절이 말하는 방식으로 사람에게 올리고, 사람은 대화에서 정한다. 사람이 말한 사실은 <code>abbd record fact ID.FIELD --value TEXT --source REF</code>로 적는다.</p>
-<p>서브에이전트는 poteto-mode가 정한 대로 poteto-agent로 띄운다. ABBD 전용 에이전트는 없다. ABBD 맥락은 시작 단계가 읽은 설계도와 이웃으로 넘긴다.</p>
-<h3>끝</h3>
+<h3>사람이 말한 사실</h3>
+<p>사람이 대화에서 목적, 책임, 결합을 말하면 그 말을 출처와 함께 적는다. 사실은 <code>abbd record fact ID.FIELD --value TEXT --source REF</code>로, 결합은 <code>abbd record relation ... --source REF</code>로 적는다. 둘 다 USER_STATED가 된다.</p>
+<p><code>/abbd</code>는 언제 사람에게 물을지, 작업을 어디로 보낼지 말하지 않는다. 지금 켜진 모드가 그것을 이미 정한다. poteto-mode라면 Autonomy 절이다. 서브에이전트도 그 모드가 정한 대로 띄운다. ABBD 전용 에이전트는 없다.</p>
+<h3>작업 뒤</h3>
 <ol>
 <li><code>abbd sync</code>로 상태와 설계도를 갱신한다.</li>
 <li><code>abbd diff</code>로 기준(기본 브랜치와의 merge base)과의 토폴로지 차이를 본다.</li>
@@ -374,8 +390,15 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><code>.abbd/</code>를 코드와 함께 커밋한다. 그래서 PR이 설계도의 변화를 함께 싣는다.</li>
 </ol>
 <p>사람은 PR 리뷰에서 판단한다. ABBD는 완료를 정하지 않는다. 언제 끝나는지는 플레이북이 정하고, 병합할지는 사람이 정한다.</p>
-<h3>모든 플레이북에 같은 단계를 붙인다</h3>
-<p>abbd-mode는 플레이북마다 다른 규칙을 두지 않는다. 작업 트리를 바꾸지 않는 플레이북(Investigation과 두 forensics)은 시작의 읽기만 쓰면 된다. sync는 멱등이므로 바뀐 것이 없으면 차이도 없다. 다른 worktree에서 도는 플레이북(Orchestrate, Autopilot)의 변화는 그 PR의 sync와 diff로 드러난다.</p>
+<h3>모든 플레이북에 같은 단계를 쓴다</h3>
+<p><code>/abbd</code>는 플레이북마다 다른 규칙을 두지 않는다. 작업 트리를 바꾸지 않는 플레이북(Investigation과 두 forensics)은 작업 앞의 읽기만 쓰면 된다. sync는 멱등이므로 바뀐 것이 없으면 차이도 없다. 다른 worktree에서 도는 플레이북(Orchestrate, Autopilot)의 변화는 그 PR의 sync와 diff로 드러난다.</p>
+<h3>CLAUDE.md의 상시 지침</h3>
+<p>상시 지침은 <code>/abbd</code>를 부르지 않은 대화에서도 에이전트가 설계도에 먼저 묻게 하는 몇 줄이다. graphify의 상시 설정과 같은 자리지만, 훅이 아니라 CLAUDE.md의 블록 하나로 둔다. abbd-setup이 마지막 단계에서 프로젝트의 CLAUDE.md에 쓴다. 블록은 두 가지를 지시한다.</p>
+<ul>
+<li>아키텍처 질문은 코드를 뒤지기 전에 설계도에 먼저 묻는다(<code>abbd explain</code>, <code>abbd path</code>, <code>abbd impact</code>).</li>
+<li>코드를 바꾼 뒤에는 <code>abbd sync</code>를 돌리고 <code>abbd diff</code>를 PR에 넣는다.</li>
+</ul>
+<p>블록의 시작과 끝에는 표시가 있다. setup을 다시 돌리면 표시 사이를 바꿔 쓰고, 블록을 하나 더 붙이지 않는다.</p>
 <h3>abbd-setup</h3>
 <p>새 저장소에 ABBD를 얹는 흐름이다.</p>
 <ol>
@@ -383,6 +406,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>pstack swarm과 how로 스크립트가 못 보는 단위와 결합을 읽어, 증거와 <code>parent</code>를 단 의미 보완을 만든다. swarm은 관련 후보를 묶어 다섯 조각 이하로 나눈다.</li>
 <li><code>abbd setup --supplement FILE -- ARGV</code>를 돌린다.</li>
 <li>모듈마다 how의 글을 <code>abbd understand</code>로 저장한다.</li>
+<li>프로젝트의 CLAUDE.md에 상시 지침 블록을 쓴다.</li>
 </ol>
 <p>정렬 단계는 없다. 첫 병합된 상태가 기준이다.</p>
 <h2 id="sec-7">7. 사람이 읽는 설계도</h2>
@@ -412,17 +436,17 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>그림의 재료와 글은 추출 스크립트와 pstack 이해 스킬에서만 온다. 겉층은 스크립트와 모듈별 how 탐색의 Boundaries에서, 속층은 그 모듈의 나머지 발견에서 온다. 사람은 에이전트가 이해한 바로 그 설명을 읽는다.</li>
 </ul>
 <h2 id="sec-8">8. pstack 연동</h2>
-<p>ABBD는 공식 Claude Code판 pstack을 그대로 설치해 쓰고, 설치된 파일은 고치지 않는다. 들어가는 길은 pstack이 열어 둔 확장 방식, 곧 poteto-mode 옆에 형제 모드 스킬을 두는 방식 하나다. 원본과 가장 일치하는 상태로 유지되는 경로가 이것이기 때문이다.</p>
+<p>ABBD는 공식 Claude Code판 pstack을 그대로 설치해 쓰고, 설치된 파일은 고치지 않는다. 들어가는 길은 pstack의 기능 스킬과 같은 방식 하나다. 따로 설치하는 스킬이 pstack 스킬을 고정 경로로 가리킨다. 원본과 가장 일치하는 상태로 유지되는 경로가 이것이기 때문이다.</p>
 <h3>설치와 유지</h3>
 <ul>
 <li>설치는 <code>/plugin marketplace add cursor/plugins</code> 다음 <code>/plugin install pstack@cursor-plugins</code>다. 업스트림 원본에서 생성한 사본이고, 재생성을 빼먹으면 CI가 실패하도록 되어 있다.</li>
 <li>이 판은 Claude 모델만 쓰고, Cursor 전용 단계는 건너뛰며, 자동 업데이트가 꺼져 있다. 버전은 0.15.36에 고정한다.</li>
 <li>커뮤니티 포트(pstack-claude, open-pstack 등)는 쓰지 않는다. 모두 <code>pstack:</code> 접두사를 써서 함께 설치할 수 없고, 일부는 정책을 따로 바꿔 원본과 어긋난다.</li>
-<li>pstack 스킬 대부분은 모델이 스스로 부르지 않고 명시적으로 호출해야 동작한다. 그래서 abbd-mode는 단계마다 부를 스킬을 경로로 적는다.</li>
+<li>pstack 스킬 대부분은 모델이 스스로 부르지 않고 명시적으로 호출해야 동작한다. 그래서 <code>/abbd</code>는 단계마다 따를 스킬을 경로로 적는다.</li>
 </ul>
 <h3>참조하고 붙여 넣지 않는다</h3>
 <ul>
-<li>abbd-mode와 abbd-setup은 pstack 스킬을 고정 버전의 경로로 가리킨다. 복사하면 원본에서 점점 멀어지고, 버전 고정 없이 참조하면 업스트림 변경으로 동작이 조용히 바뀐다.</li>
+<li><code>/abbd</code>와 <code>abbd-setup</code>은 pstack 스킬을 고정 버전의 경로로 가리킨다. 복사하면 원본에서 점점 멀어지고, 버전 고정 없이 참조하면 업스트림 변경으로 동작이 조용히 바뀐다.</li>
 <li>how, swarm, blast-radius의 절차는 바꾸지 않는다. 덧붙이는 지시는 하나다. 결과를 ABBD 형식(단위, 관계, <code>parent</code>, <code>via</code>, 증거)으로도 내라는 것이다.</li>
 <li>pstack을 올릴 때는 ABBD가 기대는 절(how의 Boundaries와 설명자의 절)이 그대로인지 스킬 테스트(<code>cmd/abbd/skills_test.go</code>)로 확인하고, 9장 평가를 다시 돌린다.</li>
 <li>pstack에 토폴로지 전용 스킬이 생기면 그 스킬로 옮긴다.</li>
@@ -432,8 +456,9 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <thead><tr><th>단계</th><th>pstack 스킬</th><th>ABBD가 더하는 것</th></tr></thead>
 <tbody>
 <tr><td>setup의 구조</td><td>추출 스크립트 생성(build-the-lever), swarm과 how</td><td>결과 형식, 증거 확인, ID, 저장</td></tr>
-<tr><td>작업 시작의 이해</td><td>how, 큰 변경이면 blast-radius</td><td><code>abbd impact</code>의 이웃, <code>abbd record</code></td></tr>
-<tr><td>분석, 설계, 구현</td><td>poteto-mode 플레이북(architect, interrogate 포함)</td><td>없음</td></tr>
+<tr><td>작업 앞의 이해</td><td>how, 큰 변경이면 blast-radius</td><td><code>abbd explain</code>, <code>abbd path</code>, <code>abbd impact</code>의 답, <code>abbd record</code></td></tr>
+<tr><td>분석, 설계, 구현</td><td>지금 켜진 모드의 플레이북(poteto-mode라면 architect, interrogate 포함)</td><td>없음</td></tr>
+<tr><td>상시 지침</td><td>없음</td><td><code>abbd-setup</code>이 CLAUDE.md에 쓰는 블록. 구조 질문은 설계도에 먼저 묻고, 코드를 바꾼 뒤에는 sync와 diff를 돌린다</td></tr>
 <tr><td>검증</td><td>프로젝트의 verify 스킬(없으면 create-verification-skill로 만든다)</td><td>없음</td></tr>
 <tr><td>사람에게 설명</td><td>how의 Overview와 Key Concepts</td><td><code>abbd understand</code>로 저장하고 설계도에 붙인다</td></tr>
 </tbody></table></div>
@@ -468,7 +493,8 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ul>
 <li><strong>계획 문서나 명세 주도 개발.</strong> 계획은 pstack처럼 기본이 아니다. ystack처럼 제품 문서를 명세로 삼아 코드를 맞춰 가는 방향도 택하지 않는다.</li>
 <li><strong>작업 절차 규칙의 자체 보유.</strong> 재현, 검증, 위임 같은 절차는 pstack에 맡긴다.</li>
-<li><strong>pstack 수정이나 포크.</strong> 설치된 pstack 파일은 고치지 않는다. 들어가는 길은 형제 모드 스킬(abbd-mode) 하나다.</li>
+<li><strong>pstack 수정이나 포크.</strong> 설치된 pstack 파일은 고치지 않는다. 들어가는 길은 따로 설치하는 기능 스킬(<code>/abbd</code>, <code>abbd-setup</code>)이다.</li>
+<li><strong>라우팅.</strong> ABBD는 작업을 플레이북으로 보내지 않고, 사람에게 물을 시점을 정하지 않는다. 그 일은 지금 켜진 모드의 몫이다.</li>
 <li><strong>디테일 결함 탐지.</strong> 토폴로지는 어디를 볼지 알려 주고, 맞는지는 검증이 알려 준다.</li>
 <li><strong>사람이 <code>.abbd/</code>를 직접 편집하는 흐름.</strong> 사람은 대화와 PR에서 말하고, 에이전트가 그 말을 출처와 함께 적는다.</li>
 <li><strong>도메인 상태 그래프 층.</strong> 완전히 없애지 않고 ID 접두사만 예약해 두며, 이번 범위에는 넣지 않는다.</li>
@@ -483,7 +509,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td>PreToolUse 가드, Stop 훅, <code>hooks.json</code>, 모드 켜기</td><td>지킬 것이 남지 않았다. 의도된 토폴로지도, 사람 몫의 명령도, 끝내야 할 턴도 없다</td></tr>
 <tr><td><code>abbd serve</code> 작업대와 승인 토큰</td><td>정적 설계도가 대신한다. 결정할 것이 없는 화면에는 서버가 필요 없다</td></tr>
 <tr><td>ABBD 안의 독립 게이트(끝 게이트, 완료 게이트, Effect와 Compare 판정)</td><td>pstack 검증과 PR 리뷰가 대신한다. CI에서 라벨이 필요하면 <code>abbd diff --check</code>를 쓴다</td></tr>
-<tr><td>abbd-agent</td><td>poteto-agent가 그대로 일한다. ABBD 맥락은 abbd-mode의 시작 단계가 넘긴다</td></tr>
+<tr><td>abbd-agent</td><td>poteto-agent가 그대로 일한다. ABBD 맥락은 <code>/abbd</code>의 작업 앞 단계가 넘긴다</td></tr>
 <tr><td>의도된 토폴로지(<code>intended.yaml</code>), ADOPTED와 OBSERVED, verification과 confirmation 축</td><td>의도와 실제를 비교하지 않으면 두 벌이 필요 없다. origin은 셋으로 줄였다</td></tr>
 <tr><td><code>align</code>, <code>approve</code>, <code>reject</code>, <code>confirm</code>, <code>couple</code>, <code>propose</code>, <code>mode</code>, <code>hook</code>, <code>ingest</code> 명령</td><td>위 장치의 입구였다. 기록은 <code>abbd record</code> 하나로 모았다</td></tr>
 </tbody></table></div>
@@ -505,15 +531,15 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>끝 기준. 코드만 있는 저장소에서 setup부터 active까지 사람이 설계 단위 확인만으로 도달한다.</li>
 </ul>
 </li>
-<li><strong>abbd-mode와 abbd-agent.</strong><ul>
-<li>abbd-mode와 abbd-agent를 만들어, 플레이북 앞에 시작(영향 범위 계산, 선언), 단계 사이에 diff 확인, 뒤에 끝(추출, 게이트, 보고, 동기화)을 잇는다.</li>
+<li><strong>v2의 모드와 에이전트.</strong><ul>
+<li>v2의 모드 스킬과 abbd-agent를 만들어, 플레이북 앞에 시작(영향 범위 계산, 선언), 단계 사이에 diff 확인, 뒤에 끝(추출, 게이트, 보고, 동기화)을 잇는다.</li>
 <li>끝 기준. 계약을 바꾸는 과제에서 소비자가 영향 범위에 자동으로 올라오고, 예상 밖 관계가 표시되며, 의도된 토폴로지의 경계를 넘는 변경은 끝 게이트에서 막힌다.</li>
 </ul>
 </li>
 <li><strong>사람 화면.</strong><ul>
 <li>변화 중심 화면, 의도와 실제의 어긋남 뷰, STALE·INFERRED 표시, confirm 큐, 승인·거부 조작.</li>
 <li>끝 기준. 사람이 md를 열지 않고 정렬, 승인, 사후 검토를 화면에서 할 수 있다. 이어서 ABBD 저장소 자신에 setup을 돌려 화면으로 정렬한다(자기 적용 시작).</li>
-<li>자기 적용 시작(5b). 추출 스크립트는 <code>.abbd/extractor/extract.go</code>로, Go 표준 라이브러리(go/parser, go/ast)만 쓰고 <code>go run .abbd/extractor/extract.go</code>로 돈다. 설계 단위 후보는 31개다. 모듈 13개(internal 패키지 10개, cmd/abbd를 CLI, PreToolUse 가드, 화면 서버로 나눈 3개), 계약 16개(CLI, 훅, 화면 HTTP, 변경 키, confirm 키, 추출 JSON, .abbd 파일 형식 7개, project.yaml, hooks.json, 플러그인 매니페스트), 기능 2개(abbd-setup, abbd-mode)다. 시그니처는 코드에서 읽고, 관계는 각 단위가 참조하는 심볼과 스킬이 인용하는 abbd 명령에서 뽑는다. 의미 보완은 pstack swarm 다섯 조각으로 만들었고, 목적과 책임, 스크립트가 못 보는 결합 11개가 INFERRED로 confirm 큐 73개에 남아 있다. setup은 결정성 검사를 통과했다(<code>59caf8f</code>). 정렬은 사람이 위임한 야간 작업 중 Claude가 사람 대신 화면에서 31개 전부를 골라 했고, 따로 커밋했다(<code>dc246dc</code>). 사람이 화면에서 다시 보고, 되돌리려면 그 커밋 하나만 revert한다.</li>
+<li>자기 적용 시작(5b). 추출 스크립트는 <code>.abbd/extractor/extract.go</code>로, Go 표준 라이브러리(go/parser, go/ast)만 쓰고 <code>go run .abbd/extractor/extract.go</code>로 돈다. 설계 단위 후보는 31개다. 모듈 13개(internal 패키지 10개, cmd/abbd를 CLI, PreToolUse 가드, 화면 서버로 나눈 3개), 계약 16개(CLI, 훅, 화면 HTTP, 변경 키, confirm 키, 추출 JSON, .abbd 파일 형식 7개, project.yaml, hooks.json, 플러그인 매니페스트), 기능 2개(abbd-setup과 v2의 모드 스킬)다. 시그니처는 코드에서 읽고, 관계는 각 단위가 참조하는 심볼과 스킬이 인용하는 abbd 명령에서 뽑는다. 의미 보완은 pstack swarm 다섯 조각으로 만들었고, 목적과 책임, 스크립트가 못 보는 결합 11개가 INFERRED로 confirm 큐 73개에 남아 있다. setup은 결정성 검사를 통과했다(<code>59caf8f</code>). 정렬은 사람이 위임한 야간 작업 중 Claude가 사람 대신 화면에서 31개 전부를 골라 했고, 따로 커밋했다(<code>dc246dc</code>). 사람이 화면에서 다시 보고, 되돌리려면 그 커밋 하나만 revert한다.</li>
 <li>자기 적용이 찾아 고친 것. setup 스킬이 후보마다 작업자 하나를 두라고 해서 31명이 될 뻔했다. 관련 후보를 묶어 다섯 조각 이하로 나누게 했다. 스킬은 스크립트가 swarm의 앵커를 그대로 내라고 했지만, 작업자가 손으로 고른 심볼은 재현할 수 없고 리팩터링마다 바뀐다. 앵커는 스크립트가 기계적으로 고르고, 비교는 같은 종류와 앵커 하나 공유로 바꿨다(<code>ffe0b73</code>). 검증 명령은 턴 안에서만 등록할 수 있어 사람이 보기 전에 에이전트가 등록하고 썼다. <code>abbd setup --verify</code>로 정렬 전에 등록하게 했다(<code>3c37cc3</code>). 보고서가 스크립트를 두 번 돌렸다고 적었지만 실제로는 세 번이다(<code>81326f9</code>). <code>.abbd/</code>를 커밋한 뒤 모드를 켜면 state.yaml에 새 HEAD를 써서 <code>.abbd/</code>가 다시 바뀌었다. 커밋할 때마다 다음 커밋이 필요한 셈이라, 작업 트리가 같으면 revision을 그대로 둔다. 세션 상태가 git 디렉터리에 있는데도 모드를 켤 때마다 <code>.abbd/.gitignore</code>를 쓰던 것도 고쳤다(<code>078f6d7</code>).</li>
 <li>남은 관찰. 작업 트리 스냅샷은 무시되지 않은 추적 밖 파일도 담는다. 이 저장소의 <code>.claude/</code>와 <code>.playwright-mcp/</code>에 무엇을 쓰면 실제 토폴로지가 STALE이 되고, 턴의 검증 뒤에 쓰면 완료가 막힌다. 화면은 후보 31개와 confirm 큐 73개를 한 페이지에 늘어놓아 데스크톱 폭에서도 2만 픽셀이 넘는다. 6단계에서 실제 사용을 보고 다룬다. 6a단계에서 둘 다 다뤘다. <code>.gitignore</code>에 <code>.claude/</code>와 <code>.playwright-mcp/</code>를 더했고(CHG-0001), 화면은 confirm 큐를 단위별로, 후보를 종류별로 접는다(CHG-0004).</li>
 </ul>
@@ -531,9 +557,10 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>계획 2(두 층 화면)는 <code>abbd-plan2</code>에서 했고 PR #2로 병합했다. 겉층과 속층, 모듈별 how 글, 속 단위의 <code>parent</code>와 순환 거부를 더했다.</li>
 </ul>
 </li>
-<li><strong>v3. pstack 감싸기로 줄이기.</strong><ul>
-<li>사용자가 의도를 분명히 했다. ABBD는 automate-me가 만드는 모드처럼 pstack을 감싸고, 분석, 설계, 결정, 구현은 pstack의 몫이며, 토폴로지는 병합된 코드의 최종 상태다.</li>
+<li><strong>v3. pstack 위의 기능 스킬로 줄이기.</strong><ul>
+<li>사용자가 의도를 분명히 했다. 분석, 설계, 결정, 구현은 pstack의 몫이고, 토폴로지는 병합된 코드의 최종 상태다.</li>
 <li>이 문서의 개정(브랜치 <code>abbd-v3-doc</code>)이 사양을 v3로 바꿨다. 코드 쪽 정리는 14장 계획 8과 9다.</li>
+<li>v3 초안의 abbd-mode는 2026-11-01에 기능 스킬로 바뀌었다. 사용자가 라우터 모드 대신 graphify와 같은 모양(스킬, CLI, 상시 지침)을 골랐다. 다음 개정(브랜치 <code>abbd-v3-doc2</code>)이 2, 3, 6장을 그에 맞췄다(13장).</li>
 <li>끝 기준. 12장의 v3 인수 목록이 통과하고, 4회차(Orca) 측정이 v3 설계도로 돈다.</li>
 </ul>
 </li>
@@ -544,7 +571,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ul>
 <li>상태와 결정적인 계산은 모델의 기억이 아니라 CLI <code>abbd</code>가 쥔다. CLI는 판단하지 않고, 막지 않고, 묻지 않는다.</li>
 <li>의존성은 최소로 둔다. Go 단일 바이너리에 YAML 라이브러리 하나다.</li>
-<li>호스트는 Claude Code 하나다. 스킬은 Claude Code 플러그인으로 배포한다. 훅은 없다. 바이너리는 사용자가 PATH에 둔다.</li>
+<li>호스트는 Claude Code 하나다. 스킬은 Claude Code 플러그인으로 배포한다. 훅은 없다. 상시 지침은 <code>abbd-setup</code>이 CLAUDE.md에 쓰는 블록 하나다. 바이너리는 사용자가 PATH에 둔다.</li>
 </ul>
 <h3>CLI</h3>
 <div class="table-wrap"><table>
@@ -552,10 +579,12 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tbody>
 <tr><td><code>abbd setup [--supplement FILE] -- EXTRACT-ARGV</code></td><td>추출기를 등록하고 세 번 돌리고, 보완을 얹고, sync한다. 스크립트 단위와 앵커를 공유하는 보완 단위는 두 이름을 적은 오류로 거부한다(5장)</td></tr>
 <tr><td><code>abbd sync</code></td><td>등록된 추출기를 돌리고, 증거를 확인하고, ID를 이어 붙이고, 상태를 쓰고, 설계도를 그린다. 멱등이다</td></tr>
-<tr><td><code>abbd record relation FROM KIND TO --via V --evidence PATH:LINES:QUOTE ...</code>, <code>abbd record unit ...</code></td><td>pstack 이해 스킬이 찾은 관계나 단위를 증거와 함께 INFERRED로 적는다</td></tr>
+<tr><td><code>abbd record relation FROM KIND TO --via V --evidence PATH:LINES:QUOTE ...</code>, <code>abbd record unit ...</code></td><td>pstack 이해 스킬이 찾은 관계나 단위를 증거와 함께 INFERRED로 적는다. <code>record relation</code>에 <code>--source REF</code>를 주면 사람이 말한 결합을 USER_STATED로 적는다</td></tr>
 <tr><td><code>abbd record fact ID.FIELD --value TEXT --source REF</code></td><td>사람이 말한 것을 출처와 함께 USER_STATED로 적는다</td></tr>
 <tr><td><code>abbd understand MOD-ID FILE</code></td><td>how의 글을 모듈 digest와 함께 저장한다. 코드가 바뀌었는데 바뀌지 않은 글을 다시 찍으려 하면 거부한다</td></tr>
 <tr><td><code>abbd impact IDS</code></td><td>읽기 전용 이웃. 직접과 멀리 두 층이다. EXTRACTED, USER_STATED, 살아 있는 INFERRED 관계와 시드 자신이 나가는 관계를 따른다</td></tr>
+<tr><td><code>abbd explain ID|NAME</code></td><td>읽기 전용. 단위 하나를 한눈에 보인다. 종류, 이름, <code>parent</code>, 책임과 그 origin, 시그니처, 제공하고 소비하는 계약, 관계 종류와 <code>via</code>와 origin을 단 직접 이웃, 증거 인용을 단 INFERRED 결합을 낸다. 모듈이면 속 단위와 how의 글을 더하고, 글이 낡았으면 STALE로 표시한다. graphify의 <code>explain</code>과 같은 자리다</td></tr>
+<tr><td><code>abbd path A B</code></td><td>읽기 전용. EXTRACTED, USER_STATED, 살아 있는 INFERRED 관계를 따라 두 단위 사이의 최단 경로를 낸다. 홉마다 관계 종류, <code>via</code>, origin을 적고, 경로에서 가장 약한 origin으로 끝난다. graphify의 <code>path</code>와 같은 자리다</td></tr>
 <tr><td><code>abbd diff [--base REV] [--json] [--check]</code></td><td>기준 revision(기본값은 기본 브랜치와의 merge base)의 상태와 지금의 토폴로지 차이다. 단위의 추가와 삭제, 계약 시그니처 변경, 시그니처는 같은데 코드가 바뀐 계약(digest), 최상위 모듈 사이 관계의 추가와 삭제, 새 추정 결합을 보고한다. PR 설명에 넣을 줄과 <code>--json</code>을 낸다. exit 0이다. <code>--check</code>를 주면 계약이 바뀌었거나 모듈 사이 관계가 생겼을 때 exit 1이다. PR에 라벨을 붙이는 CI 작업용이고, ABBD 안의 게이트가 아니다</td></tr>
 <tr><td><code>abbd evidence</code></td><td>읽기 전용 인용 확인. 결정적이다</td></tr>
 <tr><td><code>abbd status</code></td><td>상태의 최신성과 수</td></tr>
@@ -606,7 +635,10 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>겉층은 최상위 단위와 EXTRACTED, USER_STATED 관계만 그린다. INFERRED 결합은 그 모듈의 속층에 &quot;추정&quot;으로 나열된다.</li>
 <li>모듈 하나의 안이 바뀌어도 겉층의 배치는 같다. 390px에서 가로 스크롤이 없다.</li>
 <li>설계도에는 승인 버튼, 폼, 큐, 턴, 기록이 없다.</li>
-<li>abbd-mode가 참조하는 pstack 경로가 고정 버전에 모두 있고, 스킬이 부르는 <code>abbd</code> 명령이 모두 실제 명령이다.</li>
+<li><code>abbd explain</code>은 작업 트리와 <code>.abbd/</code>를 바꾸지 않고, 단위의 종류, <code>parent</code>, 책임과 origin, 시그니처, 계약, 직접 이웃, INFERRED 결합의 증거 인용을 낸다. 모듈이면 속 단위와 how의 글을 내고, 낡은 글에는 STALE이 붙는다.</li>
+<li><code>abbd path A B</code>는 작업 트리와 <code>.abbd/</code>를 바꾸지 않고, 최단 경로의 홉마다 관계 종류, <code>via</code>, origin을 내며, 경로에서 가장 약한 origin으로 끝난다. 죽은 INFERRED 관계는 경로에 쓰지 않는다.</li>
+<li><code>/abbd</code>와 <code>abbd-setup</code>이 참조하는 pstack 경로가 고정 버전에 모두 있고, 스킬과 상시 지침 블록이 부르는 <code>abbd</code> 명령이 모두 실제 명령이다.</li>
+<li><code>abbd-setup</code>이 쓰는 CLAUDE.md 블록은 시작과 끝 표시로 감싸인다. setup을 두 번 돌려도 블록은 하나다.</li>
 <li>걷어 낸 명령(<code>align</code>, <code>approve</code>, <code>reject</code>, <code>confirm</code>, <code>couple</code>, <code>propose</code>, <code>mode</code>, <code>hook</code>, <code>serve</code>, <code>turn</code>, <code>ingest</code>)이 CLI에 없다.</li>
 </ol>
 <h3>맥락과 예약</h3>
@@ -622,6 +654,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><input disabled="" type="checkbox"> 명령 소비자 탐지의 한계. 다른 <code>cmd/abbd</code> 모듈이 명령 이름을 문자열 하나로 쓸 때만 소비자로 센다. 문장 안에 쓴 이름과 <code>internal/</code> 패키지는 세지 않는다. 지금은 과소 계산이 실제 소비자를 숨긴 사례를 찾지 못했다.</li>
 <li><input disabled="" type="checkbox"> <code>abbd diff --check</code>를 돌리는 CI 작업을 어디에 두는가? ABBD 저장소에 예시 workflow로 둘지, abbd-setup이 대상 저장소에 만들게 할지 정한다.</li>
 <li><input disabled="" type="checkbox"> <code>candidates.yaml</code>이 ID 유지에 여전히 필요한가? 필요 없으면 지운다.</li>
+<li><input disabled="" type="checkbox"> EXTRACTED의 출처로 graphify의 언어 공통 AST 추출(tree-sitter)을 쓰는가? 쓰면 프로젝트마다 추출 스크립트를 쓰지 않아도 된다(14장 계획 6과 겹친다). 대신 외부 Python 의존성(<code>graphifyy</code>, Python 3.10 이상)이 생겨, Go 단일 바이너리라는 12장의 구현 형태가 깨진다. graphify의 노드는 클래스와 메서드라서 모듈과 계약으로 묶는 단계도 따로 필요하다(추론).</li>
 <li><input disabled="" type="checkbox"> 빈 저장소. 추출할 코드가 없으면 setup의 결정성 검사가 아무것도 증명하지 못한다. 지금은 첫 코드와 함께 abbd-setup을 돌리는 것으로 둔다.</li>
 </ul>
 <h3>v3로 닫힌 결정</h3>
@@ -630,7 +663,8 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><input disabled="" type="checkbox" checked> PRD v1.5 원문의 정의 옮기기. 2026-11-01에 옮겼다. v3는 origin 셋만 쓰고, 나머지 정의는 부록과 태그 <code>abbd-v1.5-phase1</code>에 있다.</li>
 <li><input disabled="" type="checkbox" checked> 코드를 남기지 않는 플레이북의 끝 게이트. 게이트가 없다. sync는 멱등이다.</li>
 <li><input disabled="" type="checkbox" checked> 훅의 역할과 훅 등록. 훅이 없다.</li>
-<li><input disabled="" type="checkbox" checked> abbd-mode가 감싸는 플레이북. 모든 플레이북에 같은 시작과 끝을 붙인다(6장).</li>
+<li><input disabled="" type="checkbox" checked> 라우터 모드인가, 기능 스킬인가. 2026-11-01에 기능 스킬로 정했다. ABBD는 기능과 상태를 더하므로 automate-me가 만드는 <code>-mode</code>가 아니라 statechart, create-verification-skill과 같은 모양이고, 에이전트와는 graphify처럼 스킬, CLI, 상시 지침으로 잇는다. 라우팅과 사람에게 묻는 시점은 지금 켜진 모드에 남긴다(2장, 6장).</li>
+<li><input disabled="" type="checkbox" checked> <code>/abbd</code>를 쓰는 플레이북. 모든 플레이북에 같은 작업 앞과 뒤를 쓴다(6장).</li>
 <li><input disabled="" type="checkbox" checked> 선언(IntentDelta)을 사람이 고치는가. 선언이 없다.</li>
 <li><input disabled="" type="checkbox" checked> 의도와 실제를 따로 저장하는가. 한 벌만 둔다(4장).</li>
 <li><input disabled="" type="checkbox" checked> 모드를 세션마다 켜는가. 모드 상태가 없다.</li>
@@ -695,9 +729,9 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 </ul>
 <h3>8. 코드를 v3로 줄이기</h3>
 <ul>
-<li>12장 CLI 표의 명령만 남기고, 10장의 장치와 명령을 지운다. <code>abbd propose</code>를 <code>abbd record</code>로 바꾸고, <code>abbd record fact</code>와 <code>abbd diff</code>를 더한다. 설계도에서 결정 UI를 지운다.</li>
+<li>12장 CLI 표의 명령만 남기고, 10장의 장치와 명령을 지운다. <code>abbd propose</code>를 <code>abbd record</code>로 바꾸고, <code>abbd record fact</code>, <code>abbd diff</code>, <code>abbd explain</code>, <code>abbd path</code>를 더한다. 설계도에서 결정 UI를 지운다.</li>
 <li>추출 파싱, ID 유지, 증거 확인, 의미 단위와 관계, <code>parent</code> 규칙, digest, 모듈 이해, 두 층 렌더러, 결정적 배치는 남긴다. 그 테스트도 아직 맞는 것은 남긴다.</li>
-<li>abbd-mode와 abbd-setup을 6장대로 다시 쓰고, abbd-agent를 지운다.</li>
+<li><code>/abbd</code>와 <code>abbd-setup</code>을 6장대로 쓴다. <code>abbd-setup</code>은 CLAUDE.md 블록을 쓰는 단계로 끝난다. v2의 모드 스킬과 abbd-agent는 지운다.</li>
 <li><strong>끝 기준.</strong> 12장 v3 인수 목록이 모두 테스트로 통과한다.</li>
 </ul>
 <h3>9. setup의 앵커 충돌</h3>
@@ -722,6 +756,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ul>
 <li><a href="https://github.com/cursor/plugins/blob/main/pstack/README.md">cursor/plugins, pstack README</a></li>
 <li><a href="https://github.com/whyjp/ABBD">whyjp/ABBD README</a></li>
+<li><a href="https://github.com/Graphify-Labs/graphify">Graphify-Labs/graphify README</a> (스킬, CLI, 상시 설정, EXTRACTED와 INFERRED 표시)</li>
 <li><a href="https://github.com/ericlitman/open-pstack">ericlitman/open-pstack</a> (공식 Claude Code 설치 경로와 제약)</li>
 <li><a href="https://ai-heartland.com/agent/pstack-verification-skill/">pstack 검증 스킬 분석, 2026-10-01</a> (명시적 호출 설정)</li>
 </ul>
