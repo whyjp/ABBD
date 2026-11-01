@@ -18,6 +18,7 @@ Setup never asks the human anything. The first state you commit is the baseline;
    - `purpose` and `responsibility` for script units, repeating `key`, `kind`, `name` and one anchor of the unit they describe, with no `evidence`
    - units the script cannot see, such as a shared table or a wire format, with `evidence` instead of anchors and their module as `parent`. Their quotes must not sit on an anchor a script unit of the same kind already holds, or setup refuses the unit and names both
    - couplings the script cannot see, such as a shared table, an execution order, a trait used through generics, a callback, a flag passed through config, a build feature or a convention two units keep in step, each with `via` and `evidence`
+   - the grouping, when the top level holds more than 16 modules or a module holds more than 16 units, the most one blueprint view shows. Ask the swarm which parts of the system's behaviour the units fall into, such as "desktop app", "cloud relay" or "native helpers". Add each part as a `MOD` with `evidence` (the manifest, README or entry point that shows the part), and give each member that part as `parent` with `parent_evidence` quoting the code that places it there. A part the readers name is better than sync's fallback, which groups by directory and never moves a unit a reader placed
 5. Run setup:
 
    ```
@@ -59,7 +60,7 @@ Setup never asks the human anything. The first state you commit is the baseline;
 - `relations` name units by `key`; `kind` is `depends_on`, `consumes` or `provides`.
 - `via` is `import`, `trait`, `callback`, `macro`, `config`, `build-feature`, `data`, `convention` or `call`.
 - `evidence` is a list of `{"path", "lines", "symbol", "quote"}`; `lines` and `symbol` are optional. The quote is verbatim; whitespace does not matter, and it must sit within three lines of `lines`. A unit or coupling only a reader found lives while any of its quotes is in its file.
-- `parent` names, by key, the module that contains a unit. A unit with no parent is drawn on the overview; a unit with one is drawn inside its module.
+- `parent` names, by key, the module that contains a unit. A unit with no parent is drawn on the overview; a unit with one is drawn inside its module. In the supplement, `parent_evidence` is the code that places a unit there; without it the unit's own `evidence` stands in. A parent from the supplement is INFERRED and survives `abbd sync` unless the script reports a parent for that unit; `abbd record parent ID PARENT --evidence ...` places one unit later.
 - The script's output carries no `purpose` or `responsibility`. Unknown fields are rejected.
 
 Rerunning setup replaces every guess the last supplement made. What the human stated through abbd record fact stays.

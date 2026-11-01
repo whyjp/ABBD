@@ -415,7 +415,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <ul>
 <li>최상위 단위(<code>parent</code> 없음)만 그린다. 모듈은 상자이고, 계약은 상자 경계의 포트다. 제공하는 계약은 출구, 소비하는 계약은 입구다.</li>
 <li>모듈 사이의 선은 계약을 거쳐서만 잇는다. 계약을 거치지 않는 직접 의존은 다르게 그린다. 경계를 우회하는 결합이기 때문이다.</li>
-<li>EXTRACTED와 USER_STATED 관계만 그린다. INFERRED 결합은 겉층에 그리지 않는다. 대신 각 모듈의 속층이 그 결합을 &quot;추정&quot;으로, <code>via</code>와 증거 인용을 붙여 나열한다.</li>
+<li>EXTRACTED와 USER_STATED 관계만 그린다. INFERRED 결합은 겉층에 그리지 않는다. 대신 각 모듈의 속층이 그 결합을 &quot;판독&quot;으로, <code>via</code>와 증거 인용을 붙여 나열한다.</li>
 </ul>
 <h3>속층은 모듈 하나의 안이다</h3>
 <ul>
@@ -425,7 +425,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 </ul>
 <h3>단위 목록과 최신성</h3>
 <ul>
-<li>단위 목록은 단위마다 이름, 책임 한 문장, 시그니처, 증거를 보인다. 책임 문장 옆의 origin 배지로 사람은 추정과 사실을 바로 가른다.</li>
+<li>단위 목록은 단위마다 이름, 책임 한 문장, 시그니처, 증거를 보인다. 책임 문장 옆의 origin 배지로 사람은 판독과 사실을 바로 가른다.</li>
 <li>최신성은 한 줄이다. 상태가 작업 트리와 맞는지(CURRENT 또는 STALE)와 sync한 커밋을 보인다. 깔끔해 보이는데 실제로는 낡은 설계도는 설계도가 없을 때보다 나쁘다.</li>
 </ul>
 <h3>그리는 규칙</h3>
@@ -433,6 +433,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li>렌더러가 데이터에서 SVG를 그린다. 에이전트는 그리지 않는다. 모델이 그린 그림은 실행마다 배치가 바뀌어, 사람이 같은 지도를 두 번 볼 수 없다.</li>
 <li>배치는 결정적이다. 같은 상태면 같은 그림이다. 모듈 하나의 안이 바뀌어도 겉층의 배치는 움직이지 않는다.</li>
 <li>폰 너비(390px)에서도 가로 스크롤 없이 읽힌다.</li>
+<li>그림이 지키는 측정 가능한 규칙과 그 검사는 <code>docs/blueprint-svg.md</code>에 있다.</li>
 <li>그림의 재료와 글은 추출 스크립트와 pstack 이해 스킬에서만 온다. 겉층은 스크립트와 모듈별 how 탐색의 Boundaries에서, 속층은 그 모듈의 나머지 발견에서 온다. 사람은 에이전트가 이해한 바로 그 설명을 읽는다.</li>
 </ul>
 <h2 id="sec-8">8. pstack 연동</h2>
