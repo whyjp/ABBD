@@ -247,9 +247,8 @@ func keyed(input []extract.Unit, ids []model.ID) map[string]model.ID {
 // key. A unit the extraction places nowhere keeps a parent a reader or a
 // human gave it, so structure a reader found survives a script that cannot
 // see it; a parent the script gave earlier goes when the script drops it.
-// A kept parent goes when its module is absent. A kept parent that would
-// close a cycle with the script's parents is dropped, since the script's word
-// on code it reads wins.
+// A kept parent goes when its module is absent, and when its own ancestors
+// lead back to it, since the script's word on code it reads wins.
 func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 	byKey := keyed(input, ids)
 	type placed struct {
@@ -283,12 +282,26 @@ func setParents(units []model.Unit, input []extract.Unit, ids []model.ID) {
 		}
 	}
 	for _, i := range kept {
-		if model.ParentCycle(units) == "" {
-			break
+		if u := &units[i]; ancestor(units, u.Parent, u.ID) {
+			u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 		}
-		u := &units[i]
-		u.Parent, u.ParentOrigin, u.ParentEvidence, u.ParentSource = "", "", nil, ""
 	}
+}
+
+// ancestor says whether following parents up from id reaches target.
+func ancestor(units []model.Unit, id, target model.ID) bool {
+	parent := map[model.ID]model.ID{}
+	for _, u := range units {
+		parent[u.ID] = u.Parent
+	}
+	seen := map[model.ID]bool{}
+	for k := id; k != "" && !seen[k]; k = parent[k] {
+		if k == target {
+			return true
+		}
+		seen[k] = true
+	}
+	return false
 }
 
 // Extraction owns the EXTRACTED relations of every unit it reports; units it
