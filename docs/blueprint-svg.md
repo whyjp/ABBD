@@ -28,7 +28,7 @@ A view is dense when it draws more than two relations per box on average. Each b
 - **Width.** A focus view stands on its own page section with no text beside it, so it takes the overview's width budget, and its unit boxes show only the last segment of a path-like name, as frame ports do.
 - **Back to the stored graph.** Every line keeps the stored relations it stands for, as in V. Each ring box opens its own focus view, X opens its inside when it has one, and the section links back to V.
 
-A focus view stores nothing: it is cut from the stored graph by the same rules as V, at render time. V stays as it is, and every relation V draws has a box at one end, so it is drawn in that box's focus view too. Under a dense view the page lists every focus view as a row of links, and a box of V that opens nothing else opens its focus view. The graph file leaves focus views out.
+A focus view stores nothing: it is cut from V's own lines at render time, never found again, so it draws no line, chip or box that V lacks. V stays as it is, and every relation V draws has a box at one end, so it is drawn in that box's focus view too. A test holds both directions across the fixtures. Under a dense view the page lists every focus view as a row of links, and a box of V that opens nothing else opens its focus view. The graph file leaves focus views and the links to them out.
 
 A focus view never groups. When a ring is still too large to read, the fix is a grouping by behaviour that a reader supplies (see Supplying groups).
 

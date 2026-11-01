@@ -13,8 +13,8 @@ import (
 // it has, laid out on their own. Callers sit above it and what it uses below.
 // Its lines out of the view's scope stay on the frame, lifted to the largest
 // unit that holds their end, as in the full view. The focus view is a
-// partial graph of the full one, cut from the stored graph by the same
-// rules: it stores nothing, and the full view stays. Every line of the full
+// partial graph of the full one, cut from the full view's own lines: it
+// stores nothing, and the full view stays. Every line of the full
 // view has a box at one end, so it is drawn in that box's focus view too.
 
 // Focus is one focus view: Unit and its ring, cut from the view at Of.
@@ -55,53 +55,88 @@ func twin(id model.ID) model.ID { return id + twinMark }
 // base is the unit a box stands for, a twin's included.
 func base(id model.ID) model.ID { return model.ID(strings.TrimSuffix(string(id), twinMark)) }
 
-// around cuts the overview down to the focus view of f: f, the edges at f,
-// and through a contract f provides or uses, the modules on the contract's
-// other side. A module on both sides of f gets a twin below.
+// around cuts the planned overview down to the focus view of f: f, the
+// lines of the overview that have f at one end, and the boxes at their other
+// ends. It filters the overview's own lines rather than finding them again,
+// so the focus view is a partial graph of the overview. A module on both
+// sides of f gets a twin below.
 func (o *overview) around(f model.ID) {
-	isContract := func(id model.ID) bool { return o.units[id].Kind.IsContract() }
-	provides := map[model.ID]bool{}
-	for _, e := range o.relations {
-		if e.From == f && isContract(e.To) {
-			provides[e.To] = provides[e.To] || e.Kind == model.Provides
-		}
-	}
-	var kept []model.Edge
-	for _, e := range o.relations {
-		mine, ok := provides[e.To]
-		if e.From == f || e.To == f || ok && (e.Kind == model.Provides) != mine {
-			kept = append(kept, e)
-		}
-	}
 	callers := map[model.ID]bool{}
-	for _, e := range kept {
-		if e.To == f || e.From != f && provides[e.To] {
+	for _, k := range o.pairs {
+		if k[1] == f {
+			callers[k[0]] = true
+		}
+	}
+	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
+	direct := func(e model.Edge) bool { return e.Kind == model.DependsOn && isModule(e.From) && isModule(e.To) }
+	for _, e := range o.relations {
+		if direct(e) && e.To == f {
 			callers[e.From] = true
 		}
 	}
-	ids := []model.ID{f}
-	for i, e := range kept {
-		switch {
-		case e.From == f && !isContract(e.To) && callers[e.To]:
-			kept[i].To = o.addTwin(e.To)
-		case e.From != f && e.Kind == model.Provides && !provides[e.To] && callers[e.From]:
-			kept[i].From = o.addTwin(e.From)
+	below := func(id model.ID) model.ID {
+		if callers[id] {
+			return o.addTwin(id)
 		}
-		o.rels[kept[i].String()] = o.rels[e.String()]
-		for _, id := range []model.ID{kept[i].From, kept[i].To} {
-			if !slices.Contains(ids, id) {
-				ids = append(ids, id)
-			}
+		return id
+	}
+	ring := map[model.ID]bool{f: true}
+	var pairs [][2]model.ID
+	carry := map[[2]model.ID][]model.ID{}
+	for _, k := range o.pairs {
+		if k[0] != f && k[1] != f {
+			continue
+		}
+		cut := k
+		if k[0] == f && isModule(k[1]) {
+			cut[1] = below(k[1])
+		}
+		pairs, carry[cut] = append(pairs, cut), o.carry[k]
+		ring[cut[0]], ring[cut[1]] = true, true
+	}
+	var relations []model.Edge
+	for _, e := range o.relations {
+		if !direct(e) || e.From != f && e.To != f {
+			continue
+		}
+		cut := e
+		if e.From == f {
+			cut.To = below(e.To)
+		}
+		o.rels[cut.String()] = o.rels[e.String()]
+		relations = append(relations, cut)
+		ring[cut.From], ring[cut.To] = true, true
+	}
+	o.pairs, o.carry, o.relations = pairs, carry, relations
+	o.unreached = map[model.ID][]model.ID{f: o.unreached[f]}
+	var modules, contracts []model.ID
+	for id := range ring {
+		if o.units[id].Kind.IsContract() {
+			contracts = append(contracts, id)
+		} else {
+			modules = append(modules, id)
 		}
 	}
-	slices.Sort(ids)
-	o.design, o.relations = ids, kept
+	slices.Sort(modules)
+	slices.Sort(contracts)
+	o.modules, o.contracts = modules, contracts
 }
 
+// addTwin adds the twin of id, which stands for id's stored relations. It
+// reads the overview's lines, so around calls it before cutting them.
 func (o *overview) addTwin(id model.ID) model.ID {
 	u := o.units[id]
 	u.ID = twin(id)
-	o.units[u.ID], o.tree.units[u.ID] = u, u
+	if _, ok := o.units[u.ID]; !ok {
+		o.units[u.ID], o.tree.units[u.ID] = u, u
+		for _, e := range o.relations {
+			if e.From == id {
+				t := e
+				t.From = u.ID
+				o.rels[t.String()] = o.rels[e.String()]
+			}
+		}
+	}
 	return u.ID
 }
 
@@ -150,12 +185,14 @@ func (o *overview) focus(scope model.ID, of, ofName string, unit model.ID, d Dra
 	}
 }
 
-// linkFocus makes each box of a full view that opens nothing else open its
-// focus view.
-func linkFocus(d *Drawing, fs []Focus) {
+// linkFocus gives a copy of a full view whose boxes that open nothing else
+// open their focus views.
+func linkFocus(d Drawing, fs []Focus) Drawing {
+	d.Boxes = slices.Clone(d.Boxes)
 	for i, b := range d.Boxes {
 		if j := slices.IndexFunc(fs, func(f Focus) bool { return f.Unit == b.ID }); j >= 0 && b.Href == "" {
 			d.Boxes[i].Href = "#" + fs[j].ID
 		}
 	}
+	return d
 }

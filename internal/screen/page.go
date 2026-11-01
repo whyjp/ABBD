@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"io"
+	"slices"
 	"strings"
 )
 
@@ -49,7 +50,16 @@ var tips = map[string]string{
 	"extracted": "프로젝트의 추출 스크립트가 코드에서 읽음",
 }
 
-func Render(w io.Writer, m Model) error { return page.Execute(w, m) }
+// Render writes the page. Its boxes also open their focus views, which
+// graph.json does not hold, so only the page's copy links them.
+func Render(w io.Writer, m Model) error {
+	m.Overview = linkFocus(m.Overview, m.Focus)
+	m.Insides = slices.Clone(m.Insides)
+	for i := range m.Insides {
+		m.Insides[i].Drawing = linkFocus(m.Insides[i].Drawing, m.Insides[i].Focus)
+	}
+	return page.Execute(w, m)
+}
 
 const (
 	GraphFile = "graph.json"
@@ -61,7 +71,8 @@ type Graph struct {
 	Watermark Watermark `json:"watermark"`
 	Units     []UnitRow `json:"units"`
 	Edges     []Line    `json:"edges"`
-	// Overview and Modules are the two levels as the page draws them.
+	// Overview and Modules are the two levels as the page draws them, less
+	// the links to focus views, which graph.json does not hold.
 	Overview Drawing  `json:"overview"`
 	Modules  []Inside `json:"modules"`
 }

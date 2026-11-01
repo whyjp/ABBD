@@ -10,25 +10,39 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// rels are the stored relations a drawing's lines and chips stand for.
-func rels(d Drawing) map[string]bool {
-	out := map[string]bool{}
+// marks are what a drawing draws, each kind of mark on its own: the pairs its
+// lines join (user to provider on the overview, from to on an inside), the
+// stored relations its lines stand for, those its chips stand for, and its
+// boxes. A twin counts as the unit it stands for.
+type marks struct{ pairs, wires, chips, boxes map[string]bool }
+
+func drawnIn(d Drawing) marks {
+	b := func(s string) string { return string(base(model.ID(s))) }
+	out := marks{map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}}
+	for _, r := range d.Relations {
+		out.pairs[b(r[0])+" -> "+b(r[1])] = true
+	}
 	for _, w := range d.Wires {
 		for _, r := range w.Rels {
-			out[r] = true
+			out.wires[r] = true
 		}
 	}
 	for _, p := range d.Ports {
 		for _, r := range p.Rels {
-			out[r] = true
+			out.chips[r] = true
 		}
+	}
+	for _, x := range d.Boxes {
+		out.boxes[b(x.ID)] = true
 	}
 	return out
 }
 
-// A dense view is read through its focus views, so together they draw every
-// relation the full view draws, and each unit box of the full view has one.
-func TestFocusViewsDrawEveryRelationOfTheirView(t *testing.T) {
+// A dense view is read through its focus views: each focus view is a partial
+// graph of its view, drawing no line, chip or box the view does not, and
+// together they draw every line and chip of the view. Each unit box of the
+// view has one.
+func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
 	type full struct {
 		name  string
 		d     Drawing
@@ -49,15 +63,35 @@ func TestFocusViewsDrawEveryRelationOfTheirView(t *testing.T) {
 				continue
 			}
 			seen++
-			got := map[string]bool{}
+			whole := drawnIn(v.d)
+			union := marks{map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}}
 			for _, f := range v.focus {
-				for r := range rels(f.Drawing) {
-					got[r] = true
+				part := drawnIn(f.Drawing)
+				for _, c := range []struct {
+					what       string
+					part, w, u map[string]bool
+				}{
+					{"line", part.pairs, whole.pairs, union.pairs},
+					{"wire relation", part.wires, whole.wires, union.wires},
+					{"chip relation", part.chips, whole.chips, union.chips},
+					{"box", part.boxes, whole.boxes, union.boxes},
+				} {
+					for k := range c.part {
+						c.u[k] = true
+						if !c.w[k] {
+							t.Errorf("%s: %s draws %s %s, which the view does not", v.name, f.ID, c.what, k)
+						}
+					}
 				}
 			}
-			for r := range rels(v.d) {
-				if !got[r] {
-					t.Errorf("%s: %s is in no focus view", v.name, r)
+			for _, c := range []struct {
+				what string
+				w, u map[string]bool
+			}{{"line", whole.pairs, union.pairs}, {"wire relation", whole.wires, union.wires}, {"chip relation", whole.chips, union.chips}} {
+				for k := range c.w {
+					if !c.u[k] {
+						t.Errorf("%s: %s %s is in no focus view", v.name, c.what, k)
+					}
 				}
 			}
 			// A contract no module provides is drawn as a box of its own; its

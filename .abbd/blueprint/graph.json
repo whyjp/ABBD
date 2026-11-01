@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "548ee9575bf0d8f77af4854bae6c833cd06e856d067988bfdb4a5a93239ad8c9"
+    "inputs_hash": "57843f78139a07c748c8edcc6d911ef7433a5b8bdb234b96f0e234a72bb70223"
   },
   "units": [
     {
@@ -314,7 +314,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:41 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -2016,8 +2016,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go:271 \"func planOverview(units []model.Unit, focus model.ID) *overview {\"",
-        "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+        "internal/screen/overview.go:273 \"func planOverview(units []model.Unit, focus model.ID) *overview {\"",
+        "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
       ]
     },
     {
@@ -2039,7 +2039,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:15 \"var page = template.Must(template.New(\\\"page\\\").Funcs(template.FuncMap{\"",
+        "internal/screen/page.go:16 \"var page = template.Must(template.New(\\\"page\\\").Funcs(template.FuncMap{\"",
         "internal/screen/page.html:7 \"\u003cmeta name=\\\"abbd-watermark\\\" content=\\\"inputs_hash={{.Watermark.Inputs}}\\\"\u003e\""
       ]
     },
@@ -3796,7 +3796,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+      "Quote": "internal/screen/overview.go:208 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
     },
     {
       "From": "MOD-0034",
@@ -3812,7 +3812,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
+      "Quote": "internal/screen/overview.go:231 \"return Badge(model.Extracted)\""
     },
     {
       "From": "MOD-0034",
@@ -3820,7 +3820,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:200 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:198 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -3828,7 +3828,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -3902,7 +3902,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+      "Quote": "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
       "From": "MOD-0037",
@@ -3910,7 +3910,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+      "Quote": "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
     },
     {
       "From": "MOD-0038",
@@ -3982,7 +3982,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -6126,8 +6126,7 @@
             "X": 520,
             "Y": 322,
             "W": 164,
-            "H": 44,
-            "Href": "#f-FEAT-0001--FEAT-0003"
+            "H": 44
           },
           {
             "ID": "FEAT-0004",
@@ -6155,8 +6154,7 @@
             "X": 80,
             "Y": 314,
             "W": 204,
-            "H": 60,
-            "Href": "#f-FEAT-0001--FEAT-0004"
+            "H": 60
           },
           {
             "ID": "FEAT-0005",
@@ -6184,8 +6182,7 @@
             "X": 214,
             "Y": 202,
             "W": 172,
-            "H": 60,
-            "Href": "#f-FEAT-0001--FEAT-0005"
+            "H": 60
           },
           {
             "ID": "FEAT-0006",
@@ -6213,8 +6210,7 @@
             "X": 409,
             "Y": 106,
             "W": 158,
-            "H": 60,
-            "Href": "#f-FEAT-0001--FEAT-0006"
+            "H": 60
           },
           {
             "ID": "FEAT-0007",
@@ -6242,8 +6238,7 @@
             "X": 80,
             "Y": 418,
             "W": 140,
-            "H": 60,
-            "Href": "#f-FEAT-0001--FEAT-0007"
+            "H": 60
           },
           {
             "ID": "FEAT-0008",
@@ -6266,8 +6261,7 @@
             "X": 550,
             "Y": 426,
             "W": 150,
-            "H": 44,
-            "Href": "#f-FEAT-0001--FEAT-0008"
+            "H": 44
           },
           {
             "ID": "FEAT-0009",
@@ -6295,8 +6289,7 @@
             "X": 316,
             "Y": 418,
             "W": 140,
-            "H": 60,
-            "Href": "#f-FEAT-0001--FEAT-0009"
+            "H": 60
           }
         ],
         "Ports": [
@@ -7430,8 +7423,7 @@
             "X": 83,
             "Y": 446,
             "W": 212,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0010"
+            "H": 60
           },
           {
             "ID": "FEAT-0011",
@@ -7459,8 +7451,7 @@
             "X": 489,
             "Y": 286,
             "W": 196,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0011"
+            "H": 60
           },
           {
             "ID": "FEAT-0012",
@@ -7488,8 +7479,7 @@
             "X": 140,
             "Y": 158,
             "W": 206,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0012"
+            "H": 60
           },
           {
             "ID": "FEAT-0013",
@@ -7517,8 +7507,7 @@
             "X": 259,
             "Y": 286,
             "W": 190,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0013"
+            "H": 60
           },
           {
             "ID": "FEAT-0014",
@@ -7546,8 +7535,7 @@
             "X": 268,
             "Y": 62,
             "W": 188,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0014"
+            "H": 60
           },
           {
             "ID": "FEAT-0015",
@@ -7575,8 +7563,7 @@
             "X": 335,
             "Y": 446,
             "W": 206,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0015"
+            "H": 60
           },
           {
             "ID": "FEAT-0016",
@@ -7604,8 +7591,7 @@
             "X": 639,
             "Y": 158,
             "W": 188,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0016"
+            "H": 60
           },
           {
             "ID": "FEAT-0017",
@@ -7633,8 +7619,7 @@
             "X": 573,
             "Y": 446,
             "W": 158,
-            "H": 60,
-            "Href": "#f-FEAT-0002--FEAT-0017"
+            "H": 60
           }
         ],
         "Ports": [
@@ -8734,8 +8719,7 @@
             "X": 31,
             "Y": 258,
             "W": 194,
-            "H": 44,
-            "Href": "#f-MOD-0001--DATA-0001"
+            "H": 44
           },
           {
             "ID": "MOD-0002",
@@ -8758,8 +8742,7 @@
             "X": 329,
             "Y": 106,
             "W": 146,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0002"
+            "H": 44
           },
           {
             "ID": "MOD-0003",
@@ -8782,8 +8765,7 @@
             "X": 77,
             "Y": 106,
             "W": 220,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0003"
+            "H": 44
           },
           {
             "ID": "MOD-0004",
@@ -8806,8 +8788,7 @@
             "X": 515,
             "Y": 106,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0004"
+            "H": 44
           },
           {
             "ID": "MOD-0005",
@@ -8830,8 +8811,7 @@
             "X": 741,
             "Y": 106,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0005"
+            "H": 44
           },
           {
             "ID": "MOD-0006",
@@ -8854,8 +8834,7 @@
             "X": 709,
             "Y": 258,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0006"
+            "H": 44
           },
           {
             "ID": "MOD-0007",
@@ -8878,8 +8857,7 @@
             "X": 265,
             "Y": 258,
             "W": 156,
-            "H": 44,
-            "Href": "#f-MOD-0001--MOD-0007"
+            "H": 44
           },
           {
             "ID": "MOD-0008",
@@ -8907,8 +8885,7 @@
             "X": 461,
             "Y": 250,
             "W": 208,
-            "H": 60,
-            "Href": "#f-MOD-0001--MOD-0008"
+            "H": 60
           }
         ],
         "Ports": [
@@ -19727,7 +19704,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:208 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -19736,8 +19713,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:231 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -19825,8 +19802,7 @@
             "X": 106,
             "Y": 62,
             "W": 182,
-            "H": 44,
-            "Href": "#f-MOD-0034--DATA-0014"
+            "H": 44
           },
           {
             "ID": "MOD-0035",
@@ -19849,8 +19825,7 @@
             "X": 169,
             "Y": 142,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0034--MOD-0035"
+            "H": 44
           },
           {
             "ID": "MOD-0036",
@@ -19878,8 +19853,7 @@
             "X": 111,
             "Y": 350,
             "W": 140,
-            "H": 60,
-            "Href": "#f-MOD-0034--MOD-0036"
+            "H": 60
           },
           {
             "ID": "MOD-0037",
@@ -19902,8 +19876,7 @@
             "X": 25,
             "Y": 246,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0034--MOD-0037"
+            "H": 44
           },
           {
             "ID": "MOD-0038",
@@ -19926,8 +19899,7 @@
             "X": 328,
             "Y": 62,
             "W": 140,
-            "H": 44,
-            "Href": "#f-MOD-0034--MOD-0038"
+            "H": 44
           },
           {
             "ID": "MOD-0039",
@@ -19950,8 +19922,7 @@
             "X": 401,
             "Y": 246,
             "W": 164,
-            "H": 44,
-            "Href": "#f-MOD-0034--MOD-0039"
+            "H": 44
           },
           {
             "ID": "MOD-0040",
@@ -19974,8 +19945,7 @@
             "X": 197,
             "Y": 246,
             "W": 164,
-            "H": 44,
-            "Href": "#f-MOD-0034--MOD-0040"
+            "H": 44
           }
         ],
         "Ports": [
@@ -20101,7 +20071,7 @@
             "Title": "overview plan depends_on internal/model (via data), 판독",
             "Via": "data",
             "Quotes": [
-              "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+              "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0030"
@@ -20114,7 +20084,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -20233,7 +20203,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+              "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
             ],
             "Marks": [
               {
@@ -20339,8 +20309,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Marks": [
               {
@@ -20502,7 +20472,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
-              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20516,7 +20486,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
               "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
-              "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -21678,11 +21648,27 @@
                 "Code": false
               },
               {
+                "Text": "planOverview",
+                "Code": true
+              },
+              {
+                "Text": " plans the whole overview first, and ",
+                "Code": false
+              },
+              {
                 "Text": "around",
                 "Code": true
               },
               {
-                "Text": " cuts the overview's edges down to the focus and the modules across the contracts it meets. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
+                "Text": " then keeps only its lines with an end at the focus and the boxes at their other ends, so a focus view never draws a line the overview lacks; ",
+                "Code": false
+              },
+              {
+                "Text": "TestFocusViewsArePartialGraphsOfTheirView",
+                "Code": true
+              },
+              {
+                "Text": " holds every focus view's lines, chips and boxes to its full view in both directions. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
                 "Code": false
               },
               {
@@ -21710,11 +21696,27 @@
                 "Code": false
               },
               {
+                "Text": "Render",
+                "Code": true
+              },
+              {
+                "Text": " gives a copy of each full view to ",
+                "Code": false
+              },
+              {
                 "Text": "linkFocus",
                 "Code": true
               },
               {
-                "Text": " makes each box of the full view that opens nothing else open its focus view, and the page lists the focus views under the full drawing.",
+                "Text": ", which makes each box that opens nothing else open its focus view, so ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": " holds no link to a focus view, and the page lists the focus views under the full drawing.",
                 "Code": false
               }
             ]
@@ -21895,7 +21897,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:207 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:208 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -21913,7 +21915,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:231 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -21922,8 +21924,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:200 \"return \\\"stated\\\"\"",
-            "internal/screen/page.go:41 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/screen.go:198 \"return \\\"stated\\\"\"",
+            "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -21932,7 +21934,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -21971,7 +21973,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:188 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:186 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -21990,7 +21992,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
-            "internal/screen/screen.go:184 \"ins := o.inside(id, in.Units, \\\"\\\")\""
+            "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\")\""
           ]
         },
         {
@@ -21999,8 +22001,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:215 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:231 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -22009,7 +22011,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:395 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+            "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
           ]
         },
         {
@@ -22098,7 +22100,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:188 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -23879,7 +23881,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:188 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:186 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -25777,7 +25779,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:230 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:231 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -26107,7 +26109,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:389 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {

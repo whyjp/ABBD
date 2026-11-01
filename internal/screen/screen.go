@@ -159,7 +159,6 @@ func Build(in Input) Model {
 	o := planOverview(in.Units, "")
 	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
-	linkFocus(&m.Overview, m.Focus)
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
@@ -183,7 +182,6 @@ func Build(in Input) Model {
 	for _, id := range views {
 		ins := o.inside(id, in.Units, "")
 		ins.Focus = o.insideFocus(id, in.Units, ins)
-		linkFocus(&ins.Drawing, ins.Focus)
 		if u, ok := in.Understandings[id]; ok {
 			ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
 		}
