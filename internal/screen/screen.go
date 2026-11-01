@@ -156,7 +156,7 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
-	o := planOverview(in.Units, "")
+	o := planOverview(in.Units, "", nil)
 	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
@@ -180,7 +180,7 @@ func Build(in Input) Model {
 	}
 	slices.Sort(views)
 	for _, id := range views {
-		ins := o.inside(id, in.Units, "")
+		ins := o.inside(id, in.Units, "", nil)
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		if u, ok := in.Understandings[id]; ok {
 			ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}

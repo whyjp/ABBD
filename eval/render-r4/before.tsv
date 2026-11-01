@@ -1,0 +1,289 @@
+fixture	view	relations	lost	phantom	bends_med	bends_max	cross_med	cross_max	unmarked_t	count_amb	size_spread	beside
+self	overview	37	0	0	4.0	8	3.0	13	0	2	1.00	0.111
+self	overview focus FEAT-0001 /abbd	5	0	0	2.0	2	0.0	1	0	1	1.00	0.000
+self	overview focus FEAT-0002 /abbd-setup	4	0	0	1.0	2	0.0	1	0	1	1.00	0.000
+self	overview focus MOD-0001 abbd CLI	15	0	0	2.0	2	1.0	3	0	1	1.00	0.028
+self	overview focus MOD-0009 internal/bootstrap	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0013 internal/evidence	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0017 internal/extract	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0022 internal/gitx	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0026 internal/identity	7	0	0	2.0	2	0.0	0	0	2	1.00	0.000
+self	overview focus MOD-0030 internal/model	9	0	0	2.0	2	0.0	2	0	0	1.00	0.035
+self	overview focus MOD-0034 internal/screen	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0041 internal/store	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0047 internal/topology	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0054 internal/group	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+self	overview focus MOD-0055 pstack (external)	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0001 /abbd	20	0	0	2.0	6	0.0	5	0	0	1.00	0.130
+self	FEAT-0001 focus FEAT-0003 /abbd ground rules	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0001 focus FEAT-0004 /abbd ask the blueprint before the code	6	0	0	2.0	2	0.0	0	0	0	1.00	0.113
+self	FEAT-0001 focus FEAT-0005 /abbd read the code through pstack	3	0	0	2.0	2	0.0	0	0	0	1.00	0.213
+self	FEAT-0001 focus FEAT-0006 /abbd record what a reader found	4	0	0	2.0	2	0.0	0	0	0	1.00	0.149
+self	FEAT-0001 focus FEAT-0007 /abbd what the human states	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0001 focus FEAT-0008 /abbd after work	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0001 focus FEAT-0009 /abbd evidence and CI gate	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0002 /abbd-setup	19	0	0	2.0	8	2.0	5	0	0	1.00	0.117
+self	FEAT-0002 focus FEAT-0010 /abbd-setup preconditions and stance	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0002 focus FEAT-0011 /abbd-setup find units with a reader swarm	4	0	0	2.0	2	0.0	0	0	0	1.00	0.116
+self	FEAT-0002 focus FEAT-0012 /abbd-setup build the deterministic extractor	4	0	0	2.0	2	0.0	0	0	0	1.00	0.123
+self	FEAT-0002 focus FEAT-0013 /abbd-setup write the reader supplement	3	0	0	2.0	2	0.0	0	0	0	1.00	0.232
+self	FEAT-0002 focus FEAT-0014 /abbd-setup run setup and resolve refusals	3	0	0	2.0	2	0.0	0	0	0	1.00	0.131
+self	FEAT-0002 focus FEAT-0015 /abbd-setup store how's account per module	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	FEAT-0002 focus FEAT-0016 /abbd-setup verify, install and hand over	4	0	0	2.0	4	0.0	3	0	0	1.00	0.183
+self	FEAT-0002 focus FEAT-0017 /abbd-setup extraction format	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0001 abbd CLI	28	0	0	2.0	4	1.0	6	0	0	1.36	0.066
+self	MOD-0001 focus DATA-0001 CLAUDE.md abbd block	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0001 focus MOD-0002 review commands	5	0	0	2.0	2	1.0	1	0	1	1.00	0.127
+self	MOD-0001 focus MOD-0003 argv parsing and dispatch	2	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0001 focus MOD-0004 sync pipeline	8	0	0	2.0	2	0.0	1	0	0	1.00	0.122
+self	MOD-0001 focus MOD-0005 query commands	3	0	0	2.0	2	1.0	1	0	1	1.00	0.273
+self	MOD-0001 focus MOD-0006 record writers	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0001 focus MOD-0007 blueprint publish	4	0	0	2.0	2	0.0	0	0	0	1.00	0.098
+self	MOD-0001 focus MOD-0008 setup determinism proof and supplement fold	4	0	0	2.0	2	0.5	1	0	0	1.36	0.197
+self	MOD-0009 internal/bootstrap	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0013 internal/evidence	5	0	0	2.0	4	0.0	0	0	0	1.36	0.239
+self	MOD-0017 internal/extract	6	0	0	2.0	4	0.0	1	0	0	1.36	0.092
+self	MOD-0022 internal/gitx	5	0	0	2.0	2	0.0	1	0	0	1.36	0.115
+self	MOD-0026 internal/identity	3	0	0	0.0	2	0.0	0	0	0	1.00	0.181
+self	MOD-0030 internal/model	26	0	0	4.0	8	4.0	10	0	1	1.36	0.084
+self	MOD-0030 focus DATA-0010 drawn versus listed relation rule	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus DATA-0012 unit kind directories	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus DATA-0015 unit absent flag	5	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+self	MOD-0030 focus DATA-0016 empty parent origin means extracted	5	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+self	MOD-0030 focus DATA-0019 evidence line range text	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus DATA-0020 citable evidence paths	2	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus IF-0016 unit ID format	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus IF-0017 evidence citation	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus MOD-0031 guess versus topology rule	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus MOD-0032 relation grammar	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0030 focus MOD-0033 fact origins	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+self	MOD-0034 internal/screen	16	0	1	2.0	4	0.0	2	0	0	1.36	0.190
+self	MOD-0034 focus DATA-0014 origin display words	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0034 focus MOD-0035 module inside	3	0	0	2.0	2	0.0	0	0	0	1.36	0.030
+self	MOD-0034 focus MOD-0036 layered layout and routing	2	0	0	2.0	2	0.0	0	0	0	1.36	0.000
+self	MOD-0034 focus MOD-0037 overview plan	4	0	0	2.0	2	0.0	0	0	0	1.36	0.133
+self	MOD-0034 focus MOD-0038 page template	4	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0034 focus MOD-0039 freshness verdicts	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0034 focus MOD-0040 understanding text	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+self	MOD-0041 internal/store	11	0	1	2.0	6	1.0	2	0	0	1.00	0.060
+self	MOD-0047 internal/topology	16	0	0	4.0	10	1.0	5	0	0	1.00	0.107
+self	MOD-0054 internal/group	2	0	0	0.0	0	0.0	0	0	0	1.15	0.143
+self	MOD-0055 pstack (external)	5	0	0	2.0	2	0.0	1	0	0	1.36	0.026
+ripgrep	overview	29	0	0	2.0	10	1.0	6	0	0	1.27	0.092
+ripgrep	overview focus FEAT-0001 pcre2 cargo feature	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus FEAT-0002 pcre2 feature (ripgrep -> grep -> grep-pcre2)	2	0	0	2.0	2	0.0	0	0	0	1.27	0.000
+ripgrep	overview focus FEAT-0003 pcre2 cargo feature chain	1	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus FEAT-0004 grep-printer 'serde' feature (default)	1	0	0	0.0	0	0.0	0	0	0	1.12	0.000
+ripgrep	overview focus MOD-0001 ripgrep	12	0	0	2.0	2	0.0	3	0	1	1.27	0.071
+ripgrep	overview focus MOD-0002 grep-cli	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0005 globset	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0006 grep	9	0	0	2.0	2	0.0	0	0	0	1.27	0.060
+ripgrep	overview focus MOD-0007 ignore	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0008 grep-matcher	6	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+ripgrep	overview focus MOD-0009 grep-pcre2	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0010 grep-printer	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0011 grep-regex	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	overview focus MOD-0012 grep-searcher	6	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+ripgrep	MOD-0001 ripgrep	7	0	0	2.0	2	0.0	1	0	0	1.00	0.014
+ripgrep	MOD-0001 focus DATA-0001 HiArgs	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0001 focus MOD-0003 Haystack / HaystackBuilder	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0001 focus MOD-0004 SearchWorker / PatternMatcher / Printer enums	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0002 grep-cli	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0005 globset	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0006 grep	0	0	0	0.0	0	0.0	0	0	0	0.00	0.000
+ripgrep	MOD-0007 ignore	6	0	0	3.0	4	0.0	0	0	0	1.00	0.058
+ripgrep	MOD-0008 grep-matcher	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0009 grep-pcre2	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0010 grep-printer	5	0	0	2.0	4	1.0	4	0	1	1.00	0.072
+ripgrep	MOD-0011 grep-regex	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+ripgrep	MOD-0012 grep-searcher	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	overview	5	0	0	2.0	2	0.0	0	0	0	1.00	0.069
+orca	MOD-0002 @orca-cloud/push	2	0	0	0.0	0	0.0	0	0	0	1.15	0.143
+orca	MOD-0003 @orca-cloud/relay	6	0	0	2.0	4	1.0	2	0	0	1.36	0.086
+orca	MOD-0007 mobile app (Expo)	71	0	0	4.0	14	5.0	17	0	2	1.00	0.079
+orca	MOD-0007 focus MOD-0014 mobile/components	18	0	0	2.0	4	0.0	0	0	0	1.00	0.020
+orca	MOD-0007 focus MOD-0015 mobile/files	8	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0016 mobile/host-screen	10	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0017 mobile/mobile-web-shell	11	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0018 mobile/notifications	4	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0019 mobile/platform	13	0	0	2.0	2	0.0	0	0	0	1.00	0.031
+orca	MOD-0007 focus MOD-0020 mobile/session	20	0	0	2.0	2	0.0	0	0	0	1.00	0.018
+orca	MOD-0007 focus MOD-0021 mobile/source-control	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0022 mobile/tasks	11	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0023 mobile/terminal	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0007 focus MOD-0024 mobile/transport	19	0	0	2.0	2	0.0	2	0	0	1.00	0.025
+orca	MOD-0007 focus MOD-0025 mobile/worktree	10	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0009 orca-mobile-web-shell	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0010 orca-notification-dismissal	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0013 @orca/expo-two-way-audio	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0027 computer-use-macos	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0038 orca CLI	3	0	0	0.0	2	0.0	0	0	0	1.00	0.364
+orca	MOD-0042 desktop main process	78	0	0	4.0	10	9.0	22	0	0	1.36	0.097
+orca	MOD-0042 focus CFG-0003 desktop cloud service origins	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0043 desktop-main/agent-hooks	19	0	0	2.0	2	0.0	0	0	0	1.00	0.055
+orca	MOD-0042 focus MOD-0044 desktop-main/ai-vault	9	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0045 desktop-main/browser	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0046 desktop-main/claude	8	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0047 desktop-main/codex	9	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0048 desktop-main/computer	2	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0049 desktop-main/daemon	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0050 desktop-main/git	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0051 desktop-main/github	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0052 desktop-main/ipc	30	0	0	2.0	6	2.0	7	0	0	1.00	0.045
+orca	MOD-0042 focus MOD-0053 desktop-main/native-chat	12	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0054 desktop-main/persistence	13	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0055 desktop-main/plugins	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0042 focus MOD-0069 desktop-main/ssh	11	0	0	2.0	2	0.0	0	0	0	1.00	0.023
+orca	MOD-0043 desktop-main/agent-hooks	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0048 desktop-main/computer	0	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0052 desktop-main/ipc	4	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+orca	MOD-0056 Orca runtime (RPC host)	49	0	1	4.0	8	3.0	12	0	1	1.00	0.149
+orca	MOD-0056 focus DATA-0003 orca-runtime.json	2	0	0	3.0	4	0.0	0	0	0	1.00	0.160
+orca	MOD-0056 focus MOD-0057 desktop-runtime/agent-session	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0058 desktop-runtime/browser	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0059 desktop-runtime/browser-host	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0060 desktop-runtime/files	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0061 desktop-runtime/mobile-cloud-relay	5	0	0	2.0	2	1.0	1	0	0	1.00	0.094
+orca	MOD-0056 focus MOD-0062 desktop-runtime/orchestration	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0063 desktop-runtime/rpc	19	0	0	2.0	4	0.0	2	0	0	1.00	0.060
+orca	MOD-0056 focus MOD-0064 desktop-runtime/runtime-rpc	8	0	0	2.0	4	0.0	2	0	0	1.00	0.053
+orca	MOD-0056 focus MOD-0065 desktop-runtime/session-tabs	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0066 desktop-runtime/sidebar-inputs	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0067 desktop-runtime/terminal	14	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0056 focus MOD-0068 desktop-runtime/workspaces	9	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0063 desktop-runtime/rpc	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0064 desktop-runtime/runtime-rpc	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 desktop renderer UI	43	0	1	2.0	6	5.0	17	0	1	1.00	0.084
+orca	MOD-0072 focus DATA-0001 paired web client bundle	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 focus MOD-0073 renderer/app-shell	7	0	0	2.0	2	0.0	0	0	0	1.00	0.037
+orca	MOD-0072 focus MOD-0074 renderer/components	13	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 focus MOD-0075 renderer/hooks	12	0	0	2.0	2	0.0	0	0	0	1.00	0.020
+orca	MOD-0072 focus MOD-0076 renderer/lib	12	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 focus MOD-0077 renderer/runtime	14	0	0	2.0	4	0.0	1	0	0	1.00	0.035
+orca	MOD-0072 focus MOD-0078 renderer/ssh	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 focus MOD-0079 renderer/store	9	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0072 focus MOD-0080 renderer/web	6	0	0	2.0	4	0.0	1	0	0	1.00	0.048
+orca	MOD-0080 renderer/web	3	0	0	0.0	0	0.0	0	0	0	1.00	0.311
+orca	MOD-0081 shared types and schemas	7	0	0	2.0	2	0.0	1	0	0	1.15	0.018
+orca	MOD-0090 shared/rpc-contract	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0094 WSL guest agent	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0095 cloud/	12	0	0	2.0	4	0.0	4	0	0	1.15	0.155
+orca	MOD-0095 focus MOD-0001 @orca-cloud/connector	2	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0095 focus MOD-0002 @orca-cloud/push	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0095 focus MOD-0003 @orca-cloud/relay	5	0	0	2.0	2	1.0	2	0	0	1.00	0.152
+orca	MOD-0095 focus MOD-0004 @orca-cloud/relay-fence-broker	1	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0095 focus MOD-0005 @orca-cloud/cloud-database	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0095 focus MOD-0006 @orca-cloud/postgres-schema	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0096 mobile/	11	0	0	2.0	4	1.0	3	0	1	1.36	0.133
+orca	MOD-0097 native/	13	0	0	4.0	8	0.0	1	0	0	1.36	0.062
+orca	MOD-0098 src/	23	0	0	2.0	6	1.0	5	0	1	1.00	0.086
+orca	MOD-0098 focus MOD-0038 orca CLI	4	0	0	2.0	4	0.0	0	0	0	1.00	0.057
+orca	MOD-0098 focus MOD-0070 @orca/process-host	4	0	0	2.0	2	0.0	0	0	0	1.00	0.068
+orca	MOD-0098 focus MOD-0081 shared types and schemas	5	0	0	2.0	2	0.0	0	0	0	1.00	0.158
+orca	MOD-0098 focus MOD-0098~1 서로 쓰는 5개	16	0	0	2.0	2	1.0	2	0	0	1.00	0.052
+orca	MOD-0098~1 서로 쓰는 5개	33	0	2	2.0	4	4.0	10	0	1	1.00	0.080
+orca	MOD-0098~1 focus MOD-0042 desktop main process	14	0	0	2.0	4	0.0	2	0	1	1.00	0.059
+orca	MOD-0098~1 focus MOD-0056 Orca runtime (RPC host)	12	0	0	2.0	4	1.0	2	0	2	1.00	0.094
+orca	MOD-0098~1 focus MOD-0071 desktop preload bridge	5	0	0	2.0	4	0.0	0	0	0	1.00	0.232
+orca	MOD-0098~1 focus MOD-0072 desktop renderer UI	5	0	0	2.0	2	0.0	1	0	0	1.00	0.133
+orca	MOD-0098~1 focus MOD-0094 WSL guest agent	4	0	0	2.0	2	0.0	0	0	0	1.00	0.099
+orca	MOD-0099 src/	7	0	0	2.0	2	0.0	1	0	0	1.15	0.022
+orca	MOD-0100 src/shared/	15	0	0	4.0	8	2.0	4	0	0	1.15	0.191
+orca	MOD-0100~1 서로 쓰는 9개	25	0	1	2.0	6	1.0	5	0	0	1.36	0.104
+orca	MOD-0100~1 focus MOD-0082 shared/agent-hook-listener	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0100~1 focus MOD-0083 shared/agent-session	7	0	0	2.0	2	0.0	0	0	0	1.00	0.044
+orca	MOD-0100~1 focus MOD-0084 shared/github	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0100~1 focus MOD-0085 shared/jira	2	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+orca	MOD-0100~1 focus MOD-0086 shared/native-chat	4	0	0	2.0	2	0.0	0	0	0	1.00	0.101
+orca	MOD-0100~1 focus MOD-0087 shared/orcad-migration	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0100~1 focus MOD-0090 shared/rpc-contract	11	0	0	2.0	2	0.0	0	0	0	1.00	0.053
+orca	MOD-0100~1 focus MOD-0091 shared/sidebar-list	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+orca	MOD-0100~1 focus MOD-0093 shared/worktree	8	0	0	2.0	2	0.0	0	0	0	1.00	0.037
+pstack	overview	61	0	52	4.0	8	4.0	17	0	1	1.27	0.119
+pstack	overview focus MOD-0001 setup and help	21	0	0	2.0	2	0.0	0	0	0	1.27	0.034
+pstack	overview focus MOD-0002 parallel fan-out and multi-model review	9	0	0	2.0	2	0.0	0	0	0	1.27	0.000
+pstack	overview focus MOD-0003 principles	13	0	0	2.0	4	0.0	0	0	0	1.27	0.024
+pstack	overview focus MOD-0004 poteto-mode, the front door	18	0	0	2.0	4	0.0	0	0	0	1.27	0.046
+pstack	overview focus MOD-0005 writing and prose	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	overview focus MOD-0006 restate and catch up	3	0	0	2.0	2	0.0	0	0	0	1.27	0.030
+pstack	overview focus MOD-0007 understand code	10	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	overview focus MOD-0008 design	8	0	0	2.0	2	0.0	0	0	0	1.27	0.016
+pstack	overview focus MOD-0009 build and clean the diff	8	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	overview focus MOD-0010 verification	9	0	0	2.0	2	0.0	0	0	0	1.27	0.023
+pstack	overview focus MOD-0011 unattended runs	9	0	0	2.0	2	0.0	0	0	0	1.27	0.023
+pstack	overview focus MOD-0012 make it yours	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0001 setup and help	35	0	2	4.0	8	3.0	9	0	0	1.36	0.064
+pstack	MOD-0001 focus FEAT-0001 docs/guide/01-setup.md	1	0	0	0.0	0	0.0	0	0	0	1.00	0.000
+pstack	MOD-0001 focus FEAT-0007 docs/guide/10-recipes-and-pitfalls.md	1	0	0	0.0	0	0.0	0	0	0	1.15	0.000
+pstack	MOD-0001 focus FEAT-0008 docs/harness/claude-code.md	12	0	0	2.0	2	0.0	0	0	0	1.00	0.011
+pstack	MOD-0001 focus FEAT-0028 /poteto-help	15	0	0	2.0	2	0.0	0	0	0	1.36	0.037
+pstack	MOD-0001 focus FEAT-0056 /setup-pstack	11	0	0	2.0	2	0.0	0	0	0	1.00	0.046
+pstack	MOD-0002 parallel fan-out and multi-model review	18	0	0	2.0	6	1.0	4	0	0	1.00	0.059
+pstack	MOD-0002 focus FEAT-0010 /arena	9	0	0	2.0	4	0.0	1	0	0	1.00	0.052
+pstack	MOD-0002 focus FEAT-0021 /interrogate	6	0	0	2.0	2	0.0	0	0	0	1.00	0.054
+pstack	MOD-0002 focus FEAT-0060 /swarm	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0003 principles	36	0	0	3.0	6	3.0	12	0	0	1.36	0.076
+pstack	MOD-0003 focus FEAT-0005 docs/guide/08-principles.md	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0003 focus MOD-0013 core principles	10	0	0	2.0	2	0.0	0	0	0	1.00	0.022
+pstack	MOD-0003 focus MOD-0014 architecture principles	8	0	0	2.0	4	0.0	0	0	0	1.00	0.051
+pstack	MOD-0003 focus MOD-0015 verification principles	13	0	0	2.0	2	0.0	0	0	0	1.00	0.025
+pstack	MOD-0003 focus MOD-0016 delegation principles	4	0	0	2.0	2	0.0	0	0	0	1.00	0.080
+pstack	MOD-0003 focus MOD-0017 meta principles	6	0	0	2.0	2	0.0	0	0	0	1.00	0.038
+pstack	MOD-0004 poteto-mode, the front door	19	0	0	2.0	4	1.0	3	0	0	1.15	0.005
+pstack	MOD-0005 writing and prose	10	0	0	4.0	6	0.5	2	0	0	1.00	0.036
+pstack	MOD-0006 restate and catch up	10	0	0	2.0	6	0.5	2	0	0	1.00	0.069
+pstack	MOD-0007 understand code	28	0	0	4.0	6	3.5	10	0	0	1.00	0.058
+pstack	MOD-0007 focus FEAT-0019 /how	10	0	0	2.0	2	0.0	0	0	0	1.00	0.046
+pstack	MOD-0007 focus FEAT-0054 /recall	7	0	0	2.0	2	0.0	0	0	0	1.00	0.042
+pstack	MOD-0007 focus FEAT-0062 /teach	5	0	0	2.0	2	0.0	0	0	0	1.00	0.074
+pstack	MOD-0007 focus FEAT-0066 /why	11	0	0	2.0	2	0.0	0	0	0	1.00	0.037
+pstack	MOD-0008 design	8	0	0	2.0	4	0.0	1	0	0	1.00	0.000
+pstack	MOD-0009 build and clean the diff	13	0	5	2.0	4	0.0	2	0	0	1.36	0.019
+pstack	MOD-0009 focus FEAT-0027 /no-comments	7	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0009 focus FEAT-0061 /tdd	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0009 focus FEAT-0064 /typescript-best-practices	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0010 verification	27	0	1	2.0	6	2.0	4	0	0	1.00	0.100
+pstack	MOD-0010 focus FEAT-0003 docs/guide/06-verify-and-ship.md	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0010 focus FEAT-0012 /benchmark-checklist	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0010 focus FEAT-0013 /blast-radius	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0010 focus FEAT-0016 /create-formal-verification-skill	6	0	0	2.0	4	0.0	0	0	0	1.00	0.156
+pstack	MOD-0010 focus FEAT-0017 /create-verification-skill	5	0	0	2.0	2	0.0	0	0	0	1.00	0.200
+pstack	MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill	4	0	0	3.0	4	0.0	0	0	0	1.00	0.204
+pstack	MOD-0010 focus FEAT-0025 /maintain-verification-skill	5	0	0	2.0	2	0.0	0	0	0	1.36	0.144
+pstack	MOD-0010 focus FEAT-0059 /statechart	2	0	0	3.0	4	0.0	0	0	0	1.15	0.205
+pstack	MOD-0011 unattended runs	16	0	0	2.0	4	1.0	4	0	0	1.36	0.042
+pstack	MOD-0011 focus FEAT-0004 docs/guide/07-overnight.md	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0011 focus FEAT-0018 /figure-it-out	8	0	0	2.0	2	0.0	0	0	0	1.00	0.039
+pstack	MOD-0011 focus FEAT-0058 /show-me-your-work	8	0	0	2.0	2	0.0	0	0	0	1.00	0.042
+pstack	MOD-0012 make it yours	15	0	0	2.0	6	0.0	2	0	0	1.36	0.096
+pstack	MOD-0012 focus FEAT-0006 docs/guide/09-make-it-yours.md	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0012 focus FEAT-0011 /automate-me	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0012 focus FEAT-0015 /correct	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0012 focus FEAT-0026 /make-bot-ui	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0012 focus FEAT-0055 /reflect	5	0	0	2.0	2	0.0	1	0	0	1.00	0.000
+pstack	MOD-0013 core principles	34	0	0	4.0	8	6.0	14	0	0	1.00	0.075
+pstack	MOD-0013 focus FEAT-0030 /principle-attack-the-premise	5	0	0	2.0	4	0.0	0	0	0	1.00	0.079
+pstack	MOD-0013 focus FEAT-0032 /principle-build-the-lever	6	0	0	2.0	2	0.0	0	0	0	1.00	0.155
+pstack	MOD-0013 focus FEAT-0034 /principle-exhaust-the-design-space	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0013 focus FEAT-0035 /principle-experience-first	2	0	0	1.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0013 focus FEAT-0038 /principle-foundational-thinking	6	0	0	2.0	4	0.0	0	0	0	1.00	0.142
+pstack	MOD-0013 focus FEAT-0040 /principle-laziness-protocol	6	0	0	2.0	2	0.0	0	0	0	1.00	0.055
+pstack	MOD-0013 focus FEAT-0043 /principle-minimize-reader-load	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0013 focus FEAT-0046 /principle-outcome-oriented-execution	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0013 focus FEAT-0048 /principle-redesign-from-first-principles	5	0	0	2.0	2	0.0	0	0	0	1.00	0.066
+pstack	MOD-0013 focus FEAT-0051 /principle-subtract-before-you-add	3	0	0	2.0	2	0.0	0	0	0	1.00	0.153
+pstack	MOD-0014 architecture principles	17	0	4	4.0	8	1.0	3	0	1	1.00	0.089
+pstack	MOD-0014 focus FEAT-0031 /principle-boundary-discipline	4	0	0	2.0	2	0.0	0	0	0	1.00	0.102
+pstack	MOD-0014 focus FEAT-0041 /principle-make-operations-idempotent	2	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0014 focus FEAT-0042 /principle-migrate-callers-then-delete-legacy-apis	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0014 focus FEAT-0044 /principle-model-the-domain	1	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0014 focus FEAT-0049 /principle-separate-before-serializing-shared-state	5	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0014 focus FEAT-0053 /principle-type-system-discipline	5	0	0	2.0	2	0.0	0	0	0	1.00	0.101
+pstack	MOD-0015 verification principles	22	0	0	2.0	6	1.0	5	0	0	1.00	0.034
+pstack	MOD-0015 focus FEAT-0036 /principle-explain-the-number	3	0	0	2.0	2	0.0	0	0	0	1.15	0.145
+pstack	MOD-0015 focus FEAT-0037 /principle-fix-root-causes	4	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0015 focus FEAT-0047 /principle-prove-it-works	10	0	0	2.0	2	0.0	0	0	0	1.00	0.025
+pstack	MOD-0015 focus FEAT-0050 /principle-sequence-verifiable-units	4	0	0	2.0	2	0.0	0	0	0	1.15	0.098
+pstack	MOD-0015 focus FEAT-0052 /principle-test-behavior-not-implementation	3	0	0	2.0	2	0.0	0	0	0	1.00	0.000
+pstack	MOD-0016 delegation principles	5	0	0	2.0	4	0.0	0	0	0	1.00	0.000
+pstack	MOD-0017 meta principles	6	0	0	2.0	2	0.0	0	0	0	1.00	0.000

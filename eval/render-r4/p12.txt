@@ -1,0 +1,43 @@
+P12, rank full views on strong edges only: tried and dropped in round 4.
+
+Base: round 4's renderer with focus views centred (after.tsv). Each variant ran
+eval/render-r1/measure.py over the fixtures and Orca's real store, and the
+legibility test (fixtures_test.go) for its whole-view crossing and back counts.
+
+Variants
+  weak      reader-found (inferred) relations do not rank their boxes; they are
+            drawn after placement, as back lines are.
+  back      the lines the cycle breaker leaves out of the ranking also stay out
+            of row ordering and chains.
+  weakback  both.
+  best      lay out with and without weak edges and keep the layout with fewer
+            row crossings plus 2 per line sent up.
+
+Orca desktop main process (the named target)
+  every variant: 87 crossings, 10 back lines, bends median 4, crossing median 9.
+  Its 78 relations are all read from code, so there is no weak edge to drop,
+  and leaving its back lines out of ordering changes nothing.
+
+Whole-view crossings / back lines (legibility test)
+                    base     weak     back     weakback
+  self overview     8 / 3    5 / 5    8 / 3    11 / 4
+  pstack overview   12 / 2   25 / 7   21 / 2   37 / 8
+  ripgrep overview  6 / 0    10 / 4   6 / 0    4 / 3
+
+Fixture full views (73), path metrics
+                    base     weak     back     weakback
+  phantom pairs     71       87       90       88
+  mean bends med    1.89     1.85     1.89     1.85
+  mean cross med    1.007    0.979    1.062    1.068
+
+self overview path metrics under weak: bends median 4 -> 2, crossing median
+3 -> 1, the hand reference's numbers. But it then sends 5 of 23 arriving
+lines up (rule 13 allows 4), and pstack's insides MOD-0005, MOD-0007, MOD-0014
+and MOD-0015 break rules 4, 6, 8 and 13.
+
+best (cost = row crossings + 2 x lines up): only self overview, pstack MOD-0007
+and Orca's runtime switch. self overview still breaks rules 4 and 13, and the
+runtime's back lines rise from 7 to 8, past its recorded debt.
+
+Verdict: no gain on desktop main, and the gain on self overview costs climbing
+lines the rules forbid. Dropped.

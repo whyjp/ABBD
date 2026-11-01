@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 )
 
 // The rows are ordered and placed as a proper layered graph (Sugiyama): a
@@ -647,6 +648,110 @@ func (g *layered) place(budget int) (map[string]int, int) {
 	out := map[string]int{}
 	for id, b := range blockOf {
 		out[id] = bx[b]
+	}
+	return out, width
+}
+
+// seat orders every row of a focus view by where its items stand in the
+// full view, so the ring keeps the reader's mental map: a box left of
+// another there stays left of it here. A chain stands where its box end
+// does. A chain with no box end but the focus, a line to the frame, stands
+// mid-row, over or under the focus. Every line of a focus view has the
+// focus at one end, so no order crosses fewer of them.
+func (g *layered) seat(at map[string]int, focus string) {
+	mid := func(row []string) int {
+		var xs []int
+		for _, id := range row {
+			if x, ok := at[id]; ok && id != focus {
+				xs = append(xs, x)
+			}
+		}
+		if len(xs) == 0 {
+			return 0
+		}
+		slices.Sort(xs)
+		return (xs[(len(xs)-1)/2] + xs[len(xs)/2]) / 2
+	}
+	for r, row := range g.rows {
+		key := map[string]int{}
+		for _, id := range row {
+			x, ok := at[id]
+			if c, d := g.chainOf[id]; d {
+				ch := g.chains[c]
+				x, ok = mid(row), true
+				for _, end := range []string{ch.upper, ch.lower} {
+					if e, has := at[end]; has && end != focus {
+						x = e
+					}
+				}
+			}
+			if !ok {
+				x = 1 << 30
+			}
+			key[id] = x
+		}
+		slices.SortStableFunc(g.rows[r], func(a, b string) int {
+			if key[a] != key[b] {
+				return key[a] - key[b]
+			}
+			return strings.Compare(a, b)
+		})
+	}
+}
+
+// ring places a focus view's rows about one vertical axis: the focus sits
+// on it, and so do the lines that reach the focus from the frame, so they
+// drop straight into it. Each row packs tight around those lines, or
+// around the axis when it has none, keeping the order seat gave it. A row
+// that would reach past budget that way moves in only as far as it must.
+func (g *layered) ring(focus string, budget int) (map[string]int, int) {
+	axial := func(id string) bool {
+		c, d := g.chainOf[id]
+		if !d {
+			return id == focus
+		}
+		ch := g.chains[c]
+		return (ch.upper == focus || ch.lower == focus) && (ch.upper == frameTopNode || ch.lower == frameBottomNode)
+	}
+	// extent is how far row reaches left of the axis, and how wide it is:
+	// the axis runs through the middle of its axial items when it has
+	// them, else through its own middle.
+	extent := func(row []string) (int, int) {
+		x, lo, hi := 0, -1, -1
+		for i, id := range row {
+			if i > 0 {
+				x += g.sep(row[i-1], id)
+			}
+			if axial(id) {
+				if lo < 0 {
+					lo = x
+				}
+				hi = x + g.w[id]
+			}
+			x += g.w[id]
+		}
+		if lo < 0 {
+			lo, hi = 0, x
+		}
+		return (lo + hi) / 2, x
+	}
+	half, widest := 0, 0
+	for _, row := range g.rows {
+		l, w := extent(row)
+		half, widest = max(half, l, w-l), max(widest, w)
+	}
+	width := max(min(2*half, max(budget-2*padX, widest)), minWidth-2*padX) + 2*padX
+	out := map[string]int{}
+	for _, row := range g.rows {
+		l, w := extent(row)
+		x := clamp(width/2-l, padX, width-padX-w)
+		for i, id := range row {
+			if i > 0 {
+				x += g.sep(row[i-1], id)
+			}
+			out[id] = x
+			x += g.w[id]
+		}
 	}
 	return out, width
 }

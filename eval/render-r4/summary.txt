@@ -1,0 +1,18 @@
+before fixture full views: 73 views, lost 0, phantom 71, unmarked T 0, mean bends median 2.11, views over 2 bends 16, mean crossing median 1.007
+after  fixture full views: 73 views, lost 0, phantom 71, unmarked T 0, mean bends median 1.89, views over 2 bends 16, mean crossing median 1.007
+before fixture focus views: 215 views, lost 0, phantom 0, unmarked T 0, mean bends median 1.86, views over 2 bends 3, mean crossing median 0.044
+after  fixture focus views: 215 views, lost 0, phantom 0, unmarked T 0, mean bends median 1.61, views over 2 bends 1, mean crossing median 0.058
+before orca store full views: 29 views, lost 0, phantom 5, unmarked T 0, mean bends median 1.86, views over 2 bends 5, mean crossing median 1.103
+after  orca store full views: 29 views, lost 0, phantom 5, unmarked T 0, mean bends median 1.55, views over 2 bends 5, mean crossing median 1.103
+before orca store focus views: 73 views, lost 0, phantom 0, unmarked T 0, mean bends median 1.86, views over 2 bends 1, mean crossing median 0.082
+after  orca store focus views: 73 views, lost 0, phantom 0, unmarked T 0, mean bends median 1.75, views over 2 bends 1, mean crossing median 0.089
+
+self overview: bends 4.0 crossings 3.0 (max 13) -> bends 4.0 crossings 3.0 (max 13)
+orca MOD-0042 desktop main process: bends 4.0 crossings 9.0 (max 22) -> bends 4.0 crossings 9.0 (max 22)
+orca MOD-0042 focus MOD-0052 desktop-main/ipc: bends 2.0 crossings 2.0 (max 7) -> bends 2.0 crossings 1.0 (max 5)
+orca MOD-0042 focus MOD-0054 desktop-main/persistence: bends 2.0 crossings 0.0 (max 0) -> bends 2.0 crossings 0.0 (max 0)
+pstack overview: bends 4.0 crossings 4.0 (max 17) -> bends 4.0 crossings 4.0 (max 17)
+pstack overview focus MOD-0003 principles: bends 2.0 crossings 0.0 (max 0) -> bends 2.0 crossings 0.0 (max 0)
+orca MOD-0056 focus DATA-0003 orca-runtime.json: bends 3.0 crossings 0.0 (max 0) -> bends 1.0 crossings 0.0 (max 0)
+pstack MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill: bends 3.0 crossings 0.0 (max 0) -> bends 2.0 crossings 0.0 (max 0)
+pstack MOD-0010 focus FEAT-0059 /statechart: bends 3.0 crossings 0.0 (max 0) -> bends 1.0 crossings 0.0 (max 0)

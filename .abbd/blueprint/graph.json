@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "57843f78139a07c748c8edcc6d911ef7433a5b8bdb234b96f0e234a72bb70223"
+    "inputs_hash": "0757250f3d1aba6b716638bcccdad325d5ecedbcd145a7bbb57622e3f9f2baba"
   },
   "units": [
     {
@@ -1966,8 +1966,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go:84 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID) Inside {\"",
-        "internal/screen/inside.go:578 \"func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {\""
+        "internal/screen/inside.go:84 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {\""
       ]
     },
     {
@@ -1992,7 +1991,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:588 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:628 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -2016,8 +2015,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go:273 \"func planOverview(units []model.Unit, focus model.ID) *overview {\"",
-        "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+        "internal/screen/overview.go:274 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
+        "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
       ]
     },
     {
@@ -3828,7 +3827,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -3836,7 +3835,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -3886,7 +3885,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\""
+      "Quote": "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
     },
     {
       "From": "MOD-0035",
@@ -3894,7 +3893,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
+      "Quote": "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
     },
     {
       "From": "MOD-0037",
@@ -3910,7 +3909,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+      "Quote": "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
     },
     {
       "From": "MOD-0038",
@@ -6103,7 +6102,7 @@
       "Name": "/abbd",
       "Drawing": {
         "Width": 781,
-        "Height": 576,
+        "Height": 584,
         "Boxes": [
           {
             "ID": "FEAT-0003",
@@ -6300,8 +6299,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd diff",
             "Exit": false,
             "Below": true,
-            "X": 538,
-            "Y": 558,
+            "X": 594,
+            "Y": 566,
             "W": 40
           },
           {
@@ -6311,8 +6310,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd evidence",
             "Exit": false,
             "Below": true,
-            "X": 380,
-            "Y": 558,
+            "X": 436,
+            "Y": 566,
             "W": 68
           },
           {
@@ -6322,8 +6321,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd status",
             "Exit": false,
             "Below": true,
-            "X": 153,
-            "Y": 558,
+            "X": 209,
+            "Y": 566,
             "W": 54
           },
           {
@@ -6333,8 +6332,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd impact",
             "Exit": false,
             "Below": true,
-            "X": 211,
-            "Y": 558,
+            "X": 267,
+            "Y": 566,
             "W": 56
           },
           {
@@ -6344,8 +6343,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd sync",
             "Exit": false,
             "Below": true,
-            "X": 582,
-            "Y": 558,
+            "X": 638,
+            "Y": 566,
             "W": 40
           },
           {
@@ -6355,8 +6354,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd explain",
             "Exit": false,
             "Below": true,
-            "X": 271,
-            "Y": 558,
+            "X": 327,
+            "Y": 566,
             "W": 61
           },
           {
@@ -6366,8 +6365,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd path",
             "Exit": false,
             "Below": true,
-            "X": 336,
-            "Y": 558,
+            "X": 392,
+            "Y": 566,
             "W": 40
           },
           {
@@ -6377,8 +6376,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd record fact",
             "Exit": false,
             "Below": true,
-            "X": 50,
-            "Y": 558,
+            "X": 106,
+            "Y": 566,
             "W": 89
           },
           {
@@ -6418,8 +6417,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd exit codes",
             "Exit": false,
             "Below": true,
-            "X": 452,
-            "Y": 558,
+            "X": 508,
+            "Y": 566,
             "W": 82
           },
           {
@@ -6479,7 +6478,7 @@
             ]
           },
           {
-            "D": "M180 502 L180 538",
+            "D": "M236 518 L236 546",
             "Kind": "consumes",
             "Title": "/abbd ask the blueprint before the code consumes abbd status (via call), 판독",
             "Via": "call",
@@ -6491,7 +6490,7 @@
             ]
           },
           {
-            "D": "M227 502 L227 538",
+            "D": "M309 518 L309 546",
             "Kind": "consumes",
             "Title": "/abbd ask the blueprint before the code consumes abbd impact (via call), 판독",
             "Via": "call",
@@ -6503,7 +6502,7 @@
             ]
           },
           {
-            "D": "M309 502 L309 538",
+            "D": "M357 518 L357 546",
             "Kind": "consumes",
             "Title": "/abbd ask the blueprint before the code consumes abbd explain (via call), 판독",
             "Via": "call",
@@ -6515,7 +6514,7 @@
             ]
           },
           {
-            "D": "M356 502 L356 538",
+            "D": "M412 518 L412 546",
             "Kind": "consumes",
             "Title": "/abbd ask the blueprint before the code consumes abbd path (via call), 판독",
             "Via": "call",
@@ -6630,7 +6629,7 @@
             ]
           },
           {
-            "D": "M150 478 L150 502 L94 502 L94 538",
+            "D": "M150 478 L150 546",
             "Kind": "consumes",
             "Title": "/abbd what the human states consumes abbd record fact (via call), 판독",
             "Origin": "inferred",
@@ -6685,7 +6684,7 @@
             ]
           },
           {
-            "D": "M602 502 L602 538",
+            "D": "M658 502 L658 546",
             "Kind": "consumes",
             "Title": "/abbd after work consumes abbd sync (via call), 판독",
             "Via": "call",
@@ -6710,7 +6709,7 @@
             ]
           },
           {
-            "D": "M414 502 L414 538",
+            "D": "M464 502 L464 546",
             "Kind": "consumes",
             "Title": "/abbd evidence and CI gate consumes abbd evidence (via call), 판독",
             "Via": "call",
@@ -6722,7 +6721,7 @@
             ]
           },
           {
-            "D": "M513 502 L513 538",
+            "D": "M549 502 L549 546",
             "Kind": "consumes",
             "Title": "/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독",
             "Via": "convention",
@@ -6780,7 +6779,7 @@
             "LY": 50
           },
           {
-            "D": "M236 374 L236 398 M236 398 L236 502 M180 502 L356 502",
+            "D": "M236 374 L236 398 M236 398 L236 518 M236 518 L412 518",
             "Kind": "consumes",
             "Title": "/abbd ask the blueprint before the code consumes abbd status (via call), 판독\n/abbd ask the blueprint before the code consumes abbd impact (via call), 판독\n/abbd ask the blueprint before the code consumes abbd explain (via call), 판독\n/abbd ask the blueprint before the code consumes abbd path (via call), 판독",
             "Origin": "inferred",
@@ -6864,7 +6863,7 @@
             "LY": 102
           },
           {
-            "D": "M625 470 L625 502 M602 502 L625 502",
+            "D": "M625 470 L625 502 M625 502 L658 502",
             "Kind": "consumes",
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd after work consumes abbd sync (via call), 판독",
             "Origin": "inferred",
@@ -6891,11 +6890,11 @@
             ],
             "Count": 2,
             "Net": 4,
-            "LX": 630,
+            "LX": 604,
             "LY": 482
           },
           {
-            "D": "M386 478 L386 502 M386 502 L513 502",
+            "D": "M386 478 L386 502 M386 502 L549 502",
             "Kind": "consumes",
             "Title": "/abbd evidence and CI gate consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd evidence (via call), 판독\n/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독",
             "Origin": "inferred",
@@ -6982,7 +6981,7 @@
             "Net": 7
           },
           {
-            "D": "M558 510 L558 538",
+            "D": "M614 510 L614 546",
             "Kind": "consumes",
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd diff (via call), 판독",
             "Quotes": [
@@ -6995,8 +6994,8 @@
             ],
             "Count": 2,
             "Net": 7,
-            "LX": 563,
-            "LY": 530
+            "LX": 619,
+            "LY": 538
           },
           {
             "D": "M182 286 L308 286",
@@ -7051,27 +7050,12 @@
             "Kind": "depends_on"
           },
           {
-            "X": 227,
-            "Y": 502,
-            "Kind": "consumes"
-          },
-          {
-            "X": 236,
-            "Y": 502,
-            "Kind": "consumes"
-          },
-          {
-            "X": 309,
-            "Y": 502,
-            "Kind": "consumes"
-          },
-          {
             "X": 386,
             "Y": 502,
             "Kind": "consumes"
           },
           {
-            "X": 414,
+            "X": 464,
             "Y": 502,
             "Kind": "consumes"
           },
@@ -7081,8 +7065,23 @@
             "Kind": "consumes"
           },
           {
-            "X": 558,
+            "X": 614,
             "Y": 510,
+            "Kind": "consumes"
+          },
+          {
+            "X": 236,
+            "Y": 518,
+            "Kind": "consumes"
+          },
+          {
+            "X": 309,
+            "Y": 518,
+            "Kind": "consumes"
+          },
+          {
+            "X": 357,
+            "Y": 518,
             "Kind": "consumes"
           }
         ],
@@ -7090,7 +7089,7 @@
           "X": 6,
           "Y": 18,
           "W": 769,
-          "H": 540
+          "H": 548
         }
       },
       "Units": [
@@ -8895,7 +8894,7 @@
             "Class": "design",
             "Title": "이 모듈이 쓰는 계약: project.yaml",
             "Exit": false,
-            "X": 529,
+            "X": 536,
             "Y": 18,
             "W": 98
           },
@@ -8927,7 +8926,7 @@
             "Class": "design",
             "Title": "이 모듈이 제공하는 계약: blueprint files",
             "Exit": true,
-            "X": 297,
+            "X": 304,
             "Y": 18,
             "W": 117
           },
@@ -8948,7 +8947,7 @@
             "Class": "design",
             "Title": "이 모듈이 제공하는 계약: abbd exit codes",
             "Exit": true,
-            "X": 176,
+            "X": 183,
             "Y": 18,
             "W": 117
           },
@@ -8969,7 +8968,7 @@
             "Class": "design",
             "Title": "이 모듈이 쓰는 계약: sync state",
             "Exit": false,
-            "X": 631,
+            "X": 638,
             "Y": 18,
             "W": 82
           },
@@ -9003,7 +9002,7 @@
             "Class": "other",
             "Title": "계약 없이 internal/gitx와 닿는 곳",
             "Exit": false,
-            "X": 457,
+            "X": 464,
             "Y": 18,
             "W": 59,
             "Href": "#m-MOD-0022"
@@ -9014,7 +9013,7 @@
             "Class": "other",
             "Title": "계약 없이 internal/topology와 닿는 곳",
             "Exit": false,
-            "X": 717,
+            "X": 724,
             "Y": 18,
             "W": 87,
             "Href": "#m-MOD-0047"
@@ -9061,7 +9060,7 @@
             "Class": "other",
             "Title": "계약 없이 /abbd-setup와 닿는 곳",
             "Exit": true,
-            "X": 71,
+            "X": 78,
             "Y": 18,
             "W": 101,
             "Href": "#m-FEAT-0002"
@@ -9153,7 +9152,7 @@
             ]
           },
           {
-            "D": "M187 106 L187 62 L234 62 L234 38",
+            "D": "M187 106 L187 62 L241 62 L241 38",
             "Kind": "provides",
             "Title": "argv parsing and dispatch provides abbd exit codes (via call), 판독",
             "Origin": "inferred",
@@ -9194,7 +9193,7 @@
             ]
           },
           {
-            "D": "M578 62 L578 38",
+            "D": "M585 62 L585 38",
             "Kind": "consumes",
             "Title": "sync pipeline consumes project.yaml (via config), 판독",
             "Back": true,
@@ -9228,7 +9227,7 @@
             ]
           },
           {
-            "D": "M672 62 L672 38",
+            "D": "M679 62 L679 38",
             "Kind": "consumes",
             "Title": "sync pipeline consumes sync state (via data), 판독",
             "Back": true,
@@ -9524,14 +9523,14 @@
             ]
           },
           {
-            "D": "M121 38 L121 62 L65 62 L65 174 L128 174 L128 258",
+            "D": "M128 38 L128 62 L65 62 L65 174 L128 174 L128 258",
             "Kind": "consumes",
             "Title": "/abbd-setup verify, install and hand over consumes CLAUDE.md abbd block (via convention), 판독",
             "Origin": "inferred",
             "Via": "convention",
             "Marks": [
               {
-                "X": 121,
+                "X": 128,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -9604,7 +9603,7 @@
             "LY": 162
           },
           {
-            "D": "M616 106 L616 62 M578 62 L672 62",
+            "D": "M616 106 L616 62 M585 62 L679 62",
             "Kind": "consumes",
             "Title": "sync pipeline consumes project.yaml (via config), 판독\nsync pipeline consumes sync state (via data), 판독",
             "Origin": "inferred",
@@ -9728,7 +9727,7 @@
             "Net": 6
           },
           {
-            "D": "M486 62 L486 38",
+            "D": "M493 62 L493 38",
             "Kind": "depends_on",
             "Title": "review commands depends_on internal/gitx (via call), 판독\nsync pipeline depends_on internal/gitx (via call), 판독",
             "Back": true,
@@ -9742,7 +9741,7 @@
             ],
             "Count": 2,
             "Net": 6,
-            "LX": 491,
+            "LX": 498,
             "LY": 50
           },
           {
@@ -9762,7 +9761,7 @@
             "Net": 7
           },
           {
-            "D": "M760 70 L760 38",
+            "D": "M767 70 L767 38",
             "Kind": "depends_on",
             "Title": "review commands depends_on internal/topology (via call), 판독\nquery commands depends_on internal/topology (via call), 판독",
             "Back": true,
@@ -9776,7 +9775,7 @@
             ],
             "Count": 2,
             "Net": 7,
-            "LX": 765,
+            "LX": 772,
             "LY": 50
           },
           {
@@ -9946,7 +9945,7 @@
         ],
         "Dots": [
           {
-            "X": 486,
+            "X": 493,
             "Y": 62,
             "Kind": "depends_on"
           },
@@ -9956,7 +9955,7 @@
             "Kind": "consumes"
           },
           {
-            "X": 760,
+            "X": 767,
             "Y": 70,
             "Kind": "depends_on"
           },
@@ -11690,7 +11689,7 @@
             "Title": "계약 없이 internal/extract와 닿는 곳",
             "Exit": false,
             "Below": true,
-            "X": 55,
+            "X": 140,
             "Y": 226,
             "W": 80,
             "Href": "#m-MOD-0017"
@@ -11701,7 +11700,7 @@
             "Class": "other",
             "Title": "계약 없이 abbd CLI와 닿는 곳",
             "Exit": true,
-            "X": 49,
+            "X": 134,
             "Y": 18,
             "W": 93,
             "Href": "#m-MOD-0001"
@@ -11729,7 +11728,7 @@
             ]
           },
           {
-            "D": "M180 182 L180 190 L95 190 L95 206",
+            "D": "M180 182 L180 206",
             "Kind": "depends_on",
             "Title": "anchor matching depends_on internal/extract (via data), 판독",
             "Origin": "inferred",
@@ -11749,14 +11748,14 @@
             ]
           },
           {
-            "D": "M95 38 L95 46 L180 46 L180 62",
+            "D": "M180 38 L180 62",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on supplement fold (via call), 판독",
             "Origin": "inferred",
             "Via": "call",
             "Marks": [
               {
-                "X": 95,
+                "X": 180,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -12384,7 +12383,7 @@
       "Name": "internal/evidence",
       "Drawing": {
         "Width": 360,
-        "Height": 344,
+        "Height": 340,
         "Boxes": [
           {
             "ID": "MOD-0014",
@@ -12469,8 +12468,8 @@
             "Title": "계약 없이 internal/model와 닿는 곳",
             "Exit": false,
             "Below": true,
-            "X": 171,
-            "Y": 326,
+            "X": 224,
+            "Y": 322,
             "W": 68,
             "Href": "#m-MOD-0030"
           },
@@ -12480,7 +12479,7 @@
             "Class": "other",
             "Title": "계약 없이 abbd CLI와 닿는 곳",
             "Exit": true,
-            "X": 81,
+            "X": 134,
             "Y": 18,
             "W": 93,
             "Href": "#m-MOD-0001"
@@ -12500,7 +12499,7 @@
             ]
           },
           {
-            "D": "M266 130 L266 294 L220 294 L220 306",
+            "D": "M266 130 L266 302",
             "Kind": "depends_on",
             "Title": "liveness and line moves depends_on internal/model (via call), 판독",
             "Via": "call",
@@ -12512,7 +12511,7 @@
             ]
           },
           {
-            "D": "M211 186 L211 194 L250 194 L250 286 L190 286 L190 306",
+            "D": "M211 186 L211 194 L250 194 L250 302",
             "Kind": "consumes",
             "Title": "quote matching consumes internal/model (via call), 판독",
             "Origin": "inferred",
@@ -12552,14 +12551,14 @@
             ]
           },
           {
-            "D": "M127 38 L127 46 L180 46 L180 62",
+            "D": "M180 38 L180 62",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on liveness and line moves (via call), 판독",
             "Origin": "inferred",
             "Via": "call",
             "Marks": [
               {
-                "X": 127,
+                "X": 180,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -12611,7 +12610,7 @@
           "X": 6,
           "Y": 18,
           "W": 348,
-          "H": 308
+          "H": 304
         }
       },
       "Units": [
@@ -19955,7 +19954,7 @@
             "Class": "design",
             "Title": "이 모듈이 제공하는 계약: blueprint files",
             "Exit": true,
-            "X": 339,
+            "X": 340,
             "Y": 18,
             "W": 117
           },
@@ -20034,7 +20033,7 @@
             "Class": "other",
             "Title": "계약 없이 abbd CLI와 닿는 곳",
             "Exit": true,
-            "X": 460,
+            "X": 461,
             "Y": 18,
             "W": 93,
             "Href": "#m-MOD-0001"
@@ -20045,7 +20044,7 @@
             "Class": "other",
             "Title": "계약 없이 internal/topology와 닿는 곳",
             "Exit": true,
-            "X": 153,
+            "X": 154,
             "Y": 18,
             "W": 87,
             "Href": "#m-MOD-0047"
@@ -20059,7 +20058,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
+              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037"
@@ -20084,14 +20083,14 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
             ]
           },
           {
-            "D": "M398 62 L398 46 L397 46 L397 38",
+            "D": "M398 62 L398 38",
             "Kind": "provides",
             "Title": "page template provides blueprint files (via data), 판독",
             "Origin": "inferred",
@@ -20255,14 +20254,14 @@
             ]
           },
           {
-            "D": "M196 38 L196 46 L197 46 L197 62",
+            "D": "M197 38 L197 62",
             "Kind": "consumes",
             "Title": "internal/topology consumes origin display words (via data), 판독",
             "Origin": "inferred",
             "Via": "data",
             "Marks": [
               {
-                "X": 196,
+                "X": 197,
                 "Y": 38,
                 "Origin": "inferred"
               }
@@ -20278,8 +20277,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
-              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Marks": [
               {
@@ -20310,7 +20309,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Marks": [
               {
@@ -20471,8 +20470,8 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
-              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20485,8 +20484,8 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\"",
-              "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20503,7 +20502,7 @@
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
+              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
               "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
@@ -20517,7 +20516,7 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Quotes": [
-              "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
+              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
               "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
@@ -21428,7 +21427,63 @@
                 "Code": true
               },
               {
-                "Text": " tells the chips where their lines leave a row.",
+                "Text": " tells the chips where their lines leave a row. A focus view passes ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": " a ",
+                "Code": false
+              },
+              {
+                "Text": "focusSeat",
+                "Code": true
+              },
+              {
+                "Text": ", the x of every box in its full view: ",
+                "Code": false
+              },
+              {
+                "Text": "seat",
+                "Code": true
+              },
+              {
+                "Text": " then orders each row by that x instead of ",
+                "Code": false
+              },
+              {
+                "Text": "order",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "brick",
+                "Code": true
+              },
+              {
+                "Text": " deals a ring too wide for one row into rows that each take every k-th box, and ",
+                "Code": false
+              },
+              {
+                "Text": "ring",
+                "Code": true
+              },
+              {
+                "Text": " replaces ",
+                "Code": false
+              },
+              {
+                "Text": "place",
+                "Code": true
+              },
+              {
+                "Text": ", setting the focus and the frame's lines into it on one vertical axis at the middle and packing each row around them.",
                 "Code": false
               }
             ]
@@ -21716,7 +21771,31 @@
                 "Code": true
               },
               {
-                "Text": " holds no link to a focus view, and the page lists the focus views under the full drawing.",
+                "Text": " holds no link to a focus view, and the page lists the focus views under the full drawing. ",
+                "Code": false
+              },
+              {
+                "Text": "centres",
+                "Code": true
+              },
+              {
+                "Text": " reads the full view's box centres for ",
+                "Code": false
+              },
+              {
+                "Text": "focusSeat",
+                "Code": true
+              },
+              {
+                "Text": ", so a ring keeps the order its boxes have in the full view; ",
+                "Code": false
+              },
+              {
+                "Text": "TestFocusViewsKeepTheMapOfTheirView",
+                "Code": true
+              },
+              {
+                "Text": " holds that order and the centred focus.",
                 "Code": false
               }
             ]
@@ -21934,7 +22013,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -21943,7 +22022,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -21982,7 +22061,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12)\""
+            "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
           ]
         },
         {
@@ -21991,8 +22070,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:126 \"if slices.Contains(o.providers[c], m) {\"",
-            "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\")\""
+            "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
           ]
         },
         {
@@ -22011,7 +22089,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:403 \"o.layout = arrange(nodes, edges, overviewBudget)\""
+            "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
           ]
         },
         {
@@ -22030,9 +22108,9 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-            "internal/screen/inside.go:494 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
+            "internal/screen/inside.go:499 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
             "internal/screen/page.html:153 \"{{if .Unwired}}\"",
-            "internal/screen/inside.go:436 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
+            "internal/screen/inside.go:441 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
         {
@@ -25788,7 +25866,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:301 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -26109,7 +26187,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:397 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
