@@ -103,7 +103,7 @@ func Parse(r io.Reader) (Result, error) {
 		if err := rr.Via.Validate(); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
-		evidence, err := normalizeEvidence(rr.Evidence)
+		evidence, err := NormalizeEvidence(rr.Evidence)
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
@@ -112,7 +112,7 @@ func Parse(r io.Reader) (Result, error) {
 	return res, nil
 }
 
-func normalizeEvidence(es []model.Evidence) ([]model.Evidence, error) {
+func NormalizeEvidence(es []model.Evidence) ([]model.Evidence, error) {
 	var out []model.Evidence
 	for _, e := range es {
 		p, err := normalizePath(e.Path)
@@ -150,7 +150,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			}
 			ru.Anchors[j] = model.Anchor{Path: p, Symbol: strings.TrimSpace(a.Symbol)}
 		}
-		evidence, err := normalizeEvidence(ru.Evidence)
+		evidence, err := NormalizeEvidence(ru.Evidence)
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
 		}

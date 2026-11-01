@@ -91,7 +91,7 @@ func TestANewCommandIsAGradeCQuestion(t *testing.T) {
 	p.verify("pass", 0, "PASSED")
 	code, out := p.cmd("", "turn", "end", "--session", "s1")
 	t.Logf("turn end exit %d:\n%s", code, out)
-	if code != 2 || !strings.Contains(out, "C BLOCKED new-relation:MOD-0001.provides.IF-0024") {
+	if code != 2 || strings.Count(out, "C BLOCKED new-relation:MOD-0001.provides.IF-") != 1 {
 		t.Errorf("adding `abbd turn ok` must ask a human:\n%s", out)
 	}
 }

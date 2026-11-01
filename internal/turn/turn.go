@@ -54,6 +54,67 @@ type Baseline struct {
 	// Digests are the units' code fingerprints at the start, for the units the
 	// extraction gives one.
 	Digests map[model.ID]string `yaml:"digests,omitempty"`
+	// Evidence fingerprints the quoted lines of each intended semantic relation.
+	Evidence map[string]string `yaml:"evidence,omitempty"`
+}
+
+// EvidenceDigests records the evidence fingerprint of every intended
+// relation that rests on evidence, keyed by edge.
+func EvidenceDigests(in topology.Intended, units []model.Unit) map[string]string {
+	out := map[string]string{}
+	for _, u := range topology.Present(units) {
+		for _, r := range u.Relations {
+			e := topology.Edge{From: u.ID, To: r.To, Kind: r.Kind}
+			if r.Semantic() && r.Counts() && slices.Contains(in.Relations, e) {
+				out[e.String()] = r.Digest
+			}
+		}
+	}
+	return out
+}
+
+// EvidenceTouched finds the intended semantic relations whose quoted lines a
+// turn edited while the quotes survived. The gate cannot read whether the
+// coupling still means the same, so each is grade B, as a touched contract is.
+func EvidenceTouched(baseline map[string]string, in topology.Intended, units []model.Unit) []Verdict {
+	var out []Verdict
+	now := EvidenceDigests(in, units)
+	for _, e := range in.Relations {
+		was, ok := baseline[e.String()]
+		if d, live := now[e.String()]; ok && live && d != was {
+			out = append(out, Verdict{Item: topology.Item{Change: topology.EvidenceTouched, Edge: e, Old: was, New: d}, Grade: B})
+		}
+	}
+	return out
+}
+
+// Scan says that an agent checked one impacted unit for the couplings only a
+// reader sees, with the pstack skill it followed.
+type Scan struct {
+	Unit model.ID `yaml:"unit"`
+	By   string   `yaml:"by"`
+}
+
+// Scanners are the pstack skills a scan may follow.
+var Scanners = []string{"how", "blast-radius"}
+
+func (t *Turn) Scanned(id model.ID) bool {
+	return slices.ContainsFunc(t.Scans, func(s Scan) bool { return s.Unit == id })
+}
+
+// Unscanned lists a grade B finding for each direct design unit no one
+// checked for semantic couplings. The script cannot see them, so only a
+// reader's scan covers that part of the impact; skipping it proceeds, and a
+// human sees it.
+func (t Turn) Unscanned(in topology.Intended, g Graph) []Verdict {
+	var out []Verdict
+	direct, _ := t.Tiers(g)
+	for _, i := range direct {
+		if _, design := in.Unit(i.Unit); design && !t.Scanned(i.Unit) {
+			out = append(out, Verdict{Item: topology.Item{Change: topology.Unscanned, Unit: i.Unit}, Grade: B})
+		}
+	}
+	return out
 }
 
 // Digests records each present unit's digest for a turn's baseline.
@@ -139,7 +200,9 @@ type Turn struct {
 	Approvals   []Approval   `yaml:"approvals,omitempty"`
 	Rejections  []Rejection  `yaml:"rejections,omitempty"`
 	Run         string       `yaml:"verification,omitempty"`
-	Report      *Report      `yaml:"report,omitempty"`
+	// Scans records which impacted units an agent checked for semantic couplings.
+	Scans  []Scan  `yaml:"scans,omitempty"`
+	Report *Report `yaml:"report,omitempty"`
 }
 
 // Link is one edge the impact follows. Semantic links come from a reader's
@@ -450,7 +513,7 @@ func Fold(in topology.Intended, vs []Verdict) topology.Intended {
 func Contrast(d Delta, vs []Verdict, touched []model.ID) (declaredNotDone, doneNotDeclared []string) {
 	var done []string
 	for _, v := range vs {
-		if v.Grade != A && v.Item.Change != topology.ContractTouched {
+		if v.Grade != A && !v.Item.Change.Finding() {
 			done = append(done, v.Item.Key())
 		}
 	}

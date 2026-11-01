@@ -173,7 +173,7 @@ func (e env) turnStart() error {
 	}
 	t := turn.Turn{
 		ID: string(chg), Requirement: string(req), Session: e.session, State: turn.Open,
-		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.Digests(v.units)},
+		Baseline: turn.Baseline{Revision: gitx.Head(e.root), Fingerprint: tree, Extractor: script, Digests: turn.Digests(v.units), Evidence: turn.EvidenceDigests(*v.intended, v.units)},
 		Seeds:    seeds, Impact: turn.ComputeImpact(turn.GraphOf(*v.intended, v.units), seeds),
 	}
 	if err := e.st.WriteRequirement(store.Requirement{ID: string(req), Origin: model.UserStated, Turn: t.ID}, text); err != nil {
@@ -218,6 +218,33 @@ func (e env) turnImpact() error {
 		return err
 	}
 	e.printImpact(*t, turn.GraphOf(*v.intended, v.units))
+	return nil
+}
+
+// turnScan records that an agent checked an impacted unit for the couplings
+// only a reader sees, by following a pstack skill.
+func (e env) turnScan() error {
+	t, err := e.current(turn.State.Resumable, "scan")
+	if err != nil {
+		return err
+	}
+	if _, err := e.impact(t); err != nil {
+		return err
+	}
+	id := model.ID(e.unit)
+	switch {
+	case !slices.Contains(turn.Scanners, e.by):
+		return fmt.Errorf("--by names the pstack skill the scan followed: one of %s", strings.Join(turn.Scanners, ", "))
+	case !t.Impacts(id):
+		return fmt.Errorf("%s is not in the impact of %s; add it with abbd turn impact --add %s first", id, t.ID, id)
+	}
+	if !t.Scanned(id) {
+		t.Scans = append(t.Scans, turn.Scan{Unit: id, By: e.by})
+	}
+	if err := e.st.SaveTurn(*t); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "%s: %s scanned for semantic couplings by %s\n", t.ID, id, e.by)
 	return nil
 }
 
@@ -536,6 +563,8 @@ func (e env) turnEnd() error {
 	}
 	vs := turn.Judge(*v.intended, v.units, t.Approvals)
 	vs = append(vs, turn.Touched(*v.intended, t.Baseline.Digests, v.units, vs)...)
+	vs = append(vs, turn.EvidenceTouched(t.Baseline.Evidence, *v.intended, v.units)...)
+	vs = append(vs, t.Unscanned(*v.intended, turn.GraphOf(*v.intended, v.units))...)
 	touched, known, err := e.touched(t.Baseline, tree, v.units)
 	if err != nil {
 		return fmt.Errorf("listing the files the turn changed: %w", err)

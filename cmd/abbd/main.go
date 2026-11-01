@@ -49,6 +49,13 @@ abbd reject unit-added:ID --reason TEXT [--root DIR]
                                      relations change
 abbd couple FROM.KIND.TO [--root DIR]
                                      register a coupling the extraction script cannot see
+abbd propose relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     an agent's guess at a coupling, kept while its evidence is
+                                     in the code; it waits in the confirm queue and never gates
+abbd propose unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--root DIR]
+                                     an agent's guess at a unit the extraction script cannot see
+abbd evidence [--root DIR]           check every semantic unit's and relation's evidence against
+                                     the working tree: live or dead, and where each quote is
 abbd serve [--addr 127.0.0.1:PORT] [--root DIR]
                                      the human screen: approve, reject, confirm and align without
                                      opening Markdown; loopback only, decisions need its token
@@ -62,6 +69,10 @@ abbd turn start --session ID --seeds IDS --request TEXT|- [--root DIR]
                                      open a turn: record the request, compute the impact
 abbd turn impact --session ID [--add IDS] [--root DIR]
                                      list the impact; the agent may only add to it
+abbd turn scan --session ID --unit ID --by how|blast-radius [--root DIR]
+                                     record that a direct unit was checked for semantic
+                                     couplings; turn end leaves a grade B card for each
+                                     direct design unit without one
 abbd turn declare --session ID [--units IDS] [--changes KEYS] [--root DIR]
                                      the IntentDelta; exit 2 while a grade C change waits for a human
 abbd turn diff --session ID [--root DIR]
@@ -104,6 +115,8 @@ type opts struct {
 	reject                        bool
 	seeds, request, units         string
 	changes, add                  string
+	via, parent, unit, by         string
+	evidence                      evidenceFlags
 	all, list                     bool
 	argv                          []string
 	// given names the flags the command line set, even to an empty value.
@@ -151,6 +164,21 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.reason, "reason", "", "why a human refuses the change")
 	},
 	"reject": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.reject, "reject", false, "the guess is wrong") },
+	"via": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call")
+	},
+	"evidence": func(fs *flag.FlagSet, o *opts) {
+		fs.Var(&o.evidence, "evidence", "PATH:LINES:QUOTE, a verbatim excerpt of the code; repeat for more")
+	},
+	"parent": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.parent, "parent", "", "the module that contains the unit")
+	},
+	"unit": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.unit, "unit", "", "the impacted unit that was scanned")
+	},
+	"by": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.by, "by", "", "the pstack skill the scan followed: how or blast-radius")
+	},
 	"addr": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.addr, "addr", "127.0.0.1:0", "loopback address to listen on; port 0 picks a free one")
 	},
@@ -167,20 +195,24 @@ type command struct {
 }
 
 var commands = map[string]command{
-	"setup":   {flags: []string{"root", "supplement", "adopt", "greenfield", "verify"}, pos: []int{0}, dashArgv: true, run: env.setup},
-	"align":   {flags: []string{"root", "all", "confirm", "exclude"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.align() }},
-	"confirm": {flags: []string{"root", "list", "value", "reject"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
-	"approve": {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},
-	"reject":  {flags: []string{"root", "reason"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.rejectChange(pos[0]) }},
-	"couple":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.couple(pos[0]) }},
-	"serve":   {flags: []string{"root", "addr"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.serve() }},
-	"ingest":  {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},
-	"mode":    {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
-	"status":  {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
-	"hook":    {flags: []string{"root"}, subs: []string{"*"}, pos: []int{0}},
+	"setup":            {flags: []string{"root", "supplement", "adopt", "greenfield", "verify"}, pos: []int{0}, dashArgv: true, run: env.setup},
+	"align":            {flags: []string{"root", "all", "confirm", "exclude"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.align() }},
+	"confirm":          {flags: []string{"root", "list", "value", "reject"}, pos: []int{0, 1}, run: func(e env, _ string, pos []string) error { return e.confirmItem(pos) }},
+	"approve":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.approve(pos[0]) }},
+	"reject":           {flags: []string{"root", "reason"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.rejectChange(pos[0]) }},
+	"couple":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.couple(pos[0]) }},
+	"propose relation": {flags: []string{"root", "via", "evidence"}, pos: []int{3}, run: func(e env, _ string, pos []string) error { return e.proposeRelation(pos) }},
+	"propose unit":     {flags: []string{"root", "evidence", "parent"}, pos: []int{2}, run: func(e env, _ string, pos []string) error { return e.proposeUnit(pos) }},
+	"evidence":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.checkEvidence() }},
+	"serve":            {flags: []string{"root", "addr"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.serve() }},
+	"ingest":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, _ string, pos []string) error { return e.ingest(pos[0]) }},
+	"mode":             {flags: []string{"root", "session"}, subs: []string{"on", "off"}, pos: []int{0}, session: true, run: func(e env, sub string, _ []string) error { return e.mode(sub == "on") }},
+	"status":           {flags: []string{"root", "session"}, pos: []int{0}, run: func(e env, _ string, _ []string) error { return e.status() }},
+	"hook":             {flags: []string{"root"}, subs: []string{"*"}, pos: []int{0}},
 
 	"turn start":   {flags: []string{"root", "session", "seeds", "request"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnStart() }},
 	"turn impact":  {flags: []string{"root", "session", "add"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnImpact() }},
+	"turn scan":    {flags: []string{"root", "session", "unit", "by"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnScan() }},
 	"turn declare": {flags: []string{"root", "session", "units", "changes"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnDeclare() }},
 	"turn diff":    {flags: []string{"root", "session"}, pos: []int{0}, session: true, run: func(e env, _ string, _ []string) error { return e.turnDiff() }},
 	"turn verify":  {flags: []string{"root", "session"}, pos: []int{0}, dashArgv: true, session: true, run: func(e env, _ string, _ []string) error { return e.turnVerify() }},

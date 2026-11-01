@@ -73,7 +73,19 @@ const (
 	// ContractTouched is a turn's finding, never a difference Compare reports:
 	// a consumed contract's code changed while its signature stayed the same.
 	ContractTouched Change = "contract-touched"
+	// EvidenceTouched is a turn's finding: the lines that hold the evidence of
+	// a confirmed semantic relation changed while the quote survived.
+	EvidenceTouched Change = "evidence-touched"
+	// Unscanned is a turn's finding: no one checked a direct design unit for
+	// the couplings only a reader sees.
+	Unscanned Change = "semantic-unscanned"
 )
+
+// Finding reports whether a change is a turn's grade B note rather than a
+// difference between the intended and the actual topology.
+func (c Change) Finding() bool {
+	return c == ContractTouched || c == EvidenceTouched || c == Unscanned
+}
 
 // Item is one difference between intended and actual.
 type Item struct {
@@ -88,7 +100,7 @@ type Item struct {
 // Key is stable across runs, so a human can approve an item by name.
 func (it Item) Key() string {
 	switch it.Change {
-	case NewRelation, RemovedRelation:
+	case NewRelation, RemovedRelation, EvidenceTouched:
 		return string(it.Change) + ":" + it.Edge.String()
 	default:
 		return string(it.Change) + ":" + string(it.Unit)
@@ -303,13 +315,13 @@ func ParseKey(key string) (Item, error) {
 	}
 	it := Item{Change: Change(change)}
 	switch it.Change {
-	case NewRelation, RemovedRelation:
+	case NewRelation, RemovedRelation, EvidenceTouched:
 		e, err := ParseEdge(rest)
 		if err != nil {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
 		it.Edge = e
-	case ContractChanged, UnitRemoved, UnitAdded, ContractTouched:
+	case ContractChanged, UnitRemoved, UnitAdded, ContractTouched, Unscanned:
 		if _, _, err := model.ParseID(rest); err != nil {
 			return Item{}, fmt.Errorf("%s: %w", key, err)
 		}
