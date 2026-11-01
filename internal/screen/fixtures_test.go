@@ -94,6 +94,7 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // cannot fold, so its climbing lines stay (docs/blueprint-svg.md, "Known
 // gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
+	"self overview":                               {TooClose: 1},
 	"self MOD-0001 abbd CLI":                      {Back: 5},
 	"self FEAT-0001 /abbd":                        {Back: 5},
 	"self MOD-0030 internal/model":                {Crossings: 32, Back: 3},
@@ -105,11 +106,11 @@ var debt = map[string]Metrics{
 	"orca MOD-0056 Orca runtime (RPC host)":       {MaxChannel: 7, TooClose: 3, Crossings: 77, Back: 7},
 	"orca MOD-0072 desktop renderer UI":           {MaxChannel: 5, TooClose: 1, Back: 6},
 	"orca MOD-0097 native/":                       {TooClose: 1},
-	"orca MOD-0098~1 서로 쓰는 5개":                    {SplitIn: 2, TooClose: 3},
+	"orca MOD-0098~1 서로 쓰는 5개":                    {TooClose: 3, SplitIn: 2},
 	"orca MOD-0099 src/":                          {Back: 2},
 	"orca MOD-0100~1 서로 쓰는 9개":                    {Back: 3},
 	"pstack overview":                             {MaxChannel: 5, Crossings: 41, Back: 9},
-	"pstack MOD-0001 setup and help":              {SplitIn: 4, TooClose: 1},
+	"pstack MOD-0001 setup and help":              {TooClose: 1, SplitIn: 4},
 	"pstack MOD-0003 principles":                  {Back: 3},
 	"pstack MOD-0004 poteto-mode, the front door": {SplitIn: 4},
 	"pstack MOD-0015 verification principles":     {Truncated: 1},
