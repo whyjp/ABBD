@@ -259,3 +259,15 @@ func TestInstallKeepsOneBlockInClaudeMD(t *testing.T) {
 		}
 	}
 }
+
+// A CLAUDE.md that shows the markers in a fenced example keeps the example;
+// install appends its own block after it.
+func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {
+	p, _ := bare(t)
+	doc := "# Project\n\nThe abbd block looks like:\n\n```\n" + blockBegin + "\nmy own example\n" + blockEnd + "\n```\n"
+	write(t, filepath.Join(p.root, "CLAUDE.md"), doc)
+	p.want(0, "added the abbd block", "install")
+	if got := claudeMD(t, p.root); got != doc+"\n"+block {
+		t.Errorf("install changed content outside its block:\n%s", got)
+	}
+}

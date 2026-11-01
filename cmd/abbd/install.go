@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -41,7 +40,7 @@ func (e env) install() error {
 		nl = "\r\n"
 	}
 	want := strings.ReplaceAll(block, "\n", nl)
-	begin, end := strings.Index(text, blockBegin), strings.Index(text, blockEnd)
+	begin, end := markers(text)
 	var next string
 	switch {
 	case begin < 0 && end < 0:
@@ -53,9 +52,7 @@ func (e env) install() error {
 		}
 		next = text + want
 	case begin >= 0 && end > begin:
-		rest := text[end+len(blockEnd):]
-		rest = strings.TrimPrefix(strings.TrimPrefix(rest, "\r"), "\n")
-		next = text[:begin] + want + rest
+		next = text[:begin] + want + text[end:]
 	default:
 		return fmt.Errorf("%s has an unmatched %s or %s marker; fix it by hand, then rerun abbd install", path, blockBegin, blockEnd)
 	}
@@ -66,10 +63,40 @@ func (e env) install() error {
 	if err := os.WriteFile(path, []byte(next), 0o644); err != nil {
 		return err
 	}
-	if bytes.Contains(old, []byte(blockBegin)) {
+	if begin >= 0 {
 		fmt.Fprintln(e.stdout, "CLAUDE.md: replaced the abbd block")
 	} else {
 		fmt.Fprintln(e.stdout, "CLAUDE.md: added the abbd block")
 	}
 	return nil
+}
+
+// markers returns where the block's begin line starts and where its end line
+// ends, or -1 for a marker not found. A marker counts only alone on its line
+// and outside fenced code, so a CLAUDE.md that shows the markers in an
+// example keeps the example.
+func markers(text string) (begin, end int) {
+	begin, end = -1, -1
+	fence := ""
+	for off := 0; off < len(text); {
+		next := len(text)
+		if n := strings.IndexByte(text[off:], '\n'); n >= 0 {
+			next = off + n + 1
+		}
+		line := strings.TrimSpace(text[off:next])
+		switch {
+		case fence != "":
+			if strings.HasPrefix(line, fence) {
+				fence = ""
+			}
+		case strings.HasPrefix(line, "```") || strings.HasPrefix(line, "~~~"):
+			fence = line[:3]
+		case line == blockBegin && begin < 0:
+			begin = off
+		case line == blockEnd && end < 0:
+			end = next
+		}
+		off = next
+	}
+	return begin, end
 }
