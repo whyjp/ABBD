@@ -39,8 +39,8 @@ When the top level holds more than 16 modules, or a module holds more than 16 un
 
 ## Known gaps
 
-Nine views still break a rule. Their current measurements are recorded in `fixtures_test.go` as debt. They are allowed to improve but never to get worse, and the test fails once a view keeps every rule until it is taken off the list.
+Seven views still break a rule. Their current measurements are recorded in `fixtures_test.go` as debt. They are allowed to improve but never to get worse, and the test fails once a view keeps every rule until it is taken off the list.
 
-- **Orca, dense cyclic graphs.** Five Orca views are dense cyclic import graphs among sibling modules that no directory split can break up: mobile app, desktop main process, runtime, renderer, and `src/`. They break rules 5, 6 and 7. The fix is a reader's grouping by behaviour.
-- **Orca, too wide or too many boxes.** `src/main/` and `shared types and schemas` are wider than the 920px budget because of their frame ports. `src/shared/` holds 22 units in one directory.
+- **Orca, dense cyclic graphs.** Five Orca views are dense cyclic import graphs among sibling modules that no directory split can break up: mobile app, desktop main process, runtime, renderer, and `src/`. They break rules 5, 6 and 7, and the runtime view also breaks rule 10. The fix is a reader's grouping by behaviour.
+- **Orca, too many boxes.** `src/shared/` holds 20 units in one directory, so it breaks rule 1 as well as rules 6, 7 and 10.
 - **This repository's CLI inside.** It has one port on the far side.

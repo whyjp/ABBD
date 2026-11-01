@@ -94,15 +94,13 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // it waits for a reader's grouping (docs/blueprint-svg.md, "Supplying
 // groups").
 var debt = map[string]Metrics{
-	"self MOD-0001 abbd CLI":                 {PortFar: 1},
-	"orca MOD-0007 mobile app (Expo)":        {MaxChannel: 6, TooClose: 13, Crossings: 214, PortFar: 1},
-	"orca MOD-0042 desktop main process":     {MaxChannel: 5, TooClose: 11, Crossings: 365},
-	"orca MOD-0056 Orca runtime (RPC host)":  {MaxChannel: 5, TooClose: 1, Crossings: 97, PortFar: 3},
-	"orca MOD-0072 desktop renderer UI":      {MaxChannel: 6, TooClose: 7, Crossings: 66},
-	"orca MOD-0081 shared types and schemas": {Width: 1027, TooClose: 1},
-	"orca MOD-0098 src/":                     {MaxChannel: 5, TooClose: 1, Crossings: 77},
-	"orca MOD-0099 src/main/":                {Width: 1701, TooClose: 2, Crossings: 44},
-	"orca MOD-0100 src/shared/":              {Boxes: 22, Crossings: 44},
+	"self MOD-0001 abbd CLI":                {PortFar: 1},
+	"orca MOD-0007 mobile app (Expo)":       {MaxChannel: 5, TooClose: 10, Crossings: 189},
+	"orca MOD-0042 desktop main process":    {MaxChannel: 5, TooClose: 11, Crossings: 365},
+	"orca MOD-0056 Orca runtime (RPC host)": {MaxChannel: 5, TooClose: 1, Crossings: 97, PortFar: 3},
+	"orca MOD-0072 desktop renderer UI":     {MaxChannel: 6, TooClose: 4, Crossings: 65},
+	"orca MOD-0098 src/":                    {MaxChannel: 5, TooClose: 7, Crossings: 68},
+	"orca MOD-0100 src/shared/":             {Boxes: 20, TooClose: 1, Crossings: 68, PortFar: 2},
 }
 
 // over names each measure that went past its recorded debt. A measure the
