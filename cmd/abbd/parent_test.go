@@ -81,3 +81,29 @@ func TestAParentOnADirectoryGroupIsRefused(t *testing.T) {
 	}
 	p.want(1, "directory group", "record", "parent", "MOD-0011", "MOD-0021", "--source", "conversation 2026-11-01")
 }
+
+// A feature holds its parts the way a module holds its units: a skill's
+// steps sit inside the skill, and a step's command is reached through it.
+// A contract still holds nothing.
+func TestAFeatureHoldsItsParts(t *testing.T) {
+	p, exe := bare(t)
+	p.code("cli/run.go", "package cli\n\nfunc Run() {}\n")
+	p.code("skills/go/SKILL.md", "---\nname: go\n---\n\n## Steps\n\n1. Run `cli run`.\n")
+	parts := `{"units":[
+ {"key":"cli","kind":"MOD","name":"cli","anchors":[{"path":"cli/run.go"}]},
+ {"key":"run","kind":"IF","name":"cli run","signature":"run","anchors":[{"path":"cli/run.go","symbol":"Run"}]},
+ {"key":"skill","kind":"FEAT","name":"/go","anchors":[{"path":"skills/go/SKILL.md","symbol":"go"}]},
+ {"key":"step","kind":"FEAT","name":"1. Run cli run","parent":"skill","anchors":[{"path":"skills/go/SKILL.md","symbol":"Steps 1"}],
+  "evidence":[{"path":"skills/go/SKILL.md","lines":"7","quote":"1. Run"}]}
+],"relations":[
+ {"from":"cli","to":"run","kind":"provides"},
+ {"from":"step","to":"run","kind":"consumes","evidence":[{"path":"skills/go/SKILL.md","lines":"7","quote":"cli run"}]}
+]}`
+	p.extract(parts)
+	p.setup(0, "synced", "--", exe)
+	contains(t, p.want(0, "", "explain", "1. Run cli run"), "inside FEAT-0002 /go\n", "evidence: skills/go/SKILL.md:7 \"1. Run\"")
+	contains(t, p.want(0, "", "path", "/go", "cli run"), "contains", "2 hop(s)")
+
+	p.extract(strings.Replace(parts, `"parent":"skill"`, `"parent":"run"`, 1))
+	p.want(1, "is not the key of another module or feature", "sync")
+}

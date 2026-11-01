@@ -118,8 +118,8 @@ func (e env) recordUnit(pos []string) error {
 		return err
 	}
 	parent := model.ID(e.parent)
-	if p, ok := presentUnit(units, parent); parent != "" && (!ok || p.Kind != model.Module) {
-		return fmt.Errorf("--parent %s is not a module of the state", parent)
+	if p, ok := presentUnit(units, parent); parent != "" && (!ok || !p.Kind.Holds()) {
+		return fmt.Errorf("--parent %s is not a module or feature of the state", parent)
 	}
 	es, err := e.citations()
 	if err != nil {
@@ -172,8 +172,8 @@ func (e env) recordParent(pos []string) error {
 		return fmt.Errorf("%s is not a unit of the state", id)
 	}
 	p, ok := presentUnit(units, parent)
-	if !ok || p.Kind != model.Module || parent == id {
-		return fmt.Errorf("%s is not another module of the state", parent)
+	if !ok || !p.Kind.Holds() || parent == id {
+		return fmt.Errorf("%s is not another module or feature of the state", parent)
 	}
 	if group.Made(p) {
 		return fmt.Errorf("%s is a directory group sync makes to keep a view small and drops when it is not needed; record the module that owns %s", parent, id)

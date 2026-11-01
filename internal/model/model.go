@@ -128,7 +128,7 @@ type Unit struct {
 	Kind    Kind     `yaml:"kind"`
 	Name    Fact     `yaml:"name"`
 	Anchors []Anchor `yaml:"anchors"`
-	// Parent is the module that contains this unit. ParentOrigin says who
+	// Parent is the module or feature that contains this unit. ParentOrigin says who
 	// placed it there, the way a relation's origin does: the script
 	// (EXTRACTED, also when empty), a reader citing ParentEvidence
 	// (INFERRED), or a human naming ParentSource (USER_STATED). A sync keeps
@@ -191,8 +191,8 @@ func (u Unit) Validate() error {
 		}
 	}
 	if u.Parent != "" {
-		if k, _, err := ParseID(string(u.Parent)); err != nil || k != Module || u.Parent == u.ID {
-			return fmt.Errorf("%s: parent %s is not another module", u.ID, u.Parent)
+		if k, _, err := ParseID(string(u.Parent)); err != nil || !k.Holds() || u.Parent == u.ID {
+			return fmt.Errorf("%s: parent %s is not another module or feature", u.ID, u.Parent)
 		}
 	}
 	switch {
@@ -264,6 +264,10 @@ func ParentCycle(units []Unit) ID {
 	}
 	return ""
 }
+
+// Holds reports whether a unit of kind k may contain others: a module holds
+// its units, and a feature holds its parts, such as a skill's steps.
+func (k Kind) Holds() bool { return k == Module || k == Feature }
 
 func (k Kind) IsContract() bool {
 	return k == Interface || k == Event || k == Data || k == Config

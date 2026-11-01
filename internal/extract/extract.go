@@ -64,7 +64,7 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
-	// Parent is the key of the module that contains the unit. A parent the
+	// Parent is the key of the module or feature that contains the unit. A parent the
 	// script reports has no ParentOrigin; one a supplement gives is INFERRED
 	// and rests on ParentEvidence.
 	Parent         string
@@ -96,8 +96,8 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 	}
 	for _, u := range units {
 		k, ok := kinds[u.Parent]
-		if u.Parent != "" && (ok && k != model.Module || !ok && !foreignParents || u.Parent == u.Key) {
-			return Result{}, fmt.Errorf("unit %q: parent %q is not the key of another module", u.Name.Value, u.Parent)
+		if u.Parent != "" && (ok && !k.Holds() || !ok && !foreignParents || u.Parent == u.Key) {
+			return Result{}, fmt.Errorf("unit %q: parent %q is not the key of another module or feature", u.Name.Value, u.Parent)
 		}
 		if parentCycle(units, u.Key) {
 			return Result{}, fmt.Errorf("unit %q: its parents form a cycle", u.Name.Value)

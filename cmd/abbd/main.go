@@ -100,7 +100,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.Var(&o.evidence, "evidence", "PATH:LINES:QUOTE, a verbatim excerpt of the code; repeat for more")
 	},
 	"parent": func(fs *flag.FlagSet, o *opts) {
-		fs.StringVar(&o.parent, "parent", "", "the module that contains the unit")
+		fs.StringVar(&o.parent, "parent", "", "the module or feature that contains the unit")
 	},
 	"responsibility": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.responsibility, "responsibility", "", "the one sentence a reader says the unit is responsible for")
