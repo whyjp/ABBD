@@ -3,13 +3,14 @@
   "owner": {
     "name": "whyjp"
   },
-  "description": "ABBD — Active Blueprint-Based Development. The agent works from a blueprint it builds and keeps current: Architecture/Feature Map, external contract view and review topology, synced with every verified change.",
+  "metadata": {
+    "description": "ABBD: a blueprint layer on top of pstack for Claude Code"
+  },
   "plugins": [
     {
       "name": "abbd",
       "source": "./plugins/abbd",
-      "description": "Eight host-neutral skills for the ABBD turn loop plus the abbd MCP server.",
-      "category": "development"
+      "description": "Keeps a human-approved intended topology next to the topology extracted from code, and gates structural drift."
     }
   ]
 }

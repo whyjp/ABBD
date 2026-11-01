@@ -1,43 +1,17 @@
 {
+  "description": "ABBD hooks. Each does nothing unless /abbd-mode turned the mode on for the session.",
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup|resume|clear|compact",
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/session-start.sh\""
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Read|Grep|Glob|Bash|PowerShell",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/history-guard.sh\""
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/session-end.sh\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/stop-gate.sh\""
+            "command": "abbd",
+            "args": [
+              "hook",
+              "SessionStart"
+            ],
+            "timeout": 30
           }
         ]
       }
@@ -47,18 +21,59 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/note-prompt.sh\""
+            "command": "abbd",
+            "args": [
+              "hook",
+              "UserPromptSubmit"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Write|Edit|NotebookEdit|WebFetch|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "abbd",
+            "args": [
+              "hook",
+              "PreToolUse"
+            ],
+            "timeout": 30
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "matcher": "Write|Edit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/note-edit.sh\""
+            "command": "abbd",
+            "args": [
+              "hook",
+              "PostToolUse"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "abbd",
+            "args": [
+              "hook",
+              "Stop"
+            ],
+            "timeout": 30
           }
         ]
       }

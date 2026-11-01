@@ -1,116 +1,337 @@
-// Package identity implements anchor-bundle stable IDs (PRD ch.06, FR-27, AC-BOOT-03).
+// Package identity keeps design-unit IDs stable across re-extraction.
+//
+// An extracted unit takes over a stored ID when they share two or more
+// anchors, or when their anchor sets are identical. Pairs are assigned
+// globally, best match first, so input order never changes the outcome.
+// Any leftover overlap between a unit and a stored unit it did not take
+// over is recorded as a merge candidate for a human to resolve.
 package identity
 
 import (
-	"path"
+	"sort"
+	"strings"
 
+	"github.com/whyjp/abbd/internal/extract"
 	"github.com/whyjp/abbd/internal/model"
 )
 
-type Verdict int
-
-const (
-	New Verdict = iota
-	Candidate
-	Same
-)
-
-// Policy is the match_policy of PRD ch.06.
-const (
-	SameIfAtLeast = 2
-	CandidateIf   = 1
-)
-
-type Existing struct {
-	ID      string
-	Anchors []model.Anchor
+type Candidate struct {
+	New      model.ID     `yaml:"new"`
+	Existing model.ID     `yaml:"existing"`
+	Shared   model.Anchor `yaml:"shared"`
 }
 
-type Match struct {
-	Verdict Verdict
-	ID      string
-	Matched []model.Anchor
+type Outcome string
+
+const (
+	Matched Outcome = "matched"
+	Created Outcome = "new"
+)
+
+type Event struct {
+	ID      model.ID
+	Outcome Outcome
 }
 
-// Resolve finds the existing object that best matches the given anchors.
-// renames maps old path -> new path (git rename detection or content-hash moves) and is
-// applied to existing path anchors before counting.
-func Resolve(anchors []model.Anchor, existing []Existing, renames map[string]string, taken map[string]bool) Match {
-	best := Match{Verdict: New}
-	for _, e := range existing {
-		if taken[e.ID] {
+type Result struct {
+	Units      []model.Unit
+	Candidates []Candidate
+	Events     []Event
+	Unmatched  []model.ID
+	HighWater  map[model.Kind]int
+}
+
+// Guesses says what happens to the stored INFERRED facts no human has decided.
+type Guesses int
+
+const (
+	// KeepGuesses is a re-extraction by the script, which cannot see them.
+	KeepGuesses Guesses = iota
+	// ReplaceGuesses is a setup, whose supplement owns them: a guess the new
+	// supplement no longer makes is withdrawn.
+	ReplaceGuesses
+)
+
+type pair struct {
+	in, st    int
+	identical bool
+	overlap   int
+	symdiff   int
+}
+
+// Reconcile is pure. renames maps old paths to new paths since the last sync.
+// highWater holds the largest number ever minted per kind, so deleted IDs are never reused.
+func Reconcile(stored []model.Unit, renames map[string]string, extraction extract.Result, prior []Candidate, highWater map[model.Kind]int, guesses Guesses) Result {
+	hw := map[model.Kind]int{}
+	for k, n := range highWater {
+		hw[k] = n
+	}
+	units := make([]model.Unit, len(stored))
+	for i, u := range stored {
+		u.Anchors = applyRenames(u.Anchors, renames)
+		units[i] = u
+		if _, n, err := model.ParseID(string(u.ID)); err == nil && n > hw[u.Kind] {
+			hw[u.Kind] = n
+		}
+	}
+	sort.Slice(units, func(i, j int) bool { return units[i].ID < units[j].ID })
+	prior = keepLive(prior, units)
+
+	input := append([]extract.Unit(nil), extraction.Units...)
+	sort.SliceStable(input, func(i, j int) bool {
+		if input[i].Kind != input[j].Kind {
+			return input[i].Kind < input[j].Kind
+		}
+		return anchorList(input[i].Anchors) < anchorList(input[j].Anchors)
+	})
+
+	var pairs []pair
+	for i, in := range input {
+		for j, u := range units {
+			if u.Kind != in.Kind {
+				continue
+			}
+			ov := overlap(u.Anchors, in.Anchors)
+			same := ov > 0 && identical(u.Anchors, in.Anchors)
+			if ov >= 2 || same {
+				pairs = append(pairs, pair{i, j, same, ov, len(u.Anchors) + len(in.Anchors) - 2*ov})
+			}
+		}
+	}
+	sort.SliceStable(pairs, func(a, b int) bool {
+		p, q := pairs[a], pairs[b]
+		switch {
+		case p.identical != q.identical:
+			return p.identical
+		case p.overlap != q.overlap:
+			return p.overlap > q.overlap
+		case p.symdiff != q.symdiff:
+			return p.symdiff < q.symdiff
+		case p.st != q.st:
+			return p.st < q.st
+		default:
+			return p.in < q.in
+		}
+	})
+	inTo := map[int]int{}
+	stTaken := map[int]bool{}
+	for _, p := range pairs {
+		if _, done := inTo[p.in]; done || stTaken[p.st] {
 			continue
 		}
-		matched := intersect(anchors, Rewrite(e.Anchors, renames))
-		if len(matched) > len(best.Matched) {
-			best = Match{ID: e.ID, Matched: matched}
+		inTo[p.in] = p.st
+		stTaken[p.st] = true
+	}
+
+	before := make([][]model.Anchor, len(units))
+	for j, u := range units {
+		before[j] = u.Anchors
+	}
+
+	var res Result
+	var created []model.Unit
+	ids := make([]model.ID, len(input))
+	for i, in := range input {
+		if j, ok := inTo[i]; ok {
+			merge(&units[j], in, guesses)
+			ids[i] = units[j].ID
+			res.Events = append(res.Events, Event{ids[i], Matched})
+			continue
+		}
+		hw[in.Kind]++
+		nu := model.Unit{
+			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
+			Anchors: in.Anchors, Purpose: in.Purpose, Responsibility: in.Responsibility,
+			Signature: in.Signature, Digest: in.Digest,
+		}
+		created = append(created, nu)
+		ids[i] = nu.ID
+		res.Events = append(res.Events, Event{nu.ID, Created})
+	}
+
+	var fresh []Candidate
+	for i, in := range input {
+		_, matched := inTo[i]
+		for j, u := range units {
+			if u.Kind != in.Kind || u.ID == ids[i] {
+				continue
+			}
+			// A matched unit only links to stored units left without a match: a merge.
+			if matched && stTaken[j] {
+				continue
+			}
+			if overlap(before[j], in.Anchors) > 0 {
+				fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})
+			}
 		}
 	}
-	switch {
-	case len(best.Matched) >= SameIfAtLeast:
-		best.Verdict = Same
-	case len(best.Matched) == CandidateIf:
-		best.Verdict = Candidate
-	default:
-		best = Match{Verdict: New}
+	for j := range units {
+		units[j].Absent = !stTaken[j]
+		if !stTaken[j] {
+			res.Unmatched = append(res.Unmatched, units[j].ID)
+		}
 	}
-	return best
+	res.Units = append(units, created...)
+	sort.Slice(res.Units, func(i, j int) bool { return res.Units[i].ID < res.Units[j].ID })
+	setRelations(res.Units, input, ids, extraction.Relations, guesses)
+	res.Candidates = keepLive(append(prior, fresh...), res.Units)
+	res.HighWater = hw
+	return res
 }
 
-// Rewrite applies path renames to path anchors and to path-shaped prefixes of other anchors.
-func Rewrite(anchors []model.Anchor, renames map[string]string) []model.Anchor {
-	if len(renames) == 0 {
-		return anchors
+// Extraction owns the EXTRACTED relations of every unit it reports; units it
+// did not report keep theirs until a human resolves them. A relation from any
+// other origin survives, because the script cannot see it, unless guesses are
+// replaced. When the same edge arrives twice, the extracted one wins, then the
+// stored one.
+func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels []extract.Relation, guesses Guesses) {
+	byKey := map[string]model.ID{}
+	for i, in := range input {
+		if in.Key != "" {
+			byKey[in.Key] = ids[i]
+		}
 	}
-	out := make([]model.Anchor, len(anchors))
-	for i, a := range anchors {
-		if a.Kind == model.AnchorPath {
-			if to, ok := renames[a.Ref]; ok {
-				a.Ref = to
+	reported := map[model.ID]bool{}
+	for _, id := range ids {
+		reported[id] = true
+	}
+	extracted := map[model.ID][]model.Relation{}
+	stated := map[model.ID][]model.Relation{}
+	for _, r := range rels {
+		origin := r.Origin
+		if origin == "" {
+			origin = model.Extracted
+		}
+		rel := model.Relation{To: byKey[r.To], Kind: r.Kind, Origin: origin}
+		f := byKey[r.From]
+		if origin == model.Extracted {
+			extracted[f] = append(extracted[f], rel)
+		} else {
+			stated[f] = append(stated[f], rel)
+		}
+	}
+	for i := range units {
+		id := units[i].ID
+		if !reported[id] {
+			continue
+		}
+		next := extracted[id]
+		for _, r := range units[i].Relations {
+			if r.Origin != model.Extracted && !(guesses == ReplaceGuesses && r.Guess()) {
+				next = append(next, r)
 			}
+		}
+		units[i].Relations = dedupRelations(append(next, stated[id]...))
+	}
+}
+
+func dedupRelations(rs []model.Relation) []model.Relation {
+	type edge struct {
+		to   model.ID
+		kind model.RelationKind
+	}
+	seen := map[edge]bool{}
+	var out []model.Relation
+	for _, r := range rs {
+		if e := (edge{r.To, r.Kind}); !seen[e] {
+			seen[e] = true
+			out = append(out, r)
+		}
+	}
+	return model.SortRelations(out)
+}
+
+// Extraction owns anchors, signatures and EXTRACTED names. Human-given values
+// and decided guesses survive.
+func merge(u *model.Unit, in extract.Unit, guesses Guesses) {
+	u.Anchors = in.Anchors
+	u.Signature = in.Signature
+	u.Digest = in.Digest
+	if u.Name.Origin == model.Extracted && u.Name.Value != in.Name.Value {
+		confirmation := u.Name.Confirmation
+		u.Name = in.Name
+		if confirmation != "" {
+			u.Name.Confirmation = model.Unconfirmed
+		}
+	}
+	replace := func(f *model.Fact) bool { return f == nil || (guesses == ReplaceGuesses && f.Guess()) }
+	if replace(u.Purpose) {
+		u.Purpose = in.Purpose
+	}
+	if replace(u.Responsibility) {
+		u.Responsibility = in.Responsibility
+	}
+}
+
+func applyRenames(as []model.Anchor, renames map[string]string) []model.Anchor {
+	out := make([]model.Anchor, len(as))
+	for i, a := range as {
+		if to, ok := renames[a.Path]; ok {
+			a.Path = to
 		}
 		out[i] = a
 	}
-	return out
+	return model.SortAnchors(out)
 }
 
-func intersect(a, b []model.Anchor) []model.Anchor {
-	set := map[model.Anchor]bool{}
+func anchorList(as []model.Anchor) string {
+	ks := make([]string, len(as))
+	for i, a := range as {
+		ks[i] = a.Key()
+	}
+	return strings.Join(ks, "\x00")
+}
+
+func keys(as []model.Anchor) map[string]bool {
+	m := make(map[string]bool, len(as))
+	for _, a := range as {
+		m[a.Key()] = true
+	}
+	return m
+}
+
+func overlap(a, b []model.Anchor) int {
+	ka, n := keys(a), 0
 	for _, x := range b {
-		set[x] = true
-	}
-	var out []model.Anchor
-	seen := map[model.Anchor]bool{}
-	for _, x := range a {
-		if set[x] && !seen[x] {
-			out = append(out, x)
-			seen[x] = true
+		if ka[x.Key()] {
+			n++
 		}
 	}
-	return out
+	return n
 }
 
-// ContentRenames detects moved files by identical content hash: a path that disappeared and
-// a new path with the same hash. Works without git.
-func ContentRenames(base, next map[string]string) map[string]string {
-	gone := map[string]string{}
-	for p, h := range base {
-		if _, ok := next[p]; !ok {
-			gone[h] = p
+func identical(a, b []model.Anchor) bool {
+	return len(a) == len(b) && overlap(a, b) == len(a)
+}
+
+func shared(a, b []model.Anchor) model.Anchor {
+	ka := keys(a)
+	for _, x := range b {
+		if ka[x.Key()] {
+			return x
 		}
 	}
-	out := map[string]string{}
-	for p, h := range next {
-		if _, existed := base[p]; existed {
-			continue
-		}
-		if old, ok := gone[h]; ok {
-			out[old] = p
-			// A module anchor is a directory; a moved file also moves its directory anchor.
-			if od, nd := path.Dir(old), path.Dir(p); od != nd {
-				out[od] = nd
-			}
+	return model.Anchor{}
+}
+
+func keepLive(cs []Candidate, units []model.Unit) []Candidate {
+	live := map[model.ID]bool{}
+	for _, u := range units {
+		live[u.ID] = true
+	}
+	seen := map[Candidate]bool{}
+	var out []Candidate
+	for _, c := range cs {
+		if live[c.New] && live[c.Existing] && !seen[c] {
+			seen[c] = true
+			out = append(out, c)
 		}
 	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].New != out[j].New {
+			return out[i].New < out[j].New
+		}
+		return out[i].Existing < out[j].Existing
+	})
 	return out
 }

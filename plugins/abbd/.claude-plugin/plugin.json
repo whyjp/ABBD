@@ -1,9 +1,9 @@
 {
   "name": "abbd",
-  "version": "0.1.0",
-  "description": "abbd turn loop: session-bootstrap, understand-project, change-intent, architect-change, impact-review, implement-and-prove, sync-knowledge, reflect-and-correct. Requires the abbd CLI on PATH (go install github.com/whyjp/abbd/cmd/abbd@latest).",
-  "author": { "name": "whyjp" },
-  "homepage": "https://github.com/whyjp/ABBD",
-  "repository": "https://github.com/whyjp/ABBD",
-  "keywords": ["harness", "ssot", "architecture-map", "feature-map", "mcp"]
+  "version": "0.4.0",
+  "description": "Keeps a human-approved intended topology next to the topology extracted from code, and gates structural drift. Requires pstack 0.15.36 and the abbd CLI on PATH.",
+  "author": {
+    "name": "whyjp"
+  },
+  "repository": "https://github.com/whyjp/ABBD"
 }

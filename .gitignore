@@ -2,6 +2,5 @@
 /abbd
 /abbd.exe
 /bin/
+.claude/
 .playwright-mcp/
-benchmark/results/
-__pycache__/
