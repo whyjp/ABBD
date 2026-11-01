@@ -282,6 +282,9 @@ func fields(u model.Unit) []field {
 		fs = append(fs, field{"quote", 1, e.Quote})
 	}
 	for _, rel := range u.Relations {
+		if rel.Dead {
+			continue
+		}
 		for _, e := range rel.Evidence {
 			fs = append(fs, field{"quote", 1, e.Quote})
 		}
