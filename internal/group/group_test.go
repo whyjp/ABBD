@@ -78,6 +78,24 @@ func TestASmallTopLevelStaysFlat(t *testing.T) {
 	}
 }
 
+// A group whose units sit both in its own directory and below it splits
+// only the ones below, and never contains itself.
+func TestAGroupNeverHoldsItself(t *testing.T) {
+	var us []model.Unit
+	for i := 1; i <= 40; i++ {
+		file := fmt.Sprintf("src/m%d.go", i)
+		if i > 20 {
+			file = fmt.Sprintf("src/sub%d/m.go", i%3)
+		}
+		us = append(us, module(i, file))
+	}
+	us = append(us, module(41, "web/a.go"), module(42, "web/b.go"))
+	got, _ := Fallback(us, map[model.Kind]int{model.Module: 42})
+	if model.ParentCycle(got) != "" {
+		t.Fatalf("the groups form a cycle: %v", parents(got))
+	}
+}
+
 // The overview draws a top-level contract as a chip, so contracts do not
 // count against the budget there.
 func TestTopLevelContractsDoNotCrowdTheOverview(t *testing.T) {

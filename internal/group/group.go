@@ -91,7 +91,9 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 		sort.Strings(names)
 		for _, dir := range names {
 			is := keys[dir]
-			if len(is) < 2 {
+			// The units right in the directory of the group being split stay
+			// in it rather than form a group of the same directory.
+			if g, ok := made[dir]; len(is) < 2 || ok && out[g].ID == container {
 				continue
 			}
 			g, ok := made[dir]
