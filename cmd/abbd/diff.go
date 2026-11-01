@@ -42,7 +42,7 @@ func (e env) diff() error {
 		fmt.Fprintf(e.stdout, "topology since %s:\n%s", short(base), d)
 	}
 	if e.check && d.Boundary() {
-		return fmt.Errorf("the change reaches the boundary between modules: a contract changed or a relation between top-level units appeared")
+		return fmt.Errorf("the change reaches the boundary between modules: a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")
 	}
 	return nil
 }

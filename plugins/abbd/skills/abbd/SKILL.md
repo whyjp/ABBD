@@ -40,4 +40,4 @@ When the human states a purpose, a responsibility or a coupling in the conversat
 2. Put the topology difference in the reply and in the PR description under its own heading, in plain words: which units came and went, which contracts changed shape or code, which relations between modules appeared or went, which couplings a reader added.
 3. Commit `.abbd/` with the code, so the PR shows the blueprint's change.
 
-`abbd evidence` lists each quote and whether the code still holds it. `abbd diff --check` exits 1 when a contract changed or a relation between modules appeared, for a CI job that labels the PR.
+`abbd evidence` lists each quote and whether the code still holds it. `abbd diff --check` exits 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared, for a CI job that labels the PR. A contract's code change under the same signature is reported but does not fail it.

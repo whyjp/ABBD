@@ -47,7 +47,10 @@ abbd impact IDS [--root DIR]         what a change to the comma-separated units 
 abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      the topology difference since REV (default: the merge base
                                      with the default branch), for the PR; --check exits 1 when
-                                     a contract changed or a cross-module relation appeared
+                                     a contract's signature changed, a contract was added or
+                                     removed, or a relation between top-level modules appeared
+                                     or disappeared; a contract's code change under the same
+                                     signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree
 abbd status [--root DIR]             whether the state and the blueprint are CURRENT, and counts`
 
@@ -101,7 +104,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
 	"check": func(fs *flag.FlagSet, o *opts) {
-		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract changed or a cross-module relation appeared")
+		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")
 	},
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
 	"source": func(fs *flag.FlagSet, o *opts) {

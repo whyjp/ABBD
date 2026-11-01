@@ -585,7 +585,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <tr><td><code>abbd impact IDS</code></td><td>읽기 전용 이웃. 직접과 멀리 두 층이다. EXTRACTED, USER_STATED, 살아 있는 INFERRED 관계와 시드 자신이 나가는 관계를 따른다</td></tr>
 <tr><td><code>abbd explain ID|NAME</code></td><td>읽기 전용. 단위 하나를 한눈에 보인다. 종류, 이름, <code>parent</code>, 책임과 그 origin, 시그니처, 제공하고 소비하는 계약, 관계 종류와 <code>via</code>와 origin을 단 직접 이웃, 증거 인용을 단 INFERRED 결합을 낸다. 모듈이면 속 단위와 how의 글을 더하고, 글이 낡았으면 STALE로 표시한다. graphify의 <code>explain</code>과 같은 자리다</td></tr>
 <tr><td><code>abbd path A B</code></td><td>읽기 전용. EXTRACTED, USER_STATED, 살아 있는 INFERRED 관계를 따라 두 단위 사이의 최단 경로를 낸다. 홉마다 관계 종류, <code>via</code>, origin을 적고, 경로에서 가장 약한 origin으로 끝난다. graphify의 <code>path</code>와 같은 자리다</td></tr>
-<tr><td><code>abbd diff [--base REV] [--json] [--check]</code></td><td>기준 revision(기본값은 기본 브랜치와의 merge base)의 상태와 지금의 토폴로지 차이다. 단위의 추가와 삭제, 계약 시그니처 변경, 시그니처는 같은데 코드가 바뀐 계약(digest), 최상위 모듈 사이 관계의 추가와 삭제, 새 추정 결합을 보고한다. PR 설명에 넣을 줄과 <code>--json</code>을 낸다. exit 0이다. <code>--check</code>를 주면 계약이 바뀌었거나 모듈 사이 관계가 생겼을 때 exit 1이다. PR에 라벨을 붙이는 CI 작업용이고, ABBD 안의 게이트가 아니다</td></tr>
+<tr><td><code>abbd diff [--base REV] [--json] [--check]</code></td><td>기준 revision(기본값은 기본 브랜치와의 merge base)의 상태와 지금의 토폴로지 차이다. 단위의 추가와 삭제, 계약 시그니처 변경, 시그니처는 같은데 코드가 바뀐 계약(digest), 최상위 모듈 사이 관계의 추가와 삭제, 새 추정 결합을 보고한다. PR 설명에 넣을 줄과 <code>--json</code>을 낸다. exit 0이다. <code>--check</code>를 주면 계약의 시그니처가 바뀌었거나, 계약이 생기거나 없어졌거나, 최상위 모듈 사이 관계가 생기거나 없어졌을 때 exit 1이다. 시그니처는 같은데 코드만 바뀐 계약은 보고하지만 exit 1로 만들지 않는다. 인터페이스 파일을 고칠 때마다 CI가 표시하지 않게 하려는 것이다. PR에 라벨을 붙이는 CI 작업용이고, ABBD 안의 게이트가 아니다</td></tr>
 <tr><td><code>abbd evidence</code></td><td>읽기 전용 인용 확인. 결정적이다</td></tr>
 <tr><td><code>abbd install</code></td><td>프로젝트의 CLAUDE.md에 상시 지침 블록을 쓰거나 제자리에서 바꾼다. <code>.abbd/</code>는 건드리지 않는다. 두 번 돌려도 바뀌는 것이 없다</td></tr>
 <tr><td><code>abbd status</code></td><td>상태의 최신성과 수</td></tr>
@@ -632,7 +632,7 @@ input[type="checkbox"] { margin: 0 8px 0 0; vertical-align: -2px; accent-color: 
 <li><code>abbd record relation</code>은 증거 없이는, <code>abbd record fact</code>는 <code>--source</code> 없이는 거부된다.</li>
 <li>코드가 바뀐 모듈에 바뀌지 않은 글을 다시 찍는 <code>abbd understand</code>는 거부되고, 낡은 글은 설계도에 STALE로 보인다.</li>
 <li><code>parent</code> 순환은 거부된다.</li>
-<li><code>abbd diff</code>는 단위의 추가와 삭제, 계약 시그니처 변경, 같은 시그니처의 digest 변경, 최상위 모듈 사이 관계의 변화, 새 추정 결합을 보고하고 exit 0이다. <code>--check</code>는 계약 변경이나 모듈 사이 새 관계가 있을 때만 exit 1이다.</li>
+<li><code>abbd diff</code>는 단위의 추가와 삭제, 계약 시그니처 변경, 같은 시그니처의 digest 변경, 최상위 모듈 사이 관계의 변화, 새 추정 결합을 보고하고 exit 0이다. <code>--check</code>는 계약의 시그니처 변경, 계약의 추가나 삭제, 최상위 모듈 사이 관계의 추가나 삭제가 있을 때만 exit 1이다. 같은 시그니처의 digest 변경으로는 exit 1이 아니다.</li>
 <li>겉층은 최상위 단위와 EXTRACTED, USER_STATED 관계만 그린다. INFERRED 결합은 그 모듈의 속층에 &quot;추정&quot;으로 나열된다.</li>
 <li>모듈 하나의 안이 바뀌어도 겉층의 배치는 같다. 390px에서 가로 스크롤이 없다.</li>
 <li>설계도에는 승인 버튼, 폼, 큐, 턴, 기록이 없다.</li>

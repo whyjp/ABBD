@@ -95,8 +95,9 @@ func TestDiffNamesEveryCategorySinceTheBase(t *testing.T) {
 	}
 }
 
-// --check informs a CI label: exit 1 when a contract changed or a relation
-// between top-level units appeared, 0 when the change stays inside modules.
+// --check informs a CI label: exit 1 when a contract's signature changed, a
+// contract was added or removed, or a relation between top-level units
+// appeared or disappeared, 0 when the change stays inside modules.
 func TestDiffCheckFlagsOnlyBoundaryChanges(t *testing.T) {
 	p, base := diffProject(t)
 	p.want(1, "reaches the boundary", "diff", "--base", base, "--check")
@@ -135,4 +136,30 @@ func TestDiffDefaultBaseFindsOriginMainWithoutOriginHead(t *testing.T) {
 	git(t, p.root, "update-ref", "refs/remotes/origin/main", "HEAD")
 	git(t, p.root, "branch", "-M", "work")
 	p.want(0, "topology since", "diff")
+}
+
+// A contract's code change under the same signature is reported but leaves
+// --check at 0, or CI would flag every edit to an interface file. A new
+// contract and a vanished relation between modules each fail it.
+func TestDiffCheckFailsOnANewContractButNotOnACodeChange(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(diffBase)
+	p.setup(0, "synced", "--", exe)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "base")
+	base := rev(t, p.root)
+
+	code := strings.Replace(diffBase, `"digest":"e1"`, `"digest":"e2"`, 1)
+	p.extract(code)
+	p.want(0, "", "sync")
+	p.want(0, "its code changed under the same signature", "diff", "--base", base, "--check")
+
+	p.extract(strings.Replace(code, `],"relations"`, `,{"key":"cfg","kind":"CFG","name":"rates","signature":"rate=N","anchors":[{"path":"cfg/rates.go","symbol":"Rate"}]}],"relations"`, 1))
+	p.want(0, "", "sync")
+	p.want(1, "reaches the boundary", "diff", "--base", base, "--check")
+
+	p.extract(strings.Replace(diffBase, `,
+ {"from":"billing","to":"ledger","kind":"depends_on"}`, "", 1))
+	p.want(0, "", "sync")
+	p.want(1, "- relation MOD-0001 depends_on MOD-0002", "diff", "--base", base, "--check")
 }

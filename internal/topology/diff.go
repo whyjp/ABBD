@@ -98,13 +98,14 @@ func Compare(base, now []model.Unit) Diff {
 }
 
 // Boundary reports whether the change reaches the boundary between modules:
-// a contract's signature changed or a contract went away, or a drawn relation
-// between top-level units appeared. It informs a label; it decides nothing.
+// a contract's signature changed, a contract was added or removed, or a drawn
+// relation between top-level units appeared or disappeared. A contract whose
+// code changed under the same signature does not count; every edit to an
+// interface file would. It informs a label; it decides nothing.
 func (d Diff) Boundary() bool {
-	if len(d.Signatures) > 0 || len(d.RelationsAdded) > 0 {
-		return true
-	}
-	return slices.ContainsFunc(d.UnitsRemoved, func(r Ref) bool { return r.Kind.IsContract() })
+	contract := func(r Ref) bool { return r.Kind.IsContract() }
+	return len(d.Signatures) > 0 || len(d.RelationsAdded) > 0 || len(d.RelationsRemoved) > 0 ||
+		slices.ContainsFunc(d.UnitsAdded, contract) || slices.ContainsFunc(d.UnitsRemoved, contract)
 }
 
 // Lines says the difference in one line per change.
