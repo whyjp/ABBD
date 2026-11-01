@@ -32,7 +32,11 @@ func (e env) checkEvidence() error {
 			subject += " via " + string(via)
 		}
 		if r.Live {
-			fmt.Fprintf(e.stdout, "%s %s: %s found at %s\n", state, subject, ev, r.At)
+			at := r.At
+			if r.Path != "" {
+				at = r.Path + ":" + r.At
+			}
+			fmt.Fprintf(e.stdout, "%s %s: %s found at %s\n", state, subject, ev, at)
 		} else {
 			fmt.Fprintf(e.stdout, "%s %s: %s\n", state, subject, ev)
 		}
