@@ -183,15 +183,15 @@
     {
       "key": "if-cli",
       "kind": "IF",
-      "name": "abbd command line",
+      "name": "abbd exit codes",
       "anchors": [
         {
           "path": "cmd/abbd/main.go",
-          "symbol": "commands"
+          "symbol": "exitNeedHuman"
         }
       ],
-      "purpose": "is the command surface humans, skills and the screen call",
-      "responsibility": "fixes the commands, their flags, positional counts, argv passthrough and exit codes 0, 1, 2 and 64"
+      "purpose": "tells every caller whether a command succeeded, failed, or needs a human",
+      "responsibility": "fixes exit codes 0, 1, 2 and 64 and how a command line is parsed; each command's own shape is its own contract"
     },
     {
       "key": "if-confirm-key",
@@ -394,11 +394,6 @@
       "from": "mod-guard",
       "to": "mod-store",
       "kind": "depends_on"
-    },
-    {
-      "from": "mod-guard",
-      "to": "if-cli",
-      "kind": "consumes"
     },
     {
       "from": "mod-guard",

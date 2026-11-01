@@ -1,7 +1,7 @@
 {
   "watermark": {
-    "inputs_hash": "9092d515911ff4c1d51b7163cb9ceed8ed57f7431703e21b84288136b1bb726a",
-    "intended_revision": 1
+    "inputs_hash": "b780cfac6573165040f264413fcb45786fc02d545e58c92979c7acd2c6b300cb",
+    "intended_revision": 74
   },
   "phase": "aligned",
   "units": [
@@ -73,7 +73,7 @@
       "ID": "DATA-0001",
       "Kind": "DATA",
       "Name": "extraction JSON",
-      "Signature": "extraction json: relations{from,kind,to},units{anchors{path,symbol},key,kind,name,purpose,responsibility,signature}",
+      "Signature": "extraction json: relations{from,kind,to},units{anchors{path,symbol},digest,key,kind,name,purpose,responsibility,signature}",
       "Design": true,
       "Purpose": {
         "Value": "is what every project extraction script and supplement must print",
@@ -95,7 +95,7 @@
       "ID": "DATA-0002",
       "Kind": "DATA",
       "Name": "unit files",
-      "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},id,kind,name{confirmation,origin,rejected,value,verification},purpose{confirmation,origin,rejected,value,verification},relations{confirmation,kind,origin,to},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}",
+      "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,anchors{path,symbol},digest,id,kind,name{confirmation,origin,rejected,value,verification},purpose{confirmation,origin,rejected,value,verification},relations{confirmation,kind,origin,to},responsibility{confirmation,origin,rejected,value,verification},signature{confirmation,origin,rejected,value,verification}",
       "Design": true,
       "Purpose": {
         "Value": "is the actual topology as reviewable files",
@@ -205,7 +205,7 @@
       "ID": "DATA-0007",
       "Kind": "DATA",
       "Name": "change records",
-      "Signature": ".abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,seeds,session,state,verification",
+      "Signature": ".abbd/changes/CHG-*.md frontmatter: approvals{adr,item},baseline{digests,extractor,fingerprint,revision},id,impact{by,unit,why},intent_delta{changes,units},questions,rejections{adr,item,reason},report{declared_not_done,done_not_declared,gate,notes,why},requirement,seeds,session,state,verification",
       "Design": true,
       "Purpose": {
         "Value": "is the record of each turn",
@@ -312,8 +312,8 @@
     {
       "ID": "IF-0002",
       "Kind": "IF",
-      "Name": "abbd command line",
-      "Signature": "align[all,confirm,exclude,root] pos{0}; approve[root] pos{1}; confirm[list,reject,root,value] pos{0,1}; couple[root] pos{1}; hook[root] sub{*} pos{0}; ingest[root] pos{1}; mode[root,session] sub{on,off} pos{0} needs-session; reject[reason,root] pos{1}; serve[addr,root] pos{0}; setup[adopt,greenfield,root,supplement,verify] pos{0} --argv; status[root,session] pos{0}; turn declare[changes,root,session,units] pos{0} needs-session; turn diff[root,session] pos{0} needs-session; turn end[root,session] pos{0} needs-session; turn impact[add,root,session] pos{0} needs-session; turn show[root,session] pos{0}; turn start[request,root,seeds,session] pos{0} needs-session; turn verify[root,session] pos{0} --argv needs-session; exit error=1,needhuman=2,ok=0,usage=64",
+      "Name": "abbd exit codes",
+      "Signature": "exit error=1,needhuman=2,ok=0,usage=64",
       "Design": true,
       "Purpose": {
         "Value": "is the command surface humans, skills and the screen call",
@@ -326,9 +326,9 @@
         "Rejected": ""
       },
       "Anchors": [
-        "cmd/abbd/main.go commands",
         "cmd/abbd/main.go exitNeedHuman",
-        "cmd/abbd/main.go flagDefs"
+        "cmd/abbd/main.go flagDefs",
+        "cmd/abbd/main.go parse"
       ]
     },
     {
@@ -378,7 +378,7 @@
       "ID": "IF-0005",
       "Kind": "IF",
       "Name": "change item key",
-      "Signature": "{contract-changed,new-relation,removed-relation,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID",
+      "Signature": "{contract-changed,contract-touched,new-relation,removed-relation,unit-added,unit-removed}:ID or :ID.{consumes,depends_on,provides}.ID",
       "Design": true,
       "Purpose": {
         "Value": "names one topology change so a human can approve or reject it",
@@ -394,6 +394,240 @@
         "internal/topology/topology.go Edge",
         "internal/topology/topology.go Item",
         "internal/topology/topology.go ParseKey"
+      ]
+    },
+    {
+      "ID": "IF-0006",
+      "Kind": "IF",
+      "Name": "abbd hook",
+      "Signature": "abbd hook[root] sub{*} pos{0}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/hook.go hook",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
+      "ID": "IF-0007",
+      "Kind": "IF",
+      "Name": "abbd align",
+      "Signature": "abbd align[all,confirm,exclude,root] pos{0}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go align",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
+      "ID": "IF-0008",
+      "Kind": "IF",
+      "Name": "abbd approve",
+      "Signature": "abbd approve[root] pos{1}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go approve",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
+      "ID": "IF-0009",
+      "Kind": "IF",
+      "Name": "abbd confirm",
+      "Signature": "abbd confirm[list,reject,root,value] pos{0,1}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go confirmItem"
+      ]
+    },
+    {
+      "ID": "IF-0010",
+      "Kind": "IF",
+      "Name": "abbd couple",
+      "Signature": "abbd couple[root] pos{1}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go couple"
+      ]
+    },
+    {
+      "ID": "IF-0011",
+      "Kind": "IF",
+      "Name": "abbd ingest",
+      "Signature": "abbd ingest[root] pos{1}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go ingest"
+      ]
+    },
+    {
+      "ID": "IF-0012",
+      "Kind": "IF",
+      "Name": "abbd mode",
+      "Signature": "abbd mode[root,session] sub{on,off} pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go mode"
+      ]
+    },
+    {
+      "ID": "IF-0013",
+      "Kind": "IF",
+      "Name": "abbd reject",
+      "Signature": "abbd reject[reason,root] pos{1}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go rejectChange"
+      ]
+    },
+    {
+      "ID": "IF-0014",
+      "Kind": "IF",
+      "Name": "abbd status",
+      "Signature": "abbd status[root,session] pos{0}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/main.go status"
+      ]
+    },
+    {
+      "ID": "IF-0015",
+      "Kind": "IF",
+      "Name": "abbd serve",
+      "Signature": "abbd serve[addr,root] pos{0}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/serve.go serve"
+      ]
+    },
+    {
+      "ID": "IF-0016",
+      "Kind": "IF",
+      "Name": "abbd setup",
+      "Signature": "abbd setup[adopt,greenfield,root,supplement,verify] pos{0} --argv",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/setup.go setup"
+      ]
+    },
+    {
+      "ID": "IF-0017",
+      "Kind": "IF",
+      "Name": "abbd turn declare",
+      "Signature": "abbd turn declare[changes,root,session,units] pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnDeclare"
+      ]
+    },
+    {
+      "ID": "IF-0018",
+      "Kind": "IF",
+      "Name": "abbd turn diff",
+      "Signature": "abbd turn diff[root,session] pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnDiff"
+      ]
+    },
+    {
+      "ID": "IF-0019",
+      "Kind": "IF",
+      "Name": "abbd turn end",
+      "Signature": "abbd turn end[root,session] pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnEnd"
+      ]
+    },
+    {
+      "ID": "IF-0020",
+      "Kind": "IF",
+      "Name": "abbd turn impact",
+      "Signature": "abbd turn impact[add,root,session] pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnImpact"
+      ]
+    },
+    {
+      "ID": "IF-0021",
+      "Kind": "IF",
+      "Name": "abbd turn show",
+      "Signature": "abbd turn show[root,session] pos{0}",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnShow"
+      ]
+    },
+    {
+      "ID": "IF-0022",
+      "Kind": "IF",
+      "Name": "abbd turn start",
+      "Signature": "abbd turn start[request,root,seeds,session] pos{0} needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnStart"
+      ]
+    },
+    {
+      "ID": "IF-0023",
+      "Kind": "IF",
+      "Name": "abbd turn verify",
+      "Signature": "abbd turn verify[root,session] pos{0} --argv needs-session",
+      "Design": true,
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/turn.go turnVerify"
       ]
     },
     {
@@ -835,7 +1069,7 @@
     },
     {
       "ID": "IF-0002",
-      "Name": "abbd command line",
+      "Name": "abbd exit codes",
       "Kind": "IF",
       "Class": "design",
       "Title": "설계 단위; purpose inferred, unconfirmed",
@@ -876,6 +1110,204 @@
       "Y": 342,
       "R": 23,
       "Guess": true
+    },
+    {
+      "ID": "IF-0006",
+      "Name": "abbd hook",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 416,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0007",
+      "Name": "abbd align",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 490,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0008",
+      "Name": "abbd approve",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 564,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0009",
+      "Name": "abbd confirm",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 638,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0010",
+      "Name": "abbd couple",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 712,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0011",
+      "Name": "abbd ingest",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 786,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0012",
+      "Name": "abbd mode",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 860,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0013",
+      "Name": "abbd reject",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 934,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0014",
+      "Name": "abbd status",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1008,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0015",
+      "Name": "abbd serve",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1082,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0016",
+      "Name": "abbd setup",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1156,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0017",
+      "Name": "abbd turn declare",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1230,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0018",
+      "Name": "abbd turn diff",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1304,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0019",
+      "Name": "abbd turn end",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1378,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0020",
+      "Name": "abbd turn impact",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1452,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0021",
+      "Name": "abbd turn show",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1526,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0022",
+      "Name": "abbd turn start",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1600,
+      "R": 23,
+      "Guess": false
+    },
+    {
+      "ID": "IF-0023",
+      "Name": "abbd turn verify",
+      "Kind": "IF",
+      "Class": "design",
+      "Title": "설계 단위",
+      "X": 544,
+      "Y": 1674,
+      "R": 23,
+      "Guess": false
     },
     {
       "ID": "MOD-0001",
@@ -1028,6 +1460,11 @@
       "Title": "CFG-0003.consumes.IF-0001: 의도"
     },
     {
+      "D": "M896 217 C796 217 796 439 696 439",
+      "Class": "kept",
+      "Title": "CFG-0003.consumes.IF-0006: 의도"
+    },
+    {
       "D": "M168 69 C356 69 356 143 544 143",
       "Class": "kept",
       "Title": "FEAT-0001.consumes.IF-0002: 의도"
@@ -1038,9 +1475,99 @@
       "Title": "FEAT-0001.consumes.IF-0005: 의도"
     },
     {
+      "D": "M168 69 C356 69 356 587 544 587",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0008: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 883 544 883",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0012: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 957 544 957",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0013: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1105 544 1105",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0015: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1179 544 1179",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0016: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1253 544 1253",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0017: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1327 544 1327",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0018: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1401 544 1401",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0019: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1475 544 1475",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0020: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1549 544 1549",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0021: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1623 544 1623",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0022: 의도"
+    },
+    {
+      "D": "M168 69 C356 69 356 1697 544 1697",
+      "Class": "kept",
+      "Title": "FEAT-0001.consumes.IF-0023: 의도"
+    },
+    {
       "D": "M168 143 C356 106 356 106 544 143",
       "Class": "kept",
       "Title": "FEAT-0002.consumes.IF-0002: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 513 544 513",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0007: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 661 544 661",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0009: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 883 544 883",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0012: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 1031 544 1031",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0014: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 1105 544 1105",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0015: 의도"
+    },
+    {
+      "D": "M168 143 C356 143 356 1179 544 1179",
+      "Class": "kept",
+      "Title": "FEAT-0002.consumes.IF-0016: 의도"
     },
     {
       "D": "M344 69 C620 69 620 143 896 143",
@@ -1168,6 +1695,136 @@
       "Title": "MOD-0001.provides.IF-0002: 의도"
     },
     {
+      "D": "M344 69 C444 69 444 439 544 439",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0006: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 513 544 513",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0007: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 587 544 587",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0008: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 661 544 661",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0009: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 735 544 735",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0010: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 809 544 809",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0011: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 883 544 883",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0012: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 957 544 957",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0013: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1031 544 1031",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0014: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1105 544 1105",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0015: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1179 544 1179",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0016: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1253 544 1253",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0017: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1327 544 1327",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0018: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1401 544 1401",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0019: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1475 544 1475",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0020: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1549 544 1549",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0021: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1623 544 1623",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0022: 의도"
+    },
+    {
+      "D": "M344 69 C444 69 444 1697 544 1697",
+      "Class": "kept",
+      "Title": "MOD-0001.provides.IF-0023: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 513 544 513",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0007: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 587 544 587",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0008: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 661 544 661",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0009: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 735 544 735",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0010: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 883 544 883",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0012: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 957 544 957",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0013: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 1105 544 1105",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0015: 의도"
+    },
+    {
+      "D": "M520 69 C548 69 516 1179 544 1179",
+      "Class": "kept",
+      "Title": "MOD-0002.consumes.IF-0016: 의도"
+    },
+    {
       "D": "M368 69 C340 69 372 69 344 69",
       "Class": "kept",
       "Title": "MOD-0002.depends_on.MOD-0001: 의도"
@@ -1176,6 +1833,31 @@
       "D": "M344 143 C444 106 444 106 544 143",
       "Class": "kept",
       "Title": "MOD-0003.consumes.IF-0002: 의도"
+    },
+    {
+      "D": "M344 143 C444 143 444 513 544 513",
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0007: 의도"
+    },
+    {
+      "D": "M344 143 C444 143 444 587 544 587",
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0008: 의도"
+    },
+    {
+      "D": "M344 143 C444 143 444 661 544 661",
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0009: 의도"
+    },
+    {
+      "D": "M344 143 C444 143 444 735 544 735",
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0010: 의도"
+    },
+    {
+      "D": "M344 143 C444 143 444 957 544 957",
+      "Class": "kept",
+      "Title": "MOD-0003.consumes.IF-0013: 의도"
     },
     {
       "D": "M344 143 C380 143 380 69 344 69",
