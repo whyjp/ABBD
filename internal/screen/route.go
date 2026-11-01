@@ -11,12 +11,16 @@ import (
 // so on into the box it reaches. Lines converge on buses:
 //
 //   - Lines of one kind that leave one edge of a box share a departure bus:
-//     one stub out of the box and one track in the first gap.
+//     one stub out of the box, then one trunk through every row two of them
+//     still pass. A line leaves the trunk in the gap above the first row it
+//     would pass alone.
 //   - Lines of one kind that reach one edge of a box share an arrival bus:
 //     one trunk through every row they pass, one track in the gap above the
-//     box, and a drop into each chip they reach. A line joins the trunk in
-//     its first gap, so lines from different places merge midway and split
-//     only at the end.
+//     box, and a drop into each chip they reach. A line joins the trunk
+//     once it is off its departure trunk, so lines from different places
+//     merge midway and split only at the end. Boxes side by side in one
+//     row that are reached mostly from the same places share one arrival
+//     bus, which splits only in the gap above them.
 //
 // A bus is drawn once and carries the count of its lines. What is left of a
 // line between its buses is drawn on a track of its own.
@@ -57,14 +61,19 @@ type plan struct {
 	fx, tx   int
 	// dep and arr are the line's departure and arrival bus, -1 for none.
 	dep, arr int
+	// ride is how many rows the line passes on its departure bus's trunk.
+	ride int
 }
 
 type bus struct {
 	members []int
-	// arrive says the bus gathers lines into one place.
+	// arrive says the bus gathers lines into one place; else it sends
+	// lines out of one.
 	arrive bool
-	// passage is the trunk's x in each row it passes.
+	// passage is the trunk's x in each row it passes, and deep how many
+	// rows a departure trunk passes.
 	passage map[int]int
+	deep    int
 }
 
 type slotKey struct {
@@ -143,15 +152,75 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			for _, i := range is {
 				plans[i].dep = len(buses)
 			}
-			buses = append(buses, &bus{members: is})
+			// The trunk runs on through every row two of its lines still
+			// pass, and each line leaves it in the gap above the first row
+			// it would pass alone.
+			deep := 0
+			for j := 1; ; j++ {
+				c := 0
+				for _, i := range is {
+					if len(plans[i].gaps) > j {
+						c++
+					}
+				}
+				if c < 2 {
+					break
+				}
+				deep = j
+			}
+			for _, i := range is {
+				plans[i].ride = min(deep, len(plans[i].gaps)-1)
+			}
+			buses = append(buses, &bus{members: is, passage: map[int]int{}, deep: deep})
 		}
 	}
+	// Lines bound for boxes in one row, of one kind and mostly from the
+	// same places, share one arrival trunk that splits only in the gap
+	// above those boxes.
+	type gather struct {
+		members  []int
+		from     map[string]bool
+		row, way int
+		kind     string
+	}
+	var gathers []*gather
 	for _, k := range sortedKeys(arrive) {
-		if is := arrive[k]; len(is) >= busAt {
-			for _, i := range is {
+		is := arrive[k]
+		to := reqs[is[0]].to
+		g := &gather{members: is, from: map[string]bool{}, row: to.row, way: k.side, kind: reqs[is[0]].kind}
+		for _, i := range is {
+			g.from[reqs[i].from.key] = true
+		}
+		joined := false
+		for _, h := range gathers {
+			if to.node == "" || reqs[h.members[0]].to.node == "" || h.row != g.row || h.way != g.way || h.kind != g.kind {
+				continue
+			}
+			shared := 0
+			for f := range g.from {
+				if h.from[f] {
+					shared++
+				}
+			}
+			if 2*shared >= min(len(g.from), len(h.from)) {
+				h.members = append(h.members, is...)
+				for f := range g.from {
+					h.from[f] = true
+				}
+				joined = true
+				break
+			}
+		}
+		if !joined {
+			gathers = append(gathers, g)
+		}
+	}
+	for _, g := range gathers {
+		if len(g.members) >= busAt {
+			for _, i := range g.members {
 				plans[i].arr = len(buses)
 			}
-			buses = append(buses, &bus{members: is, arrive: true, passage: map[int]int{}})
+			buses = append(buses, &bus{members: g.members, arrive: true, passage: map[int]int{}})
 		}
 	}
 	center := func(e end) int { return (e.lo + e.hi) / 2 }
@@ -198,9 +267,11 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	place(members, func(i int) int { return plans[i].dep }, func(i int) int { return center(reqs[i].to) }, func(i, x int) { plans[i].fx = x }, func(i int) end { return reqs[i].from })
 	place(ends, func(i int) int { return plans[i].arr }, func(i int) int { return center(reqs[i].from) }, func(i, x int) { plans[i].tx = x }, func(i int) end { return reqs[i].to })
 
-	// The x of each passage through a row. A line on an arrival bus passes
-	// every row on the bus's trunk, which runs straight above the middle of
-	// the places it reaches.
+	// The x of each passage through a row. A line on a departure trunk
+	// passes the rows it rides on the trunk, which heads for the middle of
+	// the places its lines still reach. A line on an arrival bus passes
+	// every other row on the bus's trunk, which runs straight above the
+	// middle of the places it reaches.
 	passRow := func(p *plan, j int) int {
 		if p.up {
 			return p.gaps[j-1] - 1
@@ -213,6 +284,22 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		k := len(p.gaps)
 		for j := 1; j < k; j++ {
 			r := passRow(p, j)
+			if p.dep >= 0 && j <= p.ride {
+				b := buses[p.dep]
+				x, ok := b.passage[r]
+				if !ok {
+					sum, n := 0, 0
+					for _, m := range b.members {
+						if plans[m].ride >= j {
+							sum, n = sum+plans[m].tx, n+1
+						}
+					}
+					x = l.gutter(r, p.fx+(sum/n-p.fx)*j/(b.deep+1))
+					b.passage[r] = x
+				}
+				p.xs = append(p.xs, x)
+				continue
+			}
 			if p.arr >= 0 {
 				b := buses[p.arr]
 				x, ok := b.passage[r]
@@ -230,17 +317,25 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			p.xs = append(p.xs, l.gutter(r, p.fx+(p.tx-p.fx)*j/k))
 		}
 		p.xs = append(p.xs, p.tx)
+		// A line that rides its departure trunk into its last gap leaves
+		// it where the trunk crosses that gap and steps down onto its
+		// arrival bus's track there, so lines from different trunks never
+		// share one drop.
+		if p.dep >= 0 && p.arr >= 0 && p.ride == k-1 {
+			p.xs[k] = p.xs[k-1]
+		}
 	}
 
 	// owner says whose track crossing j of line i runs on: its departure
-	// bus in its first gap, its arrival bus after it has joined the trunk,
-	// else its own. A one-gap line on both buses crosses on its departure
-	// bus to the drop and meets the arrival bus there.
+	// bus while it rides that trunk, its arrival bus after it has joined
+	// that trunk, else its own. A line that rides its departure trunk into
+	// its last gap crosses on it to the drop and meets the arrival bus
+	// there.
 	busOwner := func(b int) int { return -1 - b }
 	owner := func(i, j int) int {
 		p := &plans[i]
 		switch {
-		case j == 0 && p.dep >= 0:
+		case p.dep >= 0 && j <= p.ride:
 			return busOwner(p.dep)
 		case p.arr >= 0 && (j > 0 || len(p.gaps) == 1):
 			return busOwner(p.arr)
@@ -289,9 +384,9 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			}
 			addSpan(g, o, a, b, p.up, p.same)
 		}
-		if len(p.gaps) == 1 && p.dep >= 0 && p.arr >= 0 {
-			g := p.gaps[0]
-			addSpan(g, busOwner(p.arr), p.tx, p.tx, p.up, false)
+		if p.dep >= 0 && p.arr >= 0 && p.ride == len(p.gaps)-1 {
+			g := p.gaps[p.ride]
+			addSpan(g, busOwner(p.arr), p.xs[p.ride], p.tx, p.up, false)
 			d, a := busOwner(p.dep), busOwner(p.arr)
 			if p.up {
 				d, a = a, d
@@ -396,12 +491,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		k := len(p.gaps)
 		j := 0
 		if p.dep >= 0 {
-			x := p.tx
-			if k > 1 {
-				x = p.xs[1]
-			}
-			pts = append(pts, pt{x, trackY(p.gaps[0], busOwner(p.dep))})
-			j = 1
+			j = p.ride + 1
+			pts = append(pts, pt{p.xs[j], trackY(p.gaps[j-1], busOwner(p.dep))})
 		} else {
 			st = startOf(i)
 			pts = append(pts, st)
@@ -423,8 +514,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				pts = append(pts, pt{a, ty}, pt{b, ty})
 			}
 		}
-		if p.dep >= 0 && k == 1 && p.arr >= 0 {
-			pts = append(pts, pt{p.tx, trackY(p.gaps[0], busOwner(p.arr))})
+		if p.dep >= 0 && p.arr >= 0 && p.ride == k-1 {
+			pts = append(pts, pt{p.xs[k], trackY(p.gaps[k-1], busOwner(p.arr))})
 			joins = true
 		}
 		if !joins {
@@ -435,37 +526,52 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		}
 		out = append(out, drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{st}, joins: joins, back: back(i)})
 	}
-	// Departure buses: one stub out of the box and one track.
+	// Departure buses: one stub out of the box, the trunk down through the
+	// rows its lines share, and a track in each gap where some leave it.
 	for b, bs := range buses {
 		if bs.arrive {
 			continue
 		}
 		nets++
+		o := busOwner(b)
 		first := plans[bs.members[0]]
-		g := first.gaps[0]
-		y := trackY(g, busOwner(b))
 		s := startOf(bs.members[0])
-		lo, hi := s.x, s.x
 		var starts []pt
 		var parts [][]pt
-		var ds []string
+		span := map[int][2]int{}
+		var gaps []int
+		rows := map[int]bool{}
 		for _, i := range bs.members {
 			p := &plans[i]
-			x := p.tx
-			if len(p.gaps) > 1 {
-				x = p.xs[1]
-			}
 			st := startOf(i)
-			lo, hi = min(lo, x, st.x), max(hi, x, st.x)
 			if !slices.Contains(starts, st) {
-				parts = append(parts, []pt{st, {st.x, y}})
-				ds = append(ds, polyline(parts[len(parts)-1]))
+				parts = append(parts, []pt{st, {st.x, trackY(p.gaps[0], o)}})
 			}
 			starts = append(starts, st)
+			for j := 0; j <= p.ride; j++ {
+				next := p.xs[j+1]
+				g := p.gaps[j]
+				lh, ok := span[g]
+				if !ok {
+					lh = [2]int{next, next}
+					gaps = append(gaps, g)
+				}
+				span[g] = [2]int{min(lh[0], p.xs[j], next), max(lh[1], p.xs[j], next)}
+				if j > 0 && !rows[passRow(p, j)] {
+					rows[passRow(p, j)] = true
+					parts = append(parts, []pt{{p.xs[j], trackY(p.gaps[j-1], o)}, {p.xs[j], trackY(g, o)}})
+				}
+			}
 		}
-		if lo < hi {
-			parts = append(parts, []pt{{lo, y}, {hi, y}})
-			ds = append(ds, polyline(parts[len(parts)-1]))
+		for _, g := range gaps {
+			if lh := span[g]; lh[0] < lh[1] {
+				y := trackY(g, o)
+				parts = append(parts, []pt{{lh[0], y}, {lh[1], y}})
+			}
+		}
+		var ds []string
+		for _, pp := range parts {
+			ds = append(ds, polyline(pp))
 		}
 		lb := pt{s.x + 5, s.y + 14}
 		if first.up {
@@ -487,38 +593,43 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			}
 		}
 		lp := &plans[lead]
-		k := len(lp.gaps)
-		last := lp.gaps[k-1]
-		y := trackY(last, o)
-		// The trunk passes each row from the highest line that reaches it
-		// there to the bus's track in the gap after it.
-		reach := map[int]int{}
-		var trunk [][]pt
+		y := trackY(lp.gaps[len(lp.gaps)-1], o)
+		// The trunk passes each row from the highest line that joins it
+		// there to the bus's track in the gap after it, and steps across
+		// that gap to its passage through the next row.
+		type passage struct{ x, reach, ty, next int }
+		trunkAt := map[int]*passage{}
+		var rows []int
 		for _, i := range bs.members {
 			p := &plans[i]
 			for j := 1; j < len(p.gaps); j++ {
+				if owner(i, j) != o {
+					continue
+				}
 				r := passRow(p, j)
-				from := trackY(p.gaps[j-1], o)
-				if j == 1 {
-					from = trackY(p.gaps[0], owner(i, 0))
+				from, to := trackY(p.gaps[j-1], owner(i, j-1)), trackY(p.gaps[j], o)
+				ps, ok := trunkAt[r]
+				if !ok {
+					ps = &passage{x: p.xs[j], reach: from, ty: to, next: p.xs[j+1]}
+					trunkAt[r] = ps
+					rows = append(rows, r)
 				}
-				to := trackY(p.gaps[j], o)
-				if old, ok := reach[r]; !ok || abs(from-to) > abs(old-to) {
-					reach[r] = from
+				if abs(from-to) > abs(ps.reach-to) {
+					ps.reach = from
 				}
 			}
 		}
-		for j := 1; j < k; j++ {
-			r := passRow(lp, j)
-			ty := trackY(lp.gaps[j], o)
-			trunk = append(trunk, []pt{{lp.xs[j], reach[r]}, {lp.xs[j], ty}})
-			if j < k-1 {
-				trunk = append(trunk, []pt{{lp.xs[j], ty}, {lp.xs[j+1], ty}})
-			}
-		}
+		slices.Sort(rows)
+		var trunk [][]pt
 		lo, hi := 1<<30, -1<<30
-		if k > 1 {
-			lo, hi = lp.xs[k-1], lp.xs[k-1]
+		for _, r := range rows {
+			ps := trunkAt[r]
+			trunk = append(trunk, []pt{{ps.x, ps.reach}, {ps.x, ps.ty}})
+			if ps.ty == y {
+				lo, hi = min(lo, ps.x), max(hi, ps.x)
+			} else if ps.next != ps.x {
+				trunk = append(trunk, []pt{{ps.x, ps.ty}, {ps.next, ps.ty}})
+			}
 		}
 		drops := map[int][]int{}
 		var xs []int
@@ -527,8 +638,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			p := &plans[i]
 			none[m] = noStart
 			entry := p.xs[len(p.xs)-2]
-			if len(p.gaps) == 1 && p.dep >= 0 {
-				entry = p.tx
+			if owner(i, len(p.gaps)-1) != o {
+				entry = p.xs[len(p.xs)-1]
 			}
 			lo, hi = min(lo, entry, p.tx), max(hi, entry, p.tx)
 			if _, ok := drops[p.tx]; !ok {
@@ -548,13 +659,19 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			out = append(out, drawn{D: strings.Join(ds, " "), parts: parts, reqs: bs.members, starts: none, net: nets, joins: true, back: back(lead)})
 		}
 		slices.Sort(xs)
-		for d, x := range xs {
+		// Each box the bus reaches shows how many of its lines go there.
+		reach := map[string]int{}
+		for _, i := range bs.members {
+			reach[reqs[i].to.key]++
+		}
+		for _, x := range xs {
 			is := drops[x]
 			e := endOf(is[0])
 			drop := []pt{{x, y}, e}
 			dd := drawn{D: polyline(drop), parts: [][]pt{drop}, reqs: is, starts: none[:len(is)], net: nets, back: back(is[0])}
-			if d == 0 {
-				dd.count, dd.label = len(bs.members), pt{x + 5, (y+e.y)/2 + 4}
+			if n := reach[reqs[is[0]].to.key]; n > 0 {
+				dd.count, dd.label = n, pt{x + 5, (y+e.y)/2 + 4}
+				delete(reach, reqs[is[0]].to.key)
 			}
 			out = append(out, dd)
 		}
