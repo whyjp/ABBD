@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "e777275beb6338712ef4551034360434ff95fa7a49da5f30e568e2ba4d62d822"
+    "inputs_hash": "47bf8fd4726e79b5caf30901ad043c5ff1dd22c0d803bbe0795c5742cf88b06b"
   },
   "units": [
     {
@@ -11512,321 +11512,29 @@
                 "Code": true
               },
               {
-                "Text": " prints each note with its state.",
+                "Text": " prints each note with its state. ",
+                "Code": false
+              },
+              {
+                "Text": "notes_test.go",
+                "Code": true
+              },
+              {
+                "Text": " drives all of it through ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": " on a scratch repository, including where the blueprint puts a contract's notes.",
                 "Code": false
               }
             ]
           }
         ]
       },
-      "Contracts": [
-        {
-          "ID": "DATA-0006",
-          "Name": "sync state",
-          "Notes": [
-            {
-              "Ref": "DATA-0006.semantics",
-              "Title": "의미",
-              "Key": "",
-              "Stale": false,
-              "Blocks": [
-                {
-                  "Kind": "p",
-                  "Parts": [
-                    {
-                      "Text": "state.yaml",
-                      "Code": true
-                    },
-                    {
-                      "Text": " says which code the stored units were synced from. ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "fingerprint",
-                      "Code": true
-                    },
-                    {
-                      "Text": " is a git tree object of the working tree as ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "gitx.Snapshot",
-                      "Code": true
-                    },
-                    {
-                      "Text": " writes it into a scratch index. It holds every file ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "git add -A",
-                      "Code": true
-                    },
-                    {
-                      "Text": " would stage, untracked files included, with ",
-                      "Code": false
-                    },
-                    {
-                      "Text": ".abbd/",
-                      "Code": true
-                    },
-                    {
-                      "Text": " left out. A submodule counts as the commit the superproject's index records, not the one checked out, so every clone of a commit fingerprints the same tree.",
-                      "Code": false
-                    }
-                  ]
-                },
-                {
-                  "Kind": "p",
-                  "Parts": [
-                    {
-                      "Text": "The state is ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "CURRENT",
-                      "Code": false,
-                      "Bold": true
-                    },
-                    {
-                      "Text": " exactly when the fingerprint of the tree now equals the stored one. Any edit to code, staged or not, makes it ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "STALE",
-                      "Code": false,
-                      "Bold": true
-                    },
-                    {
-                      "Text": " until ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "abbd sync",
-                      "Code": true
-                    },
-                    {
-                      "Text": " runs. Committing changes nothing, because a commit moves HEAD and not the tree. ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "revision",
-                      "Code": true
-                    },
-                    {
-                      "Text": " only names where that tree was first synced, and ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "md_hash",
-                      "Code": true
-                    },
-                    {
-                      "Text": " is the hash of the unit files for the blueprint's own check. Neither decides whether the state is current.",
-                      "Code": false
-                    }
-                  ]
-                }
-              ],
-              "Quotes": [
-                "internal/screen/screen.go:104 \"case in.Tree != in.Synced.Fingerprint:\"",
-                "internal/gitx/gitx.go:99 \"add := []string{\\\"add\\\", \\\"-A\\\", \\\"--\\\", \\\".\\\", \\\":(exclude)\\\" + exclude}\"",
-                "internal/gitx/gitx.go:107 \"\\\"update-index\\\", \\\"--add\\\", \\\"--cacheinfo\\\", \\\"160000,\\\"+l.commit+\\\",\\\"+l.path\""
-              ]
-            },
-            {
-              "Ref": "DATA-0006.states",
-              "Title": "상태",
-              "Key": "",
-              "Stale": false,
-              "Blocks": [
-                {
-                  "Kind": "table",
-                  "Rows": [
-                    [
-                      [
-                        {
-                          "Text": "state",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "when",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "what brings it current",
-                          "Code": false
-                        }
-                      ]
-                    ],
-                    [
-                      [
-                        {
-                          "Text": "CURRENT",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "the tree's fingerprint now equals ",
-                          "Code": false
-                        },
-                        {
-                          "Text": "fingerprint",
-                          "Code": true
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "nothing",
-                          "Code": false
-                        }
-                      ]
-                    ],
-                    [
-                      [
-                        {
-                          "Text": "STALE",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "the fingerprints differ: code changed since the sync",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "abbd sync",
-                          "Code": true
-                        }
-                      ]
-                    ],
-                    [
-                      [
-                        {
-                          "Text": "UNKNOWN",
-                          "Code": false
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "no git work tree, git failed to fingerprint, or the state has no ",
-                          "Code": false
-                        },
-                        {
-                          "Text": "fingerprint",
-                          "Code": true
-                        }
-                      ],
-                      [
-                        {
-                          "Text": "run in a git checkout; a sync in one writes the fingerprint",
-                          "Code": false
-                        }
-                      ]
-                    ]
-                  ]
-                },
-                {
-                  "Kind": "p",
-                  "Parts": [
-                    {
-                      "Text": "status --check",
-                      "Code": true
-                    },
-                    {
-                      "Text": " exits 1 on STALE and on UNKNOWN, and names the cause of an UNKNOWN, because only a sync fixes STALE.",
-                      "Code": false
-                    }
-                  ]
-                }
-              ],
-              "Quotes": [
-                "internal/screen/screen.go:102 \"case in.Tree == \\\"\\\" || in.Synced.Fingerprint == \\\"\\\":\"",
-                "internal/screen/screen.go:104 \"case in.Tree != in.Synced.Fingerprint:\""
-              ]
-            },
-            {
-              "Ref": "DATA-0006.decisions.revision-stays",
-              "Title": "결정",
-              "Key": "revision-stays",
-              "Stale": false,
-              "Blocks": [
-                {
-                  "Kind": "p",
-                  "Parts": [
-                    {
-                      "Text": "revision",
-                      "Code": true
-                    },
-                    {
-                      "Text": " stays the commit where a tree was first synced. A sync whose tree matches the stored fingerprint keeps the stored revision, and only a new tree, or a state without a revision, takes ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "HEAD",
-                      "Code": true
-                    },
-                    {
-                      "Text": ". Committing ",
-                      "Code": false
-                    },
-                    {
-                      "Text": ".abbd/",
-                      "Code": true
-                    },
-                    {
-                      "Text": " after a sync moves ",
-                      "Code": false
-                    },
-                    {
-                      "Text": "HEAD",
-                      "Code": true
-                    },
-                    {
-                      "Text": " without changing the tree, so the next sync writes the same bytes and ",
-                      "Code": false
-                    },
-                    {
-                      "Text": ".abbd/",
-                      "Code": true
-                    },
-                    {
-                      "Text": " stays clean. A drifted quote dies at the first sync of a later revision, and this keeps one revision from counting as two.",
-                      "Code": false
-                    }
-                  ]
-                }
-              ],
-              "Quotes": [
-                "cmd/abbd/main.go:388 \"if state.Fingerprint != tree || rev == \\\"\\\" {\"",
-                "cmd/abbd/main.go:389 \"rev = gitx.Head(e.root)\""
-              ]
-            },
-            {
-              "Ref": "DATA-0006.wire_sample",
-              "Title": "전송 예시",
-              "Key": "",
-              "Stale": false,
-              "Blocks": [
-                {
-                  "Kind": "pre",
-                  "Code": "revision: c39d027149d5f28c92c6cfd5b75fd1b462842263\nfingerprint: 89a9d631d8da56619ffb0c7f087d5342f50af1a0\nmd_hash: 93d3854f7458cfc5c151bd75581fc59ba53cc818574c455ef950300924341f52\nhigh_water:\n    MOD: 56\n    IF: 21"
-                }
-              ],
-              "Quotes": [
-                "internal/store/store.go:27 \"Revision    string             `yaml:\\\"revision\\\"`\"",
-                "internal/store/store.go:28 \"Fingerprint string             `yaml:\\\"fingerprint\\\"`\""
-              ]
-            }
-          ]
-        }
-      ],
       "Unwired": [
         {
           "Head": "abbd",
@@ -23265,7 +22973,7 @@
                 "Code": true
               },
               {
-                "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home, the first module that provides it or else the module it sits in. A unit no inside shows keeps its notes on its row of the unit list. ",
+                "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home: the module it sits in when that module provides it, else the provider whose own provides relation rests on the strongest origin, so a reader's coupling never moves a contract away from the provider the code shows. A unit no inside shows keeps its notes on its row of the unit list. ",
                 "Code": false
               },
               {
@@ -25795,6 +25503,314 @@
           }
         ]
       },
+      "Contracts": [
+        {
+          "ID": "DATA-0006",
+          "Name": "sync state",
+          "Notes": [
+            {
+              "Ref": "DATA-0006.semantics",
+              "Title": "의미",
+              "Key": "",
+              "Stale": false,
+              "Blocks": [
+                {
+                  "Kind": "p",
+                  "Parts": [
+                    {
+                      "Text": "state.yaml",
+                      "Code": true
+                    },
+                    {
+                      "Text": " says which code the stored units were synced from. ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "fingerprint",
+                      "Code": true
+                    },
+                    {
+                      "Text": " is a git tree object of the working tree as ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "gitx.Snapshot",
+                      "Code": true
+                    },
+                    {
+                      "Text": " writes it into a scratch index. It holds every file ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "git add -A",
+                      "Code": true
+                    },
+                    {
+                      "Text": " would stage, untracked files included, with ",
+                      "Code": false
+                    },
+                    {
+                      "Text": ".abbd/",
+                      "Code": true
+                    },
+                    {
+                      "Text": " left out. A submodule counts as the commit the superproject's index records, not the one checked out, so every clone of a commit fingerprints the same tree.",
+                      "Code": false
+                    }
+                  ]
+                },
+                {
+                  "Kind": "p",
+                  "Parts": [
+                    {
+                      "Text": "The state is ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "CURRENT",
+                      "Code": false,
+                      "Bold": true
+                    },
+                    {
+                      "Text": " exactly when the fingerprint of the tree now equals the stored one. Any edit to code, staged or not, makes it ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "STALE",
+                      "Code": false,
+                      "Bold": true
+                    },
+                    {
+                      "Text": " until ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "abbd sync",
+                      "Code": true
+                    },
+                    {
+                      "Text": " runs. Committing changes nothing, because a commit moves HEAD and not the tree. ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "revision",
+                      "Code": true
+                    },
+                    {
+                      "Text": " only names where that tree was first synced, and ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "md_hash",
+                      "Code": true
+                    },
+                    {
+                      "Text": " is the hash of the unit files for the blueprint's own check. Neither decides whether the state is current.",
+                      "Code": false
+                    }
+                  ]
+                }
+              ],
+              "Quotes": [
+                "internal/screen/screen.go:104 \"case in.Tree != in.Synced.Fingerprint:\"",
+                "internal/gitx/gitx.go:99 \"add := []string{\\\"add\\\", \\\"-A\\\", \\\"--\\\", \\\".\\\", \\\":(exclude)\\\" + exclude}\"",
+                "internal/gitx/gitx.go:107 \"\\\"update-index\\\", \\\"--add\\\", \\\"--cacheinfo\\\", \\\"160000,\\\"+l.commit+\\\",\\\"+l.path\""
+              ]
+            },
+            {
+              "Ref": "DATA-0006.states",
+              "Title": "상태",
+              "Key": "",
+              "Stale": false,
+              "Blocks": [
+                {
+                  "Kind": "table",
+                  "Rows": [
+                    [
+                      [
+                        {
+                          "Text": "state",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "when",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "what brings it current",
+                          "Code": false
+                        }
+                      ]
+                    ],
+                    [
+                      [
+                        {
+                          "Text": "CURRENT",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "the tree's fingerprint now equals ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "fingerprint",
+                          "Code": true
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "nothing",
+                          "Code": false
+                        }
+                      ]
+                    ],
+                    [
+                      [
+                        {
+                          "Text": "STALE",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "the fingerprints differ: code changed since the sync",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "abbd sync",
+                          "Code": true
+                        }
+                      ]
+                    ],
+                    [
+                      [
+                        {
+                          "Text": "UNKNOWN",
+                          "Code": false
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "no git work tree, git failed to fingerprint, or the state has no ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "fingerprint",
+                          "Code": true
+                        }
+                      ],
+                      [
+                        {
+                          "Text": "run in a git checkout; a sync in one writes the fingerprint",
+                          "Code": false
+                        }
+                      ]
+                    ]
+                  ]
+                },
+                {
+                  "Kind": "p",
+                  "Parts": [
+                    {
+                      "Text": "status --check",
+                      "Code": true
+                    },
+                    {
+                      "Text": " exits 1 on STALE and on UNKNOWN, and names the cause of an UNKNOWN, because only a sync fixes STALE.",
+                      "Code": false
+                    }
+                  ]
+                }
+              ],
+              "Quotes": [
+                "internal/screen/screen.go:102 \"case in.Tree == \\\"\\\" || in.Synced.Fingerprint == \\\"\\\":\"",
+                "internal/screen/screen.go:104 \"case in.Tree != in.Synced.Fingerprint:\""
+              ]
+            },
+            {
+              "Ref": "DATA-0006.decisions.revision-stays",
+              "Title": "결정",
+              "Key": "revision-stays",
+              "Stale": false,
+              "Blocks": [
+                {
+                  "Kind": "p",
+                  "Parts": [
+                    {
+                      "Text": "revision",
+                      "Code": true
+                    },
+                    {
+                      "Text": " stays the commit where a tree was first synced. A sync whose tree matches the stored fingerprint keeps the stored revision, and only a new tree, or a state without a revision, takes ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "HEAD",
+                      "Code": true
+                    },
+                    {
+                      "Text": ". Committing ",
+                      "Code": false
+                    },
+                    {
+                      "Text": ".abbd/",
+                      "Code": true
+                    },
+                    {
+                      "Text": " after a sync moves ",
+                      "Code": false
+                    },
+                    {
+                      "Text": "HEAD",
+                      "Code": true
+                    },
+                    {
+                      "Text": " without changing the tree, so the next sync writes the same bytes and ",
+                      "Code": false
+                    },
+                    {
+                      "Text": ".abbd/",
+                      "Code": true
+                    },
+                    {
+                      "Text": " stays clean. A drifted quote dies at the first sync of a later revision, and this keeps one revision from counting as two.",
+                      "Code": false
+                    }
+                  ]
+                }
+              ],
+              "Quotes": [
+                "cmd/abbd/main.go:388 \"if state.Fingerprint != tree || rev == \\\"\\\" {\"",
+                "cmd/abbd/main.go:389 \"rev = gitx.Head(e.root)\""
+              ]
+            },
+            {
+              "Ref": "DATA-0006.wire_sample",
+              "Title": "전송 예시",
+              "Key": "",
+              "Stale": false,
+              "Blocks": [
+                {
+                  "Kind": "pre",
+                  "Code": "revision: c39d027149d5f28c92c6cfd5b75fd1b462842263\nfingerprint: 89a9d631d8da56619ffb0c7f087d5342f50af1a0\nmd_hash: 93d3854f7458cfc5c151bd75581fc59ba53cc818574c455ef950300924341f52\nhigh_water:\n    MOD: 56\n    IF: 21"
+                }
+              ],
+              "Quotes": [
+                "internal/store/store.go:27 \"Revision    string             `yaml:\\\"revision\\\"`\"",
+                "internal/store/store.go:28 \"Fingerprint string             `yaml:\\\"fingerprint\\\"`\""
+              ]
+            }
+          ]
+        }
+      ],
       "Unwired": [
         {
           "Head": "unit",

@@ -229,3 +229,24 @@ func TestTheSkillNamesEverySlot(t *testing.T) {
 		}
 	}
 }
+
+// A contract's notes sit with the module the code says provides it, even
+// when a reader also found a module of a lower ID providing it.
+func TestAContractsNotesSitWithTheProviderTheCodeShows(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\n// calls ledger.Post\nfunc Charge() {}\n")
+	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
+	p.extract(`{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]},
+ {"key":"post","kind":"IF","name":"Post","anchors":[{"path":"ledger/book.go","symbol":"Post"}],"signature":"func Post()"}
+],"relations":[{"from":"ledger","to":"post","kind":"provides"}]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "provides", "IF-0001", "--via", "call", "--evidence", "billing/charge.go:3:calls ledger.Post")
+	p.wantNote(0, "understood IF-0001.semantics", "IF-0001.semantics", "Post books one entry.", "ledger/book.go:3:func Post() {}")
+	page := p.read("blueprint/index.html")
+	ledger := page[strings.Index(page, `id="m-MOD-0002"`):]
+	if !strings.Contains(ledger[:strings.Index(ledger, "</section>")], `id="c-IF-0001"`) {
+		t.Fatal("the contract's notes belong in ledger's inside, the provider the code shows")
+	}
+}

@@ -1,6 +1,10 @@
 package screen
 
-import "github.com/whyjp/abbd/internal/model"
+import (
+	"slices"
+
+	"github.com/whyjp/abbd/internal/model"
+)
 
 // Note is one slot of a unit's account as the page shows it: the slot's
 // heading, the reader's text, the code it cites, and for a decision the
@@ -46,14 +50,32 @@ func notes(in Input, u model.Unit) []Note {
 	return out
 }
 
-// noteHome is the module whose inside shows a contract's notes: the first
-// module that provides it, else the module it sits in.
+// noteHome is the module whose inside shows a contract's notes: the module
+// it sits in when that module provides it, else the provider whose own
+// provides relation rests on the strongest origin, so a reader's coupling
+// never moves a contract away from the module the code says provides it.
+// With no provider it is the module the contract sits in.
 func (o *overview) noteHome(c model.Unit) model.ID {
-	if ps := o.providers[c.ID]; len(ps) > 0 {
-		return ps[0]
+	providers := o.providers[c.ID]
+	if slices.Contains(providers, c.Parent) {
+		return c.Parent
 	}
-	return c.Parent
+	home, best := c.Parent, -1
+	for _, p := range providers {
+		r := 0
+		for _, rel := range o.units[p].Relations {
+			if rel.To == c.ID && rel.Kind == model.Provides && !rel.Dead {
+				r = max(r, strength[rel.Origin])
+			}
+		}
+		if r > best {
+			home, best = p, r
+		}
+	}
+	return home
 }
+
+var strength = map[model.Origin]int{model.Inferred: 1, model.UserStated: 2, model.Extracted: 3}
 
 // placeNotes puts each unit's notes where a reader of the unit looks: a
 // module's beside its inside, or under its entry in its parent's inside when
