@@ -121,8 +121,10 @@ type UnitRow struct {
 	Parent string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
-	// Notes are the unit's slots when no inside shows them.
-	Notes []Note `json:",omitempty"`
+	// Notes are the unit's slots and Entries its table when no inside shows
+	// them.
+	Notes   []Note   `json:",omitempty"`
+	Entries *Entries `json:",omitempty"`
 }
 
 type Model struct {

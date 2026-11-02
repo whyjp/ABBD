@@ -102,6 +102,20 @@ func (e env) explain(s string) error {
 			fmt.Fprintf(w, "%s: %s (%s)\n", f.label, f.fact.Value, origin(f.fact))
 		}
 	}
+	if len(u.Entries) > 0 {
+		fmt.Fprintln(w, "entries:")
+		uses := topology.EntryUses(units, u.ID)
+		for _, en := range u.Entries {
+			l := "  " + en.Key + ": " + en.Name
+			if look := en.Look(); look != "" {
+				l += " " + look
+			}
+			for _, us := range uses[en.Key] {
+				l += fmt.Sprintf("; %s by %s %s", us.Kind, us.From, name[us.From])
+			}
+			fmt.Fprintln(w, l)
+		}
+	}
 	for _, ev := range u.Evidence {
 		fmt.Fprintf(w, "evidence: %s%s\n", ev, mark(ev))
 	}

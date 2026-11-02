@@ -19,6 +19,8 @@ type Link struct {
 	Origin   model.Origin
 	Via      model.Via
 	Evidence []model.Evidence
+	// Entries are the keys of the entries of To the link narrows to.
+	Entries []string
 	// Drifted says the link counts on evidence the code no longer holds as
 	// quoted; a reader must refresh or retract it.
 	Drifted bool
@@ -47,7 +49,7 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Drifted: r.Drifted()})
+				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()})
 			}
 		}
 	}

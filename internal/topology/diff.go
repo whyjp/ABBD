@@ -22,6 +22,31 @@ type Signature struct {
 	New string `json:"new"`
 }
 
+// Entry is a change to one entry of a contract: Change is "added", "removed"
+// or "changed", and Old and New are its shape and need for a change.
+type Entry struct {
+	Ref
+	Entry  string `json:"entry"`
+	Change string `json:"change"`
+	Old    string `json:"old,omitempty"`
+	New    string `json:"new,omitempty"`
+}
+
+// Listed is a contract that came to list its entries, or stopped, so its
+// entries are not each a change.
+type Listed struct {
+	Ref
+	Entries int  `json:"entries"`
+	Now     bool `json:"now"`
+}
+
+// Use is a unit that came to use one entry of a contract it already used,
+// or stopped: a consumer of a route, a writer or a reader of a field.
+type Use struct {
+	Relation
+	Entry string `json:"entry"`
+}
+
 // Relation is a relation between two units, with their names.
 type Relation struct {
 	From     model.ID           `json:"from"`
@@ -47,6 +72,15 @@ type Diff struct {
 	Signatures []Signature `json:"contract_signatures_changed"`
 	// Code are the contracts whose code changed under the same signature.
 	Code []Ref `json:"contract_code_changed"`
+	// Entries are the entries of a contract that were added, removed or
+	// changed shape, and Listed the contracts that came to list entries or
+	// stopped.
+	Entries []Entry  `json:"contract_entries_changed"`
+	Listed  []Listed `json:"contract_entries_listed"`
+	// UsesAdded and UsesRemoved are entries a unit came to use, or stopped,
+	// on a relation that was there before and is still there.
+	UsesAdded   []Use `json:"entry_uses_added"`
+	UsesRemoved []Use `json:"entry_uses_removed"`
 	// RelationsAdded and RelationsRemoved are drawn relations between
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
@@ -65,10 +99,8 @@ func Compare(base, now []model.Unit) Diff {
 		case !had:
 			d.UnitsAdded = append(d.UnitsAdded, ref(u))
 		case !u.Kind.IsContract():
-		case sig(old) != sig(u):
-			d.Signatures = append(d.Signatures, Signature{Ref: ref(u), Old: sig(old), New: sig(u)})
-		case old.Digest != "" && u.Digest != "" && old.Digest != u.Digest:
-			d.Code = append(d.Code, ref(u))
+		default:
+			d.contract(old, u)
 		}
 	}
 	for _, id := range ids(b) {
@@ -87,6 +119,7 @@ func Compare(base, now []model.Unit) Diff {
 			d.RelationsRemoved = append(d.RelationsRemoved, was[k])
 		}
 	}
+	d.UsesAdded, d.UsesRemoved = newUses(b, n, was, is), newUses(n, b, is, was)
 	old := inferred(b)
 	cur := inferred(n)
 	for _, k := range keys(cur) {
@@ -97,6 +130,96 @@ func Compare(base, now []model.Unit) Diff {
 	return d
 }
 
+// contract notes how one contract changed: its signature, its entries one
+// by one, else its code under the same shape.
+func (d *Diff) contract(old, u model.Unit) {
+	shape := false
+	if sig(old) != sig(u) {
+		d.Signatures = append(d.Signatures, Signature{Ref: ref(u), Old: sig(old), New: sig(u)})
+		shape = true
+	}
+	switch {
+	case len(old.Entries) == 0 && len(u.Entries) > 0:
+		d.Listed = append(d.Listed, Listed{Ref: ref(u), Entries: len(u.Entries), Now: true})
+		shape = true
+	case len(old.Entries) > 0 && len(u.Entries) == 0:
+		d.Listed = append(d.Listed, Listed{Ref: ref(u), Entries: len(old.Entries)})
+		shape = true
+	default:
+		for _, e := range u.Entries {
+			was, had := old.EntryNamed(e.Key)
+			switch {
+			case !had:
+				d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "added", New: e.Look()})
+			case was.Look() != e.Look() || was.Name != e.Name:
+				d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "changed", Old: was.Look(), New: e.Look()})
+			default:
+				continue
+			}
+			shape = true
+		}
+		for _, e := range old.Entries {
+			if _, ok := u.EntryNamed(e.Key); !ok {
+				d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "removed", Old: e.Look()})
+				shape = true
+			}
+		}
+	}
+	if !shape && old.Digest != "" && u.Digest != "" && old.Digest != u.Digest {
+		d.Code = append(d.Code, ref(u))
+	}
+}
+
+// newUses lists the entries a unit's drawn relations use in now and did not
+// in base, where the relation between the top-level units was there in both:
+// a new one is already a relation added.
+func newUses(base, now map[model.ID]model.Unit, was, is map[string]Relation) []Use {
+	had := entryUses(base)
+	var out []Use
+	for k, u := range entryUses(now) {
+		_, before := was[k.edge]
+		_, after := is[k.edge]
+		if _, used := had[k]; before && after && !used {
+			out = append(out, u)
+		}
+	}
+	slices.SortFunc(out, func(a, b Use) int {
+		return strings.Compare(fmt.Sprint(a.From, a.Kind, a.To, a.Entry), fmt.Sprint(b.From, b.Kind, b.To, b.Entry))
+	})
+	return out
+}
+
+// entryUse is one entry a unit uses, under the relation between the
+// top-level units that holds it.
+type entryUse struct {
+	edge, use string
+}
+
+// entryUses lists each entry a drawn relation uses: the module that holds
+// the user, the contract, the entry.
+func entryUses(units map[model.ID]model.Unit) map[entryUse]Use {
+	out := map[entryUse]Use{}
+	for _, u := range units {
+		for _, r := range u.Relations {
+			to, ok := units[r.To]
+			if !ok || !r.Counts() {
+				continue
+			}
+			from := top(units, u.ID)
+			e := model.Edge{From: from, To: top(units, r.To), Kind: r.Kind}
+			for _, k := range r.Entries {
+				name := k
+				if en, ok := to.EntryNamed(k); ok {
+					name = en.Name
+				}
+				use := Use{Relation: Relation{From: from, Kind: r.Kind, To: r.To, FromName: units[from].Name.Value, ToName: to.Name.Value}, Entry: name}
+				out[entryUse{e.String(), fmt.Sprint(from, r.Kind, r.To, k)}] = use
+			}
+		}
+	}
+	return out
+}
+
 // Boundary reports whether the change reaches the boundary between modules:
 // a contract's signature changed, a contract was added or removed, or a drawn
 // relation between top-level units appeared or disappeared. A contract whose
@@ -104,7 +227,7 @@ func Compare(base, now []model.Unit) Diff {
 // interface file would. It informs a label; it decides nothing.
 func (d Diff) Boundary() bool {
 	contract := func(r Ref) bool { return r.Kind.IsContract() }
-	return len(d.Signatures) > 0 || len(d.RelationsAdded) > 0 || len(d.RelationsRemoved) > 0 ||
+	return len(d.Signatures) > 0 || len(d.Entries) > 0 || len(d.Listed) > 0 || len(d.RelationsAdded) > 0 || len(d.RelationsRemoved) > 0 ||
 		slices.ContainsFunc(d.UnitsAdded, contract) || slices.ContainsFunc(d.UnitsRemoved, contract)
 }
 
@@ -120,6 +243,23 @@ func (d Diff) Lines() []string {
 	for _, s := range d.Signatures {
 		out = append(out, fmt.Sprintf("~ contract %s %s signature: %q -> %q", s.ID, s.Name, s.Old, s.New))
 	}
+	for _, l := range d.Listed {
+		if l.Now {
+			out = append(out, fmt.Sprintf("~ contract %s %s now lists its %d entries", l.ID, l.Name, l.Entries))
+		} else {
+			out = append(out, fmt.Sprintf("~ contract %s %s no longer lists its %d entries", l.ID, l.Name, l.Entries))
+		}
+	}
+	for _, e := range d.Entries {
+		switch e.Change {
+		case "added":
+			out = append(out, strings.TrimSpace(fmt.Sprintf("+ entry %s %s %s %s", e.ID, e.Name, e.Entry, e.New)))
+		case "removed":
+			out = append(out, strings.TrimSpace(fmt.Sprintf("- entry %s %s %s %s", e.ID, e.Name, e.Entry, e.Old)))
+		default:
+			out = append(out, fmt.Sprintf("~ entry %s %s %s: %q -> %q", e.ID, e.Name, e.Entry, e.Old, e.New))
+		}
+	}
 	for _, r := range d.Code {
 		out = append(out, fmt.Sprintf("~ contract %s %s: its code changed under the same signature", r.ID, r.Name))
 	}
@@ -128,6 +268,12 @@ func (d Diff) Lines() []string {
 	}
 	for _, r := range d.RelationsRemoved {
 		out = append(out, "- relation "+r.line())
+	}
+	for _, u := range d.UsesAdded {
+		out = append(out, fmt.Sprintf("+ entry use %s %s %s %s (%s %s %s)", u.From, u.Kind, u.To, u.Entry, u.FromName, u.Kind, u.ToName))
+	}
+	for _, u := range d.UsesRemoved {
+		out = append(out, fmt.Sprintf("- entry use %s %s %s %s (%s %s %s)", u.From, u.Kind, u.To, u.Entry, u.FromName, u.Kind, u.ToName))
 	}
 	for _, c := range d.InferredAdded {
 		s := "+ inferred " + c.line()

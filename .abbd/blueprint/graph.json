@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "9598e25000f3d10b0fb95cbd3b168983ffbf72f8fafa80e5e73dd4d2f7658117"
+    "inputs_hash": "a8997c08263c56496ad8db5553b453b86c5f46ec64f0a40d1160d5f61f354447"
   },
   "units": [
     {
@@ -69,7 +69,7 @@
       "ID": "DATA-0002",
       "Kind": "DATA",
       "Name": "extraction JSON",
-      "Signature": "extraction json: relations{evidence{lines,path,quote,symbol},from,kind,to,via},units{anchors{path,symbol},digest,evidence{lines,path,quote,symbol},key,kind,name,parent,parent_evidence{lines,path,quote,symbol},purpose,responsibility,signature}",
+      "Signature": "extraction json: relations{entries,evidence{lines,path,quote,symbol},from,kind,to,via},units{anchors{path,symbol},digest,entries{key,name,required,shape},evidence{lines,path,quote,symbol},key,kind,name,parent,parent_evidence{lines,path,quote,symbol},purpose,responsibility,signature}",
       "Purpose": {
         "Value": "so the project script, the swarm supplement and abbd agree on one format for units and relations",
         "Badge": "inferred"
@@ -111,7 +111,7 @@
       "ID": "DATA-0004",
       "Kind": "DATA",
       "Name": "unit files",
-      "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,absent_reason,anchors{path,symbol},digest,evidence{lines,path,quote,reason,since,status,symbol},hidden{digest,evidence{lines,path,quote,reason,since,status,symbol},kind,source,to,via,writer},id,kind,masks{digest,reason,source,target,writer},name{source,value,writer},parents{evidence{lines,path,quote,reason,since,status,symbol},over,source,to,writer},purpose{source,value,writer},relations{digest,evidence{lines,path,quote,reason,since,status,symbol},kind,source,to,via,writer},responsibility{source,value,writer},signature{source,value,writer},supplement_key",
+      "Signature": ".abbd/{architecture,features}/ID.md frontmatter: absent,absent_reason,anchors{path,symbol},digest,entries{key,name,required,shape},evidence{lines,path,quote,reason,since,status,symbol},hidden{digest,entries,evidence{lines,path,quote,reason,since,status,symbol},kind,source,to,via,writer},id,kind,masks{digest,reason,source,target,writer},name{source,value,writer},parents{evidence{lines,path,quote,reason,since,status,symbol},over,source,to,writer},purpose{source,value,writer},relations{digest,entries,evidence{lines,path,quote,reason,since,status,symbol},kind,source,to,via,writer},responsibility{source,value,writer},signature{source,value,writer},supplement_key",
       "Purpose": {
         "Value": "so the design units are reviewable Markdown that is the single source every other view derives from",
         "Badge": "inferred"
@@ -130,7 +130,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{graph.json,index.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},modules{Contracts{ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature},watermark{inputs_hash}}",
+      "Signature": ".abbd/blueprint/{graph.json,index.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},modules{Contracts{Entries{Data,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Entries{Data,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature},watermark{inputs_hash}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -224,7 +224,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:47 \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
+        "internal/topology/diff.go:72 \"Signatures []Signature `json:\\\"contract_signatures_changed\\\"`\""
       ]
     },
     {
@@ -242,7 +242,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:555 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -260,7 +260,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:205 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+        "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
     },
     {
@@ -332,7 +332,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:587 \"if !u.Absent {\""
+        "internal/model/model.go:600 \"if !u.Absent {\""
       ]
     },
     {
@@ -386,7 +386,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:478 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -404,7 +404,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:498 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -422,7 +422,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:70 \"case old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest:\""
+        "internal/topology/diff.go:168 \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
       ]
     },
     {
@@ -458,7 +458,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+        "internal/topology/impact.go:120 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
     },
     {
@@ -599,7 +599,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:45 \"When the human states a purpose, a responsibility or a coupling in the conversation\""
+        "plugins/abbd/skills/abbd/SKILL.md:46 \"When the human states a purpose, a responsibility or a coupling in the conversation\""
       ]
     },
     {
@@ -617,7 +617,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:54 \"Put the topology difference in the reply and in the PR description\""
+        "plugins/abbd/skills/abbd/SKILL.md:55 \"Put the topology difference in the reply and in the PR description\""
       ]
     },
     {
@@ -635,7 +635,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:57 \"for a CI job that labels the PR\""
+        "plugins/abbd/skills/abbd/SKILL.md:58 \"for a CI job that labels the PR\""
       ]
     },
     {
@@ -781,7 +781,7 @@
       "Parent": "FEAT-0002",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md:38 \"## Extraction format\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md:60 \"`relations` name units by `key`; `kind` is `depends_on`, `consumes` or `provides`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md:62 \"`relations` name units by `key`; `kind` is `depends_on`, `consumes` or `provides`.\""
       ]
     },
     {
@@ -862,7 +862,7 @@
       "ID": "IF-0001",
       "Kind": "IF",
       "Name": "abbd diff",
-      "Signature": "abbd diff[base,check,json,root] pos{0}",
+      "Signature": "abbd diff pos{0}",
       "Purpose": {
         "Value": "so a PR shows its topology change and CI can label a change that crosses module boundaries",
         "Badge": "inferred"
@@ -880,7 +880,7 @@
       "ID": "IF-0002",
       "Kind": "IF",
       "Name": "abbd evidence",
-      "Signature": "abbd evidence[root] pos{0}",
+      "Signature": "abbd evidence pos{0}",
       "Purpose": {
         "Value": "so a reader sees which quoted evidence still holds in the working tree",
         "Badge": "inferred"
@@ -898,7 +898,7 @@
       "ID": "IF-0003",
       "Kind": "IF",
       "Name": "abbd status",
-      "Signature": "abbd status[check,root] pos{0}",
+      "Signature": "abbd status pos{0}",
       "Purpose": {
         "Value": "so anyone sees at once whether state and blueprint are current",
         "Badge": "inferred"
@@ -916,7 +916,7 @@
       "ID": "IF-0004",
       "Kind": "IF",
       "Name": "abbd impact",
-      "Signature": "abbd impact[root] pos{1}",
+      "Signature": "abbd impact pos{1}",
       "Purpose": {
         "Value": "so an agent knows what a change reaches before it starts",
         "Badge": "inferred"
@@ -934,7 +934,7 @@
       "ID": "IF-0005",
       "Kind": "IF",
       "Name": "abbd install",
-      "Signature": "abbd install[root] pos{0}",
+      "Signature": "abbd install pos{0}",
       "Purpose": {
         "Value": "so every assistant session asks the blueprint before grepping and leaves the topology current",
         "Badge": "inferred"
@@ -952,7 +952,7 @@
       "ID": "IF-0006",
       "Kind": "IF",
       "Name": "abbd sync",
-      "Signature": "abbd sync[root,verbose] pos{0}",
+      "Signature": "abbd sync pos{0}",
       "Purpose": {
         "Value": "so the stored topology follows the working tree after a code change",
         "Badge": "inferred"
@@ -970,7 +970,7 @@
       "ID": "IF-0007",
       "Kind": "IF",
       "Name": "abbd explain",
-      "Signature": "abbd explain[root] pos{1}",
+      "Signature": "abbd explain pos{1}",
       "Purpose": {
         "Value": "so an assistant reads one unit's place in the architecture before it greps",
         "Badge": "inferred"
@@ -988,7 +988,7 @@
       "ID": "IF-0008",
       "Kind": "IF",
       "Name": "abbd path",
-      "Signature": "abbd path[root] pos{2}",
+      "Signature": "abbd path pos{2}",
       "Purpose": {
         "Value": "so a reader sees how two units are connected and how certain that connection is",
         "Badge": "inferred"
@@ -1006,7 +1006,7 @@
       "ID": "IF-0009",
       "Kind": "IF",
       "Name": "abbd record fact",
-      "Signature": "abbd record fact[root,source,value] pos{1}",
+      "Signature": "abbd record fact pos{1}",
       "Purpose": {
         "Value": "so what a human said about a unit's why is kept with where they said it",
         "Badge": "inferred"
@@ -1024,7 +1024,7 @@
       "ID": "IF-0010",
       "Kind": "IF",
       "Name": "abbd record relation",
-      "Signature": "abbd record relation[evidence,root,source,via] pos{3}",
+      "Signature": "abbd record relation pos{3}",
       "Purpose": {
         "Value": "so a reader's or a human's coupling enters the state with its origin",
         "Badge": "inferred"
@@ -1042,7 +1042,7 @@
       "ID": "IF-0011",
       "Kind": "IF",
       "Name": "abbd record unit",
-      "Signature": "abbd record unit[evidence,parent,responsibility,root] pos{2}",
+      "Signature": "abbd record unit pos{2}",
       "Purpose": {
         "Value": "so a unit the script cannot see enters the state, anchored on its quoted code",
         "Badge": "inferred"
@@ -1060,7 +1060,7 @@
       "ID": "IF-0012",
       "Kind": "IF",
       "Name": "abbd setup",
-      "Signature": "abbd setup[root,supplement] pos{0} --argv",
+      "Signature": "abbd setup pos{0} --argv",
       "Purpose": {
         "Value": "so a repository gets its first state from a proven-deterministic script plus the readers' supplement",
         "Badge": "inferred"
@@ -1078,7 +1078,7 @@
       "ID": "IF-0013",
       "Kind": "IF",
       "Name": "abbd understand",
-      "Signature": "abbd understand[evidence,restamp,root] pos{1,2}",
+      "Signature": "abbd understand pos{1,2}",
       "Purpose": {
         "Value": "so pstack how's text about a module is shown beside its drawing and flagged when the code moves on",
         "Badge": "inferred"
@@ -1171,15 +1171,15 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:511 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:489 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:521 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:499 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
       "ID": "IF-0018",
       "Kind": "IF",
       "Name": "abbd record parent",
-      "Signature": "abbd record parent[evidence,root,source] pos{2}",
+      "Signature": "abbd record parent pos{2}",
       "Purpose": null,
       "Responsibility": null,
       "Anchors": [
@@ -1191,7 +1191,7 @@
       "ID": "IF-0019",
       "Kind": "IF",
       "Name": "abbd migrate",
-      "Signature": "abbd migrate[root,supplement] pos{0}",
+      "Signature": "abbd migrate pos{0}",
       "Purpose": null,
       "Responsibility": null,
       "Anchors": [
@@ -1203,7 +1203,7 @@
       "ID": "IF-0020",
       "Kind": "IF",
       "Name": "abbd record evidence",
-      "Signature": "abbd record evidence[evidence,root] pos{1}",
+      "Signature": "abbd record evidence pos{1}",
       "Purpose": null,
       "Responsibility": null,
       "Anchors": [
@@ -1215,7 +1215,7 @@
       "ID": "IF-0021",
       "Kind": "IF",
       "Name": "abbd retract",
-      "Signature": "abbd retract[reason,root,source] pos{1}",
+      "Signature": "abbd retract pos{1}",
       "Purpose": null,
       "Responsibility": null,
       "Anchors": [
@@ -1345,8 +1345,8 @@
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/query.go:12 \"func resolve(units []model.Unit, s string) (model.Unit, error) {\"",
-        "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
-        "cmd/abbd/query.go:279 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
+        "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
+        "cmd/abbd/query.go:293 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
       ]
     },
     {
@@ -1607,8 +1607,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:110 \"parent %q is not the key of another module\"",
-        "internal/extract/extract.go:247 \"func parentCycle(units []Unit, key string) bool {\""
+        "internal/extract/extract.go:121 \"parent %q is not the key of another module\"",
+        "internal/extract/extract.go:310 \"func parentCycle(units []Unit, key string) bool {\""
       ]
     },
     {
@@ -1629,7 +1629,7 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:236 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
+        "internal/extract/extract.go:299 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
     },
     {
@@ -1650,8 +1650,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:220 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
-        "internal/extract/extract.go:231 \"leaves the project root\""
+        "internal/extract/extract.go:283 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
+        "internal/extract/extract.go:294 \"leaves the project root\""
       ]
     },
     {
@@ -1672,8 +1672,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:159 \"dec.DisallowUnknownFields()\"",
-        "internal/extract/extract.go:189 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
+        "internal/extract/extract.go:179 \"dec.DisallowUnknownFields()\"",
+        "internal/extract/extract.go:209 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
       ]
     },
     {
@@ -1839,7 +1839,7 @@
       ],
       "Parent": "MOD-0026",
       "Evidence": [
-        "internal/identity/identity.go:366 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
+        "internal/identity/identity.go:367 \"if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {\"",
         "internal/identity/identity.go:313 \"u.DropRelations(func(r model.Relation) bool { return ws.own(r.Writer) })\""
       ]
     },
@@ -1859,6 +1859,7 @@
       "Anchors": [
         "internal/model",
         "internal/model/claims.go",
+        "internal/model/entry.go",
         "internal/model/model.go",
         "internal/model/slot.go"
       ]
@@ -1882,7 +1883,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:192 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
+        "internal/model/model.go:196 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
       ]
     },
     {
@@ -1904,8 +1905,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:393 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:424 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:403 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go:434 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -1946,6 +1947,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/entries.go",
         "internal/screen/focus.go",
         "internal/screen/graph.go",
         "internal/screen/ink.go",
@@ -2249,6 +2251,7 @@
       "Anchors": [
         "internal/topology",
         "internal/topology/diff.go",
+        "internal/topology/entry.go",
         "internal/topology/find.go",
         "internal/topology/impact.go",
         "internal/topology/path.go",
@@ -2273,7 +2276,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:105 \"func (d Diff) Boundary() bool {\""
+        "internal/topology/diff.go:228 \"func (d Diff) Boundary() bool {\""
       ]
     },
     {
@@ -2295,8 +2298,8 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:58 \"func Compare(base, now []model.Unit) Diff {\"",
-        "internal/topology/diff.go:205 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+        "internal/topology/diff.go:92 \"func Compare(base, now []model.Unit) Diff {\"",
+        "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
     },
     {
@@ -2317,7 +2320,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:81 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
+        "internal/topology/impact.go:83 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
     },
     {
@@ -2338,7 +2341,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:41 \"func Links(units []model.Unit) []Link {\""
+        "internal/topology/impact.go:43 \"func Links(units []model.Unit) []Link {\""
       ]
     },
     {
@@ -2459,14 +2462,14 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"abbd diff\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"abbd diff\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"abbd evidence\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"abbd evidence\""
     },
     {
       "From": "FEAT-0001",
@@ -2487,7 +2490,7 @@
       "To": "IF-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"abbd sync\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"abbd sync\""
     },
     {
       "From": "FEAT-0001",
@@ -2542,14 +2545,14 @@
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:57 \"abbd migrate\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:58 \"abbd migrate\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"abbd record evidence\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"abbd record evidence\""
     },
     {
       "From": "FEAT-0001",
@@ -2632,21 +2635,21 @@
       "To": "IF-0018",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"abbd record parent\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:65 \"abbd record parent\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:66 \"abbd migrate\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:68 \"abbd migrate\""
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:62 \"abbd record evidence\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:64 \"abbd record evidence\""
     },
     {
       "From": "FEAT-0003",
@@ -2750,7 +2753,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:47 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
     },
     {
       "From": "FEAT-0007",
@@ -2758,7 +2761,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:49 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
     },
     {
       "From": "FEAT-0008",
@@ -2766,7 +2769,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
       "From": "FEAT-0008",
@@ -2774,7 +2777,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
       "From": "FEAT-0009",
@@ -2782,7 +2785,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
       "From": "FEAT-0009",
@@ -2790,7 +2793,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
     },
     {
       "From": "FEAT-0009",
@@ -2798,7 +2801,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
       "From": "FEAT-0010",
@@ -2942,7 +2945,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:66 \"What a reader stored through abbd record and what the human stated stay.\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:68 \"What a reader stored through abbd record and what the human stated stay.\""
     },
     {
       "From": "FEAT-0017",
@@ -2950,7 +2953,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:65 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
     },
     {
       "From": "MOD-0001",
@@ -3428,7 +3431,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\""
+      "Quote": "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
     },
     {
       "From": "MOD-0005",
@@ -3626,7 +3629,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:126 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+      "Quote": "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
     },
     {
       "From": "MOD-0020",
@@ -3634,7 +3637,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/extract/extract.go:220 \"the forward-slash, root-relative paths git reports\""
+      "Quote": "internal/extract/extract.go:283 \"the forward-slash, root-relative paths git reports\""
     },
     {
       "From": "MOD-0021",
@@ -3642,7 +3645,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:149 \"if err := e.Validate(); err != nil {\""
+      "Quote": "internal/extract/extract.go:169 \"if err := e.Validate(); err != nil {\""
     },
     {
       "From": "MOD-0021",
@@ -3650,7 +3653,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:209 \"Purpose:        inferred(ru.Purpose),\""
+      "Quote": "internal/extract/extract.go:234 \"Purpose:        inferred(ru.Purpose),\""
     },
     {
       "From": "MOD-0021",
@@ -3658,7 +3661,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:173 \"p, err := normalizePath(a.Path)\""
+      "Quote": "internal/extract/extract.go:193 \"p, err := normalizePath(a.Path)\""
     },
     {
       "From": "MOD-0022",
@@ -3742,7 +3745,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\""
+      "Quote": "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\""
     },
     {
       "From": "MOD-0030",
@@ -3750,7 +3753,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:555 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -3766,7 +3769,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:587 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:600 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3782,7 +3785,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:478 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3790,7 +3793,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:498 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -3858,7 +3861,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:217 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:219 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -3926,6 +3929,12 @@
     },
     {
       "From": "MOD-0034",
+      "To": "MOD-0047",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0034",
       "To": "MOD-0056",
       "Kind": "depends_on",
       "Origin": "EXTRACTED"
@@ -3944,7 +3953,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+      "Quote": "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
     },
     {
       "From": "MOD-0037",
@@ -3984,7 +3993,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+      "Quote": "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
     },
     {
       "From": "MOD-0038",
@@ -4032,7 +4041,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:193 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go:195 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -4150,7 +4159,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
     },
     {
       "From": "MOD-0047",
@@ -4158,7 +4167,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:205 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+      "Quote": "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
     },
     {
       "From": "MOD-0047",
@@ -4174,7 +4183,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go:29 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+      "Quote": "internal/topology/impact.go:31 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
     },
     {
       "From": "MOD-0047",
@@ -4190,7 +4199,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:70 \"case old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest:\""
+      "Quote": "internal/topology/diff.go:168 \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
     },
     {
       "From": "MOD-0047",
@@ -4198,7 +4207,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      "Quote": "internal/topology/impact.go:120 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
     },
     {
       "From": "MOD-0047",
@@ -4218,7 +4227,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
     },
     {
       "From": "MOD-0048",
@@ -4226,7 +4235,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/diff.go:107 \"return len(d.Signatures) \u003e 0 || len(d.RelationsAdded) \u003e 0 || len(d.RelationsRemoved) \u003e 0 ||\""
+      "Quote": "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
     },
     {
       "From": "MOD-0049",
@@ -4234,7 +4243,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:58 \"func Compare(base, now []model.Unit) Diff {\""
+      "Quote": "internal/topology/diff.go:92 \"func Compare(base, now []model.Unit) Diff {\""
     },
     {
       "From": "MOD-0050",
@@ -4242,7 +4251,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/impact.go:82 \"links := Links(units)\""
+      "Quote": "internal/topology/impact.go:84 \"links := Links(units)\""
     },
     {
       "From": "MOD-0052",
@@ -4316,8 +4325,8 @@
     }
   ],
   "overview": {
-    "Width": 1308,
-    "Height": 915,
+    "Width": 1208,
+    "Height": 843,
     "Boxes": [
       {
         "ID": "FEAT-0001",
@@ -4329,12 +4338,12 @@
           {
             "S": "/abbd",
             "X": 99,
-            "Y": 299,
+            "Y": 283,
             "Mid": true
           }
         ],
         "X": 24,
-        "Y": 264,
+        "Y": 248,
         "W": 150,
         "H": 60,
         "Href": "#m-FEAT-0001"
@@ -4348,12 +4357,12 @@
         "Lines": [
           {
             "S": "/abbd-setup",
-            "X": 759,
+            "X": 99,
             "Y": 67,
             "Mid": true
           }
         ],
-        "X": 684,
+        "X": 24,
         "Y": 32,
         "W": 150,
         "H": 60,
@@ -4368,12 +4377,12 @@
         "Lines": [
           {
             "S": "abbd CLI",
-            "X": 759,
+            "X": 662,
             "Y": 163,
             "Mid": true
           }
         ],
-        "X": 608,
+        "X": 511,
         "Y": 128,
         "W": 303,
         "H": 60,
@@ -4388,13 +4397,13 @@
         "Lines": [
           {
             "S": "internal/bootstrap",
-            "X": 504,
-            "Y": 299,
+            "X": 324,
+            "Y": 283,
             "Mid": true
           }
         ],
-        "X": 418,
-        "Y": 264,
+        "X": 238,
+        "Y": 248,
         "W": 172,
         "H": 60,
         "Href": "#m-MOD-0009"
@@ -4408,13 +4417,13 @@
         "Lines": [
           {
             "S": "internal/evidence",
-            "X": 559,
-            "Y": 699,
+            "X": 795,
+            "Y": 619,
             "Mid": true
           }
         ],
-        "X": 477,
-        "Y": 664,
+        "X": 713,
+        "Y": 584,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0013"
@@ -4428,13 +4437,13 @@
         "Lines": [
           {
             "S": "internal/extract",
-            "X": 517,
-            "Y": 507,
+            "X": 313,
+            "Y": 451,
             "Mid": true
           }
         ],
-        "X": 439,
-        "Y": 472,
+        "X": 235,
+        "Y": 416,
         "W": 156,
         "H": 60,
         "Href": "#m-MOD-0017"
@@ -4448,13 +4457,13 @@
         "Lines": [
           {
             "S": "internal/gitx",
-            "X": 756,
-            "Y": 699,
+            "X": 590,
+            "Y": 619,
             "Mid": true
           }
         ],
-        "X": 681,
-        "Y": 664,
+        "X": 515,
+        "Y": 584,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0022"
@@ -4468,13 +4477,13 @@
         "Lines": [
           {
             "S": "internal/identity",
-            "X": 1012,
-            "Y": 299,
+            "X": 532,
+            "Y": 283,
             "Mid": true
           }
         ],
-        "X": 930,
-        "Y": 264,
+        "X": 450,
+        "Y": 248,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0026"
@@ -4488,13 +4497,13 @@
         "Lines": [
           {
             "S": "internal/model",
-            "X": 559,
-            "Y": 795,
+            "X": 689,
+            "Y": 723,
             "Mid": true
           }
         ],
-        "X": 484,
-        "Y": 760,
+        "X": 614,
+        "Y": 688,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0030"
@@ -4508,13 +4517,13 @@
         "Lines": [
           {
             "S": "internal/screen",
-            "X": 760,
-            "Y": 299,
+            "X": 808,
+            "Y": 283,
             "Mid": true
           }
         ],
-        "X": 630,
-        "Y": 264,
+        "X": 678,
+        "Y": 248,
         "W": 260,
         "H": 60,
         "Href": "#m-MOD-0034"
@@ -4528,13 +4537,13 @@
         "Lines": [
           {
             "S": "internal/store",
-            "X": 960,
-            "Y": 507,
+            "X": 568,
+            "Y": 451,
             "Mid": true
           }
         ],
-        "X": 847,
-        "Y": 472,
+        "X": 455,
+        "Y": 416,
         "W": 226,
         "H": 60,
         "Href": "#m-MOD-0041"
@@ -4548,13 +4557,13 @@
         "Lines": [
           {
             "S": "internal/topology",
-            "X": 296,
-            "Y": 299,
+            "X": 795,
+            "Y": 451,
             "Mid": true
           }
         ],
-        "X": 214,
-        "Y": 264,
+        "X": 713,
+        "Y": 416,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0047"
@@ -4568,13 +4577,13 @@
         "Lines": [
           {
             "S": "internal/group",
-            "X": 1209,
-            "Y": 299,
+            "X": 1109,
+            "Y": 283,
             "Mid": true
           }
         ],
-        "X": 1134,
-        "Y": 264,
+        "X": 1034,
+        "Y": 248,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0054"
@@ -4588,13 +4597,13 @@
         "Lines": [
           {
             "S": "pstack (external)",
-            "X": 106,
-            "Y": 507,
+            "X": 113,
+            "Y": 451,
             "Mid": true
           }
         ],
-        "X": 24,
-        "Y": 472,
+        "X": 31,
+        "Y": 416,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0055"
@@ -4608,13 +4617,13 @@
         "Lines": [
           {
             "S": "internal/narrative",
-            "X": 721,
-            "Y": 507,
+            "X": 1011,
+            "Y": 451,
             "Mid": true
           }
         ],
-        "X": 635,
-        "Y": 472,
+        "X": 925,
+        "Y": 416,
         "W": 172,
         "H": 60,
         "Href": "#m-MOD-0056"
@@ -4628,19 +4637,19 @@
         "Lines": [
           {
             "S": "plugin and",
-            "X": 654,
-            "Y": 874,
+            "X": 604,
+            "Y": 802,
             "Mid": true
           },
           {
             "S": "marketplace manifest",
-            "X": 654,
-            "Y": 888,
+            "X": 604,
+            "Y": 816,
             "Mid": true
           }
         ],
-        "X": 574,
-        "Y": 856,
+        "X": 524,
+        "Y": 784,
         "W": 160,
         "H": 43
       }
@@ -4654,7 +4663,7 @@
         "Exit": false,
         "Below": true,
         "X": 101,
-        "Y": 324,
+        "Y": 308,
         "W": 69,
         "Rels": [
           "FEAT-0001.consumes.IF-0001",
@@ -4695,7 +4704,7 @@
         "Title": "/abbd-setup가 쓰는 계약: abbd diff, abbd status, abbd impact, abbd install, abbd sync, abbd explain, abbd path, abbd record fact, abbd setup, abbd understand, abbd exit codes, abbd record parent, abbd migrate, abbd record evidence",
         "Exit": false,
         "Below": true,
-        "X": 725,
+        "X": 101,
         "Y": 92,
         "W": 69,
         "Rels": [
@@ -4725,7 +4734,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: sync state",
         "Exit": true,
-        "X": 764,
+        "X": 665,
         "Y": 128,
         "W": 82,
         "Rels": [
@@ -4740,7 +4749,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract",
         "Exit": true,
-        "X": 616,
+        "X": 519,
         "Y": 128,
         "W": 69,
         "Rels": [
@@ -4768,7 +4777,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd status, abbd impact, abbd install, abbd sync, abbd explain, abbd path, abbd record fact, abbd setup, abbd understand, abbd exit codes, abbd record parent, abbd migrate, abbd record evidence",
         "Exit": true,
-        "X": 691,
+        "X": 592,
         "Y": 128,
         "W": 69,
         "Rels": [
@@ -4795,7 +4804,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: blueprint files",
         "Exit": true,
-        "X": 850,
+        "X": 753,
         "Y": 128,
         "W": 57,
         "Rels": [
@@ -4810,7 +4819,7 @@
         "Title": "abbd CLI가 쓰는 계약: project.yaml, unit files, module understanding, slot notes",
         "Exit": false,
         "Below": true,
-        "X": 845,
+        "X": 648,
         "Y": 188,
         "W": 62,
         "Rels": [
@@ -4832,7 +4841,7 @@
         "Title": "abbd CLI가 쓰는 계약: extraction JSON",
         "Exit": false,
         "Below": true,
-        "X": 616,
+        "X": 519,
         "Y": 188,
         "W": 125,
         "Rels": [
@@ -4848,7 +4857,7 @@
         "Title": "abbd CLI가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 745,
+        "X": 714,
         "Y": 188,
         "W": 96,
         "Rels": [
@@ -4862,8 +4871,8 @@
         "Class": "design",
         "Title": "internal/extract가 제공하는 계약: extraction JSON",
         "Exit": true,
-        "X": 466,
-        "Y": 472,
+        "X": 243,
+        "Y": 416,
         "W": 125,
         "Rels": [
           "MOD-0017.provides.DATA-0002"
@@ -4876,8 +4885,8 @@
         "Title": "internal/identity가 쓰는 계약: sync state",
         "Exit": false,
         "Below": true,
-        "X": 938,
-        "Y": 324,
+        "X": 528,
+        "Y": 308,
         "W": 82,
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
@@ -4889,8 +4898,8 @@
         "Class": "design",
         "Title": "internal/model가 제공하는 계약: relation key",
         "Exit": true,
-        "X": 534,
-        "Y": 760,
+        "X": 664,
+        "Y": 688,
         "W": 96,
         "Rels": [
           "MOD-0030.provides.IF-0015"
@@ -4902,8 +4911,8 @@
         "Class": "design",
         "Title": "internal/screen가 제공하는 계약: blueprint files",
         "Exit": true,
-        "X": 829,
-        "Y": 264,
+        "X": 877,
+        "Y": 248,
         "W": 57,
         "Rels": [
           "MOD-0039.consumes.DATA-0005",
@@ -4918,8 +4927,8 @@
         "Title": "internal/screen가 쓰는 계약: project.yaml, unit files, sync state, module understanding, slot notes",
         "Exit": false,
         "Below": true,
-        "X": 824,
-        "Y": 324,
+        "X": 686,
+        "Y": 308,
         "W": 62,
         "Rels": [
           "MOD-0034.consumes.CFG-0002",
@@ -4938,8 +4947,8 @@
         "Title": "internal/screen가 쓰는 계약: sync state",
         "Exit": false,
         "Below": true,
-        "X": 738,
-        "Y": 324,
+        "X": 752,
+        "Y": 308,
         "W": 82,
         "Rels": [
           "MOD-0034.consumes.DATA-0006",
@@ -4953,8 +4962,8 @@
         "Title": "internal/screen가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 638,
-        "Y": 324,
+        "X": 838,
+        "Y": 308,
         "W": 96,
         "Rels": [
           "MOD-0034.consumes.IF-0015"
@@ -4966,8 +4975,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: project.yaml, unit files, module understanding, slot notes",
         "Exit": true,
-        "X": 855,
-        "Y": 472,
+        "X": 549,
+        "Y": 416,
         "W": 62,
         "Rels": [
           "MOD-0041.provides.CFG-0002",
@@ -4983,8 +4992,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: project.yaml, unit files, sync state, module understanding, slot notes",
         "Exit": true,
-        "X": 921,
-        "Y": 472,
+        "X": 615,
+        "Y": 416,
         "W": 62,
         "Rels": [
           "MOD-0041.provides.CFG-0002",
@@ -5002,8 +5011,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: sync state",
         "Exit": true,
-        "X": 987,
-        "Y": 472,
+        "X": 463,
+        "Y": 416,
         "W": 82,
         "Rels": [
           "MOD-0041.provides.DATA-0006",
@@ -5017,8 +5026,8 @@
         "Title": "internal/topology가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 278,
-        "Y": 324,
+        "X": 721,
+        "Y": 476,
         "W": 96,
         "Rels": [
           "MOD-0047.consumes.IF-0015"
@@ -5027,7 +5036,7 @@
     ],
     "Wires": [
       {
-        "D": "M910 388 L910 436",
+        "D": "M630 372 L630 380",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5048,7 +5057,7 @@
         ]
       },
       {
-        "D": "M855 356 L855 436",
+        "D": "M717 332 L717 380",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5068,7 +5077,7 @@
         ]
       },
       {
-        "D": "M528 388 L528 472",
+        "D": "M305 372 L305 416",
         "Kind": "contract",
         "Title": "abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다",
         "Rels": [
@@ -5079,7 +5088,7 @@
         ]
       },
       {
-        "D": "M979 264 L979 236",
+        "D": "M569 248 L569 228",
         "Kind": "contract",
         "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독",
         "Origin": "inferred",
@@ -5087,8 +5096,8 @@
         "Back": true,
         "Marks": [
           {
-            "X": 979,
-            "Y": 264,
+            "X": 569,
+            "Y": 248,
             "Origin": "inferred"
           }
         ],
@@ -5097,15 +5106,15 @@
         ]
       },
       {
-        "D": "M979 324 L979 436",
+        "D": "M569 308 L569 380",
         "Kind": "contract",
         "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 979,
-            "Y": 324,
+            "X": 569,
+            "Y": 308,
             "Origin": "inferred"
           }
         ],
@@ -5114,7 +5123,7 @@
         ]
       },
       {
-        "D": "M779 264 L779 236",
+        "D": "M793 248 L793 228",
         "Kind": "contract",
         "Title": "internal/screen → abbd CLI: sync state 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5126,7 +5135,7 @@
         ]
       },
       {
-        "D": "M135 264 L135 236",
+        "D": "M135 248 L135 228",
         "Kind": "contract",
         "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5165,7 +5174,7 @@
         ]
       },
       {
-        "D": "M759 92 L759 108 L725 108 L725 128",
+        "D": "M135 92 L135 100 L626 100 L626 128",
         "Kind": "contract",
         "Title": "/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5191,7 +5200,7 @@
         ]
       },
       {
-        "D": "M631 356 L631 396 L615 396",
+        "D": "M885 332 L885 380 L893 380",
         "Kind": "contract",
         "Title": "internal/screen → internal/model: relation key 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5202,7 +5211,7 @@
         ]
       },
       {
-        "D": "M326 324 L326 404 L615 404",
+        "D": "M769 476 L769 500 L893 500",
         "Kind": "contract",
         "Title": "internal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5214,7 +5223,7 @@
         ]
       },
       {
-        "D": "M99 324 L99 348",
+        "D": "M99 308 L99 332",
         "Kind": "bypass",
         "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
@@ -5222,7 +5231,7 @@
         "Marks": [
           {
             "X": 99,
-            "Y": 324,
+            "Y": 308,
             "Origin": "inferred"
           }
         ],
@@ -5232,14 +5241,14 @@
         ]
       },
       {
-        "D": "M726 92 L726 100 L396 100 L396 212 L66 212 L66 264",
+        "D": "M91 92 L91 248",
         "Kind": "mutual",
         "Title": "/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존\n/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Both": true,
         "Marks": [
           {
-            "X": 726,
+            "X": 91,
             "Y": 92,
             "Origin": "inferred"
           }
@@ -5250,14 +5259,14 @@
         ]
       },
       {
-        "D": "M791 92 L791 116 L106 116",
+        "D": "M131 92 L131 108 L190 108",
         "Kind": "bypass",
         "Title": "/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 791,
+            "X": 131,
             "Y": 92,
             "Origin": "inferred"
           }
@@ -5271,7 +5280,7 @@
         ]
       },
       {
-        "D": "M131 228 L131 264",
+        "D": "M131 220 L131 248",
         "Kind": "bypass",
         "Title": "abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독",
         "Rels": [
@@ -5281,7 +5290,7 @@
         ]
       },
       {
-        "D": "M504 228 L504 264",
+        "D": "M324 220 L324 248",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5291,7 +5300,7 @@
         ]
       },
       {
-        "D": "M623 556 L623 620",
+        "D": "M1113 500 L1113 548",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5304,7 +5313,7 @@
         ]
       },
       {
-        "D": "M631 556 L631 636",
+        "D": "M1105 500 L1105 556",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5317,7 +5326,7 @@
         ]
       },
       {
-        "D": "M1012 228 L1012 264",
+        "D": "M532 220 L532 248",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5327,7 +5336,7 @@
         ]
       },
       {
-        "D": "M760 228 L760 264",
+        "D": "M808 220 L808 248",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5337,9 +5346,10 @@
         ]
       },
       {
-        "D": "M296 228 L296 264",
+        "D": "M795 348 L795 356",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
         "Rels": [
           "MOD-0001.depends_on.MOD-0047",
           "MOD-0001.depends_on.MOD-0048",
@@ -5348,7 +5358,7 @@
         ]
       },
       {
-        "D": "M1209 228 L1209 264",
+        "D": "M1109 220 L1109 248",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/group: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5356,7 +5366,7 @@
         ]
       },
       {
-        "D": "M721 364 L721 372",
+        "D": "M795 348 L795 356",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5365,7 +5375,7 @@
         ]
       },
       {
-        "D": "M504 348 L504 428",
+        "D": "M324 332 L324 348",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5375,7 +5385,7 @@
         ]
       },
       {
-        "D": "M559 724 L559 732",
+        "D": "M795 644 L795 652",
         "Kind": "bypass",
         "Title": "internal/evidence → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5386,7 +5396,7 @@
         ]
       },
       {
-        "D": "M517 564 L517 636",
+        "D": "M313 500 L313 556",
         "Kind": "bypass",
         "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
@@ -5395,7 +5405,7 @@
         ]
       },
       {
-        "D": "M481 564 L481 572 L465 572",
+        "D": "M391 500 L391 508 L407 508",
         "Kind": "bypass",
         "Title": "internal/extract → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5405,7 +5415,7 @@
         ]
       },
       {
-        "D": "M525 412 L525 428",
+        "D": "M305 340 L305 348",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5414,7 +5424,7 @@
         ]
       },
       {
-        "D": "M827 580 L827 636",
+        "D": "M439 500 L439 556",
         "Kind": "bypass",
         "Title": "internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
@@ -5423,7 +5433,7 @@
         ]
       },
       {
-        "D": "M489 580 L489 596 L465 596",
+        "D": "M423 500 L423 524 L407 524",
         "Kind": "bypass",
         "Title": "internal/identity → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5432,7 +5442,16 @@
         ]
       },
       {
-        "D": "M760 348 L760 372",
+        "D": "M808 340 L808 356",
+        "Kind": "bypass",
+        "Title": "internal/screen → internal/topology: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0034.depends_on.MOD-0047"
+        ]
+      },
+      {
+        "D": "M808 340 L808 356",
         "Kind": "bypass",
         "Title": "internal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5441,7 +5460,7 @@
         ]
       },
       {
-        "D": "M960 604 L960 620",
+        "D": "M568 540 L568 548",
         "Kind": "bypass",
         "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5450,7 +5469,7 @@
         ]
       },
       {
-        "D": "M952 604 L952 636",
+        "D": "M576 540 L576 556",
         "Kind": "bypass",
         "Title": "internal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5459,7 +5478,7 @@
         ]
       },
       {
-        "D": "M960 472 L960 348 L1048 348 L1048 324",
+        "D": "M568 416 L568 308",
         "Kind": "bypass",
         "Title": "internal/store → internal/identity: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5470,7 +5489,7 @@
         ]
       },
       {
-        "D": "M497 604 L497 612 L465 612",
+        "D": "M431 540 L431 548 L407 548",
         "Kind": "bypass",
         "Title": "internal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5479,7 +5498,7 @@
         ]
       },
       {
-        "D": "M1209 324 L1209 444 L607 444",
+        "D": "M1105 308 L1105 388 L407 388",
         "Kind": "bypass",
         "Title": "internal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5489,14 +5508,14 @@
         ]
       },
       {
-        "D": "M759 188 L759 228 M610 228 L610 364 M623 364 L623 556 M131 228 L1209 228 M610 364 L721 364 M623 556 L631 556",
+        "D": "M670 188 L670 220 M970 220 L970 348 M1113 348 L1113 500 M131 220 L1109 220 M795 348 L1113 348 M1105 500 L1113 500",
         "Kind": "bypass",
         "Title": "abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독\nabbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/identity: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/screen: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/group: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 759,
+            "X": 670,
             "Y": 188,
             "Origin": "inferred"
           }
@@ -5533,11 +5552,11 @@
         ],
         "Count": 9,
         "Net": 1,
-        "LX": 738,
+        "LX": 649,
         "LY": 200
       },
       {
-        "D": "M876 188 L876 252 M910 252 L910 388 M678 188 L678 252 M793 188 L793 252 M678 252 L910 252 M528 388 L910 388",
+        "D": "M679 188 L679 236 M630 236 L630 372 M630 188 L630 236 M762 188 L762 236 M630 236 L762 236 M305 372 L893 372",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다\nabbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다\nabbd CLI → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5567,11 +5586,11 @@
         ],
         "Count": 3,
         "Net": 2,
-        "LX": 881,
+        "LX": 684,
         "LY": 200
       },
       {
-        "D": "M504 324 L504 348 M504 348 L607 348",
+        "D": "M324 308 L324 332 M324 332 L407 332",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5583,19 +5602,19 @@
         ],
         "Count": 2,
         "Net": 3,
-        "LX": 483,
-        "LY": 336
+        "LX": 303,
+        "LY": 320
       },
       {
-        "D": "M517 532 L517 564 M481 564 L517 564",
+        "D": "M313 476 L313 500 M313 500 L391 500",
         "Kind": "bypass",
         "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 517,
-            "Y": 532,
+            "X": 313,
+            "Y": 476,
             "Origin": "inferred"
           }
         ],
@@ -5606,19 +5625,19 @@
         ],
         "Count": 2,
         "Net": 4,
-        "LX": 522,
-        "LY": 544
+        "LX": 292,
+        "LY": 488
       },
       {
-        "D": "M976 324 L976 412 M827 412 L827 580 M525 412 L976 412 M489 580 L827 580",
+        "D": "M496 308 L496 340 M439 340 L439 500 M305 340 L496 340 M423 500 L439 500",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 976,
-            "Y": 324,
+            "X": 496,
+            "Y": 308,
             "Origin": "inferred"
           }
         ],
@@ -5629,34 +5648,35 @@
         ],
         "Count": 3,
         "Net": 5,
-        "LX": 955,
-        "LY": 336
+        "LX": 501,
+        "LY": 320
       },
       {
-        "D": "M760 324 L760 348 M760 348 L835 348",
+        "D": "M808 308 L808 340 M697 340 L808 340",
         "Kind": "bypass",
-        "Title": "internal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
+        "Title": "internal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 760,
-            "Y": 324,
+            "X": 808,
+            "Y": 308,
             "Origin": "inferred"
           }
         ],
         "Rels": [
           "MOD-0034.depends_on.MOD-0025",
           "MOD-0039.depends_on.MOD-0022",
+          "MOD-0034.depends_on.MOD-0047",
           "MOD-0034.depends_on.MOD-0056"
         ],
-        "Count": 2,
+        "Count": 3,
         "Net": 6,
-        "LX": 739,
-        "LY": 336
+        "LX": 813,
+        "LY": 320
       },
       {
-        "D": "M855 324 L855 356 M686 324 L686 356 M631 356 L855 356",
+        "D": "M717 308 L717 332 M884 308 L884 332 M717 332 L885 332",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5680,11 +5700,11 @@
         ],
         "Count": 2,
         "Net": 7,
-        "LX": 860,
-        "LY": 336
+        "LX": 696,
+        "LY": 320
       },
       {
-        "D": "M960 532 L960 604 M497 604 L960 604",
+        "D": "M568 476 L568 540 M431 540 L576 540",
         "Kind": "bypass",
         "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5696,11 +5716,11 @@
         ],
         "Count": 3,
         "Net": 8,
-        "LX": 965,
-        "LY": 544
+        "LX": 573,
+        "LY": 488
       },
       {
-        "D": "M135 236 L979 236",
+        "D": "M135 228 L793 228",
         "Kind": "contract",
         "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다\n/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5742,7 +5762,7 @@
         "Net": 9
       },
       {
-        "D": "M650 236 L650 188",
+        "D": "M553 228 L553 188",
         "Kind": "contract",
         "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Back": true,
@@ -5780,7 +5800,7 @@
         "Net": 9
       },
       {
-        "D": "M805 236 L805 188",
+        "D": "M706 228 L706 188",
         "Kind": "contract",
         "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다",
         "Back": true,
@@ -5791,11 +5811,11 @@
         ],
         "Count": 2,
         "Net": 9,
-        "LX": 810,
+        "LX": 711,
         "LY": 200
       },
       {
-        "D": "M559 620 L960 620",
+        "D": "M568 548 L1113 548",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5810,7 +5830,7 @@
         "Net": 10
       },
       {
-        "D": "M559 620 L559 664",
+        "D": "M795 548 L795 584",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5823,11 +5843,11 @@
         ],
         "Count": 2,
         "Net": 10,
-        "LX": 564,
-        "LY": 660
+        "LX": 800,
+        "LY": 580
       },
       {
-        "D": "M504 428 L525 428",
+        "D": "M305 348 L324 348",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5839,7 +5859,7 @@
         "Net": 11
       },
       {
-        "D": "M517 428 L517 472",
+        "D": "M313 348 L313 416",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5849,11 +5869,11 @@
         ],
         "Count": 2,
         "Net": 11,
-        "LX": 496,
-        "LY": 454
+        "LX": 318,
+        "LY": 394
       },
       {
-        "D": "M835 348 L835 636 M517 636 L952 636",
+        "D": "M697 340 L697 556 M313 556 L1105 556",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5872,7 +5892,7 @@
         "Net": 12
       },
       {
-        "D": "M756 636 L756 664",
+        "D": "M590 556 L590 584",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5889,11 +5909,11 @@
         ],
         "Count": 5,
         "Net": 12,
-        "LX": 761,
-        "LY": 660
+        "LX": 595,
+        "LY": 580
       },
       {
-        "D": "M607 348 L607 556 M607 556 L465 556 M465 556 L465 732 M465 732 L559 732",
+        "D": "M407 332 L407 516 M407 508 L407 652 M407 652 L795 652",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5910,7 +5930,7 @@
         "Net": 13
       },
       {
-        "D": "M559 732 L559 760",
+        "D": "M689 652 L689 688",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5925,11 +5945,11 @@
         ],
         "Count": 6,
         "Net": 13,
-        "LX": 538,
-        "LY": 756
+        "LX": 668,
+        "LY": 684
       },
       {
-        "D": "M615 388 L615 612 M615 612 L661 612 M661 612 L661 732 M582 732 L661 732",
+        "D": "M893 372 L893 508 M893 500 L893 660 M712 660 L893 660",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5948,7 +5968,7 @@
         "Net": 14
       },
       {
-        "D": "M582 732 L582 760",
+        "D": "M712 660 L712 688",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Rels": [
@@ -5965,11 +5985,11 @@
         ],
         "Count": 3,
         "Net": 14,
-        "LX": 587,
-        "LY": 756
+        "LX": 717,
+        "LY": 684
       },
       {
-        "D": "M855 436 L1028 436",
+        "D": "M504 380 L717 380",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
         "Joins": true,
@@ -6004,7 +6024,16 @@
         "Net": 15
       },
       {
-        "D": "M886 436 L886 472",
+        "D": "M504 380 L504 416",
+        "Kind": "contract",
+        "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
+        "Rels": [
+          "MOD-0026.consumes.DATA-0006"
+        ],
+        "Net": 15
+      },
+      {
+        "D": "M580 380 L580 416",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다",
         "Rels": [
@@ -6025,7 +6054,7 @@
         "Net": 15
       },
       {
-        "D": "M952 436 L952 472",
+        "D": "M654 380 L654 416",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다",
         "Rels": [
@@ -6045,32 +6074,68 @@
         "Net": 15
       },
       {
-        "D": "M1028 436 L1028 472",
-        "Kind": "contract",
-        "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
-        "Rels": [
-          "MOD-0026.consumes.DATA-0006"
-        ],
-        "Net": 15
-      },
-      {
-        "D": "M106 116 L106 220 M106 220 L194 220 M194 220 L194 348 M99 348 L194 348",
+        "D": "M795 356 L1027 356",
         "Kind": "bypass",
-        "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독\n/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
+        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Joins": true,
         "Rels": [
-          "FEAT-0005.depends_on.FEAT-0018",
-          "FEAT-0005.depends_on.FEAT-0019",
-          "FEAT-0010.depends_on.MOD-0055",
-          "FEAT-0011.depends_on.FEAT-0018",
-          "FEAT-0011.depends_on.FEAT-0020",
-          "FEAT-0012.depends_on.FEAT-0021",
-          "FEAT-0015.depends_on.FEAT-0018"
+          "MOD-0001.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0048",
+          "MOD-0002.depends_on.MOD-0047",
+          "MOD-0005.depends_on.MOD-0047",
+          "MOD-0034.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0056",
+          "MOD-0034.depends_on.MOD-0056"
         ],
         "Net": 16
       },
       {
-        "D": "M106 348 L106 472",
+        "D": "M795 356 L795 416",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0048",
+          "MOD-0002.depends_on.MOD-0047",
+          "MOD-0005.depends_on.MOD-0047",
+          "MOD-0034.depends_on.MOD-0047"
+        ],
+        "Count": 2,
+        "Net": 16,
+        "LX": 800,
+        "LY": 412
+      },
+      {
+        "D": "M1027 356 L1027 416",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0056",
+          "MOD-0034.depends_on.MOD-0056"
+        ],
+        "Count": 2,
+        "Net": 16,
+        "LX": 1032,
+        "LY": 412
+      },
+      {
+        "D": "M190 108 L190 212 M190 212 L190 332 M99 332 L190 332",
+        "Kind": "bypass",
+        "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독\n/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
+        "Joins": true,
+        "Rels": [
+          "FEAT-0005.depends_on.FEAT-0018",
+          "FEAT-0005.depends_on.FEAT-0019",
+          "FEAT-0010.depends_on.MOD-0055",
+          "FEAT-0011.depends_on.FEAT-0018",
+          "FEAT-0011.depends_on.FEAT-0020",
+          "FEAT-0012.depends_on.FEAT-0021",
+          "FEAT-0015.depends_on.FEAT-0018"
+        ],
+        "Net": 17
+      },
+      {
+        "D": "M113 332 L113 416",
         "Kind": "bypass",
         "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독\n/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Rels": [
@@ -6083,249 +6148,215 @@
           "FEAT-0015.depends_on.FEAT-0018"
         ],
         "Count": 2,
-        "Net": 16,
-        "LX": 111,
-        "LY": 468
-      },
-      {
-        "D": "M721 372 L760 372",
-        "Kind": "bypass",
-        "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
-        "Joins": true,
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0056",
-          "MOD-0034.depends_on.MOD-0056"
-        ],
-        "Net": 17
-      },
-      {
-        "D": "M721 372 L721 472",
-        "Kind": "bypass",
-        "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0056",
-          "MOD-0034.depends_on.MOD-0056"
-        ],
-        "Count": 2,
         "Net": 17,
-        "LX": 726,
-        "LY": 468
+        "LX": 118,
+        "LY": 412
       }
     ],
     "Dots": [
       {
-        "X": 296,
-        "Y": 228,
+        "X": 324,
+        "Y": 220,
         "Kind": "bypass"
       },
       {
-        "X": 504,
-        "Y": 228,
+        "X": 532,
+        "Y": 220,
         "Kind": "bypass"
       },
       {
-        "X": 610,
-        "Y": 228,
+        "X": 670,
+        "Y": 220,
         "Kind": "bypass"
       },
       {
-        "X": 759,
-        "Y": 228,
+        "X": 808,
+        "Y": 220,
         "Kind": "bypass"
       },
       {
-        "X": 760,
-        "Y": 228,
+        "X": 970,
+        "Y": 220,
         "Kind": "bypass"
       },
       {
-        "X": 1012,
+        "X": 553,
         "Y": 228,
-        "Kind": "bypass"
+        "Kind": "contract"
       },
       {
-        "X": 650,
+        "X": 569,
+        "Y": 228,
+        "Kind": "contract"
+      },
+      {
+        "X": 706,
+        "Y": 228,
+        "Kind": "contract"
+      },
+      {
+        "X": 630,
         "Y": 236,
         "Kind": "contract"
       },
       {
-        "X": 779,
+        "X": 679,
         "Y": 236,
         "Kind": "contract"
       },
       {
-        "X": 805,
-        "Y": 236,
+        "X": 113,
+        "Y": 332,
+        "Kind": "bypass"
+      },
+      {
+        "X": 324,
+        "Y": 332,
+        "Kind": "bypass"
+      },
+      {
+        "X": 717,
+        "Y": 332,
         "Kind": "contract"
       },
       {
-        "X": 793,
-        "Y": 252,
+        "X": 884,
+        "Y": 332,
         "Kind": "contract"
       },
       {
-        "X": 876,
-        "Y": 252,
-        "Kind": "contract"
+        "X": 439,
+        "Y": 340,
+        "Kind": "bypass"
       },
       {
-        "X": 106,
+        "X": 808,
+        "Y": 340,
+        "Kind": "bypass"
+      },
+      {
+        "X": 313,
         "Y": 348,
         "Kind": "bypass"
       },
       {
-        "X": 504,
+        "X": 970,
         "Y": 348,
         "Kind": "bypass"
       },
       {
-        "X": 760,
-        "Y": 348,
-        "Kind": "bypass"
-      },
-      {
-        "X": 686,
+        "X": 795,
         "Y": 356,
-        "Kind": "contract"
-      },
-      {
-        "X": 855,
-        "Y": 356,
-        "Kind": "contract"
-      },
-      {
-        "X": 623,
-        "Y": 364,
         "Kind": "bypass"
       },
       {
-        "X": 721,
+        "X": 808,
+        "Y": 356,
+        "Kind": "bypass"
+      },
+      {
+        "X": 630,
         "Y": 372,
-        "Kind": "bypass"
+        "Kind": "contract"
       },
       {
-        "X": 615,
+        "X": 569,
+        "Y": 380,
+        "Kind": "contract"
+      },
+      {
+        "X": 580,
+        "Y": 380,
+        "Kind": "contract"
+      },
+      {
+        "X": 630,
+        "Y": 380,
+        "Kind": "contract"
+      },
+      {
+        "X": 654,
+        "Y": 380,
+        "Kind": "contract"
+      },
+      {
+        "X": 893,
+        "Y": 380,
+        "Kind": "contract"
+      },
+      {
+        "X": 407,
         "Y": 388,
-        "Kind": "contract"
-      },
-      {
-        "X": 910,
-        "Y": 388,
-        "Kind": "contract"
-      },
-      {
-        "X": 615,
-        "Y": 396,
-        "Kind": "contract"
-      },
-      {
-        "X": 615,
-        "Y": 404,
-        "Kind": "contract"
-      },
-      {
-        "X": 827,
-        "Y": 412,
         "Kind": "bypass"
       },
       {
-        "X": 517,
-        "Y": 428,
+        "X": 313,
+        "Y": 500,
         "Kind": "bypass"
       },
       {
-        "X": 886,
-        "Y": 436,
-        "Kind": "contract"
-      },
-      {
-        "X": 910,
-        "Y": 436,
-        "Kind": "contract"
-      },
-      {
-        "X": 952,
-        "Y": 436,
-        "Kind": "contract"
-      },
-      {
-        "X": 979,
-        "Y": 436,
-        "Kind": "contract"
-      },
-      {
-        "X": 607,
-        "Y": 444,
+        "X": 439,
+        "Y": 500,
         "Kind": "bypass"
       },
       {
-        "X": 623,
+        "X": 893,
+        "Y": 500,
+        "Kind": "contract"
+      },
+      {
+        "X": 1113,
+        "Y": 500,
+        "Kind": "bypass"
+      },
+      {
+        "X": 407,
+        "Y": 508,
+        "Kind": "bypass"
+      },
+      {
+        "X": 407,
+        "Y": 524,
+        "Kind": "bypass"
+      },
+      {
+        "X": 568,
+        "Y": 540,
+        "Kind": "bypass"
+      },
+      {
+        "X": 407,
+        "Y": 548,
+        "Kind": "bypass"
+      },
+      {
+        "X": 795,
+        "Y": 548,
+        "Kind": "bypass"
+      },
+      {
+        "X": 439,
         "Y": 556,
         "Kind": "bypass"
       },
       {
-        "X": 517,
-        "Y": 564,
+        "X": 576,
+        "Y": 556,
         "Kind": "bypass"
       },
       {
-        "X": 465,
-        "Y": 572,
+        "X": 590,
+        "Y": 556,
         "Kind": "bypass"
       },
       {
-        "X": 827,
-        "Y": 580,
+        "X": 697,
+        "Y": 556,
         "Kind": "bypass"
       },
       {
-        "X": 465,
-        "Y": 596,
-        "Kind": "bypass"
-      },
-      {
-        "X": 952,
-        "Y": 604,
-        "Kind": "bypass"
-      },
-      {
-        "X": 960,
-        "Y": 604,
-        "Kind": "bypass"
-      },
-      {
-        "X": 465,
-        "Y": 612,
-        "Kind": "bypass"
-      },
-      {
-        "X": 623,
-        "Y": 620,
-        "Kind": "bypass"
-      },
-      {
-        "X": 631,
-        "Y": 636,
-        "Kind": "bypass"
-      },
-      {
-        "X": 756,
-        "Y": 636,
-        "Kind": "bypass"
-      },
-      {
-        "X": 827,
-        "Y": 636,
-        "Kind": "bypass"
-      },
-      {
-        "X": 835,
-        "Y": 636,
-        "Kind": "bypass"
-      },
-      {
-        "X": 559,
-        "Y": 732,
+        "X": 689,
+        "Y": 652,
         "Kind": "bypass"
       }
     ]
@@ -6869,7 +6900,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:47 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
             ],
             "Marks": [
               {
@@ -6891,7 +6922,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:49 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Marks": [
               {
@@ -6911,7 +6942,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001"
@@ -6923,7 +6954,7 @@
             "Title": "/abbd after work consumes abbd sync (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0006"
@@ -6936,7 +6967,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0001"
@@ -6948,7 +6979,7 @@
             "Title": "/abbd evidence and CI gate consumes abbd evidence (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0002"
@@ -6960,7 +6991,7 @@
             "Title": "/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0014"
@@ -7103,8 +7134,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Marks": [
               {
@@ -7134,9 +7165,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\"",
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\"",
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Marks": [
               {
@@ -7173,7 +7204,7 @@
             "Back": true,
             "Quotes": [
               "plugins/abbd/skills/abbd/SKILL.md:26 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\"",
-              "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:49 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0010",
@@ -7188,7 +7219,7 @@
             "Back": true,
             "Quotes": [
               "plugins/abbd/skills/abbd/SKILL.md:26 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\"",
-              "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:49 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0010",
@@ -7205,8 +7236,8 @@
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd diff (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001",
@@ -7219,8 +7250,8 @@
             "Kind": "consumes",
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd diff (via call), 판독",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001",
@@ -7562,7 +7593,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:47 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+            "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
           ]
         },
         {
@@ -7571,7 +7602,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:48 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+            "plugins/abbd/skills/abbd/SKILL.md:49 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
           ]
         },
         {
@@ -7580,7 +7611,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+            "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
           ]
         },
         {
@@ -7589,7 +7620,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:53 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+            "plugins/abbd/skills/abbd/SKILL.md:54 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
           ]
         },
         {
@@ -7598,7 +7629,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+            "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
           ]
         },
         {
@@ -7607,7 +7638,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+            "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
           ]
         },
         {
@@ -7616,7 +7647,7 @@
           "Kind": "consumes",
           "Via": "convention",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:57 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+            "plugins/abbd/skills/abbd/SKILL.md:58 \"`abbd diff --check` exits 1 when a contract's signature changed\""
           ]
         },
         {
@@ -8190,7 +8221,7 @@
             "Title": "/abbd-setup extraction format consumes abbd record fact (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:66 \"What a reader stored through abbd record and what the human stated stay.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:68 \"What a reader stored through abbd record and what the human stated stay.\""
             ],
             "Rels": [
               "FEAT-0017.consumes.IF-0009"
@@ -8202,7 +8233,7 @@
             "Title": "/abbd-setup extraction format consumes abbd record parent (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:65 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
             ],
             "Rels": [
               "FEAT-0017.consumes.IF-0018"
@@ -8378,8 +8409,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:66 \"What a reader stored through abbd record and what the human stated stay.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:68 \"What a reader stored through abbd record and what the human stated stay.\"",
+              "plugins/abbd/skills/abbd-setup/SKILL.md:65 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
             ],
             "Marks": [
               {
@@ -8867,7 +8898,7 @@
           "Kind": "consumes",
           "Via": "convention",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md:66 \"What a reader stored through abbd record and what the human stated stay.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md:68 \"What a reader stored through abbd record and what the human stated stay.\""
           ]
         },
         {
@@ -8876,7 +8907,7 @@
           "Kind": "consumes",
           "Via": "convention",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md:63 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md:65 \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
           ]
         }
       ]
@@ -9497,7 +9528,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\""
+              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
             ],
             "Marks": [
               {
@@ -10075,7 +10106,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -10089,7 +10120,7 @@
             "Kind": "consumes",
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
-              "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -11192,7 +11223,7 @@
                 "Code": true
               },
               {
-                "Text": " lists every parent claim when a unit has more than one, and marks each drifted or dead item. ",
+                "Text": " lists every parent claim when a unit has more than one, and marks each drifted or dead item. For a contract with entries it prints each entry's key, name, shape and need, with the units whose relations use it. ",
                 "Code": false
               },
               {
@@ -11636,6 +11667,30 @@
                 "Code": false
               },
               {
+                "Text": "understand",
+                "Code": true
+              },
+              {
+                "Text": " refuses an ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " note whose key names no entry of the contract, and ",
+                "Code": false
+              },
+              {
+                "Text": "status",
+                "Code": true
+              },
+              {
+                "Text": " counts one whose entry the contract no longer lists as orphaned. ",
+                "Code": false
+              },
+              {
                 "Text": "explain",
                 "Code": true
               },
@@ -11663,6 +11718,677 @@
           }
         ]
       },
+      "Contracts": [
+        {
+          "ID": "IF-0001",
+          "Name": "abbd diff",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "base",
+                "Name": "--base",
+                "Shape": "string",
+                "Need": "",
+                "Note": {
+                  "Ref": "IF-0001.entries.base",
+                  "Title": "항목",
+                  "Key": "base",
+                  "Stale": false,
+                  "Blocks": [
+                    {
+                      "Kind": "p",
+                      "Parts": [
+                        {
+                          "Text": "The revision to compare with. Left out, diff takes the merge base with the default branch, so a PR shows only its own change.",
+                          "Code": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Quotes": [
+                    "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\""
+                  ]
+                }
+              },
+              {
+                "Key": "json",
+                "Name": "--json",
+                "Shape": "bool",
+                "Need": "",
+                "Note": {
+                  "Ref": "IF-0001.entries.json",
+                  "Title": "항목",
+                  "Key": "json",
+                  "Stale": false,
+                  "Blocks": [
+                    {
+                      "Kind": "p",
+                      "Parts": [
+                        {
+                          "Text": "Prints the same categories as JSON, with the base revision, for a tool rather than a reader.",
+                          "Code": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Quotes": [
+                    "cmd/abbd/diff.go:32 \"if e.asJSON {\""
+                  ]
+                }
+              },
+              {
+                "Key": "check",
+                "Name": "--check",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ],
+                "Note": {
+                  "Ref": "IF-0001.entries.check",
+                  "Title": "항목",
+                  "Key": "check",
+                  "Stale": false,
+                  "Blocks": [
+                    {
+                      "Kind": "p",
+                      "Parts": [
+                        {
+                          "Text": "Exits 1 when the change reaches the boundary between modules: a contract signature or entry changed, a contract came or went, or a relation between top-level modules appeared or disappeared. It decides nothing itself. A CI job reads the exit to label the PR.",
+                          "Code": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Quotes": [
+                    "cmd/abbd/diff.go:44 \"if e.check \u0026\u0026 d.Boundary() {\""
+                  ]
+                }
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0002",
+          "Name": "abbd evidence",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0003",
+          "Name": "abbd status",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "check",
+                "Name": "--check",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ],
+                "Note": {
+                  "Ref": "IF-0003.entries.check",
+                  "Title": "항목",
+                  "Key": "check",
+                  "Stale": false,
+                  "Blocks": [
+                    {
+                      "Kind": "p",
+                      "Parts": [
+                        {
+                          "Text": "Exits 1 while anything status reports can still be brought current in the same PR: a STALE state, blueprint, text or note, or a drifted evidence item.",
+                          "Code": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Quotes": [
+                    "cmd/abbd/evidence.go:179 \"if e.check \u0026\u0026 len(behind) \u003e 0 {\""
+                  ]
+                }
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0004",
+          "Name": "abbd impact",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0005",
+          "Name": "abbd install",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0006",
+          "Name": "abbd sync",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "verbose",
+                "Name": "--verbose",
+                "Shape": "bool",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0007",
+          "Name": "abbd explain",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0008",
+          "Name": "abbd path",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0009",
+          "Name": "abbd record fact",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "value",
+                "Name": "--value",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "source",
+                "Name": "--source",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0010",
+          "Name": "abbd record relation",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "via",
+                "Name": "--via",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "evidence",
+                "Name": "--evidence",
+                "Shape": "repeated",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "source",
+                "Name": "--source",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0011",
+          "Name": "abbd record unit",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "evidence",
+                "Name": "--evidence",
+                "Shape": "repeated",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "parent",
+                "Name": "--parent",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "responsibility",
+                "Name": "--responsibility",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0012",
+          "Name": "abbd setup",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "supplement",
+                "Name": "--supplement",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0013",
+          "Name": "abbd understand",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "restamp",
+                "Name": "--restamp",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "evidence",
+                "Name": "--evidence",
+                "Shape": "repeated",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0018",
+          "Name": "abbd record parent",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "evidence",
+                "Name": "--evidence",
+                "Shape": "repeated",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "source",
+                "Name": "--source",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0019",
+          "Name": "abbd migrate",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "supplement",
+                "Name": "--supplement",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0020",
+          "Name": "abbd record evidence",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "evidence",
+                "Name": "--evidence",
+                "Shape": "repeated",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        },
+        {
+          "ID": "IF-0021",
+          "Name": "abbd retract",
+          "Notes": null,
+          "Entries": {
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "reason",
+                "Name": "--reason",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "source",
+                "Name": "--source",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
+        }
+      ],
       "Unwired": [
         {
           "Head": "abbd",
@@ -11765,7 +12491,7 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go:214 \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/query.go:228 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
         {
@@ -11886,7 +12612,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -12032,7 +12758,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\""
+            "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
           ]
         },
         {
@@ -12042,7 +12768,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -12886,7 +13612,7 @@
           "Via": "data",
           "Quotes": [
             "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:187 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/extract/extract.go:207 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
       ]
@@ -14186,7 +14912,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:126 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+              "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
             ],
             "Marks": [
               {
@@ -14206,7 +14932,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/extract/extract.go:220 \"the forward-slash, root-relative paths git reports\""
+              "internal/extract/extract.go:283 \"the forward-slash, root-relative paths git reports\""
             ],
             "Marks": [
               {
@@ -14226,7 +14952,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:149 \"if err := e.Validate(); err != nil {\""
+              "internal/extract/extract.go:169 \"if err := e.Validate(); err != nil {\""
             ],
             "Marks": [
               {
@@ -14245,7 +14971,7 @@
             "Title": "untrusted-output gate depends_on intent is a guess (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:209 \"Purpose:        inferred(ru.Purpose),\""
+              "internal/extract/extract.go:234 \"Purpose:        inferred(ru.Purpose),\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0019"
@@ -14257,7 +14983,7 @@
             "Title": "untrusted-output gate depends_on anchor path normalization (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:173 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:193 \"p, err := normalizePath(a.Path)\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0020"
@@ -14287,8 +15013,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/extract/extract.go:209 \"Purpose:        inferred(ru.Purpose),\"",
-              "internal/extract/extract.go:173 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:234 \"Purpose:        inferred(ru.Purpose),\"",
+              "internal/extract/extract.go:193 \"p, err := normalizePath(a.Path)\""
             ],
             "Marks": [
               {
@@ -15078,6 +15804,124 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Entries",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "extract.go",
+                "Code": true
+              },
+              {
+                "Text": "): a contract's ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " are its parts as the code spells them, such as a route, a method, a flag or a field, each a ",
+                "Code": false
+              },
+              {
+                "Text": "model.Entry",
+                "Code": true
+              },
+              {
+                "Text": " with a ",
+                "Code": false
+              },
+              {
+                "Text": "name",
+                "Code": true
+              },
+              {
+                "Text": " and an optional ",
+                "Code": false
+              },
+              {
+                "Text": "shape",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "required",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "normalizeEntries",
+                "Code": true
+              },
+              {
+                "Text": " trims them, keeps the code's order, gives each entry without a ",
+                "Code": false
+              },
+              {
+                "Text": "key",
+                "Code": true
+              },
+              {
+                "Text": " the one ",
+                "Code": false
+              },
+              {
+                "Text": "model.EntryKey",
+                "Code": true
+              },
+              {
+                "Text": " reduces its name to, and refuses entries on a unit that is not a contract and two entries that share a key. A relation's ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " name entries of its ",
+                "Code": false
+              },
+              {
+                "Text": "to",
+                "Code": true
+              },
+              {
+                "Text": " unit by name or by key, and ",
+                "Code": false
+              },
+              {
+                "Text": "entryKeys",
+                "Code": true
+              },
+              {
+                "Text": " turns them into the sorted keys of that unit's entries, refusing a name the unit does not list. Two relation lines on one edge add their entries up into one relation, because one claim holds an edge. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseSupplement",
+                "Code": true
+              },
+              {
+                "Text": " refuses entries outright: they are what the code spells, so only the script reports them.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Path normalization",
                 "Code": false,
                 "Bold": true
@@ -15265,7 +16109,7 @@
           "Via": "data",
           "Quotes": [
             "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:187 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/extract/extract.go:207 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
         {
@@ -15274,7 +16118,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:126 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -15283,7 +16127,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:220 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:283 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -15292,7 +16136,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:149 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:169 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -15301,7 +16145,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:209 \"Purpose:        inferred(ru.Purpose),\""
+            "internal/extract/extract.go:234 \"Purpose:        inferred(ru.Purpose),\""
           ]
         },
         {
@@ -15310,7 +16154,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:173 \"p, err := normalizePath(a.Path)\""
+            "internal/extract/extract.go:193 \"p, err := normalizePath(a.Path)\""
           ]
         }
       ]
@@ -16610,7 +17454,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:220 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:283 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -16638,7 +17482,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:374 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -16795,7 +17639,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\""
+              "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\""
             ],
             "Marks": [
               {
@@ -17400,11 +18244,19 @@
                 "Code": true
               },
               {
-                "Text": "): folds an extracted unit into the stored unit it took over. The extraction sets the anchors and the code ",
+                "Text": "): folds an extracted unit into the stored unit it took over. The extraction sets the anchors, the code ",
                 "Code": false
               },
               {
                 "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": " and the contract's ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
                 "Code": true
               },
               {
@@ -17471,6 +18323,44 @@
               },
               {
                 "Text": " parents are added when the extraction owns their writer. A relation with no writer is the script's, and one that repeats a claim with the same end, kind and writer is skipped. Units it did not report keep their relations as they were.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Entries on claims",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "identity.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "setRelations",
+                "Code": true
+              },
+              {
+                "Text": " carries each extracted relation's ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
+                "Text": ", the keys of the entries of its target it uses, onto the claim it makes, and a new unit takes the extraction's entries as they come. An entry has no identity apart from its contract and its key, so a renamed entry is one entry gone and one added.",
                 "Code": false
               }
             ]
@@ -17823,7 +18713,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
+            "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
             "cmd/abbd/main.go:374 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
@@ -19347,6 +20237,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -20135,7 +21033,31 @@
                 "Code": true
               },
               {
-                "Text": " is keyed, so it holds one note per key. ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " are keyed, so each holds one note per key. A note in ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " describes one entry of a contract, and ",
+                "Code": false
+              },
+              {
+                "Text": "NoteRef.Unheld",
+                "Code": true
+              },
+              {
+                "Text": " reports one whose key names no entry the unit lists. ",
                 "Code": false
               },
               {
@@ -20229,6 +21151,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -20238,6 +21168,14 @@
               },
               {
                 "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
+                "Text": " narrows the claim to those entries of the contract it points at, by key: the routes a page calls, the fields a module writes. ",
                 "Code": false
               },
               {
@@ -20310,6 +21248,132 @@
               },
               {
                 "Text": " orders claims by end and then kind.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Entry",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "entry.go",
+                "Code": true
+              },
+              {
+                "Text": "): one part of a contract as the code spells it, such as a route, a method, a flag or a field. ",
+                "Code": false
+              },
+              {
+                "Text": "Name",
+                "Code": true
+              },
+              {
+                "Text": " is the code's spelling and ",
+                "Code": false
+              },
+              {
+                "Text": "Key",
+                "Code": true
+              },
+              {
+                "Text": " that name reduced by ",
+                "Code": false
+              },
+              {
+                "Text": "EntryKey",
+                "Code": true
+              },
+              {
+                "Text": " to lower-case letters, digits and hyphens, so ",
+                "Code": false
+              },
+              {
+                "Text": "GET /users/{id}",
+                "Code": true
+              },
+              {
+                "Text": " is ",
+                "Code": false
+              },
+              {
+                "Text": "get-users-id",
+                "Code": true
+              },
+              {
+                "Text": " and a note on it is ",
+                "Code": false
+              },
+              {
+                "Text": "ID.entries.get-users-id",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Shape",
+                "Code": true
+              },
+              {
+                "Text": " is what the code says the entry looks like, and ",
+                "Code": false
+              },
+              {
+                "Text": "Required",
+                "Code": true
+              },
+              {
+                "Text": " is nil when the code does not say. ",
+                "Code": false
+              },
+              {
+                "Text": "Need",
+                "Code": true
+              },
+              {
+                "Text": " words it as required, optional or nothing, and ",
+                "Code": false
+              },
+              {
+                "Text": "Look",
+                "Code": true
+              },
+              {
+                "Text": " joins shape and need for a diff line. ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateEntries",
+                "Code": true
+              },
+              {
+                "Text": " refuses an entry without a name, a malformed key and two entries with one key, and ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Validate",
+                "Code": true
+              },
+              {
+                "Text": " refuses entries on a unit that is not a contract. ",
+                "Code": false
+              },
+              {
+                "Text": "EntryNamed",
+                "Code": true
+              },
+              {
+                "Text": " finds one by key.",
                 "Code": false
               }
             ]
@@ -20979,7 +22043,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:126 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -20988,7 +22052,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:149 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:169 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -21015,7 +22079,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:542 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:555 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -21033,7 +22097,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:587 \"if !u.Absent {\""
+            "internal/model/model.go:600 \"if !u.Absent {\""
           ]
         },
         {
@@ -21051,7 +22115,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:468 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:478 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -21060,7 +22124,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:488 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:498 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -21106,7 +22170,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
             "internal/topology/query.go:42 \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -21125,7 +22189,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
           ]
         },
         {
@@ -21424,7 +22488,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037"
@@ -21494,7 +22558,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0037"
@@ -21568,7 +22632,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/screen.go:193 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+              "internal/screen/screen.go:195 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
             ],
             "Marks": [
               {
@@ -21644,7 +22708,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:288 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Marks": [
               {
@@ -21706,7 +22770,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-              "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
+              "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
               "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\""
             ],
             "Marks": [
@@ -21868,8 +22932,8 @@
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
-              "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -21882,8 +22946,8 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Quotes": [
-              "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
-              "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -23372,7 +24436,7 @@
                 "Code": true
               },
               {
-                "Text": " with the places that changed, its blocks and quotes, and for a decision the human's why and source. A note whose slot abbd does not know, or whose file is not where its slot's note belongs, shows nowhere. ",
+                "Text": " with the places that changed, its blocks and quotes, and for a decision the human's why and source. A note whose slot abbd does not know, whose file is not where its slot's note belongs, or whose entry its contract no longer lists, shows nowhere. ",
                 "Code": false
               },
               {
@@ -23397,6 +24461,52 @@
               },
               {
                 "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home: the module it sits in when that module provides it, else the provider whose provides relation, its own or one of a unit inside it, rests on the strongest origin, so a reader's coupling never moves a contract away from the provider the code shows. A unit no inside shows keeps its notes on its row of the unit list.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "entries.go",
+                "Code": true
+              },
+              {
+                "Text": "): a contract's entries as one table, one ",
+                "Code": false
+              },
+              {
+                "Text": "EntryRow",
+                "Code": true
+              },
+              {
+                "Text": " each with the entry's name and shape, its need, the units that provide it and those that use it from ",
+                "Code": false
+              },
+              {
+                "Text": "topology.EntryUses",
+                "Code": true
+              },
+              {
+                "Text": ", and the reader's ",
+                "Code": false
+              },
+              {
+                "Text": "entries",
+                "Code": true
+              },
+              {
+                "Text": " note on it. The shape column reads 시그니처, or 타입 for a contract that holds data, and the use columns read 쓰는 단위 and 읽는 단위 there. A column no row fills is left out. The page draws the table across the whole inside of the contract's home, below the drawing and the text, so nothing in it is cut: an entry's name keeps to one line, a header never breaks, and the description column takes the rest of the width and wraps. A contract with entries shows in its home's inside even with no notes, and an entry's note shows on its row rather than among the contract's notes.",
                 "Code": false
               }
             ]
@@ -23575,7 +24685,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:217 \"return \\\"stated\\\"\"",
+            "internal/screen/screen.go:219 \"return \\\"stated\\\"\"",
             "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
@@ -23624,7 +24734,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:64 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:193 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:195 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -23642,7 +24752,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/screen.go:198 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+            "internal/screen/screen.go:200 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
           ]
         },
         {
@@ -23681,7 +24791,7 @@
           "Quotes": [
             "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
             "internal/screen/inside.go:507 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
-            "internal/screen/page.html:159 \"{{if .Unwired}}\"",
+            "internal/screen/page.html:168 \"{{if .Unwired}}\"",
             "internal/screen/inside.go:449 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
@@ -23691,7 +24801,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go:169 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+            "internal/screen/screen.go:171 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
           ]
         },
         {
@@ -23701,7 +24811,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\"",
-            "internal/screen/page.html:205 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
+            "internal/screen/page.html:215 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
           ]
         },
         {
@@ -23750,7 +24860,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:193 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go:195 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -23768,7 +24878,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:29 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+            "internal/topology/impact.go:31 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
           ]
         }
       ]
@@ -26416,7 +27526,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -26465,7 +27575,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:64 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:193 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:195 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -26881,7 +27991,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/topology/diff.go:107 \"return len(d.Signatures) \u003e 0 || len(d.RelationsAdded) \u003e 0 || len(d.RelationsRemoved) \u003e 0 ||\""
+              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
             ],
             "Marks": [
               {
@@ -26902,7 +28012,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "internal/topology/diff.go:58 \"func Compare(base, now []model.Unit) Diff {\""
+              "internal/topology/diff.go:92 \"func Compare(base, now []model.Unit) Diff {\""
             ],
             "Marks": [
               {
@@ -26923,7 +28033,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/topology/impact.go:82 \"links := Links(units)\""
+              "internal/topology/impact.go:84 \"links := Links(units)\""
             ],
             "Marks": [
               {
@@ -27239,7 +28349,7 @@
             "Title": "boundary rule depends_on topology diff (via call), 판독\nunit explanation depends_on topology diff (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/topology/diff.go:107 \"return len(d.Signatures) \u003e 0 || len(d.RelationsAdded) \u003e 0 || len(d.RelationsRemoved) \u003e 0 ||\"",
+              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
               "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\""
             ],
             "Rels": [
@@ -27253,7 +28363,7 @@
             "Kind": "depends_on",
             "Title": "boundary rule depends_on topology diff (via call), 판독\nunit explanation depends_on topology diff (via convention), 판독",
             "Quotes": [
-              "internal/topology/diff.go:107 \"return len(d.Signatures) \u003e 0 || len(d.RelationsAdded) \u003e 0 || len(d.RelationsRemoved) \u003e 0 ||\"",
+              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
               "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\""
             ],
             "Rels": [
@@ -27271,7 +28381,7 @@
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/topology/impact.go:82 \"links := Links(units)\"",
+              "internal/topology/impact.go:84 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -27287,7 +28397,7 @@
             "Kind": "depends_on",
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Quotes": [
-              "internal/topology/impact.go:82 \"links := Links(units)\"",
+              "internal/topology/impact.go:84 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -28039,7 +29149,15 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", the ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
+                "Text": " of its target it uses, and ",
                 "Code": false
               },
               {
@@ -28306,6 +29424,36 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "EntryUses",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "entry.go",
+                "Code": true
+              },
+              {
+                "Text": "): for one contract, the live links that narrow to each of its entries, by entry key: who consumes a route, who writes or reads a field. ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": " and the blueprint's entry tables read it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "strength",
                 "Code": true
               },
@@ -28435,7 +29583,23 @@
                 "Code": true
               },
               {
-                "Text": ", contracts whose ",
+                "Text": ", contract ",
+                "Code": false
+              },
+              {
+                "Text": "Entries",
+                "Code": true
+              },
+              {
+                "Text": " added, removed or changed in shape or need, one ",
+                "Code": false
+              },
+              {
+                "Text": "Listed",
+                "Code": true
+              },
+              {
+                "Text": " line for a contract that came to list its entries or stopped instead of one per entry, contracts whose ",
                 "Code": false
               },
               {
@@ -28443,7 +29607,23 @@
                 "Code": true
               },
               {
-                "Text": " digest changed under the same signature when both digests exist, drawn top-level relations added or removed, and ",
+                "Text": " digest changed under the same signature and entries when both digests exist, drawn top-level relations added or removed, ",
+                "Code": false
+              },
+              {
+                "Text": "UsesAdded",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "UsesRemoved",
+                "Code": true
+              },
+              {
+                "Text": " for an entry a drawn relation came to use or stopped using on a top-level relation both sides have, and ",
                 "Code": false
               },
               {
@@ -28459,7 +29639,7 @@
                 "Code": true
               },
               {
-                "Text": " is true for a changed signature, an added or removed contract, or an added or removed drawn relation. A code-only change, a non-contract unit and an inferred coupling never set it.",
+                "Text": " is true for a changed signature, a changed entry or entry list, an added or removed contract, or an added or removed drawn relation. A code-only change, a new use of an entry on a relation already there, a non-contract unit and an inferred coupling never set it.",
                 "Code": false
               }
             ]
@@ -28497,7 +29677,7 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go:214 \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/query.go:228 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
         {
@@ -28579,7 +29759,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
             "internal/topology/query.go:42 \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -28589,7 +29769,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:205 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+            "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
           ]
         },
         {
@@ -28607,7 +29787,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:29 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+            "internal/topology/impact.go:31 \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
           ]
         },
         {
@@ -28625,7 +29805,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:70 \"case old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest:\""
+            "internal/topology/diff.go:168 \"if !shape \u0026\u0026 old.Digest != \\\"\\\" \u0026\u0026 u.Digest != \\\"\\\" \u0026\u0026 old.Digest != u.Digest {\""
           ]
         },
         {
@@ -28634,7 +29814,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+            "internal/topology/impact.go:120 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
           ]
         },
         {
@@ -28643,7 +29823,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:202 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
           ]
         },
         {
@@ -28652,7 +29832,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:107 \"return len(d.Signatures) \u003e 0 || len(d.RelationsAdded) \u003e 0 || len(d.RelationsRemoved) \u003e 0 ||\""
+            "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
           ]
         },
         {
@@ -28661,7 +29841,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:58 \"func Compare(base, now []model.Unit) Diff {\""
+            "internal/topology/diff.go:92 \"func Compare(base, now []model.Unit) Diff {\""
           ]
         },
         {
@@ -28670,7 +29850,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/impact.go:82 \"links := Links(units)\""
+            "internal/topology/impact.go:84 \"links := Links(units)\""
           ]
         },
         {
@@ -28680,7 +29860,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\"",
-            "internal/topology/diff.go:205 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+            "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
           ]
         },
         {

@@ -24,6 +24,17 @@ var Slots = []Slot{
 	{Name: "states", Title: "상태"},
 	{Name: "decisions", Title: "결정", Keyed: true},
 	{Name: "wire_sample", Title: "전송 예시"},
+	{Name: "entries", Title: "항목", Keyed: true},
+}
+
+// EntrySlot holds one note per entry of a contract, keyed by the entry's key.
+const EntrySlot = "entries"
+
+// Unheld reports whether the note names an entry the unit does not list, so
+// nothing shows it and the check skips it.
+func (r NoteRef) Unheld(u Unit) bool {
+	_, ok := u.EntryNamed(r.Key)
+	return r.Slot.Name == EntrySlot && !ok
 }
 
 // SlotNamed finds a slot by name.

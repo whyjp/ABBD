@@ -173,7 +173,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			SupplementKey: in.SupplementKey, Anchors: in.Anchors, Purpose: in.Purpose,
-			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest,
+			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Entries: in.Entries,
 			Evidence: in.Evidence,
 		}
 		created = append(created, nu)
@@ -302,7 +302,7 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 			w = model.Script
 		}
 		f := byKey[r.From]
-		made[f] = append(made[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Writer: w, Via: r.Via, Evidence: r.Evidence})
+		made[f] = append(made[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Writer: w, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries})
 	}
 	for i := range units {
 		u := &units[i]
@@ -360,6 +360,7 @@ func items(u model.Unit) []model.Evidence {
 func merge(u *model.Unit, in extract.Unit, ws Writers) {
 	u.Anchors = in.Anchors
 	u.Digest = in.Digest
+	u.Entries = in.Entries
 	if in.SupplementKey != "" {
 		u.SupplementKey = in.SupplementKey
 	}

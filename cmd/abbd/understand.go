@@ -122,6 +122,9 @@ func (e env) note(r model.NoteRef, args []string) error {
 	if !ok || !u.Kind.HoldsNotes() {
 		return fmt.Errorf("%s is not a module or a contract of the state", r.Unit)
 	}
+	if r.Unheld(u) {
+		return fmt.Errorf("%s lists no entry %s; abbd explain %s lists its entries", r.Unit, r.Key, r.Unit)
+	}
 	cited, err := e.citations()
 	if err != nil {
 		return err
