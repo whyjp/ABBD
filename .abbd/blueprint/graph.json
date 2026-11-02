@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "a461dcd763b23d44c5de1f0d5c9dded829a080d44580611dd966a6b0dd121bcb"
+    "inputs_hash": "9629bccaf774439928fb9f4159383e968864e833956a361cd038d532aa5ab2f9"
   },
   "units": [
     {
@@ -4046,7 +4046,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -11359,7 +11359,7 @@
                 "Code": true
               },
               {
-                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A place of a quote counts as unchanged when its lines read as a place of the same quote the text was written against, so a retract that moves a place up a rank does not block a restamp. A refusal names up to five of them. A restamp keeps the text's hashes. ",
+                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A retract that moves a place of a quote up a rank changes that place's hash, so it blocks a restamp until a fresh text is stored. A refusal names up to five of them. A restamp keeps the text's hashes. ",
                 "Code": false
               },
               {
@@ -20523,7 +20523,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -24945,31 +24945,7 @@
                 "Code": true
               },
               {
-                "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key. ",
-                "Code": false
-              },
-              {
-                "Text": "vouchedPlaces",
-                "Code": true
-              },
-              {
-                "Text": " lets a place pass when its lines hash as a place of the same quote in ",
-                "Code": false
-              },
-              {
-                "Text": "Code",
-                "Code": true
-              },
-              {
-                "Text": " did, each place in ",
-                "Code": false
-              },
-              {
-                "Text": "Code",
-                "Code": true
-              },
-              {
-                "Text": " vouching for one place now, so an unchanged place that changed rank does not block a restamp and an edited one still does.",
+                "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key and blocks a restamp. The hashes cannot show which code a place read before: a place can also take another's lines when its own quote is edited away or when code is swapped. So only a fresh text clears it.",
                 "Code": false
               }
             ]
@@ -25247,7 +25223,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
