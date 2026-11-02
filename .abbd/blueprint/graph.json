@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "f5649f96391a506f8c838cd3fc65045421ea3a5172af94fa1e4ae76b3b9bb78b"
+    "inputs_hash": "e4deda2cb0d9997a5028b509f2044452386225525ff001a87f67011a224c2e00"
   },
   "units": [
     {
@@ -1493,7 +1493,7 @@
       "Parent": "MOD-0009",
       "Evidence": [
         "internal/bootstrap/overlay.go:139 \"its anchors match more than one %s equally\"",
-        "internal/bootstrap/overlay.go:262 \"keys[x.Key()] = true\""
+        "internal/bootstrap/overlay.go:271 \"keys[x.Key()] = true\""
       ]
     },
     {
@@ -3567,7 +3567,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+      "Quote": "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
     },
     {
       "From": "MOD-0009",
@@ -3595,7 +3595,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\""
+      "Quote": "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
     },
     {
       "From": "MOD-0013",
@@ -11953,7 +11953,7 @@
                 "Code": true
               },
               {
-                "Text": " runs setup with a supplement whose coupling joins two script units by their refs.",
+                "Text": " runs setup with a supplement whose coupling joins two script units by their refs, refuses one whose two refs name the same unit, and warns when a supplement ref shadows the script's.",
                 "Code": false
               }
             ]
@@ -14102,7 +14102,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\""
+              "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
             ],
             "Marks": [
               {
@@ -14635,7 +14635,7 @@
                 "Code": true
               },
               {
-                "Text": " finds, each among the supplement units that landed and then among the script's refs, so an end the script reports needs no supplement unit of its own. An end it finds in neither is an error naming that ref, and ",
+                "Text": " finds, each among the supplement units that landed and then among the script's refs, so an end the script reports needs no supplement unit of its own. An end it finds in neither is an error naming that ref, and so are two ends that find the same unit, as a supplement unit restating a script unit under a ref of its own and coupled to the script's ref does. ",
                 "Code": false
               },
               {
@@ -14697,7 +14697,15 @@
                 "Code": true
               },
               {
-                "Text": " lists a documented signature the code contradicts and a second supplement unit on the same code. ",
+                "Text": " lists a documented signature the code contradicts, a second supplement unit on the same code, and a supplement ref that names another unit than the script's same ref, which ",
+                "Code": false
+              },
+              {
+                "Text": "resolve",
+                "Code": true
+              },
+              {
+                "Text": " then hides. ",
                 "Code": false
               },
               {
@@ -14756,7 +14764,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
@@ -14774,7 +14782,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
             "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
@@ -17584,7 +17592,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
             "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
@@ -32098,7 +32106,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
