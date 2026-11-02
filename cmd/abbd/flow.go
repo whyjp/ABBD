@@ -47,9 +47,10 @@ func (e env) flow(key string, args []string) error {
 	if err := e.checkDraft(&f, units); err != nil {
 		return err
 	}
-	f.Writer, f.Source = e.writer(), e.sourceRef()
-	f.Origin = f.Writer.Origin()
-	dropped, err := mayReplaceFlow(prev, had, f, units)
+	for i := range f.Steps {
+		f.Steps[i].Writer, f.Steps[i].Source = e.writer(), e.sourceRef()
+	}
+	kept, replaced, err := mayReplaceFlow(prev, had, &f, units)
 	if err != nil {
 		return err
 	}
@@ -57,9 +58,12 @@ func (e env) flow(key string, args []string) error {
 	if err := e.st.SaveFlow(f); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "stored flow %s, %d steps, %s, each step stamped with the lines around the quotes it cites\n", k, len(f.Steps), f.Origin)
-	if dropped {
-		fmt.Fprintf(e.stdout, "dropped the flow the human stated (%s), since its code changed; ask again and store it with abbd flow %s FILE --source REF\n", prev.Source, k)
+	fmt.Fprintf(e.stdout, "stored flow %s, %d steps, %s, each step stamped with the lines around the quotes it cites\n", k, len(f.Steps), f.Origin())
+	if len(kept) > 0 {
+		fmt.Fprintf(e.stdout, "kept the human's steps %s\n", kept)
+	}
+	if len(replaced) > 0 {
+		fmt.Fprintf(e.stdout, "replaced the human's steps %s of the stored flow, since their code changed; ask again and store their word with abbd flow %s FILE --source REF\n", replaced, k)
 	}
 	for i, s := range f.Steps {
 		if n := len([]rune(s.Does)); n > 80 {
@@ -110,45 +114,82 @@ func (e env) checkDraft(f *store.Flow, units []model.Unit) error {
 	return nil
 }
 
-// mayReplaceFlow decides whether f may replace the stored flow. A reader
-// replaces a flow a human stated only once a step of it is STALE, and then
-// drops the human's word, so CI does not wait on the human. The same steps
-// on the same quotes after their code moved are refused: they would mark a
-// stale flow fresh without anyone reading the code again.
-func mayReplaceFlow(prev store.Flow, had bool, f store.Flow, units []model.Unit) (dropped bool, err error) {
-	if !had {
-		return false, nil
-	}
-	stale := slices.ContainsFunc(prev.Steps, func(s store.FlowStep) bool {
-		return s.Stale() || len(s.Against(units).Gaps) > 0
-	})
-	if stale && sameFlow(prev, f) {
-		return false, fmt.Errorf("the code flow %s cites changed since it was written; read it again, then store the new steps or cite the code they rest on now", f.Key)
-	}
-	if prev.Writer == model.Human && f.Writer != model.Human {
-		if !stale {
-			return false, fmt.Errorf("a human stated flow %s (%s) and it is current; only a human replaces it, with --source", f.Key, prev.Source)
-		}
-		return true, nil
-	}
-	return false, nil
+// humanStep is a human's step by its place in a flow, from 1, and the
+// source the human said it in.
+type humanStep struct {
+	place  int
+	source string
 }
 
-// sameFlow reports whether two flows say the same steps in the same words
+type humanSteps []humanStep
+
+func (hs humanSteps) String() string {
+	var places, sources []string
+	for _, h := range hs {
+		places = append(places, fmt.Sprint(h.place))
+		if !slices.Contains(sources, h.source) {
+			sources = append(sources, h.source)
+		}
+	}
+	return fmt.Sprintf("%s (%s)", strings.Join(places, ", "), strings.Join(sources, "; "))
+}
+
+// mayReplaceFlow decides, step by step, whether the draft f may replace the
+// stored flow. A STALE step that comes back as it was is refused whatever
+// else changed: it would read fresh with no one reading its code again. A
+// human may replace any step. A reader may replace only a human's STALE
+// steps: each current one must come back as written, in its order, and
+// keeps the human's word, so CI never waits on the human for a step whose
+// code moved and a human's word on a step that still holds is never lost.
+// kept are the human's steps f keeps and replaced those the reader took
+// over, each named by its place.
+func mayReplaceFlow(prev store.Flow, had bool, f *store.Flow, units []model.Unit) (kept, replaced humanSteps, err error) {
+	if !had {
+		return nil, nil, nil
+	}
+	stale := func(s store.FlowStep) bool { return s.Stale() || len(s.Against(units).Gaps) > 0 }
+	for i, s := range prev.Steps {
+		if stale(s) && slices.ContainsFunc(f.Steps, func(n store.FlowStep) bool { return sameStep(s, n) }) {
+			return nil, nil, fmt.Errorf("step %d is STALE and comes back as it was: the code it cites changed since it was written; read it again, then store what it does now or cite the code it rests on now", i+1)
+		}
+	}
+	human := func(s store.FlowStep) bool { return s.Writer == model.Human }
+	if slices.ContainsFunc(f.Steps, human) || !slices.ContainsFunc(prev.Steps, human) {
+		return nil, nil, nil
+	}
+	if !slices.ContainsFunc(prev.Steps, stale) {
+		return nil, nil, fmt.Errorf("a human stated steps of flow %s and every step is current; only a human changes it, with --source", f.Key)
+	}
+	at := 0
+	for i, s := range prev.Steps {
+		switch {
+		case !human(s):
+			continue
+		case stale(s):
+			replaced = append(replaced, humanStep{i + 1, s.Source})
+			continue
+		}
+		j := slices.IndexFunc(f.Steps[at:], func(n store.FlowStep) bool { return sameStep(s, n) })
+		if j < 0 {
+			return nil, nil, fmt.Errorf("step %d is a human's word (%s) and current; keep it as abbd flow %s prints it, in its order, since only a human changes it, with --source", i+1, s.Source, f.Key)
+		}
+		at += j
+		f.Steps[at].Writer, f.Steps[at].Source = model.Human, s.Source
+		kept = append(kept, humanStep{at + 1, s.Source})
+		at++
+	}
+	return kept, replaced, nil
+}
+
+// sameStep reports whether two steps say the same thing in the same words
 // on the same quotes.
-func sameFlow(a, b store.Flow) bool {
-	if !sameWords(a.Question, b.Question) || len(a.Steps) != len(b.Steps) {
+func sameStep(x, y store.FlowStep) bool {
+	if x.Unit != y.Unit || !slices.Equal(x.Calls, y.Calls) || !sameCitations(x.Evidence, y.Evidence) {
 		return false
 	}
-	for i := range a.Steps {
-		x, y := a.Steps[i], b.Steps[i]
-		if x.Unit != y.Unit || !slices.Equal(x.Calls, y.Calls) || !sameCitations(x.Evidence, y.Evidence) {
+	for _, p := range [][2]string{{x.Does, y.Does}, {x.Note, y.Note}, {x.Fails, y.Fails}} {
+		if !sameWords(p[0], p[1]) {
 			return false
-		}
-		for _, p := range [][2]string{{x.Does, y.Does}, {x.Note, y.Note}, {x.Fails, y.Fails}} {
-			if !sameWords(p[0], p[1]) {
-				return false
-			}
 		}
 	}
 	return true

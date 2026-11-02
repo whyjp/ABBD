@@ -23,7 +23,7 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	stale := step("MOD-0006", "reads a sink")
 	stale.Changed = []string{"src/a.rs (the lines around it changed)"}
 	in := Input{Units: units, Flows: []store.Flow{{
-		Key: "search", Known: true, Question: "How does a search run?", Origin: model.Inferred, Caption: "From argv to output.",
+		Key: "search", Known: true, Question: "How does a search run?", Caption: "From argv to output.",
 		Steps: []store.FlowStep{
 			step("MOD-0001", "parses argv", "IF-0001", "MOD-0005"),
 			step("MOD-0002", "builds the searcher"),
@@ -82,8 +82,8 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 func TestFlowAnchorsNeverCollide(t *testing.T) {
 	two := []store.FlowStep{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
 	m := Build(Input{Units: ripgrep(), Flows: []store.Flow{
-		{Key: "a", Known: true, Question: "A?", Origin: model.Inferred, Steps: two},
-		{Key: "a-1", Known: true, Question: "A1?", Origin: model.Inferred, Steps: two},
+		{Key: "a", Known: true, Question: "A?", Steps: two},
+		{Key: "a-1", Known: true, Question: "A1?", Steps: two},
 	}})
 	seen := map[string]bool{}
 	for _, f := range m.Flows {

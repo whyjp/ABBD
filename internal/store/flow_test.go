@@ -20,10 +20,10 @@ func TestFlowsAreReadFromTheirOwnFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if f.Question != "Q?" || f.Writer != "" || f.Steps[0].Code != nil || f.Caption != "caption" {
+	if f.Question != "Q?" || f.Steps[0].Writer != "" || f.Steps[0].Code != nil || f.Caption != "caption" {
 		t.Fatalf("a draft keeps the question, steps and caption only: %+v", f)
 	}
-	f.Key, f.Writer, f.Origin = "run", model.Reader, model.Inferred
+	f.Key, f.Steps[0].Writer = "run", model.Reader
 	if err := s.SaveFlow(f); err == nil {
 		t.Fatal("an unstamped flow must be refused")
 	}

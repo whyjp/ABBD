@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // A flow answers one question with the order things happen in: numbered
@@ -16,7 +17,9 @@ import (
 // relation. Each step names stored units, each call rides a stored relation,
 // and a click on a step's unit follows the module inside that shows it.
 
-// FlowView is one flow as the page draws it. Stale counts its STALE steps.
+// FlowView is one flow as the page draws it. Badge is the weakest origin of
+// its steps and Source the one every step shares, if any. Stale counts its
+// STALE steps.
 type FlowView struct {
 	ID, Key, Question, Badge, Source string
 	Caption                          []Block `json:",omitempty"`
@@ -31,12 +34,13 @@ type Lane struct {
 	Steps                  []StepView
 }
 
-// StepView is one step. N is its place from 1 and ID its anchor. Reasons say
-// why it is STALE: the cited code changed, or the state lost a unit or a
-// relation the step names.
+// StepView is one step. N is its place from 1 and ID its anchor. Badge and
+// Source are set only where they differ from the flow's, so a mixed flow
+// marks the steps a human stated. Reasons say why it is STALE: the cited
+// code changed, or the state lost a unit or a relation the step names.
 type StepView struct {
-	N                     int
-	ID, Does, Note, Fails string
+	N                                    int
+	ID, Does, Note, Fails, Badge, Source string
 	Calls                 []Call   `json:",omitempty"`
 	Quotes                []string `json:",omitempty"`
 	Reasons               []string `json:",omitempty"`
@@ -68,10 +72,16 @@ func (o *overview) flows(in Input) []FlowView {
 		if !f.Known {
 			continue
 		}
-		v := FlowView{ID: flowID(f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin), Source: f.Source, Caption: blocks(f.Caption), Steps: len(f.Steps)}
+		v := FlowView{ID: flowID(f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin()), Source: sharedSource(f), Caption: blocks(f.Caption), Steps: len(f.Steps)}
 		for i, s := range f.Steps {
 			reach := s.Against(in.Units)
 			sv := StepView{N: i + 1, ID: stepID(f.Key, i+1), Does: s.Does, Note: s.Note, Fails: s.Fails}
+			if b := Badge(s.Writer.Origin()); b != v.Badge {
+				sv.Badge = b
+			}
+			if s.Source != v.Source {
+				sv.Source = s.Source
+			}
 			sv.Reasons = append(slices.Clone(s.Changed), reach.Gaps...)
 			sv.Stale = len(sv.Reasons) > 0
 			for _, e := range s.Evidence {
@@ -94,6 +104,19 @@ func (o *overview) flows(in Input) []FlowView {
 		out = append(out, v)
 	}
 	return out
+}
+
+// sharedSource is the source every step of f was stated in, or "".
+func sharedSource(f store.Flow) string {
+	for _, s := range f.Steps {
+		if s.Source == "" || s.Source != f.Steps[0].Source {
+			return ""
+		}
+	}
+	if len(f.Steps) == 0 {
+		return ""
+	}
+	return f.Steps[0].Source
 }
 
 // unitName is a unit's name, or its ID when the state lost it.

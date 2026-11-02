@@ -44,7 +44,7 @@ func TestAFlowIsStoredAndDrawnInOrder(t *testing.T) {
 	p := notesProject(t)
 	p.flow(0, "stored flow charge, 3 steps, INFERRED", chargeFlow)
 	stored := p.read("flows/charge.md")
-	for _, want := range []string{"question: How does a charge reach the ledger?", "writer: reader", "origin: INFERRED", "code:", "From the insert to the book."} {
+	for _, want := range []string{"question: How does a charge reach the ledger?", "writer: reader", "code:", "From the insert to the book."} {
 		if !strings.Contains(stored, want) {
 			t.Errorf("the stored flow must hold %q:\n%s", want, stored)
 		}
@@ -110,17 +110,18 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 	}
 }
 
-// A human's flow stays until its code changes: a reader may not replace a
-// current one, and replacing a stale one drops the human's word.
+// A human's flow stays until its code changes: a reader may not change a
+// current one, and a reader who replaces a stale step takes over only that
+// step.
 func TestAReaderReplacesAHumansFlowOnlyOnceItIsStale(t *testing.T) {
 	p := notesProject(t)
 	p.flow(0, "stored flow charge, 3 steps, USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
-	p.flow(1, "only a human replaces it", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
+	p.flow(1, "only a human changes it", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
 	p.resync()
-	p.flow(0, "dropped the flow the human stated (conversation 2026-11-03)", strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1))
-	if stored := p.read("flows/charge.md"); !strings.Contains(stored, "writer: reader") || strings.Contains(stored, "source:") {
-		t.Errorf("the reader's flow must replace the human's:\n%s", stored)
+	p.flow(0, "replaced the human's steps 2 (conversation 2026-11-03)", strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1))
+	if stored := p.read("flows/charge.md"); strings.Count(stored, "writer: reader") != 1 || strings.Count(stored, "writer: human") != 2 {
+		t.Errorf("the reader's step must replace the human's stale one alone:\n%s", stored)
 	}
 }
 
@@ -149,4 +150,49 @@ func TestAMalformedFlowFileWarnsAndStopsNothing(t *testing.T) {
 	}
 	p.want(0, "question: How does a charge reach the ledger?", "flow", "charge")
 	p.flow(0, "stored", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
+}
+
+// movedRetry keeps step 2's quote but changes the line under it, so step 2
+// goes STALE while its draft still holds.
+func movedRetry() string {
+	return strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 4\n", "var backoff = 2\n", 1)
+}
+
+// A stale step that comes back as it was is refused even when another step
+// changed, so rewording step 1 cannot restamp step 2.
+func TestAStaleStepStoredAgainUnreadIsRefused(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	p.code("billing/retry.go", movedRetry())
+	p.resync()
+	p.want(1, "flow charge step 2", "status", "--check")
+	p.flow(1, "step 2 is STALE and comes back as it was", strings.Replace(chargeFlow, "Charge() inserts the charge row", "Charge() writes the charge row", 1))
+	p.want(1, "flow charge step 2", "status", "--check")
+	p.flow(0, "stored", strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1))
+	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
+}
+
+// A reader replaces only the stale steps of a human's flow: the human's
+// current steps must come back as written and keep the human's word, and
+// the page marks them so.
+func TestAReaderReplacesOnlyTheStaleStepsOfAHumansFlow(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
+	p.code("billing/retry.go", movedRetry())
+	p.resync()
+	reread := strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1)
+	p.flow(1, "step 1 is a human's word (conversation 2026-11-03) and current", strings.Replace(reread, "Charge() inserts the charge row", "Charge() writes the charge row", 1))
+	out := p.flow(0, "stored flow charge, 3 steps, INFERRED", reread)
+	if !strings.Contains(out, "kept the human's steps 1, 3 (conversation 2026-11-03)") {
+		t.Errorf("the reader's store must say which human steps it kept:\n%s", out)
+	}
+	stored := p.read("flows/charge.md")
+	if strings.Count(stored, "writer: human") != 2 || strings.Count(stored, "source: conversation 2026-11-03") != 2 || strings.Count(stored, "writer: reader") != 1 {
+		t.Errorf("steps 1 and 3 keep the human's word and step 2 is the reader's:\n%s", stored)
+	}
+	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
+	page := p.read("blueprint/index.html")
+	if n := strings.Count(page, `<span class="pill stated step-origin"`); n != 2 {
+		t.Errorf("the page marks the two human steps of the mixed flow, found %d", n)
+	}
 }

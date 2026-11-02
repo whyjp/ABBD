@@ -17,17 +17,15 @@ import (
 
 // Flow is one ordered walk through the units and the question it answers.
 // Each step keeps its own Code, one hash per quote of the lines around it,
-// so an edit near one step's quotes stales that step alone. The caption is
-// the file's body. InputsHash covers .abbd/flows/, so storing a flow stales
-// the blueprint.
+// so an edit near one step's quotes stales that step alone, and its own
+// writer, so a reader who replaces a stale step keeps a human's word on the
+// others. The caption is the file's body. InputsHash covers .abbd/flows/, so
+// storing a flow stales the blueprint.
 type Flow struct {
-	Question string       `yaml:"question"`
-	Writer   model.Writer `yaml:"writer"`
-	Source   string       `yaml:"source,omitempty"`
-	Origin   model.Origin `yaml:"origin"`
-	Format   int          `yaml:"format"`
-	Steps    []FlowStep   `yaml:"steps"`
-	Caption  string       `yaml:"-"`
+	Question string     `yaml:"question"`
+	Format   int        `yaml:"format"`
+	Steps    []FlowStep `yaml:"steps"`
+	Caption  string     `yaml:"-"`
 	// Key is the file's name and File where it sits, from the project root.
 	// Known is false when the name is no flow key; status reports it.
 	Key   model.FlowKey `yaml:"-"`
@@ -35,12 +33,26 @@ type Flow struct {
 	Known bool          `yaml:"-"`
 }
 
-// FlowStep is a step and the code it was written against. Changed lists the
-// cited places whose code moved since; LoadFlows fills it.
+// FlowStep is a step, who wrote it and the code it was written against: a
+// human's step carries the Source they said it in. Changed lists the cited
+// places whose code moved since; LoadFlows fills it.
 type FlowStep struct {
 	model.Step `yaml:",inline"`
+	Writer     model.Writer      `yaml:"writer"`
+	Source     string            `yaml:"source,omitempty"`
 	Code       map[string]string `yaml:"code"`
 	Changed    []string          `yaml:"-"`
+}
+
+// Origin is the weakest origin of the flow's steps: USER_STATED only when a
+// human wrote every step.
+func (f Flow) Origin() model.Origin {
+	for _, s := range f.Steps {
+		if s.Writer != model.Human {
+			return model.Inferred
+		}
+	}
+	return model.UserStated
 }
 
 // Stale reports whether the code the step cites changed since it was written.
@@ -144,6 +156,9 @@ func (s Store) LoadFlows() ([]Flow, []Stray, error) {
 			fl.Key = model.FlowKey(strings.TrimSuffix(filepath.Base(f), ".md"))
 		}
 		for i, st := range fl.Steps {
+			if st.Writer == "" {
+				fl.Steps[i].Writer = model.Reader
+			}
 			fl.Steps[i].Changed = s.changed(st.Evidence, st.Code)
 			if len(st.Evidence) == 0 || len(st.Code) == 0 {
 				fl.Steps[i].Changed = []string{"the step cites no code abbd stamped, so nothing shows it is still true"}
