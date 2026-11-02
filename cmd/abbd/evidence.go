@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 
@@ -152,8 +153,15 @@ func (e env) status() error {
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
 	}
-	if len(in.Understandings) > 0 {
-		readTexts(e.stdout, in.Understandings)
+	texts := map[string]string{}
+	for id, u := range in.Understandings {
+		texts[string(id)] = u.Text
+	}
+	if n := e.statusNotes(in.Units, in.Notes, texts); n > 0 {
+		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence", n))
+	}
+	if len(texts) > 0 {
+		readTexts(e.stdout, texts)
 	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
@@ -172,4 +180,35 @@ func (e env) status() error {
 		return fmt.Errorf("not current: %s", strings.Join(behind, "; "))
 	}
 	return nil
+}
+
+// statusNotes reports the notes in slots: how many, which are STALE with the
+// places that moved, and which are orphaned, so the check skips them. It
+// adds each note the check reads to texts, for the readability report, and
+// returns how many are STALE.
+func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, texts map[string]string) int {
+	var total, stale, orphans int
+	var lines []string
+	for _, id := range slices.Sorted(maps.Keys(notes)) {
+		u, present := presentUnit(units, id)
+		for _, n := range notes[id] {
+			total++
+			ref := string(id) + "." + n.Slot
+			switch {
+			case !present || !u.Kind.HoldsNotes() || !n.Known:
+				orphans++
+				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; delete %s/understanding/%s/%s.md to drop it", ref, store.Dir, id, n.Slot))
+				continue
+			case n.Stale():
+				stale++
+				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s", ref, strings.Join(n.Changed, ", ")))
+			}
+			texts[ref] = n.Text
+		}
+	}
+	fmt.Fprintf(e.stdout, "notes: %d slot note(s), %d STALE, %d orphaned\n", total, stale, orphans)
+	for _, l := range lines {
+		fmt.Fprintln(e.stdout, l)
+	}
+	return stale
 }

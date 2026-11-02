@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -22,7 +23,18 @@ func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
 // module's code as it is now, so the screen can show the text beside the
 // drawing and mark it STALE once the code moves on. With --restamp it stamps
 // the stored text again instead, when only what the module holds moved.
-func (e env) understand(id model.ID, args []string) error {
+func (e env) understand(ref string, args []string) error {
+	if strings.Contains(ref, ".") {
+		r, err := model.ParseNoteRef(ref)
+		if err != nil {
+			return err
+		}
+		return e.note(r, args)
+	}
+	if len(e.evidence) > 0 {
+		return fmt.Errorf("a module's text describes all of its code and cites none; --evidence is for a slot such as %s.semantics", ref)
+	}
+	id := model.ID(ref)
 	units, err := e.st.LoadUnits()
 	if err != nil {
 		return err
@@ -53,18 +65,9 @@ func (e env) understand(id model.ID, args []string) error {
 		fmt.Fprintf(e.stdout, "restamped %s %s against code %s; its code is unchanged since the text was written\n", id, u.Name.Value, digest)
 		return nil
 	}
-	var b []byte
-	if args[0] == "-" {
-		b, err = io.ReadAll(e.stdin)
-	} else {
-		b, err = os.ReadFile(args[0])
-	}
+	text, err := e.readInput(args[0], "pass pstack how's Overview and Key Concepts")
 	if err != nil {
 		return err
-	}
-	text := store.CleanText(string(b))
-	if text == "" {
-		return fmt.Errorf("the text is empty; pass pstack how's Overview and Key Concepts")
 	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.
@@ -75,8 +78,78 @@ func (e env) understand(id model.ID, args []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
-	readText(e.stdout, id, text)
+	readText(e.stdout, string(id), text)
 	return nil
+}
+
+// readInput reads a text from FILE, or stdin for -, as abbd keeps it.
+func (e env) readInput(arg, empty string) (string, error) {
+	var b []byte
+	var err error
+	if arg == "-" {
+		b, err = io.ReadAll(e.stdin)
+	} else {
+		b, err = os.ReadFile(arg)
+	}
+	if err != nil {
+		return "", err
+	}
+	text := store.CleanText(string(b))
+	if text == "" {
+		return "", fmt.Errorf("the text is empty; %s", empty)
+	}
+	return text, nil
+}
+
+// note stores what a reader wrote into one slot of a module or a contract,
+// stamped with the code it cites, so it goes STALE when that code changes
+// and not when other code of the unit does.
+func (e env) note(r model.NoteRef, args []string) error {
+	switch {
+	case e.restamp:
+		return fmt.Errorf("a note describes only the code it cites, so moving units never stales it; store it again with abbd understand %s FILE --evidence PATH:LINES:QUOTE", r)
+	case len(args) == 0:
+		return fmt.Errorf("pass a FILE with the note's text")
+	case len(e.evidence) == 0:
+		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE that %s rests on", r)
+	}
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	u, ok := presentUnit(units, r.Unit)
+	if !ok || !u.Kind.HoldsNotes() {
+		return fmt.Errorf("%s is not a module or a contract of the state", r.Unit)
+	}
+	cited, err := e.citations()
+	if err != nil {
+		return err
+	}
+	text, err := e.readInput(args[0], "pass what the reader found for "+r.Slot.Name)
+	if err != nil {
+		return err
+	}
+	prev, had, err := e.st.LoadNote(r)
+	if err != nil {
+		return err
+	}
+	digest, code := e.st.NoteStamp(cited)
+	// The same words on the same quotes, after those quotes' code moved,
+	// would mark a stale note fresh without anyone reading the code again.
+	if had && prev.Stale() && prev.Text == text && sameCitations(prev.Evidence, cited) {
+		return fmt.Errorf("the code %s cites changed since it was written (%s); read it again, then store the new text or cite the code it rests on now", r, strings.Join(prev.Changed, ", "))
+	}
+	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Why: prev.Why, Text: text}
+	if err := e.st.SaveNote(n); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against the code it cites %s\n", r, u.Name.Value, digest)
+	readText(e.stdout, r.String(), text)
+	return nil
+}
+
+func sameCitations(a, b []model.Evidence) bool {
+	return slices.EqualFunc(a, b, func(x, y model.Evidence) bool { return x.Same(y) })
 }
 
 // mayRestamp allows a restamp only when every file of the module now is one

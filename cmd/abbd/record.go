@@ -246,13 +246,17 @@ var statedFields = map[string]func(*model.Unit) **model.Fact{
 func (e env) recordFact(key string) error {
 	id, field, _ := strings.Cut(key, ".")
 	at, ok := statedFields[field]
+	slot, _, _ := strings.Cut(field, ".")
+	_, isSlot := model.SlotNamed(slot)
 	switch {
-	case !ok:
-		return fmt.Errorf("%q is not ID.purpose or ID.responsibility", key)
+	case !ok && !isSlot:
+		return fmt.Errorf("%q is not ID.purpose, ID.responsibility or ID.decisions.KEY", key)
 	case strings.TrimSpace(e.value) == "":
 		return fmt.Errorf("give the stated text with --value")
 	case e.sourceRef() == "":
 		return fmt.Errorf("give where the human stated it with --source, such as a PR URL or \"conversation 2026-11-01\"")
+	case !ok:
+		return e.recordWhy(key)
 	}
 	units, err := e.st.Writable()
 	if err != nil {
@@ -268,6 +272,33 @@ func (e env) recordFact(key string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "recorded %s, USER_STATED from %s\n", key, e.sourceRef())
+	return nil
+}
+
+// recordWhy stores a human's reason on a decision a reader wrote. It
+// leaves the note's stamp alone: the reason is what the human said, and
+// whether the code still shows the decision is the note's to say.
+func (e env) recordWhy(key string) error {
+	r, err := model.ParseNoteRef(key)
+	if err != nil {
+		return err
+	}
+	if !r.Slot.Keyed {
+		return fmt.Errorf("only a decision takes a human's why, as ID.decisions.KEY; %s is a %s note", key, r.Slot.Name)
+	}
+	n, ok, err := e.st.LoadNote(r)
+	switch {
+	case err != nil:
+		return err
+	case !ok:
+		return fmt.Errorf("%s holds no decision; store it first with abbd understand %s FILE --evidence PATH:LINES:QUOTE", r, r)
+	}
+	f := model.Stated(strings.TrimSpace(e.value), e.sourceRef())
+	n.Why = &f
+	if err := e.st.SaveNote(n); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "recorded %s's why, USER_STATED from %s\n", key, e.sourceRef())
 	return nil
 }
 

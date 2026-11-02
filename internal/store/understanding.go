@@ -79,17 +79,25 @@ func (s Store) LoadUnderstandings() (map[model.ID]Understanding, error) {
 		if err := readFrontmatter(f, &u); err != nil {
 			return nil, err
 		}
-		b, err := os.ReadFile(f)
-		if err != nil {
+		if u.Text, err = readBody(f); err != nil {
 			return nil, err
-		}
-		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
-		if _, body, ok := bytes.Cut(bytes.TrimPrefix(b, []byte("---\n")), []byte("\n---\n")); ok {
-			u.Text = CleanText(string(body))
 		}
 		out[u.Unit] = u
 	}
 	return out, nil
+}
+
+// readBody is a text file's words after its frontmatter, as CleanText keeps them.
+func readBody(f string) (string, error) {
+	b, err := os.ReadFile(f)
+	if err != nil {
+		return "", err
+	}
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+	if _, body, ok := bytes.Cut(bytes.TrimPrefix(b, []byte("---\n")), []byte("\n---\n")); ok {
+		return CleanText(string(body)), nil
+	}
+	return "", nil
 }
 
 // quoteContext is how many lines on each side of a quote count toward a

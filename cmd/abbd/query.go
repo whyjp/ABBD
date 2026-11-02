@@ -159,7 +159,42 @@ func (e env) explain(s string) error {
 		guesses = append(guesses, line)
 	}
 	section("inferred couplings", guesses)
-	return e.explainHow(units, u)
+	if err := e.explainHow(units, u); err != nil {
+		return err
+	}
+	return e.explainNotes(u)
+}
+
+// explainNotes prints what readers wrote into the unit's slots, each marked
+// STALE with the places that moved when the code it cites changed since.
+func (e env) explainNotes(u model.Unit) error {
+	if !u.Kind.HoldsNotes() {
+		return nil
+	}
+	notes, err := e.st.LoadNotes()
+	if err != nil {
+		return err
+	}
+	for _, n := range notes[u.ID] {
+		if !n.Known {
+			continue
+		}
+		state := "CURRENT"
+		if n.Stale() {
+			state = "STALE, the code it cites changed: " + strings.Join(n.Changed, ", ")
+		}
+		fmt.Fprintf(e.stdout, "%s (%s, %s):\n", n.Ref.Name(), n.Origin, state)
+		for _, l := range strings.Split(n.Text, "\n") {
+			fmt.Fprintln(e.stdout, strings.TrimRight("  "+l, " "))
+		}
+		if n.Why != nil {
+			fmt.Fprintf(e.stdout, "  why (USER_STATED, %s): %s\n", n.Why.Source, n.Why.Value)
+		}
+		for _, ev := range n.Evidence {
+			fmt.Fprintf(e.stdout, "  cites %s\n", ev)
+		}
+	}
+	return nil
 }
 
 // mark notes an item that is not live.

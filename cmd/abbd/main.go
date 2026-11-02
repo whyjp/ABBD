@@ -37,6 +37,8 @@ abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--paren
                                      a unit the script cannot see, INFERRED
 abbd record fact ID.purpose|ID.responsibility --value TEXT --source REF [--root DIR]
                                      what a human stated, USER_STATED with where they said it
+abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
+                                     a human's reason for a decision a reader stored, USER_STATED
 abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      refresh a reader's claim with live evidence; TARGET is an ID,
                                      ID.parent or an edge FROM.KIND.TO; a supplement claim gets a
@@ -62,6 +64,13 @@ abbd understand MOD-ID --restamp [--root DIR]
                                      what the module holds; refused when the code of an anchor
                                      or a quote changed, is gone or is one the text was not
                                      written against
+abbd understand ID.SLOT[.KEY] FILE|- --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     store what a reader found for one slot of a module or a
+                                     contract: semantics, failure, states, decisions (one note
+                                     per KEY) or wire_sample; the note is stamped with the lines
+                                     around each quote it cites, so it goes STALE when that code
+                                     changes and not when other code of the unit does; a human's
+                                     why is kept when the note is stored again
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a
@@ -81,8 +90,9 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
-                                     --check exits 1 when the state, the blueprint or a module
-                                     text is STALE or an evidence item drifted, for a hook or CI;
+                                     --check exits 1 when the state, the blueprint, a module
+                                     text or a note is STALE or an evidence item drifted, for a
+                                     hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
                                      error, or no graph.json), and says which; dead evidence and
@@ -178,7 +188,7 @@ var commands = map[string]command{
 	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
-	"understand":      {flags: []string{"root", "restamp"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1:]) }},
+	"understand":      {flags: []string{"root", "restamp", "evidence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},

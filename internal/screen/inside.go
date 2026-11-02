@@ -18,6 +18,10 @@ type Inside struct {
 	Units []InsideUnit
 	// Understanding is what pstack's how wrote about the module.
 	Understanding *Understanding
+	// Notes are the module's slots; Contracts the notes of each contract
+	// whose home is this module.
+	Notes     []Note          `json:",omitempty"`
+	Contracts []ContractNotes `json:",omitempty"`
 	// Unwired are the module's contracts no inside unit is known to meet,
 	// grouped by a shared first word. The drawing leaves them off the frame.
 	Unwired []Group
@@ -53,8 +57,9 @@ type InsideUnit struct {
 	Guess   bool
 	Anchors []string
 	// Understanding is pstack how's text for a module that holds no units,
-	// which has no inside to show it beside.
+	// which has no inside to show it beside, and Notes are its slots.
 	Understanding *Understanding
+	Notes         []Note `json:",omitempty"`
 }
 
 const (
