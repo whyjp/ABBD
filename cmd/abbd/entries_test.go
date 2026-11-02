@@ -69,7 +69,7 @@ func TestDiffNamesEachEntryThatChanged(t *testing.T) {
 	p.want(0, "", "sync")
 	out := p.want(1, "reaches the boundary", "diff", "--base", base, "--check")
 	for _, want := range []string{
-		`~ entry IF-0001 http api GET /charges/{id}: "-> Charge" -> "-> ChargeView"`,
+		`~ entry IF-0001 http api GET /charges/{id} signature: "-> Charge" -> "-> ChargeView"`,
 		"- entry IF-0001 http api POST /refunds Refund -> 201",
 		"+ entry IF-0001 http api DELETE /charges/{id}",
 	} {
