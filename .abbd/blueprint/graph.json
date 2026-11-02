@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "e059cd5146012c7c70026ab713f0c27a0b77d8a26bedbf89e59fa3f9d70770d7"
+    "inputs_hash": "8bf08f7503caea16a868427fd3ca454e662002e2793c979b52227579c501c25b"
   },
   "units": [
     {
@@ -28519,7 +28519,15 @@
                 "Code": true
               },
               {
-                "Text": " that opens a code block, and a line of only as many or more of the same closes it. An unclosed block runs to the text's end. Every line inside is ",
+                "Text": " that opens a code block, and a line of only as many or more of the same closes it. After a run of backticks the rest of the line may hold no backtick, as CommonMark has it, so a line that starts with an inline code span stays ",
+                "Code": false
+              },
+              {
+                "Text": "Prose",
+                "Code": true
+              },
+              {
+                "Text": ". An unclosed block runs to the text's end. Every line inside is ",
                 "Code": false
               },
               {
