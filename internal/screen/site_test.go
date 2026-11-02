@@ -193,3 +193,38 @@ func TestTheUnitIndexListsEveryUnitWithItsFiles(t *testing.T) {
 		}
 	}
 }
+
+// The nav lists the features apart from the modules, as an engineer names
+// them: what the code is made of, then what it does for a user.
+func TestTheNavListsFeaturesApartFromModules(t *testing.T) {
+	m := fixture(t, "self")
+	nav := pages(t, m)[UnitsFile]
+	_, nav, _ = strings.Cut(nav, "<nav ")
+	modules, features, ok := strings.Cut(nav, "<h3>기능</h3>")
+	if !ok {
+		t.Fatal("the nav has no list of features")
+	}
+	kinds := map[string]string{}
+	for _, u := range m.Units {
+		kinds[u.ID] = u.Kind
+	}
+	seen := 0
+	for _, ins := range m.Insides {
+		if m.Units[slices.IndexFunc(m.Units, func(u UnitRow) bool { return u.ID == ins.ID })].Parent != "" {
+			continue
+		}
+		link := `href="` + ins.ID + `.html"`
+		in := features
+		if kinds[ins.ID] != string(model.Feature) {
+			in = modules
+		} else {
+			seen++
+		}
+		if !strings.Contains(in, link) {
+			t.Errorf("%s (%s) is not in its list of the nav", ins.ID, kinds[ins.ID])
+		}
+	}
+	if seen == 0 {
+		t.Fatal("precondition: the fixture holds a feature with a page")
+	}
+}
