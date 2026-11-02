@@ -176,7 +176,7 @@ func mark(ev model.Evidence) string {
 // explainHow prints pstack how's text for a top-level module, marked STALE
 // when the module's code moved since it was written.
 func (e env) explainHow(units []model.Unit, u model.Unit) error {
-	if u.Kind != model.Module || u.Parent != "" {
+	if _, ok := textModule(units, u.ID); !ok {
 		return nil
 	}
 	texts, err := e.st.LoadUnderstandings()
