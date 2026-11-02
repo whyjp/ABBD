@@ -57,6 +57,10 @@ type FlowRef struct {
 
 func flowID(k model.FlowKey) string { return "flow-" + string(k) }
 
+// stepID is a step's anchor. A key holds no dot, so flow a's step 1 and flow
+// a-1 never share one.
+func stepID(k model.FlowKey, n int) string { return fmt.Sprintf("%s.%d", flowID(k), n) }
+
 // flows derives each stored flow's view, in key order.
 func (o *overview) flows(in Input) []FlowView {
 	var out []FlowView
@@ -67,7 +71,7 @@ func (o *overview) flows(in Input) []FlowView {
 		v := FlowView{ID: flowID(f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin), Source: f.Source, Caption: blocks(f.Caption), Steps: len(f.Steps)}
 		for i, s := range f.Steps {
 			reach := s.Against(in.Units)
-			sv := StepView{N: i + 1, ID: fmt.Sprintf("%s-%d", v.ID, i+1), Does: s.Does, Note: s.Note, Fails: s.Fails}
+			sv := StepView{N: i + 1, ID: stepID(f.Key, i+1), Does: s.Does, Note: s.Note, Fails: s.Fails}
 			sv.Reasons = append(slices.Clone(s.Changed), reach.Gaps...)
 			sv.Stale = len(sv.Reasons) > 0
 			for _, e := range s.Evidence {

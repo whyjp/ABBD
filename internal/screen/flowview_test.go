@@ -70,9 +70,34 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 		t.Fatal(err)
 	}
 	page := b.String()
-	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search-4"`, "hands each file to it", "From argv to output.", `<a href="#flow-search">How does a search run?</a>`} {
+	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="#flow-search">How does a search run?</a>`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must hold %q", want)
+		}
+	}
+}
+
+// A step's anchor cannot be another flow's: flow a's step 1 and flow a-1
+// each have their own.
+func TestFlowAnchorsNeverCollide(t *testing.T) {
+	two := []store.FlowStep{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
+	m := Build(Input{Units: ripgrep(), Flows: []store.Flow{
+		{Key: "a", Known: true, Question: "A?", Origin: model.Inferred, Steps: two},
+		{Key: "a-1", Known: true, Question: "A1?", Origin: model.Inferred, Steps: two},
+	}})
+	seen := map[string]bool{}
+	for _, f := range m.Flows {
+		ids := []string{f.ID}
+		for _, l := range f.Lanes {
+			for _, s := range l.Steps {
+				ids = append(ids, s.ID)
+			}
+		}
+		for _, id := range ids {
+			if seen[id] {
+				t.Errorf("two anchors are %q", id)
+			}
+			seen[id] = true
 		}
 	}
 }
