@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "e0ac3cb560d71f06289881e5e94c824ad82b1c8458ff8a499c80309123645601"
+    "inputs_hash": "9598e25000f3d10b0fb95cbd3b168983ffbf72f8fafa80e5e73dd4d2f7658117"
   },
   "units": [
     {
@@ -458,7 +458,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+        "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
     },
     {
@@ -2317,7 +2317,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:78 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
+        "internal/topology/impact.go:81 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
     },
     {
@@ -4198,7 +4198,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      "Quote": "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
     },
     {
       "From": "MOD-0047",
@@ -4242,7 +4242,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/impact.go:79 \"links := Links(units)\""
+      "Quote": "internal/topology/impact.go:82 \"links := Links(units)\""
     },
     {
       "From": "MOD-0052",
@@ -26923,7 +26923,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\""
+              "internal/topology/impact.go:82 \"links := Links(units)\""
             ],
             "Marks": [
               {
@@ -27271,7 +27271,7 @@
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\"",
+              "internal/topology/impact.go:82 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -27287,7 +27287,7 @@
             "Kind": "depends_on",
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\"",
+              "internal/topology/impact.go:82 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -28187,7 +28187,7 @@
                 "Code": true
               },
               {
-                "Text": "): a breadth-first walk from the seeds and their direct children. It follows what depends on or consumes an impacted unit, and the contracts that unit provides. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
+                "Text": "): a breadth-first walk from the seeds and every unit inside them, at any depth. It follows what depends on or consumes an impacted unit, and the contracts a seed or a unit inside one provides. A unit reached through what it uses passes the change on to what uses it, not to the other contracts it provides: the change does not travel through those. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
                 "Code": false
               },
               {
@@ -28634,7 +28634,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+            "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
           ]
         },
         {
@@ -28670,7 +28670,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/impact.go:79 \"links := Links(units)\""
+            "internal/topology/impact.go:82 \"links := Links(units)\""
           ]
         },
         {
