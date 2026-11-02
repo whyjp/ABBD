@@ -75,13 +75,15 @@ type Graph struct {
 	// the links to focus views, which graph.json does not hold.
 	Overview Drawing  `json:"overview"`
 	Modules  []Inside `json:"modules"`
+	// Flows are the stored flows as the page draws them.
+	Flows []FlowView `json:"flows,omitempty"`
 }
 
 // Files renders every file. Each carries the watermark of the .abbd inputs it
 // came from, so a reader can tell when it is STALE.
 func Files(m Model) (map[string][]byte, error) {
 	m.Blueprint = Fresh
-	g := Graph{Watermark: m.Watermark, Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides}
+	g := Graph{Watermark: m.Watermark, Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

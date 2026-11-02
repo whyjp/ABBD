@@ -72,6 +72,14 @@ abbd understand ID.SLOT[.KEY] FILE|- --evidence PATH:LINES:QUOTE [--evidence ...
                                      changes and not when other code of the unit does; a human's
                                      why is kept when the decision is stored again on the same
                                      quotes, and dropped when it cites other code
+abbd flow KEY FILE|- [--source REF] [--root DIR]
+                                     store an ordered flow: a question, and two to 16 steps, each a
+                                     unit, what it does, an optional note and fails line, the
+                                     units it calls through stored relations, and the code it
+                                     cites; each step is stamped with the lines around its quotes,
+                                     so it goes STALE when that code changes; a reader's is
+                                     INFERRED, a human's with --source USER_STATED
+abbd flow KEY [--root DIR]           print the stored flow as a draft to edit and store again
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a
@@ -92,7 +100,7 @@ abbd evidence [--root DIR]           check every quote against the working tree:
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
-                                     text or a note is STALE or an evidence item drifted, for a
+                                     text, a note or a flow's step is STALE or an evidence item drifted, for a
                                      hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
@@ -194,6 +202,7 @@ var commands = map[string]command{
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
 	"understand":      {flags: []string{"root", "restamp", "evidence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
+	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},

@@ -148,9 +148,14 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
-		// One claim holds an edge, so the entries of two lines of one edge add up.
+		// One claim holds an edge, so the entries of two lines of one edge add
+		// up, and a line that names none uses the whole contract.
 		if j := slices.IndexFunc(res.Relations, func(o Relation) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); j >= 0 {
-			res.Relations[j].Entries = slices.Compact(slices.Sorted(slices.Values(append(res.Relations[j].Entries, keys...))))
+			if had := res.Relations[j].Entries; len(had) == 0 || len(keys) == 0 {
+				res.Relations[j].Entries = nil
+			} else {
+				res.Relations[j].Entries = slices.Compact(slices.Sorted(slices.Values(append(had, keys...))))
+			}
 			continue
 		}
 		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})

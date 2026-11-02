@@ -84,6 +84,11 @@ type Diff struct {
 	// on a relation that was there before and is still there.
 	UsesAdded   []Use `json:"entry_uses_added"`
 	UsesRemoved []Use `json:"entry_uses_removed"`
+	// UsesWidened are uses that came to take the whole contract, and
+	// UsesNarrowed the reverse; a whole use takes every entry, so neither
+	// is a line per entry.
+	UsesWidened  []Relation `json:"entry_uses_widened"`
+	UsesNarrowed []Relation `json:"entry_uses_narrowed"`
 	// RelationsAdded and RelationsRemoved are drawn relations between
 	// top-level units; one from an inside unit counts as its module's.
 	RelationsAdded   []Relation `json:"relations_added"`
@@ -123,6 +128,7 @@ func Compare(base, now []model.Unit) Diff {
 		}
 	}
 	d.UsesAdded, d.UsesRemoved = newUses(b, n, was, is), newUses(n, b, is, was)
+	d.UsesWidened, d.UsesNarrowed = widened(b, n, was, is), widened(n, b, is, was)
 	old := inferred(b)
 	cur := inferred(n)
 	for _, k := range keys(cur) {
@@ -184,18 +190,40 @@ func (d *Diff) contract(old, u model.Unit) {
 // and the contract listed entries in both: a new relation is already a
 // relation added, and a contract that came to list entries is one line.
 func newUses(base, now map[model.ID]model.Unit, was, is map[string]Relation) []Use {
-	had := entryUses(base)
+	had, whole := entryUses(base)
+	uses, _ := entryUses(now)
 	var out []Use
-	for k, u := range entryUses(now) {
+	for k, u := range uses {
 		_, before := was[k.edge]
 		_, after := is[k.edge]
-		if _, used := had[k]; before && after && !used && len(base[u.To].Entries) > 0 {
+		if _, used := had[k]; before && after && !used && !whole[u.Relation] && len(base[u.To].Entries) > 0 {
 			out = append(out, u)
 		}
 	}
 	slices.SortFunc(out, func(a, b Use) int {
 		return strings.Compare(fmt.Sprint(a.From, a.Kind, a.To, a.Entry), fmt.Sprint(b.From, b.Kind, b.To, b.Entry))
 	})
+	return out
+}
+
+// widened lists the uses that take the whole contract in now and only some
+// of its entries in base, under a relation there in both.
+func widened(base, now map[model.ID]model.Unit, was, is map[string]Relation) []Relation {
+	uses, wasWhole := entryUses(base)
+	narrow := map[Relation]bool{}
+	for k, u := range uses {
+		_, before := was[k.edge]
+		_, after := is[k.edge]
+		narrow[u.Relation] = before && after
+	}
+	_, whole := entryUses(now)
+	var out []Relation
+	for r := range whole {
+		if narrow[r] && !wasWhole[r] {
+			out = append(out, r)
+		}
+	}
+	slices.SortFunc(out, func(a, b Relation) int { return strings.Compare(a.line(), b.line()) })
 	return out
 }
 
@@ -206,9 +234,10 @@ type entryUse struct {
 }
 
 // entryUses lists each entry a drawn relation uses: the module that holds
-// the user, the contract, the entry.
-func entryUses(units map[model.ID]model.Unit) map[entryUse]Use {
-	out := map[entryUse]Use{}
+// the user, the contract, the entry. Whole are the relations to a contract
+// that lists entries and that name none of them, so use all of them.
+func entryUses(units map[model.ID]model.Unit) (out map[entryUse]Use, whole map[Relation]bool) {
+	out, whole = map[entryUse]Use{}, map[Relation]bool{}
 	for _, u := range units {
 		for _, r := range u.Relations {
 			to, ok := units[r.To]
@@ -217,6 +246,9 @@ func entryUses(units map[model.ID]model.Unit) map[entryUse]Use {
 			}
 			from := top(units, u.ID)
 			e := model.Edge{From: from, To: top(units, r.To), Kind: r.Kind}
+			if len(r.Entries) == 0 && len(to.Entries) > 0 {
+				whole[Relation{From: from, Kind: r.Kind, To: r.To, FromName: units[from].Name.Value, ToName: to.Name.Value}] = true
+			}
 			for _, k := range r.Entries {
 				name := k
 				if en, ok := to.EntryNamed(k); ok {
@@ -227,7 +259,7 @@ func entryUses(units map[model.ID]model.Unit) map[entryUse]Use {
 			}
 		}
 	}
-	return out
+	return out, whole
 }
 
 // Boundary reports whether the change reaches the boundary between modules:
@@ -295,6 +327,12 @@ func (d Diff) Lines() []string {
 	}
 	for _, u := range d.UsesRemoved {
 		out = append(out, fmt.Sprintf("- entry use %s %s %s %s (%s %s %s)", u.From, u.Kind, u.To, u.Entry, u.FromName, u.Kind, u.ToName))
+	}
+	for _, r := range d.UsesWidened {
+		out = append(out, fmt.Sprintf("~ entry use %s %s %s now uses the whole contract (%s %s %s)", r.From, r.Kind, r.To, r.FromName, r.Kind, r.ToName))
+	}
+	for _, r := range d.UsesNarrowed {
+		out = append(out, fmt.Sprintf("~ entry use %s %s %s now uses only some of its entries (%s %s %s)", r.From, r.Kind, r.To, r.FromName, r.Kind, r.ToName))
 	}
 	for _, c := range d.InferredAdded {
 		s := "+ inferred " + c.line()
