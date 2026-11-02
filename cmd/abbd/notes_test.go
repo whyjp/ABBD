@@ -98,7 +98,7 @@ func TestANoteGoesStaleOnlyWhenTheCodeItCitesChanges(t *testing.T) {
 
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
 	p.resync()
-	p.want(1, "stale: MOD-0001.failure, the code it cites changed: billing/retry.go (the quote is gone)", "status", "--check")
+	p.want(1, "stale: MOD-0001.failure, the code it cites changed: billing/retry.go (the quote is gone, or no longer once in the file)", "status", "--check")
 }
 
 // A slot is one abbd knows, on a module or a contract, and a note enters
@@ -249,4 +249,29 @@ func TestAContractsNotesSitWithTheProviderTheCodeShows(t *testing.T) {
 	if !strings.Contains(ledger[:strings.Index(ledger, "</section>")], `id="c-IF-0001"`) {
 		t.Fatal("the contract's notes belong in ledger's inside, the provider the code shows")
 	}
+}
+
+// Storing the same words on the same quotes in another order is still not
+// reading the code again.
+func TestReorderingTheQuotesDoesNotFreshenAStaleNote(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.states", "states text", statesQuote, failureQuote)
+	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
+	p.resync()
+	p.wantNote(1, "read it again", "MOD-0001.states", "states text", failureQuote, statesQuote)
+	p.want(1, "1 note(s) STALE", "status", "--check")
+}
+
+// A note follows its quote when code above it moves, so it cites only a
+// quote its file holds once; a quote that is in the file twice is refused.
+func TestANoteFollowsItsQuoteWhenTheCodeAboveMoves(t *testing.T) {
+	p := notesProject(t)
+	body := strings.Repeat("// filler\n", 12) + "func a() error { return nil }\n\nfunc b() error { return nil }\n"
+	p.code("billing/nil.go", "package billing\n"+body)
+	p.resync()
+	p.wantNote(1, `holds "return nil" more than once`, "MOD-0001.failure", "fails nil", "billing/nil.go:16:return nil")
+	p.wantNote(0, "understood", "MOD-0001.failure", "fails nil", "billing/nil.go:16:func b() error { return nil }")
+	p.code("billing/nil.go", "package billing\n"+strings.Repeat("// pad\n", 10)+body)
+	p.resync()
+	p.want(0, "notes: 1 slot note(s), 0 STALE", "status", "--check")
 }

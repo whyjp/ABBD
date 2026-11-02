@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 )
@@ -125,6 +126,14 @@ func (e env) note(r model.NoteRef, args []string) error {
 	if err != nil {
 		return err
 	}
+	// sync never moves a note's lines, so a note follows a quote that moved
+	// only when the quote is the one place in its file that holds it.
+	c := evidence.New(e.root)
+	for _, ev := range cited {
+		if c.Occurrences(ev) > 1 {
+			return fmt.Errorf("%s holds %q more than once; quote enough of the line that it appears once, so %s can follow it when the code above it moves", ev.Path, ev.Quote, r)
+		}
+	}
 	text, err := e.readInput(args[0], "pass what the reader found for "+r.Slot.Name)
 	if err != nil {
 		return err
@@ -148,8 +157,18 @@ func (e env) note(r model.NoteRef, args []string) error {
 	return nil
 }
 
+// sameCitations reports whether two notes cite the same set of quotes,
+// whatever their order or lines.
 func sameCitations(a, b []model.Evidence) bool {
-	return slices.EqualFunc(a, b, func(x, y model.Evidence) bool { return x.Same(y) })
+	set := func(es []model.Evidence) []string {
+		var out []string
+		for _, e := range es {
+			out = append(out, e.Path+"\x00"+e.Quote)
+		}
+		slices.Sort(out)
+		return slices.Compact(out)
+	}
+	return slices.Equal(set(a), set(b))
 }
 
 // mayRestamp allows a restamp only when every file of the module now is one

@@ -123,7 +123,7 @@ func (s Store) noteChanged(n Note) []string {
 		if n.Code[k] != h {
 			reason := "the lines around it changed"
 			if h == missing {
-				reason = "the quote is gone"
+				reason = "the quote is gone, or no longer once in the file"
 			}
 			out = append(out, fmt.Sprintf("%s (%s)", keyPath(k), reason))
 		}
