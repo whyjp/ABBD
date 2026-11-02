@@ -137,10 +137,14 @@ func (e env) status() error {
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
 	var orphans []model.ID
+	shown := map[model.ID]store.Understanding{}
 	for id, u := range in.Understandings {
 		if _, ok := textModule(in.Units, id); !ok {
 			orphans = append(orphans, id)
-		} else if u.Digest != in.Digests[id] {
+			continue
+		}
+		shown[id] = u
+		if u.Digest != in.Digests[id] {
 			stale++
 		}
 	}
@@ -152,8 +156,8 @@ func (e env) status() error {
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
 	}
-	if len(in.Understandings) > 0 {
-		readTexts(e.stdout, in.Understandings)
+	if len(shown) > 0 {
+		readTexts(e.stdout, shown)
 	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
