@@ -29,7 +29,7 @@ const (
 	// 7: crossings per drawn line, after bundling.
 	crossingsPerLine = 2
 	// 8: the widths past which a label may be cut, its full text in the tooltip.
-	hardChip, hardBox, hardUnit, hardLoose = 220, 280, 220, 236
+	hardBox, hardUnit, hardLoose = 280, 220, 236
 	// 13: back lines allowed: one, or this share of the arriving lines.
 	backShare = 0.2
 	// endZone is how close to a line's end two lines may meet or run
@@ -478,7 +478,7 @@ func measure(s sheet) Metrics {
 		pad, hard := 12.0, float64(hardBox)
 		switch {
 		case sh.kind == "port":
-			pad, hard = 6, hardChip
+			pad, hard = 6, math.Inf(1)
 		case sh.is("inner"):
 			hard = hardUnit
 		case sh.is("loose"):

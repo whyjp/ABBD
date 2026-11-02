@@ -1,0 +1,197 @@
+package store
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"maps"
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+
+	"gopkg.in/yaml.v3"
+
+	"github.com/whyjp/abbd/internal/model"
+)
+
+// Flow is one ordered walk through the units and the question it answers.
+// Each step keeps its own Code, one hash per quote of the lines around it,
+// so an edit near one step's quotes stales that step alone. The caption is
+// the file's body. InputsHash covers .abbd/flows/, so storing a flow stales
+// the blueprint.
+type Flow struct {
+	Question string       `yaml:"question"`
+	Writer   model.Writer `yaml:"writer"`
+	Source   string       `yaml:"source,omitempty"`
+	Origin   model.Origin `yaml:"origin"`
+	Format   int          `yaml:"format"`
+	Steps    []FlowStep   `yaml:"steps"`
+	Caption  string       `yaml:"-"`
+	// Key is the file's name and File where it sits, from the project root.
+	// Known is false when the name is no flow key; status reports it.
+	Key   model.FlowKey `yaml:"-"`
+	File  string        `yaml:"-"`
+	Known bool          `yaml:"-"`
+}
+
+// FlowStep is a step and the code it was written against. Changed lists the
+// cited places whose code moved since; LoadFlows fills it.
+type FlowStep struct {
+	model.Step `yaml:",inline"`
+	Code       map[string]string `yaml:"code"`
+	Changed    []string          `yaml:"-"`
+}
+
+// Stale reports whether the code the step cites changed since it was written.
+func (s FlowStep) Stale() bool { return len(s.Changed) > 0 }
+
+// FlowFormat is the version of a flow file.
+const FlowFormat = 1
+
+// FlowFile is where a flow belongs, from the project root.
+func FlowFile(k model.FlowKey) string { return Dir + "/flows/" + string(k) + ".md" }
+
+// ParseFlowDraft reads the file a reader or a human writes: the stored
+// format, of which it keeps the question, the steps and the caption. abbd
+// sets the rest when it stores the flow.
+func ParseFlowDraft(b []byte) (Flow, error) {
+	front, body, err := splitFrontmatter(b)
+	if err != nil {
+		return Flow{}, err
+	}
+	var f Flow
+	if err := yaml.Unmarshal(front, &f); err != nil {
+		return Flow{}, fmt.Errorf("the draft's frontmatter: %w", err)
+	}
+	out := Flow{Question: strings.TrimSpace(f.Question), Caption: CleanText(string(body))}
+	for _, s := range f.Steps {
+		out.Steps = append(out.Steps, FlowStep{Step: s.Step})
+	}
+	return out, nil
+}
+
+// StampFlow sets each step's Code to the lines around the quotes it cites,
+// as the code is now.
+func (s Store) StampFlow(f Flow) Flow {
+	f.Steps = slices.Clone(f.Steps)
+	for i := range f.Steps {
+		_, f.Steps[i].Code = s.NoteStamp(f.Steps[i].Evidence)
+		f.Steps[i].Changed = nil
+	}
+	return f
+}
+
+// SaveFlow writes a stamped flow. The same flow on the same code writes the
+// same bytes.
+func (s Store) SaveFlow(f Flow) error {
+	for i, st := range f.Steps {
+		if len(st.Code) == 0 {
+			return fmt.Errorf("flow %s step %d cites no code to check it against", f.Key, i+1)
+		}
+		ev := make([]model.Evidence, len(st.Evidence))
+		for j, e := range st.Evidence {
+			ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+		}
+		f.Steps[i].Evidence = ev
+	}
+	f.Format = FlowFormat
+	b, err := frontmatter(f, CleanText(f.Caption)+"\n")
+	if err != nil {
+		return err
+	}
+	return writeFile(s.path("flows", string(f.Key)+".md"), b)
+}
+
+// LoadFlows reads every flow in key order, each step checked against the
+// code it cites now. A markdown file there without frontmatter is no flow:
+// LoadFlows returns its path among the strays, from the project root.
+func (s Store) LoadFlows() ([]Flow, []string, error) {
+	files, err := filepath.Glob(s.path("flows", "*.md"))
+	if err != nil {
+		return nil, nil, err
+	}
+	slices.Sort(files)
+	var out []Flow
+	var strays []string
+	for _, f := range files {
+		file := Dir + "/flows/" + filepath.Base(f)
+		b, err := os.ReadFile(f)
+		if err != nil {
+			return nil, nil, err
+		}
+		front, body, err := splitFrontmatter(b)
+		if errors.Is(err, errNoFrontmatter) {
+			strays = append(strays, file)
+			continue
+		} else if err != nil {
+			return nil, nil, fmt.Errorf("%s: %w", file, err)
+		}
+		var fl Flow
+		if err := yaml.Unmarshal(front, &fl); err != nil {
+			return nil, nil, fmt.Errorf("%s: %w", file, err)
+		}
+		k, err := model.ParseFlowKey(strings.TrimSuffix(filepath.Base(f), ".md"))
+		fl.Key, fl.File, fl.Known, fl.Caption = k, file, err == nil, CleanText(string(body))
+		if !fl.Known {
+			fl.Key = model.FlowKey(strings.TrimSuffix(filepath.Base(f), ".md"))
+		}
+		for i := range fl.Steps {
+			fl.Steps[i].Changed = s.changed(fl.Steps[i].Evidence, fl.Steps[i].Code)
+		}
+		out = append(out, fl)
+	}
+	return out, strays, nil
+}
+
+// LoadFlow reads one flow, false when there is none.
+func (s Store) LoadFlow(k model.FlowKey) (Flow, bool, error) {
+	flows, _, err := s.LoadFlows()
+	if err != nil {
+		return Flow{}, false, err
+	}
+	i := slices.IndexFunc(flows, func(f Flow) bool { return f.Known && f.Key == k })
+	if i < 0 {
+		return Flow{}, false, nil
+	}
+	return flows[i], true, nil
+}
+
+// changed lists each cited place whose code differs from what was written
+// against it: its lines changed, or its quote is gone.
+func (s Store) changed(cited []model.Evidence, code map[string]string) []string {
+	_, now := s.NoteStamp(cited)
+	if maps.Equal(now, code) {
+		return nil
+	}
+	var out []string
+	for k, h := range now {
+		if code[k] != h {
+			reason := "the lines around it changed"
+			if h == missing {
+				reason = "the quote is gone, or no longer once in the file"
+			}
+			out = append(out, fmt.Sprintf("%s (%s)", keyPath(k), reason))
+		}
+	}
+	slices.Sort(out)
+	out = slices.Compact(out)
+	if len(out) == 0 {
+		out = []string{"its stored code does not match its evidence"}
+	}
+	return out
+}
+
+// splitFrontmatter cuts a file into its frontmatter and its body.
+func splitFrontmatter(b []byte) (front, body []byte, err error) {
+	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
+	if !ok {
+		return nil, nil, errNoFrontmatter
+	}
+	front, body, ok = bytes.Cut(append(rest, '\n'), []byte("\n---\n"))
+	if !ok {
+		return nil, nil, fmt.Errorf("unterminated frontmatter")
+	}
+	return front, body, nil
+}

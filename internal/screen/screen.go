@@ -29,6 +29,10 @@ type Input struct {
 	// markdown files beside them that are no notes, from the project root.
 	Notes  map[model.ID][]store.Note
 	Strays []string
+	// Flows are the ordered walks readers and humans stored, each a
+	// question; FlowStrays the markdown files beside them that are no flows.
+	Flows      []store.Flow
+	FlowStrays []string
 }
 
 // Watermark ties a rendered file to the .abbd inputs it came from.
@@ -57,6 +61,9 @@ func Load(st store.Store) (Input, error) {
 		return in, err
 	}
 	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
+		return in, err
+	}
+	if in.Flows, in.FlowStrays, err = st.LoadFlows(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}
@@ -136,6 +143,8 @@ type Model struct {
 	// Focus are the views derived from the overview when it is dense.
 	Focus   []Focus
 	Insides []Inside
+	// Flows are the stored flows, each a question answered in steps.
+	Flows []FlowView
 	// Edges are every live relation between present units, for graph.json.
 	Edges     []Line
 	Actual    Freshness
@@ -206,6 +215,8 @@ func Build(in Input) Model {
 		m.Insides = append(m.Insides, ins)
 	}
 	o.placeNotes(in, &m)
+	m.Flows = o.flows(in)
+	o.linkFlows(&m)
 	return m
 }
 

@@ -107,8 +107,9 @@ const (
 	chipRowsMax = 2
 	chipPx      = 11
 	nameLine    = 16
-	// chipMax and boxMax are the hard widths past which a label is cut and
-	// its full text left to the tooltip, rule 4.
+	// boxMax, and chipMax for a contract drawn as a box of its own, are the
+	// hard widths past which a name is cut and its full text left to the
+	// tooltip, rule 8. A chip is never cut: it is as wide as its label.
 	chipMax = 220
 	boxMax  = 280
 )
@@ -136,7 +137,7 @@ func portLabel(name string) string {
 	return name
 }
 
-func chipWidth(label string) int { return min(chipMax, textWidth(label, chipPx)+12) }
+func chipWidth(label string) int { return textWidth(label, chipPx) + 12 }
 
 // shorten drops a first word every label on one side shares, such as "abbd"
 // on every CLI command.
@@ -455,7 +456,7 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 				l = fmt.Sprintf("+%d", end-shown)
 			}
 			w := chipWidth(l)
-			out[items[i].key] = Port{X: x + 4, Y: y, W: w, Label: fit(l, w-12, chipPx), Below: below}
+			out[items[i].key] = Port{X: x + 4, Y: y, W: w, Label: l, Below: below}
 			if i < shown {
 				x += w + 4
 			}
