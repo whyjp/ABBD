@@ -17,9 +17,10 @@ import (
 )
 
 // CodeFormat is the shape of Code that abbd records now: one hash per anchor
-// and per quote. Format 1 hashed every file the digest read; sync upgrades a
-// text stored then.
-const CodeFormat = 2
+// and per place a quote is cited. Format 1 hashed every file the digest
+// read, and format 2 one place of a quote cited at several; sync upgrades
+// a text stored then.
+const CodeFormat = 3
 
 // Understanding is what pstack's how wrote about one module for a human to
 // read beside its drawing: its Overview and Key Concepts. It is a reader's
@@ -121,9 +122,17 @@ func (c *codebase) list() {
 	}
 	c.listed = true
 	c.links = gitx.Gitlinks(c.project)
-	c.files = gitx.WorkingFiles(c.project)
-	if c.files == nil {
-		c.files = c.walk(".")
+	listed := gitx.WorkingFiles(c.project)
+	if listed == nil {
+		listed = []string{"./"}
+	}
+	// git lists an untracked repository inside this one as its directory.
+	for _, f := range listed {
+		if dir, ok := strings.CutSuffix(f, "/"); ok {
+			c.files = append(c.files, c.walk(dir)...)
+		} else {
+			c.files = append(c.files, f)
+		}
 	}
 	c.files = slices.DeleteFunc(c.files, func(f string) bool { return strings.HasPrefix(f, Dir+"/") })
 	slices.Sort(c.files)
@@ -136,9 +145,9 @@ func (c *codebase) walk(dir string) []string {
 	filepath.WalkDir(filepath.Join(c.project, filepath.FromSlash(dir)), func(p string, d fs.DirEntry, err error) error {
 		rel, _ := filepath.Rel(c.project, p)
 		switch rel = filepath.ToSlash(rel); {
-		case err != nil || d.Name() == ".git" || rel == Dir:
+		case err != nil || rel == Dir || d.IsDir() && d.Name() == ".git":
 			return filepath.SkipDir
-		case !d.IsDir():
+		case !d.IsDir() && d.Name() != ".git":
 			files = append(files, rel)
 		}
 		return nil
@@ -268,14 +277,38 @@ func (m moduleCode) files(all bool) []string {
 	return slices.Compact(out)
 }
 
-// quotes are the cited quotes in files that no path of files covers.
-func (m moduleCode) quotes(files []string) []model.Evidence {
+func (m moduleCode) uncovered(files []string) []model.Evidence {
 	var out []model.Evidence
 	for _, e := range m.cited {
 		if _, covered := slices.BinarySearch(files, e.Path); !covered {
 			out = append(out, model.Evidence{Path: e.Path, Lines: e.Lines, Quote: e.Quote})
 		}
 	}
+	return out
+}
+
+// quotes are the places quotes are cited in files that no path of files
+// covers, in file order, so the same words cited at two places count twice.
+func (m moduleCode) quotes(files []string) []model.Evidence {
+	out := m.uncovered(files)
+	slices.SortFunc(out, func(a, b model.Evidence) int {
+		if c := strings.Compare(a.Path+"\x00"+a.Quote, b.Path+"\x00"+b.Quote); c != 0 {
+			return c
+		}
+		af, _, _ := a.Span()
+		bf, _, _ := b.Span()
+		if af != bf {
+			return af - bf
+		}
+		return strings.Compare(a.Lines, b.Lines)
+	})
+	return slices.Compact(out)
+}
+
+// quotesOnce is how formats 1 and 2 saw the quotes: one place per quote in
+// a file, whichever this sort leaves first.
+func (m moduleCode) quotesOnce(files []string) []model.Evidence {
+	out := m.uncovered(files)
 	slices.SortFunc(out, func(a, b model.Evidence) int {
 		return strings.Compare(a.Path+"\x00"+a.Quote, b.Path+"\x00"+b.Quote)
 	})
@@ -283,10 +316,18 @@ func (m moduleCode) quotes(files []string) []model.Evidence {
 }
 
 // quoteMark ends the Code key of a quote: its path, then the mark, then a
-// hash of the quote.
+// hash of the quote and, from its second place in the file on, of which
+// place it is. Counting places rather than lines keeps a key when code
+// above the quote moves it down.
 const quoteMark = "#quote-"
 
-func quoteKey(q model.Evidence) string { return q.Path + quoteMark + short([]byte(q.Quote))[:8] }
+func quoteKey(q model.Evidence, place int) string {
+	h := q.Quote
+	if place > 1 {
+		h += fmt.Sprintf("\x00%d", place)
+	}
+	return q.Path + quoteMark + short([]byte(h))[:8]
+}
 
 // keyPath is the path a Code key reads.
 func keyPath(k string) string {
@@ -307,6 +348,10 @@ func (s Store) Stamp(units []model.Unit, id model.ID) (string, map[string]string
 }
 
 func (s Store) stamp(m moduleCode) (string, map[string]string) {
+	return s.stampQuotes(m, m.quotes(m.files(true)))
+}
+
+func (s Store) stampQuotes(m moduleCode, quotes []model.Evidence) (string, map[string]string) {
 	c := s.code
 	code := map[string]string{}
 	for p, a := range m.anchors {
@@ -320,10 +365,13 @@ func (s Store) stamp(m moduleCode) (string, map[string]string) {
 		}
 		code[p] = short([]byte(b.String()))
 	}
-	for _, q := range m.quotes(m.files(true)) {
-		code[quoteKey(q)] = missing
+	places := map[[2]string]int{}
+	for _, q := range quotes {
+		places[[2]string{q.Path, q.Quote}]++
+		k := quoteKey(q, places[[2]string{q.Path, q.Quote}])
+		code[k] = missing
 		if lines, ok := c.ev.Around(q, quoteContext); ok {
-			code[quoteKey(q)] = short([]byte(lines))
+			code[k] = short([]byte(lines))
 		}
 	}
 	if len(code) == 0 {
@@ -385,7 +433,7 @@ func (s Store) Changed(units []model.Unit, id model.ID, written map[string]strin
 func (s Store) format1Digest(m moduleCode) string {
 	c := s.code
 	files := m.files(false)
-	quotes := m.quotes(files)
+	quotes := m.quotesOnce(files)
 	if len(files)+len(quotes) == 0 {
 		return ""
 	}
@@ -458,7 +506,8 @@ func (s Store) legacyModuleDigest(units []model.Unit, id model.ID) (string, []st
 //
 // ABBD 0.6 recorded no Code and digested the whole files of a module and
 // its direct children. Format 1 digested the same code as now, except that
-// a directory git lists nothing under read nothing.
+// a directory git lists nothing under read nothing. Formats 1 and 2 read
+// one place of a quote cited at several.
 func (s Store) UpgradeUnderstandings(units []model.Unit) (current, widened []model.ID, err error) {
 	texts, err := s.LoadUnderstandings()
 	if err != nil {
@@ -469,19 +518,26 @@ func (s Store) UpgradeUnderstandings(units []model.Unit) (current, widened []mod
 			continue
 		}
 		m := s.code.moduleCode(units, id)
+		files := m.files(true)
+		once := m.quotesOnce(files)
 		var matches, covered bool
-		if u.Code == nil {
+		switch {
+		case u.Format == 2:
+			d, _ := s.stampQuotes(m, once)
+			matches = u.Digest != "" && u.Digest == d
+			covered = len(once) == len(m.quotes(files))
+		case u.Code == nil:
 			legacy, read := s.legacyModuleDigest(units, id)
 			matches, covered = legacy != "" && u.Digest == legacy, true
-			for _, p := range append(m.files(true), pathsOf(m.quotes(m.files(true)))...) {
+			for _, p := range append(files, pathsOf(m.quotes(files))...) {
 				fi, err := os.Stat(filepath.Join(s.code.project, filepath.FromSlash(p)))
 				if _, ok := slices.BinarySearch(read, p); !ok || (err == nil && fi.IsDir()) {
 					covered = false
 				}
 			}
-		} else {
+		default:
 			matches = u.Digest != "" && u.Digest == s.format1Digest(m)
-			covered = true
+			covered = len(once) == len(m.quotes(files))
 			for _, a := range m.anchors {
 				covered = covered && !a.fallback
 			}
