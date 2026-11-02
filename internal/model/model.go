@@ -174,6 +174,10 @@ type Unit struct {
 	Responsibility *Fact      `yaml:"responsibility,omitempty"`
 	// Signature is the observable shape of an external contract.
 	Signature *Fact `yaml:"signature,omitempty"`
+	// Entries are the contract's parts the script reads one by one, such as
+	// a route, a method, a flag or a field, so each has its own row, its own
+	// consumers and its own diff line. Signature then says what they do not.
+	Entries []Entry `yaml:"entries,omitempty"`
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest string `yaml:"digest,omitempty"`
@@ -284,6 +288,12 @@ func (u Unit) Validate() error {
 		if err := u.Signature.validate(false); err != nil {
 			return fmt.Errorf("%s signature: %w", u.ID, err)
 		}
+	}
+	if len(u.Entries) > 0 && !u.Kind.IsContract() {
+		return fmt.Errorf("%s: only contracts carry entries", u.ID)
+	}
+	if err := ValidateEntries(u.Entries); err != nil {
+		return fmt.Errorf("%s: %w", u.ID, err)
 	}
 	seen := map[Writer]bool{}
 	for _, c := range u.Parents {
@@ -529,6 +539,9 @@ type Relation struct {
 	Source   string       `yaml:"source,omitempty"`
 	Via      Via          `yaml:"via,omitempty"`
 	Evidence []Evidence   `yaml:"evidence,omitempty"`
+	// Entries narrows the claim to these entries of the contract it points
+	// at, by key: the routes a page calls, the fields a module writes.
+	Entries []string `yaml:"entries,omitempty"`
 	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
 	// Origin and Dead are derived by Resolve. Dead marks a claim whose

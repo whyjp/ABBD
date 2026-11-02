@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -39,6 +40,14 @@ type unit struct {
 	Signature string   `json:"signature,omitempty"`
 	Anchors   []anchor `json:"anchors"`
 	Digest    string   `json:"digest,omitempty"`
+	Entries   []entry  `json:"entries,omitempty"`
+}
+
+// entry is one part of a contract the code spells: a command's flag.
+type entry struct {
+	Name     string `json:"name"`
+	Shape    string `json:"shape,omitempty"`
+	Required *bool  `json:"required,omitempty"`
 }
 
 type relation struct {
@@ -51,6 +60,7 @@ type relation struct {
 type cited struct {
 	relation
 	Evidence []evidence `json:"evidence,omitempty"`
+	Entries  []string   `json:"entries,omitempty"`
 }
 
 type evidence struct {
@@ -113,7 +123,7 @@ func run() error {
 		return err
 	}
 	units = append(units, cs...)
-	feats, featRels, featCites, err := features()
+	feats, featRels, featCites, featEntries, err := features()
 	if err != nil {
 		return err
 	}
@@ -150,7 +160,7 @@ func run() error {
 
 	out := result{Units: units}
 	for r := range rels {
-		out.Relations = append(out.Relations, cited{r, featCites[r]})
+		out.Relations = append(out.Relations, cited{r, featCites[r], featEntries[r]})
 	}
 	sort.Slice(out.Units, func(i, j int) bool { return out.Units[i].Key < out.Units[j].Key })
 	sort.Slice(out.Relations, func(i, j int) bool {
@@ -352,6 +362,8 @@ type contract struct {
 	// digest fingerprints the code the contract's meaning lives in; nil
 	// fingerprints the anchors.
 	digest func() (string, error)
+	// entries are the contract's parts one by one; nil when it lists none.
+	entries func() []entry
 }
 
 func contractTable() []contract {
@@ -362,16 +374,16 @@ func contractTable() []contract {
 		}
 	}
 	return append(commandContracts(), []contract{
-		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil},
-		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil},
-		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", fields("extraction json", "internal/extract.rawResult", "json"), nil},
-		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", fields(".abbd/project.yaml", "internal/store.Project", "yaml"), nil},
-		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", fields(".abbd/{architecture,features}/ID.md frontmatter", "internal/model.Unit", "yaml"), nil},
-		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", fields(".abbd/understanding/MOD.md frontmatter", "internal/store.Understanding", "yaml"), nil},
-		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", fields(".abbd/understanding/ID/SLOT[.KEY].md frontmatter", "internal/store.Note", "yaml"), nil},
-		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", fields(".abbd/state.yaml", "internal/store.State", "yaml"), nil},
-		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil},
-		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil},
+		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil, nil},
+		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil, nil},
+		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", fields("extraction json", "internal/extract.rawResult", "json"), nil, nil},
+		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", fields(".abbd/project.yaml", "internal/store.Project", "yaml"), nil, nil},
+		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", fields(".abbd/{architecture,features}/ID.md frontmatter", "internal/model.Unit", "yaml"), nil, nil},
+		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", fields(".abbd/understanding/MOD.md frontmatter", "internal/store.Understanding", "yaml"), nil, nil},
+		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", fields(".abbd/understanding/ID/SLOT[.KEY].md frontmatter", "internal/store.Note", "yaml"), nil, nil},
+		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", fields(".abbd/state.yaml", "internal/store.State", "yaml"), nil, nil},
+		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil, nil},
+		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil, nil},
 	}...)
 }
 
@@ -390,7 +402,11 @@ func contracts() ([]unit, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", c.key, err)
 		}
-		out = append(out, unit{Key: c.key, Kind: c.kind, Name: c.name, Signature: sig, Anchors: c.anchors, Digest: d})
+		u := unit{Key: c.key, Kind: c.kind, Name: c.name, Signature: sig, Anchors: c.anchors, Digest: d}
+		if c.entries != nil {
+			u.Entries = c.entries()
+		}
+		out = append(out, u)
 	}
 	return out, nil
 }
@@ -651,6 +667,7 @@ func commandContracts() []contract {
 			anchors:   []anchor{{"cmd/abbd/main.go", "commands"}, h},
 			provider:  "mod-cmd-abbd",
 			signature: func() (string, error) { return commandSig(kv), nil },
+			entries:   func() []entry { return commandFlags(kv) },
 			digest: func() (string, error) {
 				body, err := anchorsDigest([]anchor{h})
 				return digestOf(string(nodeText(f, kv)), body), err
@@ -688,16 +705,15 @@ func commandHandler(name string, entry *ast.CompositeLit) string {
 	return name
 }
 
+// commandSig is a command's shape less its flags, which are its entries.
 func commandSig(kv *ast.KeyValueExpr) string {
-	var flags, subs, pos, extra []string
+	var subs, pos, extra []string
 	for _, fe := range kv.Value.(*ast.CompositeLit).Elts {
 		fkv, ok := fe.(*ast.KeyValueExpr)
 		if !ok {
 			continue
 		}
 		switch fkv.Key.(*ast.Ident).Name {
-		case "flags":
-			flags = strList(fkv.Value)
 		case "subs":
 			subs = strList(fkv.Value)
 		case "pos":
@@ -708,9 +724,8 @@ func commandSig(kv *ast.KeyValueExpr) string {
 			extra = append(extra, "needs-session")
 		}
 	}
-	sort.Strings(flags)
 	sort.Strings(extra)
-	s := "abbd " + lit(kv.Key) + "[" + strings.Join(flags, ",") + "]"
+	s := "abbd " + lit(kv.Key)
 	if subs != nil {
 		s += " sub{" + strings.Join(subs, ",") + "}"
 	}
@@ -719,6 +734,47 @@ func commandSig(kv *ast.KeyValueExpr) string {
 		s += " " + x
 	}
 	return s
+}
+
+// commandFlags are the flags an entry of the commands table names, in its
+// order, each with the kind of value flagDefs binds it to.
+func commandFlags(kv *ast.KeyValueExpr) []entry {
+	var out []entry
+	for _, fe := range kv.Value.(*ast.CompositeLit).Elts {
+		if fkv, ok := fe.(*ast.KeyValueExpr); ok && fkv.Key.(*ast.Ident).Name == "flags" {
+			for _, f := range strList(fkv.Value) {
+				out = append(out, entry{Name: "--" + f, Shape: flagKinds()[f]})
+			}
+		}
+	}
+	return out
+}
+
+// flagKinds reads what each flagDefs entry binds: a string, a bool, or a
+// value repeated on the command line.
+func flagKinds() map[string]string {
+	out := map[string]string{}
+	cl, err := varLit("cmd/abbd/main.go", "flagDefs")
+	if err != nil {
+		return out
+	}
+	for _, e := range cl.Elts {
+		kv := e.(*ast.KeyValueExpr)
+		ast.Inspect(kv.Value, func(n ast.Node) bool {
+			if sel, ok := n.(*ast.SelectorExpr); ok {
+				switch sel.Sel.Name {
+				case "StringVar":
+					out[lit(kv.Key)] = "string"
+				case "BoolVar":
+					out[lit(kv.Key)] = "bool"
+				case "Var":
+					out[lit(kv.Key)] = "repeated"
+				}
+			}
+			return true
+		})
+	}
+	return out
 }
 
 func exitSig() (string, error) {
@@ -906,25 +962,34 @@ func pluginSig() (string, error) {
 var (
 	frontName = regexp.MustCompile(`(?m)^name:\s*(\S+)\s*$`)
 	codeSpan  = regexp.MustCompile("(?s)```.*?```|`[^`\n]+`")
+	flagWord  = regexp.MustCompile(`--[a-z]+`)
 	abbdCmd   = regexp.MustCompile(`\babbd[ \t]+([a-z]+)(?:[ \t]+([a-z]+))?`)
 )
 
 // features are the plugin skills. A skill consumes the CLI when its code
-// spans run an abbd command, cited at the first line of each file that does.
-func features() ([]unit, []relation, map[relation][]evidence, error) {
+// spans run an abbd command, cited at the first line of each file that does,
+// and uses each of the command's flags the same line of a span passes it.
+func features() ([]unit, []relation, map[relation][]evidence, map[relation][]string, error) {
 	skills, err := filepath.Glob("plugins/abbd/skills/*/SKILL.md")
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	sort.Strings(skills)
 	cmds, err := varLit("cmd/abbd/main.go", "commands")
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	known := map[string]bool{}
-	for _, k := range mapKeys(cmds) {
-		known[k] = true
+	flags := map[string]map[string]bool{}
+	for _, e := range cmds.Elts {
+		kv := e.(*ast.KeyValueExpr)
+		known[lit(kv.Key)] = true
+		flags[lit(kv.Key)] = map[string]bool{}
+		for _, en := range commandFlags(kv) {
+			flags[lit(kv.Key)][en.Name] = true
+		}
 	}
+	uses := map[relation][]string{}
 	var units []unit
 	var rels []relation
 	cites := map[relation][]evidence{}
@@ -932,12 +997,12 @@ func features() ([]unit, []relation, map[relation][]evidence, error) {
 		s = filepath.ToSlash(s)
 		b, err := os.ReadFile(s)
 		if err != nil {
-			return nil, nil, nil, err
+			return nil, nil, nil, nil, err
 		}
 		text := string(b)
 		m := frontName.FindStringSubmatch(text)
 		if m == nil {
-			return nil, nil, nil, fmt.Errorf("%s has no frontmatter name", s)
+			return nil, nil, nil, nil, fmt.Errorf("%s has no frontmatter name", s)
 		}
 		key := "feat-" + m[1]
 		u := unit{Key: key, Kind: "FEAT", Name: "/" + m[1], Anchors: []anchor{{Path: s, Symbol: m[1]}, {Path: path.Dir(s)}}}
@@ -961,6 +1026,12 @@ func features() ([]unit, []relation, map[relation][]evidence, error) {
 				}
 				usesCLI = true
 				r := relation{key, "if-cli-" + strings.ReplaceAll(cmd, " ", "-"), "consumes"}
+				rest, _, _ := strings.Cut(span[cl[1]:], "\n")
+				for _, fl := range flagWord.FindAllString(rest, -1) {
+					if flags[cmd][fl] && !slices.Contains(uses[r], fl) {
+						uses[r] = append(uses[r], fl)
+					}
+				}
 				if _, ok := cites[r]; !ok {
 					rels = append(rels, r)
 					line := strings.Count(text[:loc[0]+cl[0]], "\n") + 1
@@ -972,5 +1043,5 @@ func features() ([]unit, []relation, map[relation][]evidence, error) {
 			rels = append(rels, relation{key, "if-cli", "consumes"})
 		}
 	}
-	return units, rels, cites, nil
+	return units, rels, cites, uses, nil
 }

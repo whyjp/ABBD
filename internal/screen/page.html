@@ -119,6 +119,15 @@ svg marker path { stroke: none; }
 .text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
 .note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
 .note h3 { margin: 4px 0; font-size: 15px; }
+.entries { margin: 6px 0 10px; }
+.entries table { font-size: 13px; table-layout: auto; }
+.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+.entries td code { overflow-wrap: break-word; }
+.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
+.entries td.note { width: 100%; }
+.entries td p { margin: 0 0 2px; }
+.entries .who { display: block; white-space: nowrap; }
 .units-list li { padding: 4px 0; }
 @media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
 @media (max-width: 560px) {
@@ -193,12 +202,13 @@ li.step .chips { margin-top: 3px; }
       {{template "howtext" .}}
       {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
       {{template "notes" .Notes}}
-      {{if .Contracts}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}
+      {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
       {{if .Units}}<h3>안의 단위</h3>
       <ul class="plain units-list">{{range .Units}}<li><strong>{{.Name}}</strong> <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
       {{else}}<p class="muted">안의 단위가 아직 없습니다.</p>{{end}}
     </div>
   </div>
+  {{range .Contracts}}{{$c := .}}{{with .Entries}}<div class="entries" id="t-{{$c.ID}}"><h3>{{$c.Name}} <span class="muted key">{{$c.ID}}</span></h3>{{template "entries" .}}</div>{{end}}{{end}}
 </section>
 {{end}}
 {{range .Flows}}{{template "flow" .}}{{end}}
@@ -210,7 +220,7 @@ li.step .chips { margin-top: 3px; }
   <summary>단위 목록 <span class="muted" style="font-weight:400">{{len .Units}}개</span></summary>
   <table>{{range .Units}}<tr><td class="id key">{{.ID}}</td><td><strong>{{.Name}}</strong>{{if .Parent}} <span class="muted">{{.Parent}} 안</span>{{end}}
     {{with .Responsibility}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{else}}{{with .Purpose}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{end}}{{end}}
-    {{if or .Signature .Evidence}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="quote">근거 <q>{{.}}</q></div>{{end}}</details>{{end}}{{if .Notes}}<details class="text"><summary class="muted" style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</td></tr>{{end}}</table>
+    {{if or .Signature .Evidence}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="quote">근거 <q>{{.}}</q></div>{{end}}</details>{{end}}{{if .Notes}}<details class="text"><summary class="muted" style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}{{with .Entries}}{{template "entries" .}}{{end}}</td></tr>{{end}}</table>
   </details>
 </section>
 
@@ -232,6 +242,8 @@ li.step .chips { margin-top: 3px; }
 {{define "spans"}}{{range .}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}{{end}}
 {{define "blocks"}}{{range .}}{{if eq .Kind "h"}}<h4>{{template "spans" .Parts}}</h4>{{else if eq .Kind "li"}}<ul><li>{{template "spans" .Parts}}</li></ul>{{else if eq .Kind "table"}}<table>{{range $i, $r := .Rows}}<tr>{{range $r}}{{if eq $i 0}}<th>{{template "spans" .}}</th>{{else}}<td>{{template "spans" .}}</td>{{end}}{{end}}</tr>{{end}}</table>{{else if eq .Kind "pre"}}<pre>{{.Code}}</pre>{{else}}<p>{{template "spans" .Parts}}</p>{{end}}{{end}}{{end}}
 {{define "notes"}}{{range .}}{{$n := .}}<div class="note" id="n-{{.Ref}}"><h3>{{.Title}}{{if .Key}} <span class="muted key">{{.Key}}</span>{{end}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드가 바뀌면 이 설명만 STALE이 됨">판독</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}</h3>{{template "blocks" .Blocks}}{{with .Why}}<p><span class="pill stated" title="{{tip "stated"}}">{{label "stated"}}</span> 이유: {{.Value}} <span class="muted">출처 {{$n.Source}}</span></p>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></div>{{end}}{{end}}
+{{define "entries"}}<details class="entries" open><summary class="muted" style="font-weight:400">항목 {{len .Rows}}개</summary><table><tr><th>항목</th><th>{{.Shape}}</th>{{if .Need}}<th>필수</th>{{end}}{{if .Providers}}<th>{{if .Data}}쓰는 단위{{else}}제공{{end}}</th>{{end}}{{if .Users}}<th>{{if .Data}}읽는 단위{{else}}쓰는 단위{{end}}</th>{{end}}<th>설명</th></tr>{{$t := .}}{{range .Rows}}<tr id="e-{{$t.ID}}.{{.Key}}"><td class="name"><code>{{.Name}}</code></td><td>{{if .Shape}}<code>{{.Shape}}</code>{{end}}</td>{{if $t.Need}}<td>{{.Need}}</td>{{end}}{{if $t.Providers}}<td>{{range .Providers}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Users}}<td>{{range .Users}}{{template "who" .}}{{end}}</td>{{end}}<td class="note">{{with .Note}}{{template "blocks" .Blocks}}{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details>{{else}}<span class="muted">설명 없음</span>{{end}}</td></tr>{{end}}</table></details>{{end}}
+{{define "who"}}<span class="who" title="{{.ID}}">{{.Name}}{{if ne .Badge "extracted"}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{end}}</span>{{end}}
 {{define "picker"}}{{if .}}<div class="chips picker"><span class="muted">선이 많아 한 상자씩 봅니다. 상자를 고르면 그 상자와 닿는 상자, 그 사이의 선만 그립니다:</span>{{range .}} <a class="chip" href="#{{.ID}}" title="닿는 상자 {{.Ring}}개">{{.Name}}</a>{{end}}</div>{{end}}{{end}}
 {{define "focus"}}<section class="inside" id="{{.ID}}">
   <div class="drawhead"><h2>{{.Name}} 둘레 <span class="muted key">{{.Unit}}</span></h2><div class="views"><span class="muted">{{.OfName}}에서 고른 상자</span> <a href="{{.Of}}">전체 그림으로</a>{{if .In}} <a href="{{.In}}">{{.Name}}의 안으로</a>{{end}}</div></div>

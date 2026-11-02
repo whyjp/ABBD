@@ -8,6 +8,7 @@ import (
 	"io"
 	"path"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -25,6 +26,7 @@ type rawUnit struct {
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
+	Entries        []model.Entry    `json:"entries,omitempty"`
 }
 
 type rawRelation struct {
@@ -33,6 +35,7 @@ type rawRelation struct {
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
+	Entries  []string           `json:"entries,omitempty"`
 }
 
 type rawResult struct {
@@ -52,6 +55,8 @@ type Relation struct {
 	Writer   model.Writer
 	Via      model.Via
 	Evidence []model.Evidence
+	// Entries are the keys of the entries of To the relation narrows to.
+	Entries []string
 }
 
 // Placement is one writer's claim on the unit, by key, that contains another.
@@ -71,6 +76,7 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
+	Entries        []model.Entry
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
 	// parent is the script's claim; a supplement's becomes a Placement.
@@ -96,12 +102,17 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		return Result{}, err
 	}
 	kinds := map[string]model.Kind{}
+	entries := map[string][]model.Entry{}
 	for _, u := range units {
 		if u.Key != "" {
 			if _, dup := kinds[u.Key]; dup {
 				return Result{}, fmt.Errorf("duplicate unit key %q", u.Key)
 			}
 			kinds[u.Key] = u.Kind
+			entries[u.Key] = u.Entries
+		}
+		if foreignParents && len(u.Entries) > 0 {
+			return Result{}, fmt.Errorf("supplement unit %q lists entries; entries are what the code spells, so the extraction script reports them", u.Name.Value)
 		}
 	}
 	for _, u := range units {
@@ -133,7 +144,21 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence})
+		keys, err := entryKeys(rr.Entries, entries[rr.To])
+		if err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
+		// One claim holds an edge, so the entries of two lines of one edge add
+		// up, and a line that names none uses the whole contract.
+		if j := slices.IndexFunc(res.Relations, func(o Relation) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); j >= 0 {
+			if had := res.Relations[j].Entries; len(had) == 0 || len(keys) == 0 {
+				res.Relations[j].Entries = nil
+			} else {
+				res.Relations[j].Entries = slices.Compact(slices.Sorted(slices.Values(append(had, keys...))))
+			}
+			continue
+		}
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})
 	}
 	return res, nil
 }
@@ -200,8 +225,13 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			f := model.Said(model.Script, ru.Signature)
 			sig = &f
 		}
+		es, err := normalizeEntries(ru.Kind, ru.Entries)
+		if err != nil {
+			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+		}
 		out = append(out, Unit{
 			Key:            ru.Key,
+			Entries:        es,
 			Signature:      sig,
 			Kind:           ru.Kind,
 			Name:           model.Said(model.Script, ru.Name),
@@ -215,6 +245,44 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 		})
 	}
 	return out, raw, nil
+}
+
+// normalizeEntries gives each entry its key, from its name unless the
+// extraction names one, and keeps the code's order.
+func normalizeEntries(k model.Kind, es []model.Entry) ([]model.Entry, error) {
+	if len(es) == 0 {
+		return nil, nil
+	}
+	if !k.IsContract() {
+		return nil, fmt.Errorf("only contracts carry entries")
+	}
+	out := make([]model.Entry, len(es))
+	for i, e := range es {
+		e.Name, e.Shape, e.Key = strings.TrimSpace(e.Name), strings.TrimSpace(e.Shape), strings.TrimSpace(e.Key)
+		if e.Key == "" {
+			e.Key = model.EntryKey(e.Name)
+		}
+		out[i] = e
+	}
+	return out, model.ValidateEntries(out)
+}
+
+// entryKeys reads the entries a relation narrows to, each by its name or its
+// key, as the keys of the target's entries.
+func entryKeys(names []string, of []model.Entry) ([]string, error) {
+	var out []string
+	for _, n := range names {
+		i := slices.IndexFunc(of, func(e model.Entry) bool { return e.Name == n })
+		if i < 0 {
+			i = slices.IndexFunc(of, func(e model.Entry) bool { return e.Key == n })
+		}
+		if i < 0 {
+			return nil, fmt.Errorf("its target has no entry %q", n)
+		}
+		out = append(out, of[i].Key)
+	}
+	slices.Sort(out)
+	return slices.Compact(out), nil
 }
 
 // Anchors must compare equal to the forward-slash, root-relative paths git reports.
