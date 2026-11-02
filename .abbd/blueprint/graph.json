@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "2547bfc3afab79007276cfc3a41cb0b0455afec729e77f2b9f8c502c7a97228e"
+    "inputs_hash": "7d2684390e9d8abd9d4979d6826b346d02ec9deeefd90677815d0123d66fa754"
   },
   "units": [
     {
@@ -10413,7 +10413,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -11820,7 +11820,7 @@
                 "Code": true
               },
               {
-                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. With ",
+                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. Each step records its writer: with ",
                 "Code": false
               },
               {
@@ -11828,7 +11828,7 @@
                 "Code": true
               },
               {
-                "Text": " the flow is a human's, USER_STATED. ",
+                "Text": " it is a human's, USER_STATED, else a reader's. ",
                 "Code": false
               },
               {
@@ -11836,7 +11836,15 @@
                 "Code": true
               },
               {
-                "Text": " keeps a human's current flow from a reader, lets a reader replace it once a step is STALE while saying the human's word was dropped, and refuses the same steps on the same quotes after their code moved. ",
+                "Text": " refuses any STALE step that comes back with the same unit, words and citations, whatever else changed, so no reword restamps it. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word; ",
+                "Code": false
+              },
+              {
+                "Text": "flow",
+                "Code": true
+              },
+              {
+                "Text": " prints which human steps it kept and which it replaced. ",
                 "Code": false
               },
               {
@@ -11844,7 +11852,7 @@
                 "Code": true
               },
               {
-                "Text": " prints each STALE step with why, and ",
+                "Text": " prints each STALE step with why, and each stray with its reason and how to clear it, and ",
                 "Code": false
               },
               {
@@ -11852,7 +11860,7 @@
                 "Code": true
               },
               {
-                "Text": " fails while any is.",
+                "Text": " fails while a step is STALE.",
                 "Code": false
               }
             ]
@@ -19195,7 +19203,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20159,6 +20167,14 @@
               },
               {
                 "Text": " dedups and sorts by it. ",
+                "Code": false
+              },
+              {
+                "Text": "Holds",
+                "Code": true
+              },
+              {
+                "Text": " reports whether a path is the anchor's file or lies under it as a directory. ",
                 "Code": false
               },
               {
@@ -21226,7 +21242,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it against the state: a gap for a unit that is gone, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
+                "Text": " reads it against the state: a gap for a unit that is gone, a gap when no quote lies in the anchors of the step's unit, a unit inside it or a unit it calls, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
                 "Code": false
               },
               {
@@ -22409,7 +22425,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -23054,7 +23070,31 @@
                 "Code": true
               },
               {
-                "Text": " then moves a single unfolded row of chips over the x their lines run at. On an inside frame, two ports that land on one spot share a chip, and its ",
+                "Text": " then moves a single unfolded row of chips over the x their lines run at. A chip is at most ",
+                "Code": false
+              },
+              {
+                "Text": "chipMax",
+                "Code": true
+              },
+              {
+                "Text": " wide: ",
+                "Code": false
+              },
+              {
+                "Text": "chipLines",
+                "Code": true
+              },
+              {
+                "Text": " wraps a longer label onto more lines, broken after a separator or before a space, so it is never cut and never leaves its edge, and every chip in a row takes the row's height, which ",
+                "Code": false
+              },
+              {
+                "Text": "chipBand",
+                "Code": true
+              },
+              {
+                "Text": " sums for a box or a frame edge. On an inside frame, two ports that land on one spot share a chip, and its ",
                 "Code": false
               },
               {
@@ -23813,6 +23853,100 @@
               },
               {
                 "Text": " watermark.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Flows",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "flow.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "flows",
+                "Code": true
+              },
+              {
+                "Text": " derives one ",
+                "Code": false
+              },
+              {
+                "Text": "FlowView",
+                "Code": true
+              },
+              {
+                "Text": " per stored flow. Steps are numbered by their place and anchored at ",
+                "Code": false
+              },
+              {
+                "Text": "flow-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": ", which no key can produce, consecutive steps on one unit share a ",
+                "Code": false
+              },
+              {
+                "Text": "Lane",
+                "Code": true
+              },
+              {
+                "Text": ", a call shows only when ",
+                "Code": false
+              },
+              {
+                "Text": "Step.Against",
+                "Code": true
+              },
+              {
+                "Text": " finds its relation, and a step is STALE when its code moved or ",
+                "Code": false
+              },
+              {
+                "Text": "Against",
+                "Code": true
+              },
+              {
+                "Text": " finds a gap. The flow's badge is its weakest step origin, and in a mixed flow a step the human stated shows its own badge and source. ",
+                "Code": false
+              },
+              {
+                "Text": "href",
+                "Code": true
+              },
+              {
+                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. ",
+                "Code": false
+              },
+              {
+                "Text": "linkFlows",
+                "Code": true
+              },
+              {
+                "Text": " lists on each inside the steps on the units it holds. ",
+                "Code": false
+              },
+              {
+                "Text": "page.html",
+                "Code": true
+              },
+              {
+                "Text": " draws a flow as an HTML numbered list that wraps every line, and lists every flow by its question on the overview.",
                 "Code": false
               }
             ]
@@ -24848,7 +24982,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -26473,6 +26607,22 @@
                 "Code": false
               },
               {
+                "Text": "Writer",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Source",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
                 "Text": "Code",
                 "Code": true
               },
@@ -26509,7 +26659,23 @@
                 "Code": true
               },
               {
-                "Text": " per step and an edit near one step's quotes stales that step alone. ",
+                "Text": " per step and an edit near one step's quotes stales that step alone. A step with no evidence or no ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " reads STALE, and one with no writer reads as a reader's. ",
+                "Code": false
+              },
+              {
+                "Text": "Flow.Origin",
+                "Code": true
+              },
+              {
+                "Text": " is USER_STATED only when a human wrote every step. ",
                 "Code": false
               },
               {
@@ -26525,7 +26691,15 @@
                 "Code": true
               },
               {
-                "Text": " keeps only a draft's question, steps and caption. A file there with no frontmatter is a stray, one whose name is no flow key is read but not ",
+                "Text": " keeps only a draft's question, steps and caption. A file there with no frontmatter, or whose frontmatter does not parse, is a ",
+                "Code": false
+              },
+              {
+                "Text": "Stray",
+                "Code": true
+              },
+              {
+                "Text": " with its reason, so one bad file stops no reader of the others. One whose name is no flow key is read but not ",
                 "Code": false
               },
               {
@@ -30386,7 +30560,7 @@
         }
       ],
       "Steps": 13,
-      "Stale": 11,
+      "Stale": 0,
       "Lanes": [
         {
           "Unit": "MOD-0041",
@@ -30397,7 +30571,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() → the registered extraction argv",
+              "Does": "LoadProject() reads project.yaml → the registered extraction argv",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",
@@ -30411,13 +30585,10 @@
                 }
               ],
               "Quotes": [
+                "internal/store/store.go:356 \"return p, readYAML(s.path(\\\"project.yaml\\\"), \u0026p)\"",
                 "cmd/abbd/main.go:298 \"p, err := e.st.LoadProject()\"",
                 "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0041, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             }
           ]
         },
@@ -30473,12 +30644,9 @@
                 }
               ],
               "Quotes": [
+                "internal/extract/extract.go:86 \"func Parse(r io.Reader) (Result, error) { return parse(r, false) }\"",
                 "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0017, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             }
           ]
         },
@@ -30493,7 +30661,7 @@
               "ID": "flow-sync.4",
               "Does": "Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state",
               "Note": "",
-              "Fails": "",
+              "Fails": "Writable refuses a state with a unit file in the old format; run abbd migrate",
               "Badge": "",
               "Source": "",
               "Calls": [
@@ -30505,14 +30673,11 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:367 \"stored, err := st.Writable()\"",
-                "cmd/abbd/main.go:371 \"prior, err := st.LoadCandidates()\"",
-                "cmd/abbd/main.go:375 \"state, err := st.LoadState()\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0041, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+                "internal/store/store.go:76 \"return nil, ErrOldFormat\"",
+                "internal/store/store.go:242 \"func (s Store) LoadCandidates() ([]identity.Candidate, error) {\"",
+                "internal/store/store.go:254 \"func (s Store) LoadState() (State, error) {\"",
+                "cmd/abbd/main.go:367 \"stored, err := st.Writable()\""
+              ]
             }
           ]
         },
@@ -30531,12 +30696,9 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
+                "internal/gitx/gitx.go:94 \"func Snapshot(dir, exclude string) (string, error) {\"",
                 "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0022, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             },
             {
               "N": 6,
@@ -30547,13 +30709,9 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\"",
+                "internal/gitx/gitx.go:234 \"func Renames(dir, oldTree, newTree string)\"",
                 "cmd/abbd/main.go:388 \"last sync snapshot %s is gone\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0022, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             },
             {
               "N": 7,
@@ -30564,13 +30722,9 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "cmd/abbd/main.go:398 \"if state.Fingerprint != tree || rev == \\\"\\\" {\"",
-                "cmd/abbd/main.go:399 \"rev = gitx.Head(e.root)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0022, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+                "internal/gitx/gitx.go:30 \"func Head(dir string) string {\"",
+                "cmd/abbd/main.go:398 \"if state.Fingerprint != tree || rev == \\\"\\\" {\""
+              ]
             }
           ]
         },
@@ -30597,13 +30751,9 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:392 \"the extraction reported no units; refusing to mark every unit absent\"",
-                "cmd/abbd/main.go:401 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0026, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+                "internal/identity/identity.go:73 \"func Reconcile(stored []model.Unit\"",
+                "cmd/abbd/main.go:392 \"the extraction reported no units; refusing to mark every unit absent\""
+              ]
             }
           ]
         },
@@ -30622,12 +30772,9 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
+                "internal/evidence/evidence.go:227 \"func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {\"",
                 "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0013, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             }
           ]
         },
@@ -30646,12 +30793,9 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
+                "internal/group/group.go:36 \"func Fallback(units []model.Unit, hw map[model.Kind]int)\"",
                 "cmd/abbd/main.go:403 \"res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0054, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+              ]
             }
           ]
         },
@@ -30678,13 +30822,9 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:404 \"if err := st.SaveUnits(res.Units); err != nil {\"",
-                "cmd/abbd/main.go:407 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0041, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+                "internal/store/store.go:222 \"func (s Store) SaveUnits(units []model.Unit) error {\"",
+                "internal/store/store.go:247 \"func (s Store) SaveCandidates(cs []identity.Candidate) error {\""
+              ]
             },
             {
               "N": 12,
@@ -30703,13 +30843,9 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:410 \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
-                "cmd/abbd/main.go:425 \"return res, st.SaveState(state)\""
-              ],
-              "Reasons": [
-                "none of the step's quotes is in the code of MOD-0041, a unit inside it or a unit it calls; cite the lines of that code that run the step"
-              ],
-              "Stale": true
+                "internal/store/understanding.go:524 \"func (s Store) UpgradeUnderstandings(units []model.Unit)\"",
+                "internal/store/store.go:259 \"func (s Store) SaveState(st State) error {\""
+              ]
             }
           ]
         },
