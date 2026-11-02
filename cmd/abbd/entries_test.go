@@ -107,7 +107,8 @@ func TestDiffSaysOnceThatAContractNowListsItsEntries(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "base")
-	p.extract(strings.Replace(diffBase, `"signature":"GET /charges"`, `"signature":"/","entries":[{"name":"GET /charges"},{"name":"GET /charges/{id}"}]`, 1))
+	now := strings.Replace(diffBase, `"signature":"GET /charges"`, `"signature":"/","entries":[{"name":"GET /charges"},{"name":"GET /charges/{id}"}]`, 1)
+	p.extract(strings.Replace(now, `{"from":"billing","to":"api","kind":"provides"}`, `{"from":"billing","to":"api","kind":"provides","entries":["GET /charges"]}`, 1))
 	p.want(0, "", "sync")
 	out := p.want(1, "~ contract IF-0001 http api now lists its 2 entries", "diff", "--base", "HEAD", "--check")
 	if strings.Contains(out, "+ entry") {

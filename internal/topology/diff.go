@@ -171,15 +171,16 @@ func (d *Diff) contract(old, u model.Unit) {
 }
 
 // newUses lists the entries a unit's drawn relations use in now and did not
-// in base, where the relation between the top-level units was there in both:
-// a new one is already a relation added.
+// in base, where the relation between the top-level units was there in both
+// and the contract listed entries in both: a new relation is already a
+// relation added, and a contract that came to list entries is one line.
 func newUses(base, now map[model.ID]model.Unit, was, is map[string]Relation) []Use {
 	had := entryUses(base)
 	var out []Use
 	for k, u := range entryUses(now) {
 		_, before := was[k.edge]
 		_, after := is[k.edge]
-		if _, used := had[k]; before && after && !used {
+		if _, used := had[k]; before && after && !used && len(base[u.To].Entries) > 0 {
 			out = append(out, u)
 		}
 	}
@@ -244,10 +245,14 @@ func (d Diff) Lines() []string {
 		out = append(out, fmt.Sprintf("~ contract %s %s signature: %q -> %q", s.ID, s.Name, s.Old, s.New))
 	}
 	for _, l := range d.Listed {
+		n := fmt.Sprintf("%d entries", l.Entries)
+		if l.Entries == 1 {
+			n = "1 entry"
+		}
 		if l.Now {
-			out = append(out, fmt.Sprintf("~ contract %s %s now lists its %d entries", l.ID, l.Name, l.Entries))
+			out = append(out, fmt.Sprintf("~ contract %s %s now lists its %s", l.ID, l.Name, n))
 		} else {
-			out = append(out, fmt.Sprintf("~ contract %s %s no longer lists its %d entries", l.ID, l.Name, l.Entries))
+			out = append(out, fmt.Sprintf("~ contract %s %s no longer lists its %s", l.ID, l.Name, n))
 		}
 	}
 	for _, e := range d.Entries {

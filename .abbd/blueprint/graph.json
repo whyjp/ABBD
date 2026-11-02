@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "a8997c08263c56496ad8db5553b453b86c5f46ec64f0a40d1160d5f61f354447"
+    "inputs_hash": "3099bc6a70720b8a8d004cd198747704fe327c2e6cb6470a43bd51107416f2a8"
   },
   "units": [
     {
@@ -260,7 +260,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+        "internal/topology/diff.go:356 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
     },
     {
@@ -2276,7 +2276,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/diff.go:228 \"func (d Diff) Boundary() bool {\""
+        "internal/topology/diff.go:229 \"func (d Diff) Boundary() bool {\""
       ]
     },
     {
@@ -2299,7 +2299,7 @@
       "Parent": "MOD-0047",
       "Evidence": [
         "internal/topology/diff.go:92 \"func Compare(base, now []model.Unit) Diff {\"",
-        "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+        "internal/topology/diff.go:356 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
       ]
     },
     {
@@ -4159,7 +4159,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
     },
     {
       "From": "MOD-0047",
@@ -4167,7 +4167,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+      "Quote": "internal/topology/diff.go:356 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
     },
     {
       "From": "MOD-0047",
@@ -4227,7 +4227,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+      "Quote": "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
     },
     {
       "From": "MOD-0048",
@@ -4235,7 +4235,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
+      "Quote": "internal/topology/diff.go:231 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
     },
     {
       "From": "MOD-0049",
@@ -11224,6 +11224,30 @@
               },
               {
                 "Text": " lists every parent claim when a unit has more than one, and marks each drifted or dead item. For a contract with entries it prints each entry's key, name, shape and need, with the units whose relations use it. ",
+                "Code": false
+              },
+              {
+                "Text": "entries_test.go",
+                "Code": true
+              },
+              {
+                "Text": " drives entries through ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": " on a scratch repository: how sync stores them, the diff lines and the ",
+                "Code": false
+              },
+              {
+                "Text": "--check",
+                "Code": true
+              },
+              {
+                "Text": " verdict for each kind of entry change, an entry's note and its row on the page, and the extraction's refusals. ",
                 "Code": false
               },
               {
@@ -22170,7 +22194,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
             "internal/topology/query.go:42 \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -22189,7 +22213,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
           ]
         },
         {
@@ -27991,7 +28015,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
+              "internal/topology/diff.go:231 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
             ],
             "Marks": [
               {
@@ -28349,7 +28373,7 @@
             "Title": "boundary rule depends_on topology diff (via call), 판독\nunit explanation depends_on topology diff (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
+              "internal/topology/diff.go:231 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
               "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\""
             ],
             "Rels": [
@@ -28363,7 +28387,7 @@
             "Kind": "depends_on",
             "Title": "boundary rule depends_on topology diff (via call), 판독\nunit explanation depends_on topology diff (via convention), 판독",
             "Quotes": [
-              "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
+              "internal/topology/diff.go:231 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\"",
               "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\""
             ],
             "Rels": [
@@ -29623,7 +29647,7 @@
                 "Code": true
               },
               {
-                "Text": " for an entry a drawn relation came to use or stopped using on a top-level relation both sides have, and ",
+                "Text": " for an entry a drawn relation came to use or stopped using, on a top-level relation both sides have and a contract that lists entries on both, and ",
                 "Code": false
               },
               {
@@ -29759,7 +29783,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
+            "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\"",
             "internal/topology/query.go:42 \"case l.Origin == model.Inferred:\""
           ]
         },
@@ -29769,7 +29793,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+            "internal/topology/diff.go:356 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
           ]
         },
         {
@@ -29823,7 +29847,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:348 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
+            "internal/topology/diff.go:353 \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
           ]
         },
         {
@@ -29832,7 +29856,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/diff.go:230 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
+            "internal/topology/diff.go:231 \"return len(d.Signatures) \u003e 0 || len(d.Entries) \u003e 0 || len(d.Listed) \u003e 0 ||\""
           ]
         },
         {
@@ -29860,7 +29884,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/topology/query.go:46 \"case l.From == id, own(l.From) \u0026\u0026 !own(l.To):\"",
-            "internal/topology/diff.go:351 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
+            "internal/topology/diff.go:356 \"e := model.Edge{From: top(units, u.ID), To: top(units, r.To), Kind: r.Kind}\""
           ]
         },
         {
