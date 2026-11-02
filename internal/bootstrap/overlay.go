@@ -84,6 +84,14 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
+	// A ref names the supplement's unit first, then the script's.
+	resolve := func(ref string) (int, bool) {
+		if i, ok := docTo[ref]; ok {
+			return i, true
+		}
+		i, ok := sc.key[ref]
+		return i, ok
+	}
 	// A parent the supplement gives is its own claim, INFERRED: it rests on
 	// the parent evidence the reader cites, or on the unit's own evidence.
 	// The script's parent, if any, stays beside it.
@@ -92,10 +100,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if !ok || d.Parent == "" {
 			continue
 		}
-		p, ok := docTo[d.Parent]
-		if !ok {
-			p, ok = sc.key[d.Parent]
-		}
+		p, ok := resolve(d.Parent)
 		if !ok || !out.Units[p].Kind.Holds() {
 			return base, f, fmt.Errorf("supplement %s %q: parent %q is the key of no module or feature in the supplement or the script", d.Kind, d.Name.Value, d.Parent)
 		}
@@ -119,10 +124,17 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		extracted[edge{r.From, r.To, r.Kind}] = true
 	}
 	for _, r := range doc.Relations {
-		fi, okf := docTo[r.From]
-		ti, okt := docTo[r.To]
+		fi, okf := resolve(r.From)
+		ti, okt := resolve(r.To)
 		if !okf || !okt {
-			return base, f, fmt.Errorf("supplement relation %s -%s-> %s names a unit that matched no code", r.From, r.Kind, r.To)
+			name := r.To
+			if !okf {
+				name = r.From
+			}
+			return base, f, fmt.Errorf("supplement relation %s -%s-> %s names %q, which is neither the supplement's ref nor the script's", r.From, r.Kind, r.To, name)
+		}
+		if err := r.Kind.Joins(out.Units[fi].Kind, out.Units[ti].Kind); err != nil {
+			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)
 		}
 		e := edge{out.Units[fi].Key, out.Units[ti].Key, r.Kind}
 		if extracted[e] {
