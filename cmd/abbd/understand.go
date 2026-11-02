@@ -10,11 +10,12 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// textModule is the module abbd understand stores a text for. A stored text
+// textModule is the module abbd understand stores a text for: any present
+// module, at any depth, whose text describes its own subtree. A stored text
 // whose unit is not one is an orphan: no command can restamp it.
 func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
 	u, ok := presentUnit(units, id)
-	return u, ok && u.Kind == model.Module && u.Parent == ""
+	return u, ok && u.Kind == model.Module
 }
 
 // understand stores what pstack's how wrote about a module, stamped with the
@@ -31,7 +32,7 @@ func (e env) understand(id model.ID, args []string) error {
 	}
 	u, ok := textModule(units, id)
 	if !ok {
-		return fmt.Errorf("%s is not a top-level module", id)
+		return fmt.Errorf("%s is not a module", id)
 	}
 	old, err := e.st.LoadUnderstandings()
 	if err != nil {

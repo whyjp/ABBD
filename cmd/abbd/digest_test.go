@@ -410,3 +410,50 @@ func TestSyncLeavesAFormat1TextStaleWhenAQuoteIsCitedTwice(t *testing.T) {
 	}
 	p.stale("1")
 }
+
+// A module inside another takes a text of its own, describing its own
+// subtree. The text of the module that holds it describes that code too.
+func TestANestedModuleTakesATextScopedToItsSubtree(t *testing.T) {
+	p := deepProject(t)
+	texts := func(stale string) {
+		t.Helper()
+		p.want(0, "understanding: 2 module text(s), "+stale+" STALE, 0 orphaned", "status")
+	}
+	p.want(0, "understood MOD-0002 web", "understand", "MOD-0002", p.file(t, "web.md", "web serves pages.\n"))
+	p.want(0, "understood MOD-0001 app", "understand", "MOD-0001", p.file(t, "app.md", "app starts web.\n"))
+	texts("0")
+	p.want(0, "how: none; abbd understand MOD-0003 FILE", "explain", "MOD-0003")
+
+	p.code("app/main.go", "package app\n\nfunc Main() { run() }\n")
+	texts("1")
+	p.want(0, "how (INFERRED, CURRENT)", "explain", "MOD-0002")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "app2.md", "app runs web.\n"))
+
+	p.code("app/web/games/board.tsx", "export function Board() { return 1 }\n")
+	texts("2")
+}
+
+// On the blueprint, a nested module's text sits beside its own inside when
+// it holds units, and under its entry in its parent's inside when it holds
+// none, since it has no view of its own.
+func TestTheBlueprintShowsANestedModulesText(t *testing.T) {
+	p := deepProject(t)
+	p.want(0, "understood", "understand", "MOD-0002", p.file(t, "web.md", "web serves every page.\n"))
+	p.want(0, "understood", "understand", "MOD-0003", p.file(t, "games.md", "games draws the board.\n"))
+	p.resync()
+	html := p.read("blueprint/index.html")
+	section := func(id string) string {
+		i := strings.Index(html, `<section class="inside" id="m-`+id+`">`)
+		if i < 0 {
+			t.Fatalf("the blueprint has no inside for %s", id)
+		}
+		s := html[i+1:]
+		return s[:strings.Index(s, "<section")]
+	}
+	if !strings.Contains(section("MOD-0002"), "web serves every page.") {
+		t.Errorf("web's text should sit beside web's inside")
+	}
+	if !strings.Contains(section("MOD-0002"), "games draws the board.") {
+		t.Errorf("games holds nothing, so its text should sit under it in web's inside")
+	}
+}

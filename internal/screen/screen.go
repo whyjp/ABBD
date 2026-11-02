@@ -179,11 +179,20 @@ func Build(in Input) Model {
 		}
 	}
 	slices.Sort(views)
+	text := func(id model.ID) *Understanding {
+		if u, ok := in.Understandings[id]; ok {
+			return &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
+		}
+		return nil
+	}
 	for _, id := range views {
 		ins := o.inside(id, in.Units, "", nil)
 		ins.Focus = o.insideFocus(id, in.Units, ins)
-		if u, ok := in.Understandings[id]; ok {
-			ins.Understanding = &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
+		ins.Understanding = text(id)
+		for i, iu := range ins.Units {
+			if viewOf(o.tree, model.ID(iu.ID)) == "" {
+				ins.Units[i].Understanding = text(model.ID(iu.ID))
+			}
 		}
 		m.Insides = append(m.Insides, ins)
 	}
