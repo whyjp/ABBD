@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -286,5 +287,82 @@ func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {
 	p.want(0, "added the abbd block", "install")
 	if got := claudeMD(t, p.root); got != doc+"\n"+block {
 		t.Errorf("install changed content outside its block:\n%s", got)
+	}
+}
+
+// status --check gates a hook or CI on what an agent can bring current in the
+// same change: the state, the blueprint, the module texts and drifted evidence.
+// Dead evidence is history the views already dropped, so it never fails.
+func TestStatusCheckFailsOnlyOnWhatTheChangeCanBringCurrent(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "state: CURRENT", "status", "--check")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	p.want(0, "understanding: 1 module text(s), 0 STALE", "status", "--check")
+
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.want(1, "the state is STALE", "status", "--check")
+	p.resync()
+	out := p.want(1, "1 module text(s) STALE", "status", "--check")
+	if !strings.Contains(out, "evidence item(s) drifted") || strings.Contains(out, "the state is STALE") {
+		t.Fatalf("after sync only the text and the drifted quotes are out of date:\n%s", out)
+	}
+	p.want(0, "state: CURRENT", "status")
+
+	p.laterRevision()
+	p.resync()
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how2.md", "### Overview\nbilling charges.\n"))
+	out = p.want(0, "0 drifted", "status", "--check")
+	if strings.Contains(out, " 0 dead") {
+		t.Fatalf("the quote that left the code should be dead now, and dead must not fail the check:\n%s", out)
+	}
+
+	write(t, filepath.Join(p.root, ".abbd", "project.yaml"), p.read("project.yaml")+"# edited\n")
+	p.want(1, "the blueprint is STALE", "status", "--check")
+}
+
+// A Windows checkout with core.autocrlf writes .abbd's text files with CRLF
+// endings. The same state must still read current there.
+func TestStatusCheckPassesOnACRLFCheckout(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	filepath.WalkDir(filepath.Join(p.root, ".abbd"), func(path string, d fs.DirEntry, err error) error {
+		if err == nil && !d.IsDir() && filepath.Ext(path) != ".html" {
+			b, _ := os.ReadFile(path)
+			os.WriteFile(path, bytes.ReplaceAll(b, []byte("\n"), []byte("\r\n")), 0o644)
+		}
+		return nil
+	})
+	p.want(0, "blueprint: CURRENT", "status", "--check")
+}
+
+// A text whose module left the state, or is no longer one abbd understand
+// accepts, shows beside no module and no command can restamp it. The check
+// names it and passes, so it cannot block CI for good.
+func TestStatusCheckReportsAnOrphanTextAndPasses(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	text := strings.Replace(p.read("understanding/MOD-0001.md"), "unit: MOD-0001", "unit: MOD-0099", 1)
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0099.md"), text)
+	p.resync()
+	out := p.want(0, "MOD-0099", "status", "--check")
+	if !strings.Contains(out, "1 orphaned") || !strings.Contains(out, "understanding/MOD-0099.md") {
+		t.Fatalf("status must name the orphan and how to drop it:\n%s", out)
+	}
+}
+
+// Without git abbd cannot fingerprint the code, so the check cannot vouch for
+// the state. It fails and says why, rather than sending the agent to a sync
+// that changes nothing.
+func TestStatusCheckFailsOnAnUnknownStateWithTheRealCause(t *testing.T) {
+	p := semanticProject(t)
+	os.WriteFile(filepath.Join(p.root, ".git", "index"), []byte("not an index"), 0o644)
+	out := p.want(1, "git could not fingerprint the working tree", "status", "--check")
+	if strings.Contains(out, "the state is UNKNOWN, run abbd sync") {
+		t.Fatalf("a sync cannot fix a broken git index:\n%s", out)
+	}
+	os.RemoveAll(filepath.Join(p.root, ".git"))
+	out = p.want(1, "is not a git work tree", "status", "--check")
+	if strings.Contains(out, "run abbd sync") {
+		t.Fatalf("a sync cannot fingerprint without git:\n%s", out)
 	}
 }

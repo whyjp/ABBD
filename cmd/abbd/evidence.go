@@ -6,8 +6,10 @@ import (
 	"strings"
 
 	"github.com/whyjp/abbd/internal/evidence"
+	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/screen"
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // checkEvidence prints, for every claim that shows and cites evidence, whether each
@@ -65,15 +67,44 @@ func (e env) checkEvidence() error {
 }
 
 // status prints whether the state matches the working tree, whether the
-// blueprint matches the state, and what the state holds.
+// blueprint matches the state, and what the state holds. With --check it
+// fails on what the change can still bring current: a STALE state, blueprint
+// or module text, and drifted evidence, which dies at the next revision's
+// sync. Dead evidence is already out of every view, so it does not fail.
+// UNKNOWN fails too: the check cannot vouch for what it could not compare.
+// An orphan text does not fail, because no command can restamp it.
 func (e env) status() error {
 	in, err := e.screenInput()
 	if err != nil {
 		return err
 	}
+	var treeErr error
+	if in.Tree == "" {
+		_, treeErr = gitx.Snapshot(e.root, store.Dir)
+	}
 	if len(in.Units) == 0 {
 		fmt.Fprintln(e.stdout, "state: none; run abbd setup -- EXTRACT-ARGV")
+		if e.check {
+			return fmt.Errorf("not current: there is no state")
+		}
 		return nil
+	}
+	var behind []string
+	switch {
+	case in.ActualFreshness() == screen.Stale:
+		behind = append(behind, "the state is STALE, run abbd sync")
+	case treeErr != nil:
+		behind = append(behind, fmt.Sprintf("the state is UNKNOWN: git could not fingerprint the working tree: %v", treeErr))
+	case in.Tree == "":
+		behind = append(behind, fmt.Sprintf("the state is UNKNOWN: %s is not a git work tree, so abbd cannot fingerprint the code; run the check in a git checkout", e.root))
+	case in.Synced.Fingerprint == "":
+		behind = append(behind, "the state is UNKNOWN: it was synced without git and has no fingerprint, run abbd sync in a git checkout")
+	}
+	switch in.BlueprintFreshness() {
+	case screen.Stale:
+		behind = append(behind, "the blueprint is STALE, run abbd sync")
+	case screen.Unknown:
+		behind = append(behind, "the blueprint is UNKNOWN: blueprint/graph.json is missing or has no watermark, run abbd sync")
 	}
 	switch in.ActualFreshness() {
 	case screen.Stale:
@@ -105,14 +136,27 @@ func (e env) status() error {
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
+	var orphans []model.ID
 	for id, u := range in.Understandings {
-		if u.Digest != in.Digests[id] {
+		if _, ok := textModule(in.Units, id); !ok {
+			orphans = append(orphans, id)
+		} else if u.Digest != in.Digests[id] {
 			stale++
 		}
 	}
-	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE\n", len(in.Understandings), stale)
+	slices.Sort(orphans)
+	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE, %d orphaned\n", len(in.Understandings), stale, len(orphans))
+	for _, id := range orphans {
+		fmt.Fprintf(e.stdout, "orphaned: %s is not a top-level module now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
+	}
+	if stale > 0 {
+		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
+	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
+	if ev[model.Drifted] > 0 {
+		behind = append(behind, fmt.Sprintf("%d evidence item(s) drifted, abbd evidence lists them", ev[model.Drifted]))
+	}
 	for _, u := range in.Units {
 		for _, m := range u.Masks {
 			fmt.Fprintf(e.stdout, "retracted: %s %s by a %s: %s\n", u.ID, m.Target, m.Writer, m.Reason)
@@ -120,6 +164,9 @@ func (e env) status() error {
 	}
 	for _, c := range model.ParentConflicts(in.Units) {
 		fmt.Fprintln(e.stdout, "conflict:", c)
+	}
+	if e.check && len(behind) > 0 {
+		return fmt.Errorf("not current: %s", strings.Join(behind, "; "))
 	}
 	return nil
 }

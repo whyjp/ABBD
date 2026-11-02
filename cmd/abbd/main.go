@@ -76,8 +76,15 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
-abbd status [--root DIR]             whether the state and the blueprint are CURRENT, counts,
-                                     drifted and dead evidence, retractions and parent conflicts`
+abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
+                                     drifted and dead evidence, retractions and parent conflicts;
+                                     --check exits 1 when the state, the blueprint or a module
+                                     text is STALE or an evidence item drifted, for a hook or CI;
+                                     it also exits 1 when the state or the blueprint is UNKNOWN,
+                                     because it could not compare them (no git work tree, a git
+                                     error, or no graph.json), and says which; dead evidence and
+                                     an orphaned text, one whose module is gone or no longer
+                                     top-level, are reported but do not fail it`
 
 const (
 	exitOK    = 0
@@ -134,7 +141,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.BoolVar(&o.verbose, "verbose", false, "list every unit, not only what needs attention")
 	},
 	"check": func(fs *flag.FlagSet, o *opts) {
-		fs.BoolVar(&o.check, "check", false, "exit 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")
+		fs.BoolVar(&o.check, "check", false, "exit 1 on what the command's usage line names")
 	},
 	"restamp": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.restamp, "restamp", false, "stamp the stored text against the module's code again, when only what the module holds moved")
@@ -175,7 +182,7 @@ var commands = map[string]command{
 	"impact":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
-	"status":          {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 }
 
 type invocation struct {
