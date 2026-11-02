@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -317,4 +318,19 @@ func TestStatusCheckFailsOnlyOnWhatTheChangeCanBringCurrent(t *testing.T) {
 
 	write(t, filepath.Join(p.root, ".abbd", "project.yaml"), p.read("project.yaml")+"# edited\n")
 	p.want(1, "the blueprint is STALE", "status", "--check")
+}
+
+// A Windows checkout with core.autocrlf writes .abbd's text files with CRLF
+// endings. The same state must still read current there.
+func TestStatusCheckPassesOnACRLFCheckout(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	filepath.WalkDir(filepath.Join(p.root, ".abbd"), func(path string, d fs.DirEntry, err error) error {
+		if err == nil && !d.IsDir() && filepath.Ext(path) != ".html" {
+			b, _ := os.ReadFile(path)
+			os.WriteFile(path, bytes.ReplaceAll(b, []byte("\n"), []byte("\r\n")), 0o644)
+		}
+		return nil
+	})
+	p.want(0, "blueprint: CURRENT", "status", "--check")
 }

@@ -285,6 +285,8 @@ func (s Store) InputsHash() (string, error) {
 	return s.hashFiles(files)
 }
 
+// hashFiles reads CRLF as LF, so a checkout that converts line endings
+// hashes the same as the one that wrote the files.
 func (s Store) hashFiles(files []string) (string, error) {
 	sort.Strings(files)
 	h := sha256.New()
@@ -293,6 +295,7 @@ func (s Store) hashFiles(files []string) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 		rel, _ := filepath.Rel(s.root, f)
 		fmt.Fprintf(h, "%s\x00%d\x00", filepath.ToSlash(rel), len(b))
 		h.Write(b)

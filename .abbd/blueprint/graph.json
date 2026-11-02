@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "039fa2bac036c420a61539e9fe8ab61e402ff46d3f287a960297a6f4ea8397a2"
+    "inputs_hash": "9219e3ada38d188e308d340ecdb1fc602cf6afb28ebc6286ef1333e9482ce0d2"
   },
   "units": [
     {
@@ -368,7 +368,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:359 \"st.HighWater[kind]++\""
+        "internal/store/store.go:362 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2127,7 +2127,7 @@
       "Parent": "MOD-0041",
       "Evidence": [
         "internal/store/store.go:275 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
-        "internal/store/store.go:297 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
+        "internal/store/store.go:300 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
       ]
     },
     {
@@ -2148,7 +2148,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:359 \"st.HighWater[kind]++\""
+        "internal/store/store.go:362 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2190,8 +2190,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:326 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
-        "internal/store/store.go:333 \"return os.Rename(tmp, path)\""
+        "internal/store/store.go:329 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
+        "internal/store/store.go:336 \"return os.Rename(tmp, path)\""
       ]
     },
     {
@@ -4028,7 +4028,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:359 \"st.HighWater[kind]++\""
+      "Quote": "internal/store/store.go:362 \"st.HighWater[kind]++\""
     },
     {
       "From": "MOD-0041",
@@ -4062,7 +4062,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/store/store.go:360 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+      "Quote": "internal/store/store.go:363 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
     },
     {
       "From": "MOD-0046",
@@ -16812,7 +16812,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:360 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:363 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         }
@@ -22439,7 +22439,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/store/store.go:360 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+              "internal/store/store.go:363 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
             ],
             "Marks": [
               {
@@ -23597,7 +23597,7 @@
                 "Code": true
               },
               {
-                "Text": ", including the extractor and the understanding texts. The blueprint carries it as a watermark, and ",
+                "Text": ", including the extractor and the understanding texts. It reads CRLF as LF, so a Windows checkout that converts line endings hashes the same. The blueprint carries it as a watermark, and ",
                 "Code": false
               },
               {
@@ -23945,7 +23945,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:359 \"st.HighWater[kind]++\""
+            "internal/store/store.go:362 \"st.HighWater[kind]++\""
           ]
         },
         {
@@ -23964,7 +23964,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:360 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:363 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         },
