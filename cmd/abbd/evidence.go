@@ -152,6 +152,9 @@ func (e env) status() error {
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
 	}
+	if len(in.Understandings) > 0 {
+		readTexts(e.stdout, in.Understandings)
+	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
 	if ev[model.Drifted] > 0 {
