@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "9629bccaf774439928fb9f4159383e968864e833956a361cd038d532aa5ab2f9"
+    "inputs_hash": "777c2132fb1317cef7ab2b92ced44f7394506b4405a7046c0535114041da4737"
   },
   "units": [
     {
@@ -1699,7 +1699,7 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:73 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+        "internal/gitx/gitx.go:80 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
     },
     {
@@ -1720,8 +1720,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:144 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:151 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:242 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:249 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1742,8 +1742,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:98 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:99 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:107 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:109 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -3644,7 +3644,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/gitx/gitx.go:43 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+      "Quote": "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
     },
     {
       "From": "MOD-0024",
@@ -11193,7 +11193,7 @@
                 "Code": true
               },
               {
-                "Text": ", saved in the state at sync. ",
+                "Text": ", saved in the state at sync. A nested repository with no commit yet counts by its files on disk that neither repository ignores, as an untracked directory does. ",
                 "Code": false
               },
               {
@@ -15309,7 +15309,7 @@
                 "Code": true
               },
               {
-                "Text": ", with nine exported, stateless functions, two private helpers, ",
+                "Text": ", with nine exported, stateless functions, private helpers ",
                 "Code": false
               },
               {
@@ -15317,11 +15317,43 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "runInput",
+                "Code": true
+              },
+              {
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "gitlinks",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "unbornRepos",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "addFiles",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
                 "Code": true
               },
               {
@@ -15589,7 +15621,23 @@
                 "Code": true
               },
               {
-                "Text": " with extra environment variables appended, captures stdout and leaves stderr unattached, so git's messages are dropped.",
+                "Text": " with extra environment variables appended, captures stdout and leaves stderr unattached, so git's messages are dropped. ",
+                "Code": false
+              },
+              {
+                "Text": "runInput",
+                "Code": true
+              },
+              {
+                "Text": " is the same with a string on stdin, which ",
+                "Code": false
+              },
+              {
+                "Text": "addFiles",
+                "Code": true
+              },
+              {
+                "Text": " feeds paths and index lines through.",
                 "Code": false
               }
             ]
@@ -15652,6 +15700,118 @@
               },
               {
                 "Text": " puts the recorded commits back. ",
+                "Code": false
+              },
+              {
+                "Text": "git add",
+                "Code": true
+              },
+              {
+                "Text": " refuses a nested repository with no commit yet, so ",
+                "Code": false
+              },
+              {
+                "Text": "unbornRepos",
+                "Code": true
+              },
+              {
+                "Text": " finds each one, an untracked entry with a trailing slash whose ",
+                "Code": false
+              },
+              {
+                "Text": "Head",
+                "Code": true
+              },
+              {
+                "Text": " is empty, and the add skips it. ",
+                "Code": false
+              },
+              {
+                "Text": "addFiles",
+                "Code": true
+              },
+              {
+                "Text": " then adds its files, as ",
+                "Code": false
+              },
+              {
+                "Text": "WorkingFiles",
+                "Code": true
+              },
+              {
+                "Text": " lists them inside it, through ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object -w --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "update-index -z --index-info",
+                "Code": true
+              },
+              {
+                "Text": ", so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository's index can list a file deleted or renamed before its first commit, and ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
+                "Code": true
+              },
+              {
+                "Text": " drops what ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": " says the project ignores. git reads the paths of ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "--index-info",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "--cacheinfo",
+                "Code": true
+              },
+              {
+                "Text": " from the top of the work tree, so they and the submodule paths take the prefix ",
+                "Code": false
+              },
+              {
+                "Text": "rev-parse --show-prefix",
+                "Code": true
+              },
+              {
+                "Text": " gives when ",
+                "Code": false
+              },
+              {
+                "Text": "dir",
+                "Code": true
+              },
+              {
+                "Text": " is a subdirectory of the repository. ",
                 "Code": false
               },
               {
@@ -16123,7 +16283,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:43 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -20423,7 +20583,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:43 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
