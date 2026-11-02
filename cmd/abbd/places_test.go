@@ -53,16 +53,49 @@ func TestNearbyPlacesOfOneQuoteCountApart(t *testing.T) {
 	p.stale("1")
 }
 
-// When the unit citing the first place leaves, the place left is code the
-// text was written against, unchanged, so a restamp is allowed.
-func TestRestampIsAllowedAfterTheFirstPlaceLeaves(t *testing.T) {
+// When the unit citing the first place leaves, the place left takes the
+// first place's key. Its hashes alone cannot show the code it read is
+// unchanged, so the restamp is refused and a fresh text clears it.
+func TestAFreshTextClearsTheStaleAfterTheFirstPlaceLeaves(t *testing.T) {
 	p := placesProject(t, 7, 25)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	p.want(0, "retracted", "retract", "CFG-0001", "--reason", "not an exit")
 	p.resync()
 	p.stale("1")
-	p.want(0, "restamped MOD-0001", "understand", "MOD-0001", "--restamp")
+	p.want(1, "lib/util.go#quote-", "understand", "MOD-0001", "--restamp")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits late.\n"))
 	p.stale("0")
+}
+
+// When the first place's quote is edited away, its citation falls back to
+// the quote's only occurrence, so both units cite the second place. The
+// code the first unit cited is gone, so the restamp is refused.
+func TestRestampIsRefusedWhenTheFirstPlaceIsEditedAway(t *testing.T) {
+	p := placesProject(t, 7, 25)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
+	p.code("lib/util.go", quotedAt(7, 7, 25))
+	p.resync()
+	p.want(0, "lib/util.go:25", "evidence")
+	p.stale("1")
+	p.want(1, "lib/util.go#quote-", "understand", "MOD-0001", "--restamp")
+	p.stale("1")
+}
+
+// Each place's code reads as the other's did before. Every cited line
+// changed, so the restamp is refused.
+func TestRestampIsRefusedWhenTwoPlacesSwapTheirCode(t *testing.T) {
+	p := placesProject(t, 7, 25)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
+	was := strings.Split(quotedAt(0, 7, 25), "\n")
+	now := slices.Clone(was)
+	for i := 1; i <= 11; i++ {
+		now[i], now[i+18] = was[i+18], was[i]
+	}
+	p.code("lib/util.go", strings.Join(now, "\n"))
+	p.resync()
+	p.stale("1")
+	p.want(1, "lib/util.go#quote-", "understand", "MOD-0001", "--restamp")
+	p.stale("1")
 }
 
 // The place left still has to read as it did: edited, it refuses a restamp.
