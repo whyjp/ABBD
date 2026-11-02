@@ -1,0 +1,16 @@
+ workspace packages are unbuilt and many `node_modules` links in this worktree are broken (for example `zod`, `react` and `stream-json`).
+- I ran the affected suites through a temporary vitest config, now deleted, that points those packages at the pnpm store. 499 tests passed.
+- 18 tests failed, all in `sanitizeWorktreeName`, because `emojibase-data` is missing. They fail before reaching any code this change touches.
+- `oxlint` and `oxfmt --check` pass on all changed files.
+- Typecheck didn't run cleanly. Most errors were unresolved `react`/`node` types. In my files, the rest were `key`-prop errors from the same missing React types.
+- CI needs to run `pnpm tc`. I didn't look at the Settings row in a running app.
+
+**Independent review.** A separate reviewer found no blocking bugs. I fixed two of its findings:
+- A `.` separator with a workspace named `lock` would produce `jd.lock`, which Git rejects. That now becomes `jd-lock`.
+- The separator error no longer shows when no prefix applies.
+
+Two limitations remain, both written up in PR.md:
+- **Older server:** the server creates the branch, and an older one ignores the new field. A new client connected to it still shows the separator box, but branches keep using `/`.
+- **Settings changed before the first agent turn:** a workspace created as `jd-otter` won't auto-rename if the prefix or separator changes in the meantime.
+
+To fix the first, I'd need to add a server capability flag, which doesn't exist yet. Tell me if you want that.

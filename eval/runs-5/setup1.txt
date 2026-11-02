@@ -1,0 +1,1 @@
+abbd: supplement IF "local runtime socket (NDJSON over Unix socket / named pipe)" cites evidence, so it is a unit the script cannot see, but it shares an anchor with the script's IF "Orca runtime RPC methods" and would merge into it; anchor its evidence on code of its own, or drop the evidence if it describes "Orca runtime RPC methods"

@@ -1,0 +1,7 @@
+﻿$ abbd path | mobile app (Expo) | desktop main process
+# exit 0, 44 ms, 181 chars
+MOD-0007 mobile app (Expo)
+  -consumes-> IF-0020 Orca runtime RPC methods (extracted)
+  <-consumes- MOD-0042 desktop main process (extracted)
+2 hop(s), weakest origin EXTRACTED
+

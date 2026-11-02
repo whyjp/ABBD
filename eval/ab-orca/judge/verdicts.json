@@ -1,0 +1,90 @@
+[
+ {
+  "job": "36652-r1-AB",
+  "architecture": "B",
+  "pr": "B",
+  "architecture_why": "Y updates both places in first-work-branch-rename.ts that read the leaf by splitting on '/', and splits invalid-separator handling the same way the prefix does: worktree creation throws, the background rename falls back to '/'. It also moves GitPane's existing draft/echo pattern into a hook both inputs use, while X fixes only the post-rename leaf, copies the draft block, and lets an invalid separator reach the background rename.",
+  "pr_why": "Y explains each non-obvious decision (fallback versus throw, the .lock case, why stripConfiguredBranchPrefix is unchanged) and states its limits on mixed client/server versions and auto-rename. Its testing section is concrete, including the check that the new rename test fails on the old logic, while X's says the rename fix is complete when it is not.",
+  "concerns": {
+   "A": "With a '-' separator, the creature-name check at first-work-branch-rename.ts:204 still splits on '/', so branches like jd-otter are never auto-renamed, and the non-throwing computeBranchName can build an invalid ref from a bad separator.",
+   "B": "An empty separator is an error in Y rather than falling back to '/', and branches created before the prefix or separator changes won't auto-rename, a limit the PR itself notes."
+  }
+ },
+ {
+  "job": "36652-r1-BA",
+  "architecture": "B",
+  "pr": "B",
+  "architecture_why": "X sends every leaf lookup in first-work-branch-rename.ts (both the creature-name check and the post-rename leaf) through one shared getBranchLeaf helper, and it moves GitPane's existing draft pattern into a reusable hook rather than copying it. Y's getBranchNameHead join is clean, but Y leaves the line-204 `lastIndexOf('/')` creature check alone, so the change is incomplete in a place that must change together with the join.",
+  "pr_why": "X explains each design choice (throwing vs non-throwing callers, the .lock rewrite, when feedback appears), lists honest limitations, and says its rename test fails against the old logic. Y is clear but says the auto-rename leaf logic was fixed when only the post-rename half was, which would mislead a reviewer.",
+  "concerns": {
+   "B": "In computeValidatedBranchName the separator is resolved inline with `?? DEFAULT` while computeBranchName uses resolveBranchPrefixSeparator, so the two paths can drift, and the new useSettingTextDraft hook widens the diff a little.",
+   "A": "The auto-generated creature check still uses `lastIndexOf('/')`, so with a non-slash separator auto-rename from first work silently never fires, and a '.' separator with a 'lock' leaf can produce an invalid `prefix.lock` ref."
+  }
+ },
+ {
+  "job": "36652-r2-BA",
+  "architecture": "A",
+  "pr": "A",
+  "architecture_why": "Y keeps the git ref rules and the separator assert in shared/branch-prefix.ts next to the existing prefix assert, and adds getConfiguredBranchHead beside getConfiguredBranchPrefix so branch creation and auto-rename share one join. X writes its own throw inside computeValidatedBranchName, repeats a literal default instead of the shared constant, and puts its tests in a new file rather than the existing suites.",
+  "pr_why": "Y names each file and the reason for its change, describes both auto-rename bugs, and shows that its new test fails without the fix. It also lists specific known gaps (PR draft title, prefix and separator pairs git still rejects, no empty separator), while X's verification section is mostly about environment failures.",
+  "concerns": {
+   "B": "Its new locale keys are named rather than hash-style like nearby keys, several translations lose the backslash character, and the separator validation is written inline instead of reusing the shared assert pattern.",
+   "A": "It adds new translate() keys without any en.json entries, so the localization catalog check would likely fail in CI, and the PR includes an irrelevant abbd topology section."
+  }
+ },
+ {
+  "job": "36652-r2-AB",
+  "architecture": "B",
+  "pr": "A",
+  "architecture_why": "Y follows the repo's localization rule by adding its new translate() keys to en.json and the other locales, which X leaves out, so X probably fails the catalog CI check. Y also reuses getBranchPrefixIssue for the separator, as the issue suggests, and has computeValidatedBranchName call computeBranchName so the join happens in one place, while X duplicates the join and adds a parallel violatesRefFormat path.",
+  "pr_why": "X explains both rename-hook bugs with concrete outputs and lists real follow-up gaps, including the pull-request draft title that still keeps the prefix and the prefix/separator pairs that pass both checks but Git rejects. Y is clear and compares test failures with the base commit, but it misses the draft-title gap and only discusses a narrower edge case.",
+  "concerns": {
+   "A": "X adds three translate() keys with no en.json entries, so the localization catalog check will probably fail in CI.",
+   "B": "Y's separator error message is missing the backslash in six locales, and its validation error is written inline instead of an assert function like the neighbouring assertBranchPrefixValid."
+  }
+ },
+ {
+  "job": "36697-r1-AB",
+  "architecture": "A",
+  "pr": "A",
+  "architecture_why": "Both extend the same token list, role record and contrast-rule table, but X also updates plugin-themes.md, which lists every per-token check and is a contract that must change with the rules, while Y leaves it stale. X's 1.5:1 status-mark floor is a named constant set from Orca's own built-in colors, whereas Y's reused 3:1 floor would drop a theme that copies Orca's light-mode yellow (about 1.7:1 on #f5f5f5).",
+  "pr_why": "X explains its non-obvious threshold choice with measured contrast ratios, maps each file to its role, and lists its verification gaps candidly. Y's table is easy to scan and it flags the native-chat limit, but it presents 3:1 without saying it rejects Orca's own light-mode colors and admits its one test has never run.",
+  "concerns": {
+   "A": "A 1.5:1 floor is permissive enough that low-visibility status dots still pass, and the native-chat scope override of --status-success/--status-warning goes unmentioned.",
+   "B": "The 3:1 floor drops themes that reproduce Orca's own light-mode agent and workspace colors, and plugin-themes.md is not updated to list the new checks."
+  }
+ },
+ {
+  "job": "36697-r1-BA",
+  "architecture": "A",
+  "pr": "A",
+  "architecture_why": "Both extend the same token list, role record and contrast-rule table, but Y also updates the hand-written check list in plugin-themes.md and picks a threshold that accepts Orca's own built-in status colours. X's 3:1 reuse of the git-decoration floor rejects the default light-mode yellow and progress colours, and it leaves the themes doc describing an outdated set of checks.",
+  "pr_why": "Y justifies its non-obvious 1.5:1 threshold with measured contrast ratios, maps each file to its change, and spells out exactly which tests ran and which did not. X has a clear table and a useful native-chat caveat, but it gives no reason for 3:1 and says its only new test never ran.",
+  "concerns": {
+   "B": "The 3:1 floor on --worktree-sidebar drops a theme's working, progress or done colour when it matches Orca's own light-mode value, and plugin-themes.md is not updated to list the new checks.",
+   "A": "Like X, Y does not mention that native-chat scopes redeclare --status-success and --status-warning, and the 1.5:1 floor is lenient enough to allow quite low-contrast status marks."
+  }
+ },
+ {
+  "job": "36697-r2-BA",
+  "architecture": "A",
+  "pr": "B",
+  "architecture_why": "Y follows the module's existing approach to derived tints: it copies the main.css rules for the status background and text tints into plugin-theme-css-fallbacks.ts and checks the text on those tints with the textPair/over rule shape, as the diff and chat-diff rules already do. X only checks the raw hues against a surface, so it never checks how those colors look as text on their own tints.",
+  "pr_why": "X explains its contrast thresholds, the chat limit and compatibility with older clients and CLIs, and gives a per-file list of changes, which makes the review quick. Y has a richer margin table but leaves out compatibility and adds an irrelevant tool-topology section.",
+  "concerns": {
+   "B": "It checks --status-success and --status-warning only at 1.5:1 against --background, so a theme can pick a success or warning color that becomes hard to read as text on its own tinted banner.",
+   "A": "One line in plugin-themes.md breaks the paragraph's wrapping, and the docs don't say that chat keeps Orca's own status colors."
+  }
+ },
+ {
+  "job": "36697-r2-AB",
+  "architecture": "A",
+  "pr": "B",
+  "architecture_why": "X reuses the file's own patterns (a tuple list like RINGS, textPair with an `over` surface) and keeps plugin-theme-css-fallbacks.ts matching main.css, so status text is checked on the tint it is actually painted on. Y puts the same tokens in the same places but only checks the status colors as 1.5:1 dots, which doesn't match how they are used as text.",
+  "pr_why": "Y lays out the checks, the reasons for the floors, the known chat limit, mixed-version compatibility and a file-by-file change list in a form that is quick to check. X's numbers are precise, but it adds an unrelated topology section and its verification ran on a custom shim.",
+  "concerns": {
+   "A": "The extra text checks on the status tints and the newly mirrored fallback rules must stay matched to main.css by hand, and the stricter 4.5:1 floors may drop theme colors that authors expect to keep.",
+   "B": "Checking --status-success and --status-warning only at 1.5:1 against --background lets a theme set colors that make success and warning text unreadable."
+  }
+ }
+]

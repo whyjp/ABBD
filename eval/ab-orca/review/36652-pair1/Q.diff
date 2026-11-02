@@ -1,0 +1,496 @@
+diff --git a/src/main/agent-hooks/first-work-branch-rename.ts b/src/main/agent-hooks/first-work-branch-rename.ts
+index d1051b26..b743fc5a 100644
+--- a/src/main/agent-hooks/first-work-branch-rename.ts
++++ b/src/main/agent-hooks/first-work-branch-rename.ts
+@@ -10,7 +10,11 @@ import {
+   stripConfiguredBranchPrefix
+ } from '../../shared/branch-name-from-work'
+ import { getCommitMessageModelDiscoveryHostKey } from '../../shared/commit-message-host-key'
+-import { computeBranchName, getConfiguredBranchPrefix } from '../ipc/worktree-branch-name'
++import {
++  computeBranchName,
++  getBranchNameHead,
++  getConfiguredBranchPrefix
++} from '../ipc/worktree-branch-name'
+ import { gitExecFileAsync } from '../git/runner'
+ import { resolveLocalGitUsername } from '../git/git-username'
+ import { resolveGitRouteForHost } from '../providers/execution-host-provider-dispatch'
+@@ -289,7 +293,7 @@ async function runAutoRename(
+   await renameCurrentBranch(exec, newBranch)
+ 
+   // Collision suffixes belong in display and folder names too.
+-  const newBranchLeaf = newBranch.slice(newBranch.lastIndexOf('/') + 1)
++  const newBranchLeaf = newBranch.slice(getBranchNameHead(settings, username).length)
+   // Preserve user-edited display names.
+   const currentDisplayName = deps.getCurrentDisplayName(worktreeId)
+   const newDisplayName = humanizeBranchSlug(newBranchLeaf)
+diff --git a/src/main/ipc/worktree-branch-name.ts b/src/main/ipc/worktree-branch-name.ts
+index bf6786ab..4d0cde62 100644
+--- a/src/main/ipc/worktree-branch-name.ts
++++ b/src/main/ipc/worktree-branch-name.ts
+@@ -1,7 +1,9 @@
+ import {
++  assertBranchPrefixSeparatorValid,
+   assertBranchPrefixValid,
+   getBranchPrefixIssue,
+   normalizeBranchPrefix,
++  normalizeBranchPrefixSeparator,
+   selectBranchPrefixInput,
+   type BranchPrefixSettings
+ } from '../../shared/branch-prefix'
+@@ -15,13 +17,21 @@ export function getConfiguredBranchPrefix(
+   return raw ? normalizeBranchPrefix(raw) || null : null
+ }
+ 
++/** Everything a generated branch name carries before its leaf: the prefix and its separator, or '' when unprefixed. */
++export function getBranchNameHead(
++  settings: Parameters<typeof selectBranchPrefixInput>[0],
++  gitUsername: string | null
++): string {
++  const prefix = getConfiguredBranchPrefix(settings, gitUsername)
++  return prefix ? `${prefix}${normalizeBranchPrefixSeparator(settings.branchPrefixSeparator)}` : ''
++}
++
+ export function computeBranchName(
+   sanitizedName: string,
+   settings: Parameters<typeof selectBranchPrefixInput>[0],
+   gitUsername: string | null
+ ): string {
+-  const prefix = getConfiguredBranchPrefix(settings, gitUsername)
+-  return prefix ? `${prefix}/${sanitizedName}` : sanitizedName
++  return `${getBranchNameHead(settings, gitUsername)}${sanitizedName}`
+ }
+ 
+ /** Validate prefix settings early so creation errors identify configuration rather than opaque Git failures. */
+@@ -43,5 +53,6 @@ export function computeValidatedBranchName(
+     }
+     assertBranchPrefixValid(prefix)
+   }
+-  return `${prefix}/${sanitizedName}`
++  assertBranchPrefixSeparatorValid(settings.branchPrefixSeparator)
++  return computeBranchName(sanitizedName, settings, gitUsername)
+ }
+diff --git a/src/main/ipc/worktree-logic.test.ts b/src/main/ipc/worktree-logic.test.ts
+index e5ae26cb..28094734 100644
+--- a/src/main/ipc/worktree-logic.test.ts
++++ b/src/main/ipc/worktree-logic.test.ts
+@@ -24,7 +24,8 @@ import {
+ import {
+   computeBranchName,
+   getConfiguredBranchPrefix,
+-  computeValidatedBranchName
++  computeValidatedBranchName,
++  getBranchNameHead
+ } from './worktree-branch-name'
+ import { mergeWorktree } from './worktree-metadata-merge'
+ import { areWorktreePathsEqual } from '../git/worktree-path-comparison'
+@@ -289,6 +290,41 @@ describe('computeBranchName', () => {
+   })
+ })
+ 
++describe('branch prefix separator', () => {
++  const dash = {
++    branchPrefix: 'custom',
++    branchPrefixCustom: 'jd',
++    branchPrefixSeparator: '-'
++  } as const
++
++  it('joins the prefix with the configured separator', () => {
++    expect(computeValidatedBranchName('feat-login-form', dash, null)).toBe('jd-feat-login-form')
++    expect(computeBranchName('feature', dash, null)).toBe('jd-feature')
++  })
++
++  it('falls back to a slash when the separator is blank', () => {
++    expect(computeBranchName('feature', { ...dash, branchPrefixSeparator: ' ' }, null)).toBe(
++      'jd/feature'
++    )
++  })
++
++  it('ignores the separator when no prefix applies', () => {
++    expect(computeBranchName('feature', { ...dash, branchPrefix: 'none' }, null)).toBe('feature')
++  })
++
++  it('reports the head that precedes the leaf', () => {
++    expect(getBranchNameHead(dash, null)).toBe('jd-')
++    expect(getBranchNameHead({ branchPrefix: 'git-username' }, 'jdoe')).toBe('jdoe/')
++    expect(getBranchNameHead({ branchPrefix: 'none' }, 'jdoe')).toBe('')
++  })
++
++  it('rejects a separator git cannot accept', () => {
++    expect(() =>
++      computeValidatedBranchName('feature', { ...dash, branchPrefixSeparator: '~' }, null)
++    ).toThrow(/separator/)
++  })
++})
++
+ describe('getConfiguredBranchPrefix', () => {
+   it('returns null for custom strategy with an empty value', () => {
+     expect(
+diff --git a/src/main/runtime/runtime-local-worktree-create-candidate.ts b/src/main/runtime/runtime-local-worktree-create-candidate.ts
+index d0e7bc64..e56a89fb 100644
+--- a/src/main/runtime/runtime-local-worktree-create-candidate.ts
++++ b/src/main/runtime/runtime-local-worktree-create-candidate.ts
+@@ -55,6 +55,7 @@ export async function resolveRuntimeLocalWorktreeCreateCandidate(args: {
+   settings: ReturnType<typeof getWorktreePathSettings> & {
+     branchPrefix: string
+     branchPrefixCustom?: string
++    branchPrefixSeparator?: string
+   }
+   worktreePathSettings: ReturnType<typeof getWorktreePathSettings>
+   workspaceRoot: string
+diff --git a/src/main/runtime/runtime-local-worktree-create-legacy-branch.ts b/src/main/runtime/runtime-local-worktree-create-legacy-branch.ts
+index f5d11d0c..0cf3dba1 100644
+--- a/src/main/runtime/runtime-local-worktree-create-legacy-branch.ts
++++ b/src/main/runtime/runtime-local-worktree-create-legacy-branch.ts
+@@ -7,7 +7,7 @@ export async function resolveLegacyRemoteBranch(args: {
+   request: RuntimeManagedWorktreeCreateArgs
+   repo: { path: string }
+   sanitizedName: string
+-  settings: { branchPrefix: string; branchPrefixCustom?: string }
++  settings: { branchPrefix: string; branchPrefixCustom?: string; branchPrefixSeparator?: string }
+   username: string
+   baseBranch: string
+   localWorktreeGitOptions: { wslDistro?: string }
+diff --git a/src/main/runtime/runtime-store-contract.ts b/src/main/runtime/runtime-store-contract.ts
+index 6218aa8a..7e00b8f5 100644
+--- a/src/main/runtime/runtime-store-contract.ts
++++ b/src/main/runtime/runtime-store-contract.ts
+@@ -128,6 +128,7 @@ export type RuntimeStore = {
+     localBaseRefSuggestionDismissed?: boolean
+     branchPrefix: string
+     branchPrefixCustom: string
++    branchPrefixSeparator?: string
+     defaultTuiAgent?: GlobalSettings['defaultTuiAgent']
+     newWorkspaceSetupOnly?: GlobalSettings['newWorkspaceSetupOnly']
+     disabledTuiAgents?: GlobalSettings['disabledTuiAgents']
+diff --git a/src/main/runtime/runtime-worktree-create-git.ts b/src/main/runtime/runtime-worktree-create-git.ts
+index 8a2f2488..efafceb2 100644
+--- a/src/main/runtime/runtime-worktree-create-git.ts
++++ b/src/main/runtime/runtime-worktree-create-git.ts
+@@ -20,7 +20,7 @@ export async function resolveCreateBranchName(
+   repoPath: string,
+   branchNameOverride: string | undefined,
+   sanitizedName: string,
+-  settings: { branchPrefix: string; branchPrefixCustom?: string },
++  settings: { branchPrefix: string; branchPrefixCustom?: string; branchPrefixSeparator?: string },
+   username: string | null,
+   gitOptions: { wslDistro?: string; admissionTier?: GitAdmissionTier } = {}
+ ): Promise<string> {
+diff --git a/src/renderer/src/components/settings/BranchPrefixFeedback.tsx b/src/renderer/src/components/settings/BranchPrefixFeedback.tsx
+index 7328a82b..3095e94e 100644
+--- a/src/renderer/src/components/settings/BranchPrefixFeedback.tsx
++++ b/src/renderer/src/components/settings/BranchPrefixFeedback.tsx
+@@ -1,12 +1,21 @@
+ import type { ReactNode } from 'react'
+-import { getBranchPrefixIssue, normalizeBranchPrefix } from '../../../../shared/branch-prefix'
++import {
++  getBranchPrefixIssue,
++  getBranchPrefixSeparatorIssue,
++  normalizeBranchPrefix,
++  normalizeBranchPrefixSeparator
++} from '../../../../shared/branch-prefix'
+ import { translate } from '@/i18n/i18n'
+ 
+ type BranchPrefixFeedbackProps = {
+   rawPrefix: string
++  rawSeparator: string
+ }
+ 
+-export function BranchPrefixFeedback({ rawPrefix }: BranchPrefixFeedbackProps): ReactNode {
++export function BranchPrefixFeedback({
++  rawPrefix,
++  rawSeparator
++}: BranchPrefixFeedbackProps): ReactNode {
+   const issue = getBranchPrefixIssue(rawPrefix)
+   const normalized = normalizeBranchPrefix(rawPrefix)
+ 
+@@ -20,13 +29,22 @@ export function BranchPrefixFeedback({ rawPrefix }: BranchPrefixFeedbackProps):
+         )}
+       </span>
+     )
++  } else if (normalized && getBranchPrefixSeparatorIssue(rawSeparator)) {
++    message = (
++      <span className="text-destructive">
++        {translate(
++          'auto.components.settings.BranchPrefixFeedback.separatorInvalid',
++          'Separator cannot contain spaces, "//", or special characters like ~ ^ : ? * [ \\'
++        )}
++      </span>
++    )
+   } else if (normalized) {
+     message = (
+       <span className="text-muted-foreground">
+         {translate(
+           'auto.components.settings.BranchPrefixFeedback.64d70b156a',
+           'Branches will be named {{example}}',
+-          { example: `${normalized}/feature` }
++          { example: `${normalized}${normalizeBranchPrefixSeparator(rawSeparator)}feature` }
+         )}
+       </span>
+     )
+diff --git a/src/renderer/src/components/settings/GitPane.tsx b/src/renderer/src/components/settings/GitPane.tsx
+index 430f0cbf..10810d77 100644
+--- a/src/renderer/src/components/settings/GitPane.tsx
++++ b/src/renderer/src/components/settings/GitPane.tsx
+@@ -160,6 +160,14 @@ export function GitPane({
+   }, [settings.branchPrefixCustom])
+   const branchPrefixInputValue =
+     settings.branchPrefix === 'git-username' ? displayedGitUsername : customPrefixDraft
++  const [separatorDraft, setSeparatorDraft] = useState(settings.branchPrefixSeparator)
++  const lastCommittedSeparatorRef = useRef(settings.branchPrefixSeparator)
++  useEffect(() => {
++    if (settings.branchPrefixSeparator !== lastCommittedSeparatorRef.current) {
++      lastCommittedSeparatorRef.current = settings.branchPrefixSeparator
++      setSeparatorDraft(settings.branchPrefixSeparator)
++    }
++  }, [settings.branchPrefixSeparator])
+ 
+   const visibleSections = [
+     matchesSettingsSearch(searchQuery, {
+@@ -171,7 +179,8 @@ export function GitPane({
+       keywords: [
+         translate('auto.components.settings.GitPane.cc63fce906', 'branch naming'),
+         translate('auto.components.settings.GitPane.2351aa5a31', 'git username'),
+-        translate('auto.components.settings.GitPane.813e15b346', 'custom')
++        translate('auto.components.settings.GitPane.813e15b346', 'custom'),
++        translate('auto.components.settings.GitPane.branchPrefixSeparatorKeyword', 'separator')
+       ]
+     }) ? (
+       <SearchableSetting
+@@ -181,7 +190,7 @@ export function GitPane({
+           'auto.components.settings.GitPane.1ffaadf0a0',
+           'Prefix added to branch names when creating worktrees.'
+         )}
+-        keywords={['branch naming', 'git username', 'custom']}
++        keywords={['branch naming', 'git username', 'custom', 'separator']}
+         className="space-y-3"
+       >
+         <div className="space-y-0.5">
+@@ -213,27 +222,50 @@ export function GitPane({
+           ))}
+         </div>
+         {isBranchPrefixInputMode && (
+-          <Input
+-            value={branchPrefixInputValue}
+-            onChange={(e) => {
+-              const next = e.target.value
+-              lastCommittedPrefixRef.current = next
+-              setCustomPrefixDraft(next)
+-              updateSettings({ branchPrefixCustom: next })
+-            }}
+-            placeholder={
+-              settings.branchPrefix === 'git-username'
+-                ? translate(
+-                    'auto.components.settings.GitPane.aefa1ecb59',
+-                    'No git username configured'
+-                  )
+-                : translate('auto.components.settings.GitPane.b559bf9899', 'e.g. feature')
+-            }
+-            className="max-w-xs"
+-            readOnly={settings.branchPrefix === 'git-username'}
+-          />
++          <div className="flex items-center gap-2">
++            <Input
++              value={branchPrefixInputValue}
++              onChange={(e) => {
++                const next = e.target.value
++                lastCommittedPrefixRef.current = next
++                setCustomPrefixDraft(next)
++                updateSettings({ branchPrefixCustom: next })
++              }}
++              placeholder={
++                settings.branchPrefix === 'git-username'
++                  ? translate(
++                      'auto.components.settings.GitPane.aefa1ecb59',
++                      'No git username configured'
++                    )
++                  : translate('auto.components.settings.GitPane.b559bf9899', 'e.g. feature')
++              }
++              className="max-w-xs"
++              readOnly={settings.branchPrefix === 'git-username'}
++            />
++            <Input
++              value={separatorDraft}
++              onChange={(e) => {
++                const next = e.target.value
++                lastCommittedSeparatorRef.current = next
++                setSeparatorDraft(next)
++                updateSettings({ branchPrefixSeparator: next })
++              }}
++              placeholder="/"
++              aria-label={translate(
++                'auto.components.settings.GitPane.branchPrefixSeparatorLabel',
++                'Separator between prefix and branch name'
++              )}
++              title={translate(
++                'auto.components.settings.GitPane.branchPrefixSeparatorLabel',
++                'Separator between prefix and branch name'
++              )}
++              className="w-14 text-center font-mono"
++            />
++          </div>
++        )}
++        {isBranchPrefixInputMode && (
++          <BranchPrefixFeedback rawPrefix={branchPrefixInputValue} rawSeparator={separatorDraft} />
+         )}
+-        {isBranchPrefixInputMode && <BranchPrefixFeedback rawPrefix={branchPrefixInputValue} />}
+       </SearchableSetting>
+     ) : null,
+     matchesSettingsSearch(searchQuery, {
+diff --git a/src/renderer/src/components/settings/git-search.ts b/src/renderer/src/components/settings/git-search.ts
+index 7cbf49e2..0367a56c 100644
+--- a/src/renderer/src/components/settings/git-search.ts
++++ b/src/renderer/src/components/settings/git-search.ts
+@@ -13,7 +13,11 @@ export const getGitPaneSearchEntries = createLocalizedCatalog(() => [
+     keywords: [
+       ...translateSearchKeyword('auto.components.settings.git.search.f83c8937c4', 'branch naming'),
+       ...translateSearchKeyword('auto.components.settings.git.search.1d2fae1fa2', 'git username'),
+-      ...translateSearchKeyword('auto.components.settings.git.search.769ddd7f81', 'custom')
++      ...translateSearchKeyword('auto.components.settings.git.search.769ddd7f81', 'custom'),
++      ...translateSearchKeyword(
++        'auto.components.settings.git.search.branchPrefixSeparator',
++        'separator'
++      )
+     ]
+   },
+   {
+diff --git a/src/renderer/src/i18n/locales/en.json b/src/renderer/src/i18n/locales/en.json
+index 7647812e..a5c972a3 100644
+--- a/src/renderer/src/i18n/locales/en.json
++++ b/src/renderer/src/i18n/locales/en.json
+@@ -8266,9 +8266,12 @@
+         "BranchPrefixFeedback": {
+           "6c40c0908f": "Prefix cannot contain spaces or special characters like ~ ^ : ? * [ \\",
+           "64d70b156a": "Branches will be named {{example}}",
+-          "808f9a726e": "No prefix will be applied"
++          "808f9a726e": "No prefix will be applied",
++          "separatorInvalid": "Separator cannot contain spaces, \"//\", or special characters like ~ ^ : ? * [ \\"
+         },
+         "GitPane": {
++          "branchPrefixSeparatorKeyword": "separator",
++          "branchPrefixSeparatorLabel": "Separator between prefix and branch name",
+           "895d3f70b8": "gh",
+           "32dca11189": "github",
+           "c4f610d057": "Current GitLab CLI REST rate-limit headers when available.",
+@@ -10492,6 +10495,7 @@
+             "0e993bf00f": "When you create a workspace, Orca refreshes the remote base and safely fast-forwards your matching local branch, such as main or master. This keeps commands like git diff main...HEAD from comparing against stale history. Orca skips the update if that branch has uncommitted changes or local-only commits.",
+             "f8bda25f29": "Keep Local Main Up to Date",
+             "769ddd7f81": "custom",
++            "branchPrefixSeparator": "separator",
+             "1d2fae1fa2": "git username",
+             "f83c8937c4": "branch naming",
+             "5ecd91c5ef": "Prefix added to branch names when creating worktrees.",
+diff --git a/src/shared/branch-prefix.test.ts b/src/shared/branch-prefix.test.ts
+index f2261336..97e10edd 100644
+--- a/src/shared/branch-prefix.test.ts
++++ b/src/shared/branch-prefix.test.ts
+@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
+ import {
+   assertBranchPrefixValid,
+   getBranchPrefixIssue,
++  getBranchPrefixSeparatorIssue,
+   normalizeBranchPrefix,
+   selectBranchPrefixInput
+ } from './branch-prefix'
+@@ -147,3 +148,17 @@ describe('assertBranchPrefixValid', () => {
+ it('keeps an unknown prefix strategy as the original implicit undefined result', () => {
+   expect(selectBranchPrefixInput({ branchPrefix: 'future-prefix' }, 'user')).toBeUndefined()
+ })
++
++describe('getBranchPrefixSeparatorIssue', () => {
++  it('accepts separators git allows between two ref characters', () => {
++    for (const separator of ['/', '-', '_', '.', '--', undefined, '']) {
++      expect(getBranchPrefixSeparatorIssue(separator)).toBeNull()
++    }
++  })
++
++  it('rejects separators that would make the branch invalid', () => {
++    for (const separator of ['~', ':', 'a b', '..', '//', '/.', '@{']) {
++      expect(getBranchPrefixSeparatorIssue(separator)).toBe('invalid-characters')
++    }
++  })
++})
+diff --git a/src/shared/branch-prefix.ts b/src/shared/branch-prefix.ts
+index bd3866cd..374c4950 100644
+--- a/src/shared/branch-prefix.ts
++++ b/src/shared/branch-prefix.ts
+@@ -4,8 +4,11 @@ import type { BranchPrefixStrategy } from './ui-chrome-types'
+ export type BranchPrefixSettings = {
+   branchPrefix: BranchPrefixStrategy
+   branchPrefixCustom?: string
++  branchPrefixSeparator?: string
+ }
+ 
++export const DEFAULT_BRANCH_PREFIX_SEPARATOR = '/'
++
+ /** Share strategy-to-raw-prefix selection between branch creation and live settings feedback; null disables prefixing. */
+ export function selectBranchPrefixInput(
+   settings: Omit<BranchPrefixSettings, 'branchPrefix'> & { branchPrefix: string },
+@@ -29,6 +32,11 @@ export function normalizeBranchPrefix(rawPrefix: string): string {
+     .replace(/\/{2,}/g, '/')
+ }
+ 
++/** Blank separators fall back to the slash so a cleared field never glues prefix and leaf together. */
++export function normalizeBranchPrefixSeparator(rawSeparator: string | undefined): string {
++  return rawSeparator?.trim() || DEFAULT_BRANCH_PREFIX_SEPARATOR
++}
++
+ // Ref-reserved characters git check-ref-format rejects inside a branch name.
+ const INVALID_BRANCH_PREFIX_CHARS = /[~^:?*[\\]/
+ 
+@@ -62,6 +70,18 @@ export function getBranchPrefixIssue(rawPrefix: string): 'invalid-characters' |
+   return null
+ }
+ 
++/** A separator is valid when it can sit between two ref-name characters; the prefix check alone would reject a bare "-". */
++export function getBranchPrefixSeparatorIssue(
++  rawSeparator: string | undefined
++): 'invalid-characters' | null {
++  const separator = normalizeBranchPrefixSeparator(rawSeparator)
++  // normalizeBranchPrefix collapses slash runs, so catch them before it hides an empty ref segment.
++  if (separator.includes('//')) {
++    return 'invalid-characters'
++  }
++  return getBranchPrefixIssue(`a${separator}a`)
++}
++
+ /** Fail configured prefixes early on worktree creation with clear errors instead of later check-ref-format failures. */
+ export function assertBranchPrefixValid(prefix: string): void {
+   if (getBranchPrefixIssue(prefix) !== null) {
+@@ -70,3 +90,11 @@ export function assertBranchPrefixValid(prefix: string): void {
+     )
+   }
+ }
++
++export function assertBranchPrefixSeparatorValid(separator: string | undefined): void {
++  if (getBranchPrefixSeparatorIssue(separator) !== null) {
++    throw new Error(
++      `Branch prefix separator "${separator}" contains characters git rejects — update it in Settings → Git`
++    )
++  }
++}
+diff --git a/src/shared/default-global-settings.ts b/src/shared/default-global-settings.ts
+index c4523814..54a18fdc 100644
+--- a/src/shared/default-global-settings.ts
++++ b/src/shared/default-global-settings.ts
+@@ -39,6 +39,7 @@ export function buildDefaultSettings(args: {
+     autoRenameBranchFromWorkDefaultedOn: true,
+     branchPrefix: 'git-username',
+     branchPrefixCustom: '',
++    branchPrefixSeparator: '/',
+     jiraIssueKeyCasing: 'lowercase',
+     theme: 'system',
+     pluginAppTheme: null,
+diff --git a/src/shared/global-settings-types.ts b/src/shared/global-settings-types.ts
+index 9354c8a5..8efb9b91 100644
+--- a/src/shared/global-settings-types.ts
++++ b/src/shared/global-settings-types.ts
+@@ -68,6 +68,8 @@ export type GlobalSettings = GlobalSettingsBase & {
+   autoRenameBranchFromWorkDefaultedOn?: boolean
+   branchPrefix: BranchPrefixStrategy
+   branchPrefixCustom: string
++  /** Joins the prefix to the leaf; blank falls back to '/'. */
++  branchPrefixSeparator: string
+   /** Jira key casing for newly generated Jira-linked workspace and branch names.
+    *  Existing workspaces and user-typed names are never rewritten. */
+   jiraIssueKeyCasing?: JiraIssueKeyCasing

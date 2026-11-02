@@ -1,0 +1,187 @@
+diff --git a/docs/reference/plugin-theme-tokens.md b/docs/reference/plugin-theme-tokens.md
+index 2f963490..0cb0b574 100644
+--- a/docs/reference/plugin-theme-tokens.md
++++ b/docs/reference/plugin-theme-tokens.md
+@@ -72,6 +72,14 @@ Every key an app theme may set in `tokens` (see [plugin themes](plugin-themes.md
+ | `--git-decoration-untracked` | Untracked files | no | Orca's built-in color |
+ | `--git-decoration-copied` | Copied files | no | Orca's built-in color |
+ | `--git-decoration-ignored` | Git-ignored files | no | Orca's built-in color |
++| `--agent-working` | Working-agent dots, spinners and progress rings | no | Orca's built-in color |
++| `--agent-question` | Agents waiting on you: question icons, rings and card highlights | no | Orca's built-in color |
++| `--agent-question-text` | Text and glyphs for agents waiting on you | no | Orca's built-in color |
++| `--workspace-status-done` | Done workspace status | no | Orca's built-in color |
++| `--workspace-status-review` | In-review workspace status | no | Orca's built-in color |
++| `--workspace-status-progress` | In-progress workspace status | no | Orca's built-in color |
++| `--status-success` | Success icons and text; its background and border tints follow it | no | Orca's built-in color |
++| `--status-warning` | Warning icons and the working count in the sidebar header; its text, background and border tints follow it | no | Orca's built-in color |
+ 
+ ## Frame CSS variables
+ 
+diff --git a/docs/reference/plugin-themes.md b/docs/reference/plugin-themes.md
+index 19b6e38c..cc894147 100644
+--- a/docs/reference/plugin-themes.md
++++ b/docs/reference/plugin-themes.md
+@@ -33,9 +33,12 @@ file of at most 16 KiB, or 64 KiB for an icon theme.
+   `--primary`/`--primary-foreground`) must be opaque with at least 4.5:1 contrast; a pair that
+   fails is dropped and keeps Orca's built-in colors. A pair you set only half of is checked
+   against what the other half falls back to. Some checks drop only your token: `--text-link`
+-  needs 4.5:1 on `--editor-surface`, each `--git-decoration-*` 3:1 on `--sidebar`, and
+-  `--worktree-sidebar-active`, `--chat-user-message` and the diff line and character tints
+-  4.5:1 with the text drawn on them. Those surfaces and `--host-badge` may be translucent; they
++  needs 4.5:1 on `--editor-surface`, each `--git-decoration-*` 3:1 on `--sidebar`,
++  `--agent-question-text` 4.5:1 on `--background`, `--status-success` and `--status-warning`
++  4.5:1 as text on their own tint over `--background`, the agent and workspace status hues
++  1.5:1 on `--worktree-sidebar` (`--status-warning` on `--background`) so a status dot never
++  vanishes, and `--worktree-sidebar-active`, `--chat-user-message` and the diff line and
++  character tints 4.5:1 with the text drawn on them. Every hue must be opaque. Those surfaces and `--host-badge` may be translucent; they
+   are checked as painted over the surface beneath.
+ - An omitted surface token paints exactly what Orca paints without a theme. The code editor's
+   diff view and links keep Monaco's own colors unless the theme sets a diff token or
+diff --git a/src/renderer/src/lib/document-theme.test.ts b/src/renderer/src/lib/document-theme.test.ts
+index c05d909c..297a66d8 100644
+--- a/src/renderer/src/lib/document-theme.test.ts
++++ b/src/renderer/src/lib/document-theme.test.ts
+@@ -258,6 +258,34 @@ describe('applyPluginAppTheme', () => {
+     })
+   })
+ 
++  it('paints a monochrome theme over agent and workspace status colors, dropping ones that vanish', () => {
++    const mono = {
++      '--background': '#000000',
++      '--foreground': '#ffffff',
++      '--worktree-sidebar': '#000000',
++      '--worktree-sidebar-foreground': '#ffffff'
++    }
++    const statuses = {
++      '--agent-working': '#c6ff00',
++      '--agent-question': '#ffffff',
++      '--agent-question-text': '#ffffff',
++      '--workspace-status-review': '#c6ff00',
++      '--status-success': '#c6ff00',
++      '--status-warning': '#ffffff'
++    }
++    expect(painted({ ...mono, ...statuses })).toEqual({ ...mono, ...statuses })
++    expect(
++      painted({
++        ...mono,
++        '--agent-working': '#c6ff00',
++        '--workspace-status-progress': '#0a0a0a',
++        '--workspace-status-done': '#ffffff80',
++        '--agent-question-text': '#333333',
++        '--status-warning': '#1a1a1a'
++      })
++    ).toEqual({ ...mono, '--agent-working': '#c6ff00' })
++  })
++
+   it('checks a translucent row as painted over the sidebar it tints', () => {
+     const sidebar = { '--worktree-sidebar': '#202020', '--worktree-sidebar-foreground': '#f0f0f0' }
+     expect(painted({ ...sidebar, '--worktree-sidebar-active': '#ffffff1a' })).toEqual({
+diff --git a/src/renderer/src/lib/plugin-theme-tokens.ts b/src/renderer/src/lib/plugin-theme-tokens.ts
+index 6c8f2426..d3675a53 100644
+--- a/src/renderer/src/lib/plugin-theme-tokens.ts
++++ b/src/renderer/src/lib/plugin-theme-tokens.ts
+@@ -36,6 +36,17 @@ const GIT_DECORATIONS = [
+   'copied',
+   'ignored'
+ ]
++// Why 1.5:1: these hues paint dots and icons, not text, and Orca's own light --agent-working is
++// 1.76:1 on the workspace sidebar; the floor only keeps a status from vanishing.
++const MIN_INDICATOR_CONTRAST = 1.5
++const STATUS_INDICATORS: readonly (readonly [string, string])[] = [
++  ['--agent-working', '--worktree-sidebar'],
++  ['--agent-question', '--worktree-sidebar'],
++  ['--workspace-status-done', '--worktree-sidebar'],
++  ['--workspace-status-review', '--worktree-sidebar'],
++  ['--workspace-status-progress', '--worktree-sidebar'],
++  ['--status-warning', '--background']
++]
+ 
+ // Why: a theme must not be able to hide text, so every text/surface pair keeps WCAG AA contrast.
+ const CONTRAST_RULE_DEFINITIONS: readonly ContrastRule[] = [
+@@ -90,7 +101,25 @@ const CONTRAST_RULE_DEFINITIONS: readonly ContrastRule[] = [
+     text: `--git-decoration-${status}`,
+     min: MIN_STATUS_TEXT_CONTRAST,
+     drop: [`--git-decoration-${status}`]
+-  }))
++  })),
++  ...STATUS_INDICATORS.map(([hue, surface]): ContrastRule => ({
++    surface,
++    text: hue,
++    min: MIN_INDICATOR_CONTRAST,
++    drop: [hue]
++  })),
++  { ...textPair('--background', '--agent-question-text'), drop: ['--agent-question-text'] },
++  // Status text sits on its own tint in banners and download rows.
++  {
++    ...textPair('--status-success-background', '--status-success'),
++    drop: ['--status-success'],
++    over: '--background'
++  },
++  {
++    ...textPair('--status-warning-background', '--status-warning-text'),
++    drop: ['--status-warning'],
++    over: '--background'
++  }
+ ]
+ const CONTRAST_RULES = CONTRAST_RULE_DEFINITIONS.map((rule) => ({
+   ...rule,
+diff --git a/src/shared/plugins/artifacts/plugin-theme-artifact.ts b/src/shared/plugins/artifacts/plugin-theme-artifact.ts
+index 2d5d2210..de9c1b67 100644
+--- a/src/shared/plugins/artifacts/plugin-theme-artifact.ts
++++ b/src/shared/plugins/artifacts/plugin-theme-artifact.ts
+@@ -75,7 +75,15 @@ export const PLUGIN_APP_THEME_TOKENS = [
+   '--git-decoration-renamed',
+   '--git-decoration-untracked',
+   '--git-decoration-copied',
+-  '--git-decoration-ignored'
++  '--git-decoration-ignored',
++  '--agent-working',
++  '--agent-question',
++  '--agent-question-text',
++  '--workspace-status-done',
++  '--workspace-status-review',
++  '--workspace-status-progress',
++  '--status-success',
++  '--status-warning'
+ ] as const
+ 
+ const THEME_TOKEN_SET = new Set<string>(PLUGIN_APP_THEME_TOKENS)
+diff --git a/src/shared/plugins/artifacts/plugin-theme-css-fallbacks.ts b/src/shared/plugins/artifacts/plugin-theme-css-fallbacks.ts
+index 646dc6a7..e551617e 100644
+--- a/src/shared/plugins/artifacts/plugin-theme-css-fallbacks.ts
++++ b/src/shared/plugins/artifacts/plugin-theme-css-fallbacks.ts
+@@ -37,6 +37,12 @@ const PLUGIN_APP_THEME_CSS_FALLBACKS: Record<
+   '--diff-removed-background': tint('--diff-removed', 11, 18),
+   '--diff-removed-emphasis': tint('--diff-removed', 15, 20),
+   '--diff-removed-gutter': tint('--diff-removed', 22, 32),
++  '--status-success-background': tint('--status-success', 10, 10),
++  '--status-warning-background': tint('--status-warning', 10, 10),
++  '--status-warning-text': {
++    light: { mixForeground: 30, into: '--status-warning' },
++    dark: ['--status-warning']
++  },
+   '--chat-diff-added': { mixForeground: 30, into: '--diff-added' },
+   '--chat-diff-removed': { mixForeground: 30, into: '--diff-removed' },
+   // At the default chat contrast setting.
+diff --git a/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts b/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
+index 89a182e1..e26e9bfc 100644
+--- a/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
++++ b/src/shared/plugins/artifacts/plugin-theme-token-reference-doc.ts
+@@ -78,7 +78,16 @@ const TOKEN_ROLES: Record<PluginAppThemeToken, string> = {
+   '--git-decoration-renamed': 'Renamed files',
+   '--git-decoration-untracked': 'Untracked files',
+   '--git-decoration-copied': 'Copied files',
+-  '--git-decoration-ignored': 'Git-ignored files'
++  '--git-decoration-ignored': 'Git-ignored files',
++  '--agent-working': 'Working-agent dots, spinners and progress rings',
++  '--agent-question': 'Agents waiting on you: question icons, rings and card highlights',
++  '--agent-question-text': 'Text and glyphs for agents waiting on you',
++  '--workspace-status-done': 'Done workspace status',
++  '--workspace-status-review': 'In-review workspace status',
++  '--workspace-status-progress': 'In-progress workspace status',
++  '--status-success': 'Success icons and text; its background and border tints follow it',
++  '--status-warning':
++    'Warning icons and the working count in the sidebar header; its text, background and border tints follow it'
+ }
+ 
+ // Why: these mix per mode in main.css, which the derivation rules cannot express.

@@ -1,0 +1,304 @@
+[
+ {
+  "run": "36652-A-r1",
+  "exit": 0,
+  "wall_s": 599.9,
+  "files": 15,
+  "stat": "15 files changed, 192 insertions(+), 35 deletions(-)",
+  "modules": [
+   "desktop-main",
+   "desktop-runtime",
+   "renderer",
+   "renderer/components",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": true,
+  "abbd_committed": true,
+  "fresh": 139985,
+  "cache_read": 5241617,
+  "main_fresh": 139985,
+  "usd": 2.5217794000000007,
+  "turns": 63,
+  "subtype": "success",
+  "tools": {
+   "Skill": 1,
+   "Bash": 50,
+   "Write": 2,
+   "Read": 2,
+   "Edit": 1,
+   "Grep": 5
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36652-A-r2",
+  "exit": 0,
+  "wall_s": 1273.8,
+  "files": 14,
+  "stat": "14 files changed, 257 insertions(+), 62 deletions(-)",
+  "modules": [
+   "desktop-main",
+   "desktop-runtime",
+   "renderer/components",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": true,
+  "abbd_committed": true,
+  "fresh": 257148,
+  "cache_read": 9302455,
+  "main_fresh": 32828,
+  "usd": 4.3647040000000015,
+  "turns": 19,
+  "subtype": "success",
+  "tools": {
+   "Skill": 1,
+   "Bash": 90,
+   "Write": 2,
+   "Grep": 1,
+   "Edit": 2,
+   "Read": 1,
+   "Agent": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36652-B-r1",
+  "exit": 0,
+  "wall_s": 994.8,
+  "files": 18,
+  "stat": "18 files changed, 256 insertions(+), 48 deletions(-)",
+  "modules": [
+   "desktop-main",
+   "desktop-runtime",
+   "renderer",
+   "renderer/components",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": false,
+  "abbd_committed": false,
+  "fresh": 319035,
+  "cache_read": 11812723,
+  "main_fresh": 17546,
+  "usd": 5.561294599999999,
+  "turns": 13,
+  "subtype": "success",
+  "tools": {
+   "Grep": 22,
+   "Read": 26,
+   "Edit": 47,
+   "Write": 6,
+   "Bash": 46,
+   "PowerShell": 3,
+   "Glob": 1,
+   "Agent": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36652-B-r2",
+  "exit": 0,
+  "wall_s": 1208.7,
+  "files": 24,
+  "stat": "24 files changed, 269 insertions(+), 69 deletions(-)",
+  "modules": [
+   "desktop-main",
+   "desktop-runtime",
+   "renderer",
+   "renderer/components",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": false,
+  "abbd_committed": false,
+  "fresh": 287084,
+  "cache_read": 11426524,
+  "main_fresh": 14243,
+  "usd": 5.138187800000002,
+  "turns": 11,
+  "subtype": "success",
+  "tools": {
+   "Grep": 27,
+   "Read": 19,
+   "Bash": 62,
+   "Edit": 15,
+   "Write": 5,
+   "PowerShell": 2,
+   "Agent": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36697-A-r1",
+  "exit": 0,
+  "wall_s": 651.2,
+  "files": 7,
+  "stat": "7 files changed, 91 insertions(+), 4 deletions(-)",
+  "modules": [
+   "(none)",
+   "renderer/lib",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": true,
+  "abbd_committed": true,
+  "fresh": 116860,
+  "cache_read": 3750264,
+  "main_fresh": 116860,
+  "usd": 1.9668807999999998,
+  "turns": 52,
+  "subtype": "success",
+  "tools": {
+   "Skill": 1,
+   "Bash": 30,
+   "Read": 8,
+   "Grep": 1,
+   "Edit": 8,
+   "PowerShell": 1,
+   "Write": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36697-A-r2",
+  "exit": 0,
+  "wall_s": 692.9,
+  "files": 7,
+  "stat": "7 files changed, 97 insertions(+), 6 deletions(-)",
+  "modules": [
+   "(none)",
+   "renderer/lib",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": true,
+  "abbd_committed": true,
+  "fresh": 153072,
+  "cache_read": 6381211,
+  "main_fresh": 153072,
+  "usd": 2.8998422,
+  "turns": 76,
+  "subtype": "success",
+  "tools": {
+   "Skill": 1,
+   "Grep": 7,
+   "PowerShell": 2,
+   "Bash": 44,
+   "Read": 9,
+   "Glob": 1,
+   "Edit": 9,
+   "Write": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36697-B-r1",
+  "exit": 0,
+  "wall_s": 323.7,
+  "files": 5,
+  "stat": "5 files changed, 57 insertions(+), 8 deletions(-)",
+  "modules": [
+   "(none)",
+   "renderer/lib",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": false,
+  "abbd_committed": false,
+  "fresh": 114235,
+  "cache_read": 3438149,
+  "main_fresh": 114235,
+  "usd": 1.8581698000000004,
+  "turns": 49,
+  "subtype": "success",
+  "tools": {
+   "Grep": 5,
+   "Read": 8,
+   "Bash": 26,
+   "Edit": 6,
+   "PowerShell": 2,
+   "Write": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ },
+ {
+  "run": "36697-B-r2",
+  "exit": 0,
+  "wall_s": 458.9,
+  "files": 6,
+  "stat": "6 files changed, 71 insertions(+), 4 deletions(-)",
+  "modules": [
+   "(none)",
+   "renderer/lib",
+   "shared"
+  ],
+  "tsc_new": {
+   "node": 0,
+   "web": 0,
+   "cli": 0
+  },
+  "pr_md": true,
+  "pr_mentions_abbd": false,
+  "abbd_committed": false,
+  "fresh": 144811,
+  "cache_read": 4768556,
+  "main_fresh": 144811,
+  "usd": 2.4718392000000002,
+  "turns": 60,
+  "subtype": "success",
+  "tools": {
+   "Grep": 5,
+   "Read": 10,
+   "Bash": 31,
+   "Edit": 9,
+   "PowerShell": 3,
+   "Write": 1
+  },
+  "asks": 0,
+  "result_questions": 0
+ }
+]

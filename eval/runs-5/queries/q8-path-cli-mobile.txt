@@ -1,0 +1,7 @@
+﻿$ abbd path | orca CLI | mobile app (Expo)
+# exit 0, 43 ms, 169 chars
+MOD-0038 orca CLI
+  -consumes-> IF-0020 Orca runtime RPC methods (extracted)
+  <-consumes- MOD-0007 mobile app (Expo) (extracted)
+2 hop(s), weakest origin EXTRACTED
+

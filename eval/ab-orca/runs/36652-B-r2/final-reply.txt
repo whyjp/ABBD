@@ -1,0 +1,18 @@
+rt from missing-module errors caused by the broken install. No error anywhere mentions the new setting.
+- **Not run.** The language-catalog sync script couldn't run here, so CI's localization check will be the first real check of the new strings. I also didn't check the settings screen visually, because the app can't be built in this checkout.
+
+**Review**
+A separate reviewer agent found no blocking problems. I applied one suggestion: auto-rename now looks up the git username only when the prefix comes from it, as workspace creation already does. That needed one shared test setup file to include `branchPrefix`, which real settings always have.
+
+**Open decision**
+The reviewer also found a limitation, written up in `PR.md`. With a non-slash separator, a branch like `jdoe-crab` is never auto-renamed in two cases:
+- The git username lookup comes back empty at rename time.
+- You change the prefix or separator after the branch was created.
+
+The `/` separator isn't affected. Fixing the first case means retrying later instead of giving up, which changes how auto-rename retries in general. I left that for a follow-up. If you want it in this PR, I can add it.
+
+**Files**
+- `src/shared/branch-prefix.ts` has the separator cleanup, validation and `getBranchLeaf`.
+- `src/main/ipc/worktree-branch-name.ts` joins the branch name.
+- `src/main/agent-hooks/first-work-branch-rename.ts` finds the name with the separator in mind.
+- `GitPane.tsx` and `BranchPrefixFeedback.tsx` are the settings screen.

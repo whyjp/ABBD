@@ -1,0 +1,18 @@
+status-warning` | background | 3:1 |
+| `--agent-question-text` | background | 4.5:1 |
+
+**What I did verify.**
+- **Contrast checks.** I ran them directly on light and dark examples.
+  - A lime working dot stays on a dark sidebar and is dropped on a near-white one.
+  - A black-and-white light theme with a lime accent keeps every status color it sets.
+  - A dark-grey question dot on a slightly lighter sidebar is dropped, and so is a translucent review color.
+- **Validation.** Strict theme validation accepts the new keys and still refuses derived ones like `--status-warning-text`.
+- **Lint and format.** `oxlint` and `oxfmt --check` pass on all changed files.
+
+**Things to know.**
+- **Native chat.** Inside a native chat view, success and warning keep the chat's own colors. That view redeclares them, which is already true for the git file colors. I left this alone and noted it in PR.md.
+- **Faint default dots.** With the 3:1 check, a theme that sets the working dot to Orca's own light-mode yellow gets it dropped. That is harmless, because the fallback is the same yellow.
+
+**Principles behind the choices.**
+- **Model the Domain.** The existing token list and contrast table already hold this, so the change adds entries instead of new branches. The git file color checks were the same shape, so they now share one small rule builder.
+- **Laziness Protocol.** I left the derived tints private. They already follow their base color, so exposing them would only add keys themes must not break.

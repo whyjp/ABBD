@@ -1,0 +1,6 @@
+﻿$ abbd path | desktop renderer UI | desktop main process
+# exit 0, 44 ms, 125 chars
+MOD-0072 desktop renderer UI
+  <-depends_on- MOD-0042 desktop main process (extracted)
+1 hop(s), weakest origin EXTRACTED
+

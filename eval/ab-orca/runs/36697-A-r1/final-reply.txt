@@ -1,0 +1,10 @@
+tests.
+- **Typecheck:** `tsc` on the three changed source files alone is clean.
+
+**Environment problem.** The pnpm links in `node_modules` point to `/pnpm` from this checkout's path, so the repo's own `vitest` and `tsc` setups can't load. I ran vitest with a minimal config that points it at `zod` in the pnpm store. Ten other suites under `src/shared/plugins` still couldn't import `yaml`, `ajv`, `@noble/hashes` or `typescript-api` and never ran. One of them is the JSON schema parity check. `pnpm generate:plugin-schemas` couldn't load `esbuild`, so I wrote the doc by calling the same render function it uses. CI should rerun the full suite and the generator check.
+
+**Topology (abbd).** I read the blueprint status before the change. After it, `abbd sync` and `abbd diff` report no topology change. No units, contracts or relations between modules came or went, and `.abbd/` is in the commit.
+
+**One slip, fixed.** While confirming the tests fail without the change, I reverted one more file than I had saved a patch for, the reference doc's role table. I put it back, regenerated nothing else, and reran the tests on the final state before committing.
+
+**Process.** The data shape was the existing token registry plus the contrast rule table, so each token is one entry in each. I did not cite pstack principles because I didn't read their skill files this session. I skipped the subagent and design-exploration steps because the change extends lists that already exist and needs no new design.

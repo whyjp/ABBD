@@ -1,0 +1,12 @@
+te light or dark scheme, `main.css` redefines the success and warning colors. The theme's values don't reach there. Theme diff and git colors behave the same way today.
+
+**Verification.**
+- The repo's normal test and docs commands can't run in this checkout. Vitest can't load the project tsconfig, and the docs generator needs esbuild. The `node_modules` links point at a store path that doesn't exist here.
+- So I compiled the two theme test files with `tsc` and ran them under a small stand-in for vitest. `document-theme.test.ts` passed 13/13, including the new test, and `plugin-theme-artifact.test.ts` passed 28/28.
+- The new test paints the issue's black-and-white-with-lime theme and checks that each bad color is dropped alone. It failed when I disabled the dot floor and again when I aimed the question-text check at the wrong token. So it does catch regressions.
+- The project typecheck shows no errors in the touched files except the existing "can't find zod / vitest" ones.
+- `oxlint` passes, and `oxfmt` passes after it fixed one space my edit had dropped.
+
+**Blueprint (`abbd diff`).** No units, contracts or relations between modules came or went. The change stays inside existing units. I synced and committed `.abbd/` with the code. `abbd status` now shows STALE only because the state records the revision before my commit. The previous setup commit has the same offset.
+
+I didn't apply any of the pstack principle skills by name, because I didn't read their files in this session.

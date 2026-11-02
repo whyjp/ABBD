@@ -1,0 +1,20 @@
+﻿$ abbd explain | Orca runtime RPC methods
+# exit 0, 42 ms, 1712 chars
+IF-0020 Orca runtime RPC methods (IF, EXTRACTED)
+purpose: The external RPC method surface (method name, zod params, permission) that the CLI, mobile app and renderer call. (INFERRED)
+signature: accounts agent agentHooks agentSession agentSessionAttachment agentTeams aiVault artifacts automation browser clipboard computer connector desktopBrowserBridge diagnostics emulator files folderWorkspace git github gitlab host hostedReview jira layout linear linkPreview managedRuntime managedServer markdown nativeChat network notifications orcad orchestration pairing plugins preflight project projectGroup projectHostSetup reference repo runtime session settings sidebarInputs sidebarSession skills speech ssh stats status terminal terminalDaemon ui updater workspacePorts worktree (EXTRACTED)
+used by:
+  MOD-0007 mobile app (Expo) consumes (extracted)
+  MOD-0038 orca CLI consumes (extracted)
+  MOD-0042 desktop main process consumes (extracted)
+  MOD-0056 Orca runtime (RPC host) provides (extracted)
+  MOD-0072 desktop renderer UI consumes (extracted)
+inferred couplings:
+  MOD-0039 cli/handlers consumes IF-0020 Orca runtime RPC methods via call
+    src/cli/handlers/connector.ts:129 "const result = await callConnector<{ initial: ConnectorDelivery }>(client, 'connector.start', {"
+  MOD-0052 desktop-main/ipc consumes IF-0020 Orca runtime RPC methods via call
+    src/main/ipc/runtime.ts:76 "return new RpcDispatcher({ runtime, methods: ALL_RPC_METHODS }).dispatch("
+  MOD-0077 renderer/runtime consumes IF-0020 Orca runtime RPC methods via convention
+    src/renderer/src/runtime/runtime-git-status-client.ts:56 "'git.status',"
+    src/main/runtime/rpc/methods/git.ts:28 "name: 'git.status',"
+

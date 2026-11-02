@@ -1,0 +1,9 @@
+﻿$ abbd path | computer-use-macos | desktop main process
+# exit 0, 43 ms, 311 chars
+MOD-0027 computer-use-macos
+  <-depends_on- MOD-0048 desktop-main/computer (inferred, via call)
+  <-depends_on- MOD-0052 desktop-main/ipc (extracted)
+  -provides-> IF-0017 Electron IPC channels (inferred, via call)
+  <-provides- MOD-0042 desktop main process (extracted)
+4 hop(s), weakest origin INFERRED
+
