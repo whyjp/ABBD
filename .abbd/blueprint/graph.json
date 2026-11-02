@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "6cd006ace68dc601850a479a36e9927153230945fbbf5253caf9e8aba6a6d198"
+    "inputs_hash": "df9c2245c0b6b9684ffc7e15a82cae8348dba541c16d883ef066773d7978622c"
   },
   "units": [
     {
@@ -2212,8 +2212,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
-        "internal/store/understanding.go:179 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
+        "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
+        "internal/store/understanding.go:201 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
       ]
     },
     {
@@ -2974,7 +2974,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
+      "Quote": "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
     },
     {
       "From": "MOD-0001",
@@ -3240,7 +3240,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3388,7 +3388,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3412,7 +3412,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -4020,7 +4020,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -4076,7 +4076,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -9337,7 +9337,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
+              "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
             ],
             "Marks": [
               {
@@ -9392,7 +9392,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -9691,7 +9691,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -9896,7 +9896,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9910,7 +9910,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -11190,15 +11190,15 @@
                 "Code": true
               },
               {
-                "Text": " between the text's tree and now touches none of ",
+                "Text": " between the text's tree and now touches no path ",
                 "Code": false
               },
               {
-                "Text": "store.ModulePaths",
+                "Text": "store.Touches",
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " reports for the module, so a file deleted from it also blocks the restamp. ",
                 "Code": false
               },
               {
@@ -11321,7 +11321,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },
@@ -11442,7 +11442,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11598,7 +11598,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11627,7 +11627,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
           ]
         },
         {
@@ -19861,7 +19861,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -22288,7 +22288,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
           ]
         },
         {
@@ -22620,7 +22620,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
+              "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
             ],
             "Marks": [
               {
@@ -23990,15 +23990,23 @@
                 "Code": true
               },
               {
-                "Text": " runs, restamps a text whose stored digest equals that digest of the code as it is now, because it was current before the digest grew. A text the old digest called STALE stays STALE. ",
+                "Text": " runs, restamps a text that records no ",
                 "Code": false
               },
               {
-                "Text": "ModulePaths",
+                "Text": "tree",
                 "Code": true
               },
               {
-                "Text": " lists the files the digest reads, for ",
+                "Text": ", so an older ABBD stored it, and whose stored digest equals that digest of the code as it is now, because it was current before the digest grew. A text the old digest called STALE stays STALE. ",
+                "Code": false
+              },
+              {
+                "Text": "Touches",
+                "Code": true
+              },
+              {
+                "Text": " says whether a changed path is anchored or quoted by the module or a unit under it, present or absent, or sits under an anchored directory, for ",
                 "Code": false
               },
               {
@@ -24103,7 +24111,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -24173,7 +24181,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
           ]
         },
         {
@@ -24191,7 +24199,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -24229,7 +24237,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
+            "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
           ]
         },
         {
@@ -25986,7 +25994,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/gitx"
@@ -74,9 +73,9 @@ func (e env) understand(id model.ID, args []string) error {
 	return nil
 }
 
-// mayRestamp allows a restamp only when no file the module's digest reads
-// now changed between the tree the text was written at and this one, so an
-// extraction that moved units in or out is the only thing that moved.
+// mayRestamp allows a restamp only when no file the module touches changed
+// between the tree the text was written at and this one, so an extraction
+// that moved units in or out is the only thing that moved.
 func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, digest, tree string) error {
 	id := prev.Unit
 	switch {
@@ -94,9 +93,10 @@ func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, 
 	if !ok {
 		return fmt.Errorf("the tree %s's text was written at is gone; run pstack how on it again and store the new text", id)
 	}
+	touches := e.st.Touches(units, id)
 	var touched []string
-	for _, p := range e.st.ModulePaths(units, id) {
-		if slices.Contains(changed, p) {
+	for _, p := range changed {
+		if touches(p) {
 			touched = append(touched, p)
 		}
 	}

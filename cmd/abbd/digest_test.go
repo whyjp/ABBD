@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -128,4 +130,39 @@ func TestSyncUpgradesATextWrittenAgainstTheOldDigest(t *testing.T) {
 		}
 		p.stale(c.stale)
 	}
+}
+
+// A restamp sees a file the module lost because it was deleted, under a
+// directory anchor or as the only anchor of a unit that went absent.
+func TestRestampIsRefusedWhenTheModuleLostAFile(t *testing.T) {
+	p := deepProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
+	if err := os.Remove(filepath.Join(p.root, "app", "web", "page.tsx")); err != nil {
+		t.Fatal(err)
+	}
+	p.resync()
+	p.stale("1")
+	p.want(1, "app/web/page.tsx", "understand", "MOD-0001", "--restamp")
+}
+
+// sync upgrades only texts the old binary stored. A text stored now whose
+// module later gains a deeper unit stays STALE even when the old digest,
+// which never saw that unit, still matches.
+func TestSyncDoesNotUpgradeATextStoredNow(t *testing.T) {
+	p, exe := bare(t)
+	p.code("app/main.go", "package app\n\nfunc Main() {}\n")
+	p.code("app/web/page.go", "package web\n\nfunc Page() {}\n")
+	p.code("app/web/deep/g.go", "package deep\n\nfunc G() {}\n")
+	flat := `{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.go","symbol":"Main"}]},
+ {"key":"web","kind":"MOD","name":"web","parent":"app","anchors":[{"path":"app/web/page.go","symbol":"Page"}]}`
+	p.extract(flat + "]}")
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
+	p.extract(flat + `,
+ {"key":"g","kind":"MOD","name":"deep","parent":"web","anchors":[{"path":"app/web/deep/g.go","symbol":"G"}]}]}`)
+	if out := p.resync(); strings.Contains(out, "now covers") {
+		t.Fatalf("a text stored by this binary must not be upgraded:\n%s", out)
+	}
+	p.stale("1")
 }

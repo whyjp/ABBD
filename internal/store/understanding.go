@@ -137,15 +137,37 @@ func (s Store) moduleCode(units []model.Unit, id model.ID) moduleCode {
 	return c
 }
 
-// ModulePaths lists the files whose content a module's digest reads.
-func (s Store) ModulePaths(units []model.Unit, id model.ID) []string {
-	c := s.moduleCode(units, id)
-	paths := slices.Clone(c.files)
-	for _, q := range c.quotes {
-		paths = append(paths, q.Path)
+// Touches reports whether a change to path could change what a module's
+// text describes: the path is anchored or quoted by the module or by a unit
+// under it, present or absent, or sits under an anchored directory. Absent
+// units count, so a file deleted from the module still touches it.
+func (s Store) Touches(units []model.Unit, id model.ID) func(path string) bool {
+	in := map[model.ID]bool{id: true}
+	for grew := true; grew; {
+		grew = false
+		for _, u := range units {
+			if !in[u.ID] && in[u.Parent] {
+				in[u.ID], grew = true, true
+			}
+		}
 	}
-	slices.Sort(paths)
-	return slices.Compact(paths)
+	var cited []string
+	for _, u := range units {
+		if !in[u.ID] {
+			continue
+		}
+		for _, a := range u.Anchors {
+			cited = append(cited, strings.TrimSuffix(a.Path, "/"))
+		}
+		for _, e := range u.Evidence {
+			cited = append(cited, e.Path)
+		}
+	}
+	return func(path string) bool {
+		return slices.ContainsFunc(cited, func(c string) bool {
+			return c == "." || path == c || strings.HasPrefix(path, c+"/")
+		})
+	}
 }
 
 // ModuleDigest fingerprints the code a module's text describes: each file of
@@ -212,8 +234,9 @@ func (s Store) legacyModuleDigest(units []model.Unit, id model.ID) string {
 	return hex.EncodeToString(h.Sum(nil))[:16]
 }
 
-// UpgradeUnderstandings restamps each text still stamped with the 0.6
-// digest of the code as it is now. That text was current before the digest
+// UpgradeUnderstandings restamps each text an older ABBD stored, which
+// records no tree, when it is still stamped with the 0.6 digest of the code
+// as it is now. That text was current before the digest
 // grew to the module's whole code, so it stays current, at tree. A text the
 // old digest called STALE keeps its stamp and stays STALE. It returns the
 // modules it restamped.
@@ -225,7 +248,7 @@ func (s Store) UpgradeUnderstandings(units []model.Unit, tree string) ([]model.I
 	var ids []model.ID
 	for id, u := range texts {
 		now := s.ModuleDigest(units, id)
-		if u.Digest == now || u.Digest != s.legacyModuleDigest(units, id) {
+		if u.Tree != "" || u.Digest == now || u.Digest != s.legacyModuleDigest(units, id) {
 			continue
 		}
 		u.Digest, u.Tree = now, tree
