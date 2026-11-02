@@ -52,13 +52,16 @@ abbd migrate [--supplement FILE] [--root DIR]
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code: every file of the module and
-                                     the units under it, a submodule by its recorded commit, and
-                                     the lines around a quote of a file only a quote cites; the
-                                     text records each file's hash
+                                     the units under it, a submodule by its recorded commit (so
+                                     edits inside one count once committed there and staged), an
+                                     ignored directory by its files on disk, and the lines around
+                                     a quote of a file only a quote cites; the text records a
+                                     hash per anchor and per quote
 abbd understand MOD-ID --restamp [--root DIR]
                                      stamp the stored text again after the extraction moved
-                                     what the module holds; refused when a file of the module
-                                     changed, is gone or is one the text was not written against
+                                     what the module holds; refused when the code of an anchor
+                                     or a quote changed, is gone or is one the text was not
+                                     written against
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a

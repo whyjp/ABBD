@@ -148,7 +148,7 @@ func TestRestampIsRefusedWhenTheModuleLostAFile(t *testing.T) {
 	}
 	p.resync()
 	p.stale("1")
-	p.want(1, "app/web/page.tsx", "understand", "MOD-0001", "--restamp")
+	p.want(1, "app/web (code under it)", "understand", "MOD-0001", "--restamp")
 }
 
 // sync upgrades only texts the old binary stored. A text stored now whose
@@ -179,6 +179,7 @@ func vendorProject(t *testing.T, topo string) *project {
 	t.Helper()
 	lib := newRepo(t)
 	write(t, filepath.Join(lib, "lib.go"), "package lib\n\nfunc Lib() {}\n")
+	write(t, filepath.Join(lib, "pkg", "p.go"), "package pkg\n\nfunc P() {}\n")
 	git(t, lib, "add", ".")
 	git(t, lib, "commit", "-qm", "lib")
 	p, exe := bare(t)
@@ -253,4 +254,54 @@ func TestADirectoryAnchorCountsItsFilesOutsideGit(t *testing.T) {
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
 	p.code("app/web/page.tsx", "export const Page = 2\n")
 	p.stale("1")
+}
+
+// A directory anchor git lists nothing under still stands for code: inside
+// a submodule it is that submodule's pin, and an ignored directory is its
+// files on disk. Neither may leave a text current after its code moved.
+func TestADirectoryAnchorGitListsNothingUnderStillStalesItsText(t *testing.T) {
+	t.Run("inside a submodule", func(t *testing.T) {
+		p := vendorProject(t, `{"units":[{"key":"pkg","kind":"MOD","name":"pkg","anchors":[{"path":"vendor/lib/pkg"}]}]}`)
+		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "pkg is vendored.\n"))
+		sub := filepath.Join(p.root, "vendor", "lib")
+		write(t, filepath.Join(sub, "pkg", "p.go"), "package pkg\n\nfunc P() { panic(1) }\n")
+		git(t, sub, "commit", "-qam", "bump")
+		git(t, p.root, "add", "vendor/lib")
+		p.resync()
+		p.stale("1")
+	})
+	t.Run("ignored", func(t *testing.T) {
+		p := vendorProject(t, `{"units":[{"key":"gen","kind":"MOD","name":"gen","anchors":[{"path":"gen"}]}]}`)
+		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "gen is generated.\n"))
+		p.code("gen/api.go", "package gen\n\nfunc API() { panic(1) }\n")
+		p.stale("1")
+	})
+}
+
+// A restamp compares what the digest reads, so an edit to a quoted file far
+// from the quote, which leaves the digest alone, does not block it.
+func TestRestampIgnoresAnEditTheDigestIgnores(t *testing.T) {
+	p := deepProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app follows the repo rules.\n"))
+	p.code("CLAUDE.md", claudeLines("keep it small")+"line added far below\n")
+	p.extract(strings.Replace(deepTopo, `"parent":"app",`, ``, 1))
+	p.resync()
+	p.stale("1")
+	p.want(0, "restamped MOD-0001", "understand", "MOD-0001", "--restamp")
+	p.stale("0")
+}
+
+// A text stored with the format 1 manifest, one hash per file, stays
+// current across the upgrade when its digest still matches the code, and
+// is stored again in the current format.
+func TestSyncUpgradesAFormat1Text(t *testing.T) {
+	p := deepProject(t)
+	write(t, p.root+"/.abbd/understanding/MOD-0004.md", "---\nunit: MOD-0004\norigin: INFERRED\ndigest: 596dd225dceb4742\ncode:\n    other/x.go: 1ec0203f385af158\n---\n\nthe module.\n")
+	if out := p.resync(); !strings.Contains(out, "it stays current") {
+		t.Fatalf("sync should carry the format 1 text over:\n%s", out)
+	}
+	p.stale("0")
+	if text := p.read("understanding/MOD-0004.md"); !strings.Contains(text, "format: 2") {
+		t.Fatalf("the upgraded text should record the current format:\n%s", text)
+	}
 }

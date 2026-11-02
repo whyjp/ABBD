@@ -70,7 +70,7 @@ func (e env) understand(id model.ID, args []string) error {
 	if had && prev.Digest != digest && prev.Text == text {
 		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
 	}
-	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {
+	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
@@ -87,7 +87,7 @@ func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, 
 		return fmt.Errorf("there is no text to restamp; store one with abbd understand MOD-ID FILE")
 	case prev.Digest == digest:
 		return fmt.Errorf("%s's text is current; nothing to restamp", id)
-	case prev.Code == nil:
+	case prev.Format != store.CodeFormat:
 		return fmt.Errorf("%s's text was stored before abbd recorded the code a text is written against; run pstack how on it again and store the new text", id)
 	}
 	changed := e.st.Changed(units, id, prev.Code)

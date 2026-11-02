@@ -32,9 +32,16 @@ type State struct {
 
 const notesHeading = "## Notes"
 
-type Store struct{ root string }
+// Store is one command's view of a project's .abbd. It reads the project's
+// code at most once, so open one per command.
+type Store struct {
+	root string
+	code *codebase
+}
 
-func Open(projectRoot string) Store { return Store{root: filepath.Join(projectRoot, Dir)} }
+func Open(projectRoot string) Store {
+	return Store{root: filepath.Join(projectRoot, Dir), code: newCodebase(projectRoot)}
+}
 
 func (s Store) path(parts ...string) string {
 	return filepath.Join(append([]string{s.root}, parts...)...)
