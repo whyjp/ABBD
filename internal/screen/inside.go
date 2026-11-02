@@ -31,6 +31,8 @@ type Inside struct {
 	// Inferred are the couplings a reader found that touch this module, which
 	// the overview does not draw.
 	Inferred []Coupling
+	// Flows are the flows with a step on a unit this module holds.
+	Flows []FlowRef `json:",omitempty"`
 	// Focus are the views derived from this one when it is dense, one per
 	// box (focus.go). graph.json leaves them out: they hold nothing the
 	// stored graph does not.
@@ -384,7 +386,15 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	for k, p := range settle(spread(frame, true, bottoms, 1), bottoms, frame) {
 		at[k] = p
 	}
-	l.top = frameTop + chipH + 3
+	band := func(as []attach) int {
+		var labels []string
+		for _, a := range as {
+			labels = append(labels, a.label)
+		}
+		return chipBand(labels, frame.W, 1)
+	}
+	l.chips = [2]int{band(tops), band(bottoms)}
+	l.top = frameTop + l.chips[0]
 	l.minGap, l.endGap = 32, 24
 	unitEnd := func(id model.ID) end {
 		r := l.pos[string(id)]
@@ -415,7 +425,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 
 	frame.H = l.gapTop[len(l.rows)] + l.gapH[len(l.rows)] - frame.Y
 	if len(bottoms) > 0 {
-		frame.H += chipH + 3
+		frame.H += l.chips[1]
 	}
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)

@@ -234,8 +234,13 @@ func TestLabelsFitTheirBoxes(t *testing.T) {
 		}
 	}
 	for _, p := range d.Ports {
-		if textWidth(p.Label, chipPx) > p.W-6 {
-			t.Errorf("port %q is wider than its chip", p.Label)
+		for _, l := range p.Lines {
+			if textWidth(l, chipPx) > p.W-6 {
+				t.Errorf("port %q is wider than its chip", l)
+			}
+		}
+		if strings.Join(p.Lines, "") != p.Label {
+			t.Errorf("port %q must keep its whole name: %q", p.Label, p.Lines)
 		}
 	}
 }
@@ -300,5 +305,28 @@ func TestMutualUseIsOneLine(t *testing.T) {
 	}
 	if !strings.Contains(mutual[0].Title, "core → util") || !strings.Contains(mutual[0].Title, "util → core") {
 		t.Fatalf("the line should name both directions, got %q", mutual[0].Title)
+	}
+}
+
+// A chip whose name is longer than any edge wraps onto more lines: it stays
+// whole, inside the edge it sits on and inside the canvas.
+func TestALongChipNameWrapsInsideItsEdge(t *testing.T) {
+	units := ripgrep()
+	units[5].Name.Value = "trait SearcherSinkMatcherBridgeThatAdaptsEveryMatchIntoAPrinterCallbackWithContextLinesAndByteOffsets (grep-matcher)"
+	units[6].Name.Value = "trait sink for every printer that writes matches, context lines, byte offsets, binary detection and summary statistics"
+	m := build(units)
+	for _, v := range views(m) {
+		s, err := readSVG(svg(t, v.d))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if mt := measure(s); mt.Escaped+mt.Truncated+mt.Overflow > 0 {
+			t.Errorf("%s: %s", v.name, mt)
+		}
+		for _, sh := range s.shapes {
+			if sh.kind == "port" && strings.Contains(sh.title, "SearcherSink") && !strings.Contains(strings.Join(sh.lines, ""), "ByteOffsets") {
+				t.Errorf("%s: the chip must keep its whole name: %q", v.name, sh.lines)
+			}
+		}
 	}
 }

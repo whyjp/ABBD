@@ -38,6 +38,26 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
 
    The blueprint shows a module's notes beside its inside, and a contract's in the inside of the module that provides it. `abbd explain <ID>` prints each one with whether it is current. Delete `.abbd/understanding/<ID>/<SLOT>.md` when the code no longer has what the note says.
 
+7. When how or your own reading traces the order something happens in, such as what one command does, how a request crosses modules, or a pipeline's stages, store it as a flow with `abbd flow <KEY> <FILE>`. A flow answers one question. The blueprint draws it as numbered steps, each on the unit whose code runs it, and lists it on the overview and on each module it passes through. Write the FILE as frontmatter and a caption:
+
+   ```markdown
+   ---
+   question: What does abbd sync do, in order?
+   steps:
+     - unit: MOD-0017
+       does: Parse(stdout) → units, anchors and relations
+       note: one line on a cache, a TTL or a skip rule, if any
+       fails: one line on what stops or degrades the step, if any
+       calls: [DATA-0002]
+       evidence:
+         - {path: cmd/abbd/main.go, lines: "300", quote: "ex, err := extract.Parse(bytes.NewReader(out))"}
+   ---
+
+   One or two sentences on what the flow covers.
+   ```
+
+   Take two to 16 steps in the order the code runs them, and keep `does` under 80 characters. Each step cites the lines that run it, each quote held once in its file and one at least in the code of the step's unit or of a unit it calls, and goes STALE on its own when that code changes. `calls` names the units the step reaches beyond its own, and abbd refuses a call no stored relation carries, so record a missing coupling first. `abbd flow <KEY>` prints the stored flow as a draft to edit and store again. A human states a flow with `--source <REF>`. A reader then replaces only its STALE steps, and keeps each current human step exactly as `abbd flow <KEY>` prints it. A STALE step stored again unchanged is refused, so read its code first. Delete `.abbd/flows/<KEY>.md` when the code no longer runs that way.
+
    Write the text as the code is now, in the present tense. Leave out dates, issue and PR numbers, and tags such as "migrated from X", because git keeps the history. Keep each section under 2,000 characters of prose, and split a longer one under `###` headings or into shorter sections. `abbd understand <MOD-ID> <FILE>` and `abbd status` report each section over that length and each phrase that reads as history. Neither refuses the text or fails the check, because a version number or a name can read as history too.
 
 ## What the human states
@@ -58,7 +78,7 @@ When the human states a purpose, a responsibility or a coupling in the conversat
 
 ## Gate a hook or CI
 
-`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
+`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`), a flow's step is STALE (status names the step and why, so read that code again and `abbd flow <KEY> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
 
 The check also exits 1 when the state or the blueprint is UNKNOWN, meaning abbd could not compare them, and the message names the cause. The state is UNKNOWN outside a git work tree or when git fails to fingerprint the tree, and no sync fixes that, so run the check in a git checkout. The blueprint is UNKNOWN when `blueprint/graph.json` is missing or has no watermark, and `abbd sync` writes it. An orphaned text, one whose module left the state or is no longer a module, is reported and skipped, because no command can restamp it. Delete its `.abbd/understanding/<MOD-ID>.md` to drop it. An orphaned note, one whose unit left the state or whose slot abbd no longer knows, is reported and skipped the same way, and status names its file.
 

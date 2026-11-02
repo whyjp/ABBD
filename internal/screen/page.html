@@ -125,6 +125,30 @@ svg marker path { stroke: none; }
   body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
   td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
 }
+.questions { margin: 2px 0 8px; }
+.questions li { padding: 2px 0; }
+.flow .caption p { margin: 4px 0; }
+ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
+ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+ol.dg-flow > li.lane:first-child { border-top: 0; }
+.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
+.lane-unit strong { display: block; font-size: 14px; }
+.lane-unit .muted { font-size: 12px; }
+ol.steps { list-style: none; padding: 0; margin: 0; }
+li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
+li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
+li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
+ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
+li.step p { margin: 0; overflow-wrap: anywhere; }
+li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
+li.step .noteline { font-size: 13px; color: var(--muted); }
+li.step .fails { font-size: 13px; color: var(--stale); }
+li.step.stale .n { background: var(--stale); }
+li.step .chips { margin-top: 3px; }
+.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
 </style>
 </head>
 <body>
@@ -138,6 +162,7 @@ svg marker path { stroke: none; }
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
   </div>
+  {{if .Flows}}<div class="questions"><h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span>{{if .Stale}} <span class="pill STALE">STALE {{.Stale}}</span>{{end}}</li>{{end}}</ul></div>{{end}}
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" "overview"}}
@@ -157,6 +182,8 @@ svg marker path { stroke: none; }
       {{template "legend" "inside"}}
       {{template "picker" .Focus}}
       {{if .Unwired}}<div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span>{{range .Unwired}}{{if .Head}}<span class="head">{{.Head}}</span>{{end}}{{range .Names}}<span class="chip">{{.}}</span>{{end}}{{end}}</div>{{end}}
+      {{if .Flows}}<h3>이 모듈을 지나는 흐름</h3>
+      <ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">단계 {{range $i, $n := .Steps}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
       {{if .Inferred}}<h3>판독한 결합</h3>
       <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
     </div>
@@ -174,6 +201,7 @@ svg marker path { stroke: none; }
   </div>
 </section>
 {{end}}
+{{range .Flows}}{{template "flow" .}}{{end}}
 {{range .Focus}}{{template "focus" .}}{{end}}
 {{range .Insides}}{{range .Focus}}{{template "focus" .}}{{end}}{{end}}
 
@@ -197,7 +225,7 @@ svg marker path { stroke: none; }
 {{.}}{{end}}</title></path>{{range .Marks}}<circle class="origin {{.Origin}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
 {{range .Dots}}<circle class="junction {{.Kind}}" cx="{{.X}}" cy="{{.Y}}" r="3"/>{{end}}
 {{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}" data-id="{{.ID}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
-{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" width="{{.W}}" height="17" rx="3"/><text class="chip" x="{{.X}}" dx="4" y="{{if .Below}}{{plus .Y -20}}{{else}}{{plus .Y 3}}{{end}}" dy="12.5">{{.Label}}</text></g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{.RectY}}" width="{{.W}}" height="{{.H}}" rx="3"/>{{$p := .}}{{range $i, $l := .Lines}}<text class="chip" x="{{$p.X}}" dx="4" y="{{$p.LineY $i}}" dy="12.5">{{$l}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 </svg>{{end}}
 {{define "howhead"}}<span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}{{end}}
 {{define "howtext"}}{{template "blocks" .Blocks}}{{end}}
@@ -230,3 +258,11 @@ svg marker path { stroke: none; }
 <span title="{{tip "stated"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>{{end}}
+{{define "flow"}}<section class="inside flow" id="{{.ID}}">
+  <div class="drawhead"><h2>{{.Question}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if .Stale}} <span class="pill STALE" title="인용한 코드가 바뀐 단계가 있습니다">STALE {{.Stale}}</span>{{end}}</h2><div class="views"><span class="muted">{{.Steps}}단계</span> <a href="#overview">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">번호는 실행 순서입니다. 왼쪽 상자는 그 단계를 실행하는 단위이고, 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. → 칸은 단계가 닿는 단위로, 저장된 관계가 있는 것만 그립니다.</p>
+  {{if .Caption}}<div class="caption text">{{template "blocks" .Caption}}</div>{{end}}
+  {{if .Source}}<p class="muted" style="margin:0">출처 {{.Source}}</p>{{end}}
+  <ol class="dg-flow">{{range .Lanes}}<li class="lane"><a class="lane-unit" href="{{.Href}}" title="{{.Unit}}"><strong>{{.Name}}</strong><span class="muted">{{.Kind}}</span></a><ol class="steps">{{range .Steps}}<li class="step{{if .Stale}} stale{{end}}" id="{{.ID}}" value="{{.N}}"><span class="n">{{.N}}</span><p class="does">{{.Does}}{{with .Badge}} <span class="pill {{.}} step-origin" title="{{tip .}}">{{label .}}</span>{{end}}{{with .Source}} <span class="muted">출처 {{.}}</span>{{end}}{{if .Stale}} <span class="pill STALE" title="{{join .Reasons ", "}}">STALE</span>{{end}}</p>{{if .Note}}<p class="noteline">{{.Note}}</p>{{end}}{{if .Fails}}<p class="fails">실패: {{.Fails}}</p>{{end}}{{if .Calls}}<div class="chips">{{range .Calls}}<a class="chip" href="{{.Href}}" title="{{.ID}}: 저장된 관계 {{.Verb}}">→ {{.Name}}</a>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400;font-size:12.5px">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></li>{{end}}</ol></li>{{end}}</ol>
+</section>
+{{end}}
