@@ -72,7 +72,7 @@ func (e env) understand(ref string, args []string) error {
 	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.
-	if had && prev.Digest != digest && prev.Text == text {
+	if had && prev.Digest != digest && sameWords(prev.Text, text) {
 		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
 	}
 	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {
@@ -145,7 +145,7 @@ func (e env) note(r model.NoteRef, args []string) error {
 	digest, code := e.st.NoteStamp(cited)
 	// The same words on the same quotes, after those quotes' code moved,
 	// would mark a stale note fresh without anyone reading the code again.
-	if had && prev.Stale() && prev.Text == text && sameCitations(prev.Evidence, cited) {
+	if had && prev.Stale() && sameWords(prev.Text, text) && sameCitations(prev.Evidence, cited) {
 		return fmt.Errorf("the code %s cites changed since it was written (%s); read it again, then store the new text or cite the code it rests on now", r, strings.Join(prev.Changed, ", "))
 	}
 	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Why: prev.Why, Text: text}
@@ -155,6 +155,12 @@ func (e env) note(r model.NoteRef, args []string) error {
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against the code it cites %s\n", r, u.Name.Value, digest)
 	readText(e.stdout, r.String(), text)
 	return nil
+}
+
+// sameWords reports whether two texts say the same words, however they
+// are spaced or broken into lines.
+func sameWords(a, b string) bool {
+	return slices.Equal(strings.Fields(a), strings.Fields(b))
 }
 
 // sameCitations reports whether two notes cite the same set of quotes,

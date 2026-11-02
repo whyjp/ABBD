@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "a3912722078ba8f5f576fec7139cb559583ead557305fc6690f77c56cb9045aa"
+    "inputs_hash": "052696eecbb0264413fa7a77dfb67909f53f9db618dd3ba39f58c18d151035c9"
   },
   "units": [
     {
@@ -2099,8 +2099,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/words.go:63 \"func blocks(text string) []Block {\"",
-        "internal/screen/words.go:45 \"func spans(s string) []Span {\""
+        "internal/screen/words.go:64 \"func blocks(text string) []Block {\"",
+        "internal/screen/words.go:46 \"func spans(s string) []Span {\""
       ]
     },
     {
@@ -2230,7 +2230,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/understanding.go:397 \"return short([]byte(b.String())), code\""
+        "internal/store/understanding.go:385 \"return digestOf(code), code\""
       ]
     },
     {
@@ -3010,7 +3010,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:19 \"return u, ok \u0026\u0026 u.Kind == model.Module\""
+      "Quote": "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\""
     },
     {
       "From": "MOD-0001",
@@ -3282,7 +3282,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3436,7 +3436,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3460,7 +3460,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -4034,7 +4034,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0041",
@@ -4074,7 +4074,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:476 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:481 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -4136,7 +4136,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:77 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:78 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -9464,7 +9464,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -9519,7 +9519,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -9818,7 +9818,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -10023,7 +10023,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -10037,7 +10037,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:217 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -11507,7 +11507,23 @@
                 "Code": true
               },
               {
-                "Text": " over those quotes alone. It refuses the same words on the same quotes once their code moved, and keeps a stored ",
+                "Text": " over those quotes alone. It refuses a quote its file holds more than once, since sync never moves a note's lines. It also refuses the same words, however spaced (",
+                "Code": false
+              },
+              {
+                "Text": "sameWords",
+                "Code": true
+              },
+              {
+                "Text": "), on the same set of quotes, in any order (",
+                "Code": false
+              },
+              {
+                "Text": "sameCitations",
+                "Code": true
+              },
+              {
+                "Text": "), once their code moved, and it keeps a stored ",
                 "Code": false
               },
               {
@@ -11679,7 +11695,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:19 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
+            "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:214 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
@@ -11800,7 +11816,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11956,7 +11972,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11985,7 +12001,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:77 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
           ]
         },
         {
@@ -13740,6 +13756,28 @@
               },
               {
                 "Text": "): a unit is semantic when its name's writer is INFERRED, the supplement's or a reader's. A relation is semantic when it carries evidence, whatever its writer.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Occurrences",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "evidence.go",
+                "Code": true
+              },
+              {
+                "Text": "): how many places a file holds a quote now, wherever they are. A note may only cite a quote its file holds once, and a note whose quote stops being unique reads STALE.",
                 "Code": false
               }
             ]
@@ -20798,7 +20836,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:476 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:481 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -21290,7 +21328,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -21506,7 +21544,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/screen.go:51 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -21520,7 +21558,7 @@
             "Title": "freshness verdicts depends_on internal/store (via convention), 판독\nunderstanding text depends_on internal/store (via convention), 판독",
             "Quotes": [
               "internal/screen/screen.go:51 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -23017,7 +23055,7 @@
                 "Code": true
               },
               {
-                "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home: the module it sits in when that module provides it, else the provider whose own provides relation rests on the strongest origin, so a reader's coupling never moves a contract away from the provider the code shows. A unit no inside shows keeps its notes on its row of the unit list. ",
+                "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home: the module it sits in when that module provides it, else the provider whose provides relation, its own or one of a unit inside it, rests on the strongest origin, so a reader's coupling never moves a contract away from the provider the code shows. A unit no inside shows keeps its notes on its row of the unit list. ",
                 "Code": false
               },
               {
@@ -23025,7 +23063,15 @@
                 "Code": true
               },
               {
-                "Text": " also cuts pipe tables, dropping the rule line, and fenced code, kept as written.",
+                "Text": " also cuts pipe tables, dropping the rule line and keeping an escaped ",
+                "Code": false
+              },
+              {
+                "Text": "\\|",
+                "Code": true
+              },
+              {
+                "Text": " in its cell, and fenced code between backtick or tilde fences, kept as written.",
                 "Code": false
               }
             ]
@@ -23334,7 +23380,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -23666,7 +23712,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:77 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+              "cmd/abbd/understand.go:78 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
             ],
             "Marks": [
               {
@@ -25063,7 +25109,23 @@
                 "Code": true
               },
               {
-                "Text": " with no anchors, so a note's code is only the lines around each quote it cites. ",
+                "Text": " with no anchors, so a note's code is only the lines around each quote it cites. Sync never moves a note's lines, so a quote its file no longer holds exactly once counts as missing rather than as whichever copy sits near the old lines. ",
+                "Code": false
+              },
+              {
+                "Text": "digestOf",
+                "Code": true
+              },
+              {
+                "Text": " hashes a ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " map for both stamps. ",
                 "Code": false
               },
               {
@@ -25901,7 +25963,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:227 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -25970,7 +26032,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:53 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -25988,7 +26050,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:476 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:481 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -26026,7 +26088,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:77 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+            "cmd/abbd/understand.go:78 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
           ]
         },
         {
@@ -27982,7 +28044,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:19 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
+            "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:214 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },

@@ -52,24 +52,32 @@ func notes(in Input, u model.Unit) []Note {
 
 // noteHome is the module whose inside shows a contract's notes: the module
 // it sits in when that module provides it, else the provider whose own
-// provides relation rests on the strongest origin, so a reader's coupling
-// never moves a contract away from the module the code says provides it.
-// With no provider it is the module the contract sits in.
+// provides relation, its own or one of a unit inside it, rests on the
+// strongest origin, so a reader's coupling never moves a contract away from
+// the module the code says provides it. With no provider it is the module
+// the contract sits in.
 func (o *overview) noteHome(c model.Unit) model.ID {
 	providers := o.providers[c.ID]
 	if slices.Contains(providers, c.Parent) {
 		return c.Parent
 	}
-	home, best := c.Parent, -1
-	for _, p := range providers {
-		r := 0
-		for _, rel := range o.units[p].Relations {
-			if rel.To == c.ID && rel.Kind == model.Provides && !rel.Dead {
-				r = max(r, strength[rel.Origin])
+	score := map[model.ID]int{}
+	for id, u := range o.tree.units {
+		for _, rel := range u.Relations {
+			if rel.To != c.ID || rel.Kind != model.Provides || rel.Dead {
+				continue
+			}
+			for _, p := range o.tree.chain(id) {
+				if slices.Contains(providers, p) {
+					score[p] = max(score[p], strength[rel.Origin])
+				}
 			}
 		}
-		if r > best {
-			home, best = p, r
+	}
+	home, best := c.Parent, -1
+	for _, p := range providers {
+		if score[p] > best {
+			home, best = p, score[p]
 		}
 	}
 	return home

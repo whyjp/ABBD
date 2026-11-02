@@ -45,3 +45,14 @@ func TestATextDrawsTablesAndCodeAsWritten(t *testing.T) {
 		t.Errorf("code %q, want %q", got[2].Code, want)
 	}
 }
+
+// An escaped pipe stays in its cell, and a tilde fence is code.
+func TestATableKeepsEscapedPipesAndTildesFenceCode(t *testing.T) {
+	got := blocks("| state | key |\n|---|---|\n| pending | `a \\| b` |\n\n~~~json\n{\"a\": 1}\n~~~")
+	if want := [][]string{{"state", "key"}, {"pending", "a | b"}}; !reflect.DeepEqual(cellTexts(got[0]), want) {
+		t.Errorf("table %v, want %v", cellTexts(got[0]), want)
+	}
+	if len(got) != 2 || got[1].Kind != "pre" || got[1].Code != `{"a": 1}` {
+		t.Errorf("tilde fence: %+v", got[1:])
+	}
+}

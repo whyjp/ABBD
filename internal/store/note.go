@@ -38,9 +38,24 @@ type Note struct {
 func (n Note) Stale() bool { return len(n.Changed) > 0 }
 
 // NoteStamp is the digest and Code of the places a note cites, as the code
-// is now.
+// is now. Sync never moves a note's lines, so a quote its file no longer
+// holds exactly once counts as missing, rather than as whichever copy now
+// sits near the lines the note was written at.
 func (s Store) NoteStamp(cited []model.Evidence) (string, map[string]string) {
-	return s.stamp(moduleCode{anchors: map[string]anchorCode{}, cited: cited})
+	_, code := s.stamp(moduleCode{anchors: map[string]anchorCode{}, cited: cited})
+	for _, e := range cited {
+		if s.code.ev.Occurrences(e) == 1 {
+			continue
+		}
+		for place := 1; ; place++ {
+			k := quoteKey(e, place)
+			if _, ok := code[k]; !ok {
+				break
+			}
+			code[k] = missing
+		}
+	}
+	return digestOf(code), code
 }
 
 // SaveNote writes a note. It refuses one that cites no code, which would

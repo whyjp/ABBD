@@ -382,8 +382,13 @@ func (s Store) stampQuotes(m moduleCode, quotes []model.Evidence) (string, map[s
 			code[k] = short([]byte(lines))
 		}
 	}
+	return digestOf(code), code
+}
+
+// digestOf is the hash of a Code map, empty when the map is.
+func digestOf(code map[string]string) string {
 	if len(code) == 0 {
-		return "", code
+		return ""
 	}
 	keys := make([]string, 0, len(code))
 	for k := range code {
@@ -394,7 +399,7 @@ func (s Store) stampQuotes(m moduleCode, quotes []model.Evidence) (string, map[s
 	for _, k := range keys {
 		fmt.Fprintf(&b, "%s\x00%s\n", k, code[k])
 	}
-	return short([]byte(b.String())), code
+	return short([]byte(b.String()))
 }
 
 // ModuleDigest fingerprints the code a module's text describes, as Stamp

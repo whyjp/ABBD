@@ -25,12 +25,13 @@ type Block struct {
 // tableRule is a table's line under its header, such as |---|:--:|.
 var tableRule = regexp.MustCompile(`^\|?(\s*:?-+:?\s*\|)*\s*:?-+:?\s*\|?$`)
 
-// cells splits a table row at its pipes.
+// cells splits a table row at its pipes, keeping an escaped \| in its cell.
 func cells(row string) [][]Span {
+	row = strings.ReplaceAll(row, `\|`, "\x00")
 	row = strings.TrimSuffix(strings.TrimPrefix(row, "|"), "|")
 	var out [][]Span
 	for _, c := range strings.Split(row, "|") {
-		out = append(out, spans(strings.TrimSpace(c)))
+		out = append(out, spans(strings.ReplaceAll(strings.TrimSpace(c), "\x00", "|")))
 	}
 	return out
 }
@@ -70,20 +71,21 @@ func blocks(text string) []Block {
 		}
 	}
 	var fence *Block
+	var mark string
 	row := false
 	for _, line := range strings.Split(text, "\n") {
 		t := strings.TrimSpace(line)
 		wasRow := row
 		row = fence == nil && strings.HasPrefix(t, "|")
 		switch {
-		case fence != nil && strings.HasPrefix(t, "```"):
+		case fence != nil && strings.HasPrefix(t, mark):
 			fence.Code = strings.TrimSuffix(fence.Code, "\n")
 			out, fence = append(out, *fence), nil
 		case fence != nil:
 			fence.Code += strings.TrimRight(line, " \t") + "\n"
-		case strings.HasPrefix(t, "```"):
+		case strings.HasPrefix(t, "```"), strings.HasPrefix(t, "~~~"):
 			flush()
-			fence = &Block{Kind: "pre"}
+			fence, mark = &Block{Kind: "pre"}, t[:3]
 		case row && wasRow:
 			if !tableRule.MatchString(t) {
 				out[len(out)-1].Rows = append(out[len(out)-1].Rows, cells(t))

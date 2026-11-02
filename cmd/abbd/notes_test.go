@@ -275,3 +275,50 @@ func TestANoteFollowsItsQuoteWhenTheCodeAboveMoves(t *testing.T) {
 	p.resync()
 	p.want(0, "notes: 1 slot note(s), 0 STALE", "status", "--check")
 }
+
+// Respacing the words, or citing a quote twice, is not reading the code
+// again either.
+func TestRespacingOrRepeatingDoesNotFreshenAStaleNote(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.states", "states.\n\nmore.", statesQuote)
+	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
+	p.resync()
+	p.wantNote(1, "read it again", "MOD-0001.states", "states.\n\n\nmore.", statesQuote)
+	p.wantNote(1, "read it again", "MOD-0001.states", "states.\n\nmore.", statesQuote, statesQuote)
+}
+
+// When the file comes to hold a note's quote twice, the note cannot tell
+// which copy it was written on, so it reads STALE rather than following
+// whichever copy now sits near its old lines.
+func TestANoteWhoseQuoteIsNoLongerUniqueReadsStale(t *testing.T) {
+	p := notesProject(t)
+	block := "func b() error {\n\treturn retry(charge)\n}\n"
+	p.code("billing/b.go", "package billing\n"+strings.Repeat("// filler\n", 12)+block)
+	p.resync()
+	p.wantNote(0, "understood", "MOD-0001.failure", "b retries.", "billing/b.go:15:return retry(charge)")
+	p.code("billing/b.go", "package billing\n"+strings.Repeat("// filler\n", 12)+block+strings.Repeat("// more\n", 12)+block)
+	p.resync()
+	p.want(1, "stale: MOD-0001.failure, the code it cites changed: billing/b.go (the quote is gone, or no longer once in the file)", "status", "--check")
+}
+
+// A provider whose provides relation comes from a unit inside it, read by
+// the script, is still the home over a reader's provider.
+func TestAContractsHomeCountsWhatItsUnitsProvide(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\n// calls ledger.Post\nfunc Charge() {}\n")
+	p.code("ledger/core/book.go", "package core\n\nfunc Post() {}\n")
+	p.extract(`{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger"}]},
+ {"key":"core","kind":"MOD","name":"core","parent":"ledger","anchors":[{"path":"ledger/core/book.go","symbol":"Post"}]},
+ {"key":"post","kind":"IF","name":"Post","anchors":[{"path":"ledger/core/book.go","symbol":"Post"}],"signature":"func Post()"}
+],"relations":[{"from":"core","to":"post","kind":"provides"}]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "provides", "IF-0001", "--via", "call", "--evidence", "billing/charge.go:3:calls ledger.Post")
+	p.wantNote(0, "understood IF-0001.semantics", "IF-0001.semantics", "Post books one entry.", "ledger/core/book.go:3:func Post() {}")
+	page := p.read("blueprint/index.html")
+	ledger := page[strings.Index(page, `id="m-MOD-0002"`):]
+	if !strings.Contains(ledger[:strings.Index(ledger, "</section>")], `id="c-IF-0001"`) {
+		t.Fatal("the contract's notes belong in ledger's inside, whose unit the code shows providing it")
+	}
+}
