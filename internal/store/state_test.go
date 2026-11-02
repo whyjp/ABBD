@@ -13,7 +13,7 @@ import (
 // the higher of each kind's high water, so no ID is minted twice.
 func TestAStateWithTwoSyncsReadsMerged(t *testing.T) {
 	for name, text := range map[string]string{
-		"union": "revision: ra\nfingerprint: fa\nblueprint: ba\nrevision: rb\nfingerprint: fb\nblueprint: bb\nhigh_water:\n    DATA: 3\n    DATA: 5\n    MOD: 2\n",
+		"union":    "revision: ra\nfingerprint: fa\nblueprint: ba\nrevision: rb\nfingerprint: fb\nblueprint: bb\nhigh_water:\n    DATA: 3\n    DATA: 5\n    MOD: 2\n",
 		"conflict": "<<<<<<< HEAD\r\nrevision: ra\r\nfingerprint: fa\r\nblueprint: ba\r\n=======\r\nrevision: rb\r\nfingerprint: fb\r\nblueprint: bb\r\n>>>>>>> b\r\nhigh_water:\r\n<<<<<<< HEAD\r\n    DATA: 3\r\n||||||| base\r\n    DATA: 1\r\n=======\r\n    DATA: 5\r\n>>>>>>> b\r\n    MOD: 2\r\n",
 	} {
 		dir := t.TempDir()

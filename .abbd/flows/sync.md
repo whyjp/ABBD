@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "356"
+          lines: "424"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "298"
+          lines: "302"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "302"
+          lines: "306"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,7 +29,7 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "305"
+          lines: "309"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
           lines: "430"
@@ -44,10 +44,10 @@ steps:
         - DATA-0002
       evidence:
         - path: internal/extract/extract.go
-          lines: "86"
+          lines: "92"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "309"
+          lines: "313"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -55,26 +55,27 @@ steps:
         internal/extract/extract.go#quote-1772af40: 7c1ba637b199b3cb
     - unit: MOD-0041
       does: Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state
+      note: LoadState reads a state a merge left with both sides' lines as one, marked Merged
       fails: Writable refuses a state with a unit file in the old format; run abbd migrate
       calls:
         - DATA-0006
       evidence:
         - path: internal/store/store.go
-          lines: "76"
+          lines: "82"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "242"
+          lines: "248"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "254"
+          lines: "263"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "367"
+          lines: "371"
           quote: stored, err := st.Writable()
       writer: reader
       code:
         cmd/abbd/main.go#quote-3ccd4c44: 62a3553d47a88124
-        internal/store/store.go#quote-2f954852: 4fb290fcf4a16b37
+        internal/store/store.go#quote-2f954852: ef700c613d1f871f
         internal/store/store.go#quote-6d304a0c: 2b2495bfd99ecd31
         internal/store/store.go#quote-a6d8aa94: abdb9585b345b697
     - unit: MOD-0022
@@ -85,7 +86,7 @@ steps:
           lines: "94"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "379"
+          lines: "383"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -99,7 +100,7 @@ steps:
           lines: "234"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "388"
+          lines: "392"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -113,7 +114,7 @@ steps:
           lines: "30"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "398"
+          lines: "402"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -129,7 +130,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "392"
+          lines: "396"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -143,7 +144,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "402"
+          lines: "406"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -156,7 +157,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "403"
+          lines: "407"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -168,17 +169,17 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "222"
+          lines: "228"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "247"
+          lines: "253"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
         internal/store/store.go#quote-bace279f: 7b2259bf39672043
         internal/store/store.go#quote-d57cbb81: 85dc2f778cc996e7
     - unit: MOD-0041
-      does: UpgradeUnderstandings(), MDHash(), SaveState() → state.yaml
+      does: UpgradeUnderstandings(), SaveState() → state.yaml with revision and fingerprint
       calls:
         - DATA-0006
       evidence:
@@ -186,27 +187,31 @@ steps:
           lines: "524"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "259"
+          lines: "338"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
-        internal/store/store.go#quote-7d54ae9a: 6fa9c6591e7acc62
+        internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
       does: publish() → index.html and graph.json, after every command that writes
-      note: graph.json carries the watermark and is written last
+      note: then records in state.yaml the inputs hash the files were rendered from
       calls:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "272"
+          lines: "276"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
           quote: files, err := screen.Files(screen.Build(in))
+        - path: cmd/abbd/screen.go
+          lines: "36"
+          quote: in.Synced.Blueprint = in.Inputs
       writer: reader
       code:
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
+        cmd/abbd/screen.go#quote-22ad4b42: c7ae54f56076262b
         cmd/abbd/screen.go#quote-f313962c: b96f7157ff80607b
 ---
 

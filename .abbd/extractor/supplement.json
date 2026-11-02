@@ -36,7 +36,7 @@
         }
       ],
       "purpose": "lets a human read the topology in a browser and tools read it without the CLI",
-      "responsibility": "fixes the two rendered files, index.html and graph.json, and graph.json's shape: units, live edges, both drawing levels and the inputs_hash watermark that tells a CURRENT blueprint from a STALE one"
+      "responsibility": "fixes the two rendered files, index.html and graph.json, and graph.json's shape: units, live edges, both drawing levels and the flows. Neither file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
     },
     {
       "key": "data-extraction",
@@ -62,7 +62,7 @@
         }
       ],
       "purpose": "so ABBD knows what tree and revision the stored units were synced from and which ID numbers were ever used",
-      "responsibility": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the hash of all unit files, and the per-kind high-water mark of minted IDs."
+      "responsibility": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the inputs hash the blueprint was rendered from, and the per-kind high-water mark of minted IDs."
     },
     {
       "key": "data-understanding",
@@ -433,7 +433,7 @@
       "name": "blueprint publish",
       "parent": "mod-cmd-abbd",
       "purpose": "so the blueprint on disk always matches the state after a writing command",
-      "responsibility": "Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.",
+      "responsibility": "Owns loading the screen input with the current tree snapshot, writing index.html and graph.json, then recording in the state which inputs they were rendered from.",
       "evidence": [
         {
           "path": "cmd/abbd/screen.go",
@@ -533,8 +533,8 @@
         },
         {
           "path": "cmd/abbd/evidence.go",
-          "lines": "70",
-          "quote": "switch in.ActualFreshness() {",
+          "lines": "106",
+          "quote": "switch in.BlueprintFreshness() {",
           "symbol": "status"
         }
       ]
@@ -979,7 +979,7 @@
       "name": "freshness verdicts",
       "parent": "mod-screen",
       "purpose": "tells the human whether what they read can be trusted",
-      "responsibility": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the blueprint's stored watermark with the inputs hash now (blueprint freshness)",
+      "responsibility": "compares the working-tree snapshot with the synced fingerprint (state CURRENT, STALE or UNKNOWN) and the inputs hash the state says the blueprint was rendered from with the inputs hash now (blueprint freshness), and reads a merged state as STALE",
       "evidence": [
         {
           "path": "internal/screen/screen.go",
@@ -1089,8 +1089,8 @@
         },
         {
           "path": "internal/screen/page.html",
-          "lines": "7",
-          "quote": "<meta name=\"abbd-watermark\" content=\"inputs_hash={{.Watermark.Inputs}}\">"
+          "lines": "175",
+          "quote": "<div class=\"mapbox\">{{template \"drawing\" .Overview}}</div>"
         }
       ]
     },
@@ -1144,7 +1144,7 @@
       "name": "store staleness hashes",
       "parent": "mod-store",
       "purpose": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-      "responsibility": "Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark.",
+      "responsibility": "Hashes sorted file sets as relative path, length and bytes: InputsHash over every .abbd file except the blueprint and state.yaml, which the state records as the inputs the blueprint was rendered from.",
       "evidence": [
         {
           "path": "internal/store/store.go",
@@ -1476,7 +1476,7 @@
         }
       ],
       "purpose": "shows a human the architecture as it is, read-only over the store",
-      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark"
+      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json, which hold no value of the sync"
     },
     {
       "key": "mod-store",
@@ -1896,8 +1896,8 @@
       "evidence": [
         {
           "path": "cmd/abbd/main.go",
-          "lines": "307",
-          "quote": "state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}",
+          "lines": "424",
+          "quote": "state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}",
           "symbol": "syncActual"
         }
       ]
@@ -2140,8 +2140,8 @@
         },
         {
           "path": "internal/screen/screen.go",
-          "lines": "63",
-          "quote": "var g struct{ Watermark Watermark }",
+          "lines": "69",
+          "quote": "in.Rendered = b != nil",
           "symbol": "Load"
         }
       ]
@@ -2155,7 +2155,7 @@
         {
           "path": "internal/screen/screen.go",
           "lines": "98",
-          "quote": "case in.Tree != in.Synced.Fingerprint:",
+          "quote": "case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:",
           "symbol": "ActualFreshness"
         },
         {
@@ -2351,8 +2351,8 @@
       "evidence": [
         {
           "path": "internal/screen/page.html",
-          "lines": "7",
-          "quote": "<meta name=\"abbd-watermark\" content=\"inputs_hash={{.Watermark.Inputs}}\">"
+          "lines": "184",
+          "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
         }
       ]
     },
@@ -2397,14 +2397,15 @@
       "via": "data",
       "evidence": [
         {
-          "path": "cmd/abbd/main.go",
-          "lines": "297",
-          "quote": "hash, err := st.MDHash()"
+          "path": "cmd/abbd/screen.go",
+          "lines": "36",
+          "quote": "in.Synced.Blueprint = in.Inputs",
+          "symbol": "publish"
         },
         {
-          "path": "cmd/abbd/main.go",
-          "lines": "307",
-          "quote": "MDHash: hash"
+          "path": "internal/store/store.go",
+          "lines": "28",
+          "quote": "// the InputsHash the blueprint was rendered from."
         }
       ]
     },
@@ -2653,8 +2654,8 @@
       "evidence": [
         {
           "path": "cmd/abbd/evidence.go",
-          "lines": "70",
-          "quote": "switch in.ActualFreshness() {",
+          "lines": "106",
+          "quote": "switch in.BlueprintFreshness() {",
           "symbol": "status"
         },
         {
@@ -2736,8 +2737,8 @@
         },
         {
           "path": "cmd/abbd/main.go",
-          "lines": "307",
-          "quote": "state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}"
+          "lines": "424",
+          "quote": "state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}"
         }
       ]
     },
@@ -2801,7 +2802,7 @@
         {
           "path": "internal/screen/screen.go",
           "lines": "98",
-          "quote": "case in.Tree != in.Synced.Fingerprint:"
+          "quote": "case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:"
         },
         {
           "path": "cmd/abbd/screen.go",
@@ -2837,7 +2838,8 @@
         {
           "path": "internal/screen/screen.go",
           "lines": "87",
-          "quote": "case *in.Rendered != in.Current():"
+          "quote": "case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:",
+          "symbol": "BlueprintFreshness"
         }
       ]
     },

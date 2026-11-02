@@ -58,7 +58,7 @@ echo "status after merge:"
 if "$abbd" sync >/dev/null 2>"$work/sync.err"; then
 	echo "abbd sync on the merged tree: ok"
 	git add -A
-	"$abbd" status --check >/dev/null 2>&1 && echo "status --check after sync: exit 0" || echo "status --check after sync: exit $?"
+	"$abbd" status 2>&1 | grep -E '^(state|blueprint):' | sed 's/^/  /' || true
 else
 	echo "abbd sync on the merged tree: failed: $(head -1 "$work/sync.err")"
 fi
