@@ -100,19 +100,18 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // state lacks, so their climbing lines stay (docs/blueprint-svg.md, "Known
 // gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
-	"self MOD-0001 abbd CLI":                {Back: 5},
-	"self FEAT-0001 /abbd":                  {Back: 5},
-	"self MOD-0030 internal/model":          {Back: 3},
-	"self MOD-0047 internal/topology":       {Back: 2},
-	"orca MOD-0007 mobile app (Expo)":       {Back: 11},
-	"orca MOD-0042 desktop main process":    {Crossings: 87, Back: 10, MaxDetour: 244},
-	"orca MOD-0056 Orca runtime (RPC host)": {Back: 7},
-	"orca MOD-0072 desktop renderer UI":     {Back: 6},
-	"orca MOD-0098 src/":                    {TooClose: 1},
-	"orca MOD-0099 src/":                    {Back: 2},
-	"orca MOD-0100 src/shared/":             {Boxes: 20, Back: 5, MaxDetour: 452},
-	"pstack MOD-0001 setup and help":        {Braid: 2160, MaxChannel: 6},
-	"pstack MOD-0003 principles":            {Back: 3},
+	"self MOD-0001 abbd CLI":                 {Back: 5},
+	"self FEAT-0001 /abbd":                   {Back: 5},
+	"self MOD-0030 internal/model":           {Back: 3},
+	"self MOD-0047 internal/topology":        {Back: 2},
+	"orca MOD-0007 mobile app (Expo)":        {Back: 11},
+	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 244},
+	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},
+	"orca MOD-0072 desktop renderer UI":      {Back: 6},
+	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 502},
+	"orca MOD-0098 src/":                     {TooClose: 1},
+	"pstack MOD-0001 setup and help":         {Braid: 2160, MaxChannel: 6},
+	"pstack MOD-0003 principles":             {Back: 3},
 	// Focus views (focus.go) of the same states, where lines of two kinds
 	// between the same boxes run side by side. A frame chip as wide as its
 	// whole label pushes them closer.

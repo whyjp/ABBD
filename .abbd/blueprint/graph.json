@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "3da73ce812470c306431dd7704c9c339f360057f05e4f58db16e74c4949f8592"
+    "inputs_hash": "f4601f2bec6bfbd21cf68843477e1d854aff8428bb774c6d113e31da0bab8e47"
   },
   "units": [
     {
@@ -350,7 +350,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+        "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
       ]
     },
     {
@@ -440,7 +440,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+        "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
     },
     {
@@ -458,7 +458,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+        "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
     },
     {
@@ -2333,7 +2333,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:78 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
+        "internal/topology/impact.go:81 \"func ImpactOf(units []model.Unit, seeds []model.ID) Impact {\""
       ]
     },
     {
@@ -4227,7 +4227,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      "Quote": "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
     },
     {
       "From": "MOD-0047",
@@ -4271,7 +4271,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/topology/impact.go:79 \"links := Links(units)\""
+      "Quote": "internal/topology/impact.go:82 \"links := Links(units)\""
     },
     {
       "From": "MOD-0052",
@@ -4303,7 +4303,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+      "Quote": "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4311,7 +4311,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+      "Quote": "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4319,7 +4319,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+      "Quote": "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
     },
     {
       "From": "MOD-0054",
@@ -4327,7 +4327,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:115 \"next[model.Module]++\""
+      "Quote": "internal/group/group.go:137 \"next[model.Module]++\""
     },
     {
       "From": "MOD-0054",
@@ -4335,7 +4335,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      "Quote": "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
     },
     {
       "From": "MOD-0054",
@@ -21414,7 +21414,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         }
       ]
@@ -22319,7 +22319,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -23731,7 +23731,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Flows",
+                "Text": "Real states",
                 "Code": false,
                 "Bold": true
               },
@@ -23740,83 +23740,43 @@
                 "Code": false
               },
               {
-                "Text": "flow.go",
+                "Text": "fixtures_test.go",
                 "Code": true
               },
               {
-                "Text": "): ",
+                "Text": ", ",
                 "Code": false
               },
               {
-                "Text": "flows",
+                "Text": "testdata/",
                 "Code": true
               },
               {
-                "Text": " derives one ",
+                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them. ",
                 "Code": false
               },
               {
-                "Text": "FlowView",
+                "Text": "TestEveryRealDrawingIsLegible",
                 "Code": true
               },
               {
-                "Text": " per stored flow. Steps are numbered by their place, consecutive steps on one unit share a ",
+                "Text": " measures every full and focus view of each against ",
                 "Code": false
               },
               {
-                "Text": "Lane",
+                "Text": "docs/blueprint-svg.md",
                 "Code": true
               },
               {
-                "Text": ", a call shows only when ",
+                "Text": "'s rules. ",
                 "Code": false
               },
               {
-                "Text": "Step.Against",
+                "Text": "debt",
                 "Code": true
               },
               {
-                "Text": " finds its relation, and a step is STALE when its code moved or ",
-                "Code": false
-              },
-              {
-                "Text": "Against",
-                "Code": true
-              },
-              {
-                "Text": " finds a gap. ",
-                "Code": false
-              },
-              {
-                "Text": "href",
-                "Code": true
-              },
-              {
-                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. ",
-                "Code": false
-              },
-              {
-                "Text": "linkFlows",
-                "Code": true
-              },
-              {
-                "Text": " lists on each inside the steps on the units it holds. ",
-                "Code": false
-              },
-              {
-                "Text": "page.html",
-                "Code": true
-              },
-              {
-                "Text": " draws a flow as an HTML numbered list that wraps every line, and lists every flow by its question on the overview. A chip is as wide as its label (",
-                "Code": false
-              },
-              {
-                "Text": "chipWidth",
-                "Code": true
-              },
-              {
-                "Text": "), so no chip is cut.",
+                "Text": " lists the views that do not keep them yet with what they measure now: a listed view may only improve, and the test fails once it keeps every rule and is still listed.",
                 "Code": false
               }
             ]
@@ -26995,7 +26955,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:115 \"next[model.Module]++\""
+            "internal/group/group.go:137 \"next[model.Module]++\""
           ]
         }
       ],
@@ -27381,7 +27341,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\""
+              "internal/topology/impact.go:82 \"links := Links(units)\""
             ],
             "Marks": [
               {
@@ -27729,7 +27689,7 @@
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\"",
+              "internal/topology/impact.go:82 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -27745,7 +27705,7 @@
             "Kind": "depends_on",
             "Title": "impact walk depends_on live links (via call), 판독\nunit explanation depends_on live links (via call), 판독\nstrongest shortest path depends_on live links (via call), 판독",
             "Quotes": [
-              "internal/topology/impact.go:79 \"links := Links(units)\"",
+              "internal/topology/impact.go:82 \"links := Links(units)\"",
               "internal/topology/query.go:40 \"for _, l := range Links(units) {\"",
               "internal/topology/path.go:51 \"return walk(append(Links(units), nesting(units)...), a, b)\""
             ],
@@ -28645,7 +28605,7 @@
                 "Code": true
               },
               {
-                "Text": "): a breadth-first walk from the seeds and their direct children. It follows what depends on or consumes an impacted unit, and the contracts that unit provides. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
+                "Text": "): a breadth-first walk from the seeds and every unit inside them, at any depth. It follows what depends on or consumes an impacted unit, and the contracts a seed or a unit inside one provides. A unit reached through what it uses passes the change on to what uses it, not to the other contracts it provides: the change does not travel through those. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
                 "Code": false
               },
               {
@@ -29092,7 +29052,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+            "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
           ]
         },
         {
@@ -29128,7 +29088,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/topology/impact.go:79 \"links := Links(units)\""
+            "internal/topology/impact.go:82 \"links := Links(units)\""
           ]
         },
         {
@@ -29165,7 +29125,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         }
       ]
@@ -29360,7 +29320,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         },
         {
@@ -29369,7 +29329,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         },
         {
@@ -29378,7 +29338,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+            "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
           ]
         },
         {
@@ -29387,7 +29347,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:115 \"next[model.Module]++\""
+            "internal/group/group.go:137 \"next[model.Module]++\""
           ]
         },
         {
@@ -29396,7 +29356,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+            "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
           ]
         }
       ],
