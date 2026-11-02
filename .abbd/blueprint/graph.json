@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "4d923cab3f2d4afdede999b1b3a65ab1a352cbaeb924cef1930a659bd713bc81"
+    "inputs_hash": "e059cd5146012c7c70026ab713f0c27a0b77d8a26bedbf89e59fa3f9d70770d7"
   },
   "units": [
     {
@@ -1699,7 +1699,7 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:78 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+        "internal/gitx/gitx.go:80 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
     },
     {
@@ -1720,8 +1720,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:210 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:217 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:242 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:249 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1742,8 +1742,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:105 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:107 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:107 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:109 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -3644,7 +3644,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/gitx/gitx.go:48 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+      "Quote": "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
     },
     {
       "From": "MOD-0024",
@@ -4052,7 +4052,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -11254,7 +11254,7 @@
                 "Code": true
               },
               {
-                "Text": ", saved in the state at sync. A nested repository with no commit yet counts by its files, as an untracked directory does. ",
+                "Text": ", saved in the state at sync. A nested repository with no commit yet counts by its files on disk that neither repository ignores, as an untracked directory does. ",
                 "Code": false
               },
               {
@@ -11420,7 +11420,7 @@
                 "Code": true
               },
               {
-                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A place of a quote counts as unchanged when its lines read as a place of the same quote the text was written against, so a retract that moves a place up a rank does not block a restamp. A refusal names up to five of them. A restamp keeps the text's hashes. ",
+                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A retract that moves a place of a quote up a rank changes that place's hash, so it blocks a restamp until a fresh text is stored. A refusal names up to five of them. A restamp keeps the text's hashes. ",
                 "Code": false
               },
               {
@@ -15402,11 +15402,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "addFiles",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
                 "Code": true
               },
               {
@@ -15808,7 +15816,63 @@
                 "Code": true
               },
               {
-                "Text": ", so the fingerprint sees it as the untracked directory it is. ",
+                "Text": ", so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository's index can list a file deleted or renamed before its first commit, and ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
+                "Code": true
+              },
+              {
+                "Text": " drops what ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": " says the project ignores. git reads the paths of ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "--index-info",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "--cacheinfo",
+                "Code": true
+              },
+              {
+                "Text": " from the top of the work tree, so they and the submodule paths take the prefix ",
+                "Code": false
+              },
+              {
+                "Text": "rev-parse --show-prefix",
+                "Code": true
+              },
+              {
+                "Text": " gives when ",
+                "Code": false
+              },
+              {
+                "Text": "dir",
+                "Code": true
+              },
+              {
+                "Text": " is a subdirectory of the repository. ",
                 "Code": false
               },
               {
@@ -16280,7 +16344,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:48 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -20580,7 +20644,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:48 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -20680,7 +20744,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -25150,31 +25214,7 @@
                 "Code": true
               },
               {
-                "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key. ",
-                "Code": false
-              },
-              {
-                "Text": "vouchedPlaces",
-                "Code": true
-              },
-              {
-                "Text": " lets a place pass when its lines hash as a place of the same quote in ",
-                "Code": false
-              },
-              {
-                "Text": "Code",
-                "Code": true
-              },
-              {
-                "Text": " did, each place in ",
-                "Code": false
-              },
-              {
-                "Text": "Code",
-                "Code": true
-              },
-              {
-                "Text": " vouching for one place now, so an unchanged place that changed rank does not block a restamp and an edited one still does.",
+                "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key and blocks a restamp. The hashes cannot show which code a place read before: a place can also take another's lines when its own quote is edited away or when code is swapped. So only a fresh text clears it.",
                 "Code": false
               }
             ]
@@ -25452,7 +25492,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
