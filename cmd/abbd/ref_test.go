@@ -42,3 +42,11 @@ func TestASupplementUnitMayNotSpellTwoRefs(t *testing.T) {
 	two := `{"units":[{"ref":"b","key":"c","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}]}`
 	p.setup(1, `"ref" "b" and "key" "c"`, "--supplement", p.file(t, "two.json", two), "--", exe)
 }
+
+func TestAStoredUnitMayNotSpellTwoSupplementRefs(t *testing.T) {
+	p := semanticProject(t)
+	data := filepath.Join(p.root, ".abbd", "architecture", "DATA-0001.md")
+	md := p.read("architecture/DATA-0001.md")
+	write(t, data, strings.Replace(md, "supplement_ref: t\n", "supplement_ref: t\nsupplement_key: u\n", 1))
+	p.want(1, `supplement_ref "t" and supplement_key "u"`, "status")
+}

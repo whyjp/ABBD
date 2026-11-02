@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "5cf49a39a8404c74bb8f8c22345e648a2081b6a49dff1ac4fc47c47400672c36"
+    "inputs_hash": "f5649f96391a506f8c838cd3fc65045421ea3a5172af94fa1e4ae76b3b9bb78b"
   },
   "units": [
     {
@@ -103,7 +103,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:252 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
+        "internal/store/store.go:256 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
         "internal/identity/identity.go:23 \"Shared   model.Anchor `yaml:\\\"shared\\\"`\""
       ]
     },
@@ -183,8 +183,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:193 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
-        "internal/store/store.go:220 \"if u.Notes != \\\"\\\" {\""
+        "internal/store/store.go:197 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
+        "internal/store/store.go:224 \"if u.Notes != \\\"\\\" {\""
       ]
     },
     {
@@ -368,7 +368,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:378 \"st.HighWater[kind]++\""
+        "internal/store/store.go:382 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2161,8 +2161,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
-        "internal/store/store.go:316 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
+        "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
+        "internal/store/store.go:320 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
       ]
     },
     {
@@ -2183,7 +2183,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:378 \"st.HighWater[kind]++\""
+        "internal/store/store.go:382 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2204,7 +2204,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:139 \"files, err := gitx.Files(project, rev, dirs...)\""
+        "internal/store/store.go:140 \"files, err := gitx.Files(project, rev, dirs...)\""
       ]
     },
     {
@@ -2225,8 +2225,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:345 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
-        "internal/store/store.go:352 \"return os.Rename(tmp, path)\""
+        "internal/store/store.go:349 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
+        "internal/store/store.go:356 \"return os.Rename(tmp, path)\""
       ]
     },
     {
@@ -4121,7 +4121,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+      "Quote": "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
     },
     {
       "From": "MOD-0041",
@@ -4137,7 +4137,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:378 \"st.HighWater[kind]++\""
+      "Quote": "internal/store/store.go:382 \"st.HighWater[kind]++\""
     },
     {
       "From": "MOD-0041",
@@ -4183,7 +4183,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+      "Quote": "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
     },
     {
       "From": "MOD-0046",
@@ -11307,7 +11307,31 @@
                 "Code": true
               },
               {
-                "Text": ", by which a later setup pairs it again. It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
+                "Text": ", by which a later setup pairs it again. ",
+                "Code": false
+              },
+              {
+                "Text": "ref_test.go",
+                "Code": true
+              },
+              {
+                "Text": " pins that a unit stored under the older ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_key",
+                "Code": true
+              },
+              {
+                "Text": " still pairs, and that a unit file spelling both with different refs fails ",
+                "Code": false
+              },
+              {
+                "Text": "status",
+                "Code": true
+              },
+              {
+                "Text": ". It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
                 "Code": false
               }
             ]
@@ -20201,7 +20225,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         }
@@ -23766,7 +23790,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+            "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
           ]
         },
         {
@@ -26600,7 +26624,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -26937,7 +26961,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+              "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
             ],
             "Marks": [
               {
@@ -27613,7 +27637,23 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". It refuses a file that spells both with different refs, as the extraction refuses a unit with a different ",
+                "Code": false
+              },
+              {
+                "Text": "ref",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "key",
+                "Code": true
+              },
+              {
+                "Text": ", since either could be the one setup pairs on. ",
                 "Code": false
               },
               {
@@ -29794,7 +29834,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -29812,7 +29852,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+            "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
           ]
         },
         {
@@ -29830,7 +29870,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:378 \"st.HighWater[kind]++\""
+            "internal/store/store.go:382 \"st.HighWater[kind]++\""
           ]
         },
         {
@@ -29849,7 +29889,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         },
