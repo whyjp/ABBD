@@ -54,6 +54,10 @@ func (r frect) contains(p fpt, inset float64) bool {
 	return p.x > r.x+inset && p.x < r.x+r.w-inset && p.y > r.y+inset && p.y < r.y+r.h-inset
 }
 
+func (r frect) holds(o frect) bool {
+	return o.x >= r.x && o.y >= r.y && o.x+o.w <= r.x+r.w && o.y+o.h <= r.y+r.h
+}
+
 func (r frect) grow(d float64) frect { return frect{r.x - d, r.y - d, r.w + 2*d, r.h + 2*d} }
 
 func (r frect) overlaps(o frect) bool {
@@ -351,8 +355,11 @@ type Metrics struct {
 	Boxes, Split                                  int
 	Width, Wires, Crossings, TooClose, MaxChannel int
 	Truncated, Overflow                           int
-	OriginDashed, Unmarked                        int
-	UnwiredOnFrame, NodeOverlaps, ThroughBox      int
+	// Escaped counts the chips that leave the canvas, or the frame or box
+	// whose edge they sit on.
+	Escaped                                  int
+	OriginDashed, Unmarked                   int
+	UnwiredOnFrame, NodeOverlaps, ThroughBox int
 	// Forward and Back count the lines that arrive at a box or a chip by
 	// the way they run, BackPlain the back lines drawn like forward ones,
 	// and SplitIn the lines of one kind that arrive at one edge of a box
@@ -367,8 +374,8 @@ type Metrics struct {
 }
 
 func (m Metrics) String() string {
-	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx", m.Braid, m.Detour, m.MaxDetour)
+	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, escaped chips %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx", m.Braid, m.Detour, m.MaxDetour)
 }
 
 func measure(s sheet) Metrics {
@@ -491,6 +498,19 @@ func measure(s sheet) Metrics {
 			if float64(textWidth(line, sh.px[k])) > sh.r.w-pad {
 				m.Overflow++
 			}
+		}
+	}
+	canvas := frect{0, 0, s.width, s.height}
+	for _, sh := range s.shapes {
+		if sh.kind != "port" {
+			continue
+		}
+		hosted := s.frame != nil && s.frame.holds(sh.r)
+		for _, b := range s.shapes {
+			hosted = hosted || b.kind == "box" && b.r.holds(sh.r)
+		}
+		if !hosted || !canvas.holds(sh.r) {
+			m.Escaped++
 		}
 	}
 	// R10: nothing drawn on top of anything else.
@@ -688,6 +708,7 @@ func (m Metrics) violations(width int) []string {
 	check(m.Crossings <= crossingsPerLine*m.Wires, "7", "%d crossings for %d drawn lines, limit %d", m.Crossings, m.Wires, crossingsPerLine*m.Wires)
 	check(m.Truncated == 0, "8", "%d labels cut short below the hard width", m.Truncated)
 	check(m.Overflow == 0, "8", "%d labels wider than their box", m.Overflow)
+	check(m.Escaped == 0, "8", "%d chips run off their edge or the canvas", m.Escaped)
 	check(m.NodeOverlaps == 0, "9", "%d boxes or chips overlap", m.NodeOverlaps)
 	check(m.ThroughBox == 0, "9", "%d lines pass through a box they do not join", m.ThroughBox)
 	check(m.OriginDashed == 0, "11", "%d lines dashed for their origin", m.OriginDashed)

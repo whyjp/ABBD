@@ -108,15 +108,13 @@ var debt = map[string]Metrics{
 	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 244},
 	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},
 	"orca MOD-0072 desktop renderer UI":      {Back: 6},
-	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 502},
+	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 468},
 	"orca MOD-0098 src/":                     {TooClose: 1},
-	"pstack MOD-0001 setup and help":         {Braid: 2160, MaxChannel: 6},
+	"pstack MOD-0001 setup and help":         {Braid: 2228},
 	"pstack MOD-0003 principles":             {Back: 3},
-	// Focus views (focus.go) of the same states, where lines of two kinds
-	// between the same boxes run side by side. A frame chip as wide as its
-	// whole label pushes them closer.
-	"pstack MOD-0001 focus FEAT-0008 docs/harness/claude-code.md":  {Braid: 708},
-	"pstack MOD-0013 focus FEAT-0040 /principle-laziness-protocol": {Braid: 230},
+	// A focus view (focus.go) of the same state, where lines of two kinds
+	// between the same boxes run side by side.
+	"pstack MOD-0001 focus FEAT-0008 docs/harness/claude-code.md": {Braid: 708},
 }
 
 // over names each measure that went past its recorded debt. A measure the

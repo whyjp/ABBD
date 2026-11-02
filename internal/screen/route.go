@@ -1196,9 +1196,9 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			if e.node != "" {
 				continue
 			}
-			b := box{e.lo - 4, l.top - chipH - 3, e.hi - e.lo + 8, chipH + 3}
+			b := box{e.lo - 4, l.top - l.chips[0], e.hi - e.lo + 8, l.chips[0]}
 			if e.row >= 0 {
-				b.y = endY(e, 1) - 3
+				b.y, b.h = endY(e, 1)-3, l.chips[1]
 			}
 			if !seen[b] {
 				seen[b] = true
