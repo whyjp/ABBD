@@ -30,3 +30,22 @@ func TestSyncNamesAManifestNoUnitCovers(t *testing.T) {
 		t.Errorf("an uncovered manifest is a warning and must not fail status --check")
 	}
 }
+
+// A manifest nested inside a module a unit anchors by its directory, such
+// as an Android build under a mobile module, belongs to that module.
+func TestSyncKeepsQuietOnAManifestUnderADirectoryAnchor(t *testing.T) {
+	p, exe := bare(t)
+	p.code("mobile/codec/index.ts", "export const codec = 1\n")
+	p.code("mobile/codec/package.json", "{}\n")
+	p.code("mobile/codec/android/build.gradle", "apply plugin: 'java'\n")
+	p.code("mobile/other/android/build.gradle", "apply plugin: 'java'\n")
+	p.extract(`{"units":[{"ref":"codec","kind":"MOD","name":"codec","anchors":[{"path":"mobile/codec"}]}]}`)
+	out := p.setup(0, "synced", "--", exe)
+	out += p.want(0, "", "sync")
+	contains(t, out, "uncovered: mobile/other/android/build.gradle")
+	for _, quiet := range []string{"mobile/codec/package.json", "mobile/codec/android/build.gradle"} {
+		if strings.Contains(out, "uncovered: "+quiet) {
+			t.Errorf("sync must not name %s, which sits under the unit anchored on mobile/codec:\n%s", quiet, out)
+		}
+	}
+}

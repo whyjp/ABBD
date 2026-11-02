@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "4df8f8497f07ccadc2b87c23e567db5e18e91471fd2992d97a5ddfd972f67a13"
+    "inputs_hash": "28678a5386c51414fd5f143365ce0059f1717f058d3dfcad0151def8d554e31c"
   },
   "units": [
     {
@@ -11598,7 +11598,15 @@
                 "Code": true
               },
               {
-                "Text": ", under whose directory no present unit holds an anchor. It skips the root's manifest and any under ",
+                "Text": ", under whose directory no present unit holds an anchor and which no unit holds by a directory anchor over it, so an Android ",
+                "Code": false
+              },
+              {
+                "Text": "build.gradle",
+                "Code": true
+              },
+              {
+                "Text": " inside a module anchored on its directory stays quiet. It skips the root's manifest and any under ",
                 "Code": false
               },
               {
