@@ -59,3 +59,15 @@ func TestExplainNamesTheEntriesAFeatureUses(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	p.want(0, "IF-0001 http api (extracted): GET /charges", "explain", "FEAT-0002")
 }
+
+// A part of a page that uses a contract whole makes the page use it whole,
+// whatever entries the page names itself.
+func TestImpactKeepsAFeaturesWholeUse(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(strings.Replace(pagesExtraction, `{"from":"chart","to":"lib","kind":"depends_on"},`, `{"from":"chart","to":"lib","kind":"depends_on"},{"from":"chart","to":"api","kind":"consumes"},`, 1))
+	p.setup(0, "synced", "--", exe)
+	out := p.want(0, "uses IF-0001 http api, no entry named\nfeature FEAT-0004", "impact", "IF-0001", "--features")
+	if strings.Contains(out, "uses IF-0001 http api: GET /charges") {
+		t.Errorf("the chart's whole use is hidden by the page's route:\n%s", out)
+	}
+}

@@ -71,6 +71,9 @@ func ByFeature(units []model.Unit, im Impact) ([]Feature, []Tiered) {
 			groups[f].Items = append(groups[f].Items, Tiered{it, t.name})
 		}
 	}
+	// whole marks a contract a feature, or a unit inside it, uses whole, so
+	// no other unit's narrowed use hides it.
+	whole := map[[2]model.ID]bool{}
 	for _, l := range Links(units) {
 		f := home(l.From)
 		if g := groups[f]; g != nil && l.Kind == model.Consumes && impacted[l.To] {
@@ -79,7 +82,13 @@ func ByFeature(units []model.Unit, im Impact) ([]Feature, []Tiered) {
 				g.Uses = append(g.Uses, ContractUse{Contract: l.To})
 				i = len(g.Uses) - 1
 			}
-			g.Uses[i].Entries = slices.Compact(slices.Sorted(slices.Values(append(g.Uses[i].Entries, l.Entries...))))
+			k := [2]model.ID{f, l.To}
+			whole[k] = whole[k] || len(l.Entries) == 0
+			if whole[k] {
+				g.Uses[i].Entries = nil
+			} else {
+				g.Uses[i].Entries = slices.Compact(slices.Sorted(slices.Values(append(g.Uses[i].Entries, l.Entries...))))
+			}
 		}
 	}
 	var out []Feature
