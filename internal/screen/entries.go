@@ -9,6 +9,8 @@ import (
 // each, with the columns only some contracts fill left out when no row
 // fills them.
 type Entries struct {
+	// ID is the contract's, so a row's id is unique on the page.
+	ID string
 	// Shape heads the column of what each entry looks like: a signature, or
 	// for a contract that holds data its type.
 	Shape string
@@ -39,7 +41,7 @@ func entries(in Input, u model.Unit) *Entries {
 		return nil
 	}
 	data := u.Kind == model.Data || u.Kind == model.Config
-	t := &Entries{Shape: "시그니처", Data: data}
+	t := &Entries{ID: string(u.ID), Shape: "시그니처", Data: data}
 	if data {
 		t.Shape = "타입"
 	}
