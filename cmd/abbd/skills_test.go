@@ -288,3 +288,33 @@ func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {
 		t.Errorf("install changed content outside its block:\n%s", got)
 	}
 }
+
+// status --check gates a hook or CI on what an agent can bring current in the
+// same change: the state, the blueprint, the module texts and drifted evidence.
+// Dead evidence is history the views already dropped, so it never fails.
+func TestStatusCheckFailsOnlyOnWhatTheChangeCanBringCurrent(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "state: CURRENT", "status", "--check")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	p.want(0, "understanding: 1 module text(s), 0 STALE", "status", "--check")
+
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.want(1, "the state is STALE", "status", "--check")
+	p.resync()
+	out := p.want(1, "1 module text(s) STALE", "status", "--check")
+	if !strings.Contains(out, "evidence item(s) drifted") || strings.Contains(out, "the state is STALE") {
+		t.Fatalf("after sync only the text and the drifted quotes are out of date:\n%s", out)
+	}
+	p.want(0, "state: CURRENT", "status")
+
+	p.laterRevision()
+	p.resync()
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how2.md", "### Overview\nbilling charges.\n"))
+	out = p.want(0, "0 drifted", "status", "--check")
+	if strings.Contains(out, " 0 dead") {
+		t.Fatalf("the quote that left the code should be dead now, and dead must not fail the check:\n%s", out)
+	}
+
+	write(t, filepath.Join(p.root, ".abbd", "project.yaml"), p.read("project.yaml")+"# edited\n")
+	p.want(1, "the blueprint is STALE", "status", "--check")
+}

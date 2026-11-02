@@ -65,7 +65,10 @@ func (e env) checkEvidence() error {
 }
 
 // status prints whether the state matches the working tree, whether the
-// blueprint matches the state, and what the state holds.
+// blueprint matches the state, and what the state holds. With --check it
+// fails on what the change can still bring current: a STALE state, blueprint
+// or module text, and drifted evidence, which dies at the next revision's
+// sync. Dead evidence is already out of every view, so it does not fail.
 func (e env) status() error {
 	in, err := e.screenInput()
 	if err != nil {
@@ -73,7 +76,17 @@ func (e env) status() error {
 	}
 	if len(in.Units) == 0 {
 		fmt.Fprintln(e.stdout, "state: none; run abbd setup -- EXTRACT-ARGV")
+		if e.check {
+			return fmt.Errorf("not current: there is no state")
+		}
 		return nil
+	}
+	var behind []string
+	if f := in.ActualFreshness(); f != screen.Fresh {
+		behind = append(behind, fmt.Sprintf("the state is %s, run abbd sync", f))
+	}
+	if f := in.BlueprintFreshness(); f != screen.Fresh {
+		behind = append(behind, fmt.Sprintf("the blueprint is %s, run abbd sync", f))
 	}
 	switch in.ActualFreshness() {
 	case screen.Stale:
@@ -111,8 +124,14 @@ func (e env) status() error {
 		}
 	}
 	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE\n", len(in.Understandings), stale)
+	if stale > 0 {
+		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
+	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
+	if ev[model.Drifted] > 0 {
+		behind = append(behind, fmt.Sprintf("%d evidence item(s) drifted, abbd evidence lists them", ev[model.Drifted]))
+	}
 	for _, u := range in.Units {
 		for _, m := range u.Masks {
 			fmt.Fprintf(e.stdout, "retracted: %s %s by a %s: %s\n", u.ID, m.Target, m.Writer, m.Reason)
@@ -120,6 +139,9 @@ func (e env) status() error {
 	}
 	for _, c := range model.ParentConflicts(in.Units) {
 		fmt.Fprintln(e.stdout, "conflict:", c)
+	}
+	if e.check && len(behind) > 0 {
+		return fmt.Errorf("not current: %s", strings.Join(behind, "; "))
 	}
 	return nil
 }

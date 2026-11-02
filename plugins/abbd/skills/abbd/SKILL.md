@@ -44,3 +44,22 @@ When the human states a purpose, a responsibility or a coupling in the conversat
 3. Commit `.abbd/` with the code, so the PR shows the blueprint's change.
 
 `abbd evidence` lists each quote and whether it is live, drifted or dead. `abbd status` counts drifted and dead items, and lists retractions and a human's parent the script has since moved. If a write says the state is in the old format, run `abbd migrate` once and commit the result. `abbd diff --check` exits 1 when a contract's signature changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared, for a CI job that labels the PR. A contract's code change under the same signature is reported but does not fail it.
+
+## Gate a hook or CI
+
+`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
+
+```yaml
+# lefthook.yml
+pre-push:
+  commands:
+    abbd:
+      run: abbd status --check
+```
+
+```yaml
+# a GitHub Actions job, after actions/checkout
+- uses: actions/setup-go@v5
+- run: go install github.com/whyjp/abbd/cmd/abbd@main
+- run: abbd status --check
+```
