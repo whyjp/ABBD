@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "e6911e1182fdd0277ece2a36a210871e7293ce7197ea4fb536895db1b170cf6c"
+    "inputs_hash": "d897863f02c5cf2ef4fd8180d9e73202018f98e97ababe40348d84b5b072a57b"
   },
   "units": [
     {
@@ -350,7 +350,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+        "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
       ]
     },
     {
@@ -440,7 +440,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+        "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
     },
     {
@@ -4274,7 +4274,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+      "Quote": "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4282,7 +4282,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+      "Quote": "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4290,7 +4290,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+      "Quote": "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
     },
     {
       "From": "MOD-0054",
@@ -4298,7 +4298,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:115 \"next[model.Module]++\""
+      "Quote": "internal/group/group.go:124 \"next[model.Module]++\""
     },
     {
       "From": "MOD-0054",
@@ -4306,7 +4306,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      "Quote": "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
     },
     {
       "From": "MOD-0054",
@@ -21134,7 +21134,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         }
       ]
@@ -23443,6 +23443,60 @@
               },
               {
                 "Text": " watermark.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Real states",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "fixtures_test.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "testdata/",
+                "Code": true
+              },
+              {
+                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them. ",
+                "Code": false
+              },
+              {
+                "Text": "TestEveryRealDrawingIsLegible",
+                "Code": true
+              },
+              {
+                "Text": " measures every full and focus view of each against ",
+                "Code": false
+              },
+              {
+                "Text": "docs/blueprint-svg.md",
+                "Code": true
+              },
+              {
+                "Text": "'s rules. ",
+                "Code": false
+              },
+              {
+                "Text": "debt",
+                "Code": true
+              },
+              {
+                "Text": " lists the views that do not keep them yet with what they measure now: a listed view may only improve, and the test fails once it keeps every rule and is still listed.",
                 "Code": false
               }
             ]
@@ -26495,7 +26549,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:115 \"next[model.Module]++\""
+            "internal/group/group.go:124 \"next[model.Module]++\""
           ]
         }
       ]
@@ -28653,7 +28707,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         }
       ]
@@ -28848,7 +28902,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:78 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         },
         {
@@ -28857,7 +28911,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:126 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         },
         {
@@ -28866,7 +28920,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:159 \"return path.Dir(u.Anchors[0].Path)\""
+            "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
           ]
         },
         {
@@ -28875,7 +28929,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:115 \"next[model.Module]++\""
+            "internal/group/group.go:124 \"next[model.Module]++\""
           ]
         },
         {
@@ -28884,7 +28938,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:86 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+            "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
           ]
         }
       ]
