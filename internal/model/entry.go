@@ -61,6 +61,8 @@ func ValidateEntries(es []Entry) error {
 		switch {
 		case strings.TrimSpace(e.Name) == "":
 			return fmt.Errorf("an entry needs a name")
+		case e.Key == "":
+			return fmt.Errorf("entry %q: its name has no letters or digits a key can take; give it a \"key\"", e.Name)
 		case !noteKey.MatchString(e.Key):
 			return fmt.Errorf("entry %q: key %q is not lower-case letters, digits and hyphens", e.Name, e.Key)
 		case seen[e.Key] != "":

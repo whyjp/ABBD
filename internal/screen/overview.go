@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -54,6 +55,10 @@ type Port struct {
 	Exit                          bool
 	Below                         bool `json:",omitempty"`
 	X, Y, W                       int
+	// H is the chip's height, the same for every chip in its row, and Lines
+	// its label as wrapped to fit chipMax (chipLines).
+	H     int      `json:",omitempty"`
+	Lines []string `json:"-"`
 	// Href opens the view of the unit a frame port stands for.
 	Href string `json:",omitempty"`
 	// Rels are the stored relations the chip stands for.
@@ -99,6 +104,8 @@ type Mark struct {
 
 const (
 	boxH, chipH = 60, 17
+	// chipLine is how much taller each further line makes a wrapped chip.
+	chipLine = 13
 	// chipRow is how far each further row of chips sits inside a box. A
 	// module whose chips need more than chipWrap wraps them into at most
 	// chipRowsMax rows instead of widening, so lines can pass beside it.
@@ -107,8 +114,10 @@ const (
 	chipRowsMax = 2
 	chipPx      = 11
 	nameLine    = 16
-	// chipMax and boxMax are the hard widths past which a label is cut and
-	// its full text left to the tooltip, rule 4.
+	// boxMax, and chipMax for a contract drawn as a box of its own, are the
+	// hard widths past which a name is cut and its full text left to the
+	// tooltip, rule 8. A chip is never cut: a label wider than chipMax wraps
+	// onto more lines.
 	chipMax = 220
 	boxMax  = 280
 )
@@ -136,7 +145,73 @@ func portLabel(name string) string {
 	return name
 }
 
-func chipWidth(label string) int { return min(chipMax, textWidth(label, chipPx)+12) }
+// chipLines sets a chip's label on lines at most chipMax wide, broken after
+// a separator or before a space, and a word too long for a line where the
+// line is full, so a long name grows the chip down and never off its edge.
+func chipLines(label string) []string {
+	room := chipMax - 12
+	if textWidth(label, chipPx) <= room {
+		return []string{label}
+	}
+	var words []string
+	start := 0
+	for i, r := range label {
+		switch {
+		case r == ' ' && i > start:
+			words, start = append(words, label[start:i]), i
+		case strings.ContainsRune("/-_.,", r):
+			words, start = append(words, label[start:i+1]), i+1
+		}
+	}
+	words = append(words, label[start:])
+	var lines []string
+	line := ""
+	for _, w := range words {
+		if line != "" && textWidth(line+w, chipPx) > room {
+			lines, line = append(lines, strings.TrimSpace(line)), ""
+			w = strings.TrimLeft(w, " ")
+		}
+		for textWidth(w, chipPx) > room {
+			_, cut := utf8.DecodeRuneInString(w)
+			for i := range w {
+				if i > cut && textWidth(w[:i], chipPx) <= room {
+					cut = i
+				}
+			}
+			lines, w = append(lines, w[:cut]), w[cut:]
+		}
+		line += w
+	}
+	if line = strings.TrimSpace(line); line != "" {
+		lines = append(lines, line)
+	}
+	return lines
+}
+
+func chipWidth(label string) int {
+	w := 0
+	for _, l := range chipLines(label) {
+		w = max(w, textWidth(l, chipPx))
+	}
+	return w + 12
+}
+
+// chipHeight is how tall the chip for label is.
+func chipHeight(label string) int { return chipH + (len(chipLines(label))-1)*chipLine }
+
+// RectY is where the chip's rect starts: below its edge on top of a box or
+// frame, above it on the bottom.
+func (p Port) RectY() int {
+	if p.Below {
+		return p.Y - p.H - 3
+	}
+	return p.Y + 3
+}
+
+// LineY is where the chip's line i starts, the lines centred in the chip.
+func (p Port) LineY(i int) int {
+	return p.RectY() + (p.H-chipH-(len(p.Lines)-1)*chipLine)/2 + i*chipLine
+}
 
 // shorten drops a first word every label on one side shares, such as "abbd"
 // on every CLI command.
@@ -175,8 +250,9 @@ type overview struct {
 	users     map[model.ID][]model.ID
 	layout    layout
 	names     map[model.ID][]string
-	// chipRows are how many rows of chips each module's top and bottom hold.
-	chipRows map[model.ID][2]int
+	// chipBands are how tall the rows of chips on each module's top and
+	// bottom are (chipBand).
+	chipBands map[model.ID][2]int
 	// carry are the contracts each drawn contract line carries, by the
 	// user and the provider it joins, in the order lines are drawn.
 	carry map[[2]model.ID][]model.ID
@@ -272,7 +348,7 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
 func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {
-	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipRows: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
+	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
@@ -387,9 +463,9 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overvi
 		o.names[m] = ls
 		exits, entries := labels(o.chips[m][0]), labels(o.chips[m][1])
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
-		rows := [2]int{max(1, chipRows(exits, w, chipRowsMax)), max(1, chipRows(entries, w, chipRowsMax))}
-		o.chipRows[m] = rows
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + (rows[0]+rows[1]-2)*chipRow})
+		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
+		o.chipBands[m] = bands
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -435,6 +511,7 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 	}
 	labels = shorten(labels)
 	out := map[string]Port{}
+	off := 0
 	for row, start := 0, 0; start < len(labels); row++ {
 		end := len(labels)
 		if row < rows-1 {
@@ -444,10 +521,11 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 		for shown > start+1 && chipRowWidth(labels[start:shown])+chipWidth(fmt.Sprintf("+%d", end-shown)) > r.W && chipRowWidth(labels[start:end]) > r.W {
 			shown--
 		}
-		y := r.Y + row*chipRow
+		y := r.Y + off
 		if below {
-			y = r.Y + r.H - row*chipRow
+			y = r.Y + r.H - off
 		}
+		h := rowHeight(labels[start:end])
 		x := r.X + 4
 		for i := start; i < end; i++ {
 			l := labels[i]
@@ -455,14 +533,24 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 				l = fmt.Sprintf("+%d", end-shown)
 			}
 			w := chipWidth(l)
-			out[items[i].key] = Port{X: x + 4, Y: y, W: w, Label: fit(l, w-12, chipPx), Below: below}
+			out[items[i].key] = Port{X: x + 4, Y: y, W: w, H: h, Label: l, Lines: chipLines(l), Below: below}
 			if i < shown {
 				x += w + 4
 			}
 		}
+		off += h + 3
 		start = end
 	}
 	return out
+}
+
+// rowHeight is how tall a row of chips is: as tall as its tallest chip.
+func rowHeight(labels []string) int {
+	h := chipH
+	for _, l := range labels {
+		h = max(h, chipHeight(l))
+	}
+	return h
 }
 
 // settle moves each chip of a frame's or a box's edge, set out by spread
@@ -509,14 +597,20 @@ func rowEnd(labels []string, start, w int) int {
 	return end
 }
 
-// chipRows is how many rows spread sets labels in at w wide.
-func chipRows(labels []string, w, rows int) int {
+// chipBand is how tall the rows spread sets labels in at w wide are, gaps
+// included, and one row's height when there are none.
+func chipBand(labels []string, w, rows int) int {
 	labels = shorten(labels)
-	n := 0
-	for start := 0; start < len(labels) && n < rows; n++ {
-		start = rowEnd(labels, start, w)
+	band := 0
+	for n, start := 0, 0; start < len(labels); n++ {
+		end := len(labels)
+		if n < rows-1 {
+			end = rowEnd(labels, start, w)
+		}
+		band += rowHeight(labels[start:end]) + 3
+		start = end
 	}
-	return n
+	return max(band, chipRow)
 }
 
 // chipRowWidth is how wide one row of chips is, labels already shortened.
@@ -689,8 +783,8 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		u := o.units[m]
 		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
-		rows := o.chipRows[m]
-		y := r.Y + (r.H+(rows[0]-rows[1])*chipRow)/2 + 5 - (len(ls)-1)*nameLine/2
+		bands := o.chipBands[m]
+		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}

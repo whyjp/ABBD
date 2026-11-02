@@ -160,6 +160,9 @@ func (e env) status() error {
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or delete the file status names", n))
 	}
+	if n := e.statusFlows(in.Units, in.Flows, in.FlowStrays); n > 0 {
+		behind = append(behind, fmt.Sprintf("%d flow step(s) STALE, read the code each cites again and store the flow with abbd flow KEY FILE, or delete the file status names", n))
+	}
 	if len(texts) > 0 {
 		readTexts(e.stdout, texts)
 	}

@@ -56,6 +56,9 @@ type layout struct {
 	// reserved are the x of every chain's lanes in each row, which a line
 	// with no chain keeps clear of.
 	reserved map[int][]int
+	// chips are how tall the bands of chips on a frame's top and bottom
+	// edges are (chipBand), for an inside.
+	chips [2]int
 }
 
 const (

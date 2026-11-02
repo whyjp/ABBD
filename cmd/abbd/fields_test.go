@@ -35,7 +35,7 @@ func TestADataContractShowsAndDiffsEachField(t *testing.T) {
 			t.Errorf("the page misses %q", want)
 		}
 	}
-	row := page[strings.Index(page, `<tr id="e-amount">`):]
+	row := page[strings.Index(page, `<tr id="e-DATA-0001.amount">`):]
 	row = row[:strings.Index(row, "</tr>")]
 	if !strings.Contains(row, ">billing<") || !strings.Contains(row, ">ledger<") || strings.Index(row, ">billing<") > strings.Index(row, ">ledger<") {
 		t.Errorf("amount's row names billing as its writer, then ledger as its reader:\n%s", row)

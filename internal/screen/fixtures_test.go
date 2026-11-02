@@ -100,29 +100,21 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // state lacks, so their climbing lines stay (docs/blueprint-svg.md, "Known
 // gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
-	"self MOD-0001 abbd CLI":                  {Back: 5},
-	"self FEAT-0001 /abbd":                    {Back: 5},
-	"self MOD-0030 internal/model":            {Back: 3},
-	"self MOD-0047 internal/topology":         {Back: 2},
-	"orca MOD-0007 mobile app (Expo)":         {Back: 11},
-	"orca MOD-0042 desktop main process":      {Crossings: 87, Back: 10, MaxDetour: 244},
-	"orca MOD-0056 Orca runtime (RPC host)":   {Back: 7},
-	"orca MOD-0072 desktop renderer UI":       {Back: 6},
-	"orca MOD-0081 shared types and schemas":  {Boxes: 22, Back: 6, MaxDetour: 500},
-	"orca MOD-0098 src/":                      {TooClose: 1},
-	"pstack MOD-0001 setup and help":          {Braid: 2278},
-	"pstack MOD-0003 principles":              {Back: 3},
-	"pstack MOD-0015 verification principles": {Truncated: 1},
-	// Focus views (focus.go) of the same states. A name with no break
-	// that wraps is cut as it is in the full views, and lines of two
-	// kinds between the same boxes run side by side.
-	"pstack MOD-0001 focus FEAT-0008 docs/harness/claude-code.md":                        {Truncated: 1, Braid: 916},
-	"pstack MOD-0010 focus FEAT-0012 /benchmark-checklist":                               {Truncated: 1},
-	"pstack MOD-0013 focus FEAT-0030 /principle-attack-the-premise":                      {Truncated: 1},
-	"pstack MOD-0013 focus FEAT-0035 /principle-experience-first":                        {Truncated: 1},
-	"pstack MOD-0014 focus FEAT-0042 /principle-migrate-callers-then-delete-legacy-apis": {Truncated: 1},
-	"pstack MOD-0014 focus FEAT-0044 /principle-model-the-domain":                        {Truncated: 1},
-	"pstack MOD-0015 focus FEAT-0036 /principle-explain-the-number":                      {Truncated: 1},
+	"self MOD-0001 abbd CLI":                 {Back: 5},
+	"self FEAT-0001 /abbd":                   {Back: 5},
+	"self MOD-0030 internal/model":           {Back: 3},
+	"self MOD-0047 internal/topology":        {Back: 2},
+	"orca MOD-0007 mobile app (Expo)":        {Back: 11},
+	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 244},
+	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},
+	"orca MOD-0072 desktop renderer UI":      {Back: 6},
+	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 468},
+	"orca MOD-0098 src/":                     {TooClose: 1},
+	"pstack MOD-0001 setup and help":         {Braid: 2228},
+	"pstack MOD-0003 principles":             {Back: 3},
+	// A focus view (focus.go) of the same state, where lines of two kinds
+	// between the same boxes run side by side.
+	"pstack MOD-0001 focus FEAT-0008 docs/harness/claude-code.md": {Braid: 708},
 }
 
 // over names each measure that went past its recorded debt. A measure the

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -125,7 +126,7 @@ func TestANoteDescribesOneEntry(t *testing.T) {
 	p.wantNote(0, "understood IF-0001.entries.get-charges-id http api", "IF-0001.entries.get-charges-id", "One charge, with its refunds.", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	p.want(0, "notes: 1 slot note(s), 0 STALE, 0 orphaned", "status", "--check")
 	page := p.read("blueprint/index.html")
-	for _, want := range []string{`<tr id="e-get-charges-id">`, "<code>GET /charges/{id}</code>", "<p>One charge, with its refunds.</p>", ">charges page<"} {
+	for _, want := range []string{`<tr id="e-IF-0001.get-charges-id">`, "<code>GET /charges/{id}</code>", "<p>One charge, with its refunds.</p>", ">charges page<"} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page misses %q", want)
 		}
@@ -149,4 +150,84 @@ func TestTheExtractionGuardsEntries(t *testing.T) {
 	p.setup(1, `its target has no entry "GET /nope"`, "--", exe)
 	p.extract(strings.Replace(entriesBase, `{"key":"billing","kind":"MOD","name":"billing",`, `{"key":"billing","kind":"MOD","name":"billing","entries":[{"name":"x"}],`, 1))
 	p.setup(1, "only contracts carry entries", "--", exe)
+}
+
+// One line of an edge that names no entries uses the whole contract, so a
+// second, narrowed line of the same edge leaves the claim whole.
+func TestAWholeUseOutweighsANarrowedLineOfTheSameEdge(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(strings.Replace(entriesBase, `{"from":"page","to":"api","kind":"consumes","entries":["GET /charges"]}`,
+		`{"from":"page","to":"api","kind":"consumes"},{"from":"page","to":"api","kind":"consumes","entries":["GET /charges"]}`, 1))
+	p.setup(0, "synced: 3 unit(s)", "--", exe)
+	if feat := p.read("features/FEAT-0001.md"); strings.Contains(feat, "entries:") {
+		t.Errorf("the page consumes the whole api:\n%s", feat)
+	}
+}
+
+// A use that comes to take the whole contract is one line saying so, not a
+// line per entry it seems to drop.
+func TestDiffSaysAUseWidenedToTheWholeContract(t *testing.T) {
+	p, _ := entriesProject(t)
+	p.extract(strings.Replace(entriesBase, `,"entries":["GET /charges"]`, "", 1))
+	p.want(0, "", "sync")
+	out := p.want(0, "~ entry use FEAT-0001 consumes IF-0001 now uses the whole contract (charges page consumes http api)", "diff", "--base", "HEAD")
+	if strings.Contains(out, "- entry use") {
+		t.Errorf("widening a use drops no entry:\n%s", out)
+	}
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "whole")
+	p.extract(entriesBase)
+	p.want(0, "", "sync")
+	out = p.want(0, "~ entry use FEAT-0001 consumes IF-0001 now uses only some of its entries (charges page consumes http api)", "diff", "--base", "HEAD")
+	if strings.Contains(out, "+ entry use") {
+		t.Errorf("the page used every entry before:\n%s", out)
+	}
+}
+
+// A name with no letters or digits a key takes, such as Hangul, needs an
+// explicit key, and the error says so.
+func TestAnEntryWithNoKeyableNameAsksForAKey(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(strings.Replace(entriesBase, `{"name":"POST /refunds","shape":"Refund -> 201"}`, `{"name":"금액"}`, 1))
+	p.setup(1, `give it a "key"`, "--", exe)
+	p.extract(strings.Replace(entriesBase, `{"name":"POST /refunds","shape":"Refund -> 201"}`, `{"name":"금액","key":"amount"}`, 1))
+	p.setup(0, "synced: 3 unit(s)", "--", exe)
+}
+
+// Two contracts may each list an entry of the same key, and each row keeps
+// an id of its own on the page.
+func TestEntryRowsOfTwoContractsKeepTheirOwnIDs(t *testing.T) {
+	p, exe := bare(t)
+	p.extract(strings.Replace(entriesBase, `],"relations":[`, `,
+ {"key":"admin","kind":"IF","name":"admin api","signature":"/admin","anchors":[{"path":"api/admin.go","symbol":"Admin"}],"entries":[{"name":"GET /charges"}]}
+],"relations":[{"from":"billing","to":"admin","kind":"provides"},`, 1))
+	p.setup(0, "synced: 4 unit(s)", "--", exe)
+	page := p.read("blueprint/index.html")
+	seen := map[string]bool{}
+	for _, m := range regexp.MustCompile(` id="(e-[^"]+)"`).FindAllStringSubmatch(page, -1) {
+		if seen[m[1]] {
+			t.Errorf("the page repeats the id %q", m[1])
+		}
+		seen[m[1]] = true
+	}
+	for _, want := range []string{"e-IF-0001.get-charges", "e-IF-0002.get-charges"} {
+		if !seen[want] {
+			t.Errorf("the page has no row %q", want)
+		}
+	}
+}
+
+// A long route or type with no space in it wraps inside its cell, so a
+// table of entries stays as wide as the page; a browser measured this, and
+// the page keeps the rules that make it so.
+func TestALongEntryWrapsInsideItsCell(t *testing.T) {
+	p, _ := entriesProject(t)
+	css := p.read("blueprint/index.html")
+	css = css[:strings.Index(css, "</style>")]
+	if !regexp.MustCompile(`\.entries td > code \{[^}]*max-width: 40ch;[^}]*overflow-wrap: anywhere;`).MatchString(css) {
+		t.Errorf("a cell's name or shape is capped and wraps anywhere")
+	}
+	if regexp.MustCompile(`\.entries td[.\w]* \{[^}]*white-space: nowrap`).MatchString(css) {
+		t.Errorf("no entry cell refuses to wrap")
+	}
 }
