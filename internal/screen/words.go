@@ -2,6 +2,8 @@ package screen
 
 import (
 	"strings"
+
+	"github.com/whyjp/abbd/internal/narrative"
 )
 
 // Understanding is a module's text from pstack's how, split into blocks the
@@ -13,6 +15,7 @@ type Understanding struct {
 
 type Block struct {
 	// Kind is "h" for a heading, "li" for a list item, "p" for a paragraph.
+	// "pre" is a fenced code block, whose one part holds its lines.
 	Kind  string
 	Parts []Span
 }
@@ -42,23 +45,33 @@ func spans(s string) []Span {
 	return out
 }
 
+// blocks reads a text's lines as narrative.Lines does, so the page and the
+// lint agree on its headings and its code.
 func blocks(text string) []Block {
 	var out []Block
-	var para []string
+	var para, code []string
 	flush := func() {
 		if len(para) > 0 {
 			out = append(out, Block{Kind: "p", Parts: spans(strings.Join(para, " "))})
 			para = nil
 		}
+		if len(code) > 0 {
+			out = append(out, Block{Kind: "pre", Parts: []Span{{Text: strings.Join(code, "\n"), Code: true}}})
+			code = nil
+		}
 	}
-	for _, line := range strings.Split(text, "\n") {
-		t := strings.TrimSpace(line)
+	for _, l := range narrative.Lines(text) {
+		t := l.Text
 		switch {
+		case l.Kind == narrative.Code:
+			code = append(code, t)
+		case l.Kind == narrative.Fence:
+			flush()
+		case l.Kind == narrative.Heading:
+			flush()
+			out = append(out, Block{Kind: "h", Parts: spans(t)})
 		case t == "":
 			flush()
-		case strings.HasPrefix(t, "#"):
-			flush()
-			out = append(out, Block{Kind: "h", Parts: spans(strings.TrimSpace(strings.TrimLeft(t, "#")))})
 		case strings.HasPrefix(t, "- "), strings.HasPrefix(t, "* "):
 			flush()
 			out = append(out, Block{Kind: "li", Parts: spans(t[2:])})

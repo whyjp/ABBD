@@ -68,3 +68,44 @@ func TestHistorySkipsCodeSpans(t *testing.T) {
 		t.Fatalf("marks = %v, want only #7", got)
 	}
 }
+
+// A URL names a page, so a fragment or a date in its path is not the
+// text's story.
+func TestHistorySkipsURLs(t *testing.T) {
+	got := History("See https://x.com/a#12 and http://example.com/2026-11-02/notes, but not #7 here.\n")
+	if len(got) != 1 || got[0].Match != "#7" {
+		t.Fatalf("marks = %v, want only #7", got)
+	}
+}
+
+// A fenced block quotes code: a # line inside it opens no section, and
+// what reads as history inside it is not reported.
+func TestAFencedBlockIsCodeNotProse(t *testing.T) {
+	text := "## Overview\n\nIt builds.\n\n```sh\n# build it\nmake # see PR #12 from 2026-11-02\n```\n\n~~~\n#include <x.h>\n~~~\n\n## Key Concepts\n\nfixes #7\n"
+	var heads []string
+	for _, s := range Sections(text) {
+		heads = append(heads, s.Heading)
+	}
+	if want := []string{"Overview", "Key Concepts"}; !slices.Equal(heads, want) {
+		t.Errorf("sections = %v, want %v", heads, want)
+	}
+	if got := History(text); len(got) != 1 || got[0].Match != "#7" || got[0].Section != "Key Concepts" {
+		t.Errorf("marks = %v, want only #7 under Key Concepts", got)
+	}
+}
+
+// A backtick fence's info string holds no backtick, so a line that starts
+// with an inline code span is prose, and a heading after it opens a section.
+func TestALineStartingWithInlineCodeOpensNoFence(t *testing.T) {
+	text := "## Overview\n\n```js``` inline\n\n## Key Concepts\n\nfixes #7\n\n~~~ a`b\n#x\n~~~\n"
+	var heads []string
+	for _, s := range Sections(text) {
+		heads = append(heads, s.Heading)
+	}
+	if want := []string{"Overview", "Key Concepts"}; !slices.Equal(heads, want) {
+		t.Errorf("sections = %v, want %v", heads, want)
+	}
+	if got := History(text); len(got) != 1 || got[0].Match != "#7" {
+		t.Errorf("marks = %v, want only #7", got)
+	}
+}

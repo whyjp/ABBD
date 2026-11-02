@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -52,5 +53,17 @@ func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
 				t.Errorf("%s must say %q", skill, want)
 			}
 		}
+	}
+}
+
+// An orphan text shows beside no module and the check skips it, so the
+// readability report skips it too.
+func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling inserts charges.\n"))
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0099.md"), "---\nunit: MOD-0099\norigin: INFERRED\ndigest: 0123456789abcdef\nformat: 3\n---\n\n## Overview\n\nmigrated from the old service in PR #12.\n")
+	out := p.want(0, "1 orphaned", "status")
+	if !strings.Contains(out, "0 phrase(s) that read as history") || strings.Contains(out, "MOD-0099 \"Overview\"") {
+		t.Fatalf("status linted the orphan text:\n%s", out)
 	}
 }
