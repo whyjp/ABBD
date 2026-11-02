@@ -17,8 +17,8 @@ func (e env) screenInput() (screen.Input, error) {
 	return in, nil
 }
 
-// publish renders the blueprint from the .abbd inputs. graph.json carries the
-// watermark, so it is written last.
+// publish renders the blueprint from the .abbd inputs, then records in the
+// state which inputs it rendered.
 func (e env) publish() error {
 	in, err := e.screenInput()
 	if err != nil || len(in.Units) == 0 {
@@ -33,5 +33,6 @@ func (e env) publish() error {
 			return err
 		}
 	}
-	return nil
+	in.Synced.Blueprint = in.Inputs
+	return e.st.SaveState(in.Synced)
 }

@@ -7,3 +7,4 @@
 *.html -text
 *.patch -text
 *.png binary
+.abbd/state.yaml merge=union

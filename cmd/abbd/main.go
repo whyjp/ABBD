@@ -421,11 +421,7 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 	for _, id := range widened {
 		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code, and its text was checked against only part of it; it is STALE until pstack how reads the module again\n", id)
 	}
-	hash, err := st.MDHash()
-	if err != nil {
-		return res, err
-	}
-	state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}
+	state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}
 	return res, st.SaveState(state)
 }
 

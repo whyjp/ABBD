@@ -4,7 +4,6 @@
 package screen
 
 import (
-	"encoding/json"
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -16,11 +15,12 @@ type Input struct {
 	Units   []model.Unit
 	Project store.Project
 	// Synced is the watermark of the last sync; Tree is the working tree now.
-	Synced store.State
-	Tree   string
-	Inputs string
-	// Rendered is the watermark the blueprint carries, nil when missing.
-	Rendered *Watermark
+	// Inputs is what the blueprint must be rendered from now, and Rendered
+	// says whether its files are there to compare.
+	Synced   store.State
+	Tree     string
+	Inputs   string
+	Rendered bool
 	// Understandings are pstack how's texts by module; Digests are each
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
@@ -33,11 +33,6 @@ type Input struct {
 	// question; FlowStrays the markdown files beside them that are no flows, and why.
 	Flows      []store.Flow
 	FlowStrays []store.Stray
-}
-
-// Watermark ties a rendered file to the .abbd inputs it came from.
-type Watermark struct {
-	Inputs string `json:"inputs_hash"`
 }
 
 // Load reads the store. It leaves Tree empty: snapshotting the working tree
@@ -71,20 +66,9 @@ func Load(st store.Store) (Input, error) {
 		in.Digests[id] = st.ModuleDigest(in.Units, id)
 	}
 	b, err := st.ReadBlueprint(GraphFile)
-	if err != nil {
-		return in, err
-	}
-	if b != nil {
-		var g struct{ Watermark Watermark }
-		if json.Unmarshal(b, &g) == nil {
-			in.Rendered = &g.Watermark
-		}
-	}
-	return in, nil
+	in.Rendered = b != nil
+	return in, err
 }
-
-// Current is the watermark the rendered files must carry right now.
-func (in Input) Current() Watermark { return Watermark{Inputs: in.Inputs} }
 
 type Freshness string
 
@@ -94,12 +78,13 @@ const (
 	Unknown Freshness = "UNKNOWN"
 )
 
-// BlueprintFreshness compares the blueprint with the state it renders.
+// BlueprintFreshness compares the inputs the state says the blueprint was
+// rendered from with the inputs now.
 func (in Input) BlueprintFreshness() Freshness {
 	switch {
-	case in.Rendered == nil:
+	case !in.Rendered || in.Synced.Blueprint == "":
 		return Unknown
-	case *in.Rendered != in.Current():
+	case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:
 		return Stale
 	}
 	return Fresh
@@ -110,7 +95,7 @@ func (in Input) ActualFreshness() Freshness {
 	switch {
 	case in.Tree == "" || in.Synced.Fingerprint == "":
 		return Unknown
-	case in.Tree != in.Synced.Fingerprint:
+	case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:
 		return Stale
 	}
 	return Fresh
@@ -149,21 +134,13 @@ type Model struct {
 	Flows []FlowView
 	// Edges are every live relation between present units, for graph.json.
 	Edges     []Line
-	Actual    Freshness
-	Blueprint Freshness
-	Extract   []string
-	Watermark Watermark
-	Synced    store.State
-	Tree      string
+	Extract []string
 }
 
 // Build derives the screen from the store. It is deterministic: the same
 // input gives the same model, so the rendered files only change with the data.
 func Build(in Input) Model {
-	m := Model{
-		Actual: in.ActualFreshness(), Blueprint: in.BlueprintFreshness(),
-		Extract: in.Project.Extract, Watermark: in.Current(), Synced: in.Synced, Tree: in.Tree,
-	}
+	m := Model{Extract: in.Project.Extract}
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),

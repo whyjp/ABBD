@@ -90,7 +90,7 @@ func (e env) keepingCurrent(write func() error) error {
 	if err := write(); err != nil {
 		return err
 	}
-	if before == "" || before != state.Fingerprint {
+	if before == "" || state.Merged || before != state.Fingerprint {
 		return nil
 	}
 	if state.Fingerprint, err = gitx.Snapshot(e.root, store.Dir); err != nil {

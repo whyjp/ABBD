@@ -398,7 +398,7 @@ func contractTable() []contract {
 		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", literal(".abbd/understanding/MOD.md frontmatter"), nil, nil, "internal/store.Understanding", "yaml"},
 		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", literal(".abbd/understanding/ID/SLOT[.KEY].md frontmatter"), nil, nil, "internal/store.Note", "yaml"},
 		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", literal(".abbd/state.yaml"), nil, nil, "internal/store.State", "yaml"},
-		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil, nil, "", ""},
+		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}}, "mod-screen", blueprintSig, nil, nil, "", ""},
 		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil, nil, "", ""},
 	}...)
 }
