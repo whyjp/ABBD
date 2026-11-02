@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "47bf8fd4726e79b5caf30901ad043c5ff1dd22c0d803bbe0795c5742cf88b06b"
+    "inputs_hash": "a3912722078ba8f5f576fec7139cb559583ead557305fc6690f77c56cb9045aa"
   },
   "units": [
     {
@@ -459,6 +459,19 @@
       "Parent": "MOD-0047",
       "Evidence": [
         "internal/topology/impact.go:112 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      ]
+    },
+    {
+      "ID": "DATA-0024",
+      "Kind": "DATA",
+      "Name": "slot notes",
+      "Signature": ".abbd/understanding/ID/SLOT[.KEY].md frontmatter: code,digest,evidence{lines,path,quote,reason,since,status,symbol},format,origin,slot,unit,why{source,value,writer}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/store/note.go LoadNotes",
+        "internal/store/note.go Note",
+        "internal/store/note.go SaveNote"
       ]
     },
     {
@@ -3017,6 +3030,12 @@
     },
     {
       "From": "MOD-0001",
+      "To": "DATA-0024",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
       "To": "IF-0001",
       "Kind": "provides",
       "Origin": "EXTRACTED"
@@ -3859,6 +3878,12 @@
     },
     {
       "From": "MOD-0034",
+      "To": "DATA-0024",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0034",
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED"
@@ -4058,6 +4083,12 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Quote": "internal/store/store.go:369 \"st.HighWater[kind]++\""
+    },
+    {
+      "From": "MOD-0041",
+      "To": "DATA-0024",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
     },
     {
       "From": "MOD-0041",
@@ -4768,9 +4799,9 @@
       },
       {
         "Contract": "",
-        "Label": "계약 3개",
+        "Label": "계약 4개",
         "Class": "design",
-        "Title": "abbd CLI가 쓰는 계약: project.yaml, unit files, module understanding",
+        "Title": "abbd CLI가 쓰는 계약: project.yaml, unit files, module understanding, slot notes",
         "Exit": false,
         "Below": true,
         "X": 513,
@@ -4784,7 +4815,8 @@
           "MOD-0006.consumes.DATA-0004",
           "MOD-0001.consumes.DATA-0008",
           "MOD-0005.consumes.DATA-0008",
-          "MOD-0006.consumes.DATA-0008"
+          "MOD-0006.consumes.DATA-0008",
+          "MOD-0001.consumes.DATA-0024"
         ]
       },
       {
@@ -4875,9 +4907,9 @@
       },
       {
         "Contract": "",
-        "Label": "계약 4개",
+        "Label": "계약 5개",
         "Class": "design",
-        "Title": "internal/screen가 쓰는 계약: project.yaml, unit files, sync state, module understanding",
+        "Title": "internal/screen가 쓰는 계약: project.yaml, unit files, sync state, module understanding, slot notes",
         "Exit": false,
         "Below": true,
         "X": 686,
@@ -4889,7 +4921,8 @@
           "MOD-0034.consumes.DATA-0006",
           "MOD-0039.consumes.DATA-0006",
           "MOD-0034.consumes.DATA-0008",
-          "MOD-0040.consumes.DATA-0008"
+          "MOD-0040.consumes.DATA-0008",
+          "MOD-0034.consumes.DATA-0024"
         ]
       },
       {
@@ -4923,9 +4956,9 @@
       },
       {
         "Contract": "",
-        "Label": "계약 3개",
+        "Label": "계약 4개",
         "Class": "design",
-        "Title": "internal/store가 제공하는 계약: project.yaml, unit files, module understanding",
+        "Title": "internal/store가 제공하는 계약: project.yaml, unit files, module understanding, slot notes",
         "Exit": true,
         "X": 466,
         "Y": 528,
@@ -4934,14 +4967,15 @@
           "MOD-0041.provides.CFG-0002",
           "MOD-0041.provides.DATA-0004",
           "MOD-0041.provides.DATA-0008",
-          "MOD-0046.provides.DATA-0008"
+          "MOD-0046.provides.DATA-0008",
+          "MOD-0041.provides.DATA-0024"
         ]
       },
       {
         "Contract": "",
-        "Label": "계약 4개",
+        "Label": "계약 5개",
         "Class": "design",
-        "Title": "internal/store가 제공하는 계약: project.yaml, unit files, sync state, module understanding",
+        "Title": "internal/store가 제공하는 계약: project.yaml, unit files, sync state, module understanding, slot notes",
         "Exit": true,
         "X": 618,
         "Y": 528,
@@ -4952,7 +4986,8 @@
           "MOD-0041.provides.DATA-0006",
           "MOD-0042.provides.DATA-0006",
           "MOD-0041.provides.DATA-0008",
-          "MOD-0046.provides.DATA-0008"
+          "MOD-0046.provides.DATA-0008",
+          "MOD-0041.provides.DATA-0024"
         ]
       },
       {
@@ -4988,7 +5023,7 @@
       {
         "D": "M442 476 L442 500",
         "Kind": "contract",
-        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다",
+        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다",
         "Joins": true,
         "Rels": [
           "MOD-0001.consumes.CFG-0002",
@@ -4999,6 +5034,7 @@
           "MOD-0001.consumes.DATA-0008",
           "MOD-0005.consumes.DATA-0008",
           "MOD-0006.consumes.DATA-0008",
+          "MOD-0001.consumes.DATA-0024",
           "MOD-0001.depends_on.MOD-0041",
           "MOD-0001.depends_on.MOD-0043",
           "MOD-0001.depends_on.MOD-0044",
@@ -5008,7 +5044,7 @@
       {
         "D": "M741 452 L741 500",
         "Kind": "contract",
-        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다",
+        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다",
         "Joins": true,
         "Rels": [
           "MOD-0034.consumes.CFG-0002",
@@ -5017,6 +5053,7 @@
           "MOD-0039.consumes.DATA-0006",
           "MOD-0034.consumes.DATA-0008",
           "MOD-0040.consumes.DATA-0008",
+          "MOD-0034.consumes.DATA-0024",
           "MOD-0034.depends_on.MOD-0041",
           "MOD-0034.depends_on.MOD-0042",
           "MOD-0034.depends_on.MOD-0046",
@@ -5516,7 +5553,7 @@
       {
         "D": "M540 188 L540 212 M442 212 L442 324 M442 324 L442 476 M645 188 L645 212 M442 188 L442 212 M442 212 L645 212 M442 476 L1168 476",
         "Kind": "contract",
-        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다\nabbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다\nabbd CLI → internal/model: relation key 계약을 거쳐 씁니다",
+        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다\nabbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다\nabbd CLI → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
         "Joins": true,
         "Rels": [
@@ -5528,6 +5565,7 @@
           "MOD-0001.consumes.DATA-0008",
           "MOD-0005.consumes.DATA-0008",
           "MOD-0006.consumes.DATA-0008",
+          "MOD-0001.consumes.DATA-0024",
           "MOD-0001.depends_on.MOD-0041",
           "MOD-0001.depends_on.MOD-0043",
           "MOD-0001.depends_on.MOD-0044",
@@ -5611,7 +5649,7 @@
       {
         "D": "M741 412 L741 452 M886 412 L886 452 M741 452 L1160 452",
         "Kind": "contract",
-        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다",
+        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
         "Joins": true,
         "Rels": [
@@ -5621,6 +5659,7 @@
           "MOD-0039.consumes.DATA-0006",
           "MOD-0034.consumes.DATA-0008",
           "MOD-0040.consumes.DATA-0008",
+          "MOD-0034.consumes.DATA-0024",
           "MOD-0034.depends_on.MOD-0041",
           "MOD-0034.depends_on.MOD-0042",
           "MOD-0034.depends_on.MOD-0046",
@@ -5923,7 +5962,7 @@
       {
         "D": "M442 500 L741 500",
         "Kind": "contract",
-        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
+        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다\ninternal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
         "Joins": true,
         "Rels": [
           "MOD-0001.consumes.CFG-0002",
@@ -5934,6 +5973,7 @@
           "MOD-0001.consumes.DATA-0008",
           "MOD-0005.consumes.DATA-0008",
           "MOD-0006.consumes.DATA-0008",
+          "MOD-0001.consumes.DATA-0024",
           "MOD-0001.depends_on.MOD-0041",
           "MOD-0001.depends_on.MOD-0043",
           "MOD-0001.depends_on.MOD-0044",
@@ -5944,6 +5984,7 @@
           "MOD-0039.consumes.DATA-0006",
           "MOD-0034.consumes.DATA-0008",
           "MOD-0040.consumes.DATA-0008",
+          "MOD-0034.consumes.DATA-0024",
           "MOD-0034.depends_on.MOD-0041",
           "MOD-0034.depends_on.MOD-0042",
           "MOD-0034.depends_on.MOD-0046",
@@ -5956,7 +5997,7 @@
       {
         "D": "M497 500 L497 528",
         "Kind": "contract",
-        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다",
+        "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다; abbd CLI → internal/store: slot notes 계약을 거쳐 씁니다",
         "Rels": [
           "MOD-0001.consumes.CFG-0002",
           "MOD-0004.consumes.CFG-0002",
@@ -5966,6 +6007,7 @@
           "MOD-0001.consumes.DATA-0008",
           "MOD-0005.consumes.DATA-0008",
           "MOD-0006.consumes.DATA-0008",
+          "MOD-0001.consumes.DATA-0024",
           "MOD-0001.depends_on.MOD-0041",
           "MOD-0001.depends_on.MOD-0043",
           "MOD-0001.depends_on.MOD-0044",
@@ -5985,7 +6027,7 @@
       {
         "D": "M649 500 L649 528",
         "Kind": "contract",
-        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다",
+        "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다",
         "Rels": [
           "MOD-0034.consumes.CFG-0002",
           "MOD-0034.consumes.DATA-0004",
@@ -5993,6 +6035,7 @@
           "MOD-0039.consumes.DATA-0006",
           "MOD-0034.consumes.DATA-0008",
           "MOD-0040.consumes.DATA-0008",
+          "MOD-0034.consumes.DATA-0024",
           "MOD-0034.depends_on.MOD-0041",
           "MOD-0034.depends_on.MOD-0042",
           "MOD-0034.depends_on.MOD-0046",
@@ -11561,6 +11604,7 @@
         {
           "Names": [
             "sync state",
+            "slot notes",
             "blueprint files",
             "diff report fields",
             "top-level unit rule",
@@ -23039,6 +23083,7 @@
           "Names": [
             "project.yaml",
             "unit files",
+            "slot notes",
             "relation key",
             "drawn versus listed relation rule",
             "top-level unit rule",
@@ -25822,7 +25867,8 @@
         },
         {
           "Names": [
-            "project.yaml"
+            "project.yaml",
+            "slot notes"
           ]
         }
       ],
