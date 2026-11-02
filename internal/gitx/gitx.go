@@ -11,8 +11,13 @@ import (
 )
 
 func run(dir string, env []string, args ...string) (string, error) {
+	return runInput(dir, env, "", args...)
+}
+
+func runInput(dir string, env []string, input string, args ...string) (string, error) {
 	cmd := exec.Command("git", append([]string{"-C", dir}, args...)...)
 	cmd.Env = append(os.Environ(), env...)
+	cmd.Stdin = strings.NewReader(input)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -81,7 +86,9 @@ func MergeBase(dir string) (string, error) {
 // Snapshot records the working tree as a git tree object, including untracked
 // files, without touching the user's index. It returns "" outside a repository.
 // A submodule counts as the commit the superproject's index records, not the
-// one checked out, so every clone of a commit snapshots the same tree.
+// one checked out, so every clone of a commit snapshots the same tree. A
+// nested repository with no commit yet counts as the untracked directory
+// it is, since git add refuses it.
 func Snapshot(dir, exclude string) (string, error) {
 	if _, err := run(dir, nil, "rev-parse", "--git-dir"); err != nil {
 		return "", nil
@@ -96,12 +103,21 @@ func Snapshot(dir, exclude string) (string, error) {
 	}
 	defer os.RemoveAll(tmp)
 	env := []string{"GIT_INDEX_FILE=" + filepath.Join(tmp, "index")}
+	unborn := unbornRepos(dir)
 	add := []string{"add", "-A", "--", ".", ":(exclude)" + exclude}
 	for _, l := range links {
 		add = append(add, ":(exclude,literal)"+l.path)
 	}
+	for _, r := range unborn {
+		add = append(add, ":(exclude,literal)"+r)
+	}
 	if _, err := run(dir, env, add...); err != nil {
 		return "", err
+	}
+	for _, r := range unborn {
+		if err := addFiles(dir, env, r); err != nil {
+			return "", err
+		}
 	}
 	for _, l := range links {
 		if _, err := run(dir, env, "update-index", "--add", "--cacheinfo", "160000,"+l.commit+","+l.path); err != nil {
@@ -110,6 +126,56 @@ func Snapshot(dir, exclude string) (string, error) {
 	}
 	out, err := run(dir, env, "write-tree")
 	return strings.TrimSpace(out), err
+}
+
+// unbornRepos lists the untracked repositories under dir that have no
+// commit yet, by their paths relative to dir.
+func unbornRepos(dir string) []string {
+	out, err := run(dir, nil, "ls-files", "-z", "--others", "--exclude-standard")
+	if err != nil {
+		return nil
+	}
+	var repos []string
+	for _, f := range strings.Split(out, "\x00") {
+		if r, ok := strings.CutSuffix(f, "/"); ok && Head(filepath.Join(dir, r)) == "" {
+			repos = append(repos, r)
+		}
+	}
+	return repos
+}
+
+// addFiles adds the files of the repository at repo, relative to dir, to
+// the index env names, as git add adds an untracked directory's files.
+func addFiles(dir string, env []string, repo string) error {
+	var paths []string
+	for _, f := range WorkingFiles(filepath.Join(dir, repo)) {
+		if !strings.HasSuffix(f, "/") {
+			paths = append(paths, repo+"/"+f)
+		}
+	}
+	if len(paths) == 0 {
+		return nil
+	}
+	out, err := runInput(dir, nil, strings.Join(paths, "\n")+"\n", "hash-object", "-w", "--stdin-paths")
+	if err != nil {
+		return fmt.Errorf("git hash-object in %s: %w", repo, err)
+	}
+	hashes := strings.Fields(out)
+	if len(hashes) != len(paths) {
+		return fmt.Errorf("git hash-object in %s: %d hashes for %d files", repo, len(hashes), len(paths))
+	}
+	var info strings.Builder
+	for i, p := range paths {
+		mode := "100644"
+		if fi, err := os.Stat(filepath.Join(dir, filepath.FromSlash(p))); err == nil && fi.Mode()&0o111 != 0 {
+			mode = "100755"
+		}
+		fmt.Fprintf(&info, "%s %s\t%s\x00", mode, hashes[i], p)
+	}
+	if _, err := runInput(dir, env, info.String(), "update-index", "--add", "-z", "--index-info"); err != nil {
+		return fmt.Errorf("git update-index in %s: %w", repo, err)
+	}
+	return nil
 }
 
 type gitlink struct{ path, commit string }
