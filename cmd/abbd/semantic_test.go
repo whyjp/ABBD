@@ -228,3 +228,18 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	}
 	p.want(1, "code changed since this text was written", "understand", "MOD-0001", text)
 }
+
+// Saving the text again with other line endings or trailing blanks does not
+// make it a new reading, so it cannot clear STALE either.
+func TestRestampingTheSameTextWithOtherLineEndingsIsRefused(t *testing.T) {
+	p := semanticProject(t)
+	words := "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n"
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", words))
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge(currency string) {}\n")
+	p.resync()
+	crlf := strings.ReplaceAll(strings.ReplaceAll(words, "\n", "  \r\n"), "Overview", "Overview\t")
+	p.want(1, "code changed since this text was written", "understand", "MOD-0001", p.file(t, "crlf.md", crlf))
+	if !strings.Contains(p.read("blueprint/index.html"), `title="이 설명을 쓴 뒤`) {
+		t.Fatalf("the text must stay STALE")
+	}
+}

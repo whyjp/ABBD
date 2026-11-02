@@ -28,8 +28,18 @@ func (s Store) understandingPath(id model.ID) string {
 	return s.path("understanding", string(id)+".md")
 }
 
+// CleanText is a text as abbd keeps it: LF line endings, no trailing blanks
+// on a line, none around the whole. Two saves of the same words compare equal.
+func CleanText(s string) string {
+	lines := strings.Split(strings.ReplaceAll(s, "\r\n", "\n"), "\n")
+	for i, l := range lines {
+		lines[i] = strings.TrimRight(l, " \t\r")
+	}
+	return strings.TrimSpace(strings.Join(lines, "\n"))
+}
+
 func (s Store) SaveUnderstanding(u Understanding) error {
-	b, err := frontmatter(u, strings.TrimSpace(u.Text)+"\n")
+	b, err := frontmatter(u, CleanText(u.Text)+"\n")
 	if err != nil {
 		return err
 	}
@@ -54,7 +64,7 @@ func (s Store) LoadUnderstandings() (map[model.ID]Understanding, error) {
 		}
 		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 		if _, body, ok := bytes.Cut(bytes.TrimPrefix(b, []byte("---\n")), []byte("\n---\n")); ok {
-			u.Text = strings.TrimSpace(string(body))
+			u.Text = CleanText(string(body))
 		}
 		out[u.Unit] = u
 	}

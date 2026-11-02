@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
@@ -31,7 +30,7 @@ func (e env) understand(id model.ID, file string) error {
 	if err != nil {
 		return err
 	}
-	text := strings.TrimSpace(string(b))
+	text := store.CleanText(string(b))
 	if text == "" {
 		return fmt.Errorf("the text is empty; pass pstack how's Overview and Key Concepts")
 	}
@@ -42,7 +41,7 @@ func (e env) understand(id model.ID, file string) error {
 	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.
-	if prev, ok := old[id]; ok && prev.Digest != digest && strings.TrimSpace(prev.Text) == text {
+	if prev, ok := old[id]; ok && prev.Digest != digest && prev.Text == text {
 		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
 	}
 	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {
