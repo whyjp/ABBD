@@ -56,7 +56,7 @@ func build(units []model.Unit) Model { return Build(Input{Units: units}) }
 func svg(t *testing.T, d Drawing) string {
 	t.Helper()
 	var b bytes.Buffer
-	if err := page.ExecuteTemplate(&b, "drawing", d); err != nil {
+	if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
 		t.Fatal(err)
 	}
 	return b.String()

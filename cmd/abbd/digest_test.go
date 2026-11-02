@@ -441,9 +441,9 @@ func TestTheBlueprintShowsANestedModulesText(t *testing.T) {
 	p.want(0, "understood", "understand", "MOD-0002", p.file(t, "web.md", "web serves every page.\n"))
 	p.want(0, "understood", "understand", "MOD-0003", p.file(t, "games.md", "games draws the board.\n"))
 	p.resync()
-	html := p.read("blueprint/index.html")
+	html := p.blueprint()
 	section := func(id string) string {
-		i := strings.Index(html, `<section class="inside" id="m-`+id+`">`)
+		i := strings.Index(html, `<section class="inside page" id="m-`+id+`">`)
 		if i < 0 {
 			t.Fatalf("the blueprint has no inside for %s", id)
 		}

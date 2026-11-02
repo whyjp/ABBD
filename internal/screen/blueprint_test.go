@@ -1,7 +1,6 @@
 package screen
 
 import (
-	"bytes"
 	"regexp"
 	"strings"
 	"testing"
@@ -16,21 +15,23 @@ func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 	units := append(ripgrep(), inside("DATA-0001", "MOD-0004"))
 	units[0].Relations = append(units[0].Relations, guess("MOD-0005", model.DependsOn, "import"))
 	units[2].Relations = append(units[2].Relations, guess("DATA-0001", model.Consumes, "convention"))
-	var b bytes.Buffer
-	if err := Render(&b, Build(Input{Units: units})); err != nil {
-		t.Fatal(err)
-	}
-	html := b.String()
+	m := Build(Input{Units: units})
+	html := renderAll(t, m).String()
 	for _, decision := range []string{"<form", "<button", "<input", "<script", "승인", "반려", "결정 대기", "/act"} {
 		if strings.Contains(html, decision) {
 			t.Errorf("the blueprint carries decision UI %q", decision)
 		}
 	}
-	overview, insides, ok := strings.Cut(html, `<section class="inside"`)
-	if !ok {
+	ps := pages(t, m)
+	var insides string
+	for _, ins := range m.Insides {
+		insides += ps[ins.ID+".html"]
+	}
+	if insides == "" {
 		t.Fatalf("the blueprint has no module insides")
 	}
-	_, svg, _ := strings.Cut(overview, `<section id="overview">`)
+	_, svg, _ := strings.Cut(ps[PageFile], `<section id="overview">`)
+	svg, _, _ = strings.Cut(svg, "</svg>")
 	if regexp.MustCompile(`class="w [^"]*guess|DATA-0001`).MatchString(svg) {
 		t.Errorf("the overview dashes a reader's line or draws an inside unit:\n%s", svg)
 	}

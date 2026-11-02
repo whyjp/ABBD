@@ -1,7 +1,6 @@
 package screen
 
 import (
-	"bytes"
 	"strings"
 	"testing"
 
@@ -41,10 +40,7 @@ func TestUnderstandingAndNamesAreEscaped(t *testing.T) {
 	m := Build(Input{Units: units, Understandings: map[model.ID]store.Understanding{
 		"MOD-0001": {Unit: "MOD-0001", Text: "# <script>alert(3)</script>\n- **<b onmouseover=x>** `</code><script>alert(4)</script>`\n[x](javascript:alert(5))"},
 	}})
-	var b bytes.Buffer
-	if err := Render(&b, m); err != nil {
-		t.Fatal(err)
-	}
+	b := renderAll(t, m)
 	html := b.String()
 	if !strings.Contains(html, "&lt;script&gt;alert(3)") || !strings.Contains(html, "&lt;img src=x") {
 		t.Fatalf("precondition: the crafted text and name should reach the page escaped")

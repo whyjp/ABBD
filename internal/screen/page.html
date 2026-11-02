@@ -1,171 +1,39 @@
-<!doctype html>
+{{define "head"}}<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>ABBD 청사진</title>
+<title>{{.Title}} · ABBD 청사진</title>
 <style>
-:root {
-  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
-  --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
-  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
-  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
-    --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
-    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
-  --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
-  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-html, body { overflow-x: hidden; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 1400px; margin: 0 auto; padding: 10px 16px 16px; }
-header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
-h1 { font-size: 18px; margin: 0; }
-h2 { font-size: 16px; margin: 0 0 6px; }
-h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
-section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
-code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
-.muted { color: var(--muted); }
-.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
-.pill.CURRENT, .pill.stated { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
-.pill.STALE { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
-.pill.inferred { color: var(--guess); background: var(--guess-bg); border-color: transparent; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin: 6px 0 0; font-size: 12.5px; }
-.chips .chip { border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; padding: 0 6px; white-space: nowrap; }
-.chips .head { font-weight: 600; }
-.fresh { font-size: 14px; }
-ul.plain { list-style: none; padding: 0; margin: 4px 0; }
-ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
-ul.plain li:last-child { border-bottom: 0; }
-table { border-collapse: collapse; width: 100%; }
-td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
-td.id { white-space: nowrap; width: 1%; }
-details > summary { cursor: pointer; font-weight: 600; }
-a { color: var(--accent); }
-.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
-@media (max-width: 760px) { .narrow { display: block; } }
-.quote { font-size: 13px; margin-top: 2px; }
-.quote q { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; quotes: none; }
-
-.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
-.views a { margin-left: 10px; font-size: 14px; }
-.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
-.mapbox svg { display: block; margin: 0 auto; }
-svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
-svg text.name { font-weight: 650; }
-svg text.sub { font-size: 11px; fill: var(--muted); }
-svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
-svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
-svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
-svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
-svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
-svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
-svg .box.twin rect { stroke: var(--muted); }
-.picker a.chip { text-decoration: none; }
-svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
-svg .port rect { stroke-width: 1.2; }
-svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
-svg .port.exit text { fill: var(--bg); font-weight: 600; }
-svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
-svg .port.entry text { fill: var(--accent); }
-svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
-svg .port.other text { fill: var(--muted); }
-svg path.w { fill: none; stroke-width: 1.5; }
-svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
-svg path.w.both { marker-start: url(#m-bypass); }
-svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
-svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
-svg circle.origin { stroke-width: 1.5; }
-svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
-svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
-svg circle.junction { fill: var(--ink); }
-svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
-svg circle.junction.bypass { fill: var(--bypass); }
-svg circle.junction.provides { fill: var(--ok); }
-svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
-svg path.w.joins { marker-end: none; }
-svg path.w.back { stroke-dasharray: 6 4; }
-svg path.w:hover { stroke-width: 3.5; }
-svg marker path { stroke: none; }
-.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
-.legend svg { vertical-align: middle; margin-right: 4px; }
-
-.inside { display: none; border-color: var(--accent); }
-.inside:target { display: block; }
-.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
-.inside .text { max-height: 760px; overflow-y: auto; }
-.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
-.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
-.inside .text ul { padding-left: 18px; margin: 2px 0; }
-.text table, .note table { margin: 6px 0; font-size: 13px; }
-.text th, .text td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
-.text th { background: var(--panel); }
-.text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
-.note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
-.note h3 { margin: 4px 0; font-size: 15px; }
-.entries { margin: 6px 0 10px; }
-.entries table { font-size: 13px; table-layout: auto; }
-.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
-.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
-.entries td code { overflow-wrap: break-word; }
-.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
-.entries td.note { width: 100%; }
-.entries td p { margin: 0 0 2px; }
-.entries .who { display: block; white-space: nowrap; }
-.units-list li { padding: 4px 0; }
-@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
-@media (max-width: 560px) {
-  body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
-  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
-}
-.questions { margin: 2px 0 8px; }
-.questions li { padding: 2px 0; }
-.flow .caption p { margin: 4px 0; }
-ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
-ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
-ol.dg-flow > li.lane:first-child { border-top: 0; }
-.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
-a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
-.lane-unit strong { display: block; font-size: 14px; }
-.lane-unit .muted { font-size: 12px; }
-ol.steps { list-style: none; padding: 0; margin: 0; }
-li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
-li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
-li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
-ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
-li.step p { margin: 0; overflow-wrap: anywhere; }
-li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
-li.step .noteline { font-size: 13px; color: var(--muted); }
-li.step .fails { font-size: 13px; color: var(--stale); }
-li.step.stale .n { background: var(--stale); }
-li.step .chips { margin-top: 3px; }
-.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
-@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+{{css}}
 </style>
 </head>
 <body>
+<div class="shell">
+<nav class="site" aria-label="청사진 안내">
+  <a class="home" href="#overview">ABBD 청사진</a>
+  <ul class="plain top">
+    <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
+    <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a> <span class="muted">{{len .Contracts}}</span></li>
+    <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a> <span class="muted">{{len .Units}}</span></li>
+  </ul>
+  {{if .Nav}}<h3>모듈</h3>
+  <ul class="plain tree">{{range .Nav}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}</ul>{{end}}
+</nav>
 <main>
 <header>
-  <h1>ABBD 청사진</h1>
+  <p class="crumbs"><a href="#overview">청사진</a>{{range .Trail}} › <a href="#m-{{.ID}}">{{.Name}}</a>{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
   <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
 </header>
-
+{{end}}
+{{define "foot"}}<p class="muted">추출 <code>{{join .Extract " "}}</code></p>
+</main>
+</div>
+</body>
+</html>
+{{end}}
+{{define "index"}}{{template "head" .}}
 <section id="overview">
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
@@ -179,10 +47,12 @@ li.step .chips { margin-top: 3px; }
   <ul class="plain">{{range .Links}}<li>{{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span></li>{{end}}</ul>{{end}}
   <p class="muted" style="margin:6px 0 0">리더가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 확인하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 닿는 모듈의 안에 나열합니다.</p>
 </section>
-
-{{range .Insides}}
-<section class="inside" id="m-{{.ID}}">
-  <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><span class="muted">{{join .Trail " › "}}</span> <a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
+{{range .Flows}}{{template "flow" .}}{{end}}
+{{range .Focus}}{{template "focus" .}}{{end}}
+{{template "foot" .}}{{end}}
+{{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
+<section class="inside page" id="m-{{.ID}}">
+  <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="cols">
     <div>
@@ -203,30 +73,34 @@ li.step .chips { margin-top: 3px; }
       {{template "notes" .Notes}}
       {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
       {{if .Units}}<h3>안의 단위</h3>
-      <ul class="plain units-list">{{range .Units}}<li><strong>{{.Name}}</strong> <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
+      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
       {{else}}<p class="muted">안의 단위가 아직 없습니다.</p>{{end}}
     </div>
   </div>
   {{range .Contracts}}{{$c := .}}{{with .Entries}}<div class="entries" id="t-{{$c.ID}}"><h3>{{$c.Name}} <span class="muted key">{{$c.ID}}</span></h3>{{template "entries" .}}</div>{{end}}{{end}}
 </section>
-{{end}}
-{{range .Flows}}{{template "flow" .}}{{end}}
-{{range .Focus}}{{template "focus" .}}{{end}}
-{{range .Insides}}{{range .Focus}}{{template "focus" .}}{{end}}{{end}}
-
-<section id="units">
-  <details>
-  <summary>단위 목록 <span class="muted" style="font-weight:400">{{len .Units}}개</span></summary>
-  <table>{{range .Units}}<tr><td class="id key">{{.ID}}</td><td><strong>{{.Name}}</strong>{{if .Parent}} <span class="muted">{{.Parent}} 안</span>{{end}}
-    {{with .Responsibility}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{else}}{{with .Purpose}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{end}}{{end}}
-    {{if or .Signature .Evidence}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="quote">근거 <q>{{.}}</q></div>{{end}}</details>{{end}}{{if .Notes}}<details class="text"><summary class="muted" style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}{{with .Entries}}{{template "entries" .}}{{end}}</td></tr>{{end}}</table>
-  </details>
+{{range .Focus}}{{template "focus" .}}{{end}}{{end}}
+{{template "foot" .}}{{end}}
+{{define "contracts"}}{{template "head" .}}
+<section id="contracts">
+  <h2>계약 목록 <span class="muted" style="font-weight:400;font-size:13px">{{len .Contracts}}개, 종류와 이름 순</span></h2>
+  <p class="muted" style="margin:0 0 6px">모듈 사이의 계약입니다. 이름을 누르면 그 계약을 가진 모듈의 안으로, 제공과 사용의 단위를 누르면 그 단위로 갑니다. 페이지 안 찾기(Ctrl+F)로 이름, ID, 시그니처를 찾습니다.</p>
+  <table class="index">
+  <tr><th>계약</th><th>종류</th><th>가진 모듈</th><th>제공</th><th>사용</th></tr>
+  {{range .Contracts}}<tr id="k-{{.ID}}"><td>{{if .Owner}}<a href="{{.Owner.Href}}"><strong>{{.Name}}</strong></a>{{else}}<a href="#u-{{.ID}}"><strong>{{.Name}}</strong></a>{{end}} <span class="muted key">{{.ID}}</span>{{if .Signature}}<div class="key muted sig">{{.Signature}}</div>{{end}}</td><td>{{label .Kind}}</td><td>{{with .Owner}}<a href="{{.Href}}">{{.Name}}</a>{{else}}<span class="muted">없음</span>{{end}}</td><td>{{range .Providers}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td><td>{{range .Users}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td></tr>
+  {{end}}</table>
 </section>
-
-<p class="muted">추출 <code>{{join .Extract " "}}</code></p>
-</main>
-</body>
-</html>
+{{template "foot" .}}{{end}}
+{{define "units"}}{{template "head" .}}
+<section id="units">
+  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">{{len .Units}}개, ID 순</span></h2>
+  <p class="muted" style="margin:0 0 6px">모든 단위와 그 코드의 앵커입니다. 페이지 안 찾기(Ctrl+F)로 ID, 이름, 파일 경로, 심볼을 찾습니다.</p>
+  <table>{{range .Units}}<tr id="u-{{.ID}}"><td class="id key">{{.ID}}</td><td>{{if index $.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{label .Kind}}</span>{{if .Parent}} <span class="muted">· <a href="#m-{{.Parent}}" title="{{.Parent}}">{{nameOf $.Model .Parent}}</a> 안</span>{{end}}
+    {{with .Responsibility}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{else}}{{with .Purpose}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{end}}{{end}}
+    {{if .Anchors}}<div class="key muted anchors">{{join .Anchors " · "}}</div>{{end}}
+    {{if or .Signature .Evidence}}<details><summary class="muted" style="font-weight:400">시그니처와 근거</summary>{{if .Signature}}<div class="key muted">{{.Signature}}</div>{{end}}{{range .Evidence}}<div class="quote">근거 <q>{{.}}</q></div>{{end}}</details>{{end}}{{if .Notes}}<details class="text"><summary class="muted" style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}{{with .Entries}}{{template "entries" .}}{{end}}</td></tr>{{end}}</table>
+</section>
+{{template "foot" .}}{{end}}
 {{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
 <defs>{{range $k := marks}}<marker id="m-{{$k}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--{{markColor $k}})"/></marker>{{end}}</defs>
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}

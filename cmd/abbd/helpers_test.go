@@ -130,3 +130,19 @@ func equal(a, b map[string]string) bool {
 	}
 	return true
 }
+
+// blueprint is every page of the rendered blueprint, by file name, for a
+// test that asks whether the blueprint shows something on any page.
+func (p *project) blueprint() string {
+	p.t.Helper()
+	paths, err := filepath.Glob(filepath.Join(p.root, ".abbd", "blueprint", "*.html"))
+	if err != nil || len(paths) == 0 {
+		p.t.Fatalf("the blueprint has no pages: %v", err)
+	}
+	var b strings.Builder
+	for _, path := range paths {
+		page, _ := os.ReadFile(path)
+		b.Write(page)
+	}
+	return b.String()
+}

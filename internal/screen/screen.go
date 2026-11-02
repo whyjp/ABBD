@@ -133,7 +133,7 @@ type Model struct {
 	// Flows are the stored flows, each a question answered in steps.
 	Flows []FlowView
 	// Edges are every live relation between present units, for graph.json.
-	Edges     []Line
+	Edges   []Line
 	Extract []string
 }
 

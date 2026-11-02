@@ -28,10 +28,8 @@ func (e env) publish() error {
 	if err != nil {
 		return err
 	}
-	for _, name := range []string{screen.PageFile, screen.GraphFile} {
-		if err := e.st.SaveBlueprint(name, files[name]); err != nil {
-			return err
-		}
+	if err := e.st.SaveBlueprint(files); err != nil {
+		return err
 	}
 	in.Synced.Blueprint = in.Inputs
 	return e.st.SaveState(in.Synced)

@@ -439,9 +439,26 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
-// The blueprint derives from the state and is rewritten freely.
-func (s Store) SaveBlueprint(name string, b []byte) error {
-	return writeFile(s.path("blueprint", name), b)
+// SaveBlueprint writes the files of one render and removes every other
+// page, since the blueprint derives from the state and is rewritten freely.
+func (s Store) SaveBlueprint(files map[string][]byte) error {
+	for name, b := range files {
+		if err := writeFile(s.path("blueprint", name), b); err != nil {
+			return err
+		}
+	}
+	old, err := filepath.Glob(s.path("blueprint", "*.html"))
+	if err != nil {
+		return err
+	}
+	for _, p := range old {
+		if _, keep := files[filepath.Base(p)]; !keep {
+			if err := os.Remove(p); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 // ReadBlueprint returns nil when the file was never rendered.

@@ -29,7 +29,7 @@ func TestADataContractShowsAndDiffsEachField(t *testing.T) {
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "base")
 
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	for _, want := range []string{"<th>타입</th><th>필수</th><th>쓰는 단위</th><th>읽는 단위</th>", "<code>numeric(12,2)</code>", "<td>선택</td>"} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page misses %q", want)
