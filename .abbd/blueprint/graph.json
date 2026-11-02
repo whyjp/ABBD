@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "5cf49a39a8404c74bb8f8c22345e648a2081b6a49dff1ac4fc47c47400672c36"
+    "inputs_hash": "920575ed03c3e316e1e01a74343cc2837ebfb8786c547e27c2cc09f7b5762d39"
   },
   "units": [
     {
@@ -1262,6 +1262,7 @@
         "cmd/abbd/record.go",
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
+        "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go"
       ]
     },
@@ -1334,7 +1335,7 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+        "cmd/abbd/main.go:409 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
       ]
     },
     {
@@ -3057,7 +3058,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+      "Quote": "cmd/abbd/main.go:450 \"return u.ID == id \u0026\u0026 !u.Absent })\""
     },
     {
       "From": "MOD-0001",
@@ -3225,7 +3226,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0001",
@@ -3253,7 +3254,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0001",
@@ -3431,7 +3432,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+      "Quote": "cmd/abbd/main.go:432 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
     },
     {
       "From": "MOD-0004",
@@ -3447,7 +3448,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0004",
@@ -3455,7 +3456,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+      "Quote": "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
       "From": "MOD-0004",
@@ -3463,7 +3464,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:405 \"identity.Reconcile(\""
+      "Quote": "cmd/abbd/main.go:409 \"identity.Reconcile(\""
     },
     {
       "From": "MOD-0005",
@@ -3717,7 +3718,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0026",
@@ -3725,7 +3726,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\""
+      "Quote": "cmd/abbd/main.go:379 \"prior, err := st.LoadCandidates()\""
     },
     {
       "From": "MOD-0026",
@@ -3741,7 +3742,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+      "Quote": "cmd/abbd/main.go:409 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
       "From": "MOD-0026",
@@ -4175,7 +4176,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\""
+      "Quote": "cmd/abbd/main.go:428 \"hash, err := st.MDHash()\""
     },
     {
       "From": "MOD-0043",
@@ -9577,7 +9578,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:432 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0006"
@@ -9602,7 +9603,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+              "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0013"
@@ -9617,7 +9618,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Marks": [
               {
@@ -9636,7 +9637,7 @@
             "Title": "sync pipeline depends_on internal/identity (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:405 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:409 \"identity.Reconcile(\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
@@ -9955,7 +9956,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\"",
-              "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:432 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Marks": [
               {
@@ -9986,8 +9987,8 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/main.go:307 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
-              "cmd/abbd/main.go:405 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:409 \"identity.Reconcile(\""
             ],
             "Marks": [
               {
@@ -10062,7 +10063,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10077,7 +10078,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10161,7 +10162,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -10177,7 +10178,7 @@
             "Title": "review commands depends_on internal/evidence (via call), 판독\nsync pipeline depends_on internal/evidence (via call), 판독\nrecord writers depends_on internal/evidence (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -11496,6 +11497,124 @@
               },
               {
                 "Text": " reports the readability of the texts that show beside a module, and skips the orphans.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Uncovered modules",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "uncovered.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "main.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "attention",
+                "Code": true
+              },
+              {
+                "Text": ", which ",
+                "Code": false
+              },
+              {
+                "Text": "sync",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "setup",
+                "Code": true
+              },
+              {
+                "Text": " run after they write, prints ",
+                "Code": false
+              },
+              {
+                "Text": "uncovered:",
+                "Code": true
+              },
+              {
+                "Text": " for each manifest in the working tree, such as ",
+                "Code": false
+              },
+              {
+                "Text": "go.mod",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "package.json",
+                "Code": true
+              },
+              {
+                "Text": ", under whose directory no present unit holds an anchor. It skips the root's manifest and any under ",
+                "Code": false
+              },
+              {
+                "Text": "testdata",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "node_modules",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "vendor",
+                "Code": true
+              },
+              {
+                "Text": ". The line is a warning, and ",
+                "Code": false
+              },
+              {
+                "Text": "status --check",
+                "Code": true
+              },
+              {
+                "Text": " never fails on it. It catches a module that an extraction script listing modules by hand does not know. ",
+                "Code": false
+              },
+              {
+                "Text": "uncovered_test.go",
+                "Code": true
+              },
+              {
+                "Text": " drives it on a scratch repository.",
                 "Code": false
               }
             ]
@@ -13604,7 +13723,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:450 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -13631,7 +13750,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13649,7 +13768,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -13807,7 +13926,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+            "cmd/abbd/main.go:432 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
           ]
         },
         {
@@ -13826,7 +13945,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13835,7 +13954,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -13844,7 +13963,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:405 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:409 \"identity.Reconcile(\""
           ]
         },
         {
@@ -15817,7 +15936,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -15835,7 +15954,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:410 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -17749,7 +17868,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Marks": [
               {
@@ -17839,7 +17958,7 @@
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -17853,7 +17972,7 @@
             "Kind": "depends_on",
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -18890,7 +19009,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -18909,7 +19028,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18936,8 +19055,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:387 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:391 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18947,7 +19066,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18967,7 +19086,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ],
@@ -20126,7 +20245,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:405 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:409 \"identity.Reconcile(\""
           ]
         },
         {
@@ -20135,7 +20254,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:379 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -20146,7 +20265,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:411 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:415 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -20155,7 +20274,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+            "cmd/abbd/main.go:409 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
           ]
         },
         {
@@ -20192,7 +20311,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:391 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -23594,7 +23713,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:450 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -26580,7 +26699,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:113 \"case in.Tree != in.Synced.Fingerprint:\"",
-            "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree\""
+            "cmd/abbd/main.go:432 \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -26590,7 +26709,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -26917,7 +27036,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\""
+              "cmd/abbd/main.go:428 \"hash, err := st.MDHash()\""
             ],
             "Marks": [
               {
@@ -29744,7 +29863,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:379 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -29755,7 +29874,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:411 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:415 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -29839,8 +29958,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\"",
-            "cmd/abbd/main.go:428 \"MDHash: hash\""
+            "cmd/abbd/main.go:428 \"hash, err := st.MDHash()\"",
+            "cmd/abbd/main.go:432 \"MDHash: hash\""
           ]
         },
         {
