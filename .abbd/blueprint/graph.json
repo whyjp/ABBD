@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "944cdd954a630b0f5f370bc056b11997d76f8b91a4ebd8978753726aaaa0816c"
+    "inputs_hash": "9598e25000f3d10b0fb95cbd3b168983ffbf72f8fafa80e5e73dd4d2f7658117"
   },
   "units": [
     {
@@ -458,7 +458,7 @@
       ],
       "Parent": "MOD-0047",
       "Evidence": [
-        "internal/topology/impact.go:115 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+        "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
       ]
     },
     {
@@ -4198,7 +4198,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go:115 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+      "Quote": "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
     },
     {
       "From": "MOD-0047",
@@ -28187,7 +28187,7 @@
                 "Code": true
               },
               {
-                "Text": "): a breadth-first walk from the seeds and their direct children. It follows what depends on or consumes an impacted unit, and the contracts a seed or a unit inside one provides. A unit reached through what it uses passes the change on to what uses it, not to the other contracts it provides: the change does not travel through those. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
+                "Text": "): a breadth-first walk from the seeds and every unit inside them, at any depth. It follows what depends on or consumes an impacted unit, and the contracts a seed or a unit inside one provides. A unit reached through what it uses passes the change on to what uses it, not to the other contracts it provides: the change does not travel through those. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
                 "Code": false
               },
               {
@@ -28634,7 +28634,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go:115 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
+            "internal/topology/impact.go:118 \"case l.To == u \u0026\u0026 l.Kind == model.Provides \u0026\u0026 isContract(u):\""
           ]
         },
         {

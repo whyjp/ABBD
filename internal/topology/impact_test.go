@@ -82,3 +82,20 @@ func TestImpactStopsAtAConsumersOtherContracts(t *testing.T) {
 		t.Fatalf("direct %v far %v, want direct %v far %v", itemIDs(im.Direct), itemIDs(im.Far), wantDirect, wantFar)
 	}
 }
+
+// A unit nested at any depth inside a seed module is a seed too: the
+// contract it provides and that contract's consumer are impacted.
+func TestImpactReachesUnitsDeepInsideASeed(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", ""),
+		unit("MOD-0002", "MOD-0001"),
+		unit("MOD-0003", "MOD-0002", rel("IF-0001", model.Provides, model.Extracted)),
+		unit("IF-0001", ""),
+		unit("MOD-0009", "", rel("IF-0001", model.Consumes, model.Extracted)),
+	}
+	im := ImpactOf(units, []model.ID{"MOD-0001"})
+	wantDirect := []model.ID{"IF-0001", "MOD-0001", "MOD-0002", "MOD-0003", "MOD-0009"}
+	if !reflect.DeepEqual(itemIDs(im.Direct), wantDirect) || len(im.Far) != 0 {
+		t.Fatalf("direct %v far %v, want direct %v and no far", itemIDs(im.Direct), itemIDs(im.Far), wantDirect)
+	}
+}
