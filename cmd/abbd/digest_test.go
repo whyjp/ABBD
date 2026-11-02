@@ -301,7 +301,112 @@ func TestSyncUpgradesAFormat1Text(t *testing.T) {
 		t.Fatalf("sync should carry the format 1 text over:\n%s", out)
 	}
 	p.stale("0")
-	if text := p.read("understanding/MOD-0004.md"); !strings.Contains(text, "format: 2") {
+	if text := p.read("understanding/MOD-0004.md"); !strings.Contains(text, "format: 3") {
 		t.Fatalf("the upgraded text should record the current format:\n%s", text)
 	}
+}
+
+// A gitfile marks a worktree or a submodule checkout; the files beside it
+// are still code under an ignored directory anchor.
+func TestAGitfileUnderAnIgnoredAnchorHidesNoCode(t *testing.T) {
+	p := vendorProject(t, `{"units":[{"key":"gen","kind":"MOD","name":"gen","anchors":[{"path":"gen"}]}]}`)
+	p.code("gen/dep/.git", "gitdir: ../../.git/modules/dep\n")
+	p.code("gen/dep/src/a.go", "package src\n")
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "gen is generated.\n"))
+	p.code("gen/dep/src/a.go", "package src\n\nfunc A() {}\n")
+	p.stale("1")
+}
+
+// git lists an untracked repository inside the project as one directory;
+// its files on disk are still the code of a module anchored there.
+func TestAnUntrackedNestedRepositoryCountsItsFiles(t *testing.T) {
+	p, exe := bare(t)
+	p.code("app/main.go", "package app\n")
+	p.code("nested/a.go", "package nested\n")
+	nested := filepath.Join(p.root, "nested")
+	git(t, nested, "init", "-q")
+	git(t, nested, "add", ".")
+	git(t, nested, "commit", "-qm", "nested")
+	p.extract(`{"units":[{"key":"n","kind":"MOD","name":"nested","anchors":[{"path":"nested"}]}]}`)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "nested is vendored.\n"))
+	p.code("nested/a.go", "package nested\n\nfunc A() {}\n")
+	p.stale("1")
+}
+
+func twiceQuoted(edit int) string {
+	var b strings.Builder
+	for i := 1; i <= 30; i++ {
+		switch i {
+		case 7, 25:
+			b.WriteString("\treturn nil\n")
+		case edit:
+			b.WriteString("edited\n")
+		default:
+			b.WriteString("line\n")
+		}
+	}
+	return b.String()
+}
+
+// twiceProject's app holds two units that quote "return nil" in
+// lib/util.go, at lines 7 and 25.
+func twiceProject(t *testing.T) *project {
+	t.Helper()
+	p, exe := bare(t)
+	p.code("app/main.go", "package app\n")
+	p.code("lib/util.go", twiceQuoted(0))
+	p.extract(`{"units":[{"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.go"}]}]}`)
+	rules := `{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.go"}]},
+ {"key":"a","kind":"CFG","name":"early exit","parent":"app","evidence":[{"path":"lib/util.go","lines":"7","quote":"return nil"}]},
+ {"key":"b","kind":"CFG","name":"late exit","parent":"app","evidence":[{"path":"lib/util.go","lines":"25","quote":"return nil"}]}
+]}`
+	p.setup(0, "synced", "--supplement", p.file(t, "rules.json", rules), "--", exe)
+	return p
+}
+
+// Two units quoting the same words at two places in one file each count
+// by the lines around their own quote.
+func TestTheSameQuoteCitedTwiceCountsAtBothPlaces(t *testing.T) {
+	for _, edit := range []int{8, 24} {
+		p := twiceProject(t)
+		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
+		p.code("lib/util.go", twiceQuoted(edit))
+		p.resync()
+		p.stale("1")
+	}
+}
+
+// Format 2 read one place of a quote cited at several. A text stored then
+// stays current only when its module cites no quote twice; otherwise sync
+// cannot show the other place unchanged and says the text is STALE. The
+// digests are what ABBD stored in format 2 for these projects.
+func TestSyncUpgradesAFormat2TextOnlyWhenItReadEveryPlace(t *testing.T) {
+	for _, c := range []struct {
+		name, digest, says, stale string
+		project                   func(*testing.T) *project
+	}{
+		{"one place", "b59a0a674660efef", "it stays current", "0", deepProject},
+		{"two places", "2b10416f927695bf", "it is STALE until pstack how reads", "1", twiceProject},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			p := c.project(t)
+			write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: "+c.digest+"\nformat: 2\n---\n\nthe module.\n")
+			if out := p.resync(); !strings.Contains(out, c.says) {
+				t.Fatalf("sync should say %q:\n%s", c.says, out)
+			}
+			p.stale(c.stale)
+		})
+	}
+}
+
+// Format 1 read one place of a quote cited at several too.
+func TestSyncLeavesAFormat1TextStaleWhenAQuoteIsCitedTwice(t *testing.T) {
+	p := twiceProject(t)
+	write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: 1912b5ee72f158bd\ncode:\n    app/main.go: 75d99e22087438b6\n---\n\nthe module.\n")
+	if out := p.resync(); !strings.Contains(out, "it is STALE until pstack how reads") {
+		t.Fatalf("sync should say the text is STALE:\n%s", out)
+	}
+	p.stale("1")
 }
