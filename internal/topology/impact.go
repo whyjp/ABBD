@@ -67,11 +67,14 @@ type Impact struct {
 }
 
 // ImpactOf follows the links from the seeds: whatever depends on or consumes
-// an impacted unit, the providers of an impacted contract, and the contracts an
-// impacted unit provides. A provider is impacted because it implements the
-// contract, but what it does elsewhere is not followed. A unit inside a seed
-// module is a seed too. What a seed itself depends on or consumes is impacted
-// without being followed, because the change most likely breaks where they meet.
+// an impacted unit, the providers of an impacted contract, and the contracts a
+// seed provides. A provider is impacted because it implements the contract,
+// but what it does elsewhere is not followed. A unit that depends on or
+// consumes an impacted one passes the change on to what uses it, not to the
+// other contracts it provides, which the change does not travel through. A
+// unit inside a seed module is a seed too. What a seed itself depends on or
+// consumes is impacted without being followed, because the change most
+// likely breaks where they meet.
 //
 // Direct are the seeds, the units that share a link with a seed, and the
 // consumers of a contract that does. Far is the rest.
@@ -111,7 +114,7 @@ func ImpactOf(units []model.Unit, seeds []model.ID) Impact {
 				add(l.From, fmt.Sprintf("%s %s%s", l.Kind, u, l.Label()), true)
 			case l.To == u && l.Kind == model.Provides && isContract(u):
 				add(l.From, "provides "+string(u)+l.Label(), false)
-			case l.From == u && l.Kind == model.Provides:
+			case l.From == u && l.Kind == model.Provides && slices.Contains(all, u):
 				add(l.To, "provided by "+string(u)+l.Label(), true)
 			}
 		}

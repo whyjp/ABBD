@@ -63,3 +63,22 @@ func TestImpactTiers(t *testing.T) {
 		}
 	}
 }
+
+// A change to a contract reaches its consumers and what depends on them,
+// but not the other contracts a consumer provides: the change does not
+// travel through those.
+func TestImpactStopsAtAConsumersOtherContracts(t *testing.T) {
+	units := []model.Unit{
+		unit("DATA-0001", ""),
+		unit("MOD-0001", "", rel("DATA-0001", model.Consumes, model.Extracted), rel("IF-0001", model.Provides, model.Extracted)),
+		unit("IF-0001", ""),
+		unit("MOD-0002", "", rel("IF-0001", model.Consumes, model.Extracted)),
+		unit("MOD-0003", "", rel("MOD-0001", model.DependsOn, model.Extracted)),
+	}
+	im := ImpactOf(units, []model.ID{"DATA-0001"})
+	wantDirect := []model.ID{"DATA-0001", "MOD-0001"}
+	wantFar := []model.ID{"MOD-0003"}
+	if !reflect.DeepEqual(itemIDs(im.Direct), wantDirect) || !reflect.DeepEqual(itemIDs(im.Far), wantFar) {
+		t.Fatalf("direct %v far %v, want direct %v far %v", itemIDs(im.Direct), itemIDs(im.Far), wantDirect, wantFar)
+	}
+}
