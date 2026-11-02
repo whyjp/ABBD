@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "95ef507f60c77f9299c368afd1a689f6d2d1241e728d5543f13f10843bc286c7"
+    "inputs_hash": "fba26489ed26c12adbe58683685059cca6fb8f87c530f63c4f625e86ac07bbc6"
   },
   "units": [
     {
@@ -11836,7 +11836,7 @@
                 "Code": true
               },
               {
-                "Text": " refuses any STALE step that comes back with the same unit, words and citations, whatever else changed, so no reword restamps it. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word; ",
+                "Text": " refuses any STALE step that comes back with the same unit, words and citations, whatever else changed, so no reword restamps it. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too; ",
                 "Code": false
               },
               {

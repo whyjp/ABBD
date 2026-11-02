@@ -139,7 +139,7 @@ func (hs humanSteps) String() string {
 // else changed: it would read fresh with no one reading its code again. A
 // human may replace any step. A reader may replace only a human's STALE
 // steps: each current one must come back as written, in its order, and
-// keeps the human's word, so CI never waits on the human for a step whose
+// keeps the human's word, as do the question and caption, so CI never waits on the human for a step whose
 // code moved and a human's word on a step that still holds is never lost.
 // kept are the human's steps f keeps and replaced those the reader took
 // over, each named by its place.
@@ -159,6 +159,12 @@ func mayReplaceFlow(prev store.Flow, had bool, f *store.Flow, units []model.Unit
 	}
 	if !slices.ContainsFunc(prev.Steps, stale) {
 		return nil, nil, fmt.Errorf("a human stated steps of flow %s and every step is current; only a human changes it, with --source", f.Key)
+	}
+	if !sameWords(prev.Question, f.Question) {
+		return nil, nil, fmt.Errorf("the question of flow %s is a human's word; keep it as abbd flow %s prints it, since only a human changes it, with --source", f.Key, f.Key)
+	}
+	if !sameWords(prev.Caption, f.Caption) {
+		return nil, nil, fmt.Errorf("the caption of flow %s is a human's word; keep it as abbd flow %s prints it, since only a human changes it, with --source", f.Key, f.Key)
 	}
 	at := 0
 	for i, s := range prev.Steps {

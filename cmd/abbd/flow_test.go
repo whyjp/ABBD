@@ -198,3 +198,16 @@ func TestAReaderReplacesOnlyTheStaleStepsOfAHumansFlow(t *testing.T) {
 		t.Errorf("the page marks the two human steps of the mixed flow, found %d", n)
 	}
 }
+
+// The question and caption of a human's flow are the human's word too: a
+// reader who takes over a STALE step keeps them as they are.
+func TestAReaderKeepsTheQuestionAndCaptionOfAHumansFlow(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
+	p.code("billing/retry.go", movedRetry())
+	p.resync()
+	reread := strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1)
+	p.flow(1, "the question of flow charge is a human's word", strings.Replace(reread, "How does a charge reach the ledger?", "Why is the ledger empty?", 1))
+	p.flow(1, "the caption of flow charge is a human's word", strings.Replace(reread, "From the insert to the book.", "Only the insert.", 1))
+	p.flow(0, "stored flow charge, 3 steps, INFERRED", reread)
+}
