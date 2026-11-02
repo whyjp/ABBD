@@ -39,7 +39,7 @@ steps:
         cmd/abbd/main.go#quote-414b351c: 1890665b94e73ff6
         cmd/abbd/main.go#quote-c1c55757: 417fc75a7dfd695c
     - unit: MOD-0017
-      does: Parse(stdout) → extract.Result, units keyed by ref with anchors and relations
+      does: Parse(stdout) → extract.Result, the units by ref with anchors and relations
       calls:
         - DATA-0002
       evidence:
@@ -52,7 +52,7 @@ steps:
       writer: reader
       code:
         cmd/abbd/main.go#quote-2a172499: f449d858035def28
-        internal/extract/extract.go#quote-1772af40: 47cee2a32e82bc47
+        internal/extract/extract.go#quote-1772af40: c0ff7246a9ff04f7
     - unit: MOD-0041
       does: Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state
       fails: Writable refuses a state with a unit file in the old format; run abbd migrate

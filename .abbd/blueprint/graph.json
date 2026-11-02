@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "5a8726b11d0c3b7691d255211b92832dd09a8d6d7e04ab94d473a5fde15ca76f"
+    "inputs_hash": "e4deda2cb0d9997a5028b509f2044452386225525ff001a87f67011a224c2e00"
   },
   "units": [
     {
@@ -1493,7 +1493,7 @@
       "Parent": "MOD-0009",
       "Evidence": [
         "internal/bootstrap/overlay.go:139 \"its anchors match more than one %s equally\"",
-        "internal/bootstrap/overlay.go:250 \"keys[x.Key()] = true\""
+        "internal/bootstrap/overlay.go:271 \"keys[x.Key()] = true\""
       ]
     },
     {
@@ -1620,8 +1620,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:126 \"parent %q is not the key of another module\"",
-        "internal/extract/extract.go:323 \"func parentCycle(units []Unit, key string) bool {\""
+        "internal/extract/extract.go:127 \"parent %q is not the key of another module\"",
+        "internal/extract/extract.go:330 \"func parentCycle(units []Unit, key string) bool {\""
       ]
     },
     {
@@ -1642,7 +1642,7 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:312 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
+        "internal/extract/extract.go:319 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
     },
     {
@@ -1663,8 +1663,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:296 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
-        "internal/extract/extract.go:307 \"leaves the project root\""
+        "internal/extract/extract.go:303 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
+        "internal/extract/extract.go:314 \"leaves the project root\""
       ]
     },
     {
@@ -1685,8 +1685,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:189 \"dec.DisallowUnknownFields()\"",
-        "internal/extract/extract.go:222 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
+        "internal/extract/extract.go:196 \"dec.DisallowUnknownFields()\"",
+        "internal/extract/extract.go:229 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
       ]
     },
     {
@@ -3567,7 +3567,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:149 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+      "Quote": "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
     },
     {
       "From": "MOD-0009",
@@ -3595,7 +3595,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\""
+      "Quote": "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
     },
     {
       "From": "MOD-0013",
@@ -3669,7 +3669,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+      "Quote": "internal/extract/extract.go:146 \"if err := rr.Kind.Joins(from, to); err != nil {\""
     },
     {
       "From": "MOD-0020",
@@ -3677,7 +3677,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
+      "Quote": "internal/extract/extract.go:303 \"the forward-slash, root-relative paths git reports\""
     },
     {
       "From": "MOD-0021",
@@ -3685,7 +3685,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
+      "Quote": "internal/extract/extract.go:186 \"if err := e.Validate(); err != nil {\""
     },
     {
       "From": "MOD-0021",
@@ -3693,7 +3693,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
+      "Quote": "internal/extract/extract.go:254 \"Purpose:        inferred(ru.Purpose),\""
     },
     {
       "From": "MOD-0021",
@@ -3701,7 +3701,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
+      "Quote": "internal/extract/extract.go:213 \"p, err := normalizePath(a.Path)\""
     },
     {
       "From": "MOD-0022",
@@ -11945,7 +11945,15 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "coupling_test.go",
+                "Code": true
+              },
+              {
+                "Text": " runs setup with a supplement whose coupling joins two script units by their refs, refuses one whose two refs name the same unit, and warns when a supplement ref shadows the script's.",
                 "Code": false
               }
             ]
@@ -14094,7 +14102,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\""
+              "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
             ],
             "Marks": [
               {
@@ -14565,7 +14573,15 @@
                 "Code": true
               },
               {
-                "Text": " key looked up first among the supplement units that landed, then among the script's keys. It must be a module or a feature, the two kinds ",
+                "Text": " ref that ",
+                "Code": false
+              },
+              {
+                "Text": "resolve",
+                "Code": true
+              },
+              {
+                "Text": " looks up first among the supplement units that landed, then among the script's refs. It must be a module or a feature, the two kinds ",
                 "Code": false
               },
               {
@@ -14611,7 +14627,23 @@
                 "Code": true
               },
               {
-                "Text": "): a supplement relation whose ends both landed. One the script already extracted is skipped. Any other must cite evidence and is appended with the writer ",
+                "Text": "): a supplement relation whose ends ",
+                "Code": false
+              },
+              {
+                "Text": "resolve",
+                "Code": true
+              },
+              {
+                "Text": " finds, each among the supplement units that landed and then among the script's refs, so an end the script reports needs no supplement unit of its own. An end it finds in neither is an error naming that ref, and so are two ends that find the same unit, as a supplement unit restating a script unit under a ref of its own and coupled to the script's ref does. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Joins",
+                "Code": true
+              },
+              {
+                "Text": " checks the kind against the two ends' kinds. One the script already extracted is skipped. Any other must cite evidence and is appended with the writer ",
                 "Code": false
               },
               {
@@ -14665,7 +14697,15 @@
                 "Code": true
               },
               {
-                "Text": " lists a documented signature the code contradicts and a second supplement unit on the same code. ",
+                "Text": " lists a documented signature the code contradicts, a second supplement unit on the same code, and a supplement ref that names another unit than the script's same ref, which ",
+                "Code": false
+              },
+              {
+                "Text": "resolve",
+                "Code": true
+              },
+              {
+                "Text": " then hides. ",
                 "Code": false
               },
               {
@@ -14724,7 +14764,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:149 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
@@ -14742,8 +14782,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:220 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
       ]
@@ -16057,7 +16097,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+              "internal/extract/extract.go:146 \"if err := rr.Kind.Joins(from, to); err != nil {\""
             ],
             "Marks": [
               {
@@ -16077,7 +16117,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
+              "internal/extract/extract.go:303 \"the forward-slash, root-relative paths git reports\""
             ],
             "Marks": [
               {
@@ -16097,7 +16137,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
+              "internal/extract/extract.go:186 \"if err := e.Validate(); err != nil {\""
             ],
             "Marks": [
               {
@@ -16116,7 +16156,7 @@
             "Title": "untrusted-output gate depends_on intent is a guess (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
+              "internal/extract/extract.go:254 \"Purpose:        inferred(ru.Purpose),\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0019"
@@ -16128,7 +16168,7 @@
             "Title": "untrusted-output gate depends_on anchor path normalization (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:213 \"p, err := normalizePath(a.Path)\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0020"
@@ -16158,8 +16198,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\"",
-              "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:254 \"Purpose:        inferred(ru.Purpose),\"",
+              "internal/extract/extract.go:213 \"p, err := normalizePath(a.Path)\""
             ],
             "Marks": [
               {
@@ -16940,7 +16980,23 @@
                 "Code": true
               },
               {
-                "Text": "): both ends must be existing keys and must differ. ",
+                "Text": "): both ends must differ. In script output both must be existing refs. In a supplement an end may be a ref only the script reports, so ",
+                "Code": false
+              },
+              {
+                "Text": "parse",
+                "Code": true
+              },
+              {
+                "Text": " checks the kind alone there and leaves ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Joins",
+                "Code": true
+              },
+              {
+                "Text": " to the overlay, which knows both kinds. Otherwise ",
                 "Code": false
               },
               {
@@ -17536,8 +17592,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:220 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
         {
@@ -17546,7 +17602,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:146 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -17555,7 +17611,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:303 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -17564,7 +17620,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:186 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -17573,7 +17629,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
+            "internal/extract/extract.go:254 \"Purpose:        inferred(ru.Purpose),\""
           ]
         },
         {
@@ -17582,7 +17638,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
+            "internal/extract/extract.go:213 \"p, err := normalizePath(a.Path)\""
           ]
         }
       ],
@@ -18894,7 +18950,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:303 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -23633,7 +23689,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:146 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -23642,7 +23698,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:186 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -32050,7 +32106,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:149 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
@@ -33452,7 +33508,7 @@
             {
               "N": 3,
               "ID": "flow-sync.3",
-              "Does": "Parse(stdout) → extract.Result, units keyed by ref with anchors and relations",
+              "Does": "Parse(stdout) → extract.Result, the units by ref with anchors and relations",
               "Note": "",
               "Fails": "",
               "Badge": "",

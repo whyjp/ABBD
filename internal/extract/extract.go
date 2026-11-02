@@ -97,8 +97,9 @@ type Unit struct {
 func Parse(r io.Reader) (Result, error) { return parse(r, false) }
 
 // ParseSupplement reads a semantic supplement. Its units may name a module
-// only the script reports as their parent, by the script's key, so a parent
-// key the supplement does not hold is left for the overlay to resolve.
+// only the script reports as their parent, and its relations may join units
+// only the script reports, by the script's ref, so a ref the supplement does
+// not hold is left for the overlay to resolve.
 func ParseSupplement(r io.Reader) (Result, error) { return parse(r, true) }
 
 func parse(r io.Reader, foreignParents bool) (Result, error) {
@@ -134,12 +135,18 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		from, okf := kinds[rr.From]
 		to, okt := kinds[rr.To]
 		switch {
-		case !okf || !okt:
+		case (!okf || !okt) && !foreignParents:
 			return Result{}, fmt.Errorf("relation %d: %q -> %q names a unit key that does not exist", i, rr.From, rr.To)
 		case rr.From == rr.To:
 			return Result{}, fmt.Errorf("relation %d: %q relates to itself", i, rr.From)
 		}
-		if err := rr.Kind.Joins(from, to); err != nil {
+		// A supplement relation may name units only the script reports, whose
+		// kinds the overlay knows.
+		if okf && okt {
+			if err := rr.Kind.Joins(from, to); err != nil {
+				return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+			}
+		} else if err := rr.Kind.Validate(); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
 		if err := rr.Via.Validate(); err != nil {
