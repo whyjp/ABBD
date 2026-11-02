@@ -150,7 +150,7 @@ func TestAHumanStatesWhyADecisionWasTaken(t *testing.T) {
 	if !strings.Contains(out, "decisions.three-tries (INFERRED, CURRENT)") || !strings.Contains(out, "tried at most three times") {
 		t.Errorf("explain must show the decision with its new text and the kept why:\n%s", out)
 	}
-	if page := p.read("blueprint/index.html"); !strings.Contains(page, "the card network bans a fourth try") || !strings.Contains(page, "https://example.com/pr/7") {
+	if page := p.blueprint(); !strings.Contains(page, "the card network bans a fourth try") || !strings.Contains(page, "https://example.com/pr/7") {
 		t.Error("the blueprint must show the stated why and its source")
 	}
 }
@@ -162,7 +162,7 @@ func TestTheBlueprintShowsEachNoteBesideItsUnit(t *testing.T) {
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "| state | next |\n|---|---|\n| pending | charged |", statesQuote)
 	p.wantNote(0, "understood", "DATA-0001.wire_sample", "```sql\nINSERT INTO charges (amount) VALUES (?)\n```", "billing/charge.go:3:INSERT INTO charges")
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	billing := page[strings.Index(page, `id="m-MOD-0001"`):]
 	billing = billing[:strings.Index(billing, "</section>")]
 	for _, want := range []string{
@@ -180,7 +180,7 @@ func TestTheBlueprintShowsEachNoteBesideItsUnit(t *testing.T) {
 
 	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
 	p.resync()
-	page = p.read("blueprint/index.html")
+	page = p.blueprint()
 	states := page[strings.Index(page, `id="n-MOD-0001.states"`):]
 	if !strings.Contains(states[:strings.Index(states, "</h3>")], "pill STALE") {
 		t.Error("the stale note's heading must carry STALE")
@@ -244,7 +244,7 @@ func TestAContractsNotesSitWithTheProviderTheCodeShows(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "provides", "IF-0001", "--via", "call", "--evidence", "billing/charge.go:3:calls ledger.Post")
 	p.wantNote(0, "understood IF-0001.semantics", "IF-0001.semantics", "Post books one entry.", "ledger/book.go:3:func Post() {}")
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	ledger := page[strings.Index(page, `id="m-MOD-0002"`):]
 	if !strings.Contains(ledger[:strings.Index(ledger, "</section>")], `id="c-IF-0001"`) {
 		t.Fatal("the contract's notes belong in ledger's inside, the provider the code shows")
@@ -316,7 +316,7 @@ func TestAContractsHomeCountsWhatItsUnitsProvide(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "provides", "IF-0001", "--via", "call", "--evidence", "billing/charge.go:3:calls ledger.Post")
 	p.wantNote(0, "understood IF-0001.semantics", "IF-0001.semantics", "Post books one entry.", "ledger/core/book.go:3:func Post() {}")
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	ledger := page[strings.Index(page, `id="m-MOD-0002"`):]
 	if !strings.Contains(ledger[:strings.Index(ledger, "</section>")], `id="c-IF-0001"`) {
 		t.Fatal("the contract's notes belong in ledger's inside, whose unit the code shows providing it")
@@ -337,7 +337,7 @@ func TestAWhyDoesNotSurviveADecisionOnOtherCode(t *testing.T) {
 	if out := p.want(0, "decisions.k (INFERRED, CURRENT)", "explain", "MOD-0001"); strings.Contains(out, "fourth try") {
 		t.Errorf("the old why must not show under a decision on other code:\n%s", out)
 	}
-	if strings.Contains(p.read("blueprint/index.html"), "fourth try") {
+	if strings.Contains(p.blueprint(), "fourth try") {
 		t.Error("the blueprint must not show the old why under the new decision")
 	}
 }

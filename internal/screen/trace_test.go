@@ -522,7 +522,7 @@ func rectSegDist(r frect, a, b fpt) float64 {
 func traced(t *testing.T, d Drawing) Trace {
 	t.Helper()
 	var b bytes.Buffer
-	if err := page.ExecuteTemplate(&b, "drawing", d); err != nil {
+	if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
 		t.Fatal(err)
 	}
 	s, err := readSVG(b.String())
@@ -708,7 +708,7 @@ func TestEveryRelationEndIsDrawn(t *testing.T) {
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			var b bytes.Buffer
-			if err := page.ExecuteTemplate(&b, "drawing", v.d); err != nil {
+			if err := site.ExecuteTemplate(&b, "drawing", v.d); err != nil {
 				t.Fatal(err)
 			}
 			s, err := readSVG(b.String())

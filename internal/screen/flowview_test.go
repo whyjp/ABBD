@@ -1,7 +1,6 @@
 package screen
 
 import (
-	"bytes"
 	"slices"
 	"strings"
 	"testing"
@@ -65,10 +64,7 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	if !slices.Equal(refs["MOD-0002"], []int{2, 3}) || !slices.Equal(refs["MOD-0003"], []int{4}) || refs["MOD-0004"] != nil {
 		t.Errorf("each inside lists the steps on the units it holds: %v", refs)
 	}
-	var b bytes.Buffer
-	if err := Render(&b, m); err != nil {
-		t.Fatal(err)
-	}
+	b := renderAll(t, m)
 	page := b.String()
 	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="#flow-search">How does a search run?</a>`} {
 		if !strings.Contains(page, want) {

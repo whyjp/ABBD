@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>internal/gitx · ABBD 청사진</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { min-width: 0; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.muted { color: var(--muted); }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+.pill.CURRENT, .pill.stated { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.STALE { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
+.pill.inferred { color: var(--guess); background: var(--guess-bg); border-color: transparent; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin: 6px 0 0; font-size: 12.5px; }
+.chips .chip { border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; padding: 0 6px; white-space: nowrap; }
+.chips .head { font-weight: 600; }
+.fresh { font-size: 14px; }
+ul.plain { list-style: none; padding: 0; margin: 4px 0; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+ul.plain li:last-child { border-bottom: 0; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
+details > summary { cursor: pointer; font-weight: 600; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
+.quote { font-size: 13px; margin-top: 2px; }
+.quote q { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; quotes: none; }
+
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
+svg .box.twin rect { stroke: var(--muted); }
+.picker a.chip { text-decoration: none; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.w.both { marker-start: url(#m-bypass); }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg circle.origin { stroke-width: 1.5; }
+svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
+svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
+svg circle.junction { fill: var(--ink); }
+svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
+svg circle.junction.bypass { fill: var(--bypass); }
+svg circle.junction.provides { fill: var(--ok); }
+svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg path.w.joins { marker-end: none; }
+svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.text table, .note table { margin: 6px 0; font-size: 13px; }
+.text th, .text td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+.text th { background: var(--panel); }
+.text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
+.note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
+.note h3 { margin: 4px 0; font-size: 15px; }
+.entries { margin: 6px 0 10px; }
+.entries table { font-size: 13px; table-layout: auto; }
+.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+.entries td code { overflow-wrap: break-word; }
+.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
+.entries td.note { width: 100%; }
+.entries td p { margin: 0 0 2px; }
+.entries .who { display: block; white-space: nowrap; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+}
+.questions { margin: 2px 0 8px; }
+.questions li { padding: 2px 0; }
+.flow .caption p { margin: 4px 0; }
+ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
+ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+ol.dg-flow > li.lane:first-child { border-top: 0; }
+.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
+.lane-unit strong { display: block; font-size: 14px; }
+.lane-unit .muted { font-size: 12px; }
+ol.steps { list-style: none; padding: 0; margin: 0; }
+li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
+li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
+li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
+ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
+li.step p { margin: 0; overflow-wrap: anywhere; }
+li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
+li.step .noteline { font-size: 13px; color: var(--muted); }
+li.step .fails { font-size: 13px; color: var(--stale); }
+li.step.stale .n { background: var(--stale); }
+li.step .chips { margin-top: 3px; }
+.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
+nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
+nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
+nav.site ul.plain li { border-bottom: 0; padding: 1px 0; }
+nav.site h3 { margin: 10px 0 2px; }
+nav.site a { text-decoration: none; }
+nav.site a:hover { text-decoration: underline; }
+nav.site a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+nav.site .tree a { display: block; overflow-wrap: anywhere; }
+.tree .d1 { padding-left: 12px; } .tree .d2 { padding-left: 24px; } .tree .d3 { padding-left: 36px; } .tree .d4 { padding-left: 48px; }
+.crumbs { margin: 0; font-size: 14px; }
+.inside.page { display: block; }
+table.index th { text-align: left; font-size: 13px; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+table.index .sig { font-size: 12px; }
+table.index .who { display: block; }
+.anchors { font-size: 12px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
+table.index td:first-child { width: 46%; }
+
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="site" aria-label="청사진 안내">
+  <a class="home" href="index.html">ABBD 청사진</a>
+  <ul class="plain top">
+    <li><a href="index.html">모듈과 계약</a></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">47</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">123</span></li>
+  </ul>
+  <h3>모듈</h3>
+  <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="MOD-0009.html">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="MOD-0017.html">internal/extract</a></li><li class="d0"><a href="#m-MOD-0022" aria-current="page">internal/gitx</a></li><li class="d0"><a href="MOD-0054.html">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="MOD-0055.html">pstack (external)</a></li></ul>
+  <h3>기능</h3>
+  <ul class="plain tree"><li class="d0"><a href="FEAT-0002.html">/abbd-setup</a></li><li class="d0"><a href="FEAT-0001.html">/abbd</a></li></ul>
+</nav>
+<main>
+<header>
+  <p class="crumbs"><a href="index.html">청사진</a> › <a href="#m-MOD-0022">internal/gitx</a></p>
+  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+</header>
+
+<section class="inside page" id="m-MOD-0022">
+  <div class="drawhead"><h2>internal/gitx의 안 <span class="muted key">MOD-0022</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  <div class="cols">
+    <div>
+      <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="410" height="264" viewBox="0 0 410 264" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="398" height="228" rx="8"/>
+<path class="w depends_on joins" d="M279 134 L279 150" data-origin="inferred"><title>rename detection depends_on working-tree snapshot (via data), 판독
+cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</title></path><circle class="origin inferred" cx="279" cy="134" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M94 62 L94 82"><title>abbd CLI depends_on default-branch base search (via call), 판독</title></path><path class="w depends_on" d="M307 38 L307 70 L279 70 L279 90" data-origin="inferred"><title>anchor takeover matching depends_on rename detection (via data), 판독</title></path><circle class="origin inferred" cx="307" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins" d="M378 38 L378 70 L370 70" data-origin="inferred"><title>internal/screen depends_on working-tree snapshot (via convention), 판독</title></path><circle class="origin inferred" cx="378" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins" d="M232 38 L232 62 M94 62 L370 62" data-origin="inferred" data-net="1"><title>abbd CLI depends_on default-branch base search (via call), 판독
+abbd CLI depends_on working-tree snapshot (via call), 판독</title></path><circle class="origin inferred" cx="232" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="232" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="237" y="50">×2</text><path class="w depends_on joins" d="M370 62 L370 150 M279 150 L370 150" data-net="2"><title>rename detection depends_on working-tree snapshot (via data), 판독
+abbd CLI depends_on working-tree snapshot (via call), 판독
+internal/screen depends_on working-tree snapshot (via convention), 판독
+cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</title></path><path class="w depends_on" d="M370 150 L370 178" data-net="2"><title>rename detection depends_on working-tree snapshot (via data), 판독
+abbd CLI depends_on working-tree snapshot (via call), 판독
+internal/screen depends_on working-tree snapshot (via convention), 판독
+cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</title></path><text class="count" x="375" y="174">×3</text>
+<circle class="junction depends_on" cx="232" cy="62" r="3"/><circle class="junction depends_on" cx="370" cy="70" r="3"/><circle class="junction depends_on" cx="370" cy="150" r="3"/>
+<g class="box inner" data-id="MOD-0023"><title>MOD-0023 default-branch base search: Tries origin&#39;s HEAD, the upstream, origin/main, origin/master, main and master in that order and returns the first merge base with HEAD.</title><rect x="24" y="82" width="140" height="60" rx="4"/><text class="name" x="32" y="101">default-branch</text><text class="name" x="32" y="117">base search</text><text class="sub" x="32" y="134">모듈</text></g><g class="box inner" data-id="MOD-0024"><title>MOD-0024 rename detection: Diffs two snapshot trees with unlimited rename detection, parses the NUL-separated name-status output into old-to-new paths, and reports ok=false when the old tree was garbage collected.</title><rect x="204" y="90" width="150" height="44" rx="4"/><text class="name" x="212" y="109">rename detection</text><text class="sub" x="212" y="126">모듈</text></g><g class="box inner" data-id="MOD-0025"><title>MOD-0025 working-tree snapshot: Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository.</title><rect x="196" y="178" width="190" height="44" rx="4"/><text class="name" x="204" y="197">working-tree snapshot</text><text class="sub" x="204" y="214">모듈</text></g>
+<a href="MOD-0001.html"><g class="port other exit" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="195" y="21" width="74" height="17" rx="3"/><text class="chip" x="195" dx="4" y="21" dy="12.5">abbd CLI</text></g></a><a href="MOD-0026.html"><g class="port other exit" data-id="port|MOD-0026true"><title>계약 없이 internal/identity와 닿는 곳</title><rect x="273" y="21" width="68" height="17" rx="3"/><text class="chip" x="273" dx="4" y="21" dy="12.5">identity</text></g></a><a href="MOD-0034.html"><g class="port other exit" data-id="port|MOD-0034true"><title>계약 없이 internal/screen와 닿는 곳</title><rect x="345" y="21" width="54" height="17" rx="3"/><text class="chip" x="345" dx="4" y="21" dy="12.5">screen</text></g></a>
+</svg></div>
+      <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+      
+      <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="chip">citable evidence paths</span></div>
+      <h3>이 모듈을 지나는 흐름</h3>
+      <ul class="plain"><li><a href="index.html#flow-sync">What does abbd sync do, in order?</a> <span class="muted">단계 5·6·7</span></li></ul>
+      <h3>판독한 결합</h3>
+      <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> abbd CLI → default-branch base search <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> abbd CLI → working-tree snapshot <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</q></div><div class="quote"><q>cmd/abbd/screen.go:16 &#34;in.Tree, _ = gitx.Snapshot(e.root, store.Dir)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> review commands → internal/gitx <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> sync pipeline → internal/gitx <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/main.go:391 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> anchor path normalization → internal/gitx <span class="muted">(depends_on, via convention)</span><div class="quote"><q>internal/extract/extract.go:303 &#34;the forward-slash, root-relative paths git reports&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/gitx → citable evidence paths <span class="muted">(consumes, via data)</span><div class="quote"><q>internal/gitx/gitx.go:50 &#34;\&#34;ls-files\&#34;, \&#34;-z\&#34;, \&#34;--cached\&#34;, \&#34;--others\&#34;, \&#34;--exclude-standard\&#34;)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> rename detection → working-tree snapshot <span class="muted">(depends_on, via data)</span><div class="quote"><q>cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</q></div><div class="quote"><q>cmd/abbd/main.go:391 &#34;gitx.Renames(e.root, state.Fingerprint, tree)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> anchor takeover matching → rename detection <span class="muted">(depends_on, via data)</span><div class="quote"><q>internal/identity/identity.go:409 &#34;if to, ok := renames[a.Path]; ok {&#34;</q></div><div class="quote"><q>cmd/abbd/main.go:391 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/screen → working-tree snapshot <span class="muted">(depends_on, via convention)</span><div class="quote"><q>internal/screen/screen.go:98 &#34;case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> freshness verdicts → internal/gitx <span class="muted">(depends_on, via convention)</span><div class="quote"><q>cmd/abbd/screen.go:16 &#34;in.Tree, _ = gitx.Snapshot(e.root, store.Dir)&#34;</q></div><div class="quote"><q>cmd/abbd/main.go:387 &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</q></div></li></ul>
+    </div>
+    <div class="text">
+      
+      <div><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span></div>
+      <h4>Overview</h4><p><code>internal/gitx</code> is ABBD&#39;s only channel to git. It is one file, <code>gitx.go</code>, with nine exported, stateless functions, private helpers <code>run</code>, <code>runInput</code>, <code>gitlinks</code>, <code>unbornRepos</code>, <code>addFiles</code> and <code>unignored</code>, and one private type, <code>gitlink</code>, a submodule&#39;s path and recorded commit. Each function runs <code>git -C &lt;dir&gt; ...</code> and turns stdout into a string, slice or map. The package exports no types, keeps no state and imports only the standard library. It never writes the user&#39;s index, refs or commits.</p><p>The central idea is the working-tree fingerprint. <code>Snapshot</code> stages the whole working tree into a throwaway index, untracked files included and the <code>exclude</code> path left out, then runs <code>git write-tree</code>. A submodule enters as the commit the superproject&#39;s index records, not the one checked out, so a clean clone of a synced commit snapshots the same tree. Callers pass <code>store.Dir</code>, so <code>.abbd/</code> never counts. <code>syncActual</code> in <code>cmd/abbd/main.go</code> stores that tree as <code>State.Fingerprint</code> and the result of <code>Head</code> as <code>State.Revision</code>. On the next sync, <code>Renames</code> diffs the stored and fresh trees so <code>identity.Reconcile</code> can follow moved files. <code>screenInput</code> takes a fresh snapshot so <code>abbd status</code> and the blueprint can call the state STALE. <code>keepingCurrent</code> in <code>install.go</code> snapshots around an edit outside <code>.abbd/</code> and moves the fingerprint along only when the state was current. The other functions serve wider reads. <code>MergeBase</code> picks the base for <code>abbd diff</code>, and <code>Files</code> and <code>Show</code> let <code>store.UnitsAt</code> read unit files at that revision. <code>WorkingFiles</code> lists what git would commit. <code>internal/evidence</code> uses that list for move candidates, and <code>topology.Find</code> uses it when a query names a file.</p><h4>Key Concepts</h4><ul><li><code>run</code><strong> (</strong><code>gitx.go</code>): the private helper every function goes through. It runs <code>git -C dir args...</code> with extra environment variables appended, captures stdout and leaves stderr unattached, so git&#39;s messages are dropped. <code>runInput</code> is the same with a string on stdin, which <code>addFiles</code> feeds paths and index lines through.</li></ul><ul><li><strong>Snapshot</strong> (<code>gitx.go</code>): a tree object of the tracked and untracked, non-ignored files under <code>dir</code>, minus <code>exclude</code>. <code>gitlinks</code> reads each submodule&#39;s recorded commit with <code>git ls-files -s</code>, the add skips the submodule paths, and <code>update-index --cacheinfo</code> puts the recorded commits back. <code>git add</code> refuses a nested repository with no commit yet, so <code>unbornRepos</code> finds each one, an untracked entry with a trailing slash whose <code>Head</code> is empty, and the add skips it. <code>addFiles</code> then adds its files, as <code>WorkingFiles</code> lists them inside it, through <code>hash-object -w --stdin-paths</code> and <code>update-index -z --index-info</code>, so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository&#39;s index can list a file deleted or renamed before its first commit, and <code>unignored</code> drops what <code>git check-ignore</code> says the project ignores. git reads the paths of <code>hash-object --stdin-paths</code>, <code>--index-info</code> and <code>--cacheinfo</code> from the top of the work tree, so they and the submodule paths take the prefix <code>rev-parse --show-prefix</code> gives when <code>dir</code> is a subdirectory of the repository. <code>GIT_INDEX_FILE</code> points into an <code>abbd-index-</code> temp directory that is removed afterwards. Outside a repository it returns an empty string and no error.</li></ul><ul><li><code>Renames</code><strong> (</strong><code>gitx.go</code>): old to new paths from <code>git diff-tree -r -M -l0 --name-status -z --relative</code>. It keeps rename entries and skips copies. Equal or empty trees give an empty map.</li></ul><ul><li><code>ok</code> result<strong> (</strong><code>gitx.go</code>): <code>Renames</code> and <code>Changed</code> return <code>ok=false</code> with no error when <code>git cat-file -e</code> cannot find the old tree, usually after <code>git gc</code>. <code>syncActual</code> then warns that file moves are not detected and carries on.</li></ul><ul><li><code>Changed</code><strong> (</strong><code>gitx.go</code>): every path that differs between two snapshots, with a moved file listed under both names. Nothing in the repository calls it today.</li></ul><ul><li><code>MergeBase</code><strong> (</strong><code>gitx.go</code>): tries origin&#39;s <code>HEAD</code> symbolic ref, then <code>@{upstream}</code>, <code>origin/main</code>, <code>origin/master</code>, <code>main</code> and <code>master</code>, and returns the first merge base git accepts. When none works it returns an error asking for <code>--base REV</code>.</li></ul><ul><li><code>Gitlinks</code><strong> (</strong><code>gitx.go</code>): every submodule the index records, mapped from its path to the recorded commit, read once by <code>gitlinks</code> from <code>git ls-files -s</code>. It is empty outside a repository. <code>store</code> hashes a submodule by its pin, so a module&#39;s digest sees a new pin on every clone, and a directory anchor inside a submodule stands for that pin. <code>Snapshot</code> reads the same list.</li></ul><ul><li><code>Head</code><strong> (</strong><code>gitx.go</code>): the current commit, or an empty string outside a repository or before the first commit.</li></ul><ul><li><code>WorkingFiles</code><strong> (</strong><code>gitx.go</code>): <code>git ls-files --cached --others --exclude-standard</code>. It is the set the fingerprint counts, except that <code>.abbd/</code> stays in. It lists a submodule as one path, never lists an ignored file, and returns nil outside a repository, where <code>store</code> walks the disk instead.</li></ul><ul><li><strong>Paths relative to </strong><code>dir</code><strong> (</strong><code>gitx.go</code>): every function takes and returns paths relative to the directory it was given, through <code>-C</code>, <code>--relative</code> and the <code>./path</code> form in <code>Show</code>. A project root below the repository top still works.</li></ul>
+      
+      
+      
+      <h3>안의 단위</h3>
+      <ul class="plain units-list"><li id="i-MOD-0023"><strong>default-branch base search</strong> <span class="muted">모듈</span><div>Tries origin&#39;s HEAD, the upstream, origin/main, origin/master, main and master in that order and returns the first merge base with HEAD. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0023</span> <span class="key muted">internal/gitx/gitx.go MergeBase</span></details></li><li id="i-MOD-0024"><strong>rename detection</strong> <span class="muted">모듈</span><div>Diffs two snapshot trees with unlimited rename detection, parses the NUL-separated name-status output into old-to-new paths, and reports ok=false when the old tree was garbage collected. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0024</span> <span class="key muted">internal/gitx/gitx.go Renames</span></details></li><li id="i-MOD-0025"><strong>working-tree snapshot</strong> <span class="muted">모듈</span><div>Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0025</span> <span class="key muted">internal/gitx/gitx.go Snapshot</span></details></li></ul>
+      
+    </div>
+  </div>
+  
+</section>
+
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>
+</main>
+</div>
+</body>
+</html>

@@ -15,6 +15,13 @@ func TestABlueprintThatIsNotTheRenderedOneReadsStale(t *testing.T) {
 	for name, tamper := range map[string]func(p *project){
 		"page deleted":  func(p *project) { os.Remove(bp(p, "index.html")) },
 		"graph deleted": func(p *project) { os.Remove(bp(p, "graph.json")) },
+		"module page deleted": func(p *project) {
+			pages, _ := filepath.Glob(bp(p, "MOD-*.html"))
+			if len(pages) == 0 {
+				p.t.Fatal("the render wrote no module page")
+			}
+			os.Remove(pages[0])
+		},
 		"page edited":   func(p *project) { write(p.t, bp(p, "index.html"), p.read("blueprint/index.html")+"<p>hand edit</p>") },
 		"graph emptied": func(p *project) { write(p.t, bp(p, "graph.json"), "{}") },
 		"file added":    func(p *project) { write(p.t, bp(p, "extra.html"), "<p>stray</p>") },

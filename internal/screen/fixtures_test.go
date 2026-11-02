@@ -48,7 +48,7 @@ func views(m Model) []view {
 func measured(t *testing.T, d Drawing) Metrics {
 	t.Helper()
 	var b bytes.Buffer
-	if err := page.ExecuteTemplate(&b, "drawing", d); err != nil {
+	if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
 		t.Fatal(err)
 	}
 	s, err := readSVG(b.String())
@@ -60,17 +60,20 @@ func measured(t *testing.T, d Drawing) Metrics {
 
 // Every drawing of every real state keeps docs/blueprint-svg.md's rules.
 // With ABBD_BLUEPRINTS set to a directory, it also writes each fixture's page
-// there, for a person to look at.
+// there, one folder of pages per fixture, for a person to look at.
 func TestEveryRealDrawingIsLegible(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		if dir := os.Getenv("ABBD_BLUEPRINTS"); dir != "" {
-			var b bytes.Buffer
-			if err := Render(&b, m); err != nil {
+			pages, err := Pages(m)
+			if err != nil {
 				t.Fatal(err)
 			}
-			if err := os.WriteFile(filepath.Join(dir, name+".html"), b.Bytes(), 0o644); err != nil {
-				t.Fatal(err)
+			os.MkdirAll(filepath.Join(dir, name), 0o755)
+			for f, b := range pages {
+				if err := os.WriteFile(filepath.Join(dir, name, f), b, 0o644); err != nil {
+					t.Fatal(err)
+				}
 			}
 		}
 		for _, v := range views(m) {

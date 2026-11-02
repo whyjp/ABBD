@@ -20,4 +20,4 @@ code:
     internal/store/store.go#quote-86797714: aa52130fc1b9ae19
 ---
 
-The `InputsHash` of `.abbd/` the blueprint was last rendered from, which `publish` writes after it renders `index.html` and `graph.json`. status calls the blueprint STALE when it differs from the hash now, and UNKNOWN when it is empty or `blueprint/` holds no files. `InputsHash` leaves `state.yaml` out, so writing this value does not change the hash it records.
+The `InputsHash` of `.abbd/` the blueprint was last rendered from, which `publish` writes after `SaveBlueprint` has written every page and `graph.json`. status calls the blueprint STALE when it differs from the hash now, and UNKNOWN when it is empty or `blueprint/` holds no files. `InputsHash` leaves `state.yaml` out, so writing this value does not change the hash it records.

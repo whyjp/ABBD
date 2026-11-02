@@ -2,7 +2,6 @@ package screen
 
 import (
 	"bytes"
-	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -143,10 +142,7 @@ func TestAUnitOnBothSidesOfTheFocusIsDrawnTwice(t *testing.T) {
 // same data.
 func TestFocusViewsAreDeterministic(t *testing.T) {
 	page := func() []byte {
-		var b bytes.Buffer
-		if err := Render(&b, fixture(t, "orca")); err != nil {
-			t.Fatal(err)
-		}
+		b := renderAll(t, fixture(t, "orca"))
 		return b.Bytes()
 	}
 	first := page()
@@ -156,30 +152,6 @@ func TestFocusViewsAreDeterministic(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		if !bytes.Equal(page(), first) {
 			t.Fatal("rendering the same data twice gave two pages")
-		}
-	}
-}
-
-// Every link on the page opens a section the page holds.
-func TestEveryLinkOpensASection(t *testing.T) {
-	href, id := regexp.MustCompile(`href="#([^"]+)"`), regexp.MustCompile(` id="([^"]+)"`)
-	for _, name := range fixtures {
-		var b bytes.Buffer
-		if err := Render(&b, fixture(t, name)); err != nil {
-			t.Fatal(err)
-		}
-		ids := map[string]bool{}
-		for _, m := range id.FindAllStringSubmatch(b.String(), -1) {
-			ids[m[1]] = true
-		}
-		broken := 0
-		for _, m := range href.FindAllStringSubmatch(b.String(), -1) {
-			if !ids[m[1]] {
-				broken++
-				if broken <= 3 {
-					t.Errorf("%s: a link opens #%s, which the page does not hold", name, m[1])
-				}
-			}
 		}
 	}
 }

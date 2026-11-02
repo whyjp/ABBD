@@ -125,7 +125,7 @@ func TestANoteDescribesOneEntry(t *testing.T) {
 	p.wantNote(1, "IF-0001 lists no entry get-refund", "IF-0001.entries.get-refund", "Refunds one charge.", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	p.wantNote(0, "understood IF-0001.entries.get-charges-id http api", "IF-0001.entries.get-charges-id", "One charge, with its refunds.", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	p.want(0, "notes: 1 slot note(s), 0 STALE, 0 orphaned", "status", "--check")
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	for _, want := range []string{`<tr id="e-IF-0001.get-charges-id">`, "<code>GET /charges/{id}</code>", "<p>One charge, with its refunds.</p>", ">charges page<"} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page misses %q", want)
@@ -202,7 +202,7 @@ func TestEntryRowsOfTwoContractsKeepTheirOwnIDs(t *testing.T) {
  {"key":"admin","kind":"IF","name":"admin api","signature":"/admin","anchors":[{"path":"api/admin.go","symbol":"Admin"}],"entries":[{"name":"GET /charges"}]}
 ],"relations":[{"from":"billing","to":"admin","kind":"provides"},`, 1))
 	p.setup(0, "synced: 4 unit(s)", "--", exe)
-	page := p.read("blueprint/index.html")
+	page := p.blueprint()
 	seen := map[string]bool{}
 	for _, m := range regexp.MustCompile(` id="(e-[^"]+)"`).FindAllStringSubmatch(page, -1) {
 		if seen[m[1]] {
@@ -222,7 +222,7 @@ func TestEntryRowsOfTwoContractsKeepTheirOwnIDs(t *testing.T) {
 // the page keeps the rules that make it so.
 func TestALongEntryWrapsInsideItsCell(t *testing.T) {
 	p, _ := entriesProject(t)
-	css := p.read("blueprint/index.html")
+	css := p.blueprint()
 	css = css[:strings.Index(css, "</style>")]
 	if !regexp.MustCompile(`\.entries td > code \{[^}]*max-width: 40ch;[^}]*overflow-wrap: anywhere;`).MatchString(css) {
 		t.Errorf("a cell's name or shape is capped and wraps anywhere")

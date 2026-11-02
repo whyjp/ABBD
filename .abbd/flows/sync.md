@@ -194,7 +194,7 @@ steps:
         internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
-      does: publish() → index.html and graph.json, after every command that writes
+      does: publish() → every page and graph.json, after every command that writes
       note: then records in state.yaml the inputs hash it rendered from and the hash of the files it wrote
       calls:
         - DATA-0005
@@ -206,11 +206,15 @@ steps:
           lines: "27"
           quote: files, err := screen.Files(screen.Build(in))
         - path: cmd/abbd/screen.go
+          lines: "31"
+          quote: if err := e.st.SaveBlueprint(files); err != nil {
+        - path: cmd/abbd/screen.go
           lines: "34"
           quote: in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
       writer: reader
       code:
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
+        cmd/abbd/screen.go#quote-18c7c622: 8d8ed08440cabc5e
         cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
         cmd/abbd/screen.go#quote-f313962c: 4a93f263f38fbe1b
 ---

@@ -398,7 +398,7 @@ func contractTable() []contract {
 		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", literal(".abbd/understanding/MOD.md frontmatter"), nil, nil, "internal/store.Understanding", "yaml"},
 		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", literal(".abbd/understanding/ID/SLOT[.KEY].md frontmatter"), nil, nil, "internal/store.Note", "yaml"},
 		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", literal(".abbd/state.yaml"), nil, nil, "internal/store.State", "yaml"},
-		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}}, "mod-screen", blueprintSig, nil, nil, "", ""},
+		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/site.go", "Pages"}}, "mod-screen", blueprintSig, nil, nil, "", ""},
 		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil, nil, "", ""},
 	}...)
 }
@@ -929,17 +929,19 @@ func edgeKeySig() (string, error) {
 }
 
 func blueprintSig() (string, error) {
-	var names []string
-	for _, d := range files["internal/screen/page.go"].ast.Decls {
-		g, ok := d.(*ast.GenDecl)
-		if !ok || g.Tok != token.CONST {
-			continue
-		}
-		for _, s := range g.Specs {
-			vs := s.(*ast.ValueSpec)
-			for i, n := range vs.Names {
-				if strings.HasSuffix(n.Name, "File") && i < len(vs.Values) {
-					names = append(names, lit(vs.Values[i]))
+	names := []string{"<ID>.html"}
+	for _, path := range []string{"internal/screen/page.go", "internal/screen/site.go"} {
+		for _, d := range files[path].ast.Decls {
+			g, ok := d.(*ast.GenDecl)
+			if !ok || g.Tok != token.CONST {
+				continue
+			}
+			for _, s := range g.Specs {
+				vs := s.(*ast.ValueSpec)
+				for i, n := range vs.Names {
+					if strings.HasSuffix(n.Name, "File") && i < len(vs.Values) {
+						names = append(names, lit(vs.Values[i]))
+					}
 				}
 			}
 		}

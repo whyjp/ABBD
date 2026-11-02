@@ -77,12 +77,12 @@ func TestAUnionMergedStateReadsStale(t *testing.T) {
 // blueprint of two such syncs never conflicts.
 func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
 	p := semanticProject(t)
-	graph, page := p.read("blueprint/graph.json"), p.read("blueprint/index.html")
+	graph, page := p.read("blueprint/graph.json"), p.blueprint()
 	p.code("billing/charge.go", p.read("../billing/charge.go")+"\n// unrelated\n")
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "next")
 	p.resync()
-	if p.read("blueprint/graph.json") != graph || p.read("blueprint/index.html") != page {
+	if p.read("blueprint/graph.json") != graph || p.blueprint() != page {
 		t.Fatalf("a sync that changed no unit rewrote the blueprint")
 	}
 	p.want(0, "blueprint: CURRENT", "status", "--check")

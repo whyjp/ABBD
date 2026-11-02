@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>internal/group · ABBD 청사진</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { min-width: 0; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.muted { color: var(--muted); }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+.pill.CURRENT, .pill.stated { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.STALE { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
+.pill.inferred { color: var(--guess); background: var(--guess-bg); border-color: transparent; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin: 6px 0 0; font-size: 12.5px; }
+.chips .chip { border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; padding: 0 6px; white-space: nowrap; }
+.chips .head { font-weight: 600; }
+.fresh { font-size: 14px; }
+ul.plain { list-style: none; padding: 0; margin: 4px 0; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+ul.plain li:last-child { border-bottom: 0; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
+details > summary { cursor: pointer; font-weight: 600; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
+.quote { font-size: 13px; margin-top: 2px; }
+.quote q { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; quotes: none; }
+
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
+svg .box.twin rect { stroke: var(--muted); }
+.picker a.chip { text-decoration: none; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.w.both { marker-start: url(#m-bypass); }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg circle.origin { stroke-width: 1.5; }
+svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
+svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
+svg circle.junction { fill: var(--ink); }
+svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
+svg circle.junction.bypass { fill: var(--bypass); }
+svg circle.junction.provides { fill: var(--ok); }
+svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg path.w.joins { marker-end: none; }
+svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.text table, .note table { margin: 6px 0; font-size: 13px; }
+.text th, .text td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+.text th { background: var(--panel); }
+.text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
+.note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
+.note h3 { margin: 4px 0; font-size: 15px; }
+.entries { margin: 6px 0 10px; }
+.entries table { font-size: 13px; table-layout: auto; }
+.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+.entries td code { overflow-wrap: break-word; }
+.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
+.entries td.note { width: 100%; }
+.entries td p { margin: 0 0 2px; }
+.entries .who { display: block; white-space: nowrap; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+}
+.questions { margin: 2px 0 8px; }
+.questions li { padding: 2px 0; }
+.flow .caption p { margin: 4px 0; }
+ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
+ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+ol.dg-flow > li.lane:first-child { border-top: 0; }
+.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
+.lane-unit strong { display: block; font-size: 14px; }
+.lane-unit .muted { font-size: 12px; }
+ol.steps { list-style: none; padding: 0; margin: 0; }
+li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
+li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
+li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
+ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
+li.step p { margin: 0; overflow-wrap: anywhere; }
+li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
+li.step .noteline { font-size: 13px; color: var(--muted); }
+li.step .fails { font-size: 13px; color: var(--stale); }
+li.step.stale .n { background: var(--stale); }
+li.step .chips { margin-top: 3px; }
+.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
+nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
+nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
+nav.site ul.plain li { border-bottom: 0; padding: 1px 0; }
+nav.site h3 { margin: 10px 0 2px; }
+nav.site a { text-decoration: none; }
+nav.site a:hover { text-decoration: underline; }
+nav.site a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+nav.site .tree a { display: block; overflow-wrap: anywhere; }
+.tree .d1 { padding-left: 12px; } .tree .d2 { padding-left: 24px; } .tree .d3 { padding-left: 36px; } .tree .d4 { padding-left: 48px; }
+.crumbs { margin: 0; font-size: 14px; }
+.inside.page { display: block; }
+table.index th { text-align: left; font-size: 13px; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+table.index .sig { font-size: 12px; }
+table.index .who { display: block; }
+.anchors { font-size: 12px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
+table.index td:first-child { width: 46%; }
+
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="site" aria-label="청사진 안내">
+  <a class="home" href="index.html">ABBD 청사진</a>
+  <ul class="plain top">
+    <li><a href="index.html">모듈과 계약</a></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">47</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">123</span></li>
+  </ul>
+  <h3>모듈</h3>
+  <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="MOD-0009.html">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="MOD-0017.html">internal/extract</a></li><li class="d0"><a href="MOD-0022.html">internal/gitx</a></li><li class="d0"><a href="#m-MOD-0054" aria-current="page">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="MOD-0055.html">pstack (external)</a></li></ul>
+  <h3>기능</h3>
+  <ul class="plain tree"><li class="d0"><a href="FEAT-0002.html">/abbd-setup</a></li><li class="d0"><a href="FEAT-0001.html">/abbd</a></li></ul>
+</nav>
+<main>
+<header>
+  <p class="crumbs"><a href="index.html">청사진</a> › <a href="#m-MOD-0054">internal/group</a></p>
+  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+</header>
+
+<section class="inside page" id="m-MOD-0054">
+  <div class="drawhead"><h2>internal/group의 안 <span class="muted key">MOD-0054</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  <div class="cols">
+    <div>
+      <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="412" height="164" viewBox="0 0 412 164" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="400" height="128" rx="8"/>
+<path class="w provides back" d="M107 38 L107 62" data-origin="inferred"><title>internal/model provides first anchor is a module&#39;s directory (via data), 판독</title></path><circle class="origin inferred" cx="107" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes" d="M309 38 L309 70" data-origin="inferred"><title>internal/screen consumes boxes in one view (via data), 판독</title></path><circle class="origin inferred" cx="309" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
+
+<g class="box inner" data-id="DATA-0017"><title>DATA-0017 first anchor is a module&#39;s directory: the group fallback reads a module&#39;s home directory from its first anchor, which holds only because anchors sort by path#symbol so a directory comes before the files in it</title><rect x="24" y="62" width="166" height="60" rx="4"/><text class="name" x="32" y="81">first anchor is a</text><text class="name" x="32" y="97">module&#39;s directory</text><text class="sub" x="32" y="114">데이터</text></g><g class="box inner" data-id="DATA-0022"><title>DATA-0022 boxes in one view: what counts as a box in a view against the group budget; group leaves top-level contracts out, while the screen draws a contract no module provides as a loose box</title><rect x="230" y="70" width="158" height="44" rx="4"/><text class="name" x="238" y="89">boxes in one view</text><text class="sub" x="238" y="106">데이터</text></g>
+<a href="MOD-0030.html"><g class="port other exit" data-id="port|MOD-0030true"><title>계약 없이 internal/model와 닿는 곳</title><rect x="83" y="21" width="49" height="17" rx="3"/><text class="chip" x="83" dx="4" y="21" dy="12.5">model</text></g></a><a href="MOD-0034.html"><g class="port other exit" data-id="port|MOD-0034true"><title>계약 없이 internal/screen와 닿는 곳</title><rect x="282" y="21" width="54" height="17" rx="3"/><text class="chip" x="282" dx="4" y="21" dy="12.5">screen</text></g></a>
+</svg></div>
+      <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+      
+      <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="chip">top-level unit rule</span><span class="chip">unit absent flag</span><span class="chip">ID high-water mark</span></div>
+      <h3>이 모듈을 지나는 흐름</h3>
+      <ul class="plain"><li><a href="index.html#flow-sync">What does abbd sync do, in order?</a> <span class="muted">단계 10</span></li></ul>
+      <h3>판독한 결합</h3>
+      <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/model → first anchor is a module&#39;s directory <span class="muted">(provides, via data)</span><div class="quote"><q>internal/model/model.go:121 &#34;sort.Slice(out, func(i, j int) bool { return out[i].Key() &lt; out[j].Key() })&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/screen → boxes in one view <span class="muted">(consumes, via data)</span><div class="quote"><q>internal/screen/overview.go:471 &#34;if len(o.providers[c]) == 0 {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/group → top-level unit rule <span class="muted">(consumes, via data)</span><div class="quote"><q>internal/group/group.go:102 &#34;if !u.Absent &amp;&amp; u.Parent == container &amp;&amp; (u.Kind == model.Module || container != \&#34;\&#34;)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/group → unit absent flag <span class="muted">(provides, via data)</span><div class="quote"><q>internal/group/group.go:149 &#34;out[g].SetAbsent(\&#34;\&#34;)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/group → first anchor is a module&#39;s directory <span class="muted">(consumes, via data)</span><div class="quote"><q>internal/group/group.go:182 &#34;return path.Dir(u.Anchors[0].Path)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/group → ID high-water mark <span class="muted">(provides, via data)</span><div class="quote"><q>internal/group/group.go:137 &#34;next[model.Module]&#43;&#43;&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/group → boxes in one view <span class="muted">(provides, via data)</span><div class="quote"><q>internal/group/group.go:110 &#34;if !u.Absent &amp;&amp; u.Parent == container &amp;&amp; (container != \&#34;\&#34; || !u.Kind.IsContract()) {&#34;</q></div></li></ul>
+    </div>
+    <div class="text">
+      <p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand MOD-0054 FILE</code>로 넣으면 여기에 보입니다.</p>
+      
+      
+      <h3>안의 단위</h3>
+      <ul class="plain units-list"><li id="i-DATA-0017"><strong>first anchor is a module&#39;s directory</strong> <span class="muted">데이터</span><div>the group fallback reads a module&#39;s home directory from its first anchor, which holds only because anchors sort by path#symbol so a directory comes before the files in it <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">DATA-0017</span> <span class="key muted">internal/group/group.go</span></details></li><li id="i-DATA-0022"><strong>boxes in one view</strong> <span class="muted">데이터</span><div>what counts as a box in a view against the group budget; group leaves top-level contracts out, while the screen draws a contract no module provides as a loose box <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">DATA-0022</span> <span class="key muted">internal/group/group.go</span></details></li></ul>
+      
+    </div>
+  </div>
+  
+</section>
+
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>
+</main>
+</div>
+</body>
+</html>
