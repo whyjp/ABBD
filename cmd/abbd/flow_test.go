@@ -22,6 +22,7 @@ steps:
     fails: gives up after three tries
     evidence:
       - {path: billing/retry.go, lines: "3", quote: "const tries = 3"}
+      - {path: billing/charge.go, lines: "4", quote: "func Charge() {}"}
   - unit: MOD-0002
     does: Post() reads the charge into the book
     note: reads every charge, no cache
@@ -96,6 +97,7 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		{"const tries = 3", "const tries = 4", "the code does not hold"},
 		{`{path: billing/retry.go, lines: "3", quote: "const tries = 3"}`, `{path: billing/dup.go, lines: "2", quote: "retry"}`, "more than once"},
 		{"    does: retries a failed insert\n", "    does: ''\n", "says what it does"},
+		{"      - {path: billing/retry.go, lines: \"3\", quote: \"const tries = 3\"}\n      - {path: billing/charge.go, lines: \"4\", quote: \"func Charge() {}\"}", `      - {path: ledger/book.go, lines: "6", quote: "func Post() {}"}`, "none of the step's quotes is in the code of MOD-0001"},
 	} {
 		draft := strings.Replace(chargeFlow, c.from, c.to, 1)
 		if draft == chargeFlow {

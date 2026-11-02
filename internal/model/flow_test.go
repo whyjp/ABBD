@@ -29,13 +29,13 @@ func TestAStepIsOneLineOnLiveEvidence(t *testing.T) {
 // the called unit or a unit inside that; the strongest kind names it.
 func TestAStepReachesOnlyWhatTheGraphJoins(t *testing.T) {
 	units := []Unit{
-		{ID: "MOD-0001", Kind: Module, Relations: []Relation{{To: "DATA-0001", Kind: Consumes}}},
+		{ID: "MOD-0001", Kind: Module, Anchors: []Anchor{{Path: "a"}}, Relations: []Relation{{To: "DATA-0001", Kind: Consumes}}},
 		{ID: "MOD-0002", Kind: Module, Parent: "MOD-0001", Relations: []Relation{{To: "DATA-0001", Kind: Provides}, {To: "MOD-0004", Kind: DependsOn, Dead: true}}},
 		{ID: "MOD-0003", Kind: Module},
 		{ID: "MOD-0004", Kind: Module},
 		{ID: "DATA-0001", Kind: Data},
 	}
-	r := Step{Unit: "MOD-0001", Calls: []ID{"DATA-0001", "MOD-0003", "MOD-0004", "MOD-0009"}}.Against(units)
+	r := Step{Unit: "MOD-0001", Calls: []ID{"DATA-0001", "MOD-0003", "MOD-0004", "MOD-0009"}, Evidence: []Evidence{{Path: "a/a.go", Quote: "x"}}}.Against(units)
 	if r.Calls["DATA-0001"] != Provides || len(r.Calls) != 1 {
 		t.Errorf("DATA-0001 is reached, by the strongest kind; the rest are not: %v", r.Calls)
 	}
@@ -44,5 +44,44 @@ func TestAStepReachesOnlyWhatTheGraphJoins(t *testing.T) {
 	}
 	if g := (Step{Unit: "MOD-0007"}).Against(units).Gaps; len(g) != 1 {
 		t.Errorf("a step on a unit the state lacks is a gap: %v", g)
+	}
+}
+
+// A step rests on its own unit's code: one quote at least lies in the
+// anchors of the step's unit, of a unit inside it, or of a unit it calls.
+func TestAStepCitesTheCodeOfItsUnit(t *testing.T) {
+	units := []Unit{
+		{ID: "MOD-0001", Kind: Module, Anchors: []Anchor{{Path: "cmd/abbd"}}, Relations: []Relation{{To: "MOD-0002", Kind: DependsOn}}},
+		{ID: "MOD-0003", Kind: Module, Parent: "MOD-0001", Anchors: []Anchor{{Path: "cmd/abbd/sync.go", Symbol: "sync"}}},
+		{ID: "MOD-0002", Kind: Module, Anchors: []Anchor{{Path: "internal/store"}}},
+	}
+	at := func(paths ...string) []Evidence {
+		var out []Evidence
+		for _, p := range paths {
+			out = append(out, Evidence{Path: p, Quote: "x"})
+		}
+		return out
+	}
+	gap := "none of the step's quotes is in the code of"
+	for _, c := range []struct {
+		s    Step
+		gaps int
+	}{
+		{Step{Unit: "MOD-0001", Evidence: at("cmd/abbd/main.go")}, 0},
+		{Step{Unit: "MOD-0001", Evidence: at("cmd/abbdx/main.go")}, 1},
+		{Step{Unit: "MOD-0003", Evidence: at("cmd/abbd/sync.go")}, 0},
+		{Step{Unit: "MOD-0003", Evidence: at("cmd/abbd/main.go")}, 1},
+		{Step{Unit: "MOD-0001", Calls: []ID{"MOD-0002"}, Evidence: at("internal/store/flow.go")}, 0},
+		{Step{Unit: "MOD-0002", Evidence: at("cmd/abbd/main.go", "internal/store/x.go")}, 0},
+	} {
+		var got []string
+		for _, g := range c.s.Against(units).Gaps {
+			if strings.Contains(g, gap) {
+				got = append(got, g)
+			}
+		}
+		if len(got) != c.gaps {
+			t.Errorf("%s citing %v: want %d gap, got %v", c.s.Unit, c.s.Evidence, c.gaps, got)
+		}
 	}
 }

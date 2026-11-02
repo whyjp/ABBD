@@ -11,7 +11,7 @@ import (
 )
 
 func step(unit model.ID, does string, calls ...model.ID) store.FlowStep {
-	return store.FlowStep{Step: model.Step{Unit: unit, Does: does, Calls: calls, Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: does}}}}
+	return store.FlowStep{Step: model.Step{Unit: unit, Does: does, Calls: calls, Evidence: []model.Evidence{{Path: "x", Lines: "1", Quote: does}}}}
 }
 
 // A flow is drawn as numbered steps in their order. Consecutive steps on one

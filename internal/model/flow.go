@@ -72,7 +72,9 @@ type Reach struct {
 	Gaps  []string
 }
 
-// Against reads the step against the state. A call is reached when the
+// Against reads the step against the state. The step rests on its unit's
+// code: one quote at least lies in the anchors of its unit, a unit inside
+// it, or a unit it calls. A call is reached when the
 // step's unit, or a unit inside it, holds a live relation to the called unit
 // or to a unit inside it, so a chip never draws an edge the graph lacks. The
 // kind is the strongest such relation: provides, then consumes, then
@@ -92,8 +94,20 @@ func (s Step) Against(units []Unit) Reach {
 		return false
 	}
 	r := Reach{Calls: map[ID]RelationKind{}}
+	cited := func(top ID) bool {
+		for _, u := range present {
+			for _, a := range u.Anchors {
+				if under(u.ID, top) && slices.ContainsFunc(s.Evidence, func(e Evidence) bool { return a.Holds(e.Path) }) {
+					return true
+				}
+			}
+		}
+		return false
+	}
 	if _, ok := present[s.Unit]; !ok {
 		r.Gaps = append(r.Gaps, fmt.Sprintf("%s is no longer in the state", s.Unit))
+	} else if !cited(s.Unit) && !slices.ContainsFunc(s.Calls, cited) {
+		r.Gaps = append(r.Gaps, fmt.Sprintf("none of the step's quotes is in the code of %s, a unit inside it or a unit it calls; cite the lines of that code that run the step", s.Unit))
 	}
 	rank := map[RelationKind]int{Provides: 3, Consumes: 2, DependsOn: 1}
 	for _, c := range s.Calls {

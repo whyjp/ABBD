@@ -41,10 +41,10 @@ type Lane struct {
 type StepView struct {
 	N                                    int
 	ID, Does, Note, Fails, Badge, Source string
-	Calls                 []Call   `json:",omitempty"`
-	Quotes                []string `json:",omitempty"`
-	Reasons               []string `json:",omitempty"`
-	Stale                 bool     `json:",omitempty"`
+	Calls                                []Call   `json:",omitempty"`
+	Quotes                               []string `json:",omitempty"`
+	Reasons                              []string `json:",omitempty"`
+	Stale                                bool     `json:",omitempty"`
 }
 
 // Call is a unit a step reaches, named by the stored relation it rides.
