@@ -276,9 +276,6 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overvi
 	for _, u := range units {
 		o.units[u.ID] = u
 	}
-	for id := range o.tree.folds {
-		o.units[id] = o.tree.units[id]
-	}
 	design, relations, rels, origins := top(o.tree)
 	o.relations, o.rels, o.origins = relations, rels, origins
 	slices.Sort(design)

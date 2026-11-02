@@ -45,7 +45,7 @@ func focusID(scope, unit model.ID) string {
 // A box that both uses the focus and is used by it is drawn twice: once
 // above among its callers and once below among what it uses, so every
 // line of a focus view reads down. Its second box is a twin, a unit of the
-// drawing only, as a folded cycle is.
+// drawing only.
 const twinMark = "↓"
 
 const twinNote = "서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다"
