@@ -118,15 +118,21 @@ func TestRestampFollowsAnExtractionChangeButNotACodeChange(t *testing.T) {
 }
 
 // A text stored by an ABBD whose digest covered only a module's direct
-// children keeps its state across the upgrade: sync restamps it when it was
-// current then, and leaves it STALE when it was not.
+// children stays current across the upgrade only when that digest matches
+// and read every file the new one reads. other is one file, so its text
+// stays current. app's old digest never read the files under app/web, so
+// its text goes STALE. A text that was STALE stays STALE.
 func TestSyncUpgradesATextWrittenAgainstTheOldDigest(t *testing.T) {
-	for _, c := range []struct{ digest, stale string }{{"73de2c949d70057d", "0"}, {"0123456789abcdef", "1"}} {
+	for _, c := range []struct{ id, digest, says, stale string }{
+		{"MOD-0004", "596dd225dceb4742", "it stays current", "0"},
+		{"MOD-0001", "73de2c949d70057d", "it is STALE until pstack how reads", "1"},
+		{"MOD-0001", "0123456789abcdef", "", "1"},
+	} {
 		p := deepProject(t)
-		write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: \""+c.digest+"\"\n---\n\napp serves pages.\n")
+		write(t, p.root+"/.abbd/understanding/"+c.id+".md", "---\nunit: "+c.id+"\norigin: INFERRED\ndigest: \""+c.digest+"\"\n---\n\nthe module.\n")
 		out := p.resync()
-		if strings.Contains(out, "now covers") != (c.stale == "0") {
-			t.Fatalf("sync should restamp only a text current under the old digest:\n%s", out)
+		if c.says == "" && strings.Contains(out, "now covers") || !strings.Contains(out, c.says) {
+			t.Fatalf("%s at %s: sync should say %q:\n%s", c.id, c.digest, c.says, out)
 		}
 		p.stale(c.stale)
 	}
@@ -164,5 +170,87 @@ func TestSyncDoesNotUpgradeATextStoredNow(t *testing.T) {
 	if out := p.resync(); strings.Contains(out, "now covers") {
 		t.Fatalf("a text stored by this binary must not be upgraded:\n%s", out)
 	}
+	p.stale("1")
+}
+
+// vendorProject holds a submodule at vendor/lib and an ignored generated
+// directory gen/. Code a git tree never shows still belongs to a module.
+func vendorProject(t *testing.T, topo string) *project {
+	t.Helper()
+	lib := newRepo(t)
+	write(t, filepath.Join(lib, "lib.go"), "package lib\n\nfunc Lib() {}\n")
+	git(t, lib, "add", ".")
+	git(t, lib, "commit", "-qm", "lib")
+	p, exe := bare(t)
+	git(t, p.root, "-c", "protocol.file.allow=always", "submodule", "add", "-q", lib, "vendor/lib")
+	p.code(".gitignore", "gen/\n")
+	p.code("app/main.go", "package app\n\nfunc Main() {}\n")
+	p.code("gen/api.go", "package gen\n\nfunc API() {}\n")
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "vendor")
+	p.extract(topo)
+	p.setup(0, "synced", "--", exe)
+	return p
+}
+
+const vendorTopo = `{"units":[
+ {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.go","symbol":"Main"}]},
+ {"key":"lib","kind":"MOD","name":"lib","parent":"app","anchors":[{"path":"vendor/lib/lib.go","symbol":"Lib"}]},
+ {"key":"gen","kind":"MOD","name":"gen","parent":"app","anchors":[{"path":"gen/api.go","symbol":"API"}]}`
+
+// A restamp compares the files the digest reads, so an edit inside a
+// submodule or under an ignored directory blocks it like any other.
+func TestRestampSeesCodeInASubmoduleAndInAnIgnoredFile(t *testing.T) {
+	for _, edit := range []string{"vendor/lib/lib.go", "gen/api.go"} {
+		p := vendorProject(t, vendorTopo+"]}")
+		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app wraps lib.\n"))
+		p.code(edit, "package x\n\nfunc Changed() {}\n")
+		p.extract(vendorTopo + `,
+ {"key":"x","kind":"MOD","name":"x","anchors":[{"path":"app/main.go","symbol":"Main"}]}]}`)
+		p.resync()
+		p.stale("1")
+		p.want(1, edit, "understand", "MOD-0001", "--restamp")
+		p.stale("1")
+	}
+}
+
+// A directory anchored at a submodule stands for the commit the
+// superproject records for it, so a new pin stales the text.
+func TestADirectoryAnchorOnASubmoduleCountsItsPin(t *testing.T) {
+	p := vendorProject(t, `{"units":[
+ {"key":"lib","kind":"MOD","name":"lib","anchors":[{"path":"vendor/lib"}]}]}`)
+	out := p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "lib is vendored.\n"))
+	if strings.Contains(out, "against code \n") {
+		t.Fatalf("a module with code must not get the empty digest:\n%s", out)
+	}
+	sub := filepath.Join(p.root, "vendor", "lib")
+	write(t, filepath.Join(sub, "lib.go"), "package lib\n\nfunc Lib() { panic(1) }\n")
+	git(t, sub, "commit", "-qam", "bump")
+	git(t, p.root, "add", "vendor/lib")
+	p.resync()
+	p.stale("1")
+}
+
+// An old text was checked only against its module's direct children. When
+// the wider digest sees code the old one never covered, sync cannot show
+// the text still describes it, so the text goes STALE and sync says why.
+func TestSyncLeavesAnOldTextStaleWhenTheWiderScopeSeesNewCode(t *testing.T) {
+	p := deepProject(t)
+	write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: \"73de2c949d70057d\"\n---\n\napp serves pages.\n")
+	p.code("app/web/games/board.tsx", "export function Board() { return 1 }\n")
+	out := p.resync()
+	if !strings.Contains(out, "MOD-0001") || !strings.Contains(out, "STALE") {
+		t.Fatalf("sync must say the old text went STALE because the scope widened:\n%s", out)
+	}
+	p.stale("1")
+}
+
+// Outside git a directory anchor still stands for the files under it, so a
+// module with code never gets the empty digest.
+func TestADirectoryAnchorCountsItsFilesOutsideGit(t *testing.T) {
+	p := deepProject(t)
+	os.RemoveAll(filepath.Join(p.root, ".git"))
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
+	p.code("app/web/page.tsx", "export const Page = 2\n")
 	p.stale("1")
 }

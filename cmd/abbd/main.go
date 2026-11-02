@@ -52,12 +52,13 @@ abbd migrate [--supplement FILE] [--root DIR]
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code: every file of the module and
-                                     the units under it, and the lines around a quote of a file
-                                     only a quote cites
+                                     the units under it, a submodule by its recorded commit, and
+                                     the lines around a quote of a file only a quote cites; the
+                                     text records each file's hash
 abbd understand MOD-ID --restamp [--root DIR]
                                      stamp the stored text again after the extraction moved
-                                     what the module holds; refused when any of its code changed
-                                     since the text was written
+                                     what the module holds; refused when a file of the module
+                                     changed, is gone or is one the text was not written against
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a
@@ -376,12 +377,15 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 	if err := st.SaveCandidates(res.Candidates); err != nil {
 		return res, err
 	}
-	upgraded, err := st.UpgradeUnderstandings(res.Units, tree)
+	current, widened, err := st.UpgradeUnderstandings(res.Units)
 	if err != nil {
 		return res, err
 	}
-	for _, id := range upgraded {
-		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code; the text was current and stays current\n", id)
+	for _, id := range current {
+		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code, which is unchanged since the text was written; it stays current\n", id)
+	}
+	for _, id := range widened {
+		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code, and its text was checked against only part of it; it is STALE until pstack how reads the module again\n", id)
 	}
 	hash, err := st.MDHash()
 	if err != nil {

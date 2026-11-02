@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "df9c2245c0b6b9684ffc7e15a82cae8348dba541c16d883ef066773d7978622c"
+    "inputs_hash": "a50d52fdb7a05f1242ae37dfa1d7989dd93d37b7432878d59383e66c2044b834"
   },
   "units": [
     {
@@ -191,7 +191,7 @@
       "ID": "DATA-0008",
       "Kind": "DATA",
       "Name": "module understanding",
-      "Signature": ".abbd/understanding/MOD.md frontmatter: digest,origin,tree,unit",
+      "Signature": ".abbd/understanding/MOD.md frontmatter: code,digest,origin,unit",
       "Purpose": {
         "Value": "so a reader's prose about a module sits beside its drawing and is flagged when the module's code moves on",
         "Badge": "inferred"
@@ -1283,9 +1283,9 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:194 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
-        "cmd/abbd/main.go:250 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
-        "cmd/abbd/main.go:240 \"if c.writes {\""
+        "cmd/abbd/main.go:195 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
+        "cmd/abbd/main.go:251 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
+        "cmd/abbd/main.go:241 \"if c.writes {\""
       ]
     },
     {
@@ -1307,7 +1307,7 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+        "cmd/abbd/main.go:371 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
       ]
     },
     {
@@ -2208,12 +2208,12 @@
         "Badge": "inferred"
       },
       "Anchors": [
+        "internal/store/understanding.go",
         "internal/store/understanding.go ModuleDigest"
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
-        "internal/store/understanding.go:201 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
+        "internal/store/understanding.go:206 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
       ]
     },
     {
@@ -2974,7 +2974,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
+      "Quote": "cmd/abbd/understand.go:26 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
     },
     {
       "From": "MOD-0001",
@@ -2990,7 +2990,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+      "Quote": "cmd/abbd/main.go:412 \"return u.ID == id \u0026\u0026 !u.Absent })\""
     },
     {
       "From": "MOD-0001",
@@ -3140,7 +3140,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0001",
@@ -3168,7 +3168,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0001",
@@ -3240,7 +3240,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3308,7 +3308,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:232 \"return exitUsage\""
+      "Quote": "cmd/abbd/main.go:233 \"return exitUsage\""
     },
     {
       "From": "MOD-0003",
@@ -3316,7 +3316,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
+      "Quote": "cmd/abbd/main.go:242 \"if err := e.publish(); err != nil {\""
     },
     {
       "From": "MOD-0004",
@@ -3324,7 +3324,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
+      "Quote": "cmd/abbd/main.go:272 \"if len(p.Extract) == 0 {\""
     },
     {
       "From": "MOD-0004",
@@ -3332,7 +3332,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+      "Quote": "cmd/abbd/main.go:279 \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
       "From": "MOD-0004",
@@ -3340,7 +3340,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+      "Quote": "cmd/abbd/main.go:394 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
     },
     {
       "From": "MOD-0004",
@@ -3348,7 +3348,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+      "Quote": "cmd/abbd/main.go:273 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
     },
     {
       "From": "MOD-0004",
@@ -3356,7 +3356,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0004",
@@ -3364,7 +3364,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+      "Quote": "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
       "From": "MOD-0004",
@@ -3372,7 +3372,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:370 \"identity.Reconcile(\""
+      "Quote": "cmd/abbd/main.go:371 \"identity.Reconcile(\""
     },
     {
       "From": "MOD-0005",
@@ -3388,7 +3388,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3412,7 +3412,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -3626,7 +3626,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0026",
@@ -3634,7 +3634,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\""
+      "Quote": "cmd/abbd/main.go:341 \"prior, err := st.LoadCandidates()\""
     },
     {
       "From": "MOD-0026",
@@ -3650,7 +3650,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+      "Quote": "cmd/abbd/main.go:371 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
       "From": "MOD-0026",
@@ -3980,7 +3980,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+      "Quote": "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0041",
@@ -4020,7 +4020,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:271 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -4060,7 +4060,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\""
+      "Quote": "cmd/abbd/main.go:390 \"hash, err := st.MDHash()\""
     },
     {
       "From": "MOD-0043",
@@ -4076,7 +4076,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:66 \"Digest: digest, Code: code, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -9169,7 +9169,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:232 \"return exitUsage\""
+              "cmd/abbd/main.go:233 \"return exitUsage\""
             ],
             "Marks": [
               {
@@ -9190,7 +9190,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:242 \"if err := e.publish(); err != nil {\""
             ],
             "Marks": [
               {
@@ -9210,7 +9210,7 @@
             "Back": true,
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
+              "cmd/abbd/main.go:272 \"if len(p.Extract) == 0 {\""
             ],
             "Rels": [
               "MOD-0004.consumes.CFG-0002"
@@ -9224,7 +9224,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+              "cmd/abbd/main.go:279 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Marks": [
               {
@@ -9244,7 +9244,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:394 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0006"
@@ -9256,7 +9256,7 @@
             "Title": "sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독",
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+              "cmd/abbd/main.go:273 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0008"
@@ -9269,7 +9269,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+              "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0013"
@@ -9284,7 +9284,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Marks": [
               {
@@ -9303,7 +9303,7 @@
             "Title": "sync pipeline depends_on internal/identity (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:370 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:371 \"identity.Reconcile(\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
@@ -9337,7 +9337,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
+              "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -9392,7 +9392,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -9621,8 +9621,8 @@
             "Joins": true,
             "Back": true,
             "Quotes": [
-              "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\"",
-              "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:272 \"if len(p.Extract) == 0 {\"",
+              "cmd/abbd/main.go:394 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Marks": [
               {
@@ -9652,9 +9652,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
-              "cmd/abbd/main.go:370 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:273 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+              "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:371 \"identity.Reconcile(\""
             ],
             "Marks": [
               {
@@ -9691,7 +9691,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -9729,7 +9729,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -9744,7 +9744,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -9795,7 +9795,7 @@
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:279 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -9809,7 +9809,7 @@
             "Kind": "consumes",
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:279 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -9828,7 +9828,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:22 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -9844,7 +9844,7 @@
             "Title": "review commands depends_on internal/evidence (via call), 판독\nsync pipeline depends_on internal/evidence (via call), 판독\nrecord writers depends_on internal/evidence (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:22 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -9896,7 +9896,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9910,7 +9910,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9928,7 +9928,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:242 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -9942,7 +9942,7 @@
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:242 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -11134,19 +11134,11 @@
                 "Code": true
               },
               {
-                "Text": "): how's text for a top-level module, stored INFERRED with ",
+                "Text": "): how's text for a top-level module, stored INFERRED with the digest and per-file hashes of ",
                 "Code": false
               },
               {
-                "Text": "store.ModuleDigest",
-                "Code": true
-              },
-              {
-                "Text": " and the working tree's ",
-                "Code": false
-              },
-              {
-                "Text": "gitx.Snapshot",
+                "Text": "store.Stamp",
                 "Code": true
               },
               {
@@ -11186,19 +11178,11 @@
                 "Code": false
               },
               {
-                "Text": "gitx.Changed",
+                "Text": "store.Changed",
                 "Code": true
               },
               {
-                "Text": " between the text's tree and now touches no path ",
-                "Code": false
-              },
-              {
-                "Text": "store.Touches",
-                "Code": true
-              },
-              {
-                "Text": " reports for the module, so a file deleted from it also blocks the restamp. ",
+                "Text": " finds nothing: every file of the module now is one the text was written against, unchanged, and none of those is gone. A restamp keeps the text's hashes. ",
                 "Code": false
               },
               {
@@ -11214,7 +11198,7 @@
                 "Code": true
               },
               {
-                "Text": " after it saves the units and prints each text it restamps.",
+                "Text": " after it saves the units, and prints each old text that stays current and each one that goes STALE because the wider digest reads code the old one never read.",
                 "Code": false
               }
             ]
@@ -11321,7 +11305,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:26 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },
@@ -11340,7 +11324,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:412 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -11367,7 +11351,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -11385,7 +11369,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -11396,7 +11380,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:282 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:283 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -11442,8 +11426,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -11506,7 +11489,7 @@
           "Kind": "provides",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:232 \"return exitUsage\"",
+            "cmd/abbd/main.go:233 \"return exitUsage\"",
             "cmd/abbd/main.go:209 \"return exitError\""
           ]
         },
@@ -11516,7 +11499,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
+            "cmd/abbd/main.go:242 \"if err := e.publish(); err != nil {\""
           ]
         },
         {
@@ -11525,7 +11508,7 @@
           "Kind": "consumes",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
+            "cmd/abbd/main.go:272 \"if len(p.Extract) == 0 {\""
           ]
         },
         {
@@ -11534,7 +11517,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+            "cmd/abbd/main.go:279 \"ex, err := extract.Parse(bytes.NewReader(out))\""
           ]
         },
         {
@@ -11543,7 +11526,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+            "cmd/abbd/main.go:394 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
           ]
         },
         {
@@ -11552,7 +11535,7 @@
           "Kind": "depends_on",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+            "cmd/abbd/main.go:273 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
             "cmd/abbd/setup.go:51 \"p.Extract = argv\""
           ]
         },
@@ -11562,7 +11545,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -11571,7 +11554,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -11580,7 +11563,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:370 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:371 \"identity.Reconcile(\""
           ]
         },
         {
@@ -11598,8 +11581,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -11627,7 +11609,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:69 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:66 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {\""
           ]
         },
         {
@@ -13448,7 +13430,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13466,7 +13448,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:372 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -14935,7 +14917,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Marks": [
               {
@@ -15025,7 +15007,7 @@
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -15039,7 +15021,7 @@
             "Kind": "depends_on",
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -15136,7 +15118,7 @@
                 "Code": true
               },
               {
-                "Text": ", with eight exported, stateless functions and one private helper, ",
+                "Text": ", with nine exported, stateless functions and one private helper, ",
                 "Code": false
               },
               {
@@ -15667,6 +15649,44 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Gitlink",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the commit the index records for a submodule, from ",
+                "Code": false
+              },
+              {
+                "Text": "git ls-files -s",
+                "Code": true
+              },
+              {
+                "Text": ", or an empty string when the path is not one. ",
+                "Code": false
+              },
+              {
+                "Text": "store",
+                "Code": true
+              },
+              {
+                "Text": " hashes a submodule by it, so a module's digest sees a new pin on every clone.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Head",
                 "Code": true
               },
@@ -15718,7 +15738,15 @@
                 "Code": true
               },
               {
-                "Text": " stays in. It returns nil outside a repository.",
+                "Text": " stays in. It lists a submodule as one path and returns nil outside a repository, where ",
+                "Code": false
+              },
+              {
+                "Text": "store",
+                "Code": true
+              },
+              {
+                "Text": " walks the disk instead.",
                 "Code": false
               }
             ]
@@ -15811,7 +15839,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -15830,7 +15858,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15857,8 +15885,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:352 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:353 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15868,7 +15896,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15888,7 +15916,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ]
@@ -16172,7 +16200,7 @@
                 "Code": true
               },
               {
-                "Text": ". A matched unit keeps its ID. An unmatched one gets the next number above a per-kind high-water mark, so a deleted number never returns. ",
+                "Text": ". A matched unit keeps its ID and is marked present again. An unmatched one gets the next number above a per-kind high-water mark, so a deleted number never returns. ",
                 "Code": false
               },
               {
@@ -16189,7 +16217,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The package is one file, ",
+                "Text": "The package has one source file, ",
                 "Code": false
               },
               {
@@ -16205,7 +16233,7 @@
                 "Code": true
               },
               {
-                "Text": " is pure. It does no I/O, and it sorts its input and its candidate pairs, so input order never changes the outcome. It first applies git renames to stored anchors and evidence paths. It then pairs supplement units by their stored supplement key, and assigns the other pairs globally, best match first. It also decides what the run may overwrite. The ",
+                "Text": " is pure. It does no I/O. It clones the stored claims before it edits them, and it sorts its input by kind and anchor list and its candidate pairs by rank, so input order never changes the outcome. It first applies git renames to stored anchors and evidence paths. It then pairs supplement units by their stored supplement key, and assigns the other pairs globally, best match first. It also decides what the run may overwrite. The ",
                 "Code": false
               },
               {
@@ -16237,7 +16265,7 @@
                 "Code": true
               },
               {
-                "Text": ", which picks each edge's shown claim and each unit's parent. The caller is ",
+                "Text": ", which picks each edge's shown claim and each unit's parent. The main caller is ",
                 "Code": false
               },
               {
@@ -16253,7 +16281,31 @@
                 "Code": true
               },
               {
-                "Text": ". It loads units, candidates, high-water marks and renames, calls ",
+                "Text": ", used by sync with ",
+                "Code": false
+              },
+              {
+                "Text": "Sync",
+                "Code": true
+              },
+              {
+                "Text": " and by setup with ",
+                "Code": false
+              },
+              {
+                "Text": "Setup",
+                "Code": true
+              },
+              {
+                "Text": ". It loads units with ",
+                "Code": false
+              },
+              {
+                "Text": "Store.Writable",
+                "Code": true
+              },
+              {
+                "Text": ", which refuses a state in the old format, then candidates, state and renames. It refuses an empty extraction against a non-empty store, calls ",
                 "Code": false
               },
               {
@@ -16261,7 +16313,7 @@
                 "Code": true
               },
               {
-                "Text": ", then passes the units through ",
+                "Text": ", and passes the units through ",
                 "Code": false
               },
               {
@@ -16281,7 +16333,15 @@
                 "Code": false
               },
               {
-                "Text": "abbd migrate",
+                "Text": "supplementClaims",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/migrate.go",
                 "Code": true
               },
               {
@@ -16293,7 +16353,23 @@
                 "Code": true
               },
               {
-                "Text": " only to pair the supplement's units with stored ones. ",
+                "Text": " with ",
+                "Code": false
+              },
+              {
+                "Text": "Setup",
+                "Code": true
+              },
+              {
+                "Text": " and no renames or prior candidates, and reads only ",
+                "Code": false
+              },
+              {
+                "Text": "Result.Keys",
+                "Code": true
+              },
+              {
+                "Text": " to pair the supplement's units with stored ones. ",
                 "Code": false
               },
               {
@@ -16340,7 +16416,7 @@
                 "Code": true
               },
               {
-                "Text": "): a supplement unit takes over the stored unit of the same kind with the same ",
+                "Text": "): a supplement unit takes over the first stored unit of the same kind with the same ",
                 "Code": false
               },
               {
@@ -16348,7 +16424,7 @@
                 "Code": true
               },
               {
-                "Text": " first. Any other extracted unit and a stored unit of the same kind may pair when they share two or more anchors, or when their anchor sets are identical. Identical sets are the only way a one-anchor unit matches. Pairs rank by identical sets, then larger overlap, then smaller symmetric difference.",
+                "Text": ". Any other extracted unit and a stored unit of the same kind not yet taken may pair when they share two or more anchors, or when their anchor sets are identical. Identical sets are the only way a one-anchor unit matches. Pairs rank by identical sets, then larger overlap, then smaller symmetric difference, then stored position, then input position.",
                 "Code": false
               }
             ]
@@ -16398,19 +16474,19 @@
                 "Code": false
               },
               {
-                "Text": "extract.parseUnits",
+                "Text": "applyRenames",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": " rewrites stored anchor paths and re-sorts them with ",
                 "Code": false
               },
               {
-                "Text": "abbd record unit",
+                "Text": "model.SortAnchors",
                 "Code": true
               },
               {
-                "Text": " add a semantic unit's evidence locations as anchors.",
+                "Text": " before any comparison.",
                 "Code": false
               }
             ]
@@ -16440,7 +16516,7 @@
                 "Code": true
               },
               {
-                "Text": " raises it past any stored ID, mints from it and returns it in ",
+                "Text": " copies the given map, raises it past any stored ID, mints from it and returns it in ",
                 "Code": false
               },
               {
@@ -16478,15 +16554,7 @@
                 "Code": true
               },
               {
-                "Text": " is the script alone, for ",
-                "Code": false
-              },
-              {
-                "Text": "abbd sync",
-                "Code": true
-              },
-              {
-                "Text": ". ",
+                "Text": " is the script alone. ",
                 "Code": false
               },
               {
@@ -16494,15 +16562,7 @@
                 "Code": true
               },
               {
-                "Text": " is the script and the supplement, for ",
-                "Code": false
-              },
-              {
-                "Text": "abbd setup",
-                "Code": true
-              },
-              {
-                "Text": ". An unreported unit goes absent only when one of these writers wrote its name, as ",
+                "Text": " is the script and the supplement. An unmatched stored unit is touched only when one of these writers wrote its name. It goes absent as ",
                 "Code": false
               },
               {
@@ -16518,7 +16578,15 @@
                 "Code": true
               },
               {
-                "Text": " for the supplement's. A reader's unit stays, and its evidence decides.",
+                "Text": " for the supplement's. One that was already absent keeps its reason and is still listed in ",
+                "Code": false
+              },
+              {
+                "Text": "Unmatched",
+                "Code": true
+              },
+              {
+                "Text": ". A reader's or a human's unit stays, and its evidence decides.",
                 "Code": false
               }
             ]
@@ -16540,15 +16608,7 @@
                 "Code": true
               },
               {
-                "Text": "): under ",
-                "Code": false
-              },
-              {
-                "Text": "Setup",
-                "Code": true
-              },
-              {
-                "Text": ", an unreported supplement unit stays present when it carries a human's fact or parent claim, or when a human's relation starts or ends at it. ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -16556,7 +16616,7 @@
                 "Code": true
               },
               {
-                "Text": " collects these units, and their IDs land in ",
+                "Text": " marks a unit with a human's name, purpose, responsibility or signature, a human's parent claim, or a human's relation claim, shown or hidden, at either end. An unreported supplement unit that is held stays present, and its ID lands in ",
                 "Code": false
               },
               {
@@ -16564,7 +16624,15 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": ". Only ",
+                "Code": false
+              },
+              {
+                "Text": "Setup",
+                "Code": true
+              },
+              {
+                "Text": " owns supplement names, so only setup keeps units this way.",
                 "Code": false
               }
             ]
@@ -16594,7 +16662,15 @@
                 "Code": true
               },
               {
-                "Text": ". A name, purpose, responsibility or signature is replaced when its writer is one the extraction speaks for, or when the offered writer outranks it in ",
+                "Text": ", and a non-empty ",
+                "Code": false
+              },
+              {
+                "Text": "SupplementKey",
+                "Code": true
+              },
+              {
+                "Text": ". The name is replaced when its writer is one the extraction speaks for, or when the offered writer outranks it in ",
                 "Code": false
               },
               {
@@ -16602,7 +16678,7 @@
                 "Code": true
               },
               {
-                "Text": ". An empty field takes what the extraction offers. The unit's evidence goes with its name.",
+                "Text": ", and the unit's evidence goes with it. Purpose, responsibility and signature are replaced on the same terms, and an empty field takes what is offered. A replaced field takes the offer even when the offer is empty, so the extraction can clear its own value.",
                 "Code": false
               }
             ]
@@ -16640,7 +16716,7 @@
                 "Code": true
               },
               {
-                "Text": " work on each reported unit. They drop the claims of the writers the extraction speaks for and add the claims it makes: the script's parent, the supplement's ",
+                "Text": " work on each reported unit. They drop the claims of the writers the extraction speaks for and add the claims it makes. The script's parent is added when its key resolved in this run. The supplement's ",
                 "Code": false
               },
               {
@@ -16648,7 +16724,7 @@
                 "Code": true
               },
               {
-                "Text": " parents, and each extracted or supplement relation. Units it did not report keep their relations as they were.",
+                "Text": " parents are added when the extraction owns their writer. A relation with no writer is the script's, and one that repeats a claim with the same end, kind and writer is skipped. Units it did not report keep their relations as they were.",
                 "Code": false
               }
             ]
@@ -16686,23 +16762,7 @@
                 "Code": true
               },
               {
-                "Text": ", path and quote, so a symbol the supplement adds or changes does not matter). ",
-                "Code": false
-              },
-              {
-                "Text": "setParents",
-                "Code": true
-              },
-              {
-                "Text": " reads the writer's stored parent claim before it drops it, as ",
-                "Code": false
-              },
-              {
-                "Text": "setRelations",
-                "Code": true
-              },
-              {
-                "Text": " does. An item the claim did not hold falls back to any item the unit stores with the same path and quote (",
+                "Text": ", path and quote). It looks in the claim's own stored items first, then in every item the unit stores (",
                 "Code": false
               },
               {
@@ -16710,7 +16770,7 @@
                 "Code": true
               },
               {
-                "Text": "), so a supplement parent that restates the unit's evidence keeps that evidence's status. So re-running setup never revives a dead item. The script's own evidence is taken as it comes.",
+                "Text": "). So re-running setup never revives a dead item. The script's own evidence and the script's relations are taken as they come.",
                 "Code": false
               }
             ]
@@ -16756,7 +16816,23 @@
                 "Code": true
               },
               {
-                "Text": " anchor. A matched unit links only to stored units left without a match. Prior candidates survive while both IDs exist, and sync prints each as ",
+                "Text": " anchor, the first anchor of the extracted unit that the stored unit held before the merge. A matched unit links only to stored units left without a match. ",
+                "Code": false
+              },
+              {
+                "Text": "keepLive",
+                "Code": true
+              },
+              {
+                "Text": " keeps a candidate while both IDs exist, removes duplicates and sorts. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd sync",
+                "Code": true
+              },
+              {
+                "Text": " prints each as ",
                 "Code": false
               },
               {
@@ -16818,7 +16894,7 @@
                 "Code": true
               },
               {
-                "Text": " per extracted unit), ",
+                "Text": " per extracted unit, in sorted input order), ",
                 "Code": false
               },
               {
@@ -16862,6 +16938,44 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Invariant test",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "invariant_test.go",
+                "Code": true
+              },
+              {
+                "Text": "): random runs of sync, setup, record and code edits over a small world. ",
+                "Code": false
+              },
+              {
+                "Text": "TestNothingSilentlyDisappears",
+                "Code": true
+              },
+              {
+                "Text": " checks that every present unit stays present or says why, that every reader's and human's claim stays stored, and that resolved parents form a tree. ",
+                "Code": false
+              },
+              {
+                "Text": "TestSyncChangesOnlyTheScriptsClaimsAndIsIdempotent",
+                "Code": true
+              },
+              {
+                "Text": " checks that sync touches only the script's claims and that two runs on one tree agree.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -16889,7 +17003,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:282 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:283 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -16898,7 +17012,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:370 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:371 \"identity.Reconcile(\""
           ]
         },
         {
@@ -16907,7 +17021,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:341 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -16918,7 +17032,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:376 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:377 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -16927,7 +17041,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+            "cmd/abbd/main.go:371 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
           ]
         },
         {
@@ -16964,7 +17078,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:353 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18101,7 +18215,7 @@
                 "Code": true
               },
               {
-                "Text": " holds units, facts, evidence and relations, and ",
+                "Text": " holds origins, kinds, IDs, units, facts, evidence, relations and edges. ",
                 "Code": false
               },
               {
@@ -18109,7 +18223,7 @@
                 "Code": true
               },
               {
-                "Text": " holds writers, the precedence table, parent claims, masks and ",
+                "Text": " holds writers, evidence status, the precedence table, parent claims, masks and ",
                 "Code": false
               },
               {
@@ -18125,7 +18239,23 @@
                 "Code": true
               },
               {
-                "Text": " uses it (",
+                "Text": " imports it (",
+                "Code": false
+              },
+              {
+                "Text": "bootstrap",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "evidence",
+                "Code": true
+              },
+              {
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -18137,7 +18267,7 @@
                 "Code": false
               },
               {
-                "Text": "bootstrap",
+                "Text": "group",
                 "Code": true
               },
               {
@@ -18153,7 +18283,7 @@
                 "Code": false
               },
               {
-                "Text": "evidence",
+                "Text": "screen",
                 "Code": true
               },
               {
@@ -18170,22 +18300,6 @@
               },
               {
                 "Text": "topology",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "screen",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "group",
                 "Code": true
               },
               {
@@ -18262,7 +18376,7 @@
                 "Code": true
               },
               {
-                "Text": " enforces the consequences. A human's fact, parent or relation needs a ",
+                "Text": " enforces the consequences. A human's fact, parent, relation or mask needs a ",
                 "Code": false
               },
               {
@@ -18270,7 +18384,7 @@
                 "Code": true
               },
               {
-                "Text": ", and no other writer may carry one. A why-field is never the script's or the group's. A unit whose name a reader or the supplement wrote needs evidence, and so does an INFERRED parent or relation. Only contracts carry a ",
+                "Text": ", and no other writer may carry one. A why-field is never the script's or the group's. A unit whose name a reader or the supplement wrote needs evidence, and so does an INFERRED parent or relation, while an EXTRACTED parent cites none. Only contracts carry a ",
                 "Code": false
               },
               {
@@ -18278,7 +18392,7 @@
                 "Code": true
               },
               {
-                "Text": ", and a parent must be another module or feature. ",
+                "Text": ", a parent must be another module or feature, and a unit holds at most one parent claim per writer and one relation claim per writer, kind and end. An absent unit needs a known reason, and a present one has none. ",
                 "Code": false
               },
               {
@@ -18310,7 +18424,15 @@
                 "Code": true
               },
               {
-                "Text": " gets on the command line. ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd retract",
+                "Code": true
+              },
+              {
+                "Text": " get on the command line. ",
                 "Code": false
               },
               {
@@ -18318,7 +18440,7 @@
                 "Code": true
               },
               {
-                "Text": " derives the read model every other package uses: each value's origin, each edge's shown claim and each unit's parent. Downstream code branches on small predicates. ",
+                "Text": " derives the read model every other package uses. Downstream code branches on small predicates. ",
                 "Code": false
               },
               {
@@ -18326,7 +18448,7 @@
                 "Code": true
               },
               {
-                "Text": " is true for an EXTRACTED or USER_STATED claim that is not dead, and ",
+                "Text": " is true for an EXTRACTED or USER_STATED claim that is not dead, and only ",
                 "Code": false
               },
               {
@@ -18334,7 +18456,7 @@
                 "Code": true
               },
               {
-                "Text": " uses it to decide which relations between modules ",
+                "Text": " calls it, to decide which relations between modules ",
                 "Code": false
               },
               {
@@ -18342,7 +18464,15 @@
                 "Code": true
               },
               {
-                "Text": " sees. Its comment says a reader's coupling is not drawn, but the blueprint's overview draws INFERRED edges that are not dead too. ",
+                "Text": " sees. Its comment says a reader's coupling is listed instead of drawn, but ",
+                "Code": false
+              },
+              {
+                "Text": "internal/screen",
+                "Code": true
+              },
+              {
+                "Text": " draws INFERRED edges that are not dead too. ",
                 "Code": false
               },
               {
@@ -18350,7 +18480,7 @@
                 "Code": true
               },
               {
-                "Text": " drops absent units.",
+                "Text": " drops absent units and sorts by ID.",
                 "Code": false
               }
             ]
@@ -18585,11 +18715,27 @@
                 "Code": false
               },
               {
-                "Text": "ShownParent",
+                "Text": "SetAbsent",
                 "Code": true
               },
               {
-                "Text": " returns the parent claim that won, and ",
+                "Text": " sets or clears both absence fields. ",
+                "Code": false
+              },
+              {
+                "Text": "Claims",
+                "Code": true
+              },
+              {
+                "Text": " lists shown and hidden relation claims together. ",
+                "Code": false
+              },
+              {
+                "Text": "EachEvidence",
+                "Code": true
+              },
+              {
+                "Text": " visits every stored item with its claim's writer, and ",
                 "Code": false
               },
               {
@@ -18597,7 +18743,15 @@
                 "Code": true
               },
               {
-                "Text": " visits its items. ",
+                "Text": " only the unit's own, the winning parent's and the shown relations' items. ",
+                "Code": false
+              },
+              {
+                "Text": "ShownParent",
+                "Code": true
+              },
+              {
+                "Text": " returns the parent claim that won. ",
                 "Code": false
               },
               {
@@ -18667,7 +18821,15 @@
                 "Code": true
               },
               {
-                "Text": ", and ",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "IsContract",
+                "Code": true
+              },
+              {
+                "Text": "), and ",
                 "Code": false
               },
               {
@@ -18703,6 +18865,14 @@
                 "Code": false
               },
               {
+                "Text": "Validate",
+                "Code": true
+              },
+              {
+                "Text": " rejects the reserved ",
+                "Code": false
+              },
+              {
                 "Text": "DOM",
                 "Code": true
               },
@@ -18731,7 +18901,7 @@
                 "Code": true
               },
               {
-                "Text": " are reserved and rejected. ",
+                "Text": " and any unknown kind. ",
                 "Code": false
               },
               {
@@ -18755,7 +18925,7 @@
                 "Code": true
               },
               {
-                "Text": ", the two kinds that may contain others. A module holds its units, and a feature holds its parts, such as a skill's steps.",
+                "Text": ", the two kinds that may contain others.",
                 "Code": false
               }
             ]
@@ -18965,7 +19135,15 @@
                 "Code": true
               },
               {
-                "Text": " dedups and sorts by it.",
+                "Text": " dedups and sorts by it. ",
+                "Code": false
+              },
+              {
+                "Text": "Evidence.Anchor",
+                "Code": true
+              },
+              {
+                "Text": " turns an item into one.",
                 "Code": false
               }
             ]
@@ -19067,7 +19245,7 @@
                 "Code": true
               },
               {
-                "Text": " compares path and quote, since the symbol only says where in the file to look. ",
+                "Text": " compares path and quote only. ",
                 "Code": false
               },
               {
@@ -19083,7 +19261,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", and ",
                 "Code": false
               },
               {
@@ -19091,7 +19269,31 @@
                 "Code": true
               },
               {
-                "Text": " refuses paths under ",
+                "Text": " accepts only a range such as ",
+                "Code": false
+              },
+              {
+                "Text": "120",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "120-134",
+                "Code": true
+              },
+              {
+                "Text": " that starts at 1 or later. ",
+                "Code": false
+              },
+              {
+                "Text": "Validate",
+                "Code": true
+              },
+              {
+                "Text": " also refuses paths under ",
                 "Code": false
               },
               {
@@ -19123,7 +19325,7 @@
                 "Code": true
               },
               {
-                "Text": ") makes a claim live while any item is live, else drifted while any is drifted, else dead.",
+                "Text": ") makes a claim live while any item is live, else drifted while any is drifted, else dead, and a claim with no items is live.",
                 "Code": false
               }
             ]
@@ -19229,6 +19431,14 @@
                 "Code": false
               },
               {
+                "Text": "Status",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
                 "Text": "Drifted",
                 "Code": true
               },
@@ -19257,7 +19467,15 @@
                 "Code": true
               },
               {
-                "Text": " read it.",
+                "Text": " read it. ",
+                "Code": false
+              },
+              {
+                "Text": "SortRelations",
+                "Code": true
+              },
+              {
+                "Text": " orders claims by end and then kind.",
                 "Code": false
               }
             ]
@@ -19311,7 +19529,7 @@
                 "Code": true
               },
               {
-                "Text": " is one of ",
+                "Text": " is empty or one of ",
                 "Code": false
               },
               {
@@ -19445,7 +19663,15 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Edge.Joins",
+                "Code": true
+              },
+              {
+                "Text": " checks the kinds its IDs name.",
                 "Code": false
               }
             ]
@@ -19475,7 +19701,7 @@
                 "Code": true
               },
               {
-                "Text": " compares two writers on a field. On a relation or a parent, ",
+                "Text": " compares two writers on a field, and a writer missing from a row ranks below all of it. On a relation or a parent, ",
                 "Code": false
               },
               {
@@ -19483,7 +19709,7 @@
                 "Code": true
               },
               {
-                "Text": " puts live claims before drifted ones before dead ones, whatever the writer, and the table decides within a status. A claim without evidence is live.",
+                "Text": " puts live claims before drifted ones before dead ones, whatever the writer, and the table decides within a status.",
                 "Code": false
               }
             ]
@@ -19553,7 +19779,31 @@
                 "Code": true
               },
               {
-                "Text": " lists each unit whose script parent has moved off it to a parent other than the human's. A unit holds at most one claim per writer.",
+                "Text": " lists each present unit whose script parent has moved off it to a parent other than the human's. ",
+                "Code": false
+              },
+              {
+                "Text": "Claim",
+                "Code": true
+              },
+              {
+                "Text": " reads a writer's claim, ",
+                "Code": false
+              },
+              {
+                "Text": "PutParent",
+                "Code": true
+              },
+              {
+                "Text": " replaces it and keeps the claims in table order, and ",
+                "Code": false
+              },
+              {
+                "Text": "DropParents",
+                "Code": true
+              },
+              {
+                "Text": " removes the claims of the given writers.",
                 "Code": false
               }
             ]
@@ -19583,15 +19833,63 @@
                 "Code": true
               },
               {
-                "Text": ", bound by ",
+                "Text": " (",
                 "Code": false
               },
               {
-                "Text": "Digest",
+                "Text": "unit",
                 "Code": true
               },
               {
-                "Text": " to the hidden claim's content, with a ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "parent",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "purpose",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "responsibility",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "signature",
+                "Code": true
+              },
+              {
+                "Text": ", or ",
+                "Code": false
+              },
+              {
+                "Text": "KIND.TO",
+                "Code": true
+              },
+              {
+                "Text": " from ",
+                "Code": false
+              },
+              {
+                "Text": "RelationTarget",
+                "Code": true
+              },
+              {
+                "Text": "), with a ",
                 "Code": false
               },
               {
@@ -19599,7 +19897,39 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". It is bound to the hidden claim's content by ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": ", the first 16 hex digits of a SHA-256. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationDigest",
+                "Code": true
+              },
+              {
+                "Text": " hashes kind, end and via, ",
+                "Code": false
+              },
+              {
+                "Text": "ParentDigest",
+                "Code": true
+              },
+              {
+                "Text": " the parent, and ",
+                "Code": false
+              },
+              {
+                "Text": "FactDigest",
+                "Code": true
+              },
+              {
+                "Text": " the value. ",
                 "Code": false
               },
               {
@@ -19607,7 +19937,23 @@
                 "Code": true
               },
               {
-                "Text": " lets a reader's mask hide the supplement's claims and a human's hide the reader's and the supplement's. A claim whose content changes no longer matches and shows again.",
+                "Text": " lets a reader's mask hide the supplement's claims and a human's hide the reader's and the supplement's. ",
+                "Code": false
+              },
+              {
+                "Text": "Masked",
+                "Code": true
+              },
+              {
+                "Text": " tests a claim, and ",
+                "Code": false
+              },
+              {
+                "Text": "PutMask",
+                "Code": true
+              },
+              {
+                "Text": " adds a mask only once. A claim whose content changes no longer matches and shows again.",
                 "Code": false
               }
             ]
@@ -19629,7 +19975,7 @@
                 "Code": true
               },
               {
-                "Text": "): derives the read model in place. A masked why-field or signature is cleared, and a unit whose name is masked goes absent as ",
+                "Text": "): derives the read model in place. A masked why-field or signature is cleared, and a present unit whose name is masked goes absent as ",
                 "Code": false
               },
               {
@@ -19637,7 +19983,15 @@
                 "Code": true
               },
               {
-                "Text": ". Each edge shows its first unmasked claim in table order, and the rest go to ",
+                "Text": ". On each edge the claims sort by ",
+                "Code": false
+              },
+              {
+                "Text": "order",
+                "Code": true
+              },
+              {
+                "Text": " with masked claims last, the first shows unless it is masked, and the rest go to ",
                 "Code": false
               },
               {
@@ -19645,7 +19999,55 @@
                 "Code": true
               },
               {
-                "Text": ". Each present unit takes its first parent claim that is not dead, not masked, points at a present module or feature and closes no cycle. Claims are accepted tier by tier, script and group first, then human, reader and supplement, each tier in unit ID order. When a claim is refused for closing a cycle, acceptance starts again from the first tier, so the unit's next claim is weighed before any lower tier. A skipped claim stays stored.",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "PutRelation",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "DropRelations",
+                "Code": true
+              },
+              {
+                "Text": " re-run this per unit after each edit. Each present unit takes its first parent claim that is not dead, not masked, points at a present module or feature and closes no cycle. Claims are accepted tier by tier, script and group first, then human, reader and supplement, each tier in unit ID order. When a claim is refused for closing a cycle, acceptance starts again from the first tier, so the unit's next claim is weighed before any lower tier. An absent unit shows its first stored claim. A skipped claim stays stored. ",
+                "Code": false
+              },
+              {
+                "Text": "ParentCycle",
+                "Code": true
+              },
+              {
+                "Text": " names a present unit whose parents loop, and the tests of ",
+                "Code": false
+              },
+              {
+                "Text": "model",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "identity",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "group",
+                "Code": true
+              },
+              {
+                "Text": " use it to check that the result is a tree.",
                 "Code": false
               }
             ]
@@ -19680,7 +20082,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:412 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -19861,7 +20263,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:271 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -20353,7 +20755,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+              "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -20569,7 +20971,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/screen.go:49 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+              "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -20583,7 +20985,7 @@
             "Title": "freshness verdicts depends_on internal/store (via convention), 판독\nunderstanding text depends_on internal/store (via convention), 판독",
             "Quotes": [
               "internal/screen/screen.go:49 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+              "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -20871,7 +21273,7 @@
                 "Code": true
               },
               {
-                "Text": " is the same data for tools. The CLI's ",
+                "Text": " holds the watermark, the unit rows, every live relation, the overview drawing and the full module views, for tools. The CLI's ",
                 "Code": false
               },
               {
@@ -20887,7 +21289,7 @@
                 "Code": true
               },
               {
-                "Text": ") saves them after every command marked ",
+                "Text": ") runs after every command marked ",
                 "Code": false
               },
               {
@@ -20943,7 +21345,31 @@
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": "). It renders nothing for an empty store, and it saves ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": " after ",
+                "Code": false
+              },
+              {
+                "Text": "index.html",
+                "Code": true
+              },
+              {
+                "Text": " because ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": " carries the watermark. ",
                 "Code": false
               },
               {
@@ -20959,7 +21385,31 @@
                 "Code": true
               },
               {
-                "Text": " for its freshness verdicts. The package never writes the topology, and it draws no box the store lacks, apart from a focus view's twin.",
+                "Text": ", through the same ",
+                "Code": false
+              },
+              {
+                "Text": "screenInput",
+                "Code": true
+              },
+              {
+                "Text": ", for its freshness verdicts. The package imports ",
+                "Code": false
+              },
+              {
+                "Text": "internal/model",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "internal/store",
+                "Code": true
+              },
+              {
+                "Text": ", never writes the topology, and draws no box the store lacks, apart from a focus view's twin.",
                 "Code": false
               }
             ]
@@ -20968,7 +21418,15 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The overview draws each top-level module and feature as a box. A blue line runs from a user's chip on the bottom edge to the provider's chip on the top edge. One chip stands for the contracts that line carries, named when it is one and counted when it is more, and the contracts no line reaches fold into one ",
+                "Text": "The overview draws each top-level module and feature as a box, and a top-level contract no module provides as a loose box. A blue ",
+                "Code": false
+              },
+              {
+                "Text": "contract",
+                "Code": true
+              },
+              {
+                "Text": " line runs from a user's chip on the bottom edge to the provider's chip on the top edge. One chip stands for the contracts that line carries, named when it is one and counted when it is more, and the contracts no line reaches fold into one ",
                 "Code": false
               },
               {
@@ -20976,7 +21434,7 @@
                 "Code": true
               },
               {
-                "Text": " chip on the provider, and a thick orange ",
+                "Text": " chip on the provider. A thick orange ",
                 "Code": false
               },
               {
@@ -20984,7 +21442,7 @@
                 "Code": true
               },
               {
-                "Text": " line marks a module dependency no contract carries. Two modules that depend on each other that way share one ",
+                "Text": " line marks a module dependency no contract line already carries. Two modules that depend on each other that way share one ",
                 "Code": false
               },
               {
@@ -20992,7 +21450,15 @@
                 "Code": true
               },
               {
-                "Text": " line with a head at each end. A relation from a unit at any depth is lifted to the top-level unit that contains it. INFERRED couplings are drawn too, because sync rechecks their quotes. Only dead ones are dropped, and a drifted one is drawn like a live one. A small circle at a line's start marks a reader's or a human's relation, and a dashed line runs against the reading direction. Every top-level module and every unit that holds others has its own view. An overview box links to its view only when ",
+                "Text": " line with a head at each end. A relation from a unit at any depth is lifted to the top-level unit that contains it. INFERRED couplings are drawn too, because sync rechecks their quotes. Only dead ones are dropped, and a drifted one is drawn like a live one. A drawn edge counts as extracted when any relation under it is the script's, else stated, else inferred. A small circle at a line's start marks a reader's or a human's relation, a bundle of both is ",
+                "Code": false
+              },
+              {
+                "Text": "mixed",
+                "Code": true
+              },
+              {
+                "Text": ", and a dashed line runs against the reading direction. Every top-level module and every unit that holds others has its own view, and a box links to one only when ",
                 "Code": false
               },
               {
@@ -21000,23 +21466,7 @@
                 "Code": true
               },
               {
-                "Text": " names one, and ",
-                "Code": false
-              },
-              {
-                "Text": "Build",
-                "Code": true
-              },
-              {
-                "Text": " makes a view for exactly the units ",
-                "Code": false
-              },
-              {
-                "Text": "viewOf",
-                "Code": true
-              },
-              {
-                "Text": " names, so no link opens a missing section. A feature with no parts has none, so its box carries no link and its title offers no click. Everything is sorted before it is placed, so the same store always draws the same picture. ",
+                "Text": " names it, so no link opens a missing section. A feature with no parts has none. Everything is sorted before it is placed, so the same store always draws the same picture. ",
                 "Code": false
               },
               {
@@ -21040,7 +21490,7 @@
                 "Code": true
               },
               {
-                "Text": " traces every relation along the drawn ink for bends, crossings, phantom paths, unmarked splits and counts that belong to no single line.",
+                "Text": " traces every relation along the drawn ink.",
                 "Code": false
               }
             ]
@@ -21095,7 +21545,7 @@
                 "Code": true
               },
               {
-                "Text": " reads. ",
+                "Text": " reads, including each module's understanding and its code digest now. ",
                 "Code": false
               },
               {
@@ -21175,7 +21625,15 @@
                 "Code": true
               },
               {
-                "Text": ", and both freshness values.",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "graph.go",
+                "Code": true
+              },
+              {
+                "Text": "), and both freshness values.",
                 "Code": false
               }
             ]
@@ -21197,7 +21655,7 @@
                 "Code": true
               },
               {
-                "Text": "): the parent tree the views follow. A unit whose parent is absent moves to the top level, so nothing present drops out. A unit with children and no live relations of its own is abstract, and its box draws its members' relations (",
+                "Text": "): the parent tree the views follow. A unit whose parent is absent moves to the top level, so nothing present drops out. A unit with children and no live relations of its own is abstract, and an inside box for it draws its members' relations (",
                 "Code": false
               },
               {
@@ -21205,7 +21663,23 @@
                 "Code": true
               },
               {
-                "Text": ").",
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "within",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "outside",
+                "Code": true
+              },
+              {
+                "Text": " say which child of a view, or which largest unit outside it, stands for an end.",
                 "Code": false
               }
             ]
@@ -21243,7 +21717,7 @@
                 "Code": true
               },
               {
-                "Text": " lists the top-level units and the live relations between them. Each contract gets its ",
+                "Text": " lists the top-level units and the live relations between them, with the stored relations and origins each drawn edge stands for. Each top-level contract gets its ",
                 "Code": false
               },
               {
@@ -21259,7 +21733,7 @@
                 "Code": true
               },
               {
-                "Text": ", and each drawn edge keeps the stored relations it stands for and their origins.",
+                "Text": ", and a module that provides a contract is not drawn as its user.",
                 "Code": false
               }
             ]
@@ -21313,7 +21787,7 @@
                 "Code": true
               },
               {
-                "Text": " is a top-level module or feature, an inside unit, or a contract no module provides. Its ",
+                "Text": " is a top-level module or feature, an inside unit, or a loose contract. Its ",
                 "Code": false
               },
               {
@@ -21345,7 +21819,7 @@
                 "Code": true
               },
               {
-                "Text": " keeps the word, and a module whose chips need more than ",
+                "Text": " keeps the word. A module whose chips need more than ",
                 "Code": false
               },
               {
@@ -21361,7 +21835,15 @@
                 "Code": true
               },
               {
-                "Text": ". On an inside frame, two ports that land on one spot share a chip, and its ",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "settle",
+                "Code": true
+              },
+              {
+                "Text": " then moves a single unfolded row of chips over the x their lines run at. On an inside frame, two ports that land on one spot share a chip, and its ",
                 "Code": false
               },
               {
@@ -21377,63 +21859,7 @@
                 "Code": true
               },
               {
-                "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to. ",
-                "Code": false
-              },
-              {
-                "Text": "Wire.Kind",
-                "Code": true
-              },
-              {
-                "Text": " is the CSS class. ",
-                "Code": false
-              },
-              {
-                "Text": "Origin",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Marks",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Back",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Both",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "Count",
-                "Code": true
-              },
-              {
-                "Text": " carry the origin circle, the dash, a ",
-                "Code": false
-              },
-              {
-                "Text": "mutual",
-                "Code": true
-              },
-              {
-                "Text": " line's second head and a bus's ×N.",
+                "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to.",
                 "Code": false
               }
             ]
@@ -21471,7 +21897,7 @@
                 "Code": true
               },
               {
-                "Text": "): the layered layout. It breaks cycles for ranking only and sets each node above what it uses. It then lays the rows out as a proper layered graph: each pair of places more than a row apart gets a ",
+                "Text": "): the layered layout. It orders nodes to leave few edges pointing back (Eades, Lin and Smyth), ranks without those edges, and sets each node above what it uses. A node nothing uses sits just above the highest thing it uses, and nodes with no line gather on a bottom layer. Each pair of places more than a row apart gets a ",
                 "Code": false
               },
               {
@@ -21479,7 +21905,7 @@
                 "Code": true
               },
               {
-                "Text": " of dummies, one per row it passes. ",
+                "Text": " of dummies. ",
                 "Code": false
               },
               {
@@ -21487,7 +21913,7 @@
                 "Code": true
               },
               {
-                "Text": " sorts every row on the whole graph, chains included, and ",
+                "Text": " sorts every row, chains included, and ",
                 "Code": false
               },
               {
@@ -21495,15 +21921,7 @@
                 "Code": true
               },
               {
-                "Text": " splits a layer wider than the width budget in that order. ",
-                "Code": false
-              },
-              {
-                "Text": "place",
-                "Code": true
-              },
-              {
-                "Text": " treats each box and each chain as one block, Brandes and Köpf style, so a chain runs at one x and boxes step aside for it. ",
+                "Text": " splits a layer wider than the budget. ",
                 "Code": false
               },
               {
@@ -21511,7 +21929,7 @@
                 "Code": true
               },
               {
-                "Text": " then takes the shortest chains out while the rows, every chain crooked, are still wider than the budget, and renumbers the rest, so every chain left has its dummies. ",
+                "Text": " takes the shortest chains out while the rows are still too wide with every chain crooked. ",
                 "Code": false
               },
               {
@@ -21519,23 +21937,7 @@
                 "Code": true
               },
               {
-                "Text": " keeps straight as many chains as fit the budget, found by halving, since each straight chain can only widen the drawing. ",
-                "Code": false
-              },
-              {
-                "Text": "toward",
-                "Code": true
-              },
-              {
-                "Text": " tells the chips where their lines leave a row. A focus view passes ",
-                "Code": false
-              },
-              {
-                "Text": "arrange",
-                "Code": true
-              },
-              {
-                "Text": " a ",
+                "Text": " treats each box and each chain as one block, Brandes and Köpf style, keeps a chain crooked when it would swap sides with a straight one, and finds by halving how many of the longest chains stay straight within the budget. A focus view passes a ",
                 "Code": false
               },
               {
@@ -21543,7 +21945,7 @@
                 "Code": true
               },
               {
-                "Text": ", the x of every box in its full view: ",
+                "Text": ", so ",
                 "Code": false
               },
               {
@@ -21551,15 +21953,7 @@
                 "Code": true
               },
               {
-                "Text": " then orders each row by that x instead of ",
-                "Code": false
-              },
-              {
-                "Text": "order",
-                "Code": true
-              },
-              {
-                "Text": ", ",
+                "Text": " orders rows by the full view's x, ",
                 "Code": false
               },
               {
@@ -21567,7 +21961,7 @@
                 "Code": true
               },
               {
-                "Text": " deals a ring too wide for one row into rows that each take every k-th box, and ",
+                "Text": " deals a wide ring into interleaved rows, and ",
                 "Code": false
               },
               {
@@ -21575,15 +21969,7 @@
                 "Code": true
               },
               {
-                "Text": " replaces ",
-                "Code": false
-              },
-              {
-                "Text": "place",
-                "Code": true
-              },
-              {
-                "Text": ", setting the focus and the frame's lines into it on one vertical axis at the middle and packing each row around them.",
+                "Text": " packs each row around the focus on one vertical axis.",
                 "Code": false
               }
             ]
@@ -21605,7 +21991,7 @@
                 "Code": true
               },
               {
-                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain, or between two boxes or beside the row where it has none. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Lines of one kind that reach one box share an arrival bus, and boxes side by side in one row share one only when exactly the same places reach them. Each trunk runs down the chain of its lead line, with its stub or drop right over it. A line that changes buses steps between them where no reader can follow other lines the wrong way: ",
+                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain or between boxes. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. ",
                 "Code": false
               },
               {
@@ -21621,7 +22007,7 @@
                 "Code": true
               },
               {
-                "Text": " finds a step onto an arrival track the nearest x no other line uses. Lines that leave and reach one box edge share its slots. Each bus is drawn once with its line count. ",
+                "Text": " finds a step onto an arrival track at the nearest clear x. Each bus is drawn once with its line count, and ",
                 "Code": false
               },
               {
@@ -21629,7 +22015,7 @@
                 "Code": true
               },
               {
-                "Text": " then sizes each gap, with room beside each stub or drop that carries a count.",
+                "Text": " sizes each gap with room for the counts.",
                 "Code": false
               }
             ]
@@ -21713,7 +22099,23 @@
                 "Code": true
               },
               {
-                "Text": ". Its frame carries the contracts of the module or feature it opens and dashed ports for the modules it meets without one. It also holds ",
+                "Text": ", within a 920 pixel budget against the overview's 1320. Its frame carries the module's contracts and dashed ",
+                "Code": false
+              },
+              {
+                "Text": "← name",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "→ name",
+                "Code": true
+              },
+              {
+                "Text": " ports for units outside it met without one. Lines from outside units into inside units come in on top. A crowded side hands its least committed ports to the other side, and the frame never grows past the budget. It also holds ",
                 "Code": false
               },
               {
@@ -21729,7 +22131,7 @@
                 "Code": true
               },
               {
-                "Text": " contracts kept off the frame, ",
+                "Text": " contracts kept off the frame and grouped by a first word that three or more share, ",
                 "Code": false
               },
               {
@@ -21737,7 +22139,7 @@
                 "Code": true
               },
               {
-                "Text": " couplings with their quotes, ",
+                "Text": " couplings with an end in the module or a direct child, ",
                 "Code": false
               },
               {
@@ -21783,7 +22185,7 @@
                 "Code": true
               },
               {
-                "Text": "): a view derived from a dense one, which draws more than two relations per box. Each box of a dense overview or inside gets one: that box, the boxes it meets, and only its own lines, built by the same ",
+                "Text": "): a view cut from a dense one, which has more than two boxes and more than twice as many relations as boxes. Each module or feature box of a dense overview gets one, and each box of a dense inside. ",
                 "Code": false
               },
               {
@@ -21799,31 +22201,7 @@
                 "Code": true
               },
               {
-                "Text": " with a focus ID. ",
-                "Code": false
-              },
-              {
-                "Text": "planOverview",
-                "Code": true
-              },
-              {
-                "Text": " plans the whole overview first, and ",
-                "Code": false
-              },
-              {
-                "Text": "around",
-                "Code": true
-              },
-              {
-                "Text": " then keeps only its lines with an end at the focus and the boxes at their other ends, so a focus view never draws a line the overview lacks; ",
-                "Code": false
-              },
-              {
-                "Text": "TestFocusViewsArePartialGraphsOfTheirView",
-                "Code": true
-              },
-              {
-                "Text": " holds every focus view's lines, chips and boxes to its full view in both directions. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
+                "Text": " plans the full view and keeps only the lines with an end at the focus and the boxes at their other ends, so a focus view never draws a line the full view lacks. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
                 "Code": false
               },
               {
@@ -21831,7 +22209,7 @@
                 "Code": true
               },
               {
-                "Text": ", so every line reads down; ",
+                "Text": ", and ",
                 "Code": false
               },
               {
@@ -21839,7 +22217,7 @@
                 "Code": true
               },
               {
-                "Text": " maps a twin back to its unit. Focus views take the overview's width, name boxes by their last path segment, link each ring box to its own focus view, and are left out of ",
+                "Text": " maps it back. Focus views take the overview's width. A focus view of an inside names its boxes by their last path segment. Focus views link each ring box to its own focus view, and stay out of ",
                 "Code": false
               },
               {
@@ -21863,15 +22241,7 @@
                 "Code": true
               },
               {
-                "Text": ", which makes each box that opens nothing else open its focus view, so ",
-                "Code": false
-              },
-              {
-                "Text": "graph.json",
-                "Code": true
-              },
-              {
-                "Text": " holds no link to a focus view, and the page lists the focus views under the full drawing. ",
+                "Text": ", which makes each box that opens nothing else open its focus view. ",
                 "Code": false
               },
               {
@@ -21879,15 +22249,15 @@
                 "Code": true
               },
               {
-                "Text": " reads the full view's box centres for ",
+                "Text": " keeps the ring in the full view's order. ",
                 "Code": false
               },
               {
-                "Text": "focusSeat",
+                "Text": "TestFocusViewsArePartialGraphsOfTheirView",
                 "Code": true
               },
               {
-                "Text": ", so a ring keeps the order its boxes have in the full view; ",
+                "Text": " and ",
                 "Code": false
               },
               {
@@ -21895,7 +22265,7 @@
                 "Code": true
               },
               {
-                "Text": " holds that order and the centred focus.",
+                "Text": " hold both rules.",
                 "Code": false
               }
             ]
@@ -21933,7 +22303,31 @@
                 "Code": true
               },
               {
-                "Text": " compares the rendered watermark with the inputs hash now.",
+                "Text": " compares the rendered watermark with the inputs hash now. Either is ",
+                "Code": false
+              },
+              {
+                "Text": "UNKNOWN",
+                "Code": true
+              },
+              {
+                "Text": " when a side is missing. ",
+                "Code": false
+              },
+              {
+                "Text": "Files",
+                "Code": true
+              },
+              {
+                "Text": " sets the model's blueprint verdict to ",
+                "Code": false
+              },
+              {
+                "Text": "CURRENT",
+                "Code": true
+              },
+              {
+                "Text": " before it renders, since the files it writes carry the current watermark.",
                 "Code": false
               }
             ]
@@ -21963,7 +22357,7 @@
                 "Code": true
               },
               {
-                "Text": "s and ",
+                "Text": "s of headings, list items and paragraphs, and ",
                 "Code": false
               },
               {
@@ -21971,7 +22365,15 @@
                 "Code": true
               },
               {
-                "Text": "s. It is marked ",
+                "Text": "s of plain, ",
+                "Code": false
+              },
+              {
+                "Text": "code",
+                "Code": true
+              },
+              {
+                "Text": " and bold text. It is marked ",
                 "Code": false
               },
               {
@@ -21979,7 +22381,15 @@
                 "Code": true
               },
               {
-                "Text": " when the module's digest has moved. The template escapes it and never trusts its markup.",
+                "Text": " when its stored digest differs from ",
+                "Code": false
+              },
+              {
+                "Text": "store.ModuleDigest",
+                "Code": true
+              },
+              {
+                "Text": ", which hashes the files of the module and of every unit under it at any depth, and the lines around the quotes they cite in other files. The template escapes it and never trusts its markup.",
                 "Code": false
               }
             ]
@@ -22009,7 +22419,7 @@
                 "Code": true
               },
               {
-                "Text": "): the embedded Korean template with its labels and tips. ",
+                "Text": "): the embedded Korean template with its origin and kind labels and hover tips. ",
                 "Code": false
               },
               {
@@ -22249,7 +22659,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:99 \"case in.Tree != in.Synced.Fingerprint:\"",
-            "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree\""
+            "cmd/abbd/main.go:394 \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -22259,7 +22669,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:349 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -22287,8 +22697,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -22580,7 +22989,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\""
+              "cmd/abbd/main.go:390 \"hash, err := st.MDHash()\""
             ],
             "Marks": [
               {
@@ -22620,7 +23029,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
+              "cmd/abbd/understand.go:66 \"Digest: digest, Code: code, Text: text}\""
             ],
             "Marks": [
               {
@@ -22986,6 +23395,7 @@
           "Sentence": "Fingerprints, CRLF-normalized and truncated to 16 hex, every file cited by the anchors and evidence of a present module and its child units, counting a missing file as missing.",
           "Guess": true,
           "Anchors": [
+            "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
           ]
         }
@@ -23846,11 +24256,11 @@
                 "Code": false
               },
               {
-                "Text": "Tree",
+                "Text": "Code",
                 "Code": true
               },
               {
-                "Text": ", the working-tree snapshot when the text was stamped, in frontmatter and the text as the body. ",
+                "Text": ", the hash of each file the digest read when the text was written, in frontmatter and the text as the body. ",
                 "Code": false
               },
               {
@@ -23904,7 +24314,23 @@
                 "Code": true
               },
               {
-                "Text": " left out. An anchor that extraction derived from the unit's own evidence does not count as a whole file. A quote of a file no anchor covers counts by ",
+                "Text": " left out, or for the files on disk outside a repository. ",
+                "Code": false
+              },
+              {
+                "Text": "read",
+                "Code": true
+              },
+              {
+                "Text": " gives a file with LF endings, and a submodule as the commit ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.Gitlink",
+                "Code": true
+              },
+              {
+                "Text": " reports, so a directory anchored at a submodule never hashes to nothing. An anchor that extraction derived from the unit's own evidence does not count as a whole file. A quote of a file no anchor covers counts by ",
                 "Code": false
               },
               {
@@ -23953,6 +24379,84 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Stamp",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Changed",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "understanding.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Stamp",
+                "Code": true
+              },
+              {
+                "Text": " returns the digest and the ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " map, a 16-hex hash of each file the digest reads, a quoted file whole. ",
+                "Code": false
+              },
+              {
+                "Text": "Changed",
+                "Code": true
+              },
+              {
+                "Text": " lists what blocks ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand --restamp",
+                "Code": true
+              },
+              {
+                "Text": ": a file of the module now that differs from ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " or is missing from it, and a file in ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " that is gone. A file that left the module and still exists does not block it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Digest upgrade",
                 "Code": false,
                 "Bold": true
@@ -23974,7 +24478,7 @@
                 "Code": true
               },
               {
-                "Text": " is the 0.6 digest, over the whole files cited by a module and its direct children. ",
+                "Text": " is the 0.6 digest, over the whole files cited by a module and its direct children, and the paths it read. ",
                 "Code": false
               },
               {
@@ -23990,31 +24494,23 @@
                 "Code": true
               },
               {
-                "Text": " runs, restamps a text that records no ",
+                "Text": " runs, looks at each text with no ",
                 "Code": false
               },
               {
-                "Text": "tree",
+                "Text": "Code",
                 "Code": true
               },
               {
-                "Text": ", so an older ABBD stored it, and whose stored digest equals that digest of the code as it is now, because it was current before the digest grew. A text the old digest called STALE stays STALE. ",
+                "Text": ", so an older ABBD stored it, whose stored digest equals the 0.6 digest now. When the 0.6 digest read, whole, every file the new one reads, the text is stamped with ",
                 "Code": false
               },
               {
-                "Text": "Touches",
+                "Text": "Stamp",
                 "Code": true
               },
               {
-                "Text": " says whether a changed path is anchored or quoted by the module or a unit under it, present or absent, or sits under an anchored directory, for ",
-                "Code": false
-              },
-              {
-                "Text": "abbd understand --restamp",
-                "Code": true
-              },
-              {
-                "Text": ".",
+                "Text": " and stays current. Otherwise it is returned as widened, keeps its stamp and reads STALE. A text the old digest called STALE stays STALE.",
                 "Code": false
               }
             ]
@@ -24111,8 +24607,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\"",
-            "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -24121,7 +24616,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:341 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -24132,7 +24627,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:376 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:377 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -24180,8 +24675,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:34 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:33 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -24199,7 +24693,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:217 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:271 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -24217,8 +24711,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\"",
-            "cmd/abbd/main.go:390 \"MDHash: hash\""
+            "cmd/abbd/main.go:390 \"hash, err := st.MDHash()\"",
+            "cmd/abbd/main.go:394 \"MDHash: hash\""
           ]
         },
         {
@@ -24237,7 +24731,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:69 \"Digest: digest, Tree: tree, Text: text}\""
+            "cmd/abbd/understand.go:66 \"Digest: digest, Code: code, Text: text}\""
           ]
         },
         {
@@ -25243,7 +25737,55 @@
                 "Code": true
               },
               {
-                "Text": " resolves what an agent has in hand to units, and ",
+                "Text": " resolves what an agent has in hand to units, through ",
+                "Code": false
+              },
+              {
+                "Text": "env.find",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/query.go",
+                "Code": true
+              },
+              {
+                "Text": ", which ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "path",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "impact",
+                "Code": true
+              },
+              {
+                "Text": " share. A well-formed ID skips ",
+                "Code": false
+              },
+              {
+                "Text": "Find",
+                "Code": true
+              },
+              {
+                "Text": ", and when nothing matches ",
                 "Code": false
               },
               {
@@ -25251,7 +25793,7 @@
                 "Code": true
               },
               {
-                "Text": " suggests names when nothing matches. ",
+                "Text": " suggests the closest names. ",
                 "Code": false
               },
               {
@@ -25331,7 +25873,23 @@
                 "Code": true
               },
               {
-                "Text": ", and ",
+                "Text": " between a base revision, the merge base by default, and the working tree, ",
+                "Code": false
+              },
+              {
+                "Text": "Diff.Lines",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Diff.String",
+                "Code": true
+              },
+              {
+                "Text": " print it, and ",
                 "Code": false
               },
               {
@@ -25356,7 +25914,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "Its other job is to keep the three origins apart. EXTRACTED means the script read the relation from code. USER_STATED means a human said it. INFERRED means a pstack reader quoted evidence for it. A relation whose evidence is all dead is dropped everywhere. A live or drifted inferred one is still walked by ",
+                "Text": "Its other job is to keep the three origins apart. EXTRACTED means the script read the relation from code. USER_STATED means a human said it. INFERRED means a pstack reader quoted evidence for it. A relation whose evidence is all dead, or whose end is absent, is dropped everywhere. A live or drifted inferred one is still walked by ",
                 "Code": false
               },
               {
@@ -25467,7 +26025,7 @@
                 "Code": true
               },
               {
-                "Text": "): resolves a query best first. An exact ID or name returns at once (",
+                "Text": "): resolves a query best first. An exact ID returns one match (",
                 "Code": false
               },
               {
@@ -25475,7 +26033,7 @@
                 "Code": true
               },
               {
-                "Text": ", ",
+                "Text": "), and an exact name returns every unit with that name (",
                 "Code": false
               },
               {
@@ -25483,7 +26041,15 @@
                 "Code": true
               },
               {
-                "Text": "). Otherwise ",
+                "Text": "), both ignoring case. Only then does ",
+                "Code": false
+              },
+              {
+                "Text": "Find",
+                "Code": true
+              },
+              {
+                "Text": " read the project's file list. ",
                 "Code": false
               },
               {
@@ -25491,7 +26057,7 @@
                 "Code": true
               },
               {
-                "Text": " reads the query as a symbol or a path, dropping a ",
+                "Text": " reads the query as a symbol, ignoring case, or as a path, dropping a ",
                 "Code": false
               },
               {
@@ -25499,7 +26065,23 @@
                 "Code": true
               },
               {
-                "Text": " suffix. It ranks the units whose anchors or evidence hold it, the most specific anchor first. A query with ",
+                "Text": " suffix and a leading ",
+                "Code": false
+              },
+              {
+                "Text": "./",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "targets",
+                "Code": true
+              },
+              {
+                "Text": " widens a path to known files that end with it, and a bare name to files with that base name or stem. Units whose anchors or evidence hold the path rank first, the most specific first, and units with code under a named directory follow. A query with ",
                 "Code": false
               },
               {
@@ -25531,7 +26113,7 @@
                 "Code": true
               },
               {
-                "Text": " matches, scored by the query words a unit's name, descriptions, quotes and files hold.",
+                "Text": " matches, ranked by how many query words a unit holds and then by where, the name weighing most and a project file under its anchors least. Ties go to the deeper unit, then the smaller ID.",
                 "Code": false
               }
             ]
@@ -25561,7 +26143,29 @@
                 "Code": true
               },
               {
-                "Text": " seeds the best match plus every other anchored match, so a path change reaches every unit anchored there. Evidence and phrase matches stay unanchored.",
+                "Text": " seeds the best match plus every other anchored match, so a path change reaches every unit anchored there. Symbol, evidence and phrase matches stay unanchored.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Nearest",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "find.go",
+                "Code": true
+              },
+              {
+                "Text": "): the present units whose names are fewest Levenshtein edits from the query, ignoring case.",
                 "Code": false
               }
             ]
@@ -25639,7 +26243,7 @@
                 "Code": true
               },
               {
-                "Text": " is the graph that ",
+                "Text": " reads only shown relations and is the graph that ",
                 "Code": false
               },
               {
@@ -25672,6 +26276,76 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Explain",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Explanation",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "query.go",
+                "Code": true
+              },
+              {
+                "Text": "): the unit, its direct children as ",
+                "Code": false
+              },
+              {
+                "Text": "Ref",
+                "Code": true
+              },
+              {
+                "Text": "s, the drawn links ",
+                "Code": false
+              },
+              {
+                "Text": "Out",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "In",
+                "Code": true
+              },
+              {
+                "Text": ", and the reader's links ",
+                "Code": false
+              },
+              {
+                "Text": "Inferred",
+                "Code": true
+              },
+              {
+                "Text": ". A link between a unit inside it, at any depth, and a unit outside counts as the unit's own (",
+                "Code": false
+              },
+              {
+                "Text": "own",
+                "Code": true
+              },
+              {
+                "Text": ").",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "ImpactOf",
                 "Code": true
               },
@@ -25693,7 +26367,15 @@
                 "Code": true
               },
               {
-                "Text": "): a breadth-first walk from the seeds and the units inside them. It follows what depends on or consumes an impacted unit, and the contracts that unit provides. A contract's provider, and what a seed itself uses, are listed but not followed. ",
+                "Text": "): a breadth-first walk from the seeds and their direct children. It follows what depends on or consumes an impacted unit, and the contracts that unit provides. A contract's provider, and what a seed itself uses, are listed but not followed. Each ",
+                "Code": false
+              },
+              {
+                "Text": "Item",
+                "Code": true
+              },
+              {
+                "Text": " says why it is there. ",
                 "Code": false
               },
               {
@@ -25767,6 +26449,14 @@
                 "Code": false
               },
               {
+                "Text": "unloop",
+                "Code": true
+              },
+              {
+                "Text": " then cuts any stretch that leaves a unit and comes back to it, and ",
+                "Code": false
+              },
+              {
                 "Text": "markJoints",
                 "Code": true
               },
@@ -25833,7 +26523,7 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": ", which counts as EXTRACTED when empty.",
                 "Code": false
               }
             ]
@@ -25863,7 +26553,7 @@
                 "Code": true
               },
               {
-                "Text": " lifts to the top-level unit (",
+                "Text": " lifts both ends to the top-level unit (",
                 "Code": false
               },
               {
@@ -25879,7 +26569,7 @@
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": ") and drops an edge that lifts onto itself. ",
                 "Code": false
               },
               {
@@ -25887,23 +26577,15 @@
                 "Code": true
               },
               {
-                "Text": " lifts to the unit being explained (",
+                "Text": " lifts to the unit being explained. ",
                 "Code": false
               },
               {
-                "Text": "own",
+                "Text": "InferredAdded",
                 "Code": true
               },
               {
-                "Text": " in ",
-                "Code": false
-              },
-              {
-                "Text": "query.go",
-                "Code": true
-              },
-              {
-                "Text": ").",
+                "Text": " is not lifted and keeps each coupling's own ends.",
                 "Code": false
               }
             ]
@@ -25925,7 +26607,7 @@
                 "Code": true
               },
               {
-                "Text": "): units added and removed, changed contract ",
+                "Text": "): present units added and removed, so a unit gone absent counts as removed. Changed contract ",
                 "Code": false
               },
               {
@@ -25941,7 +26623,7 @@
                 "Code": true
               },
               {
-                "Text": " changed under the same signature, drawn top-level relations added or removed, and ",
+                "Text": " digest changed under the same signature when both digests exist, drawn top-level relations added or removed, and ",
                 "Code": false
               },
               {
@@ -25949,7 +26631,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " with its via and first quote. ",
                 "Code": false
               },
               {
@@ -25957,7 +26639,7 @@
                 "Code": true
               },
               {
-                "Text": " ignores code-only changes.",
+                "Text": " is true for a changed signature, an added or removed contract, or an added or removed drawn relation. A code-only change, a non-contract unit and an inferred coupling never set it.",
                 "Code": false
               }
             ]
@@ -25994,7 +26676,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:27 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:26 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },

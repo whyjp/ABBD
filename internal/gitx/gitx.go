@@ -147,3 +147,17 @@ func Changed(dir, oldTree, newTree string) (paths []string, ok bool, err error) 
 	}
 	return paths, true, nil
 }
+
+// Gitlink returns the commit the index records for the submodule at path,
+// relative to dir, or "" when path is not a submodule.
+func Gitlink(dir, path string) string {
+	out, err := run(dir, nil, "ls-files", "-s", "-z", "--", filepath.ToSlash(path))
+	if err != nil {
+		return ""
+	}
+	f := strings.Fields(strings.TrimSuffix(out, "\x00"))
+	if len(f) < 2 || f[0] != "160000" {
+		return ""
+	}
+	return f[1]
+}

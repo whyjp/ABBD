@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"slices"
@@ -19,14 +20,15 @@ import (
 // Understanding is what pstack's how wrote about one module for a human to
 // read beside its drawing: its Overview and Key Concepts. It is a reader's
 // account, so its origin is INFERRED, and Digest is the module's code as it
-// was when the text was written. Tree is the working tree's snapshot then,
-// which lets a restamp prove the module's code has not changed since.
+// was when the text was written. Code is the hash of each file that digest
+// read then, by path, which lets a restamp prove on any clone that the
+// module's code has not changed since. An older ABBD recorded no Code.
 type Understanding struct {
-	Unit   model.ID     `yaml:"unit"`
-	Origin model.Origin `yaml:"origin"`
-	Digest string       `yaml:"digest"`
-	Tree   string       `yaml:"tree,omitempty"`
-	Text   string       `yaml:"-"`
+	Unit   model.ID          `yaml:"unit"`
+	Origin model.Origin      `yaml:"origin"`
+	Digest string            `yaml:"digest"`
+	Code   map[string]string `yaml:"code,omitempty"`
+	Text   string            `yaml:"-"`
 }
 
 func (s Store) understandingPath(id model.ID) string {
@@ -72,8 +74,8 @@ const quoteContext = 5
 
 // moduleCode is the code a module's text describes: the files anchored by
 // the module or any unit under it, at any depth, with a directory anchor
-// standing for the files under it, and the quotes those units cite in files
-// no anchor covers.
+// standing for the files and submodules under it, and the quotes those units
+// cite in files no anchor covers.
 type moduleCode struct {
 	files  []string
 	quotes []model.Evidence
@@ -109,14 +111,11 @@ func (s Store) moduleCode(units []model.Unit, id model.ID) moduleCode {
 				continue
 			}
 			if !listed {
-				working, listed = gitx.WorkingFiles(project), true
+				working, listed = workingFiles(project), true
 			}
-			dir := strings.TrimSuffix(a.Path, "/") + "/"
-			if dir == "./" {
-				dir = ""
-			}
+			dir := strings.TrimSuffix(a.Path, "/")
 			for _, f := range working {
-				if strings.HasPrefix(f, dir) && !strings.HasPrefix(f, Dir+"/") {
+				if (dir == "." || f == dir || strings.HasPrefix(f, dir+"/")) && !strings.HasPrefix(f, Dir+"/") {
 					c.files = append(c.files, f)
 				}
 			}
@@ -137,37 +136,44 @@ func (s Store) moduleCode(units []model.Unit, id model.ID) moduleCode {
 	return c
 }
 
-// Touches reports whether a change to path could change what a module's
-// text describes: the path is anchored or quoted by the module or by a unit
-// under it, present or absent, or sits under an anchored directory. Absent
-// units count, so a file deleted from the module still touches it.
-func (s Store) Touches(units []model.Unit, id model.ID) func(path string) bool {
-	in := map[model.ID]bool{id: true}
-	for grew := true; grew; {
-		grew = false
-		for _, u := range units {
-			if !in[u.ID] && in[u.Parent] {
-				in[u.ID], grew = true, true
-			}
-		}
+// workingFiles lists what git lists under the project, a submodule as one
+// path. Outside a repository it walks the disk instead, so a directory
+// anchor never stands for no code.
+func workingFiles(project string) []string {
+	if files := gitx.WorkingFiles(project); files != nil {
+		return files
 	}
-	var cited []string
-	for _, u := range units {
-		if !in[u.ID] {
-			continue
+	var files []string
+	filepath.WalkDir(project, func(p string, d fs.DirEntry, err error) error {
+		switch {
+		case err != nil || d.Name() == ".git":
+			return filepath.SkipDir
+		case !d.IsDir():
+			rel, _ := filepath.Rel(project, p)
+			files = append(files, filepath.ToSlash(rel))
 		}
-		for _, a := range u.Anchors {
-			cited = append(cited, strings.TrimSuffix(a.Path, "/"))
+		return nil
+	})
+	return files
+}
+
+// read is a path's content as a digest sees it: a file with LF endings, a
+// submodule as the commit the superproject records for it, which every
+// clone has. false means there is nothing there.
+func (s Store) read(path string) ([]byte, bool) {
+	project := filepath.Dir(s.root)
+	full := filepath.Join(project, filepath.FromSlash(path))
+	if fi, err := os.Stat(full); err == nil && fi.IsDir() {
+		if commit := gitx.Gitlink(project, path); commit != "" {
+			return []byte("submodule " + commit), true
 		}
-		for _, e := range u.Evidence {
-			cited = append(cited, e.Path)
-		}
+		return nil, false
 	}
-	return func(path string) bool {
-		return slices.ContainsFunc(cited, func(c string) bool {
-			return c == "." || path == c || strings.HasPrefix(path, c+"/")
-		})
+	b, err := os.ReadFile(full)
+	if err != nil {
+		return nil, false
 	}
+	return bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n")), true
 }
 
 // ModuleDigest fingerprints the code a module's text describes: each file of
@@ -194,24 +200,72 @@ func (s Store) ModuleDigest(units []model.Unit, id model.ID) string {
 }
 
 func (s Store) hashWhole(h io.Writer, paths []string) {
-	project := filepath.Dir(s.root)
 	for _, p := range paths {
-		b, err := os.ReadFile(filepath.Join(project, filepath.FromSlash(p)))
-		if err != nil {
+		b, ok := s.read(p)
+		if !ok {
 			fmt.Fprintf(h, "%s\x00missing\x00", p)
 			continue
 		}
-		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 		fmt.Fprintf(h, "%s\x00%d\x00", p, len(b))
 		h.Write(b)
 	}
 }
 
+// missing is the Code entry of a path with nothing there.
+const missing = "missing"
+
+func (s Store) fileHash(path string) string {
+	b, ok := s.read(path)
+	if !ok {
+		return missing
+	}
+	sum := sha256.Sum256(b)
+	return hex.EncodeToString(sum[:])[:16]
+}
+
+// Stamp is what abbd understand records with a new text: the module's
+// digest, and the hash of every file the digest reads, a quoted file whole.
+func (s Store) Stamp(units []model.Unit, id model.ID) (string, map[string]string) {
+	c := s.moduleCode(units, id)
+	code := map[string]string{}
+	for _, p := range c.files {
+		code[p] = s.fileHash(p)
+	}
+	for _, q := range c.quotes {
+		code[q.Path] = s.fileHash(q.Path)
+	}
+	return s.ModuleDigest(units, id), code
+}
+
+// Changed lists the files that keep a text from being restamped: a file of
+// the module now that differs from what the text was written against, or
+// that the text never saw, and a file the text saw that is gone. A file
+// that left the module and still exists is no longer the module's code.
+func (s Store) Changed(units []model.Unit, id model.ID, written map[string]string) []string {
+	var out []string
+	_, now := s.Stamp(units, id)
+	for p, h := range now {
+		switch was, ok := written[p]; {
+		case !ok:
+			out = append(out, p+" (new to the module)")
+		case was != h:
+			out = append(out, p)
+		}
+	}
+	for p, was := range written {
+		if _, ok := now[p]; !ok && was != missing && s.fileHash(p) == missing {
+			out = append(out, p+" (gone)")
+		}
+	}
+	slices.Sort(out)
+	return out
+}
+
 // legacyModuleDigest is the digest ABBD 0.6 stamped texts with: the whole
 // files cited by a module and its direct children, a directory counting as
-// missing. It only lets UpgradeUnderstandings tell which old texts were
-// current.
-func (s Store) legacyModuleDigest(units []model.Unit, id model.ID) string {
+// missing. It also returns those paths, so UpgradeUnderstandings can tell
+// whether it read all the code the new digest reads.
+func (s Store) legacyModuleDigest(units []model.Unit, id model.ID) (string, []string) {
 	var paths []string
 	for _, u := range units {
 		if u.Absent || (u.ID != id && u.Parent != id) {
@@ -227,36 +281,65 @@ func (s Store) legacyModuleDigest(units []model.Unit, id model.ID) string {
 	slices.Sort(paths)
 	paths = slices.Compact(paths)
 	if len(paths) == 0 {
-		return ""
+		return "", nil
 	}
 	h := sha256.New()
-	s.hashWhole(h, paths)
-	return hex.EncodeToString(h.Sum(nil))[:16]
-}
-
-// UpgradeUnderstandings restamps each text an older ABBD stored, which
-// records no tree, when it is still stamped with the 0.6 digest of the code
-// as it is now. That text was current before the digest
-// grew to the module's whole code, so it stays current, at tree. A text the
-// old digest called STALE keeps its stamp and stays STALE. It returns the
-// modules it restamped.
-func (s Store) UpgradeUnderstandings(units []model.Unit, tree string) ([]model.ID, error) {
-	texts, err := s.LoadUnderstandings()
-	if err != nil {
-		return nil, err
-	}
-	var ids []model.ID
-	for id, u := range texts {
-		now := s.ModuleDigest(units, id)
-		if u.Tree != "" || u.Digest == now || u.Digest != s.legacyModuleDigest(units, id) {
+	project := filepath.Dir(s.root)
+	for _, p := range paths {
+		b, err := os.ReadFile(filepath.Join(project, filepath.FromSlash(p)))
+		if err != nil {
+			fmt.Fprintf(h, "%s\x00missing\x00", p)
 			continue
 		}
-		u.Digest, u.Tree = now, tree
-		if err := s.SaveUnderstanding(u); err != nil {
-			return nil, err
-		}
-		ids = append(ids, id)
+		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
+		fmt.Fprintf(h, "%s\x00%d\x00", p, len(b))
+		h.Write(b)
 	}
-	slices.Sort(ids)
-	return ids, nil
+	return hex.EncodeToString(h.Sum(nil))[:16], paths
+}
+
+// UpgradeUnderstandings carries over each text an older ABBD stored, which
+// records no Code. Such a text is current only when its code is shown
+// unchanged since it was written: the 0.6 digest of the code now matches its
+// stamp, and that digest read, whole, every file the new one reads. Those
+// texts are stamped again and returned in current. A text that was current
+// under the 0.6 digest, but whose module holds code that digest never read,
+// cannot be shown current: it keeps its stamp, reads STALE, and is returned
+// in widened. A text already STALE stays STALE.
+func (s Store) UpgradeUnderstandings(units []model.Unit) (current, widened []model.ID, err error) {
+	texts, err := s.LoadUnderstandings()
+	if err != nil {
+		return nil, nil, err
+	}
+	project := filepath.Dir(s.root)
+	for id, u := range texts {
+		if u.Code != nil {
+			continue
+		}
+		legacy, read := s.legacyModuleDigest(units, id)
+		if legacy == "" || u.Digest != legacy {
+			continue
+		}
+		digest, code := s.Stamp(units, id)
+		covered := true
+		for p := range code {
+			fi, err := os.Stat(filepath.Join(project, filepath.FromSlash(p)))
+			if _, ok := slices.BinarySearch(read, p); !ok || (err == nil && fi.IsDir()) {
+				covered = false
+				break
+			}
+		}
+		if !covered {
+			widened = append(widened, id)
+			continue
+		}
+		u.Digest, u.Code = digest, code
+		if err := s.SaveUnderstanding(u); err != nil {
+			return nil, nil, err
+		}
+		current = append(current, id)
+	}
+	slices.Sort(current)
+	slices.Sort(widened)
+	return current, widened, nil
 }

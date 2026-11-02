@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 )
@@ -31,17 +30,15 @@ func (e env) understand(id model.ID, args []string) error {
 	if err != nil {
 		return err
 	}
-	digest := e.st.ModuleDigest(units, id)
-	tree, err := gitx.Snapshot(e.root, store.Dir)
-	if err != nil {
-		return fmt.Errorf("snapshotting the working tree: %w", err)
-	}
+	digest, code := e.st.Stamp(units, id)
 	prev, had := old[id]
 	if e.restamp {
-		if err := e.mayRestamp(units, prev, had, digest, tree); err != nil {
+		if err := e.mayRestamp(units, prev, had, digest); err != nil {
 			return err
 		}
-		prev.Digest, prev.Tree = digest, tree
+		// Code stays what the text was written against, so a file that
+		// left the module can come back unchanged.
+		prev.Digest = digest
 		if err := e.st.SaveUnderstanding(prev); err != nil {
 			return err
 		}
@@ -66,45 +63,32 @@ func (e env) understand(id model.ID, args []string) error {
 	if had && prev.Digest != digest && strings.TrimSpace(prev.Text) == text {
 		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
 	}
-	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {
+	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Code: code, Text: text}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
 	return nil
 }
 
-// mayRestamp allows a restamp only when no file the module touches changed
-// between the tree the text was written at and this one, so an extraction
-// that moved units in or out is the only thing that moved.
-func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, digest, tree string) error {
+// mayRestamp allows a restamp only when every file of the module now is one
+// the text was written against, unchanged, and none it was written against
+// is gone, so an extraction that moved units is the only thing that moved.
+func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, digest string) error {
 	id := prev.Unit
 	switch {
 	case !had:
 		return fmt.Errorf("there is no text to restamp; store one with abbd understand MOD-ID FILE")
 	case prev.Digest == digest:
 		return fmt.Errorf("%s's text is current; nothing to restamp", id)
-	case prev.Tree == "" || tree == "":
-		return fmt.Errorf("%s's text records no tree to compare with; run pstack how on it again and store the new text", id)
+	case prev.Code == nil:
+		return fmt.Errorf("%s's text was stored before abbd recorded the code a text is written against; run pstack how on it again and store the new text", id)
 	}
-	changed, ok, err := gitx.Changed(e.root, prev.Tree, tree)
-	if err != nil {
-		return err
+	changed := e.st.Changed(units, id, prev.Code)
+	if len(changed) == 0 {
+		return nil
 	}
-	if !ok {
-		return fmt.Errorf("the tree %s's text was written at is gone; run pstack how on it again and store the new text", id)
+	if len(changed) > 5 {
+		changed = append(changed[:5], fmt.Sprintf("and %d more", len(changed)-5))
 	}
-	touches := e.st.Touches(units, id)
-	var touched []string
-	for _, p := range changed {
-		if touches(p) {
-			touched = append(touched, p)
-		}
-	}
-	if len(touched) > 0 {
-		if len(touched) > 5 {
-			touched = append(touched[:5], fmt.Sprintf("and %d more", len(touched)-5))
-		}
-		return fmt.Errorf("%s's code changed since this text was written (%s); run pstack how on it again and store the new text", id, strings.Join(touched, ", "))
-	}
-	return nil
+	return fmt.Errorf("%s's code changed since this text was written (%s); run pstack how on it again and store the new text", id, strings.Join(changed, ", "))
 }
