@@ -18,7 +18,7 @@ func (e env) screenInput() (screen.Input, error) {
 }
 
 // publish renders the blueprint from the .abbd inputs, then records in the
-// state which inputs it rendered.
+// state which inputs it rendered and which files it wrote.
 func (e env) publish() error {
 	in, err := e.screenInput()
 	if err != nil || len(in.Units) == 0 {
@@ -28,11 +28,9 @@ func (e env) publish() error {
 	if err != nil {
 		return err
 	}
-	for _, name := range []string{screen.PageFile, screen.GraphFile} {
-		if err := e.st.SaveBlueprint(name, files[name]); err != nil {
-			return err
-		}
+	if err := e.st.SaveBlueprint(files); err != nil {
+		return err
 	}
-	in.Synced.Blueprint = in.Inputs
+	in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
 	return e.st.SaveState(in.Synced)
 }

@@ -91,6 +91,6 @@ func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
 // The blueprint is UNKNOWN without its files, whatever the state says.
 func TestAMissingBlueprintIsUnknown(t *testing.T) {
 	p := semanticProject(t)
-	os.Remove(filepath.Join(p.root, ".abbd", "blueprint", "graph.json"))
+	os.RemoveAll(filepath.Join(p.root, ".abbd", "blueprint"))
 	p.want(1, "the blueprint is UNKNOWN", "status", "--check")
 }

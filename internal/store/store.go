@@ -25,11 +25,13 @@ const Dir = ".abbd"
 
 // State is the sync watermark, and the one file every sync rewrites.
 // Fingerprint is a git tree of the working tree at sync time; Blueprint is
-// the InputsHash the blueprint was rendered from.
+// the InputsHash the blueprint was rendered from, and Rendered the HashRender
+// of the files that render wrote.
 type State struct {
 	Revision    string             `yaml:"revision"`
 	Fingerprint string             `yaml:"fingerprint"`
 	Blueprint   string             `yaml:"blueprint"`
+	Rendered    string             `yaml:"rendered"`
 	HighWater   map[model.Kind]int `yaml:"high_water,omitempty"`
 	// Merged is set when a merge kept two syncs' lines, by union or as
 	// conflict markers. The values are the first side's, which match neither
@@ -299,7 +301,7 @@ func (s Store) LoadState() (State, error) {
 			}
 			continue
 		}
-		field := map[string]*string{"revision": &st.Revision, "fingerprint": &st.Fingerprint, "blueprint": &st.Blueprint}[k.Value]
+		field := map[string]*string{"revision": &st.Revision, "fingerprint": &st.Fingerprint, "blueprint": &st.Blueprint, "rendered": &st.Rendered}[k.Value]
 		switch {
 		case field == nil:
 		case !seen[k.Value]:
@@ -358,25 +360,38 @@ func (s Store) InputsHash() (string, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
-	return s.hashFiles(files)
+	return s.hashTree(s.root, files)
 }
 
-// hashFiles reads CRLF as LF, so a checkout that converts line endings
-// hashes the same as the one that wrote the files.
-func (s Store) hashFiles(files []string) (string, error) {
-	sort.Strings(files)
-	h := sha256.New()
+// hashTree hashes files by their path relative to dir.
+func (s Store) hashTree(dir string, files []string) (string, error) {
+	contents := map[string][]byte{}
 	for _, f := range files {
 		b, err := os.ReadFile(f)
 		if err != nil {
 			return "", err
 		}
-		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
-		rel, _ := filepath.Rel(s.root, f)
-		fmt.Fprintf(h, "%s\x00%d\x00", filepath.ToSlash(rel), len(b))
+		rel, _ := filepath.Rel(dir, f)
+		contents[filepath.ToSlash(rel)] = b
+	}
+	return HashRender(contents), nil
+}
+
+// HashRender hashes files by name. It reads CRLF as LF, so a checkout that
+// converts line endings hashes the same as the one that wrote the files.
+func HashRender(files map[string][]byte) string {
+	names := make([]string, 0, len(files))
+	for name := range files {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	h := sha256.New()
+	for _, name := range names {
+		b := bytes.ReplaceAll(files[name], []byte("\r\n"), []byte("\n"))
+		fmt.Fprintf(h, "%s\x00%d\x00", name, len(b))
 		h.Write(b)
 	}
-	return hex.EncodeToString(h.Sum(nil)), nil
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func readYAML(path string, v any) error {
@@ -439,18 +454,46 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
-// The blueprint derives from the state and is rewritten freely.
-func (s Store) SaveBlueprint(name string, b []byte) error {
-	return writeFile(s.path("blueprint", name), b)
+// SaveBlueprint writes the rendered files and removes every other one, so the
+// blueprint holds exactly what HashRender(files) records.
+func (s Store) SaveBlueprint(files map[string][]byte) error {
+	for name, b := range files {
+		if err := writeFile(s.path("blueprint", name), b); err != nil {
+			return err
+		}
+	}
+	old, err := os.ReadDir(s.path("blueprint"))
+	if err != nil {
+		return err
+	}
+	for _, e := range old {
+		if _, keep := files[e.Name()]; !keep {
+			if err := os.RemoveAll(s.path("blueprint", e.Name())); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
-// ReadBlueprint returns nil when the file was never rendered.
-func (s Store) ReadBlueprint(name string) ([]byte, error) {
-	b, err := os.ReadFile(s.path("blueprint", name))
-	if os.IsNotExist(err) {
-		return nil, nil
+// BlueprintHash is the HashRender of the blueprint's files as they are now,
+// and "" when there are none.
+func (s Store) BlueprintHash() (string, error) {
+	dir := s.path("blueprint")
+	var files []string
+	err := filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
+		if err == nil && !d.IsDir() {
+			files = append(files, p)
+		}
+		return err
+	})
+	if os.IsNotExist(err) || len(files) == 0 {
+		return "", nil
 	}
-	return b, err
+	if err != nil {
+		return "", err
+	}
+	return s.hashTree(dir, files)
 }
 
 func frontmatter(v any, body string) ([]byte, error) {
