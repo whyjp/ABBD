@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "1af15d410432503dcca55156b44abdd14add923349351e694db845cfb87c714b"
+    "inputs_hash": "37534b817c9af9e538c943e4add890743c3b2f3ff31b2e3720816204dad7596c"
   },
   "units": [
     {
@@ -1932,7 +1932,6 @@
       "Anchors": [
         "internal/screen",
         "internal/screen/focus.go",
-        "internal/screen/fold.go",
         "internal/screen/graph.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
@@ -2016,7 +2015,7 @@
       "Parent": "MOD-0034",
       "Evidence": [
         "internal/screen/overview.go:274 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
-        "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+        "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
       ]
     },
     {
@@ -2828,14 +2827,6 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:17 \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
-    },
-    {
-      "From": "FEAT-0013",
-      "To": "FEAT-0020",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\""
     },
     {
       "From": "FEAT-0014",
@@ -3803,7 +3794,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/tree.go:29 \"if _, ok := t.units[u.Parent]; !ok {\""
+      "Quote": "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
     },
     {
       "From": "MOD-0034",
@@ -3827,7 +3818,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:395 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -3835,7 +3826,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:299 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -3909,7 +3900,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+      "Quote": "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
     },
     {
       "From": "MOD-0038",
@@ -5175,7 +5166,6 @@
           "FEAT-0011.depends_on.FEAT-0018",
           "FEAT-0011.depends_on.FEAT-0020",
           "FEAT-0012.depends_on.FEAT-0021",
-          "FEAT-0013.depends_on.FEAT-0020",
           "FEAT-0015.depends_on.FEAT-0018"
         ]
       },
@@ -5888,7 +5878,6 @@
           "FEAT-0011.depends_on.FEAT-0018",
           "FEAT-0011.depends_on.FEAT-0020",
           "FEAT-0012.depends_on.FEAT-0021",
-          "FEAT-0013.depends_on.FEAT-0020",
           "FEAT-0015.depends_on.FEAT-0018"
         ],
         "Net": 14
@@ -5904,7 +5893,6 @@
           "FEAT-0011.depends_on.FEAT-0018",
           "FEAT-0011.depends_on.FEAT-0020",
           "FEAT-0012.depends_on.FEAT-0021",
-          "FEAT-0013.depends_on.FEAT-0020",
           "FEAT-0015.depends_on.FEAT-0018"
         ],
         "Count": 2,
@@ -7394,7 +7382,7 @@
       "Name": "/abbd-setup",
       "Drawing": {
         "Width": 911,
-        "Height": 612,
+        "Height": 604,
         "Boxes": [
           {
             "ID": "FEAT-0010",
@@ -7405,22 +7393,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup",
-                "X": 91,
-                "Y": 465
+                "X": 99,
+                "Y": 449
               },
               {
                 "S": "preconditions and stance",
-                "X": 91,
-                "Y": 481
+                "X": 99,
+                "Y": 465
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 91,
-              "Y": 498
+              "X": 99,
+              "Y": 482
             },
-            "X": 83,
-            "Y": 446,
+            "X": 91,
+            "Y": 430,
             "W": 212,
             "H": 60
           },
@@ -7433,22 +7421,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup find units",
-                "X": 497,
-                "Y": 305
+                "X": 489,
+                "Y": 321
               },
               {
                 "S": "with a reader swarm",
-                "X": 497,
-                "Y": 321
+                "X": 489,
+                "Y": 337
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 497,
-              "Y": 338
+              "X": 489,
+              "Y": 354
             },
-            "X": 489,
-            "Y": 286,
+            "X": 481,
+            "Y": 302,
             "W": 196,
             "H": 60
           },
@@ -7461,22 +7449,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup build the",
-                "X": 148,
-                "Y": 177
+                "X": 135,
+                "Y": 185
               },
               {
                 "S": "deterministic extractor",
-                "X": 148,
-                "Y": 193
+                "X": 135,
+                "Y": 201
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 148,
-              "Y": 210
+              "X": 135,
+              "Y": 218
             },
-            "X": 140,
-            "Y": 158,
+            "X": 127,
+            "Y": 166,
             "W": 206,
             "H": 60
           },
@@ -7489,22 +7477,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup write",
-                "X": 267,
-                "Y": 305
+                "X": 381,
+                "Y": 185
               },
               {
                 "S": "the reader supplement",
-                "X": 267,
-                "Y": 321
+                "X": 381,
+                "Y": 201
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 267,
-              "Y": 338
+              "X": 381,
+              "Y": 218
             },
-            "X": 259,
-            "Y": 286,
+            "X": 373,
+            "Y": 166,
             "W": 190,
             "H": 60
           },
@@ -7517,21 +7505,21 @@
             "Lines": [
               {
                 "S": "/abbd-setup run setup",
-                "X": 276,
+                "X": 455,
                 "Y": 81
               },
               {
                 "S": "and resolve refusals",
-                "X": 276,
+                "X": 455,
                 "Y": 97
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 276,
+              "X": 455,
               "Y": 114
             },
-            "X": 268,
+            "X": 447,
             "Y": 62,
             "W": 188,
             "H": 60
@@ -7545,22 +7533,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup store how's",
-                "X": 343,
-                "Y": 465
+                "X": 351,
+                "Y": 449
               },
               {
                 "S": "account per module",
-                "X": 343,
-                "Y": 481
+                "X": 351,
+                "Y": 465
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 343,
-              "Y": 498
+              "X": 351,
+              "Y": 482
             },
-            "X": 335,
-            "Y": 446,
+            "X": 343,
+            "Y": 430,
             "W": 206,
             "H": 60
           },
@@ -7573,22 +7561,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup verify,",
-                "X": 647,
-                "Y": 177
+                "X": 639,
+                "Y": 185
               },
               {
                 "S": "install and hand over",
-                "X": 647,
-                "Y": 193
+                "X": 639,
+                "Y": 201
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 647,
-              "Y": 210
+              "X": 639,
+              "Y": 218
             },
-            "X": 639,
-            "Y": 158,
+            "X": 631,
+            "Y": 166,
             "W": 188,
             "H": 60
           },
@@ -7601,22 +7589,22 @@
             "Lines": [
               {
                 "S": "/abbd-setup",
-                "X": 581,
-                "Y": 465
+                "X": 589,
+                "Y": 449
               },
               {
                 "S": "extraction format",
-                "X": 581,
-                "Y": 481
+                "X": 589,
+                "Y": 465
               }
             ],
             "Sub": {
               "S": "기능",
-              "X": 581,
-              "Y": 498
+              "X": 589,
+              "Y": 482
             },
-            "X": 573,
-            "Y": 446,
+            "X": 581,
+            "Y": 430,
             "W": 158,
             "H": 60
           }
@@ -7630,7 +7618,7 @@
             "Exit": false,
             "Below": true,
             "X": 708,
-            "Y": 594,
+            "Y": 586,
             "W": 96
           },
           {
@@ -7641,7 +7629,7 @@
             "Exit": false,
             "Below": true,
             "X": 375,
-            "Y": 594,
+            "Y": 586,
             "W": 124
           },
           {
@@ -7652,7 +7640,7 @@
             "Exit": false,
             "Below": true,
             "X": 289,
-            "Y": 594,
+            "Y": 586,
             "W": 82
           },
           {
@@ -7662,8 +7650,8 @@
             "Title": "이 모듈이 쓰는 계약: abbd understand",
             "Exit": false,
             "Below": true,
-            "X": 14,
-            "Y": 594,
+            "X": 168,
+            "Y": 586,
             "W": 117
           },
           {
@@ -7674,7 +7662,7 @@
             "Exit": false,
             "Below": true,
             "X": 503,
-            "Y": 594,
+            "Y": 586,
             "W": 138
           },
           {
@@ -7684,8 +7672,8 @@
             "Title": "계약 없이 pstack (external)와 닿는 곳",
             "Exit": false,
             "Below": true,
-            "X": 135,
-            "Y": 594,
+            "X": 14,
+            "Y": 586,
             "W": 150,
             "Href": "#m-MOD-0055"
           },
@@ -7697,7 +7685,7 @@
             "Exit": false,
             "Below": true,
             "X": 808,
-            "Y": 594,
+            "Y": 586,
             "W": 93,
             "Href": "#m-MOD-0001"
           },
@@ -7709,14 +7697,14 @@
             "Exit": false,
             "Below": true,
             "X": 645,
-            "Y": 594,
+            "Y": 586,
             "W": 59,
             "Href": "#m-FEAT-0001"
           }
         ],
         "Wires": [
           {
-            "D": "M189 506 L189 546",
+            "D": "M197 490 L197 514",
             "Kind": "depends_on",
             "Title": "/abbd-setup preconditions and stance depends_on pstack (external) (via config), 판독",
             "Origin": "inferred",
@@ -7727,8 +7715,8 @@
             ],
             "Marks": [
               {
-                "X": 189,
-                "Y": 506,
+                "X": 197,
+                "Y": 490,
                 "Origin": "inferred"
               }
             ],
@@ -7737,7 +7725,7 @@
             ]
           },
           {
-            "D": "M587 378 L587 410",
+            "D": "M579 394 L579 402",
             "Kind": "depends_on",
             "Title": "/abbd-setup find units with a reader swarm depends_on /abbd-setup extraction format (via data), 판독",
             "Joins": true,
@@ -7750,7 +7738,7 @@
             ]
           },
           {
-            "D": "M595 242 L595 258",
+            "D": "M587 258 L587 274",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Joins": true,
@@ -7763,7 +7751,7 @@
             ]
           },
           {
-            "D": "M243 370 L243 410",
+            "D": "M321 386 L321 402",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup extraction format (via data), 판독",
             "Joins": true,
@@ -7776,7 +7764,7 @@
             ]
           },
           {
-            "D": "M299 370 L299 386 L315 386",
+            "D": "M95 386 L95 402 L79 402",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독",
             "Joins": true,
@@ -7789,33 +7777,28 @@
             ]
           },
           {
-            "D": "M354 370 L354 410",
+            "D": "M465 226 L465 250",
             "Kind": "depends_on",
             "Title": "/abbd-setup write the reader supplement depends_on /abbd-setup extraction format (via data), 판독",
+            "Origin": "inferred",
             "Joins": true,
             "Via": "data",
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:17 \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
+            ],
+            "Marks": [
+              {
+                "X": 465,
+                "Y": 226,
+                "Origin": "inferred"
+              }
             ],
             "Rels": [
               "FEAT-0013.depends_on.FEAT-0017"
             ]
           },
           {
-            "D": "M331 370 L331 394 L315 394",
-            "Kind": "depends_on",
-            "Title": "/abbd-setup write the reader supplement depends_on pstack (external) (via call), 판독",
-            "Joins": true,
-            "Via": "call",
-            "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\""
-            ],
-            "Rels": [
-              "FEAT-0013.depends_on.FEAT-0020"
-            ]
-          },
-          {
-            "D": "M243 146 L243 158",
+            "D": "M230 154 L230 166",
             "Kind": "depends_on",
             "Title": "/abbd-setup run setup and resolve refusals depends_on /abbd-setup build the deterministic extractor (via data), 판독",
             "Via": "data",
@@ -7827,7 +7810,7 @@
             ]
           },
           {
-            "D": "M362 146 L362 286",
+            "D": "M468 154 L468 166",
             "Kind": "depends_on",
             "Title": "/abbd-setup run setup and resolve refusals depends_on /abbd-setup write the reader supplement (via data), 판독",
             "Via": "data",
@@ -7839,7 +7822,7 @@
             ]
           },
           {
-            "D": "M405 122 L405 146 L492 146 L492 250 L469 250 L469 418 L323 418 L323 530 L330 530 L330 574",
+            "D": "M498 122 L498 146 L353 146 L353 266 L414 266 L414 386 L331 386 L331 522 L330 522 L330 566",
             "Kind": "consumes",
             "Title": "/abbd-setup run setup and resolve refusals consumes abbd setup (via call), 판독",
             "Origin": "inferred",
@@ -7849,7 +7832,7 @@
             ],
             "Marks": [
               {
-                "X": 405,
+                "X": 498,
                 "Y": 122,
                 "Origin": "inferred"
               }
@@ -7859,7 +7842,7 @@
             ]
           },
           {
-            "D": "M485 506 L485 546",
+            "D": "M398 490 L398 514",
             "Kind": "depends_on",
             "Title": "/abbd-setup store how's account per module depends_on pstack (external) (via call), 판독",
             "Origin": "inferred",
@@ -7870,8 +7853,8 @@
             ],
             "Marks": [
               {
-                "X": 485,
-                "Y": 506,
+                "X": 398,
+                "Y": 490,
                 "Origin": "inferred"
               }
             ],
@@ -7880,7 +7863,7 @@
             ]
           },
           {
-            "D": "M390 506 L390 538 L72 538 L72 574",
+            "D": "M493 490 L493 530 L226 530 L226 566",
             "Kind": "consumes",
             "Title": "/abbd-setup store how's account per module consumes abbd understand (via call), 판독",
             "Origin": "inferred",
@@ -7890,8 +7873,8 @@
             ],
             "Marks": [
               {
-                "X": 390,
-                "Y": 506,
+                "X": 493,
+                "Y": 490,
                 "Origin": "inferred"
               }
             ],
@@ -7900,7 +7883,7 @@
             ]
           },
           {
-            "D": "M854 530 L854 574",
+            "D": "M854 514 L854 566",
             "Kind": "consumes",
             "Title": "/abbd-setup verify, install and hand over consumes abbd CLI (via convention), 판독",
             "Via": "convention",
@@ -7912,7 +7895,7 @@
             ]
           },
           {
-            "D": "M811 250 L811 538 L674 538 L674 574",
+            "D": "M803 258 L803 522 L674 522 L674 566",
             "Kind": "depends_on",
             "Title": "/abbd-setup verify, install and hand over depends_on /abbd (via call), 판독",
             "Via": "call",
@@ -7924,7 +7907,7 @@
             ]
           },
           {
-            "D": "M690 250 L690 258",
+            "D": "M682 258 L682 274",
             "Kind": "depends_on",
             "Title": "/abbd-setup verify, install and hand over depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Joins": true,
@@ -7937,7 +7920,7 @@
             ]
           },
           {
-            "D": "M738 530 L738 574",
+            "D": "M746 514 L746 566",
             "Kind": "consumes",
             "Title": "/abbd-setup verify, install and hand over consumes abbd install (via call), 판독",
             "Via": "call",
@@ -7949,7 +7932,7 @@
             ]
           },
           {
-            "D": "M437 530 L437 574",
+            "D": "M437 538 L437 566",
             "Kind": "consumes",
             "Title": "/abbd-setup extraction format consumes abbd record fact (via convention), 판독",
             "Via": "convention",
@@ -7961,7 +7944,7 @@
             ]
           },
           {
-            "D": "M572 530 L572 574",
+            "D": "M574 538 L574 566",
             "Kind": "consumes",
             "Title": "/abbd-setup extraction format consumes abbd record parent (via convention), 판독",
             "Via": "convention",
@@ -7973,7 +7956,7 @@
             ]
           },
           {
-            "D": "M587 346 L587 378 M315 378 L587 378",
+            "D": "M579 362 L579 394 M79 394 L579 394",
             "Kind": "depends_on",
             "Title": "/abbd-setup find units with a reader swarm depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup find units with a reader swarm depends_on pstack (external) (via call), 판독",
             "Origin": "inferred",
@@ -7984,13 +7967,13 @@
             ],
             "Marks": [
               {
-                "X": 587,
-                "Y": 346,
+                "X": 579,
+                "Y": 362,
                 "Origin": "inferred"
               },
               {
-                "X": 587,
-                "Y": 346,
+                "X": 579,
+                "Y": 362,
                 "Origin": "inferred"
               }
             ],
@@ -8001,11 +7984,11 @@
             ],
             "Count": 2,
             "Net": 1,
-            "LX": 592,
-            "LY": 358
+            "LX": 584,
+            "LY": 374
           },
           {
-            "D": "M243 218 L243 242 M243 242 L243 370 M243 242 L595 242 M243 370 L299 370",
+            "D": "M321 226 L321 258 M321 258 L321 386 M321 258 L587 258 M95 386 L321 386",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup find units with a reader swarm (via data), 판독\n/abbd-setup build the deterministic extractor depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독",
             "Origin": "inferred",
@@ -8017,18 +8000,18 @@
             ],
             "Marks": [
               {
-                "X": 243,
-                "Y": 218,
+                "X": 321,
+                "Y": 226,
                 "Origin": "inferred"
               },
               {
-                "X": 243,
-                "Y": 218,
+                "X": 321,
+                "Y": 226,
                 "Origin": "inferred"
               },
               {
-                "X": 243,
-                "Y": 218,
+                "X": 321,
+                "Y": 226,
                 "Origin": "inferred"
               }
             ],
@@ -8039,42 +8022,11 @@
             ],
             "Count": 3,
             "Net": 2,
-            "LX": 222,
-            "LY": 230
+            "LX": 300,
+            "LY": 238
           },
           {
-            "D": "M354 346 L354 370 M331 370 L354 370",
-            "Kind": "depends_on",
-            "Title": "/abbd-setup write the reader supplement depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup write the reader supplement depends_on pstack (external) (via call), 판독",
-            "Origin": "inferred",
-            "Joins": true,
-            "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:17 \"Write `.abbd/extractor/supplement.json` with what only reading tells:\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\""
-            ],
-            "Marks": [
-              {
-                "X": 354,
-                "Y": 346,
-                "Origin": "inferred"
-              },
-              {
-                "X": 354,
-                "Y": 346,
-                "Origin": "inferred"
-              }
-            ],
-            "Rels": [
-              "FEAT-0013.depends_on.FEAT-0017",
-              "FEAT-0013.depends_on.FEAT-0020"
-            ],
-            "Count": 2,
-            "Net": 3,
-            "LX": 359,
-            "LY": 358
-          },
-          {
-            "D": "M319 122 L319 146 M243 146 L362 146",
+            "D": "M584 122 L584 154 M230 154 L584 154",
             "Kind": "depends_on",
             "Title": "/abbd-setup run setup and resolve refusals depends_on /abbd-setup build the deterministic extractor (via data), 판독\n/abbd-setup run setup and resolve refusals depends_on /abbd-setup write the reader supplement (via data), 판독",
             "Origin": "inferred",
@@ -8085,12 +8037,12 @@
             ],
             "Marks": [
               {
-                "X": 319,
+                "X": 584,
                 "Y": 122,
                 "Origin": "inferred"
               },
               {
-                "X": 319,
+                "X": 584,
                 "Y": 122,
                 "Origin": "inferred"
               }
@@ -8100,12 +8052,12 @@
               "FEAT-0014.depends_on.FEAT-0013"
             ],
             "Count": 2,
-            "Net": 4,
-            "LX": 324,
+            "Net": 3,
+            "LX": 589,
             "LY": 134
           },
           {
-            "D": "M795 218 L795 242 M795 242 L795 370 M795 370 L795 530 M738 530 L854 530",
+            "D": "M787 226 L787 250 M787 250 L787 386 M787 386 L787 514 M746 514 L854 514",
             "Kind": "consumes",
             "Title": "/abbd-setup verify, install and hand over consumes abbd CLI (via convention), 판독\n/abbd-setup verify, install and hand over consumes abbd install (via call), 판독",
             "Origin": "inferred",
@@ -8116,13 +8068,13 @@
             ],
             "Marks": [
               {
-                "X": 795,
-                "Y": 218,
+                "X": 787,
+                "Y": 226,
                 "Origin": "inferred"
               },
               {
-                "X": 795,
-                "Y": 218,
+                "X": 787,
+                "Y": 226,
                 "Origin": "inferred"
               }
             ],
@@ -8131,12 +8083,12 @@
               "FEAT-0016.consumes.IF-0005"
             ],
             "Count": 2,
-            "Net": 5,
-            "LX": 800,
-            "LY": 230
+            "Net": 4,
+            "LX": 792,
+            "LY": 238
           },
           {
-            "D": "M690 218 L690 250 M690 250 L811 250",
+            "D": "M682 226 L682 258 M682 258 L803 258",
             "Kind": "depends_on",
             "Title": "/abbd-setup verify, install and hand over depends_on /abbd (via call), 판독\n/abbd-setup verify, install and hand over depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Origin": "inferred",
@@ -8147,13 +8099,13 @@
             ],
             "Marks": [
               {
-                "X": 690,
-                "Y": 218,
+                "X": 682,
+                "Y": 226,
                 "Origin": "inferred"
               },
               {
-                "X": 690,
-                "Y": 218,
+                "X": 682,
+                "Y": 226,
                 "Origin": "inferred"
               }
             ],
@@ -8162,12 +8114,12 @@
               "FEAT-0016.depends_on.FEAT-0011"
             ],
             "Count": 2,
-            "Net": 6,
-            "LX": 669,
-            "LY": 230
+            "Net": 5,
+            "LX": 661,
+            "LY": 238
           },
           {
-            "D": "M652 506 L652 530 M437 530 L652 530",
+            "D": "M660 490 L660 538 M437 538 L660 538",
             "Kind": "consumes",
             "Title": "/abbd-setup extraction format consumes abbd record fact (via convention), 판독\n/abbd-setup extraction format consumes abbd record parent (via convention), 판독",
             "Origin": "inferred",
@@ -8178,13 +8130,13 @@
             ],
             "Marks": [
               {
-                "X": 652,
-                "Y": 506,
+                "X": 660,
+                "Y": 490,
                 "Origin": "inferred"
               },
               {
-                "X": 652,
-                "Y": 506,
+                "X": 660,
+                "Y": 490,
                 "Origin": "inferred"
               }
             ],
@@ -8193,20 +8145,19 @@
               "FEAT-0017.consumes.IF-0018"
             ],
             "Count": 2,
-            "Net": 7,
-            "LX": 657,
-            "LY": 518
+            "Net": 6,
+            "LX": 639,
+            "LY": 502
           },
           {
-            "D": "M315 378 L315 546 M189 546 L485 546",
+            "D": "M79 394 L79 514 M79 514 L398 514",
             "Kind": "depends_on",
-            "Title": "/abbd-setup preconditions and stance depends_on pstack (external) (via config), 판독\n/abbd-setup find units with a reader swarm depends_on pstack (external) (via call), 판독\n/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독\n/abbd-setup write the reader supplement depends_on pstack (external) (via call), 판독\n/abbd-setup store how's account per module depends_on pstack (external) (via call), 판독",
+            "Title": "/abbd-setup preconditions and stance depends_on pstack (external) (via config), 판독\n/abbd-setup find units with a reader swarm depends_on pstack (external) (via call), 판독\n/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독\n/abbd-setup store how's account per module depends_on pstack (external) (via call), 판독",
             "Joins": true,
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:8 \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:15 \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:16 \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:33 \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
             ],
             "Rels": [
@@ -8214,20 +8165,18 @@
               "FEAT-0011.depends_on.FEAT-0018",
               "FEAT-0011.depends_on.FEAT-0020",
               "FEAT-0012.depends_on.FEAT-0021",
-              "FEAT-0013.depends_on.FEAT-0020",
               "FEAT-0015.depends_on.FEAT-0018"
             ],
-            "Net": 8
+            "Net": 7
           },
           {
-            "D": "M210 546 L210 574",
+            "D": "M89 514 L89 566",
             "Kind": "depends_on",
-            "Title": "/abbd-setup preconditions and stance depends_on pstack (external) (via config), 판독\n/abbd-setup find units with a reader swarm depends_on pstack (external) (via call), 판독\n/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독\n/abbd-setup write the reader supplement depends_on pstack (external) (via call), 판독\n/abbd-setup store how's account per module depends_on pstack (external) (via call), 판독",
+            "Title": "/abbd-setup preconditions and stance depends_on pstack (external) (via config), 판독\n/abbd-setup find units with a reader swarm depends_on pstack (external) (via call), 판독\n/abbd-setup build the deterministic extractor depends_on pstack (external) (via call), 판독\n/abbd-setup store how's account per module depends_on pstack (external) (via call), 판독",
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:8 \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:15 \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:16 \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\"",
               "plugins/abbd/skills/abbd-setup/SKILL.md:33 \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
             ],
             "Rels": [
@@ -8235,16 +8184,15 @@
               "FEAT-0011.depends_on.FEAT-0018",
               "FEAT-0011.depends_on.FEAT-0020",
               "FEAT-0012.depends_on.FEAT-0021",
-              "FEAT-0013.depends_on.FEAT-0020",
               "FEAT-0015.depends_on.FEAT-0018"
             ],
-            "Count": 5,
-            "Net": 8,
-            "LX": 215,
-            "LY": 566
+            "Count": 4,
+            "Net": 7,
+            "LX": 94,
+            "LY": 558
           },
           {
-            "D": "M587 258 L690 258",
+            "D": "M579 274 L682 274",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup find units with a reader swarm (via data), 판독\n/abbd-setup verify, install and hand over depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Joins": true,
@@ -8256,10 +8204,10 @@
               "FEAT-0012.depends_on.FEAT-0011",
               "FEAT-0016.depends_on.FEAT-0011"
             ],
-            "Net": 9
+            "Net": 8
           },
           {
-            "D": "M587 258 L587 286",
+            "D": "M579 274 L579 302",
             "Kind": "depends_on",
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup find units with a reader swarm (via data), 판독\n/abbd-setup verify, install and hand over depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Quotes": [
@@ -8271,12 +8219,12 @@
               "FEAT-0016.depends_on.FEAT-0011"
             ],
             "Count": 2,
-            "Net": 9,
-            "LX": 566,
-            "LY": 282
+            "Net": 8,
+            "LX": 558,
+            "LY": 298
           },
           {
-            "D": "M243 410 L652 410",
+            "D": "M465 250 L465 402 M321 402 L660 402",
             "Kind": "depends_on",
             "Title": "/abbd-setup find units with a reader swarm depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup build the deterministic extractor depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup write the reader supplement depends_on /abbd-setup extraction format (via data), 판독",
             "Joins": true,
@@ -8290,10 +8238,10 @@
               "FEAT-0012.depends_on.FEAT-0017",
               "FEAT-0013.depends_on.FEAT-0017"
             ],
-            "Net": 10
+            "Net": 9
           },
           {
-            "D": "M652 410 L652 446",
+            "D": "M660 402 L660 430",
             "Kind": "depends_on",
             "Title": "/abbd-setup find units with a reader swarm depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup build the deterministic extractor depends_on /abbd-setup extraction format (via data), 판독\n/abbd-setup write the reader supplement depends_on /abbd-setup extraction format (via data), 판독",
             "Quotes": [
@@ -8307,93 +8255,83 @@
               "FEAT-0013.depends_on.FEAT-0017"
             ],
             "Count": 3,
-            "Net": 10,
-            "LX": 657,
-            "LY": 442
+            "Net": 9,
+            "LX": 665,
+            "LY": 426
           }
         ],
         "Dots": [
           {
-            "X": 319,
-            "Y": 146,
+            "X": 468,
+            "Y": 154,
             "Kind": "depends_on"
           },
           {
-            "X": 243,
-            "Y": 242,
-            "Kind": "depends_on"
-          },
-          {
-            "X": 690,
-            "Y": 250,
-            "Kind": "depends_on"
-          },
-          {
-            "X": 595,
+            "X": 321,
             "Y": 258,
             "Kind": "depends_on"
           },
           {
-            "X": 243,
-            "Y": 370,
-            "Kind": "depends_on"
-          },
-          {
-            "X": 354,
-            "Y": 370,
+            "X": 682,
+            "Y": 258,
             "Kind": "depends_on"
           },
           {
             "X": 587,
-            "Y": 378,
+            "Y": 274,
             "Kind": "depends_on"
           },
           {
-            "X": 315,
+            "X": 321,
             "Y": 386,
             "Kind": "depends_on"
           },
           {
-            "X": 315,
+            "X": 579,
             "Y": 394,
             "Kind": "depends_on"
           },
           {
-            "X": 354,
-            "Y": 410,
+            "X": 79,
+            "Y": 402,
             "Kind": "depends_on"
           },
           {
-            "X": 587,
-            "Y": 410,
+            "X": 465,
+            "Y": 402,
             "Kind": "depends_on"
           },
           {
-            "X": 572,
-            "Y": 530,
+            "X": 579,
+            "Y": 402,
+            "Kind": "depends_on"
+          },
+          {
+            "X": 89,
+            "Y": 514,
+            "Kind": "depends_on"
+          },
+          {
+            "X": 197,
+            "Y": 514,
+            "Kind": "depends_on"
+          },
+          {
+            "X": 787,
+            "Y": 514,
             "Kind": "consumes"
           },
           {
-            "X": 795,
-            "Y": 530,
+            "X": 574,
+            "Y": 538,
             "Kind": "consumes"
-          },
-          {
-            "X": 210,
-            "Y": 546,
-            "Kind": "depends_on"
-          },
-          {
-            "X": 315,
-            "Y": 546,
-            "Kind": "depends_on"
           }
         ],
         "Frame": {
           "X": 6,
           "Y": 18,
           "W": 899,
-          "H": 576
+          "H": 568
         }
       },
       "Units": [
@@ -8578,15 +8516,6 @@
           "Via": "data",
           "Quotes": [
             "plugins/abbd/skills/abbd-setup/SKILL.md:17 \"Write `.abbd/extractor/supplement.json` with what only reading tells:\""
-          ]
-        },
-        {
-          "From": "/abbd-setup write the reader supplement",
-          "To": "pstack /swarm",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\""
           ]
         },
         {
@@ -10308,7 +10237,7 @@
                 "Code": true
               },
               {
-                "Text": " adds directory groups when a view gets crowded. ",
+                "Text": " places a crowded level's units in the directories their code lives in. ",
                 "Code": false
               },
               {
@@ -20083,7 +20012,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -20309,7 +20238,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/overview.go:216 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Marks": [
               {
@@ -20471,7 +20400,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20485,7 +20414,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
               "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -20829,7 +20758,7 @@
                 "Code": true
               },
               {
-                "Text": " for its freshness verdicts. The package never writes the topology, and the fold boxes it invents never reach the store.",
+                "Text": " for its freshness verdicts. The package never writes the topology, and it draws no box the store lacks, apart from a focus view's twin.",
                 "Code": false
               }
             ]
@@ -21084,36 +21013,6 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "fold",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "fold.go",
-                "Code": true
-              },
-              {
-                "Text": "): a cycle of three or more units in a view becomes one synthetic box, ID ",
-                "Code": false
-              },
-              {
-                "Text": "\u003ccontainer\u003e~N",
-                "Code": true
-              },
-              {
-                "Text": ", whose own view draws the cycle. It folds only a cycle that holds at most two thirds of the view, and never on the overview.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
                 "Text": "overview",
                 "Code": true
               },
@@ -21213,7 +21112,7 @@
                 "Code": true
               },
               {
-                "Text": " is a top-level module or feature, an inside unit, a fold, or a contract no module provides. Its ",
+                "Text": " is a top-level module or feature, an inside unit, or a contract no module provides. Its ",
                 "Code": false
               },
               {
@@ -21985,7 +21884,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:29 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -22013,7 +21912,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:395 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -22022,7 +21921,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:299 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -22089,7 +21988,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:404 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+            "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
           ]
         },
         {
@@ -25848,7 +25747,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:29 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -25866,7 +25765,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:302 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:299 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -26187,7 +26086,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:398 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:395 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -26403,8 +26302,7 @@
             "Title": "/abbd-setup find units with a reader swarm depends_on pstack /swarm (via call), 판독",
             "Via": "call",
             "Rels": [
-              "FEAT-0011.depends_on.FEAT-0020",
-              "FEAT-0013.depends_on.FEAT-0020"
+              "FEAT-0011.depends_on.FEAT-0020"
             ]
           },
           {
@@ -26470,7 +26368,6 @@
               "FEAT-0011.depends_on.FEAT-0018",
               "FEAT-0015.depends_on.FEAT-0018",
               "FEAT-0011.depends_on.FEAT-0020",
-              "FEAT-0013.depends_on.FEAT-0020",
               "FEAT-0012.depends_on.FEAT-0021"
             ],
             "Count": 3,
@@ -26636,15 +26533,6 @@
           "Via": "call",
           "Quotes": [
             "plugins/abbd/skills/abbd-setup/SKILL.md:16 \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
-          ]
-        },
-        {
-          "From": "/abbd-setup write the reader supplement",
-          "To": "pstack /swarm",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md:21 \"Ask the swarm which parts of the system's behaviour the units fall into\""
           ]
         },
         {
