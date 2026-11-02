@@ -334,3 +334,35 @@ func TestStatusCheckPassesOnACRLFCheckout(t *testing.T) {
 	})
 	p.want(0, "blueprint: CURRENT", "status", "--check")
 }
+
+// A text whose module left the state, or is no longer one abbd understand
+// accepts, shows beside no module and no command can restamp it. The check
+// names it and passes, so it cannot block CI for good.
+func TestStatusCheckReportsAnOrphanTextAndPasses(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
+	text := strings.Replace(p.read("understanding/MOD-0001.md"), "unit: MOD-0001", "unit: MOD-0099", 1)
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0099.md"), text)
+	p.resync()
+	out := p.want(0, "MOD-0099", "status", "--check")
+	if !strings.Contains(out, "1 orphaned") || !strings.Contains(out, "understanding/MOD-0099.md") {
+		t.Fatalf("status must name the orphan and how to drop it:\n%s", out)
+	}
+}
+
+// Without git abbd cannot fingerprint the code, so the check cannot vouch for
+// the state. It fails and says why, rather than sending the agent to a sync
+// that changes nothing.
+func TestStatusCheckFailsOnAnUnknownStateWithTheRealCause(t *testing.T) {
+	p := semanticProject(t)
+	os.WriteFile(filepath.Join(p.root, ".git", "index"), []byte("not an index"), 0o644)
+	out := p.want(1, "git could not fingerprint the working tree", "status", "--check")
+	if strings.Contains(out, "the state is UNKNOWN, run abbd sync") {
+		t.Fatalf("a sync cannot fix a broken git index:\n%s", out)
+	}
+	os.RemoveAll(filepath.Join(p.root, ".git"))
+	out = p.want(1, "is not a git work tree", "status", "--check")
+	if strings.Contains(out, "run abbd sync") {
+		t.Fatalf("a sync cannot fingerprint without git:\n%s", out)
+	}
+}

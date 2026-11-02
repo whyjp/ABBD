@@ -10,6 +10,13 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
+// textModule is the module abbd understand stores a text for. A stored text
+// whose unit is not one is an orphan: no command can restamp it.
+func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
+	u, ok := presentUnit(units, id)
+	return u, ok && u.Kind == model.Module && u.Parent == ""
+}
+
 // understand stores what pstack's how wrote about a module, stamped with the
 // module's code as it is now, so the screen can show the text beside the
 // drawing and mark it STALE once the code moves on.
@@ -18,8 +25,8 @@ func (e env) understand(id model.ID, file string) error {
 	if err != nil {
 		return err
 	}
-	u, ok := presentUnit(units, id)
-	if !ok || u.Kind != model.Module || u.Parent != "" {
+	u, ok := textModule(units, id)
+	if !ok {
 		return fmt.Errorf("%s is not a top-level module", id)
 	}
 	var b []byte

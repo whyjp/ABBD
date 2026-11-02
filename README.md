@@ -25,4 +25,4 @@ pstack 0.15.36(`/plugin install pstack@cursor-plugins`)이 먼저 있어야 한�
 
 ## 훅과 CI
 
-`abbd status --check`는 상태, 청사진, 모듈 설명 중 하나가 STALE이거나 근거가 drifted면 1로 끝난다. 모두 같은 PR에서 바로잡을 수 있는 것이다. dead 근거는 보고만 하고 실패시키지 않는다. 이미 모든 뷰에서 빠졌고, 지우려면 `abbd retract`뿐이기 때문이다. 상태는 추적하지 않는 파일까지 지문에 넣으므로, 빌드가 파일을 쓰기 전 깨끗한 체크아웃에서 돌린다. lefthook과 GitHub Actions 예시는 `plugins/abbd/skills/abbd/SKILL.md`의 "Gate a hook or CI"에 있다.
+`abbd status --check`는 상태, 청사진, 모듈 설명 중 하나가 STALE이거나 근거가 drifted면 1로 끝난다. 모두 같은 PR에서 바로잡을 수 있는 것이다. dead 근거는 보고만 하고 실패시키지 않는다. 이미 모든 뷰에서 빠졌고, 지우려면 `abbd retract`뿐이기 때문이다. 상태나 청사진이 UNKNOWN이어도 1로 끝나고 원인을 말한다. git 작업 트리가 아니거나 git이 지문을 못 뜨면 상태가 UNKNOWN이고, `graph.json`이 없으면 청사진이 UNKNOWN이다. 모듈이 사라졌거나 최상위가 아닌 설명(orphaned)은 보고만 하고 건너뛴다. 상태는 추적하지 않는 파일까지 지문에 넣으므로, 빌드가 파일을 쓰기 전 깨끗한 체크아웃에서 돌린다. lefthook과 GitHub Actions 예시는 `plugins/abbd/skills/abbd/SKILL.md`의 "Gate a hook or CI"에 있다.

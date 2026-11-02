@@ -73,7 +73,11 @@ abbd status [--check] [--root DIR]   whether the state and the blueprint are CUR
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint or a module
                                      text is STALE or an evidence item drifted, for a hook or CI;
-                                     dead evidence is reported but does not fail it`
+                                     it also exits 1 when the state or the blueprint is UNKNOWN,
+                                     because it could not compare them (no git work tree, a git
+                                     error, or no graph.json), and says which; dead evidence and
+                                     an orphaned text, one whose module is gone or no longer
+                                     top-level, are reported but do not fail it`
 
 const (
 	exitOK    = 0
