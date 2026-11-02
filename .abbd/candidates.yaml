@@ -359,6 +359,14 @@
     path: cmd/abbd/main.go
     symbol: commands
 - new: MOD-0001
+  existing: MOD-0002
+  shared:
+    path: cmd/abbd/evidence.go
+- new: MOD-0001
+  existing: MOD-0002
+  shared:
+    path: cmd/abbd/diff.go
+- new: MOD-0001
   existing: MOD-0004
   shared:
     path: cmd/abbd/main.go
@@ -366,6 +374,10 @@
   existing: MOD-0006
   shared:
     path: cmd/abbd/record.go
+- new: MOD-0001
+  existing: MOD-0007
+  shared:
+    path: cmd/abbd/screen.go
 - new: MOD-0009
   existing: MOD-0010
   shared:
@@ -402,6 +414,14 @@
   existing: MOD-0037
   shared:
     path: internal/screen/overview.go
+- new: MOD-0034
+  existing: MOD-0038
+  shared:
+    path: internal/screen/page.go
+- new: MOD-0041
+  existing: MOD-0042
+  shared:
+    path: internal/store/store.go
 - new: MOD-0041
   existing: MOD-0046
   shared:

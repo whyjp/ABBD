@@ -46,7 +46,7 @@ func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 			t.Errorf("an inside should list the guess %s", want)
 		}
 	}
-	if !strings.Contains(html, `id="freshness"`) {
-		t.Errorf("the blueprint says whether it matches the working tree")
+	if !strings.Contains(html, `<code>abbd status</code>`) {
+		t.Errorf("the blueprint says how to tell whether it matches the working tree")
 	}
 }

@@ -92,6 +92,8 @@ func (e env) status() error {
 	}
 	var behind []string
 	switch {
+	case in.Synced.Merged:
+		behind = append(behind, "the state is STALE: a merge kept two syncs, run abbd sync on the merged tree")
 	case in.ActualFreshness() == screen.Stale:
 		behind = append(behind, "the state is STALE, run abbd sync")
 	case treeErr != nil:
@@ -105,10 +107,12 @@ func (e env) status() error {
 	case screen.Stale:
 		behind = append(behind, "the blueprint is STALE, run abbd sync")
 	case screen.Unknown:
-		behind = append(behind, "the blueprint is UNKNOWN: blueprint/graph.json is missing or has no watermark, run abbd sync")
+		behind = append(behind, "the blueprint is UNKNOWN: blueprint/ holds no files or the state does not say what was rendered, run abbd sync")
 	}
-	switch in.ActualFreshness() {
-	case screen.Stale:
+	switch {
+	case in.Synced.Merged:
+		fmt.Fprintf(e.stdout, "state: STALE, a merge kept two syncs, one at %s; abbd sync on the merged tree writes one\n", in.Synced.Revision)
+	case in.ActualFreshness() == screen.Stale:
 		fmt.Fprintf(e.stdout, "state: STALE, synced at %s; the code changed since, abbd sync re-extracts\n", in.Synced.Revision)
 	default:
 		fmt.Fprintf(e.stdout, "state: %s, synced at %s\n", in.ActualFreshness(), in.Synced.Revision)

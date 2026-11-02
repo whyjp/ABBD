@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<meta name="abbd-watermark" content="inputs_hash={{.Watermark.Inputs}}">
 <title>ABBD 청사진</title>
 <style>
 :root {
@@ -164,7 +163,7 @@ li.step .chips { margin-top: 3px; }
 <main>
 <header>
   <h1>ABBD 청사진</h1>
-  <p class="fresh" id="freshness">{{if eq .Actual "STALE"}}<span class="pill STALE">STALE</span> 코드가 마지막 sync 뒤에 바뀌었습니다.{{else if eq .Actual "CURRENT"}}<span class="pill CURRENT">CURRENT</span> 작업 트리와 맞습니다.{{else}}<span class="pill">UNKNOWN</span>{{end}} <span class="muted">sync 커밋 <code>{{short .Synced.Revision 12}}</code></span></p>
+  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
 </header>
 
 <section id="overview">
@@ -224,7 +223,7 @@ li.step .chips { margin-top: 3px; }
   </details>
 </section>
 
-<p class="muted">추출 <code>{{join .Extract " "}}</code> · 워터마크 <code>{{.Watermark.Inputs}}</code></p>
+<p class="muted">추출 <code>{{join .Extract " "}}</code></p>
 </main>
 </body>
 </html>

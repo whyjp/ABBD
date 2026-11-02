@@ -66,11 +66,12 @@ const (
 	PageFile  = "index.html"
 )
 
-// Graph is graph.json: the blueprint's data, for tools that do not read the page.
+// Graph is graph.json: the blueprint's data, for tools that do not read the
+// page. It holds no value of the sync that rendered it, which the state
+// records, so two syncs of unrelated changes rewrite different lines.
 type Graph struct {
-	Watermark Watermark `json:"watermark"`
-	Units     []UnitRow `json:"units"`
-	Edges     []Line    `json:"edges"`
+	Units []UnitRow `json:"units"`
+	Edges []Line    `json:"edges"`
 	// Overview and Modules are the two levels as the page draws them, less
 	// the links to focus views, which graph.json does not hold.
 	Overview Drawing  `json:"overview"`
@@ -79,11 +80,9 @@ type Graph struct {
 	Flows []FlowView `json:"flows,omitempty"`
 }
 
-// Files renders every file. Each carries the watermark of the .abbd inputs it
-// came from, so a reader can tell when it is STALE.
+// Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	m.Blueprint = Fresh
-	g := Graph{Watermark: m.Watermark, Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows}
+	g := Graph{Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err

@@ -24,12 +24,20 @@ import (
 
 const Dir = ".abbd"
 
-// State is the sync watermark. Fingerprint is a git tree of the working tree at sync time.
+// State is the sync watermark, and the one file every sync rewrites.
+// Fingerprint is a git tree of the working tree at sync time; Blueprint is
+// the InputsHash the blueprint was rendered from, and Rendered the HashRender
+// of the files that render wrote.
 type State struct {
 	Revision    string             `yaml:"revision"`
 	Fingerprint string             `yaml:"fingerprint"`
-	MDHash      string             `yaml:"md_hash"`
+	Blueprint   string             `yaml:"blueprint"`
+	Rendered    string             `yaml:"rendered"`
 	HighWater   map[model.Kind]int `yaml:"high_water,omitempty"`
+	// Merged is set when a merge kept two syncs' lines, by union or as
+	// conflict markers. The values are the first side's, which match neither
+	// the merged tree nor its inputs, so abbd sync writes the state anew.
+	Merged bool `yaml:"-"`
 }
 
 const notesHeading = "## Notes"
@@ -263,29 +271,89 @@ func (s Store) SaveCandidates(cs []identity.Candidate) error {
 	return writeYAML(s.path("candidates.yaml"), cs)
 }
 
+// LoadState reads the state, and a state a merge left with both sides'
+// lines: it drops conflict markers, keeps each key's first value and the
+// higher of each kind's high water.
 func (s Store) LoadState() (State, error) {
 	var st State
-	return st, readYAML(s.path("state.yaml"), &st)
+	b, err := os.ReadFile(s.path("state.yaml"))
+	if os.IsNotExist(err) {
+		return st, nil
+	}
+	if err != nil {
+		return st, err
+	}
+	var lines []string
+	for _, l := range strings.Split(strings.ReplaceAll(string(b), "\r\n", "\n"), "\n") {
+		if conflictMarker(l) {
+			st.Merged = true
+			continue
+		}
+		lines = append(lines, l)
+	}
+	var doc yaml.Node
+	if err := yaml.Unmarshal([]byte(strings.Join(lines, "\n")), &doc); err != nil {
+		return st, fmt.Errorf("reading %s: %w", s.path("state.yaml"), err)
+	}
+	if len(doc.Content) == 0 {
+		return st, nil
+	}
+	seen := map[string]bool{}
+	for k, v := range pairs(doc.Content[0]) {
+		if k.Value == "high_water" {
+			for kind, n := range pairs(v) {
+				var i int
+				if err := n.Decode(&i); err != nil {
+					return st, fmt.Errorf("reading %s: high_water %s: %w", s.path("state.yaml"), kind.Value, err)
+				}
+				if st.HighWater == nil {
+					st.HighWater = map[model.Kind]int{}
+				}
+				st.HighWater[model.Kind(kind.Value)] = max(st.HighWater[model.Kind(kind.Value)], i)
+			}
+			continue
+		}
+		field := map[string]*string{"revision": &st.Revision, "fingerprint": &st.Fingerprint, "blueprint": &st.Blueprint, "rendered": &st.Rendered}[k.Value]
+		switch {
+		case field == nil:
+		case !seen[k.Value]:
+			*field, seen[k.Value] = v.Value, true
+		case *field != v.Value:
+			st.Merged = true
+		}
+	}
+	return st, nil
+}
+
+// conflictMarker is a line git writes around a conflict.
+func conflictMarker(l string) bool {
+	for _, m := range []string{"<<<<<<<", "|||||||", "=======", ">>>>>>>"} {
+		if l == m || strings.HasPrefix(l, m+" ") {
+			return true
+		}
+	}
+	return false
+}
+
+// pairs walks a YAML mapping's keys and values in order, duplicates included.
+func pairs(n *yaml.Node) func(yield func(k, v *yaml.Node) bool) {
+	return func(yield func(k, v *yaml.Node) bool) {
+		if n.Kind != yaml.MappingNode {
+			return
+		}
+		for i := 0; i+1 < len(n.Content); i += 2 {
+			if !yield(n.Content[i], n.Content[i+1]) {
+				return
+			}
+		}
+	}
 }
 
 func (s Store) SaveState(st State) error { return writeYAML(s.path("state.yaml"), st) }
 
-// MDHash fingerprints every unit file so derived views can detect staleness.
-func (s Store) MDHash() (string, error) {
-	var files []string
-	for _, d := range s.unitDirs() {
-		fs, err := filepath.Glob(s.path(d, "*.md"))
-		if err != nil {
-			return "", err
-		}
-		files = append(files, fs...)
-	}
-	return s.hashFiles(files)
-}
-
 // InputsHash fingerprints every file under .abbd that a page can render, so
-// the blueprint is STALE whenever any of them changed. The blueprint is not
-// an input.
+// the blueprint is STALE whenever any of them changed. Neither the blueprint
+// nor the state, which records this hash, is an input.
 func (s Store) InputsHash() (string, error) {
 	var files []string
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
@@ -294,6 +362,8 @@ func (s Store) InputsHash() (string, error) {
 			return err
 		case d.IsDir() && p == s.path("blueprint"):
 			return filepath.SkipDir
+		case p == s.path("state.yaml"):
+			return nil
 		case !d.IsDir():
 			files = append(files, p)
 		}
@@ -302,25 +372,38 @@ func (s Store) InputsHash() (string, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
-	return s.hashFiles(files)
+	return s.hashTree(s.root, files)
 }
 
-// hashFiles reads CRLF as LF, so a checkout that converts line endings
-// hashes the same as the one that wrote the files.
-func (s Store) hashFiles(files []string) (string, error) {
-	sort.Strings(files)
-	h := sha256.New()
+// hashTree hashes files by their path relative to dir.
+func (s Store) hashTree(dir string, files []string) (string, error) {
+	contents := map[string][]byte{}
 	for _, f := range files {
 		b, err := os.ReadFile(f)
 		if err != nil {
 			return "", err
 		}
-		b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
-		rel, _ := filepath.Rel(s.root, f)
-		fmt.Fprintf(h, "%s\x00%d\x00", filepath.ToSlash(rel), len(b))
+		rel, _ := filepath.Rel(dir, f)
+		contents[filepath.ToSlash(rel)] = b
+	}
+	return HashRender(contents), nil
+}
+
+// HashRender hashes files by name. It reads CRLF as LF, so a checkout that
+// converts line endings hashes the same as the one that wrote the files.
+func HashRender(files map[string][]byte) string {
+	names := make([]string, 0, len(files))
+	for name := range files {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	h := sha256.New()
+	for _, name := range names {
+		b := bytes.ReplaceAll(files[name], []byte("\r\n"), []byte("\n"))
+		fmt.Fprintf(h, "%s\x00%d\x00", name, len(b))
 		h.Write(b)
 	}
-	return hex.EncodeToString(h.Sum(nil)), nil
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 func readYAML(path string, v any) error {
@@ -383,18 +466,46 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
-// The blueprint derives from the state and is rewritten freely.
-func (s Store) SaveBlueprint(name string, b []byte) error {
-	return writeFile(s.path("blueprint", name), b)
+// SaveBlueprint writes the rendered files and removes every other one, so the
+// blueprint holds exactly what HashRender(files) records.
+func (s Store) SaveBlueprint(files map[string][]byte) error {
+	for name, b := range files {
+		if err := writeFile(s.path("blueprint", name), b); err != nil {
+			return err
+		}
+	}
+	old, err := os.ReadDir(s.path("blueprint"))
+	if err != nil {
+		return err
+	}
+	for _, e := range old {
+		if _, keep := files[e.Name()]; !keep {
+			if err := os.RemoveAll(s.path("blueprint", e.Name())); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
-// ReadBlueprint returns nil when the file was never rendered.
-func (s Store) ReadBlueprint(name string) ([]byte, error) {
-	b, err := os.ReadFile(s.path("blueprint", name))
-	if os.IsNotExist(err) {
-		return nil, nil
+// BlueprintHash is the HashRender of the blueprint's files as they are now,
+// and "" when there are none.
+func (s Store) BlueprintHash() (string, error) {
+	dir := s.path("blueprint")
+	var files []string
+	err := filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
+		if err == nil && !d.IsDir() {
+			files = append(files, p)
+		}
+		return err
+	})
+	if os.IsNotExist(err) || len(files) == 0 {
+		return "", nil
 	}
-	return b, err
+	if err != nil {
+		return "", err
+	}
+	return s.hashTree(dir, files)
 }
 
 func frontmatter(v any, body string) ([]byte, error) {
