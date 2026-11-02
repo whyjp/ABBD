@@ -75,6 +75,19 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 	for i, u := range out {
 		at[u.ID] = i
 	}
+	// A path is a directory when an anchor lies under it. The
+	// store says so on every machine alike, and a file never has one.
+	dirs := map[string]bool{}
+	for _, u := range out {
+		if u.Absent || Made(u) {
+			continue
+		}
+		for _, a := range u.Anchors {
+			for d := path.Dir(a.Path); d != "." && d != "/" && !dirs[d]; d = path.Dir(d) {
+				dirs[d] = true
+			}
+		}
+	}
 	var split func(container model.ID)
 	split = func(container model.ID) {
 		// Only units below the container's own directory group: a group of
@@ -82,7 +95,7 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
 		// outside it has no directory of the container's to go in.
 		own := ""
 		if container != "" {
-			own = span(out[at[container]])
+			own = span(out[at[container]], dirs)
 		}
 		var members []int
 		for i, u := range out {
@@ -170,14 +183,19 @@ func home(u model.Unit) string {
 }
 
 // span is the directory a container spans: a group's own, or the deepest
-// directory that holds every anchor of a module, "" for the root.
-func span(u model.Unit) string {
+// directory that holds every anchor of a module, "" for the root. An anchor
+// in dirs is a directory and holds itself.
+func span(u model.Unit, dirs map[string]bool) string {
 	if Made(u) {
 		return u.Anchors[0].Path
 	}
 	var common []string
 	for i, a := range u.Anchors {
-		parts := strings.Split(path.Dir(a.Path), "/")
+		d := a.Path
+		if !dirs[d] {
+			d = path.Dir(d)
+		}
+		parts := strings.Split(d, "/")
 		if parts[0] == "." {
 			return ""
 		}
