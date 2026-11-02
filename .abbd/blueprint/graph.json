@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "c4128ae625baa916b52f990d974e79797ff408c241ef4015f9b6d7a4b6a837a7"
+    "inputs_hash": "944cdd954a630b0f5f370bc056b11997d76f8b91a4ebd8978753726aaaa0816c"
   },
   "units": [
     {
@@ -350,7 +350,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
+        "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
       ]
     },
     {
@@ -440,7 +440,7 @@
       ],
       "Parent": "MOD-0054",
       "Evidence": [
-        "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+        "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
       ]
     },
     {
@@ -4274,7 +4274,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+      "Quote": "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4282,7 +4282,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
+      "Quote": "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
     },
     {
       "From": "MOD-0054",
@@ -4290,7 +4290,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
+      "Quote": "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
     },
     {
       "From": "MOD-0054",
@@ -4298,7 +4298,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:124 \"next[model.Module]++\""
+      "Quote": "internal/group/group.go:137 \"next[model.Module]++\""
     },
     {
       "From": "MOD-0054",
@@ -4306,7 +4306,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+      "Quote": "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
     },
     {
       "From": "MOD-0054",
@@ -21134,7 +21134,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         }
       ]
@@ -26549,7 +26549,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:124 \"next[model.Module]++\""
+            "internal/group/group.go:137 \"next[model.Module]++\""
           ]
         }
       ]
@@ -28707,7 +28707,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         }
       ]
@@ -28902,7 +28902,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:89 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
+            "internal/group/group.go:102 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (u.Kind == model.Module || container != \\\"\\\")\""
           ]
         },
         {
@@ -28911,7 +28911,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:136 \"out[g].SetAbsent(\\\"\\\")\""
+            "internal/group/group.go:149 \"out[g].SetAbsent(\\\"\\\")\""
           ]
         },
         {
@@ -28920,7 +28920,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:169 \"return path.Dir(u.Anchors[0].Path)\""
+            "internal/group/group.go:182 \"return path.Dir(u.Anchors[0].Path)\""
           ]
         },
         {
@@ -28929,7 +28929,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:124 \"next[model.Module]++\""
+            "internal/group/group.go:137 \"next[model.Module]++\""
           ]
         },
         {
@@ -28938,7 +28938,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/group/group.go:97 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
+            "internal/group/group.go:110 \"if !u.Absent \u0026\u0026 u.Parent == container \u0026\u0026 (container != \\\"\\\" || !u.Kind.IsContract()) {\""
           ]
         }
       ]

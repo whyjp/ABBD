@@ -60,3 +60,32 @@ func TestAContainersSubdirectoriesStillGroup(t *testing.T) {
 		t.Fatalf("web/x.ts left core: %v", p)
 	}
 }
+
+// A module anchored at a directory spans that directory, not the one above
+// it, so no group inside it repeats the directory, whether or not it also
+// anchors a file there.
+func TestADirectoryAnchoredModuleIsItsDirectory(t *testing.T) {
+	for _, anchors := range [][]model.Anchor{
+		{{Path: "src/core"}},
+		{{Path: "src/core"}, {Path: "src/core/a.ts"}},
+	} {
+		us := []model.Unit{{ID: "MOD-0001", Kind: model.Module, Name: model.Said(model.Script, "core"), Anchors: anchors}}
+		in := func(u model.Unit) model.Unit {
+			u.PutParent(model.ParentClaim{To: "MOD-0001", Writer: model.Script})
+			return u
+		}
+		for i := 2; i <= 19; i++ {
+			dir := "src/core"
+			if i > 10 {
+				dir = "src/core/sub"
+			}
+			us = append(us, in(module(i, fmt.Sprintf("%s/m%d.ts", dir, i))))
+		}
+		got, _ := Fallback(us, map[model.Kind]int{model.Module: 19})
+		for _, u := range model.Present(got) {
+			if Made(u) && !below(u.Anchors[0].Path, "src/core") {
+				t.Errorf("anchors %v: %s %q repeats the directory of the module it sits in: %v", anchors, u.ID, u.Name.Value, parents(got))
+			}
+		}
+	}
+}
