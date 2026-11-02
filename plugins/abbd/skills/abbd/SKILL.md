@@ -27,7 +27,7 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
    - `abbd record unit <KIND> <NAME> --parent <MOD-ID> --evidence <PATH:LINES:QUOTE>`
 
    When the reader finds a stored INFERRED claim wrong, retract it in one step with `abbd retract <TARGET> --reason "<why>"`. The target is a unit ID, an edge such as `MOD-0001.depends_on.MOD-0002`, or `<ID>.parent`. It removes your own claim and hides the supplement's until that claim's content changes.
-5. When a module's text in the blueprint is STALE and how read it again, store the new Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
+5. When a module's text in the blueprint is STALE and how read it again, store the new Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`. A text describes every file of its module and of the units under it, and the lines around each quote of a file the module only quotes. When a sync moved units in or out of the module and none of its code changed, `abbd understand <MOD-ID> --restamp` stamps the stored text again. abbd refuses it when any of that code changed since the text was written.
 
 ## What the human states
 

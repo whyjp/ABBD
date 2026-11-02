@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "14e24dfdc55df054d8cb1914902ef05c17afc74540fbf2a74ec6d0f93c519cbe"
+    "inputs_hash": "6cd006ace68dc601850a479a36e9927153230945fbbf5253caf9e8aba6a6d198"
   },
   "units": [
     {
@@ -191,7 +191,7 @@
       "ID": "DATA-0008",
       "Kind": "DATA",
       "Name": "module understanding",
-      "Signature": ".abbd/understanding/MOD.md frontmatter: digest,origin,unit",
+      "Signature": ".abbd/understanding/MOD.md frontmatter: digest,origin,tree,unit",
       "Purpose": {
         "Value": "so a reader's prose about a module sits beside its drawing and is flagged when the module's code moves on",
         "Badge": "inferred"
@@ -1065,7 +1065,7 @@
       "ID": "IF-0013",
       "Kind": "IF",
       "Name": "abbd understand",
-      "Signature": "abbd understand[root] pos{2}",
+      "Signature": "abbd understand[restamp,root] pos{1,2}",
       "Purpose": {
         "Value": "so pstack how's text about a module is shown beside its drawing and flagged when the code moves on",
         "Badge": "inferred"
@@ -1283,9 +1283,9 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:185 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
-        "cmd/abbd/main.go:241 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
-        "cmd/abbd/main.go:231 \"if c.writes {\""
+        "cmd/abbd/main.go:194 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
+        "cmd/abbd/main.go:250 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
+        "cmd/abbd/main.go:240 \"if c.writes {\""
       ]
     },
     {
@@ -1307,7 +1307,7 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:361 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+        "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
       ]
     },
     {
@@ -1506,8 +1506,8 @@
       ],
       "Parent": "MOD-0013",
       "Evidence": [
-        "internal/evidence/evidence.go:207 \"v.SetAbsent(model.EvidenceDead)\"",
-        "internal/evidence/evidence.go:168 \"e.Status, e.Since = model.Drifted, rev\""
+        "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\"",
+        "internal/evidence/evidence.go:190 \"e.Status, e.Since = model.Drifted, rev\""
       ]
     },
     {
@@ -2212,8 +2212,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/understanding.go:70 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
-        "internal/store/understanding.go:90 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
+        "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
+        "internal/store/understanding.go:179 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
       ]
     },
     {
@@ -2974,7 +2974,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:22 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
+      "Quote": "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\""
     },
     {
       "From": "MOD-0001",
@@ -2990,7 +2990,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:392 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+      "Quote": "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
     },
     {
       "From": "MOD-0001",
@@ -3140,7 +3140,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0001",
@@ -3168,7 +3168,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0001",
@@ -3240,7 +3240,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3308,7 +3308,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:229 \"return exitError\""
+      "Quote": "cmd/abbd/main.go:232 \"return exitUsage\""
     },
     {
       "From": "MOD-0003",
@@ -3316,7 +3316,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
+      "Quote": "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
     },
     {
       "From": "MOD-0004",
@@ -3324,7 +3324,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:262 \"if len(p.Extract) == 0 {\""
+      "Quote": "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
     },
     {
       "From": "MOD-0004",
@@ -3332,7 +3332,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:269 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+      "Quote": "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
       "From": "MOD-0004",
@@ -3340,7 +3340,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:374 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+      "Quote": "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
     },
     {
       "From": "MOD-0004",
@@ -3348,7 +3348,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:263 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+      "Quote": "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
     },
     {
       "From": "MOD-0004",
@@ -3356,7 +3356,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0004",
@@ -3364,7 +3364,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+      "Quote": "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
       "From": "MOD-0004",
@@ -3372,7 +3372,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:361 \"identity.Reconcile(\""
+      "Quote": "cmd/abbd/main.go:370 \"identity.Reconcile(\""
     },
     {
       "From": "MOD-0005",
@@ -3388,7 +3388,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\""
+      "Quote": "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3412,7 +3412,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -3512,7 +3512,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/evidence/evidence.go:207 \"v.SetAbsent(model.EvidenceDead)\""
+      "Quote": "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
     },
     {
       "From": "MOD-0013",
@@ -3534,7 +3534,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/evidence/evidence.go:153 \"r := c.Check(e)\""
+      "Quote": "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
     },
     {
       "From": "MOD-0014",
@@ -3542,7 +3542,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/evidence/evidence.go:204 \"if u.Semantic() {\""
+      "Quote": "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
     },
     {
       "From": "MOD-0015",
@@ -3550,7 +3550,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/evidence/evidence.go:132 \"first, last, bounded := e.Span()\""
+      "Quote": "internal/evidence/evidence.go:139 \"first, last, bounded := e.Span()\""
     },
     {
       "From": "MOD-0015",
@@ -3626,7 +3626,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0026",
@@ -3634,7 +3634,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:331 \"prior, err := st.LoadCandidates()\""
+      "Quote": "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\""
     },
     {
       "From": "MOD-0026",
@@ -3650,7 +3650,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:361 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+      "Quote": "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
       "From": "MOD-0026",
@@ -4020,7 +4020,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:70 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -4029,6 +4029,12 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Quote": "internal/store/store.go:359 \"st.HighWater[kind]++\""
+    },
+    {
+      "From": "MOD-0041",
+      "To": "MOD-0013",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED"
     },
     {
       "From": "MOD-0041",
@@ -4054,7 +4060,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:370 \"hash, err := st.MDHash()\""
+      "Quote": "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\""
     },
     {
       "From": "MOD-0043",
@@ -4070,7 +4076,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:48 \"Digest: digest, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -4244,8 +4250,8 @@
     }
   ],
   "overview": {
-    "Width": 1182,
-    "Height": 827,
+    "Width": 1308,
+    "Height": 883,
     "Boxes": [
       {
         "ID": "FEAT-0001",
@@ -4256,13 +4262,13 @@
         "Lines": [
           {
             "S": "/abbd",
-            "X": 1067,
-            "Y": 427,
+            "X": 99,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 992,
-        "Y": 392,
+        "X": 24,
+        "Y": 264,
         "W": 150,
         "H": 60,
         "Href": "#m-FEAT-0001"
@@ -4276,12 +4282,12 @@
         "Lines": [
           {
             "S": "/abbd-setup",
-            "X": 1067,
+            "X": 711,
             "Y": 67,
             "Mid": true
           }
         ],
-        "X": 992,
+        "X": 636,
         "Y": 32,
         "W": 150,
         "H": 60,
@@ -4296,12 +4302,12 @@
         "Lines": [
           {
             "S": "abbd CLI",
-            "X": 517,
+            "X": 711,
             "Y": 163,
             "Mid": true
           }
         ],
-        "X": 366,
+        "X": 560,
         "Y": 128,
         "W": 303,
         "H": 60,
@@ -4316,13 +4322,13 @@
         "Lines": [
           {
             "S": "internal/bootstrap",
-            "X": 354,
-            "Y": 275,
+            "X": 504,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 268,
-        "Y": 240,
+        "X": 418,
+        "Y": 264,
         "W": 172,
         "H": 60,
         "Href": "#m-MOD-0009"
@@ -4336,13 +4342,13 @@
         "Lines": [
           {
             "S": "internal/evidence",
-            "X": 106,
-            "Y": 427,
+            "X": 559,
+            "Y": 667,
             "Mid": true
           }
         ],
-        "X": 24,
-        "Y": 392,
+        "X": 477,
+        "Y": 632,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0013"
@@ -4356,13 +4362,13 @@
         "Lines": [
           {
             "S": "internal/extract",
-            "X": 469,
-            "Y": 579,
+            "X": 623,
+            "Y": 491,
             "Mid": true
           }
         ],
-        "X": 391,
-        "Y": 544,
+        "X": 545,
+        "Y": 456,
         "W": 156,
         "H": 60,
         "Href": "#m-MOD-0017"
@@ -4376,13 +4382,13 @@
         "Lines": [
           {
             "S": "internal/gitx",
-            "X": 805,
-            "Y": 707,
+            "X": 756,
+            "Y": 667,
             "Mid": true
           }
         ],
-        "X": 730,
-        "Y": 672,
+        "X": 681,
+        "Y": 632,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0022"
@@ -4396,13 +4402,13 @@
         "Lines": [
           {
             "S": "internal/identity",
-            "X": 570,
-            "Y": 275,
+            "X": 712,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 488,
-        "Y": 240,
+        "X": 630,
+        "Y": 264,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0026"
@@ -4416,13 +4422,13 @@
         "Lines": [
           {
             "S": "internal/model",
-            "X": 359,
-            "Y": 707,
+            "X": 559,
+            "Y": 763,
             "Mid": true
           }
         ],
-        "X": 284,
-        "Y": 672,
+        "X": 484,
+        "Y": 728,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0030"
@@ -4436,13 +4442,13 @@
         "Lines": [
           {
             "S": "internal/screen",
-            "X": 830,
-            "Y": 275,
+            "X": 964,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 700,
-        "Y": 240,
+        "X": 834,
+        "Y": 264,
         "W": 260,
         "H": 60,
         "Href": "#m-MOD-0034"
@@ -4456,13 +4462,13 @@
         "Lines": [
           {
             "S": "internal/store",
-            "X": 708,
-            "Y": 579,
+            "X": 854,
+            "Y": 491,
             "Mid": true
           }
         ],
-        "X": 595,
-        "Y": 544,
+        "X": 741,
+        "Y": 456,
         "W": 226,
         "H": 60,
         "Href": "#m-MOD-0041"
@@ -4476,13 +4482,13 @@
         "Lines": [
           {
             "S": "internal/topology",
-            "X": 335,
-            "Y": 427,
+            "X": 296,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 253,
-        "Y": 392,
+        "X": 214,
+        "Y": 264,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0047"
@@ -4496,13 +4502,13 @@
         "Lines": [
           {
             "S": "internal/group",
-            "X": 532,
-            "Y": 427,
+            "X": 1209,
+            "Y": 299,
             "Mid": true
           }
         ],
-        "X": 457,
-        "Y": 392,
+        "X": 1134,
+        "Y": 264,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0054"
@@ -4516,13 +4522,13 @@
         "Lines": [
           {
             "S": "pstack (external)",
-            "X": 1076,
-            "Y": 579,
+            "X": 106,
+            "Y": 491,
             "Mid": true
           }
         ],
-        "X": 994,
-        "Y": 544,
+        "X": 24,
+        "Y": 456,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0055"
@@ -4536,19 +4542,19 @@
         "Lines": [
           {
             "S": "plugin and",
-            "X": 591,
-            "Y": 786,
+            "X": 654,
+            "Y": 842,
             "Mid": true
           },
           {
             "S": "marketplace manifest",
-            "X": 591,
-            "Y": 800,
+            "X": 654,
+            "Y": 856,
             "Mid": true
           }
         ],
-        "X": 511,
-        "Y": 768,
+        "X": 574,
+        "Y": 824,
         "W": 160,
         "H": 43
       }
@@ -4561,8 +4567,8 @@
         "Title": "/abbd가 쓰는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract",
         "Exit": false,
         "Below": true,
-        "X": 1000,
-        "Y": 452,
+        "X": 101,
+        "Y": 324,
         "W": 69,
         "Rels": [
           "FEAT-0001.consumes.IF-0001",
@@ -4603,7 +4609,7 @@
         "Title": "/abbd-setup가 쓰는 계약: abbd diff, abbd impact, abbd install, abbd sync, abbd explain, abbd path, abbd record fact, abbd setup, abbd understand, abbd exit codes, abbd record parent, abbd migrate, abbd record evidence",
         "Exit": false,
         "Below": true,
-        "X": 1000,
+        "X": 677,
         "Y": 92,
         "W": 69,
         "Rels": [
@@ -4632,7 +4638,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: sync state",
         "Exit": true,
-        "X": 376,
+        "X": 716,
         "Y": 128,
         "W": 82,
         "Rels": [
@@ -4647,7 +4653,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract",
         "Exit": true,
-        "X": 462,
+        "X": 568,
         "Y": 128,
         "W": 69,
         "Rels": [
@@ -4675,7 +4681,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd impact, abbd install, abbd sync, abbd explain, abbd path, abbd record fact, abbd setup, abbd understand, abbd exit codes, abbd record parent, abbd migrate, abbd record evidence",
         "Exit": true,
-        "X": 535,
+        "X": 643,
         "Y": 128,
         "W": 69,
         "Rels": [
@@ -4701,7 +4707,7 @@
         "Class": "design",
         "Title": "abbd CLI가 제공하는 계약: blueprint files",
         "Exit": true,
-        "X": 608,
+        "X": 802,
         "Y": 128,
         "W": 57,
         "Rels": [
@@ -4716,7 +4722,7 @@
         "Title": "abbd CLI가 쓰는 계약: project.yaml, unit files, module understanding",
         "Exit": false,
         "Below": true,
-        "X": 603,
+        "X": 797,
         "Y": 188,
         "W": 62,
         "Rels": [
@@ -4737,7 +4743,7 @@
         "Title": "abbd CLI가 쓰는 계약: extraction JSON",
         "Exit": false,
         "Below": true,
-        "X": 474,
+        "X": 668,
         "Y": 188,
         "W": 125,
         "Rels": [
@@ -4753,7 +4759,7 @@
         "Title": "abbd CLI가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 374,
+        "X": 568,
         "Y": 188,
         "W": 96,
         "Rels": [
@@ -4767,8 +4773,8 @@
         "Class": "design",
         "Title": "internal/extract가 제공하는 계약: extraction JSON",
         "Exit": true,
-        "X": 418,
-        "Y": 544,
+        "X": 572,
+        "Y": 456,
         "W": 125,
         "Rels": [
           "MOD-0017.provides.DATA-0002"
@@ -4781,8 +4787,8 @@
         "Title": "internal/identity가 쓰는 계약: sync state",
         "Exit": false,
         "Below": true,
-        "X": 566,
-        "Y": 300,
+        "X": 708,
+        "Y": 324,
         "W": 82,
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
@@ -4794,8 +4800,8 @@
         "Class": "design",
         "Title": "internal/model가 제공하는 계약: relation key",
         "Exit": true,
-        "X": 334,
-        "Y": 672,
+        "X": 534,
+        "Y": 728,
         "W": 96,
         "Rels": [
           "MOD-0030.provides.IF-0015"
@@ -4807,8 +4813,8 @@
         "Class": "design",
         "Title": "internal/screen가 제공하는 계약: blueprint files",
         "Exit": true,
-        "X": 899,
-        "Y": 240,
+        "X": 1033,
+        "Y": 264,
         "W": 57,
         "Rels": [
           "MOD-0039.consumes.DATA-0005",
@@ -4823,8 +4829,8 @@
         "Title": "internal/screen가 쓰는 계약: project.yaml, unit files, sync state, module understanding",
         "Exit": false,
         "Below": true,
-        "X": 794,
-        "Y": 300,
+        "X": 1028,
+        "Y": 324,
         "W": 62,
         "Rels": [
           "MOD-0034.consumes.CFG-0002",
@@ -4842,8 +4848,8 @@
         "Title": "internal/screen가 쓰는 계약: sync state",
         "Exit": false,
         "Below": true,
-        "X": 708,
-        "Y": 300,
+        "X": 942,
+        "Y": 324,
         "W": 82,
         "Rels": [
           "MOD-0034.consumes.DATA-0006",
@@ -4857,8 +4863,8 @@
         "Title": "internal/screen가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 860,
-        "Y": 300,
+        "X": 842,
+        "Y": 324,
         "W": 96,
         "Rels": [
           "MOD-0034.consumes.IF-0015"
@@ -4870,8 +4876,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: project.yaml, unit files, module understanding",
         "Exit": true,
-        "X": 689,
-        "Y": 544,
+        "X": 749,
+        "Y": 456,
         "W": 62,
         "Rels": [
           "MOD-0041.provides.CFG-0002",
@@ -4886,8 +4892,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: project.yaml, unit files, sync state, module understanding",
         "Exit": true,
-        "X": 755,
-        "Y": 544,
+        "X": 901,
+        "Y": 456,
         "W": 62,
         "Rels": [
           "MOD-0041.provides.CFG-0002",
@@ -4904,8 +4910,8 @@
         "Class": "design",
         "Title": "internal/store가 제공하는 계약: sync state",
         "Exit": true,
-        "X": 603,
-        "Y": 544,
+        "X": 815,
+        "Y": 456,
         "W": 82,
         "Rels": [
           "MOD-0041.provides.DATA-0006",
@@ -4919,8 +4925,8 @@
         "Title": "internal/topology가 쓰는 계약: relation key",
         "Exit": false,
         "Below": true,
-        "X": 279,
-        "Y": 452,
+        "X": 278,
+        "Y": 324,
         "W": 96,
         "Rels": [
           "MOD-0047.consumes.IF-0015"
@@ -4929,7 +4935,7 @@
     ],
     "Wires": [
       {
-        "D": "M767 500 L767 516",
+        "D": "M814 396 L814 412",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다",
         "Joins": true,
@@ -4949,7 +4955,7 @@
         ]
       },
       {
-        "D": "M837 508 L837 516",
+        "D": "M1059 404 L1059 412",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다",
         "Joins": true,
@@ -4968,7 +4974,7 @@
         ]
       },
       {
-        "D": "M480 500 L480 544",
+        "D": "M634 396 L634 456",
         "Kind": "contract",
         "Title": "abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다",
         "Rels": [
@@ -4979,7 +4985,7 @@
         ]
       },
       {
-        "D": "M607 240 L607 228",
+        "D": "M749 264 L749 236",
         "Kind": "contract",
         "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독",
         "Origin": "inferred",
@@ -4987,8 +4993,8 @@
         "Back": true,
         "Marks": [
           {
-            "X": 607,
-            "Y": 240,
+            "X": 749,
+            "Y": 264,
             "Origin": "inferred"
           }
         ],
@@ -4997,15 +5003,15 @@
         ]
       },
       {
-        "D": "M607 300 L607 332 L735 332",
+        "D": "M749 324 L749 412",
         "Kind": "contract",
         "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 607,
-            "Y": 300,
+            "X": 749,
+            "Y": 324,
             "Origin": "inferred"
           }
         ],
@@ -5014,7 +5020,7 @@
         ]
       },
       {
-        "D": "M749 240 L749 228",
+        "D": "M983 264 L983 236",
         "Kind": "contract",
         "Title": "internal/screen → abbd CLI: sync state 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5026,7 +5032,7 @@
         ]
       },
       {
-        "D": "M1034 392 L1034 324 L992 324",
+        "D": "M135 264 L135 236",
         "Kind": "contract",
         "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5065,7 +5071,7 @@
         ]
       },
       {
-        "D": "M1034 92 L1034 100 L569 100 L569 128",
+        "D": "M711 92 L711 108 L677 108 L677 128",
         "Kind": "contract",
         "Title": "/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5090,7 +5096,7 @@
         ]
       },
       {
-        "D": "M343 508 L343 516 L327 516",
+        "D": "M382 404 L382 412 L366 412",
         "Kind": "contract",
         "Title": "internal/screen → internal/model: relation key 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5101,7 +5107,7 @@
         ]
       },
       {
-        "D": "M327 452 L327 508",
+        "D": "M326 324 L326 404 L366 404",
         "Kind": "contract",
         "Title": "internal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5113,15 +5119,15 @@
         ]
       },
       {
-        "D": "M1067 452 L1067 460",
+        "D": "M99 324 L99 348",
         "Kind": "bypass",
         "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 1067,
-            "Y": 452,
+            "X": 99,
+            "Y": 324,
             "Origin": "inferred"
           }
         ],
@@ -5131,14 +5137,14 @@
         ]
       },
       {
-        "D": "M1059 92 L1059 392",
+        "D": "M678 92 L678 100 L372 100 L372 212 L66 212 L66 264",
         "Kind": "mutual",
         "Title": "/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존\n/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Both": true,
         "Marks": [
           {
-            "X": 1059,
+            "X": 678,
             "Y": 92,
             "Origin": "inferred"
           }
@@ -5149,14 +5155,14 @@
         ]
       },
       {
-        "D": "M1099 92 L1099 100 L1158 100",
+        "D": "M743 92 L743 116 L106 116",
         "Kind": "bypass",
         "Title": "/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 1099,
+            "X": 743,
             "Y": 92,
             "Origin": "inferred"
           }
@@ -5170,7 +5176,7 @@
         ]
       },
       {
-        "D": "M1034 372 L1034 392",
+        "D": "M131 228 L131 264",
         "Kind": "bypass",
         "Title": "abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독",
         "Rels": [
@@ -5180,7 +5186,7 @@
         ]
       },
       {
-        "D": "M354 212 L354 240",
+        "D": "M504 228 L504 264",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5190,9 +5196,10 @@
         ]
       },
       {
-        "D": "M106 372 L106 392",
+        "D": "M721 540 L721 588",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
         "Rels": [
           "MOD-0001.depends_on.MOD-0013",
           "MOD-0001.depends_on.MOD-0014",
@@ -5202,7 +5209,20 @@
         ]
       },
       {
-        "D": "M570 212 L570 240",
+        "D": "M737 540 L737 596",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0022",
+          "MOD-0001.depends_on.MOD-0023",
+          "MOD-0001.depends_on.MOD-0025",
+          "MOD-0002.depends_on.MOD-0022",
+          "MOD-0004.depends_on.MOD-0022"
+        ]
+      },
+      {
+        "D": "M712 228 L712 264",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5212,7 +5232,7 @@
         ]
       },
       {
-        "D": "M830 212 L830 240",
+        "D": "M964 228 L964 264",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5222,7 +5242,7 @@
         ]
       },
       {
-        "D": "M335 372 L335 392",
+        "D": "M296 228 L296 264",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5233,7 +5253,7 @@
         ]
       },
       {
-        "D": "M532 372 L532 392",
+        "D": "M1209 228 L1209 264",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/group: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5241,7 +5261,7 @@
         ]
       },
       {
-        "D": "M623 460 L623 484",
+        "D": "M504 348 L504 388",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5251,7 +5271,7 @@
         ]
       },
       {
-        "D": "M106 452 L106 476 L359 476",
+        "D": "M559 692 L559 700",
         "Kind": "bypass",
         "Title": "internal/evidence → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5262,7 +5282,7 @@
         ]
       },
       {
-        "D": "M469 628 L469 636",
+        "D": "M623 540 L623 596",
         "Kind": "bypass",
         "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
@@ -5271,7 +5291,7 @@
         ]
       },
       {
-        "D": "M461 628 L461 644",
+        "D": "M481 540 L481 548 L465 548",
         "Kind": "bypass",
         "Title": "internal/extract → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5281,7 +5301,7 @@
         ]
       },
       {
-        "D": "M477 476 L477 484",
+        "D": "M631 372 L631 388",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5290,7 +5310,7 @@
         ]
       },
       {
-        "D": "M563 628 L563 636",
+        "D": "M729 556 L729 596",
         "Kind": "bypass",
         "Title": "internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
@@ -5299,7 +5319,7 @@
         ]
       },
       {
-        "D": "M555 628 L555 644",
+        "D": "M489 556 L489 564 L465 564",
         "Kind": "bypass",
         "Title": "internal/identity → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5308,15 +5328,15 @@
         ]
       },
       {
-        "D": "M903 300 L903 380",
+        "D": "M964 324 L964 356 L713 356",
         "Kind": "bypass",
         "Title": "internal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Origin": "inferred",
         "Joins": true,
         "Marks": [
           {
-            "X": 903,
-            "Y": 300,
+            "X": 964,
+            "Y": 324,
             "Origin": "inferred"
           }
         ],
@@ -5326,7 +5346,16 @@
         ]
       },
       {
-        "D": "M708 628 L708 636",
+        "D": "M854 580 L854 588",
+        "Kind": "bypass",
+        "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0041.depends_on.MOD-0013"
+        ]
+      },
+      {
+        "D": "M846 580 L846 596",
         "Kind": "bypass",
         "Title": "internal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5335,7 +5364,7 @@
         ]
       },
       {
-        "D": "M751 544 L751 340 L606 340 L606 300",
+        "D": "M854 456 L854 348 L748 348 L748 324",
         "Kind": "bypass",
         "Title": "internal/store → internal/identity: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5346,7 +5375,7 @@
         ]
       },
       {
-        "D": "M700 628 L700 644",
+        "D": "M497 580 L497 588 L465 588",
         "Kind": "bypass",
         "Title": "internal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5355,7 +5384,7 @@
         ]
       },
       {
-        "D": "M532 452 L532 468 L359 468",
+        "D": "M1209 324 L1209 428 L374 428",
         "Kind": "bypass",
         "Title": "internal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5365,14 +5394,14 @@
         ]
       },
       {
-        "D": "M517 188 L517 212 M252 212 L252 372 M252 212 L830 212 M106 372 L1034 372",
+        "D": "M711 188 L711 228 M610 228 L610 364 M721 364 L721 540 M131 228 L1209 228 M610 364 L721 364 M721 540 L737 540",
         "Kind": "bypass",
         "Title": "abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독\nabbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/identity: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/screen: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/group: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 517,
+            "X": 711,
             "Y": 188,
             "Origin": "inferred"
           }
@@ -5408,11 +5437,11 @@
         ],
         "Count": 8,
         "Net": 1,
-        "LX": 522,
+        "LX": 690,
         "LY": 200
       },
       {
-        "D": "M634 188 L634 220 M668 220 L668 324 M767 324 L767 500 M536 188 L536 220 M422 188 L422 220 M422 220 L668 220 M668 324 L767 324 M327 500 L767 500",
+        "D": "M828 188 L828 252 M814 252 L814 396 M730 188 L730 252 M616 188 L616 252 M616 252 L828 252 M366 396 L814 396",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다\nabbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다\nabbd CLI → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5441,11 +5470,11 @@
         ],
         "Count": 3,
         "Net": 2,
-        "LX": 639,
+        "LX": 833,
         "LY": 200
       },
       {
-        "D": "M354 300 L354 364 M623 364 L623 460 M354 364 L623 364 M359 460 L623 460",
+        "D": "M504 324 L504 348 M374 348 L504 348",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5457,19 +5486,19 @@
         ],
         "Count": 2,
         "Net": 3,
-        "LX": 333,
-        "LY": 312
+        "LX": 509,
+        "LY": 336
       },
       {
-        "D": "M469 604 L469 628 M461 628 L469 628",
+        "D": "M623 516 L623 540 M481 540 L623 540",
         "Kind": "bypass",
         "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 469,
-            "Y": 604,
+            "X": 623,
+            "Y": 516,
             "Origin": "inferred"
           }
         ],
@@ -5480,19 +5509,19 @@
         ],
         "Count": 2,
         "Net": 4,
-        "LX": 474,
-        "LY": 616
+        "LX": 628,
+        "LY": 528
       },
       {
-        "D": "M534 300 L534 348 M703 348 L703 476 M563 476 L563 628 M534 348 L703 348 M477 476 L703 476 M555 628 L563 628",
+        "D": "M676 324 L676 372 M729 372 L729 556 M631 372 L729 372 M489 556 L729 556",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
         "Joins": true,
         "Marks": [
           {
-            "X": 534,
-            "Y": 300,
+            "X": 676,
+            "Y": 324,
             "Origin": "inferred"
           }
         ],
@@ -5503,11 +5532,11 @@
         ],
         "Count": 3,
         "Net": 5,
-        "LX": 513,
-        "LY": 312
+        "LX": 655,
+        "LY": 336
       },
       {
-        "D": "M837 300 L837 324 M837 324 L837 508 M912 300 L912 324 M837 324 L912 324 M343 508 L837 508",
+        "D": "M1059 324 L1059 404 M890 324 L890 404 M382 404 L1059 404",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다",
         "Origin": "extracted",
@@ -5530,26 +5559,27 @@
         ],
         "Count": 2,
         "Net": 6,
-        "LX": 816,
-        "LY": 312
+        "LX": 1064,
+        "LY": 336
       },
       {
-        "D": "M708 604 L708 628 M700 628 L708 628",
+        "D": "M854 516 L854 580 M497 580 L854 580",
         "Kind": "bypass",
-        "Title": "internal/store → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
+        "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
         "Joins": true,
         "Rels": [
+          "MOD-0041.depends_on.MOD-0013",
           "MOD-0041.depends_on.MOD-0022",
           "MOD-0041.depends_on.MOD-0030"
         ],
-        "Count": 2,
+        "Count": 3,
         "Net": 7,
-        "LX": 713,
-        "LY": 616
+        "LX": 859,
+        "LY": 528
       },
       {
-        "D": "M992 324 L992 228 M417 228 L992 228",
+        "D": "M135 236 L983 236",
         "Kind": "contract",
         "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다\n/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5591,22 +5621,7 @@
         "Net": 8
       },
       {
-        "D": "M417 228 L417 188",
-        "Kind": "contract",
-        "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다",
-        "Back": true,
-        "Rels": [
-          "MOD-0026.consumes.DATA-0006",
-          "MOD-0034.consumes.DATA-0006",
-          "MOD-0039.consumes.DATA-0006"
-        ],
-        "Count": 2,
-        "Net": 8,
-        "LX": 396,
-        "LY": 200
-      },
-      {
-        "D": "M496 228 L496 188",
+        "D": "M602 236 L602 188",
         "Kind": "contract",
         "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다",
         "Back": true,
@@ -5644,7 +5659,54 @@
         "Net": 8
       },
       {
-        "D": "M469 484 L623 484",
+        "D": "M757 236 L757 188",
+        "Kind": "contract",
+        "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다",
+        "Back": true,
+        "Rels": [
+          "MOD-0026.consumes.DATA-0006",
+          "MOD-0034.consumes.DATA-0006",
+          "MOD-0039.consumes.DATA-0006"
+        ],
+        "Count": 2,
+        "Net": 8,
+        "LX": 762,
+        "LY": 200
+      },
+      {
+        "D": "M559 588 L854 588",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0013",
+          "MOD-0001.depends_on.MOD-0014",
+          "MOD-0002.depends_on.MOD-0013",
+          "MOD-0004.depends_on.MOD-0013",
+          "MOD-0006.depends_on.MOD-0013",
+          "MOD-0041.depends_on.MOD-0013"
+        ],
+        "Net": 9
+      },
+      {
+        "D": "M559 588 L559 632",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0013",
+          "MOD-0001.depends_on.MOD-0014",
+          "MOD-0002.depends_on.MOD-0013",
+          "MOD-0004.depends_on.MOD-0013",
+          "MOD-0006.depends_on.MOD-0013",
+          "MOD-0041.depends_on.MOD-0013"
+        ],
+        "Count": 2,
+        "Net": 9,
+        "LX": 564,
+        "LY": 628
+      },
+      {
+        "D": "M504 388 L631 388",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5653,10 +5715,10 @@
           "MOD-0011.depends_on.MOD-0021",
           "MOD-0026.depends_on.MOD-0017"
         ],
-        "Net": 9
+        "Net": 10
       },
       {
-        "D": "M469 484 L469 544",
+        "D": "M623 388 L623 456",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5665,12 +5727,12 @@
           "MOD-0026.depends_on.MOD-0017"
         ],
         "Count": 2,
-        "Net": 9,
-        "LX": 448,
-        "LY": 534
+        "Net": 10,
+        "LX": 602,
+        "LY": 452
       },
       {
-        "D": "M903 372 L903 460 M903 460 L903 636 M469 636 L903 636",
+        "D": "M713 356 L713 596 M623 596 L846 596",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5686,10 +5748,10 @@
           "MOD-0039.depends_on.MOD-0022",
           "MOD-0041.depends_on.MOD-0022"
         ],
-        "Net": 10
+        "Net": 11
       },
       {
-        "D": "M805 636 L805 672",
+        "D": "M756 596 L756 632",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5705,12 +5767,12 @@
           "MOD-0041.depends_on.MOD-0022"
         ],
         "Count": 5,
-        "Net": 10,
-        "LX": 810,
-        "LY": 668
+        "Net": 11,
+        "LX": 761,
+        "LY": 628
       },
       {
-        "D": "M359 460 L359 644 M359 644 L700 644",
+        "D": "M374 348 L374 540 M374 540 L465 540 M465 540 L465 700 M465 700 L559 700",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5724,10 +5786,10 @@
           "MOD-0041.depends_on.MOD-0030",
           "MOD-0054.depends_on.MOD-0030"
         ],
-        "Net": 11
+        "Net": 12
       },
       {
-        "D": "M359 644 L359 672",
+        "D": "M559 700 L559 728",
         "Kind": "bypass",
         "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -5741,12 +5803,12 @@
           "MOD-0054.depends_on.MOD-0030"
         ],
         "Count": 6,
-        "Net": 11,
-        "LX": 338,
-        "LY": 668
+        "Net": 12,
+        "LX": 538,
+        "LY": 724
       },
       {
-        "D": "M327 500 L327 628 M327 628 L384 628",
+        "D": "M366 396 L366 604 M366 604 L661 604 M661 604 L661 700 M582 700 L661 700",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Joins": true,
@@ -5762,10 +5824,10 @@
           "MOD-0047.depends_on.MOD-0030",
           "MOD-0047.depends_on.MOD-0031"
         ],
-        "Net": 12
+        "Net": 13
       },
       {
-        "D": "M384 628 L384 672",
+        "D": "M582 700 L582 728",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Rels": [
@@ -5781,12 +5843,12 @@
           "MOD-0047.depends_on.MOD-0031"
         ],
         "Count": 3,
-        "Net": 12,
-        "LX": 389,
-        "LY": 668
+        "Net": 13,
+        "LX": 587,
+        "LY": 724
       },
       {
-        "D": "M735 332 L735 516 M614 516 L837 516",
+        "D": "M749 412 L1059 412",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다\ninternal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
         "Joins": true,
@@ -5816,19 +5878,10 @@
           "MOD-0040.depends_on.MOD-0041",
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 13
+        "Net": 14
       },
       {
-        "D": "M614 516 L614 544",
-        "Kind": "contract",
-        "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
-        "Rels": [
-          "MOD-0026.consumes.DATA-0006"
-        ],
-        "Net": 13
-      },
-      {
-        "D": "M735 516 L735 544",
+        "D": "M780 412 L780 456",
         "Kind": "contract",
         "Title": "abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다; abbd CLI → internal/store: module understanding 계약을 거쳐 씁니다",
         "Rels": [
@@ -5845,10 +5898,19 @@
           "MOD-0001.depends_on.MOD-0044",
           "MOD-0001.depends_on.MOD-0046"
         ],
-        "Net": 13
+        "Net": 14
       },
       {
-        "D": "M786 516 L786 544",
+        "D": "M856 412 L856 456",
+        "Kind": "contract",
+        "Title": "internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독",
+        "Rels": [
+          "MOD-0026.consumes.DATA-0006"
+        ],
+        "Net": 14
+      },
+      {
+        "D": "M932 412 L932 456",
         "Kind": "contract",
         "Title": "internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다",
         "Rels": [
@@ -5864,10 +5926,10 @@
           "MOD-0039.depends_on.MOD-0041",
           "MOD-0040.depends_on.MOD-0041"
         ],
-        "Net": 13
+        "Net": 14
       },
       {
-        "D": "M1158 100 L1158 212 M1158 212 L1158 324 M1158 324 L1158 460 M1067 460 L1158 460",
+        "D": "M106 116 L106 220 M106 220 L194 220 M194 220 L194 348 M99 348 L194 348",
         "Kind": "bypass",
         "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독\n/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
@@ -5880,10 +5942,10 @@
           "FEAT-0012.depends_on.FEAT-0021",
           "FEAT-0015.depends_on.FEAT-0018"
         ],
-        "Net": 14
+        "Net": 15
       },
       {
-        "D": "M1076 460 L1076 544",
+        "D": "M106 348 L106 456",
         "Kind": "bypass",
         "Title": "/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독\n/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독",
         "Rels": [
@@ -5896,190 +5958,210 @@
           "FEAT-0015.depends_on.FEAT-0018"
         ],
         "Count": 2,
-        "Net": 14,
-        "LX": 1081,
-        "LY": 540
+        "Net": 15,
+        "LX": 111,
+        "LY": 452
       }
     ],
     "Dots": [
       {
-        "X": 354,
-        "Y": 212,
-        "Kind": "bypass"
-      },
-      {
-        "X": 517,
-        "Y": 212,
-        "Kind": "bypass"
-      },
-      {
-        "X": 570,
-        "Y": 212,
-        "Kind": "bypass"
-      },
-      {
-        "X": 536,
-        "Y": 220,
-        "Kind": "contract"
-      },
-      {
-        "X": 634,
-        "Y": 220,
-        "Kind": "contract"
-      },
-      {
-        "X": 496,
+        "X": 296,
         "Y": 228,
-        "Kind": "contract"
+        "Kind": "bypass"
       },
       {
-        "X": 607,
+        "X": 504,
         "Y": 228,
+        "Kind": "bypass"
+      },
+      {
+        "X": 610,
+        "Y": 228,
+        "Kind": "bypass"
+      },
+      {
+        "X": 711,
+        "Y": 228,
+        "Kind": "bypass"
+      },
+      {
+        "X": 712,
+        "Y": 228,
+        "Kind": "bypass"
+      },
+      {
+        "X": 964,
+        "Y": 228,
+        "Kind": "bypass"
+      },
+      {
+        "X": 602,
+        "Y": 236,
         "Kind": "contract"
       },
       {
         "X": 749,
-        "Y": 228,
+        "Y": 236,
         "Kind": "contract"
       },
       {
-        "X": 837,
-        "Y": 324,
+        "X": 757,
+        "Y": 236,
         "Kind": "contract"
       },
       {
-        "X": 252,
-        "Y": 372,
+        "X": 730,
+        "Y": 252,
+        "Kind": "contract"
+      },
+      {
+        "X": 814,
+        "Y": 252,
+        "Kind": "contract"
+      },
+      {
+        "X": 106,
+        "Y": 348,
         "Kind": "bypass"
       },
       {
-        "X": 335,
-        "Y": 372,
+        "X": 504,
+        "Y": 348,
         "Kind": "bypass"
       },
       {
-        "X": 532,
-        "Y": 372,
-        "Kind": "bypass"
-      },
-      {
-        "X": 903,
+        "X": 676,
         "Y": 372,
         "Kind": "bypass"
       },
       {
         "X": 623,
-        "Y": 460,
+        "Y": 388,
         "Kind": "bypass"
       },
       {
-        "X": 1076,
-        "Y": 460,
-        "Kind": "bypass"
-      },
-      {
-        "X": 359,
-        "Y": 468,
-        "Kind": "bypass"
-      },
-      {
-        "X": 359,
-        "Y": 476,
-        "Kind": "bypass"
-      },
-      {
-        "X": 563,
-        "Y": 476,
-        "Kind": "bypass"
-      },
-      {
-        "X": 477,
-        "Y": 484,
-        "Kind": "bypass"
-      },
-      {
-        "X": 327,
-        "Y": 500,
+        "X": 634,
+        "Y": 396,
         "Kind": "contract"
       },
       {
-        "X": 480,
-        "Y": 500,
+        "X": 814,
+        "Y": 396,
         "Kind": "contract"
       },
       {
-        "X": 767,
-        "Y": 500,
+        "X": 366,
+        "Y": 404,
         "Kind": "contract"
       },
       {
-        "X": 837,
-        "Y": 508,
+        "X": 890,
+        "Y": 404,
         "Kind": "contract"
       },
       {
-        "X": 327,
-        "Y": 516,
+        "X": 1059,
+        "Y": 404,
         "Kind": "contract"
       },
       {
-        "X": 735,
-        "Y": 516,
+        "X": 366,
+        "Y": 412,
         "Kind": "contract"
       },
       {
-        "X": 767,
-        "Y": 516,
+        "X": 780,
+        "Y": 412,
         "Kind": "contract"
       },
       {
-        "X": 786,
-        "Y": 516,
+        "X": 814,
+        "Y": 412,
         "Kind": "contract"
       },
       {
-        "X": 469,
-        "Y": 628,
+        "X": 856,
+        "Y": 412,
+        "Kind": "contract"
+      },
+      {
+        "X": 932,
+        "Y": 412,
+        "Kind": "contract"
+      },
+      {
+        "X": 374,
+        "Y": 428,
         "Kind": "bypass"
       },
       {
-        "X": 563,
-        "Y": 628,
+        "X": 623,
+        "Y": 540,
         "Kind": "bypass"
       },
       {
-        "X": 708,
-        "Y": 628,
+        "X": 721,
+        "Y": 540,
         "Kind": "bypass"
       },
       {
-        "X": 563,
-        "Y": 636,
+        "X": 465,
+        "Y": 548,
         "Kind": "bypass"
       },
       {
-        "X": 708,
-        "Y": 636,
+        "X": 729,
+        "Y": 556,
         "Kind": "bypass"
       },
       {
-        "X": 805,
-        "Y": 636,
+        "X": 465,
+        "Y": 564,
         "Kind": "bypass"
       },
       {
-        "X": 359,
-        "Y": 644,
+        "X": 846,
+        "Y": 580,
         "Kind": "bypass"
       },
       {
-        "X": 461,
-        "Y": 644,
+        "X": 854,
+        "Y": 580,
         "Kind": "bypass"
       },
       {
-        "X": 555,
-        "Y": 644,
+        "X": 465,
+        "Y": 588,
+        "Kind": "bypass"
+      },
+      {
+        "X": 721,
+        "Y": 588,
+        "Kind": "bypass"
+      },
+      {
+        "X": 713,
+        "Y": 596,
+        "Kind": "bypass"
+      },
+      {
+        "X": 729,
+        "Y": 596,
+        "Kind": "bypass"
+      },
+      {
+        "X": 737,
+        "Y": 596,
+        "Kind": "bypass"
+      },
+      {
+        "X": 756,
+        "Y": 596,
+        "Kind": "bypass"
+      },
+      {
+        "X": 559,
+        "Y": 700,
         "Kind": "bypass"
       }
     ]
@@ -9087,7 +9169,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:229 \"return exitError\""
+              "cmd/abbd/main.go:232 \"return exitUsage\""
             ],
             "Marks": [
               {
@@ -9108,7 +9190,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
             ],
             "Marks": [
               {
@@ -9128,7 +9210,7 @@
             "Back": true,
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:262 \"if len(p.Extract) == 0 {\""
+              "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
             ],
             "Rels": [
               "MOD-0004.consumes.CFG-0002"
@@ -9142,7 +9224,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:269 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Marks": [
               {
@@ -9162,7 +9244,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:374 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0006"
@@ -9174,7 +9256,7 @@
             "Title": "sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독",
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:263 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+              "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0008"
@@ -9187,7 +9269,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0013"
@@ -9202,7 +9284,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Marks": [
               {
@@ -9221,7 +9303,7 @@
             "Title": "sync pipeline depends_on internal/identity (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:361 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:370 \"identity.Reconcile(\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
@@ -9255,7 +9337,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\""
+              "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
             ],
             "Marks": [
               {
@@ -9310,7 +9392,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -9539,8 +9621,8 @@
             "Joins": true,
             "Back": true,
             "Quotes": [
-              "cmd/abbd/main.go:262 \"if len(p.Extract) == 0 {\"",
-              "cmd/abbd/main.go:374 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\"",
+              "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Marks": [
               {
@@ -9570,9 +9652,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:263 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-              "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
-              "cmd/abbd/main.go:361 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:370 \"identity.Reconcile(\""
             ],
             "Marks": [
               {
@@ -9609,7 +9691,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -9647,7 +9729,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -9662,7 +9744,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -9713,7 +9795,7 @@
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:269 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -9727,7 +9809,7 @@
             "Kind": "consumes",
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:269 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -9746,7 +9828,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:22 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -9762,7 +9844,7 @@
             "Title": "review commands depends_on internal/evidence (via call), 판독\nsync pipeline depends_on internal/evidence (via call), 판독\nrecord writers depends_on internal/evidence (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:22 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -9814,7 +9896,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9828,7 +9910,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9846,7 +9928,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -9860,7 +9942,7 @@
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:70 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -11060,6 +11142,14 @@
                 "Code": true
               },
               {
+                "Text": " and the working tree's ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.Snapshot",
+                "Code": true
+              },
+              {
                 "Text": ". ",
                 "Code": false
               },
@@ -11076,7 +11166,55 @@
                 "Code": true
               },
               {
-                "Text": " shows it as CURRENT or STALE.",
+                "Text": " shows it as CURRENT or STALE. ",
+                "Code": false
+              },
+              {
+                "Text": "--restamp",
+                "Code": true
+              },
+              {
+                "Text": " stamps the stored text again without a new one, after the extraction moved what the module holds. ",
+                "Code": false
+              },
+              {
+                "Text": "mayRestamp",
+                "Code": true
+              },
+              {
+                "Text": " allows it only when ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.Changed",
+                "Code": true
+              },
+              {
+                "Text": " between the text's tree and now touches none of ",
+                "Code": false
+              },
+              {
+                "Text": "store.ModulePaths",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "syncActual",
+                "Code": true
+              },
+              {
+                "Text": " runs ",
+                "Code": false
+              },
+              {
+                "Text": "store.UpgradeUnderstandings",
+                "Code": true
+              },
+              {
+                "Text": " after it saves the units and prints each text it restamps.",
                 "Code": false
               }
             ]
@@ -11183,7 +11321,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:22 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },
@@ -11202,7 +11340,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:392 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -11229,7 +11367,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -11247,7 +11385,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -11258,7 +11396,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:273 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:282 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -11304,7 +11442,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11368,7 +11506,8 @@
           "Kind": "provides",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:229 \"return exitError\""
+            "cmd/abbd/main.go:232 \"return exitUsage\"",
+            "cmd/abbd/main.go:209 \"return exitError\""
           ]
         },
         {
@@ -11377,7 +11516,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:232 \"if err := e.publish(); err != nil {\""
+            "cmd/abbd/main.go:241 \"if err := e.publish(); err != nil {\""
           ]
         },
         {
@@ -11386,7 +11525,7 @@
           "Kind": "consumes",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:262 \"if len(p.Extract) == 0 {\""
+            "cmd/abbd/main.go:271 \"if len(p.Extract) == 0 {\""
           ]
         },
         {
@@ -11395,7 +11534,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:269 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+            "cmd/abbd/main.go:278 \"ex, err := extract.Parse(bytes.NewReader(out))\""
           ]
         },
         {
@@ -11404,7 +11543,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:374 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+            "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
           ]
         },
         {
@@ -11413,7 +11552,7 @@
           "Kind": "depends_on",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:263 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+            "cmd/abbd/main.go:272 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
             "cmd/abbd/setup.go:51 \"p.Extract = argv\""
           ]
         },
@@ -11423,7 +11562,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -11432,7 +11571,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -11441,7 +11580,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:361 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:370 \"identity.Reconcile(\""
           ]
         },
         {
@@ -11459,7 +11598,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11488,7 +11627,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:48 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:70 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Tree: tree, Text: text}); err != nil {\""
           ]
         },
         {
@@ -12421,7 +12560,7 @@
             "Title": "liveness and line moves depends_on quote matching (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/evidence/evidence.go:153 \"r := c.Check(e)\""
+              "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0015"
@@ -12433,7 +12572,7 @@
             "Title": "liveness and line moves depends_on internal/model (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/evidence/evidence.go:204 \"if u.Semantic() {\""
+              "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0031"
@@ -12446,7 +12585,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/evidence/evidence.go:132 \"first, last, bounded := e.Span()\""
+              "internal/evidence/evidence.go:139 \"first, last, bounded := e.Span()\""
             ],
             "Marks": [
               {
@@ -12503,8 +12642,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/evidence/evidence.go:153 \"r := c.Check(e)\"",
-              "internal/evidence/evidence.go:204 \"if u.Semantic() {\""
+              "internal/evidence/evidence.go:175 \"r := c.Check(e)\"",
+              "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
             ],
             "Marks": [
               {
@@ -12822,7 +12961,23 @@
                 "Code": true
               },
               {
-                "Text": " calls it to mark every item but the script's that is not live as dead.",
+                "Text": " calls it to mark every item but the script's that is not live as dead. ",
+                "Code": false
+              },
+              {
+                "Text": "store.ModuleDigest",
+                "Code": true
+              },
+              {
+                "Text": " calls ",
+                "Code": false
+              },
+              {
+                "Text": "Around",
+                "Code": true
+              },
+              {
+                "Text": " to hash the lines near each quote of a file a module only quotes.",
                 "Code": false
               }
             ]
@@ -13225,6 +13380,52 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Around",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "evidence.go",
+                "Code": true
+              },
+              {
+                "Text": "): the raw lines that hold a quote now, found as ",
+                "Code": false
+              },
+              {
+                "Text": "Check",
+                "Code": true
+              },
+              {
+                "Text": " finds it, with ",
+                "Code": false
+              },
+              {
+                "Text": "n",
+                "Code": true
+              },
+              {
+                "Text": " lines on each side, clamped to the file. It returns false when ",
+                "Code": false
+              },
+              {
+                "Text": "Check",
+                "Code": true
+              },
+              {
+                "Text": " would not find the quote.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -13247,7 +13448,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13265,7 +13466,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:362 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:371 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13283,7 +13484,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/evidence/evidence.go:207 \"v.SetAbsent(model.EvidenceDead)\""
+            "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
           ]
         },
         {
@@ -13301,7 +13502,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:153 \"r := c.Check(e)\""
+            "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
           ]
         },
         {
@@ -13310,7 +13511,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:204 \"if u.Semantic() {\""
+            "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
           ]
         },
         {
@@ -13319,7 +13520,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:132 \"first, last, bounded := e.Span()\""
+            "internal/evidence/evidence.go:139 \"first, last, bounded := e.Span()\""
           ]
         },
         {
@@ -14734,7 +14935,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Marks": [
               {
@@ -14824,7 +15025,7 @@
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -14838,7 +15039,7 @@
             "Kind": "depends_on",
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -15610,7 +15811,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -15629,7 +15830,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15656,8 +15857,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:343 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:352 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15667,7 +15868,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15687,7 +15888,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ]
@@ -16688,7 +16889,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:273 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:282 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -16697,7 +16898,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:361 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:370 \"identity.Reconcile(\""
           ]
         },
         {
@@ -16706,7 +16907,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:331 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -16717,7 +16918,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:367 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:376 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -16726,7 +16927,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:361 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+            "cmd/abbd/main.go:370 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
           ]
         },
         {
@@ -16763,7 +16964,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:408 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:343 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:352 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -19479,7 +19680,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:392 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:408 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -19506,7 +19707,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/evidence/evidence.go:207 \"v.SetAbsent(model.EvidenceDead)\""
+            "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
           ]
         },
         {
@@ -19524,7 +19725,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:204 \"if u.Semantic() {\""
+            "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
           ]
         },
         {
@@ -19533,7 +19734,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:132 \"first, last, bounded := e.Span()\""
+            "internal/evidence/evidence.go:139 \"first, last, bounded := e.Span()\""
           ]
         },
         {
@@ -19660,7 +19861,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:70 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -22048,7 +22249,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:99 \"case in.Tree != in.Synced.Fingerprint:\"",
-            "cmd/abbd/main.go:374 \"state = store.State{Revision: rev, Fingerprint: tree\""
+            "cmd/abbd/main.go:390 \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -22058,7 +22259,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:339 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:348 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -22087,7 +22288,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
           ]
         },
         {
@@ -22379,7 +22580,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:370 \"hash, err := st.MDHash()\""
+              "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\""
             ],
             "Marks": [
               {
@@ -22419,7 +22620,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:48 \"Digest: digest, Text: text}\""
+              "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
             ],
             "Marks": [
               {
@@ -23633,7 +23834,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -23641,7 +23842,15 @@
                 "Code": true
               },
               {
-                "Text": " in frontmatter and the text as the body. ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Tree",
+                "Code": true
+              },
+              {
+                "Text": ", the working-tree snapshot when the text was stamped, in frontmatter and the text as the body. ",
                 "Code": false
               },
               {
@@ -23671,23 +23880,47 @@
                 "Code": true
               },
               {
-                "Text": "): the first 16 hex characters of a SHA-256 over the files cited by the anchors and evidence of a module and of its direct children, with absent units left out. A missing file hashes as missing. A child's citations count, so ",
+                "Text": "): the first 16 hex characters of a SHA-256 over the code a module's text describes. ",
                 "Code": false
               },
               {
-                "Text": "internal/store",
+                "Text": "moduleCode",
                 "Code": true
               },
               {
-                "Text": "'s text goes STALE when ",
+                "Text": " collects the module and every present unit under it at any depth, and takes their anchors. A directory anchor stands for the files ",
                 "Code": false
               },
               {
-                "Text": "internal/identity/identity.go",
+                "Text": "gitx.WorkingFiles",
                 "Code": true
               },
               {
-                "Text": ", which the merge candidates file unit cites, changes. A text whose ",
+                "Text": " lists under it, ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/",
+                "Code": true
+              },
+              {
+                "Text": " left out. An anchor that extraction derived from the unit's own evidence does not count as a whole file. A quote of a file no anchor covers counts by ",
+                "Code": false
+              },
+              {
+                "Text": "evidence.Checker.Around",
+                "Code": true
+              },
+              {
+                "Text": ", the quoted lines and 5 on each side wherever they sit now, so an edit elsewhere in a shared file such as ",
+                "Code": false
+              },
+              {
+                "Text": "CLAUDE.md",
+                "Code": true
+              },
+              {
+                "Text": " leaves the text current. A missing file or quote hashes as missing. A text whose ",
                 "Code": false
               },
               {
@@ -23712,6 +23945,68 @@
               },
               {
                 "Text": " and the blueprint.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Digest upgrade",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "understanding.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "legacyModuleDigest",
+                "Code": true
+              },
+              {
+                "Text": " is the 0.6 digest, over the whole files cited by a module and its direct children. ",
+                "Code": false
+              },
+              {
+                "Text": "UpgradeUnderstandings",
+                "Code": true
+              },
+              {
+                "Text": ", which ",
+                "Code": false
+              },
+              {
+                "Text": "syncActual",
+                "Code": true
+              },
+              {
+                "Text": " runs, restamps a text whose stored digest equals that digest of the code as it is now, because it was current before the digest grew. A text the old digest called STALE stays STALE. ",
+                "Code": false
+              },
+              {
+                "Text": "ModulePaths",
+                "Code": true
+              },
+              {
+                "Text": " lists the files the digest reads, for ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand --restamp",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
@@ -23808,7 +24103,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\"",
+            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -23818,7 +24113,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:331 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:340 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -23829,7 +24124,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:367 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:376 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -23878,7 +24173,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "cmd/abbd/understand.go:38 \"digest := e.st.ModuleDigest(units, id)\""
+            "cmd/abbd/understand.go:35 \"digest := e.st.ModuleDigest(units, id)\""
           ]
         },
         {
@@ -23896,7 +24191,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:70 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:195 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -23914,8 +24209,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:370 \"hash, err := st.MDHash()\"",
-            "cmd/abbd/main.go:374 \"MDHash: hash\""
+            "cmd/abbd/main.go:386 \"hash, err := st.MDHash()\"",
+            "cmd/abbd/main.go:390 \"MDHash: hash\""
           ]
         },
         {
@@ -23934,7 +24229,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:48 \"Digest: digest, Text: text}\""
+            "cmd/abbd/understand.go:70 \"Digest: digest, Tree: tree, Text: text}\""
           ]
         },
         {
@@ -25691,7 +25986,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:22 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
+            "cmd/abbd/understand.go:28 \"if !ok || u.Kind != model.Module || u.Parent != \\\"\\\" {\"",
             "cmd/abbd/query.go:179 \"if u.Kind != model.Module || u.Parent != \\\"\\\" {\""
           ]
         },
