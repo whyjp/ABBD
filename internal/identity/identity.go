@@ -105,11 +105,11 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	inTo := map[int]int{}
 	stTaken := map[int]bool{}
 	for i, in := range input {
-		if in.SupplementKey == "" {
+		if in.SupplementRef == "" {
 			continue
 		}
 		for j, u := range units {
-			if !stTaken[j] && u.Kind == in.Kind && u.SupplementKey == in.SupplementKey {
+			if !stTaken[j] && u.Kind == in.Kind && u.SupplementRef == in.SupplementRef {
 				inTo[i], stTaken[j] = j, true
 				break
 			}
@@ -172,7 +172,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		hw[in.Kind]++
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
-			SupplementKey: in.SupplementKey, Anchors: in.Anchors, Purpose: in.Purpose,
+			SupplementRef: in.SupplementRef, Anchors: in.Anchors, Purpose: in.Purpose,
 			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Entries: in.Entries,
 			Evidence: in.Evidence,
 		}
@@ -361,8 +361,8 @@ func merge(u *model.Unit, in extract.Unit, ws Writers) {
 	u.Anchors = in.Anchors
 	u.Digest = in.Digest
 	u.Entries = in.Entries
-	if in.SupplementKey != "" {
-		u.SupplementKey = in.SupplementKey
+	if in.SupplementRef != "" {
+		u.SupplementRef = in.SupplementRef
 	}
 	if ws.own(u.Name.Writer) || model.Outranks(model.NameField, in.Name.Writer, u.Name.Writer) {
 		u.Name = in.Name

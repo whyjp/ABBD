@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "356"
+          lines: "364"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "298"
+          lines: "302"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "302"
+          lines: "306"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,30 +29,30 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "305"
+          lines: "309"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "430"
+          lines: "434"
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
       code:
         cmd/abbd/main.go#quote-414b351c: 1890665b94e73ff6
         cmd/abbd/main.go#quote-c1c55757: 417fc75a7dfd695c
     - unit: MOD-0017
-      does: Parse(stdout) → extract.Result with units, anchors and relations
+      does: Parse(stdout) → extract.Result, units keyed by ref with anchors and relations
       calls:
         - DATA-0002
       evidence:
         - path: internal/extract/extract.go
-          lines: "86"
+          lines: "97"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "309"
+          lines: "313"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
         cmd/abbd/main.go#quote-2a172499: f449d858035def28
-        internal/extract/extract.go#quote-1772af40: 7c1ba637b199b3cb
+        internal/extract/extract.go#quote-1772af40: 47cee2a32e82bc47
     - unit: MOD-0041
       does: Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state
       fails: Writable refuses a state with a unit file in the old format; run abbd migrate
@@ -63,13 +63,13 @@ steps:
           lines: "76"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "242"
+          lines: "250"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "254"
+          lines: "262"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "367"
+          lines: "371"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -85,7 +85,7 @@ steps:
           lines: "94"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "379"
+          lines: "383"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -99,7 +99,7 @@ steps:
           lines: "234"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "388"
+          lines: "392"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -113,7 +113,7 @@ steps:
           lines: "30"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "398"
+          lines: "402"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -129,7 +129,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "392"
+          lines: "396"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -143,7 +143,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "402"
+          lines: "406"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -156,7 +156,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "403"
+          lines: "407"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -168,10 +168,10 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "222"
+          lines: "230"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "247"
+          lines: "255"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
@@ -186,7 +186,7 @@ steps:
           lines: "524"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "259"
+          lines: "267"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
@@ -199,7 +199,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "272"
+          lines: "276"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"

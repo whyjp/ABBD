@@ -4,6 +4,7 @@ package store
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -181,6 +182,17 @@ func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 		u = l.convert()
 	} else if err := yaml.Unmarshal(front, &u); err != nil {
 		return u, false, err
+	} else if bytes.Contains(front, []byte("supplement_key:")) {
+		var key struct {
+			Key string `yaml:"supplement_key"`
+		}
+		if err := yaml.Unmarshal(front, &key); err != nil {
+			return u, false, err
+		}
+		if u.SupplementRef != "" && key.Key != "" && u.SupplementRef != key.Key {
+			return u, false, fmt.Errorf("supplement_ref %q and supplement_key %q name the unit twice; supplement_key is the older spelling of supplement_ref, so keep one", u.SupplementRef, key.Key)
+		}
+		u.SupplementRef = cmp.Or(u.SupplementRef, key.Key)
 	}
 	if i := bytes.Index(body, []byte("\n"+notesHeading)); i >= 0 {
 		u.Notes = string(body[i+1:])

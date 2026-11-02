@@ -138,12 +138,12 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 }
 
 // semantic is a unit only a reader vouches for. Its name is a guess too, and
-// its evidence anchors its ID. It keeps the supplement's key, by which a
+// its evidence anchors its ID. It keeps the supplement's ref, by which a
 // re-run of setup finds it again.
 func semantic(d extract.Unit, n int) extract.Unit {
-	d.SupplementKey, d.Key = d.Key, fmt.Sprintf("supplement#%d", n)
-	if d.SupplementKey != "" {
-		d.Key = "supplement:" + d.SupplementKey
+	d.SupplementRef, d.Key = d.Key, fmt.Sprintf("supplement#%d", n)
+	if d.SupplementRef != "" {
+		d.Key = "supplement:" + d.SupplementRef
 	}
 	d.Name = model.Said(model.Supplement, d.Name.Value)
 	d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, "", "", nil

@@ -12,7 +12,7 @@ import (
 )
 
 type xunit struct {
-	Key, Kind, Name, Signature, Digest string
+	Ref, Kind, Name, Signature, Digest string
 }
 type xrel struct{ From, To, Kind string }
 type xresult struct {
@@ -76,16 +76,16 @@ func TestANewCommandIsOneNewContract(t *testing.T) {
 	_, r2 := runExtractor(t, dir)
 	old := map[string]xunit{}
 	for _, u := range r1.Units {
-		old[u.Key] = u
+		old[u.Ref] = u
 	}
 	var added []string
 	for _, u := range r2.Units {
-		o, ok := old[u.Key]
+		o, ok := old[u.Ref]
 		switch {
 		case !ok:
-			added = append(added, u.Key)
+			added = append(added, u.Ref)
 		case o.Signature != u.Signature || o.Digest != u.Digest:
-			t.Fatalf("%s changed: %+v -> %+v", u.Key, o, u)
+			t.Fatalf("%s changed: %+v -> %+v", u.Ref, o, u)
 		}
 	}
 	if len(added) != 1 || added[0] != "if-cli-ok" {
@@ -142,11 +142,11 @@ func TestExtractionIsStableAcrossRunsAndLineEndings(t *testing.T) {
 	json.Unmarshal([]byte(a), &r0)
 	old := map[string]xunit{}
 	for _, u := range r0.Units {
-		old[u.Key] = u
+		old[u.Ref] = u
 	}
 	for _, u := range r1.Units {
-		if o := old[u.Key]; o.Digest != u.Digest || o.Signature != u.Signature {
-			t.Errorf("CRLF changed %s: digest %s -> %s, sig %q -> %q", u.Key, o.Digest, u.Digest, o.Signature, u.Signature)
+		if o := old[u.Ref]; o.Digest != u.Digest || o.Signature != u.Signature {
+			t.Errorf("CRLF changed %s: digest %s -> %s, sig %q -> %q", u.Ref, o.Digest, u.Digest, o.Signature, u.Signature)
 		}
 	}
 }
