@@ -16,11 +16,11 @@ type Input struct {
 	Project store.Project
 	// Synced is the watermark of the last sync; Tree is the working tree now.
 	// Inputs is what the blueprint must be rendered from now, and Rendered
-	// says whether its files are there to compare.
+	// the hash of its files now, "" when there are none.
 	Synced   store.State
 	Tree     string
 	Inputs   string
-	Rendered bool
+	Rendered string
 	// Understandings are pstack how's texts by module; Digests are each
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
@@ -65,8 +65,7 @@ func Load(st store.Store) (Input, error) {
 	for id := range in.Understandings {
 		in.Digests[id] = st.ModuleDigest(in.Units, id)
 	}
-	b, err := st.ReadBlueprint(GraphFile)
-	in.Rendered = b != nil
+	in.Rendered, err = st.BlueprintHash()
 	return in, err
 }
 
@@ -79,12 +78,13 @@ const (
 )
 
 // BlueprintFreshness compares the inputs the state says the blueprint was
-// rendered from with the inputs now.
+// rendered from with the inputs now, and the files that render wrote with
+// the files there now.
 func (in Input) BlueprintFreshness() Freshness {
 	switch {
-	case !in.Rendered || in.Synced.Blueprint == "":
+	case in.Rendered == "" || in.Synced.Blueprint == "" || in.Synced.Rendered == "":
 		return Unknown
-	case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:
+	case in.Synced.Merged || in.Synced.Blueprint != in.Inputs || in.Synced.Rendered != in.Rendered:
 		return Stale
 	}
 	return Fresh

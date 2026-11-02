@@ -107,7 +107,7 @@ func (e env) status() error {
 	case screen.Stale:
 		behind = append(behind, "the blueprint is STALE, run abbd sync")
 	case screen.Unknown:
-		behind = append(behind, "the blueprint is UNKNOWN: blueprint/graph.json is missing or the state does not say what it was rendered from, run abbd sync")
+		behind = append(behind, "the blueprint is UNKNOWN: blueprint/ holds no files or the state does not say what was rendered, run abbd sync")
 	}
 	switch {
 	case in.Synced.Merged:

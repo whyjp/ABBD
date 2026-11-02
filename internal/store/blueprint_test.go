@@ -20,7 +20,7 @@ func TestSavingTheBlueprintDropsPagesItNoLongerHas(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(dir, Dir, "blueprint", "MOD-0001.html")); !os.IsNotExist(err) {
 		t.Errorf("the page of a module no render holds is still there")
 	}
-	if b, _ := s.ReadBlueprint("index.html"); string(b) != "a" {
+	if b, _ := os.ReadFile(filepath.Join(dir, Dir, "blueprint", "index.html")); string(b) != "a" {
 		t.Errorf("the index page is gone or changed: %q", b)
 	}
 }

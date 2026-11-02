@@ -82,7 +82,7 @@ A unit is present or absent, and an absent unit always stores `absent_reason`.
 | `retracted` | A mask hides the unit, or a reader retracted its own unit |
 | `unneeded` | A group unit that no view needs |
 
-Setup pairs a supplement unit with the stored unit of the same `supplement_key` before it pairs anything on anchors. The key is the supplement's own key for the unit. Identity therefore never depends on evidence locators, which sync rewrites.
+Setup pairs a supplement unit with the stored unit of the same `supplement_ref` before it pairs anything on anchors. The ref is the supplement's own `ref` for the unit. A store written before the ref spells it `supplement_key`, and setup pairs on that the same way. Identity therefore never depends on evidence locators, which sync rewrites.
 
 ## 6. Operations
 
@@ -104,7 +104,7 @@ A mask is `{target, writer, digest, reason, source}`. The digest covers the mask
 The adversarial review of the first draft asked to reduce scope before implementing. Each finding and what this design does with it:
 
 1. A symbol index would kill a third of the supplement's live evidence, because readers stored bare method names where the index emits `Type.Method`. Deferred. When an index comes, an unknown or bare symbol falls back to file scope, and a duplicate symbol in one file (several `init`) never fails sync.
-2. Anchors derived from evidence would change under a symbol migration, so setup would re-mint IDs. Setup now pairs on the stored `supplement_key` first.
+2. Anchors derived from evidence would change under a symbol migration, so setup would re-mint IDs. Setup now pairs on the stored `supplement_ref` first.
 3. `group.Fallback` minted IDs and had no reason for absence. It is now a writer with stored claims and the `unneeded` reason, and it also groups unplaced top-level units.
 4. Without an index, a drifted claim would count forever. Drift is bounded to one revision (section 3). Migration keeps today's dead items dead.
 5. A drifted reader claim beat a live supplement claim. A live claim now wins, between any writers.
@@ -128,7 +128,7 @@ An old-format unit file is recognized by `origin` on its name. The old-format lo
 `abbd migrate` runs once per repository and can be re-run on a copy.
 
 1. Load the old state, run the registered extraction, and fold in the supplement (`--supplement`, default `.abbd/extractor/supplement.json`). With no supplement file it stops and says so, because it cannot tell supplement claims from reader claims.
-2. Pair the supplement's units with the stored units as setup would. An INFERRED claim is the reader's when the supplement makes no claim on the same target (the unit, the edge, its parent, or the field). Otherwise it stays the supplement's, which is also the default for anything unclear. A parent claim is the supplement's only when the supplement places the unit in the same parent. A paired supplement unit stores its `supplement_key`, and a human's parent stores the script's parent the extraction reports as its `over`.
+2. Pair the supplement's units with the stored units as setup would. An INFERRED claim is the reader's when the supplement makes no claim on the same target (the unit, the edge, its parent, or the field). Otherwise it stays the supplement's, which is also the default for anything unclear. A parent claim is the supplement's only when the supplement places the unit in the same parent. A paired supplement unit stores its `supplement_ref`, and a human's parent stores the script's parent the extraction reports as its `over`.
 3. Mark every non-script item that is not live in the tree now as dead, with reason `dead before migration`. Today's dead items stay dead, and nothing is revived.
 4. Compare the graph before and after: present units, their parents, and each shown relation with its origin and deadness. Any difference stops the migration before it writes.
 5. Save every unit in the new format and print the classification.
