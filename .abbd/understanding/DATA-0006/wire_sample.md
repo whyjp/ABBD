@@ -2,25 +2,29 @@
 unit: DATA-0006
 slot: wire_sample
 origin: INFERRED
-digest: 31937c4b5f956355
+digest: 63f5b605ba049532
 format: 3
 evidence:
     - path: internal/store/store.go
-      lines: "27"
+      lines: "30"
       quote: Revision    string             `yaml:"revision"`
     - path: internal/store/store.go
-      lines: "28"
+      lines: "31"
       quote: Fingerprint string             `yaml:"fingerprint"`
+    - path: internal/store/store.go
+      lines: "32"
+      quote: Blueprint   string             `yaml:"blueprint"`
 code:
-    internal/store/store.go#quote-8f961298: 4f85db1bb4b528df
-    internal/store/store.go#quote-94800254: f149f89caa4619fa
+    internal/store/store.go#quote-8f961298: b1907888710405e0
+    internal/store/store.go#quote-3610ea4c: fdd1bd3cba782385
+    internal/store/store.go#quote-94800254: 0fd7e896a2c7c61b
 ---
 
 ```yaml
-revision: c39d027149d5f28c92c6cfd5b75fd1b462842263
-fingerprint: 89a9d631d8da56619ffb0c7f087d5342f50af1a0
-md_hash: 93d3854f7458cfc5c151bd75581fc59ba53cc818574c455ef950300924341f52
+revision: 8b87be3ab0e29685c841c03ec6bd0a41436e5e57
+fingerprint: 7e33d18f48894c23e02284444c4c748686cb9bae
+blueprint: ebf9bba1c302f60f8d90ae5470879cdc5e3583debc067bbdece4bd7093bd4a21
 high_water:
     MOD: 56
-    IF: 21
+    IF: 22
 ```
