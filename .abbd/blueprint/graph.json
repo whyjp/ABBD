@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "918d910372858a0b4356f75f6c5595b2741d4b11ed7be3c4c44fb62d6508afb4"
+    "inputs_hash": "ca5cfd182562b6986244cb4f63bef57330b093e41f648ca4d1116b01b683ca51"
   },
   "units": [
     {
@@ -1310,9 +1310,9 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:225 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
-        "cmd/abbd/main.go:281 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
-        "cmd/abbd/main.go:271 \"if c.writes {\""
+        "cmd/abbd/main.go:229 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
+        "cmd/abbd/main.go:285 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
+        "cmd/abbd/main.go:275 \"if c.writes {\""
       ]
     },
     {
@@ -1334,7 +1334,7 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:401 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+        "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
       ]
     },
     {
@@ -1358,8 +1358,8 @@
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/query.go:12 \"func resolve(units []model.Unit, s string) (model.Unit, error) {\"",
-        "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
-        "cmd/abbd/query.go:293 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
+        "cmd/abbd/query.go:256 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\"",
+        "cmd/abbd/query.go:308 \"fmt.Fprintf(e.stdout, \\\"%d hop(s), weakest origin %s\\\\n\\\", len(hops), topology.Weakest(hops))\""
       ]
     },
     {
@@ -2268,6 +2268,7 @@
         "internal/topology",
         "internal/topology/diff.go",
         "internal/topology/entry.go",
+        "internal/topology/feature.go",
         "internal/topology/find.go",
         "internal/topology/impact.go",
         "internal/topology/path.go",
@@ -3056,7 +3057,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:442 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+      "Quote": "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
     },
     {
       "From": "MOD-0001",
@@ -3224,7 +3225,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0001",
@@ -3252,7 +3253,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0001",
@@ -3398,7 +3399,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:263 \"return exitUsage\""
+      "Quote": "cmd/abbd/main.go:267 \"return exitUsage\""
     },
     {
       "From": "MOD-0003",
@@ -3406,7 +3407,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\""
+      "Quote": "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\""
     },
     {
       "From": "MOD-0004",
@@ -3414,7 +3415,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\""
+      "Quote": "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\""
     },
     {
       "From": "MOD-0004",
@@ -3422,7 +3423,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+      "Quote": "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
       "From": "MOD-0004",
@@ -3430,7 +3431,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:424 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+      "Quote": "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
     },
     {
       "From": "MOD-0004",
@@ -3438,7 +3439,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:303 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+      "Quote": "cmd/abbd/main.go:307 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
     },
     {
       "From": "MOD-0004",
@@ -3446,7 +3447,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0004",
@@ -3454,7 +3455,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+      "Quote": "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
       "From": "MOD-0004",
@@ -3462,7 +3463,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:401 \"identity.Reconcile(\""
+      "Quote": "cmd/abbd/main.go:405 \"identity.Reconcile(\""
     },
     {
       "From": "MOD-0005",
@@ -3470,7 +3471,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
+      "Quote": "cmd/abbd/query.go:246 \"texts, err := e.st.LoadUnderstandings()\""
     },
     {
       "From": "MOD-0005",
@@ -3716,7 +3717,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0026",
@@ -3724,7 +3725,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:371 \"prior, err := st.LoadCandidates()\""
+      "Quote": "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\""
     },
     {
       "From": "MOD-0026",
@@ -3740,7 +3741,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:401 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+      "Quote": "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
       "From": "MOD-0026",
@@ -4174,7 +4175,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:420 \"hash, err := st.MDHash()\""
+      "Quote": "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\""
     },
     {
       "From": "MOD-0043",
@@ -9501,7 +9502,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:263 \"return exitUsage\""
+              "cmd/abbd/main.go:267 \"return exitUsage\""
             ],
             "Marks": [
               {
@@ -9522,7 +9523,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\""
             ],
             "Marks": [
               {
@@ -9542,7 +9543,7 @@
             "Back": true,
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\""
+              "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\""
             ],
             "Rels": [
               "MOD-0004.consumes.CFG-0002"
@@ -9556,7 +9557,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+              "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Marks": [
               {
@@ -9576,7 +9577,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:424 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0006"
@@ -9588,7 +9589,7 @@
             "Title": "sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독",
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:303 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+              "cmd/abbd/main.go:307 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0008"
@@ -9601,7 +9602,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0013"
@@ -9616,7 +9617,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Marks": [
               {
@@ -9635,7 +9636,7 @@
             "Title": "sync pipeline depends_on internal/identity (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:401 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:405 \"identity.Reconcile(\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
@@ -9649,7 +9650,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
+              "cmd/abbd/query.go:246 \"texts, err := e.st.LoadUnderstandings()\""
             ],
             "Marks": [
               {
@@ -9953,8 +9954,8 @@
             "Joins": true,
             "Back": true,
             "Quotes": [
-              "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\"",
-              "cmd/abbd/main.go:424 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\"",
+              "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
             ],
             "Marks": [
               {
@@ -9984,9 +9985,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:303 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-              "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
-              "cmd/abbd/main.go:401 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:307 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:405 \"identity.Reconcile(\""
             ],
             "Marks": [
               {
@@ -10061,7 +10062,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10076,7 +10077,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10127,7 +10128,7 @@
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -10141,7 +10142,7 @@
             "Kind": "consumes",
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -10160,7 +10161,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -10176,7 +10177,7 @@
             "Title": "review commands depends_on internal/evidence (via call), 판독\nsync pipeline depends_on internal/evidence (via call), 판독\nrecord writers depends_on internal/evidence (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -10227,7 +10228,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:246 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -10241,7 +10242,7 @@
             "Kind": "consumes",
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
-              "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\"",
+              "cmd/abbd/query.go:246 \"texts, err := e.st.LoadUnderstandings()\"",
               "cmd/abbd/understand.go:78 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
@@ -10260,7 +10261,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:78 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -10274,7 +10275,7 @@
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:78 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -11384,7 +11385,39 @@
                 "Code": true
               },
               {
-                "Text": " also seeds every other unit anchored at a queried path.",
+                "Text": " also seeds every other unit anchored at a queried path, and with ",
+                "Code": false
+              },
+              {
+                "Text": "--features",
+                "Code": true
+              },
+              {
+                "Text": " prints ",
+                "Code": false
+              },
+              {
+                "Text": "topology.ByFeature",
+                "Code": true
+              },
+              {
+                "Text": ": each feature the change reaches, what it holds that is reached, and the reached contracts it uses with the entries it names, then what no feature holds. ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": " names the entries each drawn link it lists uses, so a page's contracts read with the endpoints it calls; ",
+                "Code": false
+              },
+              {
+                "Text": "byfeature_test.go",
+                "Code": true
+              },
+              {
+                "Text": " drives both, including a part of a page whose whole use of a contract keeps the page's use whole.",
                 "Code": false
               }
             ]
@@ -12872,11 +12905,44 @@
                 "Name": "--root",
                 "Shape": "string",
                 "Need": ""
+              },
+              {
+                "Key": "features",
+                "Name": "--features",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ],
+                "Note": {
+                  "Ref": "IF-0004.entries.features",
+                  "Title": "항목",
+                  "Key": "features",
+                  "Stale": false,
+                  "Blocks": [
+                    {
+                      "Kind": "p",
+                      "Parts": [
+                        {
+                          "Text": "Groups what the change reaches by feature: each page or skill it reaches, its reached parts under it, and the reached contracts it uses with the entries it names. Units no feature holds follow under no feature.",
+                          "Code": false
+                        }
+                      ]
+                    }
+                  ],
+                  "Quotes": [
+                    "cmd/abbd/impact.go:35 \"if e.features {\""
+                  ]
+                }
               }
             ],
             "Need": false,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": false
           }
         },
@@ -13488,7 +13554,7 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go:228 \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/query.go:243 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
         {
@@ -13506,7 +13572,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:442 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -13533,7 +13599,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13551,7 +13617,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -13562,7 +13628,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:313 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:317 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -13609,7 +13675,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:256 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -13672,7 +13738,7 @@
           "Kind": "provides",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:263 \"return exitUsage\"",
+            "cmd/abbd/main.go:267 \"return exitUsage\"",
             "cmd/abbd/main.go:209 \"return exitError\""
           ]
         },
@@ -13682,7 +13748,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\""
+            "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\""
           ]
         },
         {
@@ -13691,7 +13757,7 @@
           "Kind": "consumes",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\""
+            "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\""
           ]
         },
         {
@@ -13700,7 +13766,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+            "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\""
           ]
         },
         {
@@ -13709,7 +13775,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:424 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
+            "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree, MDHash: hash, HighWater: res.HighWater}\""
           ]
         },
         {
@@ -13718,7 +13784,7 @@
           "Kind": "depends_on",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:303 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+            "cmd/abbd/main.go:307 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
             "cmd/abbd/setup.go:51 \"p.Extract = argv\""
           ]
         },
@@ -13728,7 +13794,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -13737,7 +13803,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -13746,7 +13812,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:401 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:405 \"identity.Reconcile(\""
           ]
         },
         {
@@ -13755,7 +13821,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/query.go:231 \"texts, err := e.st.LoadUnderstandings()\""
+            "cmd/abbd/query.go:246 \"texts, err := e.st.LoadUnderstandings()\""
           ]
         },
         {
@@ -13765,7 +13831,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:256 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -15687,7 +15753,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -15705,7 +15771,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -17565,7 +17631,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Marks": [
               {
@@ -17655,7 +17721,7 @@
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -17669,7 +17735,7 @@
             "Kind": "depends_on",
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -18706,7 +18772,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -18725,7 +18791,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18752,8 +18818,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:383 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:387 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18763,7 +18829,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -18783,7 +18849,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ],
@@ -19933,7 +19999,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:313 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:317 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -19942,7 +20008,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:401 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:405 \"identity.Reconcile(\""
           ]
         },
         {
@@ -19951,7 +20017,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -19962,7 +20028,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:407 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:411 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -19971,7 +20037,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:401 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+            "cmd/abbd/main.go:405 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
           ]
         },
         {
@@ -20008,7 +20074,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:383 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:387 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -23402,7 +23468,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:442 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:446 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -26388,7 +26454,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:113 \"case in.Tree != in.Synced.Fingerprint:\"",
-            "cmd/abbd/main.go:424 \"state = store.State{Revision: rev, Fingerprint: tree\""
+            "cmd/abbd/main.go:428 \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -26398,7 +26464,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -26725,7 +26791,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:420 \"hash, err := st.MDHash()\""
+              "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\""
             ],
             "Marks": [
               {
@@ -29511,7 +29577,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/understand.go:54 \"digest, code := e.st.Stamp(units, id)\"",
-            "cmd/abbd/query.go:241 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+            "cmd/abbd/query.go:256 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -29520,7 +29586,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:371 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:375 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -29531,7 +29597,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:407 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:411 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -29615,8 +29681,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:420 \"hash, err := st.MDHash()\"",
-            "cmd/abbd/main.go:424 \"MDHash: hash\""
+            "cmd/abbd/main.go:424 \"hash, err := st.MDHash()\"",
+            "cmd/abbd/main.go:428 \"MDHash: hash\""
           ]
         },
         {
@@ -31426,6 +31492,60 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "ByFeature",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Feature",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "feature.go",
+                "Code": true
+              },
+              {
+                "Text": "): groups an ",
+                "Code": false
+              },
+              {
+                "Text": "Impact",
+                "Code": true
+              },
+              {
+                "Text": " under the outermost FEAT that is or holds each impacted unit, the feature itself first, each item with its tier. ",
+                "Code": false
+              },
+              {
+                "Text": "Uses",
+                "Code": true
+              },
+              {
+                "Text": " lists the impacted contracts the feature or a unit inside it consumes, with the union of the entry keys those links name, or none when any of those links names no entries, since that unit uses the contract whole. Impacted units no feature holds come back apart. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd impact --features",
+                "Code": true
+              },
+              {
+                "Text": " prints it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "EntryUses",
                 "Code": true
               },
@@ -31743,7 +31863,7 @@
           "Via": "data",
           "Quotes": [
             "cmd/abbd/understand.go:20 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go:228 \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/query.go:243 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
         {

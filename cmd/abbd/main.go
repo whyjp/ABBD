@@ -133,6 +133,7 @@ type opts struct {
 	reason           string
 	base             string
 	asJSON, check    bool
+	features         bool
 	verbose, restamp bool
 	evidence         evidenceFlags
 	argv             []string
@@ -159,6 +160,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.base, "base", "", "the revision to compare with; default: the merge base with the default branch")
 	},
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
+	"features": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.features, "features", false, "group the result by the features it reaches, with the contracts and entries each uses")
+	},
 	"verbose": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.verbose, "verbose", false, "list every unit, not only what needs attention")
 	},
@@ -202,7 +206,7 @@ var commands = map[string]command{
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
-	"impact":          {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
+	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},

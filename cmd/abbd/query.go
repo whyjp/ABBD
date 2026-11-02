@@ -147,8 +147,23 @@ func (e env) explain(s string) error {
 		}
 		return fmt.Sprintf(" via inside %s %s", inside, name[inside])
 	}
+	byID := map[model.ID]model.Unit{}
+	for _, v := range units {
+		byID[v.ID] = v
+	}
 	for _, l := range ex.Out {
-		out[l.Kind] = append(out[l.Kind], fmt.Sprintf("%s %s%s%s", l.To, name[l.To], l.Label(), through(l.From)))
+		s := fmt.Sprintf("%s %s%s%s", l.To, name[l.To], l.Label(), through(l.From))
+		if len(l.Entries) > 0 {
+			var es []string
+			for _, k := range l.Entries {
+				if en, ok := byID[l.To].EntryNamed(k); ok {
+					k = en.Name
+				}
+				es = append(es, k)
+			}
+			s += ": " + strings.Join(es, ", ")
+		}
+		out[l.Kind] = append(out[l.Kind], s)
 	}
 	section("provides", out[model.Provides])
 	section("consumes", out[model.Consumes])
