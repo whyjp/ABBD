@@ -320,3 +320,48 @@ func TestUnitInWrongFolderIsRejected(t *testing.T) {
 		t.Fatalf("a MOD file under features/ should be rejected, exit %d: %s", code, errOut)
 	}
 }
+
+// The state fingerprints the submodule commits the superproject records, so a
+// checkout that moves a submodule, or a clone that never checks it out, still
+// reads the synced commit as current.
+func TestSubmoduleCheckoutLeavesTheStateCurrent(t *testing.T) {
+	lib := t.TempDir()
+	git(t, lib, "init", "-q")
+	write(t, filepath.Join(lib, "lib.go"), "package lib\n")
+	git(t, lib, "add", ".")
+	git(t, lib, "commit", "-qm", "one")
+	write(t, filepath.Join(lib, "lib.go"), "package lib\n\nfunc Two() {}\n")
+	git(t, lib, "commit", "-qam", "two")
+
+	root := newRepo(t)
+	git(t, root, "-c", "protocol.file.allow=always", "submodule", "add", "-q", lib, "vendor/lib")
+	git(t, root, "commit", "-qm", "add lib")
+	ingestOK(t, root, extraction)
+	git(t, root, "add", ".abbd")
+	git(t, root, "commit", "-qm", "sync")
+
+	status := func(dir string) string {
+		t.Helper()
+		var out, errb bytes.Buffer
+		if code := run([]string{"status", "--root", dir}, nil, &out, &errb); code != 0 {
+			t.Fatalf("status exit %d: %s", code, errb.String())
+		}
+		return out.String()
+	}
+	if s := status(root); !strings.Contains(s, "state: CURRENT") {
+		t.Fatalf("the synced tree should read current:\n%s", s)
+	}
+	git(t, filepath.Join(root, "vendor", "lib"), "checkout", "-q", "HEAD~1")
+	if s := status(root); !strings.Contains(s, "state: CURRENT") {
+		t.Fatalf("a submodule checked out away from its pin should leave the state current:\n%s", s)
+	}
+	clone := filepath.Join(t.TempDir(), "clone")
+	git(t, root, "clone", "-q", root, clone)
+	if s := status(clone); !strings.Contains(s, "state: CURRENT") {
+		t.Fatalf("a clean clone of the synced commit should read current:\n%s", s)
+	}
+	git(t, root, "commit", "-qam", "pin lib one")
+	if s := status(root); !strings.Contains(s, "state: STALE") {
+		t.Fatalf("a new pin is a change to the superproject and should stale the state:\n%s", s)
+	}
+}

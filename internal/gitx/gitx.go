@@ -80,9 +80,15 @@ func MergeBase(dir string) (string, error) {
 
 // Snapshot records the working tree as a git tree object, including untracked
 // files, without touching the user's index. It returns "" outside a repository.
+// A submodule counts as the commit the superproject's index records, not the
+// one checked out, so every clone of a commit snapshots the same tree.
 func Snapshot(dir, exclude string) (string, error) {
 	if _, err := run(dir, nil, "rev-parse", "--git-dir"); err != nil {
 		return "", nil
+	}
+	links, err := gitlinks(dir)
+	if err != nil {
+		return "", err
 	}
 	tmp, err := os.MkdirTemp("", "abbd-index-")
 	if err != nil {
@@ -90,11 +96,39 @@ func Snapshot(dir, exclude string) (string, error) {
 	}
 	defer os.RemoveAll(tmp)
 	env := []string{"GIT_INDEX_FILE=" + filepath.Join(tmp, "index")}
-	if _, err := run(dir, env, "add", "-A", "--", ".", ":(exclude)"+exclude); err != nil {
+	add := []string{"add", "-A", "--", ".", ":(exclude)" + exclude}
+	for _, l := range links {
+		add = append(add, ":(exclude,literal)"+l.path)
+	}
+	if _, err := run(dir, env, add...); err != nil {
 		return "", err
+	}
+	for _, l := range links {
+		if _, err := run(dir, env, "update-index", "--add", "--cacheinfo", "160000,"+l.commit+","+l.path); err != nil {
+			return "", err
+		}
 	}
 	out, err := run(dir, env, "write-tree")
 	return strings.TrimSpace(out), err
+}
+
+type gitlink struct{ path, commit string }
+
+// gitlinks lists the submodules the index records under dir, with their
+// paths relative to dir.
+func gitlinks(dir string) ([]gitlink, error) {
+	out, err := run(dir, nil, "ls-files", "-s", "-z")
+	if err != nil {
+		return nil, err
+	}
+	var links []gitlink
+	for _, e := range strings.Split(out, "\x00") {
+		meta, path, ok := strings.Cut(e, "\t")
+		if f := strings.Fields(meta); ok && len(f) == 3 && f[0] == "160000" && f[2] == "0" {
+			links = append(links, gitlink{path, f[1]})
+		}
+	}
+	return links, nil
 }
 
 // Renames maps old to new paths, relative to dir, between two snapshots.

@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "98f85e974bdf16381b01b605993406e92406c90830893ffacf5c622baea65e4d"
+    "inputs_hash": "727452e4926ea2cf2392d0db361e65c9ecb3c41714e587ac26e09d811adeb15e"
   },
   "units": [
     {
@@ -1719,8 +1719,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:110 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:117 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:144 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:151 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1741,8 +1741,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:92 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:93 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:98 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:99 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -14992,7 +14992,7 @@
                 "Code": true
               },
               {
-                "Text": ". Callers pass ",
+                "Text": ". A submodule enters as the commit the superproject's index records, not the one checked out, so a clean clone of a synced commit snapshots the same tree. Callers pass ",
                 "Code": false
               },
               {
@@ -15246,6 +15246,30 @@
               },
               {
                 "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "gitlinks",
+                "Code": true
+              },
+              {
+                "Text": " reads each submodule's recorded commit with ",
+                "Code": false
+              },
+              {
+                "Text": "git ls-files -s",
+                "Code": true
+              },
+              {
+                "Text": ", the add skips the submodule paths, and ",
+                "Code": false
+              },
+              {
+                "Text": "update-index --cacheinfo",
+                "Code": true
+              },
+              {
+                "Text": " puts the recorded commits back. ",
                 "Code": false
               },
               {
