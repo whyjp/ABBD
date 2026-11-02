@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "c3f0d5f684b210745ba9c3ae0a9d9f70a81f7d73e8d255100c5243dad698e090"
+    "inputs_hash": "a461dcd763b23d44c5de1f0d5c9dded829a080d44580611dd966a6b0dd121bcb"
   },
   "units": [
     {
@@ -1507,8 +1507,8 @@
       ],
       "Parent": "MOD-0013",
       "Evidence": [
-        "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\"",
-        "internal/evidence/evidence.go:190 \"e.Status, e.Since = model.Drifted, rev\""
+        "internal/evidence/evidence.go:238 \"v.SetAbsent(model.EvidenceDead)\"",
+        "internal/evidence/evidence.go:199 \"e.Status, e.Since = model.Drifted, rev\""
       ]
     },
     {
@@ -3538,7 +3538,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
+      "Quote": "internal/evidence/evidence.go:238 \"v.SetAbsent(model.EvidenceDead)\""
     },
     {
       "From": "MOD-0013",
@@ -3560,7 +3560,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
+      "Quote": "internal/evidence/evidence.go:184 \"r := c.Check(e)\""
     },
     {
       "From": "MOD-0014",
@@ -3568,7 +3568,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
+      "Quote": "internal/evidence/evidence.go:235 \"if u.Semantic() {\""
     },
     {
       "From": "MOD-0015",
@@ -4046,7 +4046,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -11359,7 +11359,7 @@
                 "Code": true
               },
               {
-                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A refusal names up to five of them. A restamp keeps the text's hashes. ",
+                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A place of a quote counts as unchanged when its lines read as a place of the same quote the text was written against, so a retract that moves a place up a rank does not block a restamp. A refusal names up to five of them. A restamp keeps the text's hashes. ",
                 "Code": false
               },
               {
@@ -12723,7 +12723,7 @@
             "Title": "liveness and line moves depends_on quote matching (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
+              "internal/evidence/evidence.go:184 \"r := c.Check(e)\""
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0015"
@@ -12735,7 +12735,7 @@
             "Title": "liveness and line moves depends_on internal/model (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
+              "internal/evidence/evidence.go:235 \"if u.Semantic() {\""
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0031"
@@ -12805,8 +12805,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/evidence/evidence.go:175 \"r := c.Check(e)\"",
-              "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
+              "internal/evidence/evidence.go:184 \"r := c.Check(e)\"",
+              "internal/evidence/evidence.go:235 \"if u.Semantic() {\""
             ],
             "Marks": [
               {
@@ -12951,7 +12951,7 @@
                 "Code": true
               },
               {
-                "Text": " tests one item. It looks first within the cited lines plus ",
+                "Text": " tests one item. It takes the occurrence nearest the cited lines within ",
                 "Code": false
               },
               {
@@ -12959,7 +12959,7 @@
                 "Code": true
               },
               {
-                "Text": ", then takes the quote's only occurrence anywhere in the file. A quote found twice with neither near the cited lines is not found. ",
+                "Text": ", so two places of one quote cited a line or two apart each keep their own, and otherwise the quote's only occurrence anywhere in the file. A quote found twice with neither near the cited lines is not found. ",
                 "Code": false
               },
               {
@@ -13296,7 +13296,7 @@
                 "Code": true
               },
               {
-                "Text": "): 3 lines of tolerance around the cited range. A quote with no ",
+                "Text": "): 3 lines of tolerance around the cited range. Among the occurrences within it, the one nearest the range wins, and the earlier one on a tie. A quote with no ",
                 "Code": false
               },
               {
@@ -13650,7 +13650,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
+            "internal/evidence/evidence.go:238 \"v.SetAbsent(model.EvidenceDead)\""
           ]
         },
         {
@@ -13668,7 +13668,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:175 \"r := c.Check(e)\""
+            "internal/evidence/evidence.go:184 \"r := c.Check(e)\""
           ]
         },
         {
@@ -13677,7 +13677,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
+            "internal/evidence/evidence.go:235 \"if u.Semantic() {\""
           ]
         },
         {
@@ -20369,7 +20369,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/evidence/evidence.go:229 \"v.SetAbsent(model.EvidenceDead)\""
+            "internal/evidence/evidence.go:238 \"v.SetAbsent(model.EvidenceDead)\""
           ]
         },
         {
@@ -20387,7 +20387,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/evidence/evidence.go:226 \"if u.Semantic() {\""
+            "internal/evidence/evidence.go:235 \"if u.Semantic() {\""
           ]
         },
         {
@@ -20523,7 +20523,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -24945,7 +24945,31 @@
                 "Code": true
               },
               {
-                "Text": " whose path is gone. One that left the module while its path still exists does not block it.",
+                "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key. ",
+                "Code": false
+              },
+              {
+                "Text": "vouchedPlaces",
+                "Code": true
+              },
+              {
+                "Text": " lets a place pass when its lines hash as a place of the same quote in ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " did, each place in ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " vouching for one place now, so an unchanged place that changed rank does not block a restamp and an edited one still does.",
                 "Code": false
               }
             ]
@@ -25223,7 +25247,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:468 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:500 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {

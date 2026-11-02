@@ -405,8 +405,10 @@ func (s Store) Changed(units []model.Unit, id model.ID, written map[string]strin
 	var out []string
 	m := s.code.moduleCode(units, id)
 	_, now := s.stamp(m)
+	vouched := vouchedPlaces(m.quotes(m.files(true)), now, written)
 	for k, h := range now {
 		switch was, ok := written[k]; {
+		case vouched[k]:
 		case !ok:
 			out = append(out, k+" (new to the module)")
 		case was != h && m.anchors[k].dir:
@@ -424,6 +426,36 @@ func (s Store) Changed(units []model.Unit, id model.ID, written map[string]strin
 		}
 	}
 	slices.Sort(out)
+	return out
+}
+
+// vouchedPlaces are the quote keys of now whose lines read as those around
+// a place of the same quote the text was written against, each written
+// place vouching for one place now. A place keyed by its rank among the
+// places cited takes a new key when a unit citing an earlier place leaves,
+// and its unchanged code still lets the text be restamped.
+func vouchedPlaces(quotes []model.Evidence, now, written map[string]string) map[string]bool {
+	places := map[model.Evidence]int{}
+	for _, q := range quotes {
+		places[model.Evidence{Path: q.Path, Quote: q.Quote}]++
+	}
+	out := map[string]bool{}
+	for q, n := range places {
+		left := map[string]int{}
+		for p := 1; ; p++ {
+			h, ok := written[quoteKey(q, p)]
+			if !ok {
+				break
+			}
+			left[h]++
+		}
+		for p := 1; p <= n; p++ {
+			if k := quoteKey(q, p); left[now[k]] > 0 {
+				left[now[k]]--
+				out[k] = true
+			}
+		}
+	}
 	return out
 }
 
