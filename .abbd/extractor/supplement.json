@@ -36,7 +36,7 @@
         }
       ],
       "purpose": "lets a human read the topology in a browser and tools read it without the CLI",
-      "responsibility": "fixes the two rendered files, index.html and graph.json, and graph.json's shape: units, live edges, both drawing levels and the flows. Neither file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
+      "responsibility": "fixes the rendered files, the pages (index.html, one <ID>.html per module or feature that holds units, contracts.html and units.html) and graph.json, and graph.json's shape: units, live edges, both drawing levels and the flows. No file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
     },
     {
       "key": "data-extraction",
@@ -433,7 +433,7 @@
       "name": "blueprint publish",
       "parent": "mod-cmd-abbd",
       "purpose": "so the blueprint on disk always matches the state after a writing command",
-      "responsibility": "Owns loading the screen input with the current tree snapshot, writing index.html and graph.json, then recording in the state which inputs they were rendered from.",
+      "responsibility": "Owns loading the screen input with the current tree snapshot, writing every blueprint file in one SaveBlueprint call, which removes the pages no render holds, then recording in the state which inputs they were rendered from.",
       "evidence": [
         {
           "path": "cmd/abbd/screen.go",
@@ -444,7 +444,7 @@
         {
           "path": "cmd/abbd/screen.go",
           "lines": "31",
-          "quote": "for _, name := range []string{screen.PageFile, screen.GraphFile} {",
+          "quote": "if err := e.st.SaveBlueprint(files); err != nil {",
           "symbol": "publish"
         }
       ]
@@ -1078,18 +1078,18 @@
       "kind": "MOD",
       "name": "page template",
       "parent": "mod-screen",
-      "purpose": "turns the model into the one page a human opens",
-      "responsibility": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
+      "purpose": "turns the model into the pages a human opens",
+      "responsibility": "holds the embedded Korean HTML template, one named template per kind of page, its helper functions and the Korean labels for kinds and origin badges, and the stylesheet every page inlines, which styles each wire kind and port class the model emits",
       "evidence": [
         {
           "path": "internal/screen/page.go",
-          "lines": "15",
-          "quote": "var page = template.Must(template.New(\"page\").Funcs(template.FuncMap{",
-          "symbol": "page"
+          "lines": "16",
+          "quote": "var site = template.Must(template.New(\"site\").Funcs(template.FuncMap{",
+          "symbol": "site"
         },
         {
           "path": "internal/screen/page.html",
-          "lines": "175",
+          "lines": "45",
           "quote": "<div class=\"mapbox\">{{template \"drawing\" .Overview}}</div>"
         }
       ]
@@ -1476,7 +1476,7 @@
         }
       ],
       "purpose": "shows a human the architecture as it is, read-only over the store",
-      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json, which hold no value of the sync"
+      "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders the blueprint's pages (index.html, a page per module that holds units, a contract index and a unit index) and graph.json, which hold no value of the sync"
     },
     {
       "key": "mod-store",
@@ -1627,8 +1627,8 @@
       "evidence": [
         {
           "path": "cmd/abbd/screen.go",
-          "lines": "32",
-          "quote": "if err := e.st.SaveBlueprint(name, files[name]); err != nil {",
+          "lines": "31",
+          "quote": "if err := e.st.SaveBlueprint(files); err != nil {",
           "symbol": "publish"
         }
       ]
@@ -2275,8 +2275,8 @@
       "via": "convention",
       "evidence": [
         {
-          "path": "internal/screen/page.html",
-          "lines": "92",
+          "path": "internal/screen/page.css",
+          "lines": "86",
           "quote": "svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }"
         },
         {
@@ -2319,8 +2319,8 @@
         },
         {
           "path": "internal/screen/page.html",
-          "lines": "137",
-          "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
+          "lines": "56",
+          "quote": "<section class=\"inside page\" id=\"m-{{.ID}}\">"
         }
       ]
     },
@@ -2351,8 +2351,8 @@
       "evidence": [
         {
           "path": "internal/screen/page.html",
-          "lines": "184",
-          "quote": "<section class=\"inside\" id=\"m-{{.ID}}\">"
+          "lines": "56",
+          "quote": "<section class=\"inside page\" id=\"m-{{.ID}}\">"
         }
       ]
     },

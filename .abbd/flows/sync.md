@@ -194,7 +194,7 @@ steps:
         internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
-      does: publish() → index.html and graph.json, after every command that writes
+      does: publish() → every page and graph.json, after every command that writes
       note: then records in state.yaml the inputs hash the files were rendered from
       calls:
         - DATA-0005
@@ -206,13 +206,17 @@ steps:
           lines: "27"
           quote: files, err := screen.Files(screen.Build(in))
         - path: cmd/abbd/screen.go
-          lines: "36"
+          lines: "31"
+          quote: if err := e.st.SaveBlueprint(files); err != nil {
+        - path: cmd/abbd/screen.go
+          lines: "34"
           quote: in.Synced.Blueprint = in.Inputs
       writer: reader
       code:
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
-        cmd/abbd/screen.go#quote-22ad4b42: c7ae54f56076262b
-        cmd/abbd/screen.go#quote-f313962c: b96f7157ff80607b
+        cmd/abbd/screen.go#quote-18c7c622: 987a3fd26ae6c4d2
+        cmd/abbd/screen.go#quote-22ad4b42: dccd885f9bde2847
+        cmd/abbd/screen.go#quote-f313962c: 4a93f263f38fbe1b
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.

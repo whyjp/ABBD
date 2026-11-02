@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{graph.json,index.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -138,7 +138,8 @@
       },
       "Anchors": [
         "internal/screen/page.go Files",
-        "internal/screen/page.go Graph"
+        "internal/screen/page.go Graph",
+        "internal/screen/site.go Pages"
       ]
     },
     {
@@ -310,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go:44 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -757,7 +758,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\"",
+        "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\"",
         "plugins/abbd/skills/abbd-setup/SKILL.md:35 \"Run `abbd install`.\""
       ]
     },
@@ -1397,13 +1398,14 @@
         "Badge": "inferred"
       },
       "Anchors": [
+        "cmd/abbd/screen.go",
         "cmd/abbd/screen.go publish",
         "cmd/abbd/screen.go screenInput"
       ],
       "Parent": "MOD-0001",
       "Evidence": [
         "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-        "cmd/abbd/screen.go:31 \"for _, name := range []string{screen.PageFile, screen.GraphFile} {\""
+        "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\""
       ]
     },
     {
@@ -1971,6 +1973,7 @@
         "internal/screen/page.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
+        "internal/screen/site.go",
         "internal/screen/tree.go",
         "internal/screen/words.go"
       ]
@@ -2068,8 +2071,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:16 \"var page = template.Must(template.New(\\\"page\\\").Funcs(template.FuncMap{\"",
-        "internal/screen/page.html:175 \"\u003cdiv class=\\\"mapbox\\\"\u003e{{template \\\"drawing\\\" .Overview}}\u003c/div\u003e\""
+        "internal/screen/page.go:16 \"var site = template.Must(template.New(\\\"site\\\").Funcs(template.FuncMap{\"",
+        "internal/screen/page.html:45 \"\u003cdiv class=\\\"mapbox\\\"\u003e{{template \\\"drawing\\\" .Overview}}\u003c/div\u003e\""
       ]
     },
     {
@@ -2951,7 +2954,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
     },
     {
       "From": "FEAT-0016",
@@ -3525,7 +3528,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/screen.go:32 \"if err := e.st.SaveBlueprint(name, files[name]); err != nil {\""
+      "Quote": "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\""
     },
     {
       "From": "MOD-0007",
@@ -4015,7 +4018,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/page.html:184 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+      "Quote": "internal/screen/page.html:56 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
     },
     {
       "From": "MOD-0038",
@@ -4023,7 +4026,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.html:94 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+      "Quote": "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
     },
     {
       "From": "MOD-0038",
@@ -4173,7 +4176,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/screen.go:36 \"in.Synced.Blueprint = in.Inputs\""
+      "Quote": "cmd/abbd/screen.go:34 \"in.Synced.Blueprint = in.Inputs\""
     },
     {
       "From": "MOD-0043",
@@ -8301,7 +8304,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
             ],
             "Rels": [
               "FEAT-0016.depends_on.FEAT-0011"
@@ -8483,7 +8486,7 @@
             "Joins": true,
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:37 \"From here on the abbd skill reads and queries the blueprint.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
             ],
             "Marks": [
               {
@@ -8586,7 +8589,7 @@
             "Joins": true,
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:16 \"Diff its output against the swarm result until every difference is explained.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
             ],
             "Rels": [
               "FEAT-0012.depends_on.FEAT-0011",
@@ -8600,7 +8603,7 @@
             "Title": "/abbd-setup build the deterministic extractor depends_on /abbd-setup find units with a reader swarm (via data), 판독\n/abbd-setup verify, install and hand over depends_on /abbd-setup find units with a reader swarm (via data), 판독",
             "Quotes": [
               "plugins/abbd/skills/abbd-setup/SKILL.md:16 \"Diff its output against the swarm result until every difference is explained.\"",
-              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+              "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
             ],
             "Rels": [
               "FEAT-0012.depends_on.FEAT-0011",
@@ -8984,7 +8987,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each inside read the way the swarm described the code.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md:34 \"check that the overview and each module's page read the way the swarm described the code.\""
           ]
         },
         {
@@ -9769,7 +9772,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/screen.go:32 \"if err := e.st.SaveBlueprint(name, files[name]); err != nil {\""
+              "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\""
             ],
             "Marks": [
               {
@@ -10452,6 +10455,7 @@
           "Sentence": "Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.",
           "Guess": true,
           "Anchors": [
+            "cmd/abbd/screen.go",
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
           ],
@@ -10692,11 +10696,11 @@
                 "Code": true
               },
               {
-                "Text": ", which re-renders ",
+                "Text": ", which renders every page of ",
                 "Code": false
               },
               {
-                "Text": ".abbd/blueprint/index.html",
+                "Text": ".abbd/blueprint/",
                 "Code": true
               },
               {
@@ -10708,7 +10712,23 @@
                 "Code": true
               },
               {
-                "Text": ", then records in the state's ",
+                "Text": " through ",
+                "Code": false
+              },
+              {
+                "Text": "screen.Files",
+                "Code": true
+              },
+              {
+                "Text": ", hands them to ",
+                "Code": false
+              },
+              {
+                "Text": "store.SaveBlueprint",
+                "Code": true
+              },
+              {
+                "Text": " in one call, then records in the state's ",
                 "Code": false
               },
               {
@@ -10716,7 +10736,23 @@
                 "Code": true
               },
               {
-                "Text": " the inputs hash it rendered them from.",
+                "Text": " the inputs hash it rendered them from. The tests read the blueprint through ",
+                "Code": false
+              },
+              {
+                "Text": "blueprint()",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "helpers_test.go",
+                "Code": true
+              },
+              {
+                "Text": ", every page joined, so a check passes whichever page shows what it asks for.",
                 "Code": false
               }
             ]
@@ -12510,15 +12546,15 @@
                           "Code": true
                         },
                         {
-                          "Text": " writes after it renders ",
+                          "Text": " writes after ",
                           "Code": false
                         },
                         {
-                          "Text": "index.html",
+                          "Text": "SaveBlueprint",
                           "Code": true
                         },
                         {
-                          "Text": " and ",
+                          "Text": " has written every page and ",
                           "Code": false
                         },
                         {
@@ -12557,7 +12593,8 @@
                     }
                   ],
                   "Quotes": [
-                    "cmd/abbd/screen.go:36 \"in.Synced.Blueprint = in.Inputs\"",
+                    "cmd/abbd/screen.go:34 \"in.Synced.Blueprint = in.Inputs\"",
+                    "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\"",
                     "internal/screen/screen.go:87 \"case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:\"",
                     "internal/store/store.go:351 \"case p == s.path(\\\"state.yaml\\\"):\""
                   ]
@@ -14029,7 +14066,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/screen.go:32 \"if err := e.st.SaveBlueprint(name, files[name]); err != nil {\""
+            "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\""
           ]
         },
         {
@@ -24165,7 +24202,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/page.html:184 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+              "internal/screen/page.html:56 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
             ],
             "Marks": [
               {
@@ -24184,7 +24221,7 @@
             "Title": "page template depends_on module inside (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "internal/screen/page.html:94 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0035"
@@ -24408,7 +24445,7 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/page.html:94 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
               "internal/screen/screen.go:157 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
               "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\""
             ],
@@ -24802,7 +24839,7 @@
                 "Code": true
               },
               {
-                "Text": " renders two files. ",
+                "Text": " renders the blueprint's files. The pages are static HTML with no script, cut from the one model: ",
                 "Code": false
               },
               {
@@ -24810,7 +24847,31 @@
                 "Code": true
               },
               {
-                "Text": " is one static page with no script. ",
+                "Text": " holds the overview and the flows, each module or feature that holds units has its own ",
+                "Code": false
+              },
+              {
+                "Text": "\u003cID\u003e.html",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "contracts.html",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "units.html",
+                "Code": true
+              },
+              {
+                "Text": " index every contract and every unit. ",
                 "Code": false
               },
               {
@@ -24890,7 +24951,7 @@
                 "Code": true
               },
               {
-                "Text": "). It renders nothing for an empty store. Once both files are written, it records in the state's ",
+                "Text": "). It renders nothing for an empty store. Once every file is written, it records in the state's ",
                 "Code": false
               },
               {
@@ -24898,7 +24959,7 @@
                 "Code": true
               },
               {
-                "Text": " the inputs hash it rendered from, so neither file holds any value of the sync. ",
+                "Text": " the inputs hash it rendered from, so no file holds any value of the sync. ",
                 "Code": false
               },
               {
@@ -25003,7 +25064,7 @@
                 "Code": true
               },
               {
-                "Text": " names it, so no link opens a missing section. A feature with no parts has none. Everything is sorted before it is placed, so the same store always draws the same picture. ",
+                "Text": " names it, so no link opens a missing page. A feature with no parts has none. Everything is sorted before it is placed, so the same store always draws the same picture. ",
                 "Code": false
               },
               {
@@ -25332,7 +25393,7 @@
                 "Code": true
               },
               {
-                "Text": " opens a view the page holds, and it stays empty when there is none. On the overview, ",
+                "Text": " opens a view the blueprint holds, and it stays empty when there is none. On the overview, ",
                 "Code": false
               },
               {
@@ -25794,7 +25855,15 @@
                 "Code": true
               },
               {
-                "Text": " maps it back. Focus views take the overview's width. A focus view of an inside names its boxes by their last path segment. Focus views link each ring box to its own focus view, and stay out of ",
+                "Text": " maps it back. Focus views take the overview's width. The overview's sit on ",
+                "Code": false
+              },
+              {
+                "Text": "index.html",
+                "Code": true
+              },
+              {
+                "Text": ", and an inside's on its module's page. A focus view of an inside names its boxes by their last path segment. Focus views link each ring box to its own focus view, and stay out of ",
                 "Code": false
               },
               {
@@ -25806,7 +25875,7 @@
                 "Code": false
               },
               {
-                "Text": "Render",
+                "Text": "Pages",
                 "Code": true
               },
               {
@@ -26219,7 +26288,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "page",
+                "Text": "site",
                 "Code": true
               },
               {
@@ -26240,7 +26309,95 @@
                 "Code": true
               },
               {
-                "Text": "): the embedded Korean template with its origin and kind labels and hover tips. ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "page.html",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": "): the embedded Korean template, one named template per kind of page (",
+                "Code": false
+              },
+              {
+                "Text": "index",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "module",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "contracts",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "units",
+                "Code": true
+              },
+              {
+                "Text": ") around a shared ",
+                "Code": false
+              },
+              {
+                "Text": "head",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "foot",
+                "Code": true
+              },
+              {
+                "Text": ", with its origin and kind labels and hover tips. The ",
+                "Code": false
+              },
+              {
+                "Text": "css",
+                "Code": true
+              },
+              {
+                "Text": " func inlines ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " into every page, so each page opens on its own. A module's page shows its inside as ",
+                "Code": false
+              },
+              {
+                "Text": ".inside.page",
+                "Code": true
+              },
+              {
+                "Text": ", and a focus view stays hidden until its anchor is the target. ",
                 "Code": false
               },
               {
@@ -26248,7 +26405,281 @@
                 "Code": true
               },
               {
-                "Text": " renders both files from the model alone, so the same store renders the same bytes whatever sync wrote them.",
+                "Text": " renders every page through ",
+                "Code": false
+              },
+              {
+                "Text": "Pages",
+                "Code": true
+              },
+              {
+                "Text": " and adds ",
+                "Code": false
+              },
+              {
+                "Text": "graph.json",
+                "Code": true
+              },
+              {
+                "Text": ", all from the model alone, so the same store renders the same bytes whatever sync wrote them.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Pages",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "site.go",
+                "Code": true
+              },
+              {
+                "Text": "): one ",
+                "Code": false
+              },
+              {
+                "Text": "page",
+                "Code": true
+              },
+              {
+                "Text": " per file, each with its ",
+                "Code": false
+              },
+              {
+                "Text": "Title",
+                "Code": true
+              },
+              {
+                "Text": ", its template and ",
+                "Code": false
+              },
+              {
+                "Text": "Current",
+                "Code": true
+              },
+              {
+                "Text": ", the anchor of its own view (",
+                "Code": false
+              },
+              {
+                "Text": "overview",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "m-\u003cID\u003e",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "contracts",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "units",
+                "Code": true
+              },
+              {
+                "Text": "). A module page carries its ",
+                "Code": false
+              },
+              {
+                "Text": "Inside",
+                "Code": true
+              },
+              {
+                "Text": " and a ",
+                "Code": false
+              },
+              {
+                "Text": "Trail",
+                "Code": true
+              },
+              {
+                "Text": " of the modules above it, which the breadcrumbs draw. Every page carries the ",
+                "Code": false
+              },
+              {
+                "Text": "Nav",
+                "Code": true
+              },
+              {
+                "Text": " from ",
+                "Code": false
+              },
+              {
+                "Text": "navTree",
+                "Code": true
+              },
+              {
+                "Text": ": each module that has a page, under the module that holds it, siblings by name. The nav lists modules and features under separate headings, a top-level feature and everything under it counting as a feature, and marks the current page with ",
+                "Code": false
+              },
+              {
+                "Text": "aria-current",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "TestTheNavListsFeaturesApartFromModules",
+                "Code": true
+              },
+              {
+                "Text": " holds that split on this repository's own state. ",
+                "Code": false
+              },
+              {
+                "Text": "Paged",
+                "Code": true
+              },
+              {
+                "Text": " names the units that have a page, so a unit's name links there.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Indexes",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "site.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "page.html",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "contractRows",
+                "Code": true
+              },
+              {
+                "Text": " lists every contract grouped by kind, IF, EVT, DATA, then CFG, and by name within a kind. Each row names the module it sits in as its owner, and the units whose live relations provide and use it. Each is a ",
+                "Code": false
+              },
+              {
+                "Text": "Ref",
+                "Code": true
+              },
+              {
+                "Text": " to the unit's page when it has one, else to its row ",
+                "Code": false
+              },
+              {
+                "Text": "u-\u003cID\u003e",
+                "Code": true
+              },
+              {
+                "Text": " in the unit index. ",
+                "Code": false
+              },
+              {
+                "Text": "units.html",
+                "Code": true
+              },
+              {
+                "Text": " lists every unit by ID with its kind, its parent, its responsibility or purpose, its anchors, and its signature and quotes folded, so the browser's find reaches any ID, name, path or symbol.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "link",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "site.go",
+                "Code": true
+              },
+              {
+                "Text": "): the template links by anchor, ",
+                "Code": false
+              },
+              {
+                "Text": "href=\"#id\"",
+                "Code": true
+              },
+              {
+                "Text": ", as if the site were one page. ",
+                "Code": false
+              },
+              {
+                "Text": "link",
+                "Code": true
+              },
+              {
+                "Text": " reads every ",
+                "Code": false
+              },
+              {
+                "Text": "id",
+                "Code": true
+              },
+              {
+                "Text": " each page holds and rewrites each anchor after all pages render. An anchor that is another page's own view opens that page at its top, an anchor the page itself holds stays as it is, and any other opens the first page in order that holds it, as ",
+                "Code": false
+              },
+              {
+                "Text": "FILE#id",
+                "Code": true
+              },
+              {
+                "Text": ". An anchor no page holds stays unchanged. ",
+                "Code": false
+              },
+              {
+                "Text": "site_test.go",
+                "Code": true
+              },
+              {
+                "Text": " checks that every link opens a page and a section that exist.",
                 "Code": false
               }
             ]
@@ -26475,7 +26906,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:207 \"return \\\"stated\\\"\"",
-            "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/page.go:44 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -26567,7 +26998,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/page.html:184 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+            "internal/screen/page.html:56 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
         },
         {
@@ -26576,9 +27007,9 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.html:94 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+            "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
             "internal/screen/inside.go:517 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
-            "internal/screen/page.html:192 \"{{if .Unwired}}\"",
+            "internal/screen/page.html:64 \"{{if .Unwired}}\"",
             "internal/screen/inside.go:459 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
@@ -26598,7 +27029,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\"",
-            "internal/screen/page.html:242 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
+            "internal/screen/page.html:118 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
           ]
         },
         {
@@ -26953,7 +27384,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/screen.go:36 \"in.Synced.Blueprint = in.Inputs\""
+              "cmd/abbd/screen.go:34 \"in.Synced.Blueprint = in.Inputs\""
             ],
             "Marks": [
               {
@@ -27484,19 +27915,43 @@
                 "Code": false
               },
               {
-                "Text": "blueprint/index.html",
+                "Text": "blueprint/",
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ": the pages and ",
                 "Code": false
               },
               {
-                "Text": "blueprint/graph.json",
+                "Text": "graph.json",
                 "Code": true
               },
               {
                 "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "SaveBlueprint",
+                "Code": true
+              },
+              {
+                "Text": " writes the files of one render and removes every other ",
+                "Code": false
+              },
+              {
+                "Text": "*.html",
+                "Code": true
+              },
+              {
+                "Text": " page there, so the page of a module that left the state goes with it, and ",
+                "Code": false
+              },
+              {
+                "Text": "blueprint_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds that. ",
                 "Code": false
               },
               {
@@ -29922,7 +30377,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/screen.go:36 \"in.Synced.Blueprint = in.Inputs\"",
+            "cmd/abbd/screen.go:34 \"in.Synced.Blueprint = in.Inputs\"",
             "internal/store/store.go:28 \"// the InputsHash the blueprint was rendered from.\""
           ]
         },
@@ -33771,7 +34226,7 @@
             {
               "N": 13,
               "ID": "flow-sync.13",
-              "Does": "publish() → index.html and graph.json, after every command that writes",
+              "Does": "publish() → every page and graph.json, after every command that writes",
               "Note": "then records in state.yaml the inputs hash the files were rendered from",
               "Fails": "",
               "Badge": "",
@@ -33787,7 +34242,8 @@
               "Quotes": [
                 "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\"",
                 "cmd/abbd/screen.go:27 \"files, err := screen.Files(screen.Build(in))\"",
-                "cmd/abbd/screen.go:36 \"in.Synced.Blueprint = in.Inputs\""
+                "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\"",
+                "cmd/abbd/screen.go:34 \"in.Synced.Blueprint = in.Inputs\""
               ]
             }
           ]

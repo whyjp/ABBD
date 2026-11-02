@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>internal/extract · ABBD 청사진</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { min-width: 0; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.muted { color: var(--muted); }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+.pill.CURRENT, .pill.stated { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.STALE { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
+.pill.inferred { color: var(--guess); background: var(--guess-bg); border-color: transparent; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin: 6px 0 0; font-size: 12.5px; }
+.chips .chip { border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; padding: 0 6px; white-space: nowrap; }
+.chips .head { font-weight: 600; }
+.fresh { font-size: 14px; }
+ul.plain { list-style: none; padding: 0; margin: 4px 0; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+ul.plain li:last-child { border-bottom: 0; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
+details > summary { cursor: pointer; font-weight: 600; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
+.quote { font-size: 13px; margin-top: 2px; }
+.quote q { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; quotes: none; }
+
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
+svg .box.twin rect { stroke: var(--muted); }
+.picker a.chip { text-decoration: none; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.w.both { marker-start: url(#m-bypass); }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg circle.origin { stroke-width: 1.5; }
+svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
+svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
+svg circle.junction { fill: var(--ink); }
+svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
+svg circle.junction.bypass { fill: var(--bypass); }
+svg circle.junction.provides { fill: var(--ok); }
+svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg path.w.joins { marker-end: none; }
+svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.text table, .note table { margin: 6px 0; font-size: 13px; }
+.text th, .text td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+.text th { background: var(--panel); }
+.text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
+.note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
+.note h3 { margin: 4px 0; font-size: 15px; }
+.entries { margin: 6px 0 10px; }
+.entries table { font-size: 13px; table-layout: auto; }
+.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+.entries td code { overflow-wrap: break-word; }
+.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
+.entries td.note { width: 100%; }
+.entries td p { margin: 0 0 2px; }
+.entries .who { display: block; white-space: nowrap; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+}
+.questions { margin: 2px 0 8px; }
+.questions li { padding: 2px 0; }
+.flow .caption p { margin: 4px 0; }
+ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
+ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+ol.dg-flow > li.lane:first-child { border-top: 0; }
+.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
+.lane-unit strong { display: block; font-size: 14px; }
+.lane-unit .muted { font-size: 12px; }
+ol.steps { list-style: none; padding: 0; margin: 0; }
+li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
+li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
+li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
+ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
+li.step p { margin: 0; overflow-wrap: anywhere; }
+li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
+li.step .noteline { font-size: 13px; color: var(--muted); }
+li.step .fails { font-size: 13px; color: var(--stale); }
+li.step.stale .n { background: var(--stale); }
+li.step .chips { margin-top: 3px; }
+.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
+nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
+nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
+nav.site ul.plain li { border-bottom: 0; padding: 1px 0; }
+nav.site h3 { margin: 10px 0 2px; }
+nav.site a { text-decoration: none; }
+nav.site a:hover { text-decoration: underline; }
+nav.site a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+nav.site .tree a { display: block; overflow-wrap: anywhere; }
+.tree .d1 { padding-left: 12px; } .tree .d2 { padding-left: 24px; } .tree .d3 { padding-left: 36px; } .tree .d4 { padding-left: 48px; }
+.crumbs { margin: 0; font-size: 14px; }
+.inside.page { display: block; }
+table.index th { text-align: left; font-size: 13px; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+table.index .sig { font-size: 12px; }
+table.index .who { display: block; }
+.anchors { font-size: 12px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
+table.index td:first-child { width: 46%; }
+
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="site" aria-label="청사진 안내">
+  <a class="home" href="index.html">ABBD 청사진</a>
+  <ul class="plain top">
+    <li><a href="index.html">모듈과 계약</a></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">47</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">123</span></li>
+  </ul>
+  <h3>모듈</h3>
+  <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="MOD-0009.html">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="#m-MOD-0017" aria-current="page">internal/extract</a></li><li class="d0"><a href="MOD-0022.html">internal/gitx</a></li><li class="d0"><a href="MOD-0054.html">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="MOD-0055.html">pstack (external)</a></li></ul>
+  <h3>기능</h3>
+  <ul class="plain tree"><li class="d0"><a href="FEAT-0002.html">/abbd-setup</a></li><li class="d0"><a href="FEAT-0001.html">/abbd</a></li></ul>
+</nav>
+<main>
+<header>
+  <p class="crumbs"><a href="index.html">청사진</a> › <a href="#m-MOD-0017">internal/extract</a></p>
+  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+</header>
+
+<section class="inside page" id="m-MOD-0017">
+  <div class="drawhead"><h2>internal/extract의 안 <span class="muted key">MOD-0017</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  <div class="cols">
+    <div>
+      <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="628" height="272" viewBox="0 0 628 272" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="616" height="236" rx="8"/>
+<path class="w depends_on" d="M118 202 L118 218 L351 218 L351 234" data-origin="inferred"><title>key and parent checks depends_on internal/model (via call), 판독
+internal/extract/extract.go:137 &#34;if err := rr.Kind.Joins(from, to); err != nil {&#34;</title></path><circle class="origin inferred" cx="118" cy="202" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M518 210 L518 234" data-origin="inferred"><title>anchor path normalization depends_on internal/gitx (via convention), 판독
+internal/extract/extract.go:288 &#34;the forward-slash, root-relative paths git reports&#34;</title></path><circle class="origin inferred" cx="518" cy="210" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes" d="M467 106 L467 130 L428 130 L428 218 L371 218 L371 234" data-origin="inferred"><title>untrusted-output gate consumes internal/model (via call), 판독
+internal/extract/extract.go:174 &#34;if err := e.Validate(); err != nil {&#34;</title></path><circle class="origin inferred" cx="467" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M330 138 L330 158"><title>untrusted-output gate depends_on intent is a guess (via call), 판독
+internal/extract/extract.go:239 &#34;Purpose:        inferred(ru.Purpose),&#34;</title></path><path class="w depends_on" d="M518 138 L518 150"><title>untrusted-output gate depends_on anchor path normalization (via call), 판독
+internal/extract/extract.go:198 &#34;p, err := normalizePath(a.Path)&#34;</title></path><path class="w depends_on" d="M510 38 L510 62" data-origin="inferred"><title>anchor matching depends_on untrusted-output gate (via data), 판독</title></path><circle class="origin inferred" cx="510" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins" d="M553 106 L553 138 M330 138 L553 138" data-origin="inferred" data-net="1"><title>untrusted-output gate depends_on intent is a guess (via call), 판독
+untrusted-output gate depends_on anchor path normalization (via call), 판독
+internal/extract/extract.go:239 &#34;Purpose:        inferred(ru.Purpose),&#34;
+internal/extract/extract.go:198 &#34;p, err := normalizePath(a.Path)&#34;</title></path><circle class="origin inferred" cx="553" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="553" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="558" y="118">×2</text>
+<circle class="junction depends_on" cx="518" cy="138" r="3"/>
+<g class="box inner" data-id="MOD-0018"><title>MOD-0018 key and parent checks: Refuses duplicate keys, a parent that is not another module, parent cycles, relations naming missing keys or a unit itself, and relation kinds that cannot join the two unit kinds.</title><rect x="24" y="158" width="188" height="44" rx="4"/><text class="name" x="32" y="177">key and parent checks</text><text class="sub" x="32" y="194">모듈</text></g><g class="box inner" data-id="MOD-0019"><title>MOD-0019 intent is a guess: Gives every purpose and responsibility read from extraction output the INFERRED origin.</title><rect x="252" y="158" width="156" height="44" rx="4"/><text class="name" x="260" y="177">intent is a guess</text><text class="sub" x="260" y="194">모듈</text></g><g class="box inner" data-id="MOD-0020"><title>MOD-0020 anchor path normalization: Turns backslashes into forward slashes, cleans the path, and refuses empty, absolute or root-escaping paths.</title><rect x="448" y="150" width="140" height="60" rx="4"/><text class="name" x="456" y="169">anchor path</text><text class="name" x="456" y="185">normalization</text><text class="sub" x="456" y="202">모듈</text></g><g class="box inner" data-id="MOD-0021"><title>MOD-0021 untrusted-output gate: Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader&#39;s unit is identified by the code it cites.</title><rect x="416" y="62" width="188" height="44" rx="4"/><text class="name" x="424" y="81">untrusted-output gate</text><text class="sub" x="424" y="98">모듈</text></g>
+<a href="MOD-0030.html"><g class="port other entry" data-id="port|MOD-0030false"><title>계약 없이 internal/model와 닿는 곳</title><rect x="337" y="234" width="49" height="17" rx="3"/><text class="chip" x="337" dx="4" y="234" dy="12.5">model</text></g></a><a href="MOD-0022.html"><g class="port other entry" data-id="port|MOD-0022false"><title>계약 없이 internal/gitx와 닿는 곳</title><rect x="498" y="234" width="40" height="17" rx="3"/><text class="chip" x="498" dx="4" y="234" dy="12.5">gitx</text></g></a><a href="MOD-0009.html"><g class="port other exit" data-id="port|MOD-0009true"><title>계약 없이 internal/bootstrap와 닿는 곳</title><rect x="463" y="21" width="94" height="17" rx="3"/><text class="chip" x="463" dx="4" y="21" dy="12.5">← bootstrap</text></g></a>
+</svg></div>
+      <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+      
+      <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="chip">extraction JSON</span></div>
+      <h3>이 모듈을 지나는 흐름</h3>
+      <ul class="plain"><li><a href="index.html#flow-sync">What does abbd sync do, in order?</a> <span class="muted">단계 3</span></li></ul>
+      <h3>판독한 결합</h3>
+      <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> anchor matching → untrusted-output gate <span class="muted">(depends_on, via data)</span><div class="quote"><q>internal/bootstrap/overlay.go:225 &#34;n := overlap(u.Anchors, d.Anchors)&#34;</q></div><div class="quote"><q>internal/extract/extract.go:212 &#34;// Evidence locates a unit the script cannot see, so it anchors the unit&#39;s ID.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> key and parent checks → relation grammar <span class="muted">(depends_on, via call)</span><div class="quote"><q>internal/extract/extract.go:137 &#34;if err := rr.Kind.Joins(from, to); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> anchor path normalization → internal/gitx <span class="muted">(depends_on, via convention)</span><div class="quote"><q>internal/extract/extract.go:288 &#34;the forward-slash, root-relative paths git reports&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> untrusted-output gate → evidence citation <span class="muted">(consumes, via call)</span><div class="quote"><q>internal/extract/extract.go:174 &#34;if err := e.Validate(); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> untrusted-output gate → intent is a guess <span class="muted">(depends_on, via call)</span><div class="quote"><q>internal/extract/extract.go:239 &#34;Purpose:        inferred(ru.Purpose),&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> untrusted-output gate → anchor path normalization <span class="muted">(depends_on, via call)</span><div class="quote"><q>internal/extract/extract.go:198 &#34;p, err := normalizePath(a.Path)&#34;</q></div></li></ul>
+    </div>
+    <div class="text">
+      
+      <div><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span></div>
+      <h4>Overview</h4><p><code>internal/extract</code> is where ABBD reads the extraction JSON. That is the units-and-relations document a project&#39;s extraction script prints, and pstack&#39;s supplement uses the same schema. It is one file, <code>extract.go</code>, and its package comment calls it &#34;the boundary where untrusted model output becomes typed units&#34;. A model wrote the script and a model reader wrote the supplement, so this package checks their shape once and nothing downstream checks it again. <code>Parse</code> reads script output and <code>ParseSupplement</code> reads a supplement. Both decode strictly with unknown fields refused. They normalize every path, check every unit and relation against the rules in <code>internal/model</code>, and give each fact its writer. They return a whole <code>Result</code> or the first error, never part of a result.</p><p>The package depends only on <code>internal/model</code>. It knows nothing of stored IDs, the <code>.abbd/</code> state or git, and its output is keyed by extractor-local <code>key</code> strings. <code>cmd/abbd</code> calls <code>Parse</code> in <code>sync</code>, <code>setup</code> and <code>migrate</code>, and <code>ParseSupplement</code> in <code>readSupplement</code>, which <code>setup</code> and <code>migrate</code> use. <code>internal/bootstrap</code> folds the two results together, and <code>internal/identity</code> matches the result against stored units and assigns IDs. <code>NormalizeEvidence</code> is exported too. <code>abbd record</code> runs every <code>--evidence</code> through it, so recorded quotes follow the same path rules as extracted ones.</p><h4>Key Concepts</h4><ul><li><code>Result</code><strong> (</strong><code>extract.go</code>): one extraction run, a slice of <code>Unit</code> and a slice of <code>Relation</code>. Relations name their ends by unit <code>Key</code>, not by ID, and carry their <code>Writer</code>.</li></ul><ul><li><code>Unit</code><strong> (</strong><code>extract.go</code>): a design unit before it has an ID. It carries <code>Kind</code>, sorted and deduplicated <code>Anchors</code>, a <code>Name</code> and an optional <code>Signature</code> by the <code>script</code>, <code>Purpose</code> and <code>Responsibility</code>, an opaque <code>Digest</code>, the <code>Parent</code> key of the module or feature that contains it with <code>ParentEvidence</code>, and <code>Evidence</code>. Parsing leaves <code>Placed</code> and <code>SupplementKey</code> empty, and <code>bootstrap.Overlay</code> fills them.</li></ul><ul><li><code>Placement</code><strong> (</strong><code>extract.go</code>): one writer&#39;s parent claim, by key, with its evidence. The overlay adds the supplement&#39;s to <code>Placed</code>, and <code>identity</code> stores each one as a parent claim beside the script&#39;s.</li></ul><ul><li><strong>Wire shapes</strong> (<code>extract.go</code>): <code>rawResult</code>, <code>rawUnit</code> and <code>rawRelation</code> are the private JSON form, decoded with <code>DisallowUnknownFields</code>. <code>Unit</code> and <code>Relation</code> are the checked, typed form.</li></ul><ul><li><strong>Unit checks</strong> (<code>extract.go</code>): <code>parseUnits</code> validates the kind, which refuses unknown kinds and the reserved domain kinds. It requires a name and at least one anchor. It allows a <code>signature</code> only on contracts (<code>IF</code>, <code>EVT</code>, <code>DATA</code>, <code>CFG</code>).</li></ul><ul><li><strong>Key and parent checks</strong> (<code>extract.go</code>): keys are unique. A parent must be the key of another module or feature, the two kinds <code>model.Kind.Holds</code> allows. <code>parentCycle</code> refuses loops. <code>ParseSupplement</code> sets <code>foreignParents</code>, so a parent key the supplement does not hold is left for <code>bootstrap.Overlay</code> to resolve against the script.</li></ul><ul><li><strong>Relation checks</strong> (<code>extract.go</code>): both ends must be existing keys and must differ. <code>RelationKind.Joins</code> checks that the kind fits the ends, <code>Via.Validate</code> checks the via, and the evidence is normalized. Every parsed relation&#39;s writer is <code>script</code>, and the overlay appends the supplement&#39;s own couplings with the writer <code>supplement</code>.</li></ul><ul><li><strong>Entries</strong> (<code>extract.go</code>): a contract&#39;s <code>entries</code> are its parts as the code spells them, such as a route, a method, a flag or a field, each a <code>model.Entry</code> with a <code>name</code> and an optional <code>shape</code> and <code>required</code>. <code>normalizeEntries</code> trims them, keeps the code&#39;s order, gives each entry without a <code>key</code> the one <code>model.EntryKey</code> reduces its name to, and refuses entries on a unit that is not a contract and two entries that share a key. A relation&#39;s <code>entries</code> name entries of its <code>to</code> unit by name or by key, and <code>entryKeys</code> turns them into the sorted keys of that unit&#39;s entries, refusing a name the unit does not list. Two relation lines on one edge add their entries up into one relation, because one claim holds an edge, and a line that names no entries keeps that relation whole, since it uses every entry. <code>ParseSupplement</code> refuses entries outright: they are what the code spells, so only the script reports them.</li></ul><ul><li><strong>Path normalization</strong> (<code>extract.go</code>): <code>normalizePath</code> turns backslashes into slashes, trims and cleans the path, and refuses empty, absolute or root-escaping paths. Anchors must compare equal to the root-relative paths git reports, because identity matching runs on them.</li></ul><ul><li><strong>Evidence</strong> (<code>extract.go</code>): a verbatim quote with <code>path</code>, optional <code>lines</code> and <code>symbol</code>, and <code>quote</code>. The JSON never sets an item&#39;s status. <code>NormalizeEvidence</code> normalizes its path, trims its symbol and runs <code>model.Evidence.Validate</code>, which also refuses quotes from <code>.abbd/</code> or <code>.git/</code>. A unit&#39;s evidence becomes anchors too, so a reader&#39;s unit gets a stable identity.</li></ul><ul><li><strong>Writer tagging</strong> (<code>extract.go</code>): names, signatures and relations get the writer <code>script</code>, which is EXTRACTED. A purpose or responsibility in the JSON gets the writer <code>supplement</code>, which is INFERRED, since &#34;Extraction reads code, so any statement of intent it makes is a guess, and it ranks with the supplement&#39;s&#34;. Nothing here produces a <code>reader</code> or <code>human</code> value.</li></ul>
+      
+      
+      
+      <h3>안의 단위</h3>
+      <ul class="plain units-list"><li id="i-MOD-0018"><strong>key and parent checks</strong> <span class="muted">모듈</span><div>Refuses duplicate keys, a parent that is not another module, parent cycles, relations naming missing keys or a unit itself, and relation kinds that cannot join the two unit kinds. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0018</span> <span class="key muted">internal/extract/extract.go Parse, internal/extract/extract.go parentCycle</span></details></li><li id="i-MOD-0019"><strong>intent is a guess</strong> <span class="muted">모듈</span><div>Gives every purpose and responsibility read from extraction output the INFERRED origin. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0019</span> <span class="key muted">internal/extract/extract.go inferred</span></details></li><li id="i-MOD-0020"><strong>anchor path normalization</strong> <span class="muted">모듈</span><div>Turns backslashes into forward slashes, cleans the path, and refuses empty, absolute or root-escaping paths. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0020</span> <span class="key muted">internal/extract/extract.go normalizePath</span></details></li><li id="i-MOD-0021"><strong>untrusted-output gate</strong> <span class="muted">모듈</span><div>Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader&#39;s unit is identified by the code it cites. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0021</span> <span class="key muted">internal/extract/extract.go parseUnits</span></details></li></ul>
+      
+    </div>
+  </div>
+  <div class="entries" id="t-DATA-0002"><h3>extraction JSON <span class="muted key">DATA-0002</span></h3><details class="entries" open><summary class="muted" style="font-weight:400">항목 38개</summary><table><tr><th>항목</th><th>타입</th><th>필수</th><th>설명</th></tr><tr id="e-DATA-0002.units"><td class="name"><code>units</code></td><td><code>[]rawUnit</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-key"><td class="name"><code>units.key</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-signature"><td class="name"><code>units.signature</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-kind"><td class="name"><code>units.kind</code></td><td><code>model.Kind</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-name"><td class="name"><code>units.name</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-anchors"><td class="name"><code>units.anchors</code></td><td><code>[]model.Anchor</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-anchors-path"><td class="name"><code>units.anchors.path</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-anchors-symbol"><td class="name"><code>units.anchors.symbol</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-purpose"><td class="name"><code>units.purpose</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-responsibility"><td class="name"><code>units.responsibility</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-digest"><td class="name"><code>units.digest</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent"><td class="name"><code>units.parent</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent-evidence"><td class="name"><code>units.parent_evidence</code></td><td><code>[]model.Evidence</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent-evidence-path"><td class="name"><code>units.parent_evidence.path</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent-evidence-lines"><td class="name"><code>units.parent_evidence.lines</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent-evidence-symbol"><td class="name"><code>units.parent_evidence.symbol</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-parent-evidence-quote"><td class="name"><code>units.parent_evidence.quote</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-evidence"><td class="name"><code>units.evidence</code></td><td><code>[]model.Evidence</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-evidence-path"><td class="name"><code>units.evidence.path</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-evidence-lines"><td class="name"><code>units.evidence.lines</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-evidence-symbol"><td class="name"><code>units.evidence.symbol</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-evidence-quote"><td class="name"><code>units.evidence.quote</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-entries"><td class="name"><code>units.entries</code></td><td><code>[]model.Entry</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-entries-key"><td class="name"><code>units.entries.key</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-entries-name"><td class="name"><code>units.entries.name</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-entries-shape"><td class="name"><code>units.entries.shape</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.units-entries-required"><td class="name"><code>units.entries.required</code></td><td><code>*bool</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations"><td class="name"><code>relations</code></td><td><code>[]rawRelation</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-from"><td class="name"><code>relations.from</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-to"><td class="name"><code>relations.to</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-kind"><td class="name"><code>relations.kind</code></td><td><code>model.RelationKind</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-via"><td class="name"><code>relations.via</code></td><td><code>model.Via</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-evidence"><td class="name"><code>relations.evidence</code></td><td><code>[]model.Evidence</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-evidence-path"><td class="name"><code>relations.evidence.path</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-evidence-lines"><td class="name"><code>relations.evidence.lines</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-evidence-symbol"><td class="name"><code>relations.evidence.symbol</code></td><td><code>string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-evidence-quote"><td class="name"><code>relations.evidence.quote</code></td><td><code>string</code></td><td>필수</td><td class="note"><span class="muted">설명 없음</span></td></tr><tr id="e-DATA-0002.relations-entries"><td class="name"><code>relations.entries</code></td><td><code>[]string</code></td><td>선택</td><td class="note"><span class="muted">설명 없음</span></td></tr></table></details></div>
+</section>
+
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>
+</main>
+</div>
+</body>
+</html>

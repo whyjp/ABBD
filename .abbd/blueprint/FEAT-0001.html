@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>/abbd · ABBD 청사진</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
+  --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+    --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+    --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
+  --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
+  --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { min-width: 0; padding: 10px 16px 16px; }
+header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.muted { color: var(--muted); }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+.pill.CURRENT, .pill.stated { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.pill.STALE { color: var(--stale); background: var(--warn-bg); border-color: transparent; }
+.pill.inferred { color: var(--guess); background: var(--guess-bg); border-color: transparent; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; margin: 6px 0 0; font-size: 12.5px; }
+.chips .chip { border: 1px solid var(--accent); color: var(--accent); border-radius: 3px; padding: 0 6px; white-space: nowrap; }
+.chips .head { font-weight: 600; }
+.fresh { font-size: 14px; }
+ul.plain { list-style: none; padding: 0; margin: 4px 0; }
+ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+ul.plain li:last-child { border-bottom: 0; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { white-space: nowrap; width: 1%; }
+details > summary { cursor: pointer; font-weight: 600; }
+a { color: var(--accent); }
+.narrow { display: none; margin: 4px 0 0; font-size: 13px; }
+@media (max-width: 760px) { .narrow { display: block; } }
+.quote { font-size: 13px; margin-top: 2px; }
+.quote q { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; quotes: none; }
+
+.drawhead { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; justify-content: space-between; }
+.views a { margin-left: 10px; font-size: 14px; }
+.mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
+.mapbox svg { display: block; margin: 0 auto; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg text.name { font-weight: 650; }
+svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.chip { font-size: 11px; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
+svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
+svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
+svg .box.twin rect { stroke: var(--muted); }
+.picker a.chip { text-decoration: none; }
+svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+svg .port rect { stroke-width: 1.2; }
+svg .port.exit rect { fill: var(--accent); stroke: var(--accent); }
+svg .port.exit text { fill: var(--bg); font-weight: 600; }
+svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
+svg .port.entry text { fill: var(--accent); }
+svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
+svg .port.other text { fill: var(--muted); }
+svg path.w { fill: none; stroke-width: 1.5; }
+svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
+svg path.w.both { marker-start: url(#m-bypass); }
+svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
+svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
+svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg circle.origin { stroke-width: 1.5; }
+svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
+svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
+svg circle.junction { fill: var(--ink); }
+svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
+svg circle.junction.bypass { fill: var(--bypass); }
+svg circle.junction.provides { fill: var(--ok); }
+svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg path.w.joins { marker-end: none; }
+svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w:hover { stroke-width: 3.5; }
+svg marker path { stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
+.legend svg { vertical-align: middle; margin-right: 4px; }
+
+.inside { display: none; border-color: var(--accent); }
+.inside:target { display: block; }
+.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
+.inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
+.inside .text ul { padding-left: 18px; margin: 2px 0; }
+.text table, .note table { margin: 6px 0; font-size: 13px; }
+.text th, .text td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+.text th { background: var(--panel); }
+.text pre { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; overflow-x: auto; margin: 6px 0; }
+.note { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 6px; }
+.note h3 { margin: 4px 0; font-size: 15px; }
+.entries { margin: 6px 0 10px; }
+.entries table { font-size: 13px; table-layout: auto; }
+.entries th, .entries td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
+.entries th { background: var(--bg); font-weight: 600; white-space: nowrap; }
+.entries td code { overflow-wrap: break-word; }
+.entries td > code { display: inline-block; width: max-content; max-width: 40ch; overflow-wrap: anywhere; }
+.entries td.note { width: 100%; }
+.entries td p { margin: 0 0 2px; }
+.entries .who { display: block; white-space: nowrap; }
+.units-list li { padding: 4px 0; }
+@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
+@media (max-width: 560px) {
+  body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
+  td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
+}
+.questions { margin: 2px 0 8px; }
+.questions li { padding: 2px 0; }
+.flow .caption p { margin: 4px 0; }
+ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
+ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
+ol.dg-flow > li.lane:first-child { border-top: 0; }
+.lane-unit { display: block; align-self: start; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 6px 9px; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.lane-unit:hover, a.lane-unit:focus { border-color: var(--accent); }
+.lane-unit strong { display: block; font-size: 14px; }
+.lane-unit .muted { font-size: 12px; }
+ol.steps { list-style: none; padding: 0; margin: 0; }
+li.step { position: relative; padding: 2px 0 12px 40px; min-width: 0; }
+li.step .n { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+li.step::after { content: ""; position: absolute; left: 13px; top: 30px; bottom: -6px; border-left: 2px solid var(--accent); }
+li.step::before { content: ""; position: absolute; left: 8px; top: -8px; border: 6px solid transparent; border-top-color: var(--accent); }
+ol.dg-flow > li.lane:first-child li.step:first-child::before, ol.dg-flow > li.lane:last-child li.step:last-child::after { display: none; }
+li.step p { margin: 0; overflow-wrap: anywhere; }
+li.step .does { font-size: 14.5px; font-weight: 600; line-height: 28px; }
+li.step .noteline { font-size: 13px; color: var(--muted); }
+li.step .fails { font-size: 13px; color: var(--stale); }
+li.step.stale .n { background: var(--stale); }
+li.step .chips { margin-top: 3px; }
+.chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
+nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
+nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
+nav.site ul.plain li { border-bottom: 0; padding: 1px 0; }
+nav.site h3 { margin: 10px 0 2px; }
+nav.site a { text-decoration: none; }
+nav.site a:hover { text-decoration: underline; }
+nav.site a[aria-current="page"] { color: var(--ink); font-weight: 700; }
+nav.site .tree a { display: block; overflow-wrap: anywhere; }
+.tree .d1 { padding-left: 12px; } .tree .d2 { padding-left: 24px; } .tree .d3 { padding-left: 36px; } .tree .d4 { padding-left: 48px; }
+.crumbs { margin: 0; font-size: 14px; }
+.inside.page { display: block; }
+table.index th { text-align: left; font-size: 13px; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
+table.index .sig { font-size: 12px; }
+table.index .who { display: block; }
+.anchors { font-size: 12px; }
+@media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
+table.index td:first-child { width: 46%; }
+
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="site" aria-label="청사진 안내">
+  <a class="home" href="index.html">ABBD 청사진</a>
+  <ul class="plain top">
+    <li><a href="index.html">모듈과 계약</a></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">47</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">123</span></li>
+  </ul>
+  <h3>모듈</h3>
+  <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="MOD-0009.html">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="MOD-0017.html">internal/extract</a></li><li class="d0"><a href="MOD-0022.html">internal/gitx</a></li><li class="d0"><a href="MOD-0054.html">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="MOD-0055.html">pstack (external)</a></li></ul>
+  <h3>기능</h3>
+  <ul class="plain tree"><li class="d0"><a href="FEAT-0002.html">/abbd-setup</a></li><li class="d0"><a href="#m-FEAT-0001" aria-current="page">/abbd</a></li></ul>
+</nav>
+<main>
+<header>
+  <p class="crumbs"><a href="index.html">청사진</a> › <a href="#m-FEAT-0001">/abbd</a></p>
+  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+</header>
+
+<section class="inside page" id="m-FEAT-0001">
+  <div class="drawhead"><h2>/abbd의 안 <span class="muted key">FEAT-0001</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  <div class="cols">
+    <div>
+      <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="781" height="584" viewBox="0 0 781 584" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="769" height="548" rx="8"/>
+<path class="w depends_on back" d="M602 322 L602 270 L641 270 L641 174 L680 174 L680 62 L720 62 L720 38" data-origin="inferred"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:11 &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</title></path><circle class="origin inferred" cx="602" cy="322" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes" d="M236 518 L236 546"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:19 &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;</title></path><path class="w consumes" d="M309 518 L309 546"><title>/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:23 &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;</title></path><path class="w consumes" d="M357 518 L357 546"><title>/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:21 &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;</title></path><path class="w consumes" d="M412 518 L412 546"><title>/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:22 &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><path class="w depends_on joins" d="M308 262 L308 286" data-origin="inferred"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><circle class="origin inferred" cx="308" cy="262" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on back" d="M261 202 L261 182 L167 182 L167 62 L89 62 L89 38" data-origin="inferred"><title>/abbd read the code through pstack depends_on pstack (external) (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><circle class="origin inferred" cx="261" cy="202" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M496 166 L496 174 L339 174 L339 202" data-origin="inferred"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:25 &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><circle class="origin inferred" cx="496" cy="166" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins back" d="M488 78 L488 70"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="w consumes back" d="M483 78 L483 38"><title>/abbd record what a reader found consumes abbd record unit (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:27 &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="w consumes back" d="M607 78 L607 38"><title>/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:30 &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><path class="w consumes" d="M150 478 L150 546" data-origin="inferred"><title>/abbd what the human states consumes abbd record fact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:68 &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;</title></path><circle class="origin inferred" cx="150" cy="478" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins back" d="M150 418 L150 406 L402 406" data-origin="inferred"><title>/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><circle class="origin inferred" cx="150" cy="418" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins" d="M625 502 L625 510"><title>/abbd after work consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="w consumes" d="M658 502 L658 546"><title>/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="w consumes joins" d="M386 502 L386 510"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="w consumes" d="M464 502 L464 546"><title>/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;</title></path><path class="w consumes" d="M549 502 L549 546"><title>/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="w depends_on joins" d="M182 278 L182 286"><title>CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독</title></path><path class="w depends_on" d="M700 278 L700 398 L625 398 L625 426"><title>CLAUDE.md abbd block depends_on /abbd after work (via convention), 판독</title></path><path class="w depends_on joins" d="M370 38 L370 62 M182 62 L182 190 M182 190 L182 278 M182 62 L370 62 M182 278 L700 278" data-origin="inferred" data-net="1"><title>CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독
+CLAUDE.md abbd block depends_on /abbd after work (via convention), 판독</title></path><circle class="origin inferred" cx="370" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="370" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="375" y="50">×2</text><path class="w consumes joins" d="M236 374 L236 398 M236 398 L236 518 M236 518 L412 518" data-origin="inferred" data-net="2"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:19 &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;
+plugins/abbd/skills/abbd/SKILL.md:23 &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;
+plugins/abbd/skills/abbd/SKILL.md:21 &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;
+plugins/abbd/skills/abbd/SKILL.md:22 &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><circle class="origin inferred" cx="236" cy="374" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="236" cy="374" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="236" cy="374" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="236" cy="374" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="241" y="386">×4</text><path class="w consumes joins back" d="M488 106 L488 78 M483 78 L607 78" data-origin="inferred" data-net="3"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+/abbd record what a reader found consumes abbd record unit (via call), 판독
+/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:27 &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:30 &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><circle class="origin inferred" cx="488" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="488" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="488" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="493" y="102">×3</text><path class="w consumes joins" d="M625 470 L625 502 M625 502 L658 502" data-origin="inferred" data-net="4"><title>/abbd after work consumes abbd diff (via call), 판독
+/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><circle class="origin inferred" cx="625" cy="470" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="625" cy="470" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="604" y="482">×2</text><path class="w consumes joins" d="M386 478 L386 502 M386 502 L549 502" data-origin="inferred" data-net="5"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><circle class="origin inferred" cx="386" cy="478" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="386" cy="478" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="386" cy="478" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="365" y="490">×3</text><path class="w consumes joins back" d="M244 174 L244 70 M202 270 L202 174 M202 174 L244 174 M402 406 L402 270 M402 270 L202 270 M244 70 L488 70" data-net="6"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><path class="w consumes back" d="M244 70 L244 38" data-net="6"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><text class="count" x="249" y="50">×2</text><path class="w consumes joins" d="M386 510 L625 510" data-net="7"><title>/abbd after work consumes abbd diff (via call), 판독
+/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="w consumes" d="M614 510 L614 546" data-net="7"><title>/abbd after work consumes abbd diff (via call), 판독
+/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><text class="count" x="619" y="538">×2</text><path class="w depends_on joins" d="M182 286 L308 286" data-net="8"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><path class="w depends_on" d="M190 286 L190 314" data-net="8"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><text class="count" x="195" y="310">×2</text>
+<circle class="junction consumes" cx="244" cy="70" r="3"/><circle class="junction consumes" cx="488" cy="78" r="3"/><circle class="junction depends_on" cx="182" cy="278" r="3"/><circle class="junction depends_on" cx="190" cy="286" r="3"/><circle class="junction consumes" cx="386" cy="502" r="3"/><circle class="junction consumes" cx="464" cy="502" r="3"/><circle class="junction consumes" cx="625" cy="502" r="3"/><circle class="junction consumes" cx="614" cy="510" r="3"/><circle class="junction consumes" cx="236" cy="518" r="3"/><circle class="junction consumes" cx="309" cy="518" r="3"/><circle class="junction consumes" cx="357" cy="518" r="3"/>
+<a href="#f-FEAT-0001--FEAT-0003"><g class="box inner" data-id="FEAT-0003"><title>FEAT-0003 /abbd ground rules: Sets what the blueprint is, that the abbd lever never judges, that the skill sits under any mode, that setup must run first, and how to weigh a fact by its origin.</title><rect x="520" y="322" width="164" height="44" rx="6"/><text class="name" x="528" y="341">/abbd ground rules</text><text class="sub" x="528" y="358">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0004"><g class="box inner" data-id="FEAT-0004"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="80" y="314" width="204" height="60" rx="6"/><text class="name" x="88" y="333">/abbd ask the blueprint</text><text class="name" x="88" y="349">before the code</text><text class="sub" x="88" y="366">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0005"><g class="box inner" data-id="FEAT-0005"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="214" y="202" width="172" height="60" rx="6"/><text class="name" x="222" y="221">/abbd read the</text><text class="name" x="222" y="237">code through pstack</text><text class="sub" x="222" y="254">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0006"><g class="box inner" data-id="FEAT-0006"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="409" y="106" width="158" height="60" rx="6"/><text class="name" x="417" y="125">/abbd record what</text><text class="name" x="417" y="141">a reader found</text><text class="sub" x="417" y="158">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0007"><g class="box inner" data-id="FEAT-0007"><title>FEAT-0007 /abbd what the human states: Records a purpose, responsibility or coupling the human states, with a source reference.</title><rect x="80" y="418" width="140" height="60" rx="6"/><text class="name" x="88" y="437">/abbd what the</text><text class="name" x="88" y="453">human states</text><text class="sub" x="88" y="470">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0008"><g class="box inner" data-id="FEAT-0008"><title>FEAT-0008 /abbd after work: Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.</title><rect x="550" y="426" width="150" height="44" rx="6"/><text class="name" x="558" y="445">/abbd after work</text><text class="sub" x="558" y="462">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0009"><g class="box inner" data-id="FEAT-0009"><title>FEAT-0009 /abbd evidence and CI gate: Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.</title><rect x="316" y="418" width="140" height="60" rx="6"/><text class="name" x="324" y="437">/abbd evidence</text><text class="name" x="324" y="453">and CI gate</text><text class="sub" x="324" y="470">기능</text></g></a>
+<g class="port design entry" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="594" y="546" width="40" height="17" rx="3"/><text class="chip" x="594" dx="4" y="546" dy="12.5">diff</text></g><g class="port design entry" data-id="port|IF-0002false"><title>이 모듈이 쓰는 계약: abbd evidence</title><rect x="436" y="546" width="68" height="17" rx="3"/><text class="chip" x="436" dx="4" y="546" dy="12.5">evidence</text></g><g class="port design entry" data-id="port|IF-0003false"><title>이 모듈이 쓰는 계약: abbd status</title><rect x="209" y="546" width="54" height="17" rx="3"/><text class="chip" x="209" dx="4" y="546" dy="12.5">status</text></g><g class="port design entry" data-id="port|IF-0004false"><title>이 모듈이 쓰는 계약: abbd impact</title><rect x="267" y="546" width="56" height="17" rx="3"/><text class="chip" x="267" dx="4" y="546" dy="12.5">impact</text></g><g class="port design entry" data-id="port|IF-0006false"><title>이 모듈이 쓰는 계약: abbd sync</title><rect x="638" y="546" width="40" height="17" rx="3"/><text class="chip" x="638" dx="4" y="546" dy="12.5">sync</text></g><g class="port design entry" data-id="port|IF-0007false"><title>이 모듈이 쓰는 계약: abbd explain</title><rect x="327" y="546" width="61" height="17" rx="3"/><text class="chip" x="327" dx="4" y="546" dy="12.5">explain</text></g><g class="port design entry" data-id="port|IF-0008false"><title>이 모듈이 쓰는 계약: abbd path</title><rect x="392" y="546" width="40" height="17" rx="3"/><text class="chip" x="392" dx="4" y="546" dy="12.5">path</text></g><g class="port design entry" data-id="port|IF-0009false"><title>이 모듈이 쓰는 계약: abbd record fact</title><rect x="106" y="546" width="89" height="17" rx="3"/><text class="chip" x="106" dx="4" y="546" dy="12.5">record fact</text></g><g class="port design entry" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="168" y="21" width="152" height="17" rx="3"/><text class="chip" x="168" dx="4" y="21" dy="12.5">abbd record relation</text></g><g class="port design entry" data-id="port|IF-0011false"><title>이 모듈이 쓰는 계약: abbd record unit</title><rect x="421" y="21" width="124" height="17" rx="3"/><text class="chip" x="421" dx="4" y="21" dy="12.5">abbd record unit</text></g><g class="port design entry" data-id="port|IF-0013false"><title>이 모듈이 쓰는 계약: abbd understand</title><rect x="549" y="21" width="117" height="17" rx="3"/><text class="chip" x="549" dx="4" y="21" dy="12.5">abbd understand</text></g><g class="port design entry" data-id="port|IF-0014false"><title>이 모듈이 쓰는 계약: abbd exit codes</title><rect x="508" y="546" width="82" height="17" rx="3"/><text class="chip" x="508" dx="4" y="546" dy="12.5">exit codes</text></g><a href="FEAT-0002.html"><g class="port other entry" data-id="port|FEAT-0002false"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="670" y="21" width="101" height="17" rx="3"/><text class="chip" x="670" dx="4" y="21" dy="12.5">→ abbd-setup</text></g></a><a href="MOD-0055.html"><g class="port other entry" data-id="port|MOD-0055false"><title>계약 없이 pstack (external)와 닿는 곳</title><rect x="14" y="21" width="150" height="17" rx="3"/><text class="chip" x="14" dx="4" y="21" dy="12.5">→ pstack (external)</text></g></a><a href="MOD-0001.html"><g class="port other exit" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="324" y="21" width="93" height="17" rx="3"/><text class="chip" x="324" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
+</svg></div>
+      <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+      <div class="chips picker"><span class="muted">선이 많아 한 상자씩 봅니다. 상자를 고르면 그 상자와 닿는 상자, 그 사이의 선만 그립니다:</span> <a class="chip" href="#f-FEAT-0001--FEAT-0003" title="닿는 상자 0개">/abbd ground rules</a> <a class="chip" href="#f-FEAT-0001--FEAT-0004" title="닿는 상자 1개">/abbd ask the blueprint before the code</a> <a class="chip" href="#f-FEAT-0001--FEAT-0005" title="닿는 상자 2개">/abbd read the code through pstack</a> <a class="chip" href="#f-FEAT-0001--FEAT-0006" title="닿는 상자 1개">/abbd record what a reader found</a> <a class="chip" href="#f-FEAT-0001--FEAT-0007" title="닿는 상자 0개">/abbd what the human states</a> <a class="chip" href="#f-FEAT-0001--FEAT-0008" title="닿는 상자 0개">/abbd after work</a> <a class="chip" href="#f-FEAT-0001--FEAT-0009" title="닿는 상자 0개">/abbd evidence and CI gate</a></div>
+      <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="head">abbd</span><span class="chip">migrate</span><span class="chip">record evidence</span><span class="chip">retract</span><span class="chip">flow</span></div>
+      
+      <h3>판독한 결합</h3>
+      <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> CLAUDE.md abbd block → /abbd <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/install.go:29 &#34;The /abbd skill says how to read, query and record the topology.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> CLAUDE.md abbd block → /abbd ask the blueprint before the code <span class="muted">(depends_on, via convention)</span><div class="quote"><q>cmd/abbd/install.go:27 &#34;A query is what you have in hand: a unit ID or name, a file path, a symbol, or a few words.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> CLAUDE.md abbd block → /abbd after work <span class="muted">(depends_on, via convention)</span><div class="quote"><q>cmd/abbd/install.go:28 &#34;After changing code, run &#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd ground rules → /abbd-setup <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:11 &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd ask the blueprint before the code → abbd status <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:19 &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd ask the blueprint before the code → abbd impact <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:23 &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd ask the blueprint before the code → abbd explain <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:21 &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd ask the blueprint before the code → abbd path <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:22 &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd read the code through pstack → /abbd ask the blueprint before the code <span class="muted">(depends_on, via data)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd read the code through pstack → pstack /how <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:24 &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd read the code through pstack → pstack /blast-radius <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:24 &#34;or `&lt;pstack&gt;/skills/blast-radius/SKILL.md` for a change that spans several modules.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd record what a reader found → /abbd read the code through pstack <span class="muted">(depends_on, via data)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:25 &#34;Record each coupling or unit a reader found that the state lacks&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd record what a reader found → abbd record relation <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd record what a reader found → abbd record unit <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:27 &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd record what a reader found → abbd understand <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:30 &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd what the human states → abbd record fact <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:68 &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd what the human states → abbd record relation <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd after work → abbd diff <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd after work → abbd sync <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd evidence and CI gate → abbd diff <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd evidence and CI gate → abbd evidence <span class="muted">(consumes, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd evidence and CI gate → abbd exit codes <span class="muted">(consumes, via convention)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup verify, install and hand over → /abbd <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:37 &#34;From here on the abbd skill reads and queries the blueprint.&#34;</q></div></li></ul>
+    </div>
+    <div class="text">
+      <p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand FEAT-0001 FILE</code>로 넣으면 여기에 보입니다.</p>
+      
+      
+      <h3>안의 단위</h3>
+      <ul class="plain units-list"><li id="i-FEAT-0003"><strong>/abbd ground rules</strong> <span class="muted">기능</span><div>Sets what the blueprint is, that the abbd lever never judges, that the skill sits under any mode, that setup must run first, and how to weigh a fact by its origin. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0003</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0004"><strong>/abbd ask the blueprint before the code</strong> <span class="muted">기능</span><div>Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0004</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0005"><strong>/abbd read the code through pstack</strong> <span class="muted">기능</span><div>When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0005</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0006"><strong>/abbd record what a reader found</strong> <span class="muted">기능</span><div>Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0006</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0007"><strong>/abbd what the human states</strong> <span class="muted">기능</span><div>Records a purpose, responsibility or coupling the human states, with a source reference. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0007</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0008"><strong>/abbd after work</strong> <span class="muted">기능</span><div>Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0008</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li><li id="i-FEAT-0009"><strong>/abbd evidence and CI gate</strong> <span class="muted">기능</span><div>Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0009</span> <span class="key muted">plugins/abbd/skills/abbd/SKILL.md</span></details></li></ul>
+      
+    </div>
+  </div>
+  
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0003">
+  <div class="drawhead"><h2>/abbd ground rules 둘레 <span class="muted key">FEAT-0003</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="168" viewBox="0 0 360 168" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="348" height="132" rx="8"/>
+<path class="w depends_on" d="M180 106 L180 130" data-origin="inferred"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:11 &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</title></path><circle class="origin inferred" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
+
+<g class="box inner focus" data-id="FEAT-0003"><title>FEAT-0003 /abbd ground rules: Sets what the blueprint is, that the abbd lever never judges, that the skill sits under any mode, that setup must run first, and how to weigh a fact by its origin.</title><rect x="98" y="62" width="164" height="44" rx="4"/><text class="name" x="106" y="81">/abbd ground rules</text><text class="sub" x="106" y="98">기능</text></g>
+<a href="FEAT-0002.html"><g class="port other entry" data-id="port|FEAT-0002false"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="130" y="130" width="101" height="17" rx="3"/><text class="chip" x="130" dx="4" y="130" dy="12.5">→ abbd-setup</text></g></a>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0004">
+  <div class="drawhead"><h2>/abbd ask the blueprint before the code 둘레 <span class="muted key">FEAT-0004</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="424" height="292" viewBox="0 0 424 292" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="412" height="256" rx="8"/>
+<path class="w consumes" d="M212 242 L212 254"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:19 &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;</title></path><path class="w consumes" d="M271 242 L271 254"><title>/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:23 &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;</title></path><path class="w consumes" d="M333 242 L333 254"><title>/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:21 &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;</title></path><path class="w consumes" d="M388 242 L388 254"><title>/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:22 &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><path class="w depends_on joins" d="M110 122 L110 130" data-origin="inferred"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><circle class="origin inferred" cx="110" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins" d="M212 38 L212 46" data-origin="inferred"><title>CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독</title></path><circle class="origin inferred" cx="212" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins" d="M212 218 L212 242 M212 242 L388 242" data-origin="inferred" data-net="1"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:19 &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;
+plugins/abbd/skills/abbd/SKILL.md:23 &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;
+plugins/abbd/skills/abbd/SKILL.md:21 &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;
+plugins/abbd/skills/abbd/SKILL.md:22 &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><circle class="origin inferred" cx="212" cy="218" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="212" cy="218" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="212" cy="218" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="212" cy="218" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="191" y="230">×4</text><path class="w depends_on joins" d="M212 46 L212 130 M110 130 L212 130" data-net="2"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><path class="w depends_on" d="M212 130 L212 158" data-net="2"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><text class="count" x="217" y="154">×2</text>
+<circle class="junction depends_on" cx="212" cy="130" r="3"/><circle class="junction consumes" cx="212" cy="242" r="3"/><circle class="junction consumes" cx="271" cy="242" r="3"/><circle class="junction consumes" cx="333" cy="242" r="3"/>
+<g class="box inner focus" data-id="FEAT-0004"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="110" y="158" width="204" height="60" rx="4"/><text class="name" x="118" y="177">/abbd ask the blueprint</text><text class="name" x="118" y="193">before the code</text><text class="sub" x="118" y="210">기능</text></g><a href="#f-FEAT-0001--FEAT-0005"><g class="box inner" data-id="FEAT-0005"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="24" y="62" width="172" height="60" rx="6"/><text class="name" x="32" y="81">/abbd read the</text><text class="name" x="32" y="97">code through pstack</text><text class="sub" x="32" y="114">기능</text></g></a>
+<g class="port design entry" data-id="port|IF-0003false"><title>이 모듈이 쓰는 계약: abbd status</title><rect x="185" y="254" width="54" height="17" rx="3"/><text class="chip" x="185" dx="4" y="254" dy="12.5">status</text></g><g class="port design entry" data-id="port|IF-0004false"><title>이 모듈이 쓰는 계약: abbd impact</title><rect x="243" y="254" width="56" height="17" rx="3"/><text class="chip" x="243" dx="4" y="254" dy="12.5">impact</text></g><g class="port design entry" data-id="port|IF-0007false"><title>이 모듈이 쓰는 계약: abbd explain</title><rect x="303" y="254" width="61" height="17" rx="3"/><text class="chip" x="303" dx="4" y="254" dy="12.5">explain</text></g><g class="port design entry" data-id="port|IF-0008false"><title>이 모듈이 쓰는 계약: abbd path</title><rect x="368" y="254" width="40" height="17" rx="3"/><text class="chip" x="368" dx="4" y="254" dy="12.5">path</text></g><a href="MOD-0001.html"><g class="port other exit" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="166" y="21" width="93" height="17" rx="3"/><text class="chip" x="166" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0005">
+  <div class="drawhead"><h2>/abbd read the code through pstack 둘레 <span class="muted key">FEAT-0005</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="488" height="372" viewBox="0 0 488 372" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="476" height="336" rx="8"/>
+<path class="w depends_on" d="M126 238 L126 250"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;</title></path><path class="w depends_on" d="M244 238 L244 334"><title>/abbd read the code through pstack depends_on pstack (external) (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><path class="w depends_on" d="M244 122 L244 154" data-origin="inferred"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:25 &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><circle class="origin inferred" cx="244" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins" d="M252 214 L252 238 M126 238 L252 238" data-origin="inferred" data-net="1"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+/abbd read the code through pstack depends_on pstack (external) (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;Start them from the units the queries named.&#34;
+plugins/abbd/skills/abbd/SKILL.md:24 &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><circle class="origin inferred" cx="252" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="252" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="257" y="226">×2</text>
+<circle class="junction depends_on" cx="244" cy="238" r="3"/>
+<a href="#f-FEAT-0001--FEAT-0004"><g class="box inner" data-id="FEAT-0004"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="24" y="250" width="204" height="60" rx="6"/><text class="name" x="32" y="269">/abbd ask the blueprint</text><text class="name" x="32" y="285">before the code</text><text class="sub" x="32" y="302">기능</text></g></a><g class="box inner focus" data-id="FEAT-0005"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="158" y="154" width="172" height="60" rx="4"/><text class="name" x="166" y="173">/abbd read the</text><text class="name" x="166" y="189">code through pstack</text><text class="sub" x="166" y="206">기능</text></g><a href="#f-FEAT-0001--FEAT-0006"><g class="box inner" data-id="FEAT-0006"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="165" y="62" width="158" height="60" rx="6"/><text class="name" x="173" y="81">/abbd record what</text><text class="name" x="173" y="97">a reader found</text><text class="sub" x="173" y="114">기능</text></g></a>
+<a href="MOD-0055.html"><g class="port other entry" data-id="port|MOD-0055false"><title>계약 없이 pstack (external)와 닿는 곳</title><rect x="169" y="334" width="150" height="17" rx="3"/><text class="chip" x="169" dx="4" y="334" dy="12.5">→ pstack (external)</text></g></a>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0006">
+  <div class="drawhead"><h2>/abbd record what a reader found 둘레 <span class="muted key">FEAT-0006</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="456" height="280" viewBox="0 0 456 280" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="444" height="244" rx="8"/>
+<path class="w depends_on" d="M192 122 L192 146 L110 146 L110 158" data-origin="inferred"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md:25 &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><circle class="origin inferred" cx="192" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes" d="M212 226 L212 242"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="w consumes" d="M315 226 L315 242"><title>/abbd record what a reader found consumes abbd record unit (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:27 &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="w consumes" d="M405 226 L405 242"><title>/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:30 &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><path class="w consumes joins" d="M212 122 L212 146 M212 146 L212 226 M212 226 L405 226" data-origin="inferred" data-net="1"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+/abbd record what a reader found consumes abbd record unit (via call), 판독
+/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:26 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:27 &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:30 &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><circle class="origin inferred" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="217" y="134">×3</text>
+<circle class="junction consumes" cx="212" cy="226" r="3"/><circle class="junction consumes" cx="315" cy="226" r="3"/>
+<a href="#f-FEAT-0001--FEAT-0005"><g class="box inner" data-id="FEAT-0005"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="24" y="158" width="172" height="60" rx="6"/><text class="name" x="32" y="177">/abbd read the</text><text class="name" x="32" y="193">code through pstack</text><text class="sub" x="32" y="210">기능</text></g></a><g class="box inner focus" data-id="FEAT-0006"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="149" y="62" width="158" height="60" rx="4"/><text class="name" x="157" y="81">/abbd record what</text><text class="name" x="157" y="97">a reader found</text><text class="sub" x="157" y="114">기능</text></g>
+<g class="port design entry" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="150" y="242" width="117" height="17" rx="3"/><text class="chip" x="150" dx="4" y="242" dy="12.5">record relation</text></g><g class="port design entry" data-id="port|IF-0011false"><title>이 모듈이 쓰는 계약: abbd record unit</title><rect x="271" y="242" width="89" height="17" rx="3"/><text class="chip" x="271" dx="4" y="242" dy="12.5">record unit</text></g><g class="port design entry" data-id="port|IF-0013false"><title>이 모듈이 쓰는 계약: abbd understand</title><rect x="364" y="242" width="82" height="17" rx="3"/><text class="chip" x="364" dx="4" y="242" dy="12.5">understand</text></g>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0007">
+  <div class="drawhead"><h2>/abbd what the human states 둘레 <span class="muted key">FEAT-0007</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="196" viewBox="0 0 360 196" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="348" height="160" rx="8"/>
+<path class="w consumes" d="M180 146 L180 158"><title>/abbd what the human states consumes abbd record fact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:68 &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;</title></path><path class="w consumes" d="M287 146 L287 158"><title>/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><path class="w consumes joins" d="M180 122 L180 146 M180 146 L287 146" data-origin="inferred" data-net="1"><title>/abbd what the human states consumes abbd record fact (via call), 판독
+/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:68 &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;
+plugins/abbd/skills/abbd/SKILL.md:69 &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><circle class="origin inferred" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="159" y="134">×2</text>
+<circle class="junction consumes" cx="180" cy="146" r="3"/>
+<g class="box inner focus" data-id="FEAT-0007"><title>FEAT-0007 /abbd what the human states: Records a purpose, responsibility or coupling the human states, with a source reference.</title><rect x="110" y="62" width="140" height="60" rx="4"/><text class="name" x="118" y="81">/abbd what the</text><text class="name" x="118" y="97">human states</text><text class="sub" x="118" y="114">기능</text></g>
+<g class="port design entry" data-id="port|IF-0009false"><title>이 모듈이 쓰는 계약: abbd record fact</title><rect x="136" y="158" width="89" height="17" rx="3"/><text class="chip" x="136" dx="4" y="158" dy="12.5">record fact</text></g><g class="port design entry" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="229" y="158" width="117" height="17" rx="3"/><text class="chip" x="229" dx="4" y="158" dy="12.5">record relation</text></g>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0008">
+  <div class="drawhead"><h2>/abbd after work 둘레 <span class="muted key">FEAT-0008</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="180" viewBox="0 0 360 180" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="348" height="144" rx="8"/>
+<path class="w consumes" d="M180 130 L180 142"><title>/abbd after work consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="w consumes" d="M224 130 L224 142"><title>/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="w depends_on" d="M180 38 L180 62" data-origin="inferred"><title>CLAUDE.md abbd block depends_on /abbd after work (via convention), 판독</title></path><circle class="origin inferred" cx="180" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins" d="M180 106 L180 130 M180 130 L224 130" data-origin="inferred" data-net="1"><title>/abbd after work consumes abbd diff (via call), 판독
+/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;
+plugins/abbd/skills/abbd/SKILL.md:74 &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><circle class="origin inferred" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="159" y="118">×2</text>
+<circle class="junction consumes" cx="180" cy="130" r="3"/>
+<g class="box inner focus" data-id="FEAT-0008"><title>FEAT-0008 /abbd after work: Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.</title><rect x="105" y="62" width="150" height="44" rx="4"/><text class="name" x="113" y="81">/abbd after work</text><text class="sub" x="113" y="98">기능</text></g>
+<g class="port design entry" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="160" y="142" width="40" height="17" rx="3"/><text class="chip" x="160" dx="4" y="142" dy="12.5">diff</text></g><g class="port design entry" data-id="port|IF-0006false"><title>이 모듈이 쓰는 계약: abbd sync</title><rect x="204" y="142" width="40" height="17" rx="3"/><text class="chip" x="204" dx="4" y="142" dy="12.5">sync</text></g><a href="MOD-0001.html"><g class="port other exit" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="134" y="21" width="93" height="17" rx="3"/><text class="chip" x="134" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+<section class="inside" id="f-FEAT-0001--FEAT-0009">
+  <div class="drawhead"><h2>/abbd evidence and CI gate 둘레 <span class="muted key">FEAT-0009</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
+  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="196" viewBox="0 0 360 196" role="img" aria-label="모듈의 안">
+<defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
+<rect class="frame" x="6" y="18" width="348" height="160" rx="8"/>
+<path class="w consumes" d="M172 146 L172 158"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="w consumes" d="M230 146 L230 158"><title>/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;</title></path><path class="w consumes" d="M309 146 L309 158"><title>/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="w consumes joins" d="M180 122 L180 146 M172 146 L309 146" data-origin="inferred" data-net="1"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;
+plugins/abbd/skills/abbd/SKILL.md:80 &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><circle class="origin inferred" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count" x="185" y="134">×3</text>
+<circle class="junction consumes" cx="180" cy="146" r="3"/><circle class="junction consumes" cx="230" cy="146" r="3"/>
+<g class="box inner focus" data-id="FEAT-0009"><title>FEAT-0009 /abbd evidence and CI gate: Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.</title><rect x="110" y="62" width="140" height="60" rx="4"/><text class="name" x="118" y="81">/abbd evidence</text><text class="name" x="118" y="97">and CI gate</text><text class="sub" x="118" y="114">기능</text></g>
+<g class="port design entry" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="152" y="158" width="40" height="17" rx="3"/><text class="chip" x="152" dx="4" y="158" dy="12.5">diff</text></g><g class="port design entry" data-id="port|IF-0002false"><title>이 모듈이 쓰는 계약: abbd evidence</title><rect x="196" y="158" width="68" height="17" rx="3"/><text class="chip" x="196" dx="4" y="158" dy="12.5">evidence</text></g><g class="port design entry" data-id="port|IF-0014false"><title>이 모듈이 쓰는 계약: abbd exit codes</title><rect x="268" y="158" width="82" height="17" rx="3"/><text class="chip" x="268" dx="4" y="158" dy="12.5">exit codes</text></g>
+</svg></div>
+  <div class="legend">
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
+<span>표시 없는 선: 코드에서 추출</span>
+<span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div>
+</section>
+
+<p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>
+</main>
+</div>
+</body>
+</html>
