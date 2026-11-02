@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -392,6 +393,8 @@ func frontmatter(v any, body string) ([]byte, error) {
 	return []byte("---\n" + string(front) + "---\n\n" + body), nil
 }
 
+var errNoFrontmatter = errors.New("missing frontmatter")
+
 func readFrontmatter(path string, v any) error {
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -400,7 +403,7 @@ func readFrontmatter(path string, v any) error {
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
 	if !ok {
-		return fmt.Errorf("%s: missing frontmatter", path)
+		return fmt.Errorf("%s: %w", path, errNoFrontmatter)
 	}
 	front, _, ok := bytes.Cut(rest, []byte("\n---\n"))
 	if !ok {

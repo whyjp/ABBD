@@ -256,3 +256,17 @@ func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
 	model.Resolve(out)
 	return out
 }
+
+// Occurrences counts the places e's file holds its quote now, wherever
+// they are; 0 when the file is gone.
+func (c *Checker) Occurrences(e model.Evidence) int {
+	f := c.load(e.Path)
+	if f == nil {
+		return 0
+	}
+	q := normalize(e.Quote)
+	if q == "" {
+		return 0
+	}
+	return len(f.matches(q))
+}

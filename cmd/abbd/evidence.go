@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 
@@ -137,13 +138,13 @@ func (e env) status() error {
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
 	var orphans []model.ID
-	shown := map[model.ID]store.Understanding{}
+	texts := map[string]string{}
 	for id, u := range in.Understandings {
 		if _, ok := textModule(in.Units, id); !ok {
 			orphans = append(orphans, id)
 			continue
 		}
-		shown[id] = u
+		texts[string(id)] = u.Text
 		if u.Digest != in.Digests[id] {
 			stale++
 		}
@@ -156,8 +157,11 @@ func (e env) status() error {
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
 	}
-	if len(shown) > 0 {
-		readTexts(e.stdout, shown)
+	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
+		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or delete the file status names", n))
+	}
+	if len(texts) > 0 {
+		readTexts(e.stdout, texts)
 	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
@@ -176,4 +180,43 @@ func (e env) status() error {
 		return fmt.Errorf("not current: %s", strings.Join(behind, "; "))
 	}
 	return nil
+}
+
+// statusNotes reports the notes in slots: how many, which are STALE with the
+// places that moved, which are orphaned, so the check skips them, and the
+// markdown files beside them that are no notes. It
+// adds each note the check reads to texts, for the readability report, and
+// returns how many are STALE.
+func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, strays []string, texts map[string]string) int {
+	var total, stale, orphans int
+	var lines []string
+	for _, id := range slices.Sorted(maps.Keys(notes)) {
+		u, present := presentUnit(units, id)
+		for _, n := range notes[id] {
+			total++
+			ref := string(id) + "." + n.Slot
+			switch {
+			case n.Misfiled:
+				orphans++
+				lines = append(lines, fmt.Sprintf("orphaned: %s says it is %s, whose note belongs at %s, so nothing reads it and the check skips it; delete %s to drop it", n.File, ref, store.NoteFile(id, n.Slot), n.File))
+				continue
+			case !present || !u.Kind.HoldsNotes() || !n.Known:
+				orphans++
+				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; delete %s to drop it", ref, n.File))
+				continue
+			case n.Stale():
+				stale++
+				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s; read that code again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE, or delete %s to drop it", ref, strings.Join(n.Changed, ", "), ref, n.File))
+			}
+			texts[ref] = n.Text
+		}
+	}
+	fmt.Fprintf(e.stdout, "notes: %d slot note(s), %d STALE, %d orphaned\n", total, stale, orphans)
+	for _, f := range strays {
+		fmt.Fprintf(e.stdout, "warning: %s has no frontmatter, so it is no note and abbd reads past it; move it out of %s/understanding to silence this\n", f, store.Dir)
+	}
+	for _, l := range lines {
+		fmt.Fprintln(e.stdout, l)
+	}
+	return stale
 }

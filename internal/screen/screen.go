@@ -25,6 +25,10 @@ type Input struct {
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
 	Digests        map[model.ID]string
+	// Notes are what readers wrote into each unit's slots. Strays are the
+	// markdown files beside them that are no notes, from the project root.
+	Notes  map[model.ID][]store.Note
+	Strays []string
 }
 
 // Watermark ties a rendered file to the .abbd inputs it came from.
@@ -50,6 +54,9 @@ func Load(st store.Store) (Input, error) {
 		return in, err
 	}
 	if in.Understandings, err = st.LoadUnderstandings(); err != nil {
+		return in, err
+	}
+	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}
@@ -114,6 +121,8 @@ type UnitRow struct {
 	Parent string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
+	// Notes are the unit's slots when no inside shows them.
+	Notes []Note `json:",omitempty"`
 }
 
 type Model struct {
@@ -196,6 +205,7 @@ func Build(in Input) Model {
 		}
 		m.Insides = append(m.Insides, ins)
 	}
+	o.placeNotes(in, &m)
 	return m
 }
 

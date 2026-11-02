@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/narrative"
@@ -14,10 +15,27 @@ type Understanding struct {
 }
 
 type Block struct {
-	// Kind is "h" for a heading, "li" for a list item, "p" for a paragraph.
-	// "pre" is a fenced code block, whose one part holds its lines.
+	// Kind is "h" for a heading, "li" for a list item, "p" for a paragraph,
+	// "table" for a pipe table, whose Rows start with its header, and "pre"
+	// for fenced code, whose Code is its lines as written.
 	Kind  string
-	Parts []Span
+	Parts []Span     `json:",omitempty"`
+	Rows  [][][]Span `json:",omitempty"`
+	Code  string     `json:",omitempty"`
+}
+
+// tableRule is a table's line under its header, such as |---|:--:|.
+var tableRule = regexp.MustCompile(`^\|?(\s*:?-+:?\s*\|)*\s*:?-+:?\s*\|?$`)
+
+// cells splits a table row at its pipes, keeping an escaped \| in its cell.
+func cells(row string) [][]Span {
+	row = strings.ReplaceAll(row, `\|`, "\x00")
+	row = strings.TrimSuffix(strings.TrimPrefix(row, "|"), "|")
+	var out [][]Span
+	for _, c := range strings.Split(row, "|") {
+		out = append(out, spans(strings.ReplaceAll(strings.TrimSpace(c), "\x00", "|")))
+	}
+	return out
 }
 
 type Span struct {
@@ -50,26 +68,39 @@ func spans(s string) []Span {
 func blocks(text string) []Block {
 	var out []Block
 	var para, code []string
+	inCode := false
 	flush := func() {
 		if len(para) > 0 {
 			out = append(out, Block{Kind: "p", Parts: spans(strings.Join(para, " "))})
 			para = nil
 		}
-		if len(code) > 0 {
-			out = append(out, Block{Kind: "pre", Parts: []Span{{Text: strings.Join(code, "\n"), Code: true}}})
-			code = nil
+		if inCode {
+			out = append(out, Block{Kind: "pre", Code: strings.Join(code, "\n")})
+			code, inCode = nil, false
 		}
 	}
+	row := false
 	for _, l := range narrative.Lines(text) {
 		t := l.Text
+		wasRow := row
+		row = l.Kind == narrative.Prose && strings.HasPrefix(t, "|")
 		switch {
 		case l.Kind == narrative.Code:
 			code = append(code, t)
 		case l.Kind == narrative.Fence:
+			opens := !inCode
 			flush()
+			inCode = opens
 		case l.Kind == narrative.Heading:
 			flush()
 			out = append(out, Block{Kind: "h", Parts: spans(t)})
+		case row && wasRow:
+			if !tableRule.MatchString(t) {
+				out[len(out)-1].Rows = append(out[len(out)-1].Rows, cells(t))
+			}
+		case row:
+			flush()
+			out = append(out, Block{Kind: "table", Rows: [][][]Span{cells(t)}})
 		case t == "":
 			flush()
 		case strings.HasPrefix(t, "- "), strings.HasPrefix(t, "* "):

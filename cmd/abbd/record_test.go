@@ -108,7 +108,7 @@ func TestRecordFactNeedsASourceAndOutlivesTheSupplement(t *testing.T) {
 	p.extract(codeOnly)
 	p.setup(0, "synced", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
 	p.want(1, "--source", "record", "fact", "MOD-0002.purpose", "--value", "posts journal entries")
-	p.want(1, "is not ID.purpose or ID.responsibility", "record", "fact", "MOD-0002.signature", "--value", "x", "--source", "conversation 2026-11-01")
+	p.want(1, "is not ID.purpose, ID.responsibility or ID.decisions.KEY", "record", "fact", "MOD-0002.signature", "--value", "x", "--source", "conversation 2026-11-01")
 	p.want(0, "recorded MOD-0002.purpose, USER_STATED", "record", "fact", "MOD-0002.purpose", "--value", "posts journal entries", "--source", "conversation 2026-11-01")
 	stated := "value: posts journal entries\n    writer: human\n    source: conversation 2026-11-01\n"
 	if md := p.read("architecture/MOD-0002.md"); !strings.Contains(md, stated) {
