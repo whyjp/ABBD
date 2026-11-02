@@ -371,11 +371,14 @@ type Metrics struct {
 	// the lines are than the shortest grid path between their ends, and
 	// MaxDetour the most any one line is.
 	Braid, Detour, MaxDetour int
+	// Bends is how many times the lines turn, and MaxBends the most any
+	// one line does.
+	Bends, MaxBends int
 }
 
 func (m Metrics) String() string {
 	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, escaped chips %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx", m.Braid, m.Detour, m.MaxDetour)
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx, bends %d, most bends %d", m.Braid, m.Detour, m.MaxDetour, m.Bends, m.MaxBends)
 }
 
 func measure(s sheet) Metrics {
@@ -391,6 +394,11 @@ func measure(s sheet) Metrics {
 		if len(w.pts) > 1 {
 			ws = append(ws, w)
 		}
+	}
+	for _, w := range ws {
+		n := bends(w.pts)
+		m.Bends += n
+		m.MaxBends = max(m.MaxBends, n)
 	}
 	// R1: crossings between two lines, away from the ends where lines meet
 	// on purpose.
@@ -719,4 +727,32 @@ func (m Metrics) violations(width int) []string {
 	check(m.Braid <= braidPerLine*max(1, m.Wires), "14", "lines run %dpx side by side for %d drawn lines, limit %dpx", m.Braid, m.Wires, braidPerLine*max(1, m.Wires))
 	check(m.MaxDetour <= detourLimit, "15", "a line runs %dpx longer than the shortest way between its ends, limit %dpx", m.MaxDetour, detourLimit)
 	return out
+}
+
+// bends counts where a line turns: a point between two runs that head
+// different ways.
+func bends(pts []fpt) int {
+	n := 0
+	var last fpt
+	for i := 1; i < len(pts); i++ {
+		d := fpt{fsign(pts[i].x - pts[i-1].x), fsign(pts[i].y - pts[i-1].y)}
+		if d == (fpt{}) {
+			continue
+		}
+		if last != (fpt{}) && d != last {
+			n++
+		}
+		last = d
+	}
+	return n
+}
+
+func fsign(f float64) float64 {
+	switch {
+	case f > 0.5:
+		return 1
+	case f < -0.5:
+		return -1
+	}
+	return 0
 }

@@ -629,7 +629,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				p.xs = append(p.xs, x)
 				continue
 			}
-			x := l.gutter(r, p.fx+(p.tx-p.fx)*j/k)
+			x := l.gutter(r, p.xs[len(p.xs)-1])
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}
