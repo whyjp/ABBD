@@ -74,6 +74,7 @@ func (e env) understand(id model.ID, args []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
+	readText(e.stdout, id, text)
 	return nil
 }
 
