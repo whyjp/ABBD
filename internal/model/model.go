@@ -160,9 +160,10 @@ var absentReasons = map[AbsentReason]bool{NotReported: true, Withdrawn: true, Ev
 type Unit struct {
 	ID   ID   `yaml:"id"`
 	Kind Kind `yaml:"kind"`
-	// SupplementKey is the setup supplement's own key for the unit, so a
+	// SupplementRef is the setup supplement's own ref for the unit, so a
 	// re-run of setup finds it without comparing evidence that sync rewrites.
-	SupplementKey string   `yaml:"supplement_key,omitempty"`
+	// A store from before the ref spells it supplement_key; the store reads that.
+	SupplementRef string   `yaml:"supplement_ref,omitempty"`
 	Name          Fact     `yaml:"name"`
 	Anchors       []Anchor `yaml:"anchors"`
 	// Parents holds every writer's claim on the module or feature that

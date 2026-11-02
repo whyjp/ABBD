@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "ca5cfd182562b6986244cb4f63bef57330b093e41f648ca4d1116b01b683ca51"
+    "inputs_hash": "cc0b389c05d62de43c8715c4d09763c1f0ac1f0a555c796b3664f18463322f4e"
   },
   "units": [
     {
@@ -103,7 +103,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:244 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
+        "internal/store/store.go:252 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
         "internal/identity/identity.go:23 \"Shared   model.Anchor `yaml:\\\"shared\\\"`\""
       ]
     },
@@ -183,8 +183,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:185 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
-        "internal/store/store.go:212 \"if u.Notes != \\\"\\\" {\""
+        "internal/store/store.go:193 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
+        "internal/store/store.go:220 \"if u.Notes != \\\"\\\" {\""
       ]
     },
     {
@@ -242,7 +242,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:562 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -332,7 +332,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:607 \"if !u.Absent {\""
+        "internal/model/model.go:608 \"if !u.Absent {\""
       ]
     },
     {
@@ -368,7 +368,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:370 \"st.HighWater[kind]++\""
+        "internal/store/store.go:378 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -386,7 +386,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:485 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -404,7 +404,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:505 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -781,7 +781,7 @@
       "Parent": "FEAT-0002",
       "Evidence": [
         "plugins/abbd/skills/abbd-setup/SKILL.md:38 \"## Extraction format\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md:64 \"`relations` name units by `key`; `kind` is `depends_on`, `consumes` or `provides`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md:64 \"`relations` name units by `ref`; `kind` is `depends_on`, `consumes` or `provides`.\""
       ]
     },
     {
@@ -1171,8 +1171,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:528 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:506 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:529 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:507 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
@@ -1620,8 +1620,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:121 \"parent %q is not the key of another module\"",
-        "internal/extract/extract.go:315 \"func parentCycle(units []Unit, key string) bool {\""
+        "internal/extract/extract.go:126 \"parent %q is not the key of another module\"",
+        "internal/extract/extract.go:323 \"func parentCycle(units []Unit, key string) bool {\""
       ]
     },
     {
@@ -1642,7 +1642,7 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:304 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
+        "internal/extract/extract.go:312 \"// Extraction reads code, so any statement of intent it makes is a guess, and\""
       ]
     },
     {
@@ -1663,8 +1663,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:288 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
-        "internal/extract/extract.go:299 \"leaves the project root\""
+        "internal/extract/extract.go:296 \"// Anchors must compare equal to the forward-slash, root-relative paths git reports.\"",
+        "internal/extract/extract.go:307 \"leaves the project root\""
       ]
     },
     {
@@ -1685,8 +1685,8 @@
       ],
       "Parent": "MOD-0017",
       "Evidence": [
-        "internal/extract/extract.go:184 \"dec.DisallowUnknownFields()\"",
-        "internal/extract/extract.go:214 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
+        "internal/extract/extract.go:189 \"dec.DisallowUnknownFields()\"",
+        "internal/extract/extract.go:222 \"ru.Anchors = append(ru.Anchors, e.Anchor())\""
       ]
     },
     {
@@ -1897,7 +1897,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:203 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
+        "internal/model/model.go:204 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
       ]
     },
     {
@@ -1919,8 +1919,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:410 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:441 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:411 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go:442 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -2161,8 +2161,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:283 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
-        "internal/store/store.go:308 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
+        "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
+        "internal/store/store.go:316 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
       ]
     },
     {
@@ -2183,7 +2183,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:370 \"st.HighWater[kind]++\""
+        "internal/store/store.go:378 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2225,8 +2225,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:337 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
-        "internal/store/store.go:344 \"return os.Rename(tmp, path)\""
+        "internal/store/store.go:345 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
+        "internal/store/store.go:352 \"return os.Rename(tmp, path)\""
       ]
     },
     {
@@ -3669,7 +3669,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+      "Quote": "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
     },
     {
       "From": "MOD-0020",
@@ -3677,7 +3677,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/extract/extract.go:288 \"the forward-slash, root-relative paths git reports\""
+      "Quote": "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
     },
     {
       "From": "MOD-0021",
@@ -3685,7 +3685,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:174 \"if err := e.Validate(); err != nil {\""
+      "Quote": "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
     },
     {
       "From": "MOD-0021",
@@ -3693,7 +3693,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:239 \"Purpose:        inferred(ru.Purpose),\""
+      "Quote": "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
     },
     {
       "From": "MOD-0021",
@@ -3701,7 +3701,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/extract/extract.go:198 \"p, err := normalizePath(a.Path)\""
+      "Quote": "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
     },
     {
       "From": "MOD-0022",
@@ -3793,7 +3793,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:562 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -3809,7 +3809,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:607 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:608 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3825,7 +3825,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:485 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3833,7 +3833,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:505 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -4137,7 +4137,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:370 \"st.HighWater[kind]++\""
+      "Quote": "internal/store/store.go:378 \"st.HighWater[kind]++\""
     },
     {
       "From": "MOD-0041",
@@ -4183,7 +4183,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/store/store.go:371 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+      "Quote": "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
     },
     {
       "From": "MOD-0046",
@@ -11299,7 +11299,15 @@
                 "Code": true
               },
               {
-                "Text": ". It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
+                "Text": ". A unit paired with a supplement unit keeps that unit's ref as ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_ref",
+                "Code": true
+              },
+              {
+                "Text": ", by which a later setup pairs it again. It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
                 "Code": false
               }
             ]
@@ -11897,7 +11905,23 @@
                 "Code": true
               },
               {
-                "Text": " on a scratch repository, including where the blueprint puts a contract's notes.",
+                "Text": " on a scratch repository, including where the blueprint puts a contract's notes. ",
+                "Code": false
+              },
+              {
+                "Text": "extractor_test.go",
+                "Code": true
+              },
+              {
+                "Text": " runs this repository's own extraction script and reads each unit it prints by its ",
+                "Code": false
+              },
+              {
+                "Text": "ref",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
@@ -14447,11 +14471,19 @@
                 "Code": true
               },
               {
-                "Text": " keeps the supplement's key as ",
+                "Text": " keeps the supplement's ",
                 "Code": false
               },
               {
-                "Text": "SupplementKey",
+                "Text": "ref",
+                "Code": true
+              },
+              {
+                "Text": " as ",
+                "Code": false
+              },
+              {
+                "Text": "SupplementRef",
                 "Code": true
               },
               {
@@ -14459,7 +14491,7 @@
                 "Code": false
               },
               {
-                "Text": "supplement:\u003ckey\u003e",
+                "Text": "supplement:\u003cref\u003e",
                 "Code": true
               },
               {
@@ -14687,7 +14719,7 @@
           "Via": "data",
           "Quotes": [
             "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:212 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/extract/extract.go:220 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
       ]
@@ -16001,7 +16033,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+              "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
             ],
             "Marks": [
               {
@@ -16021,7 +16053,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/extract/extract.go:288 \"the forward-slash, root-relative paths git reports\""
+              "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
             ],
             "Marks": [
               {
@@ -16041,7 +16073,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:174 \"if err := e.Validate(); err != nil {\""
+              "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
             ],
             "Marks": [
               {
@@ -16060,7 +16092,7 @@
             "Title": "untrusted-output gate depends_on intent is a guess (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:239 \"Purpose:        inferred(ru.Purpose),\""
+              "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0019"
@@ -16072,7 +16104,7 @@
             "Title": "untrusted-output gate depends_on anchor path normalization (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "internal/extract/extract.go:198 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
             ],
             "Rels": [
               "MOD-0021.depends_on.MOD-0020"
@@ -16102,8 +16134,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/extract/extract.go:239 \"Purpose:        inferred(ru.Purpose),\"",
-              "internal/extract/extract.go:198 \"p, err := normalizePath(a.Path)\""
+              "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\"",
+              "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
             ],
             "Marks": [
               {
@@ -16273,7 +16305,15 @@
                 "Code": true
               },
               {
-                "Text": " state or git, and its output is keyed by extractor-local ",
+                "Text": " state or git, and its output is keyed by each unit's extractor-local ref. A unit spells it ",
+                "Code": false
+              },
+              {
+                "Text": "ref",
+                "Code": true
+              },
+              {
+                "Text": " or ",
                 "Code": false
               },
               {
@@ -16281,7 +16321,31 @@
                 "Code": true
               },
               {
-                "Text": " strings. ",
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "parseUnits",
+                "Code": true
+              },
+              {
+                "Text": " refuses a unit that spells both with different values, because gitleaks' ",
+                "Code": false
+              },
+              {
+                "Text": "generic-api-key",
+                "Code": true
+              },
+              {
+                "Text": " rule reads a path-like ",
+                "Code": false
+              },
+              {
+                "Text": "key",
+                "Code": true
+              },
+              {
+                "Text": " value with enough entropy as a secret. ",
                 "Code": false
               },
               {
@@ -16578,7 +16642,7 @@
                 "Code": false
               },
               {
-                "Text": "SupplementKey",
+                "Text": "SupplementRef",
                 "Code": true
               },
               {
@@ -17195,6 +17259,12 @@
                 "Need": "필수"
               },
               {
+                "Key": "units-ref",
+                "Name": "units.ref",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "units-key",
                 "Name": "units.key",
                 "Shape": "string",
@@ -17443,7 +17513,7 @@
           "Via": "data",
           "Quotes": [
             "internal/bootstrap/overlay.go:225 \"n := overlap(u.Anchors, d.Anchors)\"",
-            "internal/extract/extract.go:212 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
+            "internal/extract/extract.go:220 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
         {
@@ -17452,7 +17522,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -17461,7 +17531,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:288 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -17470,7 +17540,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:174 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -17479,7 +17549,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:239 \"Purpose:        inferred(ru.Purpose),\""
+            "internal/extract/extract.go:247 \"Purpose:        inferred(ru.Purpose),\""
           ]
         },
         {
@@ -17488,7 +17558,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:198 \"p, err := normalizePath(a.Path)\""
+            "internal/extract/extract.go:206 \"p, err := normalizePath(a.Path)\""
           ]
         }
       ],
@@ -18800,7 +18870,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/extract/extract.go:288 \"the forward-slash, root-relative paths git reports\""
+            "internal/extract/extract.go:296 \"the forward-slash, root-relative paths git reports\""
           ]
         },
         {
@@ -19370,7 +19440,7 @@
                 "Code": false
               },
               {
-                "Text": "SupplementKey",
+                "Text": "SupplementRef",
                 "Code": true
               },
               {
@@ -19624,7 +19694,7 @@
                 "Code": false
               },
               {
-                "Text": "SupplementKey",
+                "Text": "SupplementRef",
                 "Code": true
               },
               {
@@ -20083,7 +20153,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:371 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         }
@@ -21571,7 +21641,15 @@
                 "Code": false
               },
               {
-                "Text": "SupplementKey",
+                "Text": "SupplementRef",
+                "Code": true
+              },
+              {
+                "Text": ", stored as ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_ref",
                 "Code": true
               },
               {
@@ -23531,7 +23609,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:137 \"if err := rr.Kind.Joins(from, to); err != nil {\""
+            "internal/extract/extract.go:142 \"if err := rr.Kind.Joins(from, to); err != nil {\""
           ]
         },
         {
@@ -23540,7 +23618,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "internal/extract/extract.go:174 \"if err := e.Validate(); err != nil {\""
+            "internal/extract/extract.go:179 \"if err := e.Validate(); err != nil {\""
           ]
         },
         {
@@ -23567,7 +23645,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:562 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -23585,7 +23663,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:607 \"if !u.Absent {\""
+            "internal/model/model.go:608 \"if !u.Absent {\""
           ]
         },
         {
@@ -23603,7 +23681,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:485 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -23612,7 +23690,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:505 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -26474,7 +26552,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:283 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -26811,7 +26889,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/store/store.go:371 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+              "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
             ],
             "Marks": [
               {
@@ -27455,7 +27533,39 @@
                 "Code": true
               },
               {
-                "Text": " file and renames it over the old one. The store reads two unit formats. ",
+                "Text": " file and renames it over the old one. The store reads two unit formats. In the current one, ",
+                "Code": false
+              },
+              {
+                "Text": "parseUnit",
+                "Code": true
+              },
+              {
+                "Text": " also reads a unit's supplement ref spelled ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_key",
+                "Code": true
+              },
+              {
+                "Text": " into ",
+                "Code": false
+              },
+              {
+                "Text": "SupplementRef",
+                "Code": true
+              },
+              {
+                "Text": ", and the next save writes it as ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_ref",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -29002,8 +29112,8 @@
                 "Need": "필수"
               },
               {
-                "Key": "supplement-key",
-                "Name": "supplement_key",
+                "Key": "supplement-ref",
+                "Name": "supplement_ref",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -29636,7 +29746,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:283 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -29672,7 +29782,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:370 \"st.HighWater[kind]++\""
+            "internal/store/store.go:378 \"st.HighWater[kind]++\""
           ]
         },
         {
@@ -29691,7 +29801,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:371 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         },
@@ -33257,9 +33367,9 @@
                 }
               ],
               "Quotes": [
-                "internal/store/store.go:356 \"return p, readYAML(s.path(\\\"project.yaml\\\"), \u0026p)\"",
-                "cmd/abbd/main.go:298 \"p, err := e.st.LoadProject()\"",
-                "cmd/abbd/main.go:302 \"if len(p.Extract) == 0 {\""
+                "internal/store/store.go:364 \"return p, readYAML(s.path(\\\"project.yaml\\\"), \u0026p)\"",
+                "cmd/abbd/main.go:302 \"p, err := e.st.LoadProject()\"",
+                "cmd/abbd/main.go:306 \"if len(p.Extract) == 0 {\""
               ]
             }
           ]
@@ -33287,8 +33397,8 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:305 \"out, err := e.runScript(p.Extract)\"",
-                "cmd/abbd/main.go:430 \"cmd := exec.Command(argv[0], argv[1:]...)\""
+                "cmd/abbd/main.go:309 \"out, err := e.runScript(p.Extract)\"",
+                "cmd/abbd/main.go:434 \"cmd := exec.Command(argv[0], argv[1:]...)\""
               ]
             }
           ]
@@ -33302,7 +33412,7 @@
             {
               "N": 3,
               "ID": "flow-sync.3",
-              "Does": "Parse(stdout) → extract.Result with units, anchors and relations",
+              "Does": "Parse(stdout) → extract.Result, units keyed by ref with anchors and relations",
               "Note": "",
               "Fails": "",
               "Badge": "",
@@ -33316,8 +33426,8 @@
                 }
               ],
               "Quotes": [
-                "internal/extract/extract.go:86 \"func Parse(r io.Reader) (Result, error) { return parse(r, false) }\"",
-                "cmd/abbd/main.go:309 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+                "internal/extract/extract.go:97 \"func Parse(r io.Reader) (Result, error) { return parse(r, false) }\"",
+                "cmd/abbd/main.go:313 \"ex, err := extract.Parse(bytes.NewReader(out))\""
               ]
             }
           ]
@@ -33346,9 +33456,9 @@
               ],
               "Quotes": [
                 "internal/store/store.go:76 \"return nil, ErrOldFormat\"",
-                "internal/store/store.go:242 \"func (s Store) LoadCandidates() ([]identity.Candidate, error) {\"",
-                "internal/store/store.go:254 \"func (s Store) LoadState() (State, error) {\"",
-                "cmd/abbd/main.go:367 \"stored, err := st.Writable()\""
+                "internal/store/store.go:250 \"func (s Store) LoadCandidates() ([]identity.Candidate, error) {\"",
+                "internal/store/store.go:262 \"func (s Store) LoadState() (State, error) {\"",
+                "cmd/abbd/main.go:371 \"stored, err := st.Writable()\""
               ]
             }
           ]
@@ -33369,7 +33479,7 @@
               "Source": "",
               "Quotes": [
                 "internal/gitx/gitx.go:94 \"func Snapshot(dir, exclude string) (string, error) {\"",
-                "cmd/abbd/main.go:379 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+                "cmd/abbd/main.go:383 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
               ]
             },
             {
@@ -33382,7 +33492,7 @@
               "Source": "",
               "Quotes": [
                 "internal/gitx/gitx.go:234 \"func Renames(dir, oldTree, newTree string)\"",
-                "cmd/abbd/main.go:388 \"last sync snapshot %s is gone\""
+                "cmd/abbd/main.go:392 \"last sync snapshot %s is gone\""
               ]
             },
             {
@@ -33395,7 +33505,7 @@
               "Source": "",
               "Quotes": [
                 "internal/gitx/gitx.go:30 \"func Head(dir string) string {\"",
-                "cmd/abbd/main.go:398 \"if state.Fingerprint != tree || rev == \\\"\\\" {\""
+                "cmd/abbd/main.go:402 \"if state.Fingerprint != tree || rev == \\\"\\\" {\""
               ]
             }
           ]
@@ -33424,7 +33534,7 @@
               ],
               "Quotes": [
                 "internal/identity/identity.go:73 \"func Reconcile(stored []model.Unit\"",
-                "cmd/abbd/main.go:392 \"the extraction reported no units; refusing to mark every unit absent\""
+                "cmd/abbd/main.go:396 \"the extraction reported no units; refusing to mark every unit absent\""
               ]
             }
           ]
@@ -33445,7 +33555,7 @@
               "Source": "",
               "Quotes": [
                 "internal/evidence/evidence.go:227 \"func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {\"",
-                "cmd/abbd/main.go:402 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+                "cmd/abbd/main.go:406 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
               ]
             }
           ]
@@ -33466,7 +33576,7 @@
               "Source": "",
               "Quotes": [
                 "internal/group/group.go:36 \"func Fallback(units []model.Unit, hw map[model.Kind]int)\"",
-                "cmd/abbd/main.go:403 \"res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)\""
+                "cmd/abbd/main.go:407 \"res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)\""
               ]
             }
           ]
@@ -33494,8 +33604,8 @@
                 }
               ],
               "Quotes": [
-                "internal/store/store.go:222 \"func (s Store) SaveUnits(units []model.Unit) error {\"",
-                "internal/store/store.go:247 \"func (s Store) SaveCandidates(cs []identity.Candidate) error {\""
+                "internal/store/store.go:230 \"func (s Store) SaveUnits(units []model.Unit) error {\"",
+                "internal/store/store.go:255 \"func (s Store) SaveCandidates(cs []identity.Candidate) error {\""
               ]
             },
             {
@@ -33516,7 +33626,7 @@
               ],
               "Quotes": [
                 "internal/store/understanding.go:524 \"func (s Store) UpgradeUnderstandings(units []model.Unit)\"",
-                "internal/store/store.go:259 \"func (s Store) SaveState(st State) error {\""
+                "internal/store/store.go:267 \"func (s Store) SaveState(st State) error {\""
               ]
             }
           ]
@@ -33544,7 +33654,7 @@
                 }
               ],
               "Quotes": [
-                "cmd/abbd/main.go:272 \"if err := e.publish(); err != nil {\"",
+                "cmd/abbd/main.go:276 \"if err := e.publish(); err != nil {\"",
                 "cmd/abbd/screen.go:27 \"files, err := screen.Files(screen.Build(in))\""
               ]
             }

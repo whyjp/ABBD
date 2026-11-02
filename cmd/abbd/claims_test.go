@@ -168,8 +168,8 @@ func TestMigrateTellsAReadersClaimsFromTheSupplements(t *testing.T) {
 	out := p.want(0, "migrated 3 unit file(s)", "migrate")
 	contains(t, out, "relations: 2 supplement, 1 reader", "units: 1 supplement, 0 reader", "parents: 1 supplement, 0 reader")
 	p.want(0, "already in the current format", "migrate")
-	if md := p.read("architecture/DATA-0001.md"); !strings.Contains(md, "supplement_key: t") {
-		t.Fatalf("a paired supplement unit keeps the supplement's key:\n%s", md)
+	if md := p.read("architecture/DATA-0001.md"); !strings.Contains(md, "supplement_ref: t") {
+		t.Fatalf("a paired supplement unit keeps the supplement's ref:\n%s", md)
 	}
 
 	p.resync()

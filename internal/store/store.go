@@ -181,6 +181,14 @@ func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 		u = l.convert()
 	} else if err := yaml.Unmarshal(front, &u); err != nil {
 		return u, false, err
+	} else if u.SupplementRef == "" && bytes.Contains(front, []byte("supplement_key:")) {
+		var key struct {
+			Key string `yaml:"supplement_key"`
+		}
+		if err := yaml.Unmarshal(front, &key); err != nil {
+			return u, false, err
+		}
+		u.SupplementRef = key.Key
 	}
 	if i := bytes.Index(body, []byte("\n"+notesHeading)); i >= 0 {
 		u.Notes = string(body[i+1:])

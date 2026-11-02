@@ -34,7 +34,7 @@ type anchor struct {
 }
 
 type unit struct {
-	Key       string   `json:"key"`
+	Key       string   `json:"ref"`
 	Kind      string   `json:"kind"`
 	Name      string   `json:"name"`
 	Signature string   `json:"signature,omitempty"`
