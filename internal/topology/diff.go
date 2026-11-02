@@ -23,11 +23,14 @@ type Signature struct {
 }
 
 // Entry is a change to one entry of a contract: Change is "added", "removed"
-// or "changed", and Old and New are its shape and need for a change.
+// or "changed". A change names the Field that changed, "name", "shape" or
+// "required", with its Old and New value; an added or removed entry carries
+// its shape and need.
 type Entry struct {
 	Ref
 	Entry  string `json:"entry"`
 	Change string `json:"change"`
+	Field  string `json:"field,omitempty"`
 	Old    string `json:"old,omitempty"`
 	New    string `json:"new,omitempty"`
 }
@@ -151,10 +154,16 @@ func (d *Diff) contract(old, u model.Unit) {
 			switch {
 			case !had:
 				d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "added", New: e.Look()})
-			case was.Look() != e.Look() || was.Name != e.Name:
-				d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "changed", Old: was.Look(), New: e.Look()})
 			default:
-				continue
+				n := len(d.Entries)
+				for _, f := range []struct{ field, old, now string }{{"name", was.Name, e.Name}, {"shape", was.Shape, e.Shape}, {"required", was.Need(), e.Need()}} {
+					if f.old != f.now {
+						d.Entries = append(d.Entries, Entry{Ref: ref(u), Entry: e.Name, Change: "changed", Field: f.field, Old: f.old, New: f.now})
+					}
+				}
+				if len(d.Entries) == n {
+					continue
+				}
 			}
 			shape = true
 		}
@@ -262,7 +271,14 @@ func (d Diff) Lines() []string {
 		case "removed":
 			out = append(out, strings.TrimSpace(fmt.Sprintf("- entry %s %s %s %s", e.ID, e.Name, e.Entry, e.Old)))
 		default:
-			out = append(out, fmt.Sprintf("~ entry %s %s %s: %q -> %q", e.ID, e.Name, e.Entry, e.Old, e.New))
+			field := e.Field
+			if field == "shape" {
+				field = "signature"
+				if e.Kind == model.Data || e.Kind == model.Config {
+					field = "type"
+				}
+			}
+			out = append(out, fmt.Sprintf("~ entry %s %s %s %s: %q -> %q", e.ID, e.Name, e.Entry, field, e.Old, e.New))
 		}
 	}
 	for _, r := range d.Code {

@@ -157,6 +157,24 @@ func run() error {
 	for _, r := range featRels {
 		rels[r] = true
 	}
+	// A module that writes a field of a file contract provides it, and one
+	// that reads a field consumes it, narrowed to those fields.
+	for _, c := range contractTable() {
+		if c.typ == "" {
+			continue
+		}
+		writes, reads := fieldUses(c, owners)
+		for kind, by := range map[string]map[string][]string{"provides": writes, "consumes": reads} {
+			for owner, fields := range by {
+				if kind == "consumes" && owner == c.provider {
+					continue
+				}
+				r := relation{owner, c.key, kind}
+				rels[r] = true
+				featEntries[r] = append(featEntries[r], fields...)
+			}
+		}
+	}
 
 	out := result{Units: units}
 	for r := range rels {
@@ -364,26 +382,24 @@ type contract struct {
 	digest func() (string, error)
 	// entries are the contract's parts one by one; nil when it lists none.
 	entries func() []entry
+	// typ is the struct a file contract serializes, by "dir.Name", and tag
+	// the struct tag that names its fields; its fields are the entries.
+	typ, tag string
 }
 
 func contractTable() []contract {
-	fields := func(prefix, typ, tag string) func() (string, error) {
-		return func() (string, error) {
-			s, err := structSig(typ, tag, map[string]bool{})
-			return prefix + ": " + s, err
-		}
-	}
+	literal := func(s string) func() (string, error) { return func() (string, error) { return s, nil } }
 	return append(commandContracts(), []contract{
-		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil, nil},
-		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil, nil},
-		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", fields("extraction json", "internal/extract.rawResult", "json"), nil, nil},
-		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", fields(".abbd/project.yaml", "internal/store.Project", "yaml"), nil, nil},
-		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", fields(".abbd/{architecture,features}/ID.md frontmatter", "internal/model.Unit", "yaml"), nil, nil},
-		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", fields(".abbd/understanding/MOD.md frontmatter", "internal/store.Understanding", "yaml"), nil, nil},
-		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", fields(".abbd/understanding/ID/SLOT[.KEY].md frontmatter", "internal/store.Note", "yaml"), nil, nil},
-		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", fields(".abbd/state.yaml", "internal/store.State", "yaml"), nil, nil},
-		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil, nil},
-		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil, nil},
+		{"if-cli", "IF", "abbd exit codes", []anchor{{"cmd/abbd/main.go", "flagDefs"}, {"cmd/abbd/main.go", "exitUsage"}, {"cmd/abbd/main.go", "parse"}}, "mod-cmd-abbd", exitSig, nil, nil, "", ""},
+		{"if-edge-key", "IF", "relation key", []anchor{{"internal/model/model.go", "Edge"}, {"internal/model/model.go", "ParseEdge"}}, "mod-model", edgeKeySig, nil, nil, "", ""},
+		{"data-extraction", "DATA", "extraction JSON", []anchor{{"internal/extract/extract.go", "rawResult"}, {"internal/extract/extract.go", "rawUnit"}, {"internal/extract/extract.go", "Parse"}}, "mod-extract", literal("extraction json"), nil, nil, "internal/extract.rawResult", "json"},
+		{"cfg-project", "CFG", "project.yaml", []anchor{{"internal/store/store.go", "Project"}, {"internal/store/store.go", "LoadProject"}, {"internal/store/store.go", "SaveProject"}}, "mod-store", literal(".abbd/project.yaml"), nil, nil, "internal/store.Project", "yaml"},
+		{"data-units", "DATA", "unit files", []anchor{{"internal/store/store.go", "SaveUnits"}, {"internal/store/store.go", "LoadUnits"}, {"internal/model/model.go", "Unit"}}, "mod-store", literal(".abbd/{architecture,features}/ID.md frontmatter"), nil, nil, "internal/model.Unit", "yaml"},
+		{"data-understanding", "DATA", "module understanding", []anchor{{"internal/store/understanding.go", "SaveUnderstanding"}, {"internal/store/understanding.go", "LoadUnderstandings"}, {"internal/store/understanding.go", "Understanding"}}, "mod-store", literal(".abbd/understanding/MOD.md frontmatter"), nil, nil, "internal/store.Understanding", "yaml"},
+		{"data-notes", "DATA", "slot notes", []anchor{{"internal/store/note.go", "SaveNote"}, {"internal/store/note.go", "LoadNotes"}, {"internal/store/note.go", "Note"}}, "mod-store", literal(".abbd/understanding/ID/SLOT[.KEY].md frontmatter"), nil, nil, "internal/store.Note", "yaml"},
+		{"data-state", "DATA", "sync state", []anchor{{"internal/store/store.go", "SaveState"}, {"internal/store/store.go", "LoadState"}, {"internal/store/store.go", "State"}}, "mod-store", literal(".abbd/state.yaml"), nil, nil, "internal/store.State", "yaml"},
+		{"data-blueprint", "DATA", "blueprint files", []anchor{{"internal/screen/page.go", "Graph"}, {"internal/screen/page.go", "Files"}, {"internal/screen/screen.go", "Watermark"}}, "mod-screen", blueprintSig, nil, nil, "", ""},
+		{"cfg-plugin", "CFG", "plugin and marketplace manifest", []anchor{{".claude-plugin/marketplace.json", ""}, {"plugins/abbd/.claude-plugin/plugin.json", ""}}, "", pluginSig, nil, nil, "", ""},
 	}...)
 }
 
@@ -405,6 +421,11 @@ func contracts() ([]unit, error) {
 		u := unit{Key: c.key, Kind: c.kind, Name: c.name, Signature: sig, Anchors: c.anchors, Digest: d}
 		if c.entries != nil {
 			u.Entries = c.entries()
+		}
+		if c.typ != "" {
+			for _, f := range structFields(c.typ, c.tag, "", map[string]bool{}) {
+				u.Entries = append(u.Entries, f.entry)
+			}
 		}
 		out = append(out, u)
 	}
@@ -1044,4 +1065,198 @@ func features() ([]unit, []relation, map[relation][]evidence, map[relation][]str
 		}
 	}
 	return units, rels, cites, uses, nil
+}
+
+// structField is one serialized field of a file contract: its entry, and the
+// struct and Go name that declare it, by which code that writes or reads it
+// is found.
+type structField struct {
+	entry
+	typ, goName string
+}
+
+// structFields lists a struct's serialized fields in declaration order, each
+// with its Go type and whether the file always holds it: a field without
+// omitempty is written every time. A field of a module struct type is
+// followed by that struct's fields, named under it as parent.child.
+func structFields(qualified, tagKey, prefix string, visiting map[string]bool) []structField {
+	td, ok := types[qualified]
+	if !ok || visiting[qualified] {
+		return nil
+	}
+	st, ok := td.spec.Type.(*ast.StructType)
+	if !ok {
+		return nil
+	}
+	visiting[qualified] = true
+	defer delete(visiting, qualified)
+	var out []structField
+	for _, fl := range st.Fields.List {
+		tag := ""
+		if fl.Tag != nil {
+			raw, _ := strconv.Unquote(fl.Tag.Value)
+			tag = reflect.StructTag(raw).Get(tagKey)
+		}
+		name, opts, _ := strings.Cut(tag, ",")
+		if name == "-" {
+			continue
+		}
+		inner := innerStruct(fl.Type, td.file)
+		if len(fl.Names) == 0 || strings.Contains(opts, "inline") {
+			out = append(out, structFields(inner, tagKey, prefix, visiting)...)
+			continue
+		}
+		for _, n := range fl.Names {
+			if !n.IsExported() {
+				continue
+			}
+			fname := name
+			if fname == "" {
+				fname = n.Name
+				if tagKey == "yaml" {
+					fname = strings.ToLower(n.Name)
+				}
+			}
+			required := !strings.Contains(opts, "omitempty")
+			out = append(out, structField{entry{Name: prefix + fname, Shape: string(nodeText(td.file, fl.Type)), Required: &required}, qualified, n.Name})
+			out = append(out, structFields(inner, tagKey, prefix+fname+".", visiting)...)
+		}
+	}
+	return out
+}
+
+// innerStruct is the module struct type a field holds, through pointers,
+// slices and maps, as "dir.Name", or "".
+func innerStruct(t ast.Expr, f *srcFile) string {
+	switch t := t.(type) {
+	case *ast.StarExpr:
+		return innerStruct(t.X, f)
+	case *ast.ArrayType:
+		return innerStruct(t.Elt, f)
+	case *ast.MapType:
+		return innerStruct(t.Value, f)
+	case *ast.Ident:
+		if td, ok := types[f.dir+"."+t.Name]; ok {
+			if _, ok := td.spec.Type.(*ast.StructType); ok {
+				return f.dir + "." + t.Name
+			}
+		}
+	case *ast.SelectorExpr:
+		if x, ok := t.X.(*ast.Ident); ok {
+			if dir, ok := f.imports[x.Name]; ok {
+				if td, ok := types[dir+"."+t.Sel.Name]; ok {
+					if _, ok := td.spec.Type.(*ast.StructType); ok {
+						return dir + "." + t.Sel.Name
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// fieldNames counts the struct types that declare each exported field name.
+func fieldNames() map[string]int {
+	out := map[string]int{}
+	for _, q := range sortedKeys(types) {
+		if st, ok := types[q].spec.Type.(*ast.StructType); ok {
+			for _, fl := range st.Fields.List {
+				for _, n := range fl.Names {
+					out[n.Name]++
+				}
+			}
+		}
+	}
+	return out
+}
+
+// fieldUses finds the modules that write and read each top-level field of
+// a file contract, as the code spells it: a keyed composite literal of the
+// struct writes its fields, an assignment to x.Field writes and any other
+// x.Field reads. A name that two struct types declare is skipped, since
+// without types the code does not say whose field it is. Only a struct the
+// provider declares counts: one declared elsewhere, such as model.Unit, is
+// shared vocabulary, and building one writes no file.
+func fieldUses(c contract, owners map[string]string) (writes, reads map[string][]string) {
+	writes, reads = map[string][]string{}, map[string][]string{}
+	if owners[types[c.typ].file.path] != c.provider {
+		return writes, reads
+	}
+	byGo := map[string]string{}
+	for _, f := range structFields(c.typ, c.tag, "", map[string]bool{}) {
+		if f.typ == c.typ {
+			byGo[f.goName] = f.Name
+		}
+	}
+	tdir, tname := path.Dir(strings.ReplaceAll(c.typ, ".", "/")), path.Base(strings.ReplaceAll(c.typ, ".", "/"))
+	count := fieldNames()
+	add := func(m map[string][]string, owner, field string) {
+		if owner != "" && !slices.Contains(m[owner], field) {
+			m[owner] = append(m[owner], field)
+		}
+	}
+	for _, p := range sortedKeys(files) {
+		f, owner := files[p], owners[p]
+		isType := func(e ast.Expr) bool {
+			switch e := e.(type) {
+			case *ast.Ident:
+				return f.dir == tdir && e.Name == tname
+			case *ast.SelectorExpr:
+				x, ok := e.X.(*ast.Ident)
+				return ok && f.imports[x.Name] == tdir && e.Sel.Name == tname
+			}
+			return false
+		}
+		written := map[ast.Node]bool{}
+		ast.Inspect(f.ast, func(n ast.Node) bool {
+			switch n := n.(type) {
+			case *ast.CompositeLit:
+				if isType(n.Type) {
+					for _, el := range n.Elts {
+						if kv, ok := el.(*ast.KeyValueExpr); ok {
+							if k, ok := kv.Key.(*ast.Ident); ok && byGo[k.Name] != "" {
+								add(writes, owner, byGo[k.Name])
+							}
+						}
+					}
+				}
+			case *ast.AssignStmt:
+				for _, l := range n.Lhs {
+					written[fieldOf(l)] = true
+				}
+			case *ast.IncDecStmt:
+				written[fieldOf(n.X)] = true
+			case *ast.SelectorExpr:
+				x, isIdent := n.X.(*ast.Ident)
+				if field := byGo[n.Sel.Name]; field != "" && count[n.Sel.Name] == 1 && !(isIdent && f.imports[x.Name] != "") {
+					if written[n] {
+						add(writes, owner, field)
+					} else {
+						add(reads, owner, field)
+					}
+				}
+			}
+			return true
+		})
+	}
+	return writes, reads
+}
+
+// fieldOf is the x.Field an assignment's left side writes, through an index
+// or a dereference, or nil.
+func fieldOf(e ast.Expr) ast.Node {
+	for {
+		switch t := e.(type) {
+		case *ast.IndexExpr:
+			e = t.X
+		case *ast.StarExpr:
+			e = t.X
+		case *ast.ParenExpr:
+			e = t.X
+		case *ast.SelectorExpr:
+			return t
+		default:
+			return nil
+		}
+	}
 }
