@@ -18,8 +18,10 @@
     <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a> <span class="muted">{{len .Contracts}}</span></li>
     <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a> <span class="muted">{{len .Units}}</span></li>
   </ul>
-  {{if .Nav}}<h3>모듈</h3>
-  <ul class="plain tree">{{range .Nav}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}</ul>{{end}}
+  <h3>모듈</h3>
+  <ul class="plain tree">{{range .Nav}}{{if not .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}{{end}}</ul>
+  <h3>기능</h3>
+  <ul class="plain tree">{{range .Nav}}{{if .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}{{end}}</ul>
 </nav>
 <main>
 <header>
@@ -86,8 +88,8 @@
   <h2>계약 목록 <span class="muted" style="font-weight:400;font-size:13px">{{len .Contracts}}개, 종류와 이름 순</span></h2>
   <p class="muted" style="margin:0 0 6px">모듈 사이의 계약입니다. 이름을 누르면 그 계약을 가진 모듈의 안으로, 제공과 사용의 단위를 누르면 그 단위로 갑니다. 페이지 안 찾기(Ctrl+F)로 이름, ID, 시그니처를 찾습니다.</p>
   <table class="index">
-  <tr><th>계약</th><th>종류</th><th>가진 모듈</th><th>제공</th><th>사용</th></tr>
-  {{range .Contracts}}<tr id="k-{{.ID}}"><td>{{if .Owner}}<a href="{{.Owner.Href}}"><strong>{{.Name}}</strong></a>{{else}}<a href="#u-{{.ID}}"><strong>{{.Name}}</strong></a>{{end}} <span class="muted key">{{.ID}}</span>{{if .Signature}}<div class="key muted sig">{{.Signature}}</div>{{end}}</td><td>{{label .Kind}}</td><td>{{with .Owner}}<a href="{{.Href}}">{{.Name}}</a>{{else}}<span class="muted">없음</span>{{end}}</td><td>{{range .Providers}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td><td>{{range .Users}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td></tr>
+  <tr><th>계약</th><th>가진 모듈</th><th>제공</th><th>사용</th></tr>{{$kind := ""}}
+  {{range .Contracts}}{{if ne .Kind $kind}}<tr class="kind"><th colspan="4">{{label .Kind}}</th></tr>{{$kind = .Kind}}{{end}}<tr id="k-{{.ID}}"><td>{{if .Owner}}<a href="{{.Owner.Href}}"><strong>{{.Name}}</strong></a>{{else}}<a href="#u-{{.ID}}"><strong>{{.Name}}</strong></a>{{end}} <span class="muted key">{{.ID}}</span>{{if .Signature}}<div class="key muted sig">{{.Signature}}</div>{{end}}</td><td>{{with .Owner}}<a href="{{.Href}}">{{.Name}}</a>{{else}}<span class="muted">최상위</span>{{end}}</td><td>{{range .Providers}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td><td>{{range .Users}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td></tr>
   {{end}}</table>
 </section>
 {{template "foot" .}}{{end}}

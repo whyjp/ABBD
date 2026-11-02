@@ -35,9 +35,11 @@ type page struct {
 }
 
 // NavItem is one module in the nav's tree, at its depth below the top.
+// Feature says its top-level unit is a feature, which the nav lists apart.
 type NavItem struct {
 	ID, Name string
 	Depth    int
+	Feature  bool
 }
 
 // ContractRow is one contract in the contract index: who owns it, who
@@ -160,18 +162,23 @@ func navTree(m Model) ([]NavItem, map[string]string) {
 		children[p] = append(children[p], ins.ID)
 	}
 	var out []NavItem
-	var walk func(id string, depth int)
-	walk = func(id string, depth int) {
+	kind := map[string]string{}
+	for _, u := range m.Units {
+		kind[u.ID] = u.Kind
+	}
+	var walk func(id string, depth int, feature bool)
+	walk = func(id string, depth int, feature bool) {
 		kids := children[id]
 		slices.SortFunc(kids, func(a, b string) int {
 			return strings.Compare(nameOf(m, a)+a, nameOf(m, b)+b)
 		})
 		for _, k := range kids {
-			out = append(out, NavItem{ID: k, Name: nameOf(m, k), Depth: depth})
-			walk(k, depth+1)
+			f := feature || depth == 0 && kind[k] == string(model.Feature)
+			out = append(out, NavItem{ID: k, Name: nameOf(m, k), Depth: depth, Feature: f})
+			walk(k, depth+1, f)
 		}
 	}
-	walk("", 0)
+	walk("", 0, false)
 	for id, p := range parent {
 		if !has[p] {
 			parent[id] = ""
