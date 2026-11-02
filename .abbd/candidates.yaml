@@ -374,6 +374,10 @@
   existing: MOD-0006
   shared:
     path: cmd/abbd/record.go
+- new: MOD-0001
+  existing: MOD-0007
+  shared:
+    path: cmd/abbd/screen.go
 - new: MOD-0009
   existing: MOD-0010
   shared:
@@ -414,6 +418,10 @@
   existing: MOD-0038
   shared:
     path: internal/screen/page.go
+- new: MOD-0041
+  existing: MOD-0042
+  shared:
+    path: internal/store/store.go
 - new: MOD-0041
   existing: MOD-0046
   shared:

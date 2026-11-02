@@ -58,7 +58,7 @@ func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 
 	p = semanticProject(t)
 	md := p.read("architecture/DATA-0001.md")
-	for _, want := range []string{"value: charges table\n    writer: supplement", "- to: MOD-0001\n      writer: supplement", "quote: INSERT INTO charges", "path: billing/charge.go", "supplement_key: t"} {
+	for _, want := range []string{"value: charges table\n    writer: supplement", "- to: MOD-0001\n      writer: supplement", "quote: INSERT INTO charges", "path: billing/charge.go", "supplement_ref: t"} {
 		if !strings.Contains(md, want) {
 			t.Fatalf("a unit only the reader found should be stored with its evidence and parent; missing %q:\n%s", want, md)
 		}

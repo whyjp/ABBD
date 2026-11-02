@@ -157,7 +157,7 @@ func markDead(units []model.Unit, c *evidence.Checker) int {
 
 // claims is what the supplement says, by stored ID.
 type claims struct {
-	key map[model.ID]string
+	ref map[model.ID]string
 	// ids maps the overlay's keys to the stored units they took.
 	ids      map[string]model.ID
 	input    map[model.ID]extract.Unit
@@ -172,11 +172,11 @@ func supplementClaims(units []model.Unit, over extract.Result, hw map[model.Kind
 	for _, u := range units {
 		stored[u.ID] = true
 	}
-	c := claims{key: map[model.ID]string{}, ids: map[string]model.ID{}, input: map[model.ID]extract.Unit{}, edges: map[model.Edge]bool{}, reader: map[model.ID]bool{}}
+	c := claims{ref: map[model.ID]string{}, ids: map[string]model.ID{}, input: map[model.ID]extract.Unit{}, edges: map[model.Edge]bool{}, reader: map[model.ID]bool{}}
 	for _, in := range over.Units {
 		id := res.Keys[in.Key]
 		if !stored[id] {
-			if in.SupplementKey != "" {
+			if in.SupplementRef != "" {
 				c.unpaired++
 			}
 			continue
@@ -185,8 +185,8 @@ func supplementClaims(units []model.Unit, over extract.Result, hw map[model.Kind
 		if in.Key != "" {
 			c.ids[in.Key] = id
 		}
-		if in.SupplementKey != "" {
-			c.key[id] = in.SupplementKey
+		if in.SupplementRef != "" {
+			c.ref[id] = in.SupplementRef
 		}
 	}
 	for _, r := range over.Relations {
@@ -246,7 +246,7 @@ func (c claims) classify(u *model.Unit, t *classification) {
 		if r {
 			u.Name.Writer = model.Reader
 		}
-		u.SupplementKey = c.key[u.ID]
+		u.SupplementRef = c.ref[u.ID]
 		t.count("units", r)
 	}
 	for _, f := range []struct {

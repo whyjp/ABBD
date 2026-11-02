@@ -96,7 +96,7 @@ func (w *world) extraction(withSupplement bool) extract.Result {
 		key := fmt.Sprintf("s%d", k)
 		host := ex.Units[w.rng.Intn(script)].Key
 		ex.Units = append(ex.Units, extract.Unit{
-			Key: "supplement:" + key, SupplementKey: key, Kind: model.Data, Name: model.Said(model.Supplement, key),
+			Key: "supplement:" + key, SupplementRef: key, Kind: model.Data, Name: model.Said(model.Supplement, key),
 			Anchors: []model.Anchor{es[0].Anchor()}, Evidence: es,
 			Placed: []extract.Placement{{Key: host, Writer: model.Supplement, Evidence: es}},
 		})

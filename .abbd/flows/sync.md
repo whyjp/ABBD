@@ -9,7 +9,7 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "424"
+          lines: "451"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
           lines: "302"
@@ -32,19 +32,19 @@ steps:
           lines: "309"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "430"
+          lines: "434"
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
       code:
         cmd/abbd/main.go#quote-414b351c: 1890665b94e73ff6
         cmd/abbd/main.go#quote-c1c55757: 417fc75a7dfd695c
     - unit: MOD-0017
-      does: Parse(stdout) → extract.Result with units, anchors and relations
+      does: Parse(stdout) → extract.Result, the units by ref with anchors and relations
       calls:
         - DATA-0002
       evidence:
         - path: internal/extract/extract.go
-          lines: "92"
+          lines: "97"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
           lines: "313"
@@ -52,7 +52,7 @@ steps:
       writer: reader
       code:
         cmd/abbd/main.go#quote-2a172499: f449d858035def28
-        internal/extract/extract.go#quote-1772af40: 7c1ba637b199b3cb
+        internal/extract/extract.go#quote-1772af40: c0ff7246a9ff04f7
     - unit: MOD-0041
       does: Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state
       note: LoadState reads a state a merge left with both sides' lines as one, marked Merged
@@ -61,16 +61,16 @@ steps:
         - DATA-0006
       evidence:
         - path: internal/store/store.go
-          lines: "82"
+          lines: "85"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "248"
+          lines: "262"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "263"
+          lines: "277"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "371"
+          lines: "375"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -86,7 +86,7 @@ steps:
           lines: "94"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "383"
+          lines: "387"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -100,7 +100,7 @@ steps:
           lines: "234"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "392"
+          lines: "396"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -114,7 +114,7 @@ steps:
           lines: "30"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "402"
+          lines: "406"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -130,7 +130,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "396"
+          lines: "400"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -144,7 +144,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "406"
+          lines: "410"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -157,7 +157,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "407"
+          lines: "411"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -169,10 +169,10 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "228"
+          lines: "242"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "253"
+          lines: "267"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
@@ -187,7 +187,7 @@ steps:
           lines: "524"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "338"
+          lines: "352"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
@@ -195,7 +195,7 @@ steps:
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
       does: publish() → index.html and graph.json, after every command that writes
-      note: then records in state.yaml the inputs hash the files were rendered from
+      note: then records in state.yaml the inputs hash it rendered from and the hash of the files it wrote
       calls:
         - DATA-0005
       evidence:
@@ -206,13 +206,13 @@ steps:
           lines: "27"
           quote: files, err := screen.Files(screen.Build(in))
         - path: cmd/abbd/screen.go
-          lines: "36"
-          quote: in.Synced.Blueprint = in.Inputs
+          lines: "34"
+          quote: in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
       writer: reader
       code:
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
-        cmd/abbd/screen.go#quote-22ad4b42: c7ae54f56076262b
-        cmd/abbd/screen.go#quote-f313962c: b96f7157ff80607b
+        cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
+        cmd/abbd/screen.go#quote-f313962c: 4a93f263f38fbe1b
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.

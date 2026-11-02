@@ -1,7 +1,7 @@
 {
   "units": [
     {
-      "key": "cfg-plugin",
+      "ref": "cfg-plugin",
       "kind": "CFG",
       "name": "plugin and marketplace manifest",
       "anchors": [
@@ -13,7 +13,7 @@
       "responsibility": "Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin's version and its requirements (pstack 0.15.36 and the abbd CLI on PATH)."
     },
     {
-      "key": "cfg-project",
+      "ref": "cfg-project",
       "kind": "CFG",
       "name": "project.yaml",
       "anchors": [
@@ -26,7 +26,7 @@
       "responsibility": "Holds the argv of the extraction script that setup recorded and sync runs from the repository root."
     },
     {
-      "key": "data-blueprint",
+      "ref": "data-blueprint",
       "kind": "DATA",
       "name": "blueprint files",
       "anchors": [
@@ -39,7 +39,7 @@
       "responsibility": "fixes the two rendered files, index.html and graph.json, and graph.json's shape: units, live edges, both drawing levels and the flows. Neither file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
     },
     {
-      "key": "data-extraction",
+      "ref": "data-extraction",
       "kind": "DATA",
       "name": "extraction JSON",
       "anchors": [
@@ -52,7 +52,7 @@
       "responsibility": "The JSON shape the extraction script prints and the supplement repeats: units with key, kind, name, anchors or evidence, optional signature, digest and parent, and relations with from, to, kind, via and evidence, with unknown fields rejected."
     },
     {
-      "key": "data-state",
+      "ref": "data-state",
       "kind": "DATA",
       "name": "sync state",
       "anchors": [
@@ -65,7 +65,7 @@
       "responsibility": "Records the sync watermark: the revision first synced, the working-tree snapshot fingerprint, the inputs hash the blueprint was rendered from, and the per-kind high-water mark of minted IDs."
     },
     {
-      "key": "data-understanding",
+      "ref": "data-understanding",
       "kind": "DATA",
       "name": "module understanding",
       "anchors": [
@@ -78,7 +78,7 @@
       "responsibility": "Stores one Markdown file per module with its unit ID, INFERRED origin and the module digest at writing time in frontmatter, and the Overview and Key Concepts text as body."
     },
     {
-      "key": "data-units",
+      "ref": "data-units",
       "kind": "DATA",
       "name": "unit files",
       "anchors": [
@@ -91,7 +91,7 @@
       "responsibility": "Defines one file per unit at architecture/ or features/ ID.md, YAML frontmatter with each fact's value and origin, a generated title and anchor list, and a human Notes section kept across rewrites."
     },
     {
-      "key": "feat-abbd",
+      "ref": "feat-abbd",
       "kind": "FEAT",
       "name": "/abbd",
       "anchors": [
@@ -104,7 +104,7 @@
       "responsibility": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work."
     },
     {
-      "key": "feat-abbd-setup",
+      "ref": "feat-abbd-setup",
       "kind": "FEAT",
       "name": "/abbd-setup",
       "anchors": [
@@ -117,7 +117,7 @@
       "responsibility": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block."
     },
     {
-      "key": "if-cli",
+      "ref": "if-cli",
       "kind": "IF",
       "name": "abbd exit codes",
       "anchors": [
@@ -130,7 +130,7 @@
       "responsibility": "Fixes the process contract: exit 0 on success, 1 when a command fails, 64 when the command line does not parse, with the usage printed on stderr."
     },
     {
-      "key": "if-cli-diff",
+      "ref": "if-cli-diff",
       "kind": "IF",
       "name": "abbd diff",
       "anchors": [
@@ -143,7 +143,7 @@
       "responsibility": "Prints the topology difference from a base revision as text or --json, and with --check exits 1 on a boundary change."
     },
     {
-      "key": "if-cli-evidence",
+      "ref": "if-cli-evidence",
       "kind": "IF",
       "name": "abbd evidence",
       "anchors": [
@@ -156,7 +156,7 @@
       "responsibility": "Prints live or dead, with location, for every quote of every unit and relation, and the totals, without writing."
     },
     {
-      "key": "if-cli-explain",
+      "ref": "if-cli-explain",
       "kind": "IF",
       "name": "abbd explain",
       "anchors": [
@@ -169,7 +169,7 @@
       "responsibility": "Prints a unit, found by ID or name, with its facts, inside units, contracts, neighbours, inferred couplings and how's text."
     },
     {
-      "key": "if-cli-impact",
+      "ref": "if-cli-impact",
       "kind": "IF",
       "name": "abbd impact",
       "anchors": [
@@ -182,7 +182,7 @@
       "responsibility": "Prints the direct and far tiers a change to comma-separated unit IDs reaches, with why each is reached."
     },
     {
-      "key": "if-cli-install",
+      "ref": "if-cli-install",
       "kind": "IF",
       "name": "abbd install",
       "anchors": [
@@ -195,7 +195,7 @@
       "responsibility": "Writes or replaces the marked abbd block in the root CLAUDE.md and keeps everything else in that file."
     },
     {
-      "key": "if-cli-path",
+      "ref": "if-cli-path",
       "kind": "IF",
       "name": "abbd path",
       "anchors": [
@@ -208,7 +208,7 @@
       "responsibility": "Prints the shortest hop path between two units and the weakest origin along it."
     },
     {
-      "key": "if-cli-record-fact",
+      "ref": "if-cli-record-fact",
       "kind": "IF",
       "name": "abbd record fact",
       "anchors": [
@@ -221,7 +221,7 @@
       "responsibility": "Records ID.purpose or ID.responsibility as USER_STATED with --value and --source."
     },
     {
-      "key": "if-cli-record-relation",
+      "ref": "if-cli-record-relation",
       "kind": "IF",
       "name": "abbd record relation",
       "anchors": [
@@ -234,7 +234,7 @@
       "responsibility": "Records FROM KIND TO as INFERRED with --via and live --evidence, or USER_STATED with --source, never over an EXTRACTED relation."
     },
     {
-      "key": "if-cli-record-unit",
+      "ref": "if-cli-record-unit",
       "kind": "IF",
       "name": "abbd record unit",
       "anchors": [
@@ -247,7 +247,7 @@
       "responsibility": "Records a KIND NAME unit as INFERRED with live --evidence, an optional module --parent and --responsibility, refusing a duplicate on the same code."
     },
     {
-      "key": "if-cli-setup",
+      "ref": "if-cli-setup",
       "kind": "IF",
       "name": "abbd setup",
       "anchors": [
@@ -260,7 +260,7 @@
       "responsibility": "Registers the extraction argv after --, runs it three times to prove it deterministic, folds in --supplement, replaces earlier guesses and syncs."
     },
     {
-      "key": "if-cli-status",
+      "ref": "if-cli-status",
       "kind": "IF",
       "name": "abbd status",
       "anchors": [
@@ -273,7 +273,7 @@
       "responsibility": "Prints the freshness of the state against the tree and of the blueprint against the state, with unit, relation and understanding counts."
     },
     {
-      "key": "if-cli-sync",
+      "ref": "if-cli-sync",
       "kind": "IF",
       "name": "abbd sync",
       "anchors": [
@@ -286,7 +286,7 @@
       "responsibility": "Reruns the registered script, reconciles IDs across renames, checks every quote, writes the state and renders the blueprint."
     },
     {
-      "key": "if-cli-understand",
+      "ref": "if-cli-understand",
       "kind": "IF",
       "name": "abbd understand",
       "anchors": [
@@ -299,7 +299,7 @@
       "responsibility": "Stores a top-level module's Overview and Key Concepts from a file or stdin, stamped with the module's code digest."
     },
     {
-      "key": "if-edge-key",
+      "ref": "if-edge-key",
       "kind": "IF",
       "name": "relation key",
       "anchors": [
@@ -312,7 +312,7 @@
       "responsibility": "The FROM.kind.TO text form of a relation, such as MOD-0001.depends_on.MOD-0002, that Edge.String prints and ParseEdge reads back, checking both IDs and the relation kind."
     },
     {
-      "key": "in-bootstrap-fold",
+      "ref": "in-bootstrap-fold",
       "kind": "MOD",
       "name": "supplement fold",
       "parent": "mod-bootstrap",
@@ -334,7 +334,7 @@
       ]
     },
     {
-      "key": "in-bootstrap-match",
+      "ref": "in-bootstrap-match",
       "kind": "MOD",
       "name": "anchor matching",
       "parent": "mod-bootstrap",
@@ -356,7 +356,7 @@
       ]
     },
     {
-      "key": "in-bootstrap-reader-unit",
+      "ref": "in-bootstrap-reader-unit",
       "kind": "MOD",
       "name": "reader-only unit",
       "parent": "mod-bootstrap",
@@ -372,7 +372,7 @@
       ]
     },
     {
-      "key": "in-cli-argv",
+      "ref": "in-cli-argv",
       "kind": "MOD",
       "name": "argv parsing and dispatch",
       "parent": "mod-cmd-abbd",
@@ -400,7 +400,7 @@
       ]
     },
     {
-      "key": "in-cli-claude-block",
+      "ref": "in-cli-claude-block",
       "kind": "DATA",
       "name": "CLAUDE.md abbd block",
       "parent": "mod-cmd-abbd",
@@ -428,7 +428,7 @@
       ]
     },
     {
-      "key": "in-cli-publish",
+      "ref": "in-cli-publish",
       "kind": "MOD",
       "name": "blueprint publish",
       "parent": "mod-cmd-abbd",
@@ -450,7 +450,7 @@
       ]
     },
     {
-      "key": "in-cli-query",
+      "ref": "in-cli-query",
       "kind": "MOD",
       "name": "query commands",
       "parent": "mod-cmd-abbd",
@@ -478,7 +478,7 @@
       ]
     },
     {
-      "key": "in-cli-record",
+      "ref": "in-cli-record",
       "kind": "MOD",
       "name": "record writers",
       "parent": "mod-cmd-abbd",
@@ -512,7 +512,7 @@
       ]
     },
     {
-      "key": "in-cli-review",
+      "ref": "in-cli-review",
       "kind": "MOD",
       "name": "review commands",
       "parent": "mod-cmd-abbd",
@@ -540,7 +540,7 @@
       ]
     },
     {
-      "key": "in-cli-setup",
+      "ref": "in-cli-setup",
       "kind": "MOD",
       "name": "setup determinism proof and supplement fold",
       "parent": "mod-cmd-abbd",
@@ -568,7 +568,7 @@
       ]
     },
     {
-      "key": "in-cli-sync",
+      "ref": "in-cli-sync",
       "kind": "MOD",
       "name": "sync pipeline",
       "parent": "mod-cmd-abbd",
@@ -596,7 +596,7 @@
       ]
     },
     {
-      "key": "in-evidence-apply",
+      "ref": "in-evidence-apply",
       "kind": "MOD",
       "name": "liveness and line moves",
       "parent": "mod-evidence",
@@ -618,7 +618,7 @@
       ]
     },
     {
-      "key": "in-evidence-index",
+      "ref": "in-evidence-index",
       "kind": "MOD",
       "name": "whitespace-free file index",
       "parent": "mod-evidence",
@@ -640,7 +640,7 @@
       ]
     },
     {
-      "key": "in-evidence-match",
+      "ref": "in-evidence-match",
       "kind": "MOD",
       "name": "quote matching",
       "parent": "mod-evidence",
@@ -662,7 +662,7 @@
       ]
     },
     {
-      "key": "in-extract-gate",
+      "ref": "in-extract-gate",
       "kind": "MOD",
       "name": "untrusted-output gate",
       "parent": "mod-extract",
@@ -684,7 +684,7 @@
       ]
     },
     {
-      "key": "in-extract-graph-check",
+      "ref": "in-extract-graph-check",
       "kind": "MOD",
       "name": "key and parent checks",
       "parent": "mod-extract",
@@ -706,7 +706,7 @@
       ]
     },
     {
-      "key": "in-extract-guess",
+      "ref": "in-extract-guess",
       "kind": "MOD",
       "name": "intent is a guess",
       "parent": "mod-extract",
@@ -722,7 +722,7 @@
       ]
     },
     {
-      "key": "in-extract-paths",
+      "ref": "in-extract-paths",
       "kind": "MOD",
       "name": "anchor path normalization",
       "parent": "mod-extract",
@@ -744,7 +744,7 @@
       ]
     },
     {
-      "key": "in-gitx-mergebase",
+      "ref": "in-gitx-mergebase",
       "kind": "MOD",
       "name": "default-branch base search",
       "parent": "mod-gitx",
@@ -760,7 +760,7 @@
       ]
     },
     {
-      "key": "in-gitx-renames",
+      "ref": "in-gitx-renames",
       "kind": "MOD",
       "name": "rename detection",
       "parent": "mod-gitx",
@@ -782,7 +782,7 @@
       ]
     },
     {
-      "key": "in-gitx-snapshot",
+      "ref": "in-gitx-snapshot",
       "kind": "MOD",
       "name": "working-tree snapshot",
       "parent": "mod-gitx",
@@ -804,7 +804,7 @@
       ]
     },
     {
-      "key": "in-identity-held",
+      "ref": "in-identity-held",
       "kind": "MOD",
       "name": "human-held unit retention",
       "parent": "mod-identity",
@@ -820,7 +820,7 @@
       ]
     },
     {
-      "key": "in-identity-match",
+      "ref": "in-identity-match",
       "kind": "MOD",
       "name": "anchor takeover matching",
       "parent": "mod-identity",
@@ -842,7 +842,7 @@
       ]
     },
     {
-      "key": "in-identity-ownership",
+      "ref": "in-identity-ownership",
       "kind": "MOD",
       "name": "fact and relation ownership",
       "parent": "mod-identity",
@@ -864,7 +864,7 @@
       ]
     },
     {
-      "key": "in-model-evidence-arg",
+      "ref": "in-model-evidence-arg",
       "kind": "IF",
       "name": "evidence citation",
       "parent": "mod-model",
@@ -886,7 +886,7 @@
       ]
     },
     {
-      "key": "in-model-id",
+      "ref": "in-model-id",
       "kind": "IF",
       "name": "unit ID format",
       "parent": "mod-model",
@@ -908,7 +908,7 @@
       ]
     },
     {
-      "key": "in-model-origin",
+      "ref": "in-model-origin",
       "kind": "MOD",
       "name": "fact origins",
       "parent": "mod-model",
@@ -930,7 +930,7 @@
       ]
     },
     {
-      "key": "in-model-reader-marker",
+      "ref": "in-model-reader-marker",
       "kind": "MOD",
       "name": "guess versus topology rule",
       "parent": "mod-model",
@@ -952,7 +952,7 @@
       ]
     },
     {
-      "key": "in-model-relation-grammar",
+      "ref": "in-model-relation-grammar",
       "kind": "MOD",
       "name": "relation grammar",
       "parent": "mod-model",
@@ -974,7 +974,7 @@
       ]
     },
     {
-      "key": "in-screen-freshness",
+      "ref": "in-screen-freshness",
       "kind": "MOD",
       "name": "freshness verdicts",
       "parent": "mod-screen",
@@ -996,7 +996,7 @@
       ]
     },
     {
-      "key": "in-screen-inside",
+      "ref": "in-screen-inside",
       "kind": "MOD",
       "name": "module inside",
       "parent": "mod-screen",
@@ -1018,7 +1018,7 @@
       ]
     },
     {
-      "key": "in-screen-layout",
+      "ref": "in-screen-layout",
       "kind": "MOD",
       "name": "layered layout and routing",
       "parent": "mod-screen",
@@ -1046,7 +1046,7 @@
       ]
     },
     {
-      "key": "in-screen-overview",
+      "ref": "in-screen-overview",
       "kind": "MOD",
       "name": "overview plan",
       "parent": "mod-screen",
@@ -1074,7 +1074,7 @@
       ]
     },
     {
-      "key": "in-screen-page",
+      "ref": "in-screen-page",
       "kind": "MOD",
       "name": "page template",
       "parent": "mod-screen",
@@ -1095,7 +1095,7 @@
       ]
     },
     {
-      "key": "in-screen-understanding",
+      "ref": "in-screen-understanding",
       "kind": "MOD",
       "name": "understanding text",
       "parent": "mod-screen",
@@ -1117,7 +1117,7 @@
       ]
     },
     {
-      "key": "in-store-candidates",
+      "ref": "in-store-candidates",
       "kind": "DATA",
       "name": "merge candidates file",
       "parent": "mod-store",
@@ -1139,7 +1139,7 @@
       ]
     },
     {
-      "key": "in-store-hashes",
+      "ref": "in-store-hashes",
       "kind": "MOD",
       "name": "store staleness hashes",
       "parent": "mod-store",
@@ -1161,7 +1161,7 @@
       ]
     },
     {
-      "key": "in-store-highwater",
+      "ref": "in-store-highwater",
       "kind": "MOD",
       "name": "ID high-water minting",
       "parent": "mod-store",
@@ -1177,7 +1177,7 @@
       ]
     },
     {
-      "key": "in-store-history",
+      "ref": "in-store-history",
       "kind": "MOD",
       "name": "units at a revision",
       "parent": "mod-store",
@@ -1193,7 +1193,7 @@
       ]
     },
     {
-      "key": "in-store-moddigest",
+      "ref": "in-store-moddigest",
       "kind": "MOD",
       "name": "module code digest",
       "parent": "mod-store",
@@ -1215,7 +1215,7 @@
       ]
     },
     {
-      "key": "in-store-notes",
+      "ref": "in-store-notes",
       "kind": "DATA",
       "name": "unit notes section",
       "parent": "mod-store",
@@ -1237,7 +1237,7 @@
       ]
     },
     {
-      "key": "in-store-write",
+      "ref": "in-store-write",
       "kind": "MOD",
       "name": "no-op-aware atomic write",
       "parent": "mod-store",
@@ -1259,7 +1259,7 @@
       ]
     },
     {
-      "key": "in-topo-boundary",
+      "ref": "in-topo-boundary",
       "kind": "MOD",
       "name": "boundary rule",
       "parent": "mod-topology",
@@ -1275,7 +1275,7 @@
       ]
     },
     {
-      "key": "in-topo-diff",
+      "ref": "in-topo-diff",
       "kind": "MOD",
       "name": "topology diff",
       "parent": "mod-topology",
@@ -1297,7 +1297,7 @@
       ]
     },
     {
-      "key": "in-topo-diff-report",
+      "ref": "in-topo-diff-report",
       "kind": "DATA",
       "name": "diff report fields",
       "parent": "mod-topology",
@@ -1313,7 +1313,7 @@
       ]
     },
     {
-      "key": "in-topo-explain",
+      "ref": "in-topo-explain",
       "kind": "MOD",
       "name": "unit explanation",
       "parent": "mod-topology",
@@ -1329,7 +1329,7 @@
       ]
     },
     {
-      "key": "in-topo-impact",
+      "ref": "in-topo-impact",
       "kind": "MOD",
       "name": "impact walk",
       "parent": "mod-topology",
@@ -1345,7 +1345,7 @@
       ]
     },
     {
-      "key": "in-topo-links",
+      "ref": "in-topo-links",
       "kind": "MOD",
       "name": "live links",
       "parent": "mod-topology",
@@ -1361,7 +1361,7 @@
       ]
     },
     {
-      "key": "in-topo-path",
+      "ref": "in-topo-path",
       "kind": "MOD",
       "name": "strongest shortest path",
       "parent": "mod-topology",
@@ -1383,7 +1383,7 @@
       ]
     },
     {
-      "key": "mod-bootstrap",
+      "ref": "mod-bootstrap",
       "kind": "MOD",
       "name": "internal/bootstrap",
       "anchors": [
@@ -1395,7 +1395,7 @@
       "responsibility": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract."
     },
     {
-      "key": "mod-cmd-abbd",
+      "ref": "mod-cmd-abbd",
       "kind": "MOD",
       "name": "abbd CLI",
       "anchors": [
@@ -1407,7 +1407,7 @@
       "responsibility": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes."
     },
     {
-      "key": "mod-evidence",
+      "ref": "mod-evidence",
       "kind": "MOD",
       "name": "internal/evidence",
       "anchors": [
@@ -1419,7 +1419,7 @@
       "responsibility": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now."
     },
     {
-      "key": "mod-extract",
+      "ref": "mod-extract",
       "kind": "MOD",
       "name": "internal/extract",
       "anchors": [
@@ -1431,7 +1431,7 @@
       "responsibility": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity."
     },
     {
-      "key": "mod-gitx",
+      "ref": "mod-gitx",
       "kind": "MOD",
       "name": "internal/gitx",
       "anchors": [
@@ -1443,7 +1443,7 @@
       "responsibility": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots."
     },
     {
-      "key": "mod-identity",
+      "ref": "mod-identity",
       "kind": "MOD",
       "name": "internal/identity",
       "anchors": [
@@ -1455,7 +1455,7 @@
       "responsibility": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates."
     },
     {
-      "key": "mod-model",
+      "ref": "mod-model",
       "kind": "MOD",
       "name": "internal/model",
       "anchors": [
@@ -1467,7 +1467,7 @@
       "responsibility": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds."
     },
     {
-      "key": "mod-screen",
+      "ref": "mod-screen",
       "kind": "MOD",
       "name": "internal/screen",
       "anchors": [
@@ -1479,7 +1479,7 @@
       "responsibility": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json, which hold no value of the sync"
     },
     {
-      "key": "mod-store",
+      "ref": "mod-store",
       "kind": "MOD",
       "name": "internal/store",
       "anchors": [
@@ -1491,7 +1491,7 @@
       "responsibility": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale."
     },
     {
-      "key": "mod-topology",
+      "ref": "mod-topology",
       "kind": "MOD",
       "name": "internal/topology",
       "anchors": [

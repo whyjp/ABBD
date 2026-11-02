@@ -2,28 +2,29 @@
 unit: DATA-0006
 slot: wire_sample
 origin: INFERRED
-digest: 63f5b605ba049532
+digest: 2b610a88e5ce15ad
 format: 3
 evidence:
     - path: internal/store/store.go
-      lines: "30"
+      lines: "32"
       quote: Revision    string             `yaml:"revision"`
     - path: internal/store/store.go
-      lines: "31"
-      quote: Fingerprint string             `yaml:"fingerprint"`
-    - path: internal/store/store.go
-      lines: "32"
+      lines: "34"
       quote: Blueprint   string             `yaml:"blueprint"`
+    - path: internal/store/store.go
+      lines: "35"
+      quote: Rendered    string             `yaml:"rendered"`
 code:
-    internal/store/store.go#quote-8f961298: b1907888710405e0
-    internal/store/store.go#quote-3610ea4c: fdd1bd3cba782385
-    internal/store/store.go#quote-94800254: 0fd7e896a2c7c61b
+    internal/store/store.go#quote-8f961298: c94e417b4c816d29
+    internal/store/store.go#quote-3610ea4c: 974357860e038ae2
+    internal/store/store.go#quote-28231f2c: 9a93eb5cc6adc5e8
 ---
 
 ```yaml
-revision: 8b87be3ab0e29685c841c03ec6bd0a41436e5e57
-fingerprint: 7e33d18f48894c23e02284444c4c748686cb9bae
-blueprint: ebf9bba1c302f60f8d90ae5470879cdc5e3583debc067bbdece4bd7093bd4a21
+revision: c22dff8fda6f6527d729bb64ff835d127c25b551
+fingerprint: f47f6bda02522b323f9cf97e3c542806dfeecb9e
+blueprint: 0d528176012c93f1bef2f78f8238d4ffce4d7ffc56161a283ba9708bdb14f1b1
+rendered: 5137c5b3144d6ac0485ad7d17c08bf1ac091040b35af61ba8d52746e056d8b8f
 high_water:
     MOD: 56
     IF: 22
