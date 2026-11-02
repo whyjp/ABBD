@@ -116,8 +116,8 @@ func (f *file) result(m match) Result {
 	return Result{Live: true, At: at, Digest: hex.EncodeToString(h[:8])}
 }
 
-// Check finds e's quote in its file, whitespace-insensitively: within the
-// lines e names and the slack first, then the quote's only occurrence in the
+// Check finds e's quote in its file, whitespace-insensitively: nearest the
+// lines e names within the slack first, then the quote's only occurrence in the
 // file. A quote found twice with neither near is not found, so the same tree
 // always gives the same answer.
 func (c *Checker) Check(e model.Evidence) Result {
@@ -138,10 +138,19 @@ func (f *file) find(e model.Evidence) (match, bool) {
 	}
 	first, last, bounded := e.Span()
 	ms := f.matches(q)
+	if len(ms) > 0 && !bounded {
+		return ms[0], true
+	}
+	// The nearest occurrence wins, so two places of one quote within each
+	// other's slack each keep their own.
+	best, gap := match{}, Slack+1
 	for _, m := range ms {
-		if !bounded || (m.start <= last+Slack && m.end >= first-Slack) {
-			return m, true
+		if d := max(m.start-last, first-m.end, 0); d < gap {
+			best, gap = m, d
 		}
+	}
+	if gap <= Slack {
+		return best, true
 	}
 	if len(ms) == 1 {
 		return ms[0], true

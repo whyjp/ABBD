@@ -3,6 +3,8 @@ package screen
 import (
 	"regexp"
 	"strings"
+
+	"github.com/whyjp/abbd/internal/narrative"
 )
 
 // Understanding is a module's text from pstack's how, split into blocks the
@@ -61,31 +63,37 @@ func spans(s string) []Span {
 	return out
 }
 
+// blocks reads a text's lines as narrative.Lines does, so the page and the
+// lint agree on its headings and its code.
 func blocks(text string) []Block {
 	var out []Block
-	var para []string
+	var para, code []string
+	inCode := false
 	flush := func() {
 		if len(para) > 0 {
 			out = append(out, Block{Kind: "p", Parts: spans(strings.Join(para, " "))})
 			para = nil
 		}
+		if inCode {
+			out = append(out, Block{Kind: "pre", Code: strings.Join(code, "\n")})
+			code, inCode = nil, false
+		}
 	}
-	var fence *Block
-	var mark string
 	row := false
-	for _, line := range strings.Split(text, "\n") {
-		t := strings.TrimSpace(line)
+	for _, l := range narrative.Lines(text) {
+		t := l.Text
 		wasRow := row
-		row = fence == nil && strings.HasPrefix(t, "|")
+		row = l.Kind == narrative.Prose && strings.HasPrefix(t, "|")
 		switch {
-		case fence != nil && strings.HasPrefix(t, mark):
-			fence.Code = strings.TrimSuffix(fence.Code, "\n")
-			out, fence = append(out, *fence), nil
-		case fence != nil:
-			fence.Code += strings.TrimRight(line, " \t") + "\n"
-		case strings.HasPrefix(t, "```"), strings.HasPrefix(t, "~~~"):
+		case l.Kind == narrative.Code:
+			code = append(code, t)
+		case l.Kind == narrative.Fence:
+			opens := !inCode
 			flush()
-			fence, mark = &Block{Kind: "pre"}, t[:3]
+			inCode = opens
+		case l.Kind == narrative.Heading:
+			flush()
+			out = append(out, Block{Kind: "h", Parts: spans(t)})
 		case row && wasRow:
 			if !tableRule.MatchString(t) {
 				out[len(out)-1].Rows = append(out[len(out)-1].Rows, cells(t))
@@ -95,9 +103,6 @@ func blocks(text string) []Block {
 			out = append(out, Block{Kind: "table", Rows: [][][]Span{cells(t)}})
 		case t == "":
 			flush()
-		case strings.HasPrefix(t, "#"):
-			flush()
-			out = append(out, Block{Kind: "h", Parts: spans(strings.TrimSpace(strings.TrimLeft(t, "#")))})
 		case strings.HasPrefix(t, "- "), strings.HasPrefix(t, "* "):
 			flush()
 			out = append(out, Block{Kind: "li", Parts: spans(t[2:])})
@@ -110,9 +115,5 @@ func blocks(text string) []Block {
 		}
 	}
 	flush()
-	if fence != nil {
-		fence.Code = strings.TrimSuffix(fence.Code, "\n")
-		out = append(out, *fence)
-	}
 	return out
 }

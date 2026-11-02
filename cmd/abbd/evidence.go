@@ -138,10 +138,14 @@ func (e env) status() error {
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
 	var orphans []model.ID
+	texts := map[string]string{}
 	for id, u := range in.Understandings {
 		if _, ok := textModule(in.Units, id); !ok {
 			orphans = append(orphans, id)
-		} else if u.Digest != in.Digests[id] {
+			continue
+		}
+		texts[string(id)] = u.Text
+		if u.Digest != in.Digests[id] {
 			stale++
 		}
 	}
@@ -152,10 +156,6 @@ func (e env) status() error {
 	}
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
-	}
-	texts := map[string]string{}
-	for id, u := range in.Understandings {
-		texts[string(id)] = u.Text
 	}
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or delete the file status names", n))

@@ -30,25 +30,70 @@ type Mark struct {
 	Match   string
 }
 
-// heading is how the blueprint tells a heading: a line starting with #.
-func heading(line string) (string, bool) {
-	if !strings.HasPrefix(line, "#") {
-		return "", false
+// LineKind is what a line of a text is to a reader.
+type LineKind int
+
+const (
+	Prose LineKind = iota
+	Heading
+	// Fence opens or closes a code block.
+	Fence
+	// Code is a line inside a code block.
+	Code
+)
+
+// Line is one line of a text. Text is the heading's words for a heading,
+// the line without trailing blanks for code, and the trimmed line else.
+type Line struct {
+	Kind LineKind
+	Text string
+}
+
+// Lines reads a text as the lint and the blueprint both do. A line
+// starting with # is a heading. A line starting with three or more
+// backticks or tildes opens a code block, which a line of only as many or
+// more of the same closes, or the text's end. After backticks the rest of
+// the line holds no backtick, as CommonMark has it, so a line that starts
+// with an inline code span stays prose.
+func Lines(text string) []Line {
+	var out []Line
+	fence := ""
+	for _, line := range strings.Split(text, "\n") {
+		t := strings.TrimSpace(line)
+		run := ""
+		if t != "" {
+			run = t[:len(t)-len(strings.TrimLeft(t, t[:1]))]
+		}
+		switch {
+		case fence != "" && strings.HasPrefix(t, fence) && strings.Trim(t, fence[:1]) == "":
+			out = append(out, Line{Fence, t})
+			fence = ""
+		case fence != "":
+			out = append(out, Line{Code, strings.TrimRight(line, " \t\r")})
+		case strings.HasPrefix(t, "~~~"),
+			strings.HasPrefix(t, "```") && !strings.Contains(t[len(run):], "`"):
+			fence = run
+			out = append(out, Line{Fence, t})
+		case strings.HasPrefix(t, "#"):
+			out = append(out, Line{Heading, strings.TrimSpace(strings.TrimLeft(t, "#"))})
+		default:
+			out = append(out, Line{Prose, t})
+		}
 	}
-	return strings.TrimSpace(strings.TrimLeft(line, "#")), true
+	return out
 }
 
 // Sections splits a text at its headings, in order.
 func Sections(text string) []Section {
 	var out []Section
 	cur := -1
-	for _, line := range strings.Split(text, "\n") {
-		t := strings.TrimSpace(line)
-		if h, ok := heading(t); ok {
-			out = append(out, Section{Heading: h})
+	for _, l := range Lines(text) {
+		if l.Kind == Heading {
+			out = append(out, Section{Heading: l.Text})
 			cur = len(out) - 1
 			continue
 		}
+		t := strings.TrimSpace(l.Text)
 		if t == "" {
 			continue
 		}
@@ -97,10 +142,18 @@ var patterns = []struct {
 	{ref, regexp.MustCompile(`(?:^|[^\w&#/])(#\d+)\b`)},
 }
 
-// code marks the bytes of a line's `code` spans, which quote code and
-// examples rather than tell the module's story, so History skips them.
-func code(line string) []bool {
+var url = regexp.MustCompile(`[A-Za-z][A-Za-z0-9+.-]*://\S+`)
+
+// quoted marks the bytes of a line's `code` spans and URLs, which quote
+// code, examples and pages rather than tell the module's story, so History
+// skips them.
+func quoted(line string) []bool {
 	marked := make([]bool, len(line))
+	for _, m := range url.FindAllStringIndex(line, -1) {
+		for j := m[0]; j < m[1]; j++ {
+			marked[j] = true
+		}
+	}
 	open := -1
 	for i := range len(line) {
 		if line[i] != '`' {
@@ -118,18 +171,20 @@ func code(line string) []bool {
 	return marked
 }
 
-// History is each phrase that reads as history outside `code`, by section,
-// line by line.
+// History is each phrase that reads as history in prose, outside `code`
+// and URLs, by section, line by line.
 func History(text string) []Mark {
 	var out []Mark
 	section := ""
-	for _, line := range strings.Split(text, "\n") {
-		t := strings.TrimSpace(line)
-		if h, ok := heading(t); ok {
-			section = h
+	for _, l := range Lines(text) {
+		if l.Kind == Heading {
+			section = l.Text
+		}
+		if l.Kind != Prose {
 			continue
 		}
-		taken := code(t)
+		t := l.Text
+		taken := quoted(t)
 		for _, p := range patterns {
 			for _, m := range p.re.FindAllStringSubmatchIndex(t, -1) {
 				from, to := m[0], m[1]
