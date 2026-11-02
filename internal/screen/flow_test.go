@@ -40,9 +40,10 @@ func TestLinesIntoOneBoxShareATrunk(t *testing.T) {
 	}
 }
 
-// A cycle that is only part of a view folds into one box, and that box's
-// own view draws the cycle. Nothing is left out.
-func TestATangledCycleFoldsIntoABoxWithItsOwnView(t *testing.T) {
+// A cycle is drawn in the view of the unit that really holds it: the
+// drawing makes no box that the state lacks, and the line that closes the
+// cycle climbs, dashed.
+func TestACycleStaysInItsContainersView(t *testing.T) {
 	units := []model.Unit{
 		called("MOD-0001", "app"),
 		inside("MOD-0002", "MOD-0001", rel("MOD-0003", model.DependsOn), rel("MOD-0005", model.DependsOn)),
@@ -53,38 +54,38 @@ func TestATangledCycleFoldsIntoABoxWithItsOwnView(t *testing.T) {
 		inside("MOD-0007", "MOD-0001"),
 	}
 	m := build(units)
-	views := map[string]Inside{}
-	for _, ins := range m.Insides {
-		views[ins.ID] = ins
+	if len(m.Insides) != 1 || m.Insides[0].ID != "MOD-0001" {
+		t.Fatalf("only app holds units, so only app has a view: %+v", m.Insides)
 	}
-	app, cycle := views["MOD-0001"], views["MOD-0001~1"]
+	app := m.Insides[0]
 	b := boxes(app.Drawing)
-	if len(b) != 4 || b["MOD-0001~1"].Href != "#m-MOD-0001~1" {
-		t.Fatalf("app's view should hold the folded cycle as one box that opens its view, and the chain beside it: %+v", app.Drawing.Boxes)
-	}
-	cb := boxes(cycle.Drawing)
-	for _, id := range []string{"MOD-0002", "MOD-0003", "MOD-0004"} {
-		if _, ok := cb[id]; !ok {
-			t.Errorf("the fold's view should draw %s", id)
+	for _, u := range units[1:] {
+		if _, ok := b[string(u.ID)]; !ok {
+			t.Errorf("app's view should draw %s", u.ID)
 		}
 	}
+	if len(b) != len(units)-1 {
+		t.Errorf("app's view should draw its six units and nothing else: %+v", app.Drawing.Boxes)
+	}
 	shown := map[string]bool{}
-	for _, ins := range m.Insides {
-		for _, w := range ins.Drawing.Wires {
-			for _, r := range w.Rels {
-				shown[r] = true
-			}
+	for _, w := range app.Drawing.Wires {
+		for _, r := range w.Rels {
+			shown[r] = true
 		}
 	}
 	for _, u := range units {
 		for _, r := range u.Relations {
 			if k := key(u.ID, r.Kind, r.To); !shown[k] {
-				t.Errorf("%s is in no view after folding", k)
+				t.Errorf("%s is not drawn in app's view", k)
 			}
 		}
 	}
-	if len(boxes(m.Overview)) != 1 {
-		t.Errorf("the overview is never folded: %+v", m.Overview.Boxes)
+	s, err := readSVG(svg(t, app.Drawing))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mt := measure(s); mt.Back != 1 || mt.BackPlain != 0 {
+		t.Errorf("the line that closes the cycle should climb dashed, and only it: %s", mt)
 	}
 }
 

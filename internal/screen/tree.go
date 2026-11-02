@@ -14,12 +14,10 @@ import (
 type tree struct {
 	units    map[model.ID]model.Unit
 	children map[model.ID][]model.ID
-	// folds are the cycles the drawing folded into a box (fold.go).
-	folds map[model.ID]bool
 }
 
 func newTree(units []model.Unit) tree {
-	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, folds: map[model.ID]bool{}}
+	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}}
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 	}
@@ -32,17 +30,8 @@ func newTree(units []model.Unit) tree {
 		}
 		t.children[u.Parent] = append(t.children[u.Parent], u.ID)
 	}
-	var containers []model.ID
 	for k := range t.children {
 		slices.Sort(t.children[k])
-		if k != "" {
-			containers = append(containers, k)
-		}
-	}
-	// The overview is never folded: its boxes are the system's top level.
-	slices.Sort(containers)
-	for _, c := range containers {
-		t.fold(c)
 	}
 	return t
 }

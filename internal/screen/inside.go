@@ -453,7 +453,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		for i, s := range ls {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + 8, Y: r.Y + 19 + i*nameLine})
 		}
-		b.Sub = &Text{S: o.kindWord(u), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
+		b.Sub = &Text{S: kindWord(u.Kind), X: r.X + 8, Y: r.Y + 19 + len(ls)*nameLine + 1}
 		if base(u.ID) != u.ID {
 			b.Sub.S += " · 위에도 있음"
 			b.Class += " twin"
@@ -469,7 +469,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if base(u.ID) != u.ID {
 			continue
 		}
-		iu := InsideUnit{ID: string(u.ID), Name: u.Name.Value, Kind: o.kindWord(u), Anchors: anchors(u)}
+		iu := InsideUnit{ID: string(u.ID), Name: u.Name.Value, Kind: kindWord(u.Kind), Anchors: anchors(u)}
 		if f := sentence(u); f != nil {
 			iu.Sentence, iu.Guess = f.Value, f.Guess()
 		}
@@ -523,14 +523,6 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		ins.Inferred = o.inferred(m, units)
 	}
 	return ins
-}
-
-// kindWord names a unit's kind under its name; a folded cycle says so.
-func (o *overview) kindWord(u model.Unit) string {
-	if o.tree.folds[base(u.ID)] {
-		return "순환 묶음"
-	}
-	return kindWord(u.Kind)
 }
 
 // lastPart drops the leading path segments of a module's name, such as

@@ -23,7 +23,7 @@ Every fact, relation and parent claim stores the writer that made it. Origin is 
 | Writer | Made by | Origin |
 |---|---|---|
 | `script` | `abbd sync` from the extraction | EXTRACTED |
-| `group` | `group.Fallback` during sync, to keep a view small | EXTRACTED |
+| `group` | `group.Fallback` during sync, placing a crowded level's units in the directories their code lives in | EXTRACTED |
 | `supplement` | `abbd setup --supplement F` | INFERRED |
 | `reader` | `abbd record` with `--evidence` | INFERRED |
 | `human` | `abbd record` with `--source` | USER_STATED |

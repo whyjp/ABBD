@@ -175,7 +175,7 @@ func evidenceAnchors(as []model.Anchor, es []model.Evidence) []model.Anchor {
 	return model.SortAnchors(as)
 }
 
-// recordParent places a unit inside a module: a reader's grouping with
+// recordParent places a unit inside a module that holds it: a reader's finding with
 // --evidence, or what a human stated with --source. The claim is stored
 // beside the other writers'; a human's outranks the script's.
 func (e env) recordParent(pos []string) error {

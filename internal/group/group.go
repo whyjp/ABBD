@@ -1,7 +1,7 @@
-// Package group is the last resort that keeps every blueprint view small.
-// When a module, or the top level, holds more modules than one view shows
-// and no reader grouped them, sync places them in groups by the directory
-// their code lives in. It is a writer of its own: each placement is a group
+// Package group places a crowded level in the directories the code has.
+// When a module, or the top level, holds more boxes than one view shows,
+// sync places the units the script placed, or nobody did, in the directory
+// their code lives in. A directory is a level the project itself shows. It is a writer of its own: each placement is a group
 // parent claim, which ranks below a human's and above the script's. It only
 // moves units whose winning claim is the script's, or that have none, and it
 // runs again on every sync from scratch, so it never outlives the layout it
