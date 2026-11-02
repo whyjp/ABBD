@@ -3,10 +3,12 @@ package gitx
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -114,13 +116,18 @@ func Snapshot(dir, exclude string) (string, error) {
 	if _, err := run(dir, env, add...); err != nil {
 		return "", err
 	}
+	prefix, err := run(dir, nil, "rev-parse", "--show-prefix")
+	if err != nil {
+		return "", err
+	}
+	prefix = strings.TrimSpace(prefix)
 	for _, r := range unborn {
-		if err := addFiles(dir, env, r); err != nil {
+		if err := addFiles(dir, prefix, env, r); err != nil {
 			return "", err
 		}
 	}
 	for _, l := range links {
-		if _, err := run(dir, env, "update-index", "--add", "--cacheinfo", "160000,"+l.commit+","+l.path); err != nil {
+		if _, err := run(dir, env, "update-index", "--add", "--cacheinfo", "160000,"+l.commit+","+prefix+l.path); err != nil {
 			return "", err
 		}
 	}
@@ -145,18 +152,27 @@ func unbornRepos(dir string) []string {
 }
 
 // addFiles adds the files of the repository at repo, relative to dir, to
-// the index env names, as git add adds an untracked directory's files.
-func addFiles(dir string, env []string, repo string) error {
+// the index env names, as git add adds an untracked directory's files: the
+// ones on disk that neither repository ignores. hash-object and update-index
+// read their paths from the top of the work tree, so each takes prefix,
+// where dir sits in it.
+func addFiles(dir, prefix string, env []string, repo string) error {
 	var paths []string
 	for _, f := range WorkingFiles(filepath.Join(dir, repo)) {
-		if !strings.HasSuffix(f, "/") {
-			paths = append(paths, repo+"/"+f)
+		p := repo + "/" + f
+		if fi, err := os.Stat(filepath.Join(dir, filepath.FromSlash(p))); err == nil && fi.Mode().IsRegular() {
+			paths = append(paths, p)
 		}
 	}
-	if len(paths) == 0 {
-		return nil
+	paths, err := unignored(dir, paths)
+	if err != nil || len(paths) == 0 {
+		return err
 	}
-	out, err := runInput(dir, nil, strings.Join(paths, "\n")+"\n", "hash-object", "-w", "--stdin-paths")
+	var in strings.Builder
+	for _, p := range paths {
+		in.WriteString(prefix + p + "\n")
+	}
+	out, err := runInput(dir, nil, in.String(), "hash-object", "-w", "--stdin-paths")
 	if err != nil {
 		return fmt.Errorf("git hash-object in %s: %w", repo, err)
 	}
@@ -170,12 +186,28 @@ func addFiles(dir string, env []string, repo string) error {
 		if fi, err := os.Stat(filepath.Join(dir, filepath.FromSlash(p))); err == nil && fi.Mode()&0o111 != 0 {
 			mode = "100755"
 		}
-		fmt.Fprintf(&info, "%s %s\t%s\x00", mode, hashes[i], p)
+		fmt.Fprintf(&info, "%s %s\t%s%s\x00", mode, hashes[i], prefix, p)
 	}
 	if _, err := runInput(dir, env, info.String(), "update-index", "--add", "-z", "--index-info"); err != nil {
 		return fmt.Errorf("git update-index in %s: %w", repo, err)
 	}
 	return nil
+}
+
+// unignored drops the paths, relative to dir, that dir's repository ignores.
+func unignored(dir string, paths []string) ([]string, error) {
+	if len(paths) == 0 {
+		return nil, nil
+	}
+	out, err := runInput(dir, nil, strings.Join(paths, "\x00")+"\x00", "check-ignore", "-z", "--stdin")
+	if exit := (*exec.ExitError)(nil); errors.As(err, &exit) && exit.ExitCode() == 1 {
+		return paths, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("git check-ignore: %w", err)
+	}
+	ignored := strings.Split(out, "\x00")
+	return slices.DeleteFunc(paths, func(p string) bool { return slices.Contains(ignored, p) }), nil
 }
 
 type gitlink struct{ path, commit string }
