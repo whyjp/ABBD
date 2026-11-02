@@ -153,24 +153,11 @@ func rank(n Note) int {
 // noteChanged lists each cited place whose code differs from what the note
 // was written against: its lines changed, or its quote is gone.
 func (s Store) noteChanged(n Note) []string {
-	digest, now := s.NoteStamp(n.Evidence)
-	if digest == n.Digest {
+	if digest, _ := s.NoteStamp(n.Evidence); digest == n.Digest {
 		return nil
 	}
-	var out []string
-	for k, h := range now {
-		if n.Code[k] != h {
-			reason := "the lines around it changed"
-			if h == missing {
-				reason = "the quote is gone, or no longer once in the file"
-			}
-			out = append(out, fmt.Sprintf("%s (%s)", keyPath(k), reason))
-		}
+	if out := s.changed(n.Evidence, n.Code); out != nil {
+		return out
 	}
-	slices.Sort(out)
-	out = slices.Compact(out)
-	if len(out) == 0 {
-		out = []string{"its stored code does not match its evidence"}
-	}
-	return out
+	return []string{"its stored code does not match its evidence"}
 }

@@ -102,6 +102,13 @@ type Anchor struct {
 
 func (a Anchor) Key() string { return a.Path + "#" + a.Symbol }
 
+// Holds reports whether path is the anchor's code: the anchor's own file, or
+// a file under it when it is a directory.
+func (a Anchor) Holds(path string) bool {
+	dir := strings.TrimSuffix(a.Path, "/")
+	return path == dir || dir == "." || strings.HasPrefix(path, dir+"/")
+}
+
 func SortAnchors(as []Anchor) []Anchor {
 	seen := map[string]bool{}
 	out := make([]Anchor, 0, len(as))
