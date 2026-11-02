@@ -93,3 +93,19 @@ func TestAFencedBlockIsCodeNotProse(t *testing.T) {
 		t.Errorf("marks = %v, want only #7 under Key Concepts", got)
 	}
 }
+
+// A backtick fence's info string holds no backtick, so a line that starts
+// with an inline code span is prose, and a heading after it opens a section.
+func TestALineStartingWithInlineCodeOpensNoFence(t *testing.T) {
+	text := "## Overview\n\n```js``` inline\n\n## Key Concepts\n\nfixes #7\n\n~~~ a`b\n#x\n~~~\n"
+	var heads []string
+	for _, s := range Sections(text) {
+		heads = append(heads, s.Heading)
+	}
+	if want := []string{"Overview", "Key Concepts"}; !slices.Equal(heads, want) {
+		t.Errorf("sections = %v, want %v", heads, want)
+	}
+	if got := History(text); len(got) != 1 || got[0].Match != "#7" {
+		t.Errorf("marks = %v, want only #7", got)
+	}
+}
