@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "c209e8039afbc6dddf18f994267234f2d549d44f96351d2e78481992cb448efb"
+    "inputs_hash": "98f85e974bdf16381b01b605993406e92406c90830893ffacf5c622baea65e4d"
   },
   "units": [
     {
@@ -2212,8 +2212,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/understanding.go:80 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
-        "internal/store/understanding.go:100 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
+        "internal/store/understanding.go:83 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\"",
+        "internal/store/understanding.go:103 \"fmt.Fprintf(h, \\\"%s\\\\x00missing\\\\x00\\\", p)\""
       ]
     },
     {
@@ -4020,7 +4020,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/understanding.go:80 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+      "Quote": "internal/store/understanding.go:83 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
     },
     {
       "From": "MOD-0041",
@@ -19668,7 +19668,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:80 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:83 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {
@@ -23665,7 +23665,7 @@
                 "Code": true
               },
               {
-                "Text": " gives every text LF line endings and no trailing blanks, on save, on load and before ",
+                "Text": " strips a leading byte order mark and gives every text LF line endings and no trailing blanks, on save, on load and before ",
                 "Code": false
               },
               {
@@ -23920,7 +23920,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/understanding.go:80 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
+            "internal/store/understanding.go:83 \"if u.Absent || (u.ID != id \u0026\u0026 u.Parent != id) {\""
           ]
         },
         {

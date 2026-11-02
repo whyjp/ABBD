@@ -243,3 +243,14 @@ func TestRestampingTheSameTextWithOtherLineEndingsIsRefused(t *testing.T) {
 		t.Fatalf("the text must stay STALE")
 	}
 }
+
+// Editors on Windows prepend a byte order mark when they save UTF-8; it is
+// not a word of the text, so it cannot make the same reading look new.
+func TestRestampingTheSameTextWithAByteOrderMarkIsRefused(t *testing.T) {
+	p := semanticProject(t)
+	words := "### Overview\nbilling writes each `charge` to the charges table.\n"
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", words))
+	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge(currency string) {}\n")
+	p.resync()
+	p.want(1, "code changed since this text was written", "understand", "MOD-0001", p.file(t, "bom.md", "\uFEFF"+words))
+}

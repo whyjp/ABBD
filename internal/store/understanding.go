@@ -28,9 +28,12 @@ func (s Store) understandingPath(id model.ID) string {
 	return s.path("understanding", string(id)+".md")
 }
 
-// CleanText is a text as abbd keeps it: LF line endings, no trailing blanks
-// on a line, none around the whole. Two saves of the same words compare equal.
+// CleanText is a text as abbd keeps it: no byte order mark, LF line endings,
+// no trailing blanks on a line, none around the whole. Two saves of the same
+// words compare equal. Trailing blanks carry no meaning here because the
+// screen joins a paragraph's lines with a space and draws no hard breaks.
 func CleanText(s string) string {
+	s = strings.TrimPrefix(s, "\uFEFF")
 	lines := strings.Split(strings.ReplaceAll(s, "\r\n", "\n"), "\n")
 	for i, l := range lines {
 		lines[i] = strings.TrimRight(l, " \t\r")
