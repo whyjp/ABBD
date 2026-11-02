@@ -322,3 +322,64 @@ func TestAContractsHomeCountsWhatItsUnitsProvide(t *testing.T) {
 		t.Fatal("the contract's notes belong in ledger's inside, whose unit the code shows providing it")
 	}
 }
+
+// A human's why is about the decision they commented on. A decision stored
+// again on other code is another decision, so the why does not carry over to
+// it, and the reader who stored it hears that it was dropped.
+func TestAWhyDoesNotSurviveADecisionOnOtherCode(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.decisions.k", "A charge is tried three times.", failureQuote)
+	p.want(0, "recorded", "record", "fact", "MOD-0001.decisions.k", "--value", "the card network bans a fourth try", "--source", "https://example.com/pr/7")
+	out := p.wantNote(0, "understood", "MOD-0001.decisions.k", "A charge moves from pending to charged.", statesQuote)
+	if !strings.Contains(out, "dropped the why") || !strings.Contains(out, "abbd record fact MOD-0001.decisions.k") {
+		t.Errorf("understand must say it dropped the why and how to state one again:\n%s", out)
+	}
+	if out := p.want(0, "decisions.k (INFERRED, CURRENT)", "explain", "MOD-0001"); strings.Contains(out, "fourth try") {
+		t.Errorf("the old why must not show under a decision on other code:\n%s", out)
+	}
+	if strings.Contains(p.read("blueprint/index.html"), "fourth try") {
+		t.Error("the blueprint must not show the old why under the new decision")
+	}
+}
+
+// A note file that is not at the path its frontmatter names is no note of
+// its slot: status names the file as it sits, the check skips it, and the
+// note at the right path goes STALE and current on its own.
+func TestANoteFileAtTheWrongPathIsOrphaned(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.states", "states text", statesQuote)
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "a.md"), p.read("understanding/MOD-0001/states.md"))
+	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
+	p.resync()
+	out := p.want(1, "1 note(s) STALE", "status", "--check")
+	for _, want := range []string{
+		"orphaned: .abbd/understanding/MOD-0001/a.md says it is MOD-0001.states, whose note belongs at .abbd/understanding/MOD-0001/states.md",
+		"delete .abbd/understanding/MOD-0001/a.md",
+		"stale: MOD-0001.states, the code it cites changed",
+		"abbd understand MOD-0001.states FILE --evidence",
+		"or delete .abbd/understanding/MOD-0001/states.md",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("status must say %q:\n%s", want, out)
+		}
+	}
+	p.wantNote(0, "understood", "MOD-0001.states", "states text, with refunds", statesQuote)
+	p.want(0, "notes: 2 slot note(s), 0 STALE, 1 orphaned", "status", "--check")
+	if out := p.want(0, "with refunds", "explain", "MOD-0001"); strings.Count(out, "states (INFERRED") != 1 {
+		t.Errorf("explain must show the slot's one note:\n%s", out)
+	}
+}
+
+// A markdown file without frontmatter beside the notes, such as a README,
+// is no note: every command reads past it, and status names it. A file that
+// opens frontmatter is a note, and a malformed one still fails.
+func TestAStrayMarkdownFileBesideTheNotesIsAWarning(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "README.md"), "# what these are\n")
+	p.resync()
+	p.want(0, "warning: .abbd/understanding/MOD-0001/README.md has no frontmatter", "status", "--check")
+	p.want(0, "failure (INFERRED, CURRENT)", "explain", "MOD-0001")
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "semantics.md"), "---\nunit: MOD-0001\n")
+	p.want(1, "unterminated frontmatter", "status")
+}

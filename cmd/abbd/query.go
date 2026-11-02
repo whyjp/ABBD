@@ -171,7 +171,7 @@ func (e env) explainNotes(u model.Unit) error {
 	if !u.Kind.HoldsNotes() {
 		return nil
 	}
-	notes, err := e.st.LoadNotes()
+	notes, _, err := e.st.LoadNotes()
 	if err != nil {
 		return err
 	}

@@ -25,8 +25,10 @@ type Input struct {
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
 	Digests        map[model.ID]string
-	// Notes are what readers wrote into each unit's slots.
-	Notes map[model.ID][]store.Note
+	// Notes are what readers wrote into each unit's slots. Strays are the
+	// markdown files beside them that are no notes, from the project root.
+	Notes  map[model.ID][]store.Note
+	Strays []string
 }
 
 // Watermark ties a rendered file to the .abbd inputs it came from.
@@ -54,7 +56,7 @@ func Load(st store.Store) (Input, error) {
 	if in.Understandings, err = st.LoadUnderstandings(); err != nil {
 		return in, err
 	}
-	if in.Notes, err = st.LoadNotes(); err != nil {
+	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}

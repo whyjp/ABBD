@@ -70,7 +70,8 @@ abbd understand ID.SLOT[.KEY] FILE|- --evidence PATH:LINES:QUOTE [--evidence ...
                                      per KEY) or wire_sample; the note is stamped with the lines
                                      around each quote it cites, so it goes STALE when that code
                                      changes and not when other code of the unit does; a human's
-                                     why is kept when the note is stored again
+                                     why is kept when the decision is stored again on the same
+                                     quotes, and dropped when it cites other code
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a

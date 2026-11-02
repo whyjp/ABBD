@@ -33,7 +33,7 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
    - `semantics`: what the unit means, such as what a key identifies or when a value counts as current.
    - `failure`: how it fails, which failures it retries, and what a caller sees.
    - `states`: its states and what moves it between them, as a table with a header row (`| state | when | next |`).
-   - `decisions`: one note per decision, as `<ID>.decisions.<KEY>`, saying what the code chose over what. When the human states why, record it with `abbd record fact <ID>.decisions.<KEY> --value "<why>" --source <REF>`. Storing the decision again keeps that why.
+   - `decisions`: one note per decision, as `<ID>.decisions.<KEY>`, saying what the code chose over what. When the human states why, record it with `abbd record fact <ID>.decisions.<KEY> --value "<why>" --source <REF>`. Storing the decision again on the same quotes keeps that why. Storing it on other quotes drops it, since the human did not speak about that code; ask again.
    - `wire_sample`: a sample of what crosses the contract, in a fenced code block.
 
    The blueprint shows a module's notes beside its inside, and a contract's in the inside of the module that provides it. `abbd explain <ID>` prints each one with whether it is current. Delete `.abbd/understanding/<ID>/<SLOT>.md` when the code no longer has what the note says.

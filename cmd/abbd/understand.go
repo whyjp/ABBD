@@ -148,11 +148,20 @@ func (e env) note(r model.NoteRef, args []string) error {
 	if had && prev.Stale() && sameWords(prev.Text, text) && sameCitations(prev.Evidence, cited) {
 		return fmt.Errorf("the code %s cites changed since it was written (%s); read it again, then store the new text or cite the code it rests on now", r, strings.Join(prev.Changed, ", "))
 	}
-	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Why: prev.Why, Text: text}
+	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Text: text}
+	// A decision on other quotes is another decision, and the human did not
+	// say why about it.
+	dropped := prev.Why != nil && !sameCitations(prev.Evidence, cited)
+	if !dropped {
+		n.Why = prev.Why
+	}
 	if err := e.st.SaveNote(n); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against the code it cites %s\n", r, u.Name.Value, digest)
+	if dropped {
+		fmt.Fprintf(e.stdout, "dropped the why %s stated, since the decision now cites other code; ask again and store it with abbd record fact %s --value WHY --source WHERE\n", prev.Why.Source, r)
+	}
 	readText(e.stdout, r.String(), text)
 	return nil
 }
