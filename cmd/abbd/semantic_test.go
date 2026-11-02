@@ -210,7 +210,7 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	p := semanticProject(t)
 	text := p.file(t, "how.md", "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n")
-	p.want(1, "is not a top-level module", "understand", "DATA-0001", text)
+	p.want(1, "is not a module", "understand", "DATA-0001", text)
 	p.want(0, "understood MOD-0001 billing, INFERRED", "understand", "MOD-0001", text)
 	html := p.read("blueprint/index.html")
 	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `pstack how가 쓴 설명`} {

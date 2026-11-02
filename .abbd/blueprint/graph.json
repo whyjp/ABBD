@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "16c9ca8a73d5a4f00430ef3b47f4f36866b755a853596d7a6a531e7838f8c310"
+    "inputs_hash": "c3f0d5f684b210745ba9c3ae0a9d9f70a81f7d73e8d255100c5243dad698e090"
   },
   "units": [
     {
@@ -130,7 +130,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{graph.json,index.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},modules{Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Trail,Understanding{Blocks{Kind,Parts{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Sentence},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Evidence,ID,Kind,Name,Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature},watermark{inputs_hash}}",
+      "Signature": ".abbd/blueprint/{graph.json,index.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},modules{Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Trail,Understanding{Blocks{Kind,Parts{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Sentence,Understanding{Blocks{Kind,Parts{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},units{Anchors,Evidence,ID,Kind,Name,Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature},watermark{inputs_hash}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -1966,7 +1966,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go:84 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {\""
+        "internal/screen/inside.go:87 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {\""
       ]
     },
     {
@@ -2994,7 +2994,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:17 \"return u, ok \u0026\u0026 u.Kind == model.Module \u0026\u0026 u.Parent == \\\"\\\"\""
+      "Quote": "cmd/abbd/understand.go:18 \"return u, ok \u0026\u0026 u.Kind == model.Module\""
     },
     {
       "From": "MOD-0001",
@@ -3260,7 +3260,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3414,7 +3414,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3438,7 +3438,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -3836,7 +3836,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:198 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:207 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -3902,7 +3902,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
+      "Quote": "internal/screen/inside.go:283 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
     },
     {
       "From": "MOD-0035",
@@ -3910,7 +3910,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+      "Quote": "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
     },
     {
       "From": "MOD-0037",
@@ -3998,7 +3998,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go:184 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -4006,7 +4006,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0041",
@@ -4102,7 +4102,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:73 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:74 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -7236,7 +7236,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0004",
@@ -7246,7 +7247,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0005",
@@ -7256,7 +7258,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0006",
@@ -7266,7 +7269,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0007",
@@ -7276,7 +7280,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0008",
@@ -7286,7 +7291,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0009",
@@ -7296,7 +7302,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": null,
@@ -8490,7 +8497,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0011",
@@ -8500,7 +8508,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0012",
@@ -8510,7 +8519,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0013",
@@ -8520,7 +8530,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0014",
@@ -8530,7 +8541,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0015",
@@ -8540,7 +8552,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0016",
@@ -8550,7 +8563,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0017",
@@ -8560,7 +8574,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": null,
@@ -9403,7 +9418,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -9458,7 +9473,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -9757,7 +9772,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -9962,7 +9977,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -9976,7 +9991,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:182 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -10110,7 +10125,8 @@
             "cmd/abbd/install.go blockBegin",
             "cmd/abbd/install.go install",
             "cmd/abbd/install.go markers"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0002",
@@ -10122,7 +10138,8 @@
             "cmd/abbd/diff.go diff",
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0003",
@@ -10134,7 +10151,8 @@
             "cmd/abbd/main.go parse",
             "cmd/abbd/main.go parseInterspersed",
             "cmd/abbd/main.go run"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0004",
@@ -10145,7 +10163,8 @@
           "Anchors": [
             "cmd/abbd/main.go runScript",
             "cmd/abbd/main.go syncActual"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0005",
@@ -10157,7 +10176,8 @@
             "cmd/abbd/query.go explainHow",
             "cmd/abbd/query.go path",
             "cmd/abbd/query.go resolve"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0006",
@@ -10170,7 +10190,8 @@
             "cmd/abbd/record.go recordRelation",
             "cmd/abbd/record.go statedFields",
             "cmd/abbd/understand.go understand"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0007",
@@ -10181,7 +10202,8 @@
           "Anchors": [
             "cmd/abbd/screen.go publish",
             "cmd/abbd/screen.go screenInput"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0008",
@@ -10193,7 +10215,8 @@
             "cmd/abbd/setup.go deterministic",
             "cmd/abbd/setup.go readExtraction",
             "cmd/abbd/setup.go reseeded"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -11224,7 +11247,7 @@
                 "Code": true
               },
               {
-                "Text": "): how's text for a top-level module, stored INFERRED with the digest, ",
+                "Text": "): how's text for any module, at any depth, stored INFERRED with the digest, ",
                 "Code": false
               },
               {
@@ -11272,7 +11295,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ": any present module. A module's digest reads its whole subtree, so a text on a module inside another describes that module's code, and the text of the module above it describes it too. ",
                 "Code": false
               },
               {
@@ -11459,7 +11482,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:17 \"return u, ok \u0026\u0026 u.Kind == model.Module \u0026\u0026 u.Parent == \\\"\\\"\"",
+            "cmd/abbd/understand.go:18 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:179 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
@@ -11580,7 +11603,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11736,7 +11759,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -11765,7 +11788,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:73 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:74 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
           ]
         },
         {
@@ -11987,7 +12010,8 @@
           "Guess": true,
           "Anchors": [
             "internal/bootstrap/overlay.go Overlay"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0011",
@@ -11998,7 +12022,8 @@
           "Anchors": [
             "internal/bootstrap/overlay.go match",
             "internal/bootstrap/overlay.go overlap"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -12829,7 +12854,8 @@
           "Anchors": [
             "internal/evidence/evidence.go Apply",
             "internal/evidence/evidence.go all"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0015",
@@ -12840,7 +12866,8 @@
           "Anchors": [
             "internal/evidence/evidence.go Check",
             "internal/evidence/evidence.go Slack"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0016",
@@ -12851,7 +12878,8 @@
           "Anchors": [
             "internal/evidence/evidence.go file",
             "internal/evidence/evidence.go load"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -13972,7 +14000,8 @@
           "Anchors": [
             "internal/extract/extract.go Parse",
             "internal/extract/extract.go parentCycle"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0019",
@@ -13982,7 +14011,8 @@
           "Guess": true,
           "Anchors": [
             "internal/extract/extract.go inferred"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0020",
@@ -13992,7 +14022,8 @@
           "Guess": true,
           "Anchors": [
             "internal/extract/extract.go normalizePath"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0021",
@@ -14002,7 +14033,8 @@
           "Guess": true,
           "Anchors": [
             "internal/extract/extract.go parseUnits"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -15223,7 +15255,8 @@
           "Guess": true,
           "Anchors": [
             "internal/gitx/gitx.go MergeBase"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0024",
@@ -15233,7 +15266,8 @@
           "Guess": true,
           "Anchors": [
             "internal/gitx/gitx.go Renames"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0025",
@@ -15243,7 +15277,8 @@
           "Guess": true,
           "Anchors": [
             "internal/gitx/gitx.go Snapshot"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -16328,7 +16363,8 @@
           "Guess": true,
           "Anchors": [
             "internal/identity/identity.go Reconcile"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0028",
@@ -16338,7 +16374,8 @@
           "Guess": true,
           "Anchors": [
             "internal/identity/identity.go heldByHuman"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0029",
@@ -16349,7 +16386,8 @@
           "Anchors": [
             "internal/identity/identity.go merge",
             "internal/identity/identity.go setRelations"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -18285,7 +18323,8 @@
           "Guess": true,
           "Anchors": [
             "internal/model/model.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0012",
@@ -18295,7 +18334,8 @@
           "Guess": true,
           "Anchors": [
             "internal/model/model.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0015",
@@ -18305,7 +18345,8 @@
           "Guess": true,
           "Anchors": [
             "internal/model/model.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0019",
@@ -18315,7 +18356,8 @@
           "Guess": true,
           "Anchors": [
             "internal/model/model.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0020",
@@ -18325,7 +18367,8 @@
           "Guess": true,
           "Anchors": [
             "internal/model/model.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "IF-0016",
@@ -18336,7 +18379,8 @@
           "Anchors": [
             "internal/model/model.go FormatID",
             "internal/model/model.go idPattern"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "IF-0017",
@@ -18347,7 +18391,8 @@
           "Anchors": [
             "internal/model/model.go ParseEvidence",
             "internal/model/model.go Validate"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0031",
@@ -18358,7 +18403,8 @@
           "Anchors": [
             "internal/model/model.go Counts",
             "internal/model/model.go Semantic"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0032",
@@ -18369,7 +18415,8 @@
           "Anchors": [
             "internal/model/model.go ends",
             "internal/model/model.go vias"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0033",
@@ -18380,7 +18427,8 @@
           "Anchors": [
             "internal/model/model.go sourced",
             "internal/model/model.go validate"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -20802,7 +20850,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037"
@@ -20946,7 +20994,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+              "internal/screen/screen.go:184 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
             ],
             "Marks": [
               {
@@ -20967,7 +21015,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -21021,8 +21069,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/inside.go:283 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Marks": [
               {
@@ -21183,7 +21231,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/screen.go:49 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -21197,7 +21245,7 @@
             "Title": "freshness verdicts depends_on internal/store (via convention), 판독\nunderstanding text depends_on internal/store (via convention), 판독",
             "Quotes": [
               "internal/screen/screen.go:49 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -21214,7 +21262,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/inside.go:283 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
               "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
@@ -21228,7 +21276,7 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
-              "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/inside.go:283 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
               "internal/screen/overview.go:401 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
@@ -21246,7 +21294,7 @@
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
               "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
@@ -21260,7 +21308,7 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Quotes": [
-              "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
               "internal/screen/screen.go:160 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
@@ -21336,7 +21384,8 @@
           "Guess": true,
           "Anchors": [
             "internal/screen/page.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0035",
@@ -21348,7 +21397,8 @@
             "internal/screen/inside.go",
             "internal/screen/inside.go inferred",
             "internal/screen/inside.go inside"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0036",
@@ -21360,7 +21410,8 @@
             "internal/screen/layout.go arrange",
             "internal/screen/layout.go route",
             "internal/screen/layout.go textWidth"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0037",
@@ -21373,7 +21424,8 @@
             "internal/screen/overview.go draw",
             "internal/screen/overview.go planOverview",
             "internal/screen/overview.go top"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0038",
@@ -21384,7 +21436,8 @@
           "Anchors": [
             "internal/screen/page.go page",
             "internal/screen/page.html"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0039",
@@ -21395,7 +21448,8 @@
           "Anchors": [
             "internal/screen/screen.go ActualFreshness",
             "internal/screen/screen.go BlueprintFreshness"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0040",
@@ -21406,7 +21460,8 @@
           "Anchors": [
             "internal/screen/words.go blocks",
             "internal/screen/words.go spans"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -22375,7 +22430,23 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text beside its own inside. One that holds none has no view, and ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": " puts its text on its ",
+                "Code": false
+              },
+              {
+                "Text": "InsideUnit",
+                "Code": true
+              },
+              {
+                "Text": " in the parent's view, where the page folds it under the unit's entry.",
                 "Code": false
               }
             ]
@@ -22601,7 +22672,23 @@
                 "Code": true
               },
               {
-                "Text": ", which hashes the files of the module and of every unit under it at any depth, and the lines around the quotes they cite in other files. The template escapes it and never trusts its markup.",
+                "Text": ", which hashes the files of the module and of every unit under it at any depth, and the lines around the quotes they cite in other files. The template draws it through ",
+                "Code": false
+              },
+              {
+                "Text": "howhead",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "howtext",
+                "Code": true
+              },
+              {
+                "Text": " in both places, escapes it and never trusts its markup.",
                 "Code": false
               }
             ]
@@ -22725,7 +22812,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:198 \"return \\\"stated\\\"\"",
+            "internal/screen/screen.go:207 \"return \\\"stated\\\"\"",
             "internal/screen/page.go:42 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
@@ -22774,7 +22861,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:186 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:184 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -22783,7 +22870,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:280 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
+            "internal/screen/inside.go:283 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
           ]
         },
         {
@@ -22792,7 +22879,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/screen.go:183 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+            "internal/screen/screen.go:189 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
           ]
         },
         {
@@ -22830,9 +22917,9 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.html:95 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-            "internal/screen/inside.go:499 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
+            "internal/screen/inside.go:502 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
             "internal/screen/page.html:153 \"{{if .Unwired}}\"",
-            "internal/screen/inside.go:441 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
+            "internal/screen/inside.go:444 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
         {
@@ -22851,7 +22938,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/words.go:15 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph.\"",
-            "internal/screen/page.html:160 \"{{range .Blocks}}{{if eq .Kind \\\"h\\\"}}\""
+            "internal/screen/page.html:195 \"{{range .Blocks}}{{if eq .Kind \\\"h\\\"}}\""
           ]
         },
         {
@@ -22900,7 +22987,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:186 \"ins.Understanding = \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go:184 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -22909,7 +22996,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -23241,7 +23328,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:73 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+              "cmd/abbd/understand.go:74 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
             ],
             "Marks": [
               {
@@ -23536,7 +23623,8 @@
           "Anchors": [
             "internal/identity/identity.go Candidate",
             "internal/store/store.go LoadCandidates"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0007",
@@ -23547,7 +23635,8 @@
           "Anchors": [
             "internal/store/store.go parseUnit",
             "internal/store/store.go renderUnit"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0018",
@@ -23557,7 +23646,8 @@
           "Guess": true,
           "Anchors": [
             "internal/store/store.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0042",
@@ -23568,7 +23658,8 @@
           "Anchors": [
             "internal/store/store.go InputsHash",
             "internal/store/store.go hashFiles"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0043",
@@ -23578,7 +23669,8 @@
           "Guess": true,
           "Anchors": [
             "internal/store/store.go NextID"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0044",
@@ -23588,7 +23680,8 @@
           "Guess": true,
           "Anchors": [
             "internal/store/store.go UnitsAt"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0045",
@@ -23598,7 +23691,8 @@
           "Guess": true,
           "Anchors": [
             "internal/store/store.go writeFile"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0046",
@@ -23609,7 +23703,8 @@
           "Anchors": [
             "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -25041,7 +25136,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:192 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -25091,7 +25186,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:57 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:186 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:184 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -25110,7 +25205,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:40 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:41 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -25166,7 +25261,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:73 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+            "cmd/abbd/understand.go:74 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
           ]
         },
         {
@@ -25991,7 +26086,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/diff.go Diff"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0011",
@@ -26001,7 +26097,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/diff.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0013",
@@ -26011,7 +26108,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/query.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0021",
@@ -26021,7 +26119,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/diff.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0023",
@@ -26031,7 +26130,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/impact.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0048",
@@ -26041,7 +26141,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/diff.go Boundary"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0049",
@@ -26052,7 +26153,8 @@
           "Anchors": [
             "internal/topology/diff.go Compare",
             "internal/topology/diff.go between"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0050",
@@ -26062,7 +26164,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/impact.go ImpactOf"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0051",
@@ -26072,7 +26175,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/impact.go Links"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0052",
@@ -26082,7 +26186,8 @@
           "Guess": true,
           "Anchors": [
             "internal/topology/query.go Explain"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "MOD-0053",
@@ -26093,7 +26198,8 @@
           "Anchors": [
             "internal/topology/query.go Path",
             "internal/topology/query.go strength"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
@@ -27111,7 +27217,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:17 \"return u, ok \u0026\u0026 u.Kind == model.Module \u0026\u0026 u.Parent == \\\"\\\"\"",
+            "cmd/abbd/understand.go:18 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:179 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
@@ -27463,7 +27569,8 @@
           "Guess": true,
           "Anchors": [
             "internal/group/group.go"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "DATA-0022",
@@ -27473,7 +27580,8 @@
           "Guess": true,
           "Anchors": [
             "internal/group/group.go"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": null,
@@ -27861,7 +27969,8 @@
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md",
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0019",
@@ -27871,7 +27980,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0020",
@@ -27881,7 +27991,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         },
         {
           "ID": "FEAT-0021",
@@ -27891,7 +28002,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ]
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": null,

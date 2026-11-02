@@ -52,6 +52,9 @@ type InsideUnit struct {
 	// Guess is true when only a reader vouches for the sentence.
 	Guess   bool
 	Anchors []string
+	// Understanding is pstack how's text for a module that holds no units,
+	// which has no inside to show it beside.
+	Understanding *Understanding
 }
 
 const (
