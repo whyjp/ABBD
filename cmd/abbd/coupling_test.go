@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func couplingProject(t *testing.T) (*project, string) {
 	t.Helper()
@@ -29,4 +32,27 @@ func TestASupplementCouplingStillChecksItsEnds(t *testing.T) {
 	wrongKind := `{"units":[],"relations":[{"from":"ledger","to":"billing","kind":"provides","via":"call",
   "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
 	p.setup(1, "is not a relation ABBD knows", "--supplement", p.file(t, "kind.json", wrongKind), "--", exe)
+}
+
+// The supplement may restate a script unit under a ref of its own. A
+// coupling from that ref to the script's ref is the unit to itself.
+func TestASupplementCouplingMayNotJoinAUnitToItself(t *testing.T) {
+	p, exe := couplingProject(t)
+	self := `{"units":[{"ref":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}],
+  "relations":[{"from":"l","to":"ledger","kind":"depends_on","via":"call",
+  "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
+	p.setup(1, `relates MOD "ledger" to itself`, "--supplement", p.file(t, "self.json", self), "--", exe)
+}
+
+// A supplement ref that names another unit than the script's same ref
+// changes what every coupling by that ref joins, so setup says so.
+func TestSetupWarnsWhenASupplementRefShadowsAScriptRef(t *testing.T) {
+	p, exe := couplingProject(t)
+	shadow := `{"units":[{"ref":"billing","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}]}`
+	out := p.setup(0, "synced: 2 unit(s)", "--supplement", p.file(t, "shadow.json", shadow), "--", exe)
+	contains(t, out, `supplement ref "billing" names MOD "ledger", which shadows the script's ref "billing" for MOD "billing"`)
+	same := `{"units":[{"ref":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}]}`
+	if out := p.setup(0, "synced: 2 unit(s)", "--supplement", p.file(t, "same.json", same), "--", exe); strings.Contains(out, "shadows") {
+		t.Errorf("a ref that restates the script's unit under the same ref shadows nothing:\n%s", out)
+	}
 }

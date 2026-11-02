@@ -84,7 +84,13 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		sort.Strings(gaps)
 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
 	}
-	// A ref names the supplement's unit first, then the script's.
+	// A ref names the supplement's unit first, then the script's, so a
+	// supplement ref that names another unit hides the script's.
+	for ref, i := range docTo {
+		if j, ok := sc.key[ref]; ok && j != i {
+			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement ref %q names %s %q, which shadows the script's ref %q for %s %q", ref, out.Units[i].Kind, out.Units[i].Name.Value, ref, out.Units[j].Kind, out.Units[j].Name.Value))
+		}
+	}
 	resolve := func(ref string) (int, bool) {
 		if i, ok := docTo[ref]; ok {
 			return i, true
@@ -132,6 +138,9 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 				name = r.From
 			}
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s names %q, which is neither the supplement's ref nor the script's", r.From, r.Kind, r.To, name)
+		}
+		if fi == ti {
+			return base, f, fmt.Errorf("supplement relation %s -%s-> %s relates %s %q to itself; both refs name the same unit", r.From, r.Kind, r.To, out.Units[fi].Kind, out.Units[fi].Name.Value)
 		}
 		if err := r.Kind.Joins(out.Units[fi].Kind, out.Units[ti].Kind); err != nil {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)

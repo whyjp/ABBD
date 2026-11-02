@@ -1,6 +1,6 @@
 {
   "watermark": {
-    "inputs_hash": "920575ed03c3e316e1e01a74343cc2837ebfb8786c547e27c2cc09f7b5762d39"
+    "inputs_hash": "4df8f8497f07ccadc2b87c23e567db5e18e91471fd2992d97a5ddfd972f67a13"
   },
   "units": [
     {
@@ -103,7 +103,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:252 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
+        "internal/store/store.go:256 \"return cs, readYAML(s.path(\\\"candidates.yaml\\\"), \u0026cs)\"",
         "internal/identity/identity.go:23 \"Shared   model.Anchor `yaml:\\\"shared\\\"`\""
       ]
     },
@@ -183,8 +183,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:193 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
-        "internal/store/store.go:220 \"if u.Notes != \\\"\\\" {\""
+        "internal/store/store.go:197 \"if i := bytes.Index(body, []byte(\\\"\\\\n\\\"+notesHeading)); i \u003e= 0 {\"",
+        "internal/store/store.go:224 \"if u.Notes != \\\"\\\" {\""
       ]
     },
     {
@@ -368,7 +368,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:378 \"st.HighWater[kind]++\""
+        "internal/store/store.go:382 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -1494,7 +1494,7 @@
       "Parent": "MOD-0009",
       "Evidence": [
         "internal/bootstrap/overlay.go:139 \"its anchors match more than one %s equally\"",
-        "internal/bootstrap/overlay.go:262 \"keys[x.Key()] = true\""
+        "internal/bootstrap/overlay.go:271 \"keys[x.Key()] = true\""
       ]
     },
     {
@@ -2162,8 +2162,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
-        "internal/store/store.go:316 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
+        "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\"",
+        "internal/store/store.go:320 \"fmt.Fprintf(h, \\\"%s\\\\x00%d\\\\x00\\\", filepath.ToSlash(rel), len(b))\""
       ]
     },
     {
@@ -2184,7 +2184,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:378 \"st.HighWater[kind]++\""
+        "internal/store/store.go:382 \"st.HighWater[kind]++\""
       ]
     },
     {
@@ -2205,7 +2205,7 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:139 \"files, err := gitx.Files(project, rev, dirs...)\""
+        "internal/store/store.go:140 \"files, err := gitx.Files(project, rev, dirs...)\""
       ]
     },
     {
@@ -2226,8 +2226,8 @@
       ],
       "Parent": "MOD-0041",
       "Evidence": [
-        "internal/store/store.go:345 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
-        "internal/store/store.go:352 \"return os.Rename(tmp, path)\""
+        "internal/store/store.go:349 \"if old, err := os.ReadFile(path); err == nil \u0026\u0026 bytes.Equal(old, b) {\"",
+        "internal/store/store.go:356 \"return os.Rename(tmp, path)\""
       ]
     },
     {
@@ -3568,7 +3568,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+      "Quote": "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
     },
     {
       "From": "MOD-0009",
@@ -3596,7 +3596,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\""
+      "Quote": "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
     },
     {
       "From": "MOD-0013",
@@ -4122,7 +4122,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+      "Quote": "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
     },
     {
       "From": "MOD-0041",
@@ -4138,7 +4138,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/store/store.go:378 \"st.HighWater[kind]++\""
+      "Quote": "internal/store/store.go:382 \"st.HighWater[kind]++\""
     },
     {
       "From": "MOD-0041",
@@ -4184,7 +4184,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+      "Quote": "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
     },
     {
       "From": "MOD-0046",
@@ -11308,7 +11308,31 @@
                 "Code": true
               },
               {
-                "Text": ", by which a later setup pairs it again. It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
+                "Text": ", by which a later setup pairs it again. ",
+                "Code": false
+              },
+              {
+                "Text": "ref_test.go",
+                "Code": true
+              },
+              {
+                "Text": " pins that a unit stored under the older ",
+                "Code": false
+              },
+              {
+                "Text": "supplement_key",
+                "Code": true
+              },
+              {
+                "Text": " still pairs, and that a unit file spelling both with different refs fails ",
+                "Code": false
+              },
+              {
+                "Text": "status",
+                "Code": true
+              },
+              {
+                "Text": ". It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
                 "Code": false
               }
             ]
@@ -12048,7 +12072,7 @@
                 "Code": true
               },
               {
-                "Text": " runs setup with a supplement whose coupling joins two script units by their refs.",
+                "Text": " runs setup with a supplement whose coupling joins two script units by their refs, refuses one whose two refs name the same unit, and warns when a supplement ref shadows the script's.",
                 "Code": false
               }
             ]
@@ -14197,7 +14221,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\""
+              "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\""
             ],
             "Marks": [
               {
@@ -14730,7 +14754,7 @@
                 "Code": true
               },
               {
-                "Text": " finds, each among the supplement units that landed and then among the script's refs, so an end the script reports needs no supplement unit of its own. An end it finds in neither is an error naming that ref, and ",
+                "Text": " finds, each among the supplement units that landed and then among the script's refs, so an end the script reports needs no supplement unit of its own. An end it finds in neither is an error naming that ref, and so are two ends that find the same unit, as a supplement unit restating a script unit under a ref of its own and coupled to the script's ref does. ",
                 "Code": false
               },
               {
@@ -14792,7 +14816,15 @@
                 "Code": true
               },
               {
-                "Text": " lists a documented signature the code contradicts and a second supplement unit on the same code. ",
+                "Text": " lists a documented signature the code contradicts, a second supplement unit on the same code, and a supplement ref that names another unit than the script's same ref, which ",
+                "Code": false
+              },
+              {
+                "Text": "resolve",
+                "Code": true
+              },
+              {
+                "Text": " then hides. ",
                 "Code": false
               },
               {
@@ -14851,7 +14883,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
@@ -14869,7 +14901,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
             "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
@@ -17679,7 +17711,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:237 \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/bootstrap/overlay.go:246 \"n := overlap(u.Anchors, d.Anchors)\"",
             "internal/extract/extract.go:227 \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
@@ -20320,7 +20352,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         }
@@ -23885,7 +23917,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+            "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
           ]
         },
         {
@@ -26719,7 +26751,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -27056,7 +27088,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+              "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
             ],
             "Marks": [
               {
@@ -27732,7 +27764,23 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". It refuses a file that spells both with different refs, as the extraction refuses a unit with a different ",
+                "Code": false
+              },
+              {
+                "Text": "ref",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "key",
+                "Code": true
+              },
+              {
+                "Text": ", since either could be the one setup pairs on. ",
                 "Code": false
               },
               {
@@ -29913,7 +29961,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/screen.go:57 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-            "internal/store/store.go:291 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+            "internal/store/store.go:295 \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -29931,7 +29979,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:51 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
+            "internal/store/store.go:52 \"func (s Store) unitDirs() []string { return []string{\\\"architecture\\\", \\\"features\\\"} }\""
           ]
         },
         {
@@ -29949,7 +29997,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/store/store.go:378 \"st.HighWater[kind]++\""
+            "internal/store/store.go:382 \"st.HighWater[kind]++\""
           ]
         },
         {
@@ -29968,7 +30016,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go:379 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/store/store.go:383 \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
             "internal/identity/identity.go:174 \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         },
@@ -32177,7 +32225,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go:161 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
+            "internal/bootstrap/overlay.go:170 \"d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \\\"\\\", \\\"\\\", nil\""
           ]
         },
         {
