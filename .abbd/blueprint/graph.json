@@ -25936,7 +25936,15 @@
                 "Code": true
               },
               {
-                "Text": ", since a merged state's values match neither the merged tree nor its inputs.",
+                "Text": ", since a merged state's values match neither the merged tree nor its inputs. ",
+                "Code": false
+              },
+              {
+                "Text": "Model",
+                "Code": true
+              },
+              {
+                "Text": " holds no freshness verdict and no value of the sync, so a render changes only with the data.",
                 "Code": false
               }
             ]
@@ -28158,7 +28166,15 @@
                 "Code": true
               },
               {
-                "Text": " writes one state on the merged tree.",
+                "Text": " writes one state on the merged tree. ",
+                "Code": false
+              },
+              {
+                "Text": "state_test.go",
+                "Code": true
+              },
+              {
+                "Text": " reads a union-merged state and one with conflict markers and CRLF endings, and checks a saved state reads back unmerged.",
                 "Code": false
               }
             ]
