@@ -177,7 +177,7 @@ func (e env) printFlow(f store.Flow) error {
 
 // statusFlows reports the flows: how many steps, which are STALE and why,
 // which files are no flows. It returns how many steps are STALE.
-func (e env) statusFlows(units []model.Unit, flows []store.Flow, strays []string) int {
+func (e env) statusFlows(units []model.Unit, flows []store.Flow, strays []store.Stray) int {
 	var steps, stale int
 	var lines []string
 	for _, f := range flows {
@@ -197,7 +197,7 @@ func (e env) statusFlows(units []model.Unit, flows []store.Flow, strays []string
 	}
 	fmt.Fprintf(e.stdout, "flows: %d flow(s), %d step(s), %d STALE\n", len(flows), steps, stale)
 	for _, f := range strays {
-		fmt.Fprintf(e.stdout, "warning: %s has no frontmatter, so it is no flow and abbd reads past it; move it out of %s/flows to silence this\n", f, store.Dir)
+		fmt.Fprintf(e.stdout, "warning: %s %s, so it is no flow and abbd reads past it; fix its frontmatter, or move it out of %s/flows, to clear this\n", f.File, f.Why, store.Dir)
 	}
 	for _, l := range lines {
 		fmt.Fprintln(e.stdout, l)

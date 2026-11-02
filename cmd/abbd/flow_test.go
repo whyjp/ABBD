@@ -133,3 +133,20 @@ func TestAFlowOnAUnitThatLeftFailsTheCheck(t *testing.T) {
 	p.resync()
 	p.want(1, "MOD-0002 is no longer in the state", "status", "--check")
 }
+
+// One flow file abbd cannot read is a named warning: sync, status and every
+// abbd flow go on, and the well-formed flows are still checked.
+func TestAMalformedFlowFileWarnsAndStopsNothing(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	if err := os.WriteFile(filepath.Join(p.root, ".abbd", "flows", "broken.md"), []byte("---\nsteps: [unclosed\n---\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	p.resync()
+	out := p.want(0, "warning: .abbd/flows/broken.md has frontmatter abbd cannot read", "status", "--check")
+	if !strings.Contains(out, "fix its frontmatter, or move it out of .abbd/flows, to clear this") || !strings.Contains(out, "flows: 1 flow(s), 3 step(s), 0 STALE") {
+		t.Errorf("status must name the file, say how to clear it, and still check the good flow:\n%s", out)
+	}
+	p.want(0, "question: How does a charge reach the ledger?", "flow", "charge")
+	p.flow(0, "stored", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
+}

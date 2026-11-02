@@ -103,17 +103,22 @@ func (s Store) SaveFlow(f Flow) error {
 	return writeFile(s.path("flows", string(f.Key)+".md"), b)
 }
 
+// Stray is a markdown file under .abbd/flows that is no flow, from the
+// project root, and why abbd reads past it.
+type Stray struct{ File, Why string }
+
 // LoadFlows reads every flow in key order, each step checked against the
-// code it cites now. A markdown file there without frontmatter is no flow:
-// LoadFlows returns its path among the strays, from the project root.
-func (s Store) LoadFlows() ([]Flow, []string, error) {
+// code it cites now. A markdown file there without frontmatter, or whose
+// frontmatter abbd cannot read, is no flow: LoadFlows returns it among the
+// strays, so one bad file stops no reader of the others.
+func (s Store) LoadFlows() ([]Flow, []Stray, error) {
 	files, err := filepath.Glob(s.path("flows", "*.md"))
 	if err != nil {
 		return nil, nil, err
 	}
 	slices.Sort(files)
 	var out []Flow
-	var strays []string
+	var strays []Stray
 	for _, f := range files {
 		file := Dir + "/flows/" + filepath.Base(f)
 		b, err := os.ReadFile(f)
@@ -122,22 +127,27 @@ func (s Store) LoadFlows() ([]Flow, []string, error) {
 		}
 		front, body, err := splitFrontmatter(b)
 		if errors.Is(err, errNoFrontmatter) {
-			strays = append(strays, file)
+			strays = append(strays, Stray{file, "has no frontmatter"})
 			continue
 		} else if err != nil {
-			return nil, nil, fmt.Errorf("%s: %w", file, err)
+			strays = append(strays, Stray{file, "has frontmatter abbd cannot read (" + err.Error() + ")"})
+			continue
 		}
 		var fl Flow
 		if err := yaml.Unmarshal(front, &fl); err != nil {
-			return nil, nil, fmt.Errorf("%s: %w", file, err)
+			strays = append(strays, Stray{file, "has frontmatter abbd cannot read (" + err.Error() + ")"})
+			continue
 		}
 		k, err := model.ParseFlowKey(strings.TrimSuffix(filepath.Base(f), ".md"))
 		fl.Key, fl.File, fl.Known, fl.Caption = k, file, err == nil, CleanText(string(body))
 		if !fl.Known {
 			fl.Key = model.FlowKey(strings.TrimSuffix(filepath.Base(f), ".md"))
 		}
-		for i := range fl.Steps {
-			fl.Steps[i].Changed = s.changed(fl.Steps[i].Evidence, fl.Steps[i].Code)
+		for i, st := range fl.Steps {
+			fl.Steps[i].Changed = s.changed(st.Evidence, st.Code)
+			if len(st.Evidence) == 0 || len(st.Code) == 0 {
+				fl.Steps[i].Changed = []string{"the step cites no code abbd stamped, so nothing shows it is still true"}
+			}
 		}
 		out = append(out, fl)
 	}

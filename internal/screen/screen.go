@@ -30,9 +30,9 @@ type Input struct {
 	Notes  map[model.ID][]store.Note
 	Strays []string
 	// Flows are the ordered walks readers and humans stored, each a
-	// question; FlowStrays the markdown files beside them that are no flows.
+	// question; FlowStrays the markdown files beside them that are no flows, and why.
 	Flows      []store.Flow
-	FlowStrays []string
+	FlowStrays []store.Stray
 }
 
 // Watermark ties a rendered file to the .abbd inputs it came from.
