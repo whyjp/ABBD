@@ -125,21 +125,43 @@ func (c *Checker) Check(e model.Evidence) Result {
 	if f == nil {
 		return Result{Gone: true}
 	}
+	if m, ok := f.find(e); ok {
+		return f.result(m)
+	}
+	return Result{}
+}
+
+func (f *file) find(e model.Evidence) (match, bool) {
 	q := normalize(e.Quote)
 	if q == "" {
-		return Result{}
+		return match{}, false
 	}
 	first, last, bounded := e.Span()
 	ms := f.matches(q)
 	for _, m := range ms {
 		if !bounded || (m.start <= last+Slack && m.end >= first-Slack) {
-			return f.result(m)
+			return m, true
 		}
 	}
 	if len(ms) == 1 {
-		return f.result(ms[0])
+		return ms[0], true
 	}
-	return Result{}
+	return match{}, false
+}
+
+// Around returns the lines that hold e's quote now and n lines on each side,
+// or false when Check would not find the quote.
+func (c *Checker) Around(e model.Evidence, n int) (string, bool) {
+	f := c.load(e.Path)
+	if f == nil {
+		return "", false
+	}
+	m, ok := f.find(e)
+	if !ok {
+		return "", false
+	}
+	from, to := max(m.start-n, 1), min(m.end+n, len(f.raw))
+	return strings.Join(f.raw[from-1:to], "\n"), true
 }
 
 // Status checks one item and returns it with its new status. rev is the

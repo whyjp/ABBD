@@ -181,3 +181,15 @@ func Changed(dir, oldTree, newTree string) (paths []string, ok bool, err error) 
 	}
 	return paths, true, nil
 }
+
+// Gitlinks maps each submodule the index records under dir, by its path
+// relative to dir, to the commit recorded for it. It is empty outside a
+// repository.
+func Gitlinks(dir string) map[string]string {
+	links, _ := gitlinks(dir)
+	out := map[string]string{}
+	for _, l := range links {
+		out[l.path] = l.commit
+	}
+	return out
+}

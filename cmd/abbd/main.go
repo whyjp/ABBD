@@ -51,7 +51,17 @@ abbd migrate [--supplement FILE] [--root DIR]
                                      .abbd/extractor/supplement.json)
 abbd understand MOD-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
-                                     stamped with the module's code
+                                     stamped with the module's code: every file of the module and
+                                     the units under it, a submodule by its recorded commit (so
+                                     edits inside one count once committed there and staged), an
+                                     ignored directory by its files on disk, and the lines around
+                                     a quote of a file only a quote cites; the text records a
+                                     hash per anchor and per quote
+abbd understand MOD-ID --restamp [--root DIR]
+                                     stamp the stored text again after the extraction moved
+                                     what the module holds; refused when the code of an anchor
+                                     or a quote changed, is gone or is one the text was not
+                                     written against
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a
@@ -104,7 +114,7 @@ type opts struct {
 	reason           string
 	base             string
 	asJSON, check    bool
-	verbose          bool
+	verbose, restamp bool
 	evidence         evidenceFlags
 	argv             []string
 }
@@ -136,6 +146,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"check": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.check, "check", false, "exit 1 on what the command's usage line names")
 	},
+	"restamp": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.restamp, "restamp", false, "stamp the stored text against the module's code again, when only what the module holds moved")
+	},
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
 	"reason": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.reason, "reason", "", "why the claim is wrong")
@@ -165,7 +178,7 @@ var commands = map[string]command{
 	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
-	"understand":      {flags: []string{"root"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1]) }},
+	"understand":      {flags: []string{"root", "restamp"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(model.ID(pos[0]), pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
@@ -373,6 +386,16 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 	}
 	if err := st.SaveCandidates(res.Candidates); err != nil {
 		return res, err
+	}
+	current, widened, err := st.UpgradeUnderstandings(res.Units)
+	if err != nil {
+		return res, err
+	}
+	for _, id := range current {
+		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code, which is unchanged since the text was written; it stays current\n", id)
+	}
+	for _, id := range widened {
+		fmt.Fprintf(e.stdout, "understanding: %s's digest now covers all of its code, and its text was checked against only part of it; it is STALE until pstack how reads the module again\n", id)
 	}
 	hash, err := st.MDHash()
 	if err != nil {
