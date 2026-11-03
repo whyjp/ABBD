@@ -2006,6 +2006,7 @@
         "internal/screen/site.go",
         "internal/screen/stack.go",
         "internal/screen/tree.go",
+        "internal/screen/weigh.go",
         "internal/screen/words.go"
       ]
     },
@@ -2054,7 +2055,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:665 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:670 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -4425,7 +4426,7 @@
   ],
   "overview": {
     "Width": 1194,
-    "Height": 851,
+    "Height": 843,
     "Boxes": [
       {
         "ID": "FEAT-0001",
@@ -4517,12 +4518,12 @@
           {
             "S": "internal/evidence",
             "X": 788,
-            "Y": 627,
+            "Y": 611,
             "Mid": true
           }
         ],
         "X": 706,
-        "Y": 592,
+        "Y": 576,
         "W": 164,
         "H": 60,
         "Href": "#m-MOD-0013"
@@ -4557,12 +4558,12 @@
           {
             "S": "internal/gitx",
             "X": 537,
-            "Y": 627,
+            "Y": 611,
             "Mid": true
           }
         ],
         "X": 462,
-        "Y": 592,
+        "Y": 576,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0022"
@@ -4597,12 +4598,12 @@
           {
             "S": "internal/model",
             "X": 682,
-            "Y": 731,
+            "Y": 723,
             "Mid": true
           }
         ],
         "X": 607,
-        "Y": 696,
+        "Y": 688,
         "W": 150,
         "H": 60,
         "Href": "#m-MOD-0030"
@@ -4737,18 +4738,18 @@
           {
             "S": "plugin and",
             "X": 597,
-            "Y": 810,
+            "Y": 802,
             "Mid": true
           },
           {
             "S": "marketplace manifest",
             "X": 597,
-            "Y": 824,
+            "Y": 816,
             "Mid": true
           }
         ],
         "X": 517,
-        "Y": 792,
+        "Y": 784,
         "W": 160,
         "H": 43
       }
@@ -5033,7 +5034,7 @@
         "Title": "internal/model가 제공하는 계약: relation key",
         "Exit": true,
         "X": 657,
-        "Y": 696,
+        "Y": 688,
         "W": 96,
         "H": 17,
         "Rels": [
@@ -5445,7 +5446,7 @@
         ]
       },
       {
-        "D": "M1106 500 L1106 564",
+        "D": "M1106 500 L1106 524",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5458,7 +5459,7 @@
         ]
       },
       {
-        "D": "M1098 500 L1098 556",
+        "D": "M1098 500 L1098 548",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5491,7 +5492,7 @@
         ]
       },
       {
-        "D": "M788 348 L788 356",
+        "D": "M780 348 L780 356",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5511,7 +5512,7 @@
         ]
       },
       {
-        "D": "M788 348 L788 356",
+        "D": "M780 348 L780 356",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5530,7 +5531,7 @@
         ]
       },
       {
-        "D": "M788 652 L788 660",
+        "D": "M788 636 L788 652",
         "Kind": "bypass",
         "Title": "internal/evidence → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5541,26 +5542,7 @@
         ]
       },
       {
-        "D": "M306 500 L306 556",
-        "Kind": "bypass",
-        "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
-        "Joins": true,
-        "Rels": [
-          "MOD-0020.depends_on.MOD-0022"
-        ]
-      },
-      {
-        "D": "M384 500 L384 508 L400 508",
-        "Kind": "bypass",
-        "Title": "internal/extract → internal/model: 계약을 거치지 않는 직접 의존",
-        "Joins": true,
-        "Rels": [
-          "MOD-0017.depends_on.MOD-0030",
-          "MOD-0018.depends_on.MOD-0032"
-        ]
-      },
-      {
-        "D": "M318 340 L318 348",
+        "D": "M310 340 L310 348",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5569,21 +5551,12 @@
         ]
       },
       {
-        "D": "M432 500 L432 556",
+        "D": "M432 500 L432 540",
         "Kind": "bypass",
         "Title": "internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
         "Rels": [
           "MOD-0027.depends_on.MOD-0024"
-        ]
-      },
-      {
-        "D": "M416 500 L416 524 L400 524",
-        "Kind": "bypass",
-        "Title": "internal/identity → internal/model: 계약을 거치지 않는 직접 의존",
-        "Joins": true,
-        "Rels": [
-          "MOD-0026.depends_on.MOD-0030"
         ]
       },
       {
@@ -5605,7 +5578,7 @@
         ]
       },
       {
-        "D": "M561 540 L561 564",
+        "D": "M561 508 L561 524",
         "Kind": "bypass",
         "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5614,7 +5587,7 @@
         ]
       },
       {
-        "D": "M553 540 L553 556",
+        "D": "M553 508 L553 540",
         "Kind": "bypass",
         "Title": "internal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5634,7 +5607,7 @@
         ]
       },
       {
-        "D": "M424 540 L424 548 L400 548",
+        "D": "M612 508 L612 516 L628 516",
         "Kind": "bypass",
         "Title": "internal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5653,7 +5626,7 @@
         ]
       },
       {
-        "D": "M657 188 L657 220 M953 220 L953 348 M1106 348 L1106 500 M126 220 L1095 220 M788 348 L1106 348 M1098 500 L1106 500",
+        "D": "M657 188 L657 220 M953 220 L953 348 M1106 348 L1106 500 M126 220 L1095 220 M780 348 L1106 348 M1098 500 L1106 500",
         "Kind": "bypass",
         "Title": "abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독\nabbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/identity: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/screen: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/group: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
@@ -5747,7 +5720,7 @@
         "LY": 320
       },
       {
-        "D": "M306 476 L306 500 M306 500 L384 500",
+        "D": "M306 476 L306 540",
         "Kind": "bypass",
         "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
@@ -5770,7 +5743,7 @@
         "LY": 488
       },
       {
-        "D": "M499 308 L499 340 M432 340 L432 500 M318 340 L499 340 M416 500 L432 500",
+        "D": "M499 308 L499 340 M432 340 L432 500 M310 340 L499 340 M432 500 L628 500",
         "Kind": "bypass",
         "Title": "internal/identity → internal/extract: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "mixed",
@@ -5845,7 +5818,7 @@
         "LY": 320
       },
       {
-        "D": "M561 476 L561 540 M424 540 L561 540",
+        "D": "M561 476 L561 508 M553 508 L612 508",
         "Kind": "bypass",
         "Title": "internal/store → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
         "Origin": "extracted",
@@ -5859,6 +5832,96 @@
         "Net": 8,
         "LX": 566,
         "LY": 488
+      },
+      {
+        "D": "M628 500 L628 644 M306 540 L628 540",
+        "Kind": "bypass",
+        "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0020.depends_on.MOD-0022",
+          "MOD-0017.depends_on.MOD-0030",
+          "MOD-0018.depends_on.MOD-0032",
+          "MOD-0027.depends_on.MOD-0024",
+          "MOD-0026.depends_on.MOD-0030",
+          "MOD-0041.depends_on.MOD-0022",
+          "MOD-0041.depends_on.MOD-0030"
+        ],
+        "Net": 9
+      },
+      {
+        "D": "M537 540 L537 576",
+        "Kind": "bypass",
+        "Title": "internal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0020.depends_on.MOD-0022",
+          "MOD-0027.depends_on.MOD-0024",
+          "MOD-0041.depends_on.MOD-0022"
+        ],
+        "Count": 5,
+        "Net": 9,
+        "LX": 516,
+        "LY": 572
+      },
+      {
+        "D": "M628 644 L628 688",
+        "Kind": "bypass",
+        "Title": "internal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0017.depends_on.MOD-0030",
+          "MOD-0018.depends_on.MOD-0032",
+          "MOD-0026.depends_on.MOD-0030",
+          "MOD-0041.depends_on.MOD-0030"
+        ],
+        "Count": 6,
+        "Net": 9,
+        "LX": 633,
+        "LY": 684
+      },
+      {
+        "D": "M780 356 L1010 356",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
+        "Joins": true,
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0048",
+          "MOD-0002.depends_on.MOD-0047",
+          "MOD-0005.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0056",
+          "MOD-0034.depends_on.MOD-0047",
+          "MOD-0034.depends_on.MOD-0056"
+        ],
+        "Net": 10
+      },
+      {
+        "D": "M788 356 L788 416",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0047",
+          "MOD-0001.depends_on.MOD-0048",
+          "MOD-0002.depends_on.MOD-0047",
+          "MOD-0005.depends_on.MOD-0047",
+          "MOD-0034.depends_on.MOD-0047"
+        ],
+        "Count": 2,
+        "Net": 10,
+        "LX": 793,
+        "LY": 412
+      },
+      {
+        "D": "M1010 356 L1010 416",
+        "Kind": "bypass",
+        "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
+        "Rels": [
+          "MOD-0001.depends_on.MOD-0056",
+          "MOD-0034.depends_on.MOD-0056"
+        ],
+        "Count": 2,
+        "Net": 10,
+        "LX": 1015,
+        "LY": 412
       },
       {
         "D": "M138 228 L786 228",
@@ -5906,7 +5969,7 @@
           "FEAT-0001.consumes.IF-0023",
           "FEAT-0001.consumes.IF-0024"
         ],
-        "Net": 9
+        "Net": 11
       },
       {
         "D": "M524 228 L524 188",
@@ -5947,7 +6010,7 @@
           "FEAT-0001.consumes.IF-0023",
           "FEAT-0001.consumes.IF-0024"
         ],
-        "Net": 9
+        "Net": 11
       },
       {
         "D": "M677 228 L677 188",
@@ -5957,7 +6020,7 @@
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 9
+        "Net": 11
       },
       {
         "D": "M753 228 L753 188",
@@ -5971,10 +6034,10 @@
           "MOD-0040.consumes.DATA-0008",
           "MOD-0034.consumes.DATA-0024"
         ],
-        "Net": 9
+        "Net": 11
       },
       {
-        "D": "M561 564 L1106 564",
+        "D": "M561 524 L1106 524",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Joins": true,
@@ -5986,10 +6049,10 @@
           "MOD-0006.depends_on.MOD-0013",
           "MOD-0041.depends_on.MOD-0013"
         ],
-        "Net": 10
+        "Net": 12
       },
       {
-        "D": "M788 564 L788 592",
+        "D": "M788 524 L788 576",
         "Kind": "bypass",
         "Title": "abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존\ninternal/store → internal/evidence: 계약을 거치지 않는 직접 의존",
         "Rels": [
@@ -6001,9 +6064,9 @@
           "MOD-0041.depends_on.MOD-0013"
         ],
         "Count": 2,
-        "Net": 10,
+        "Net": 12,
         "LX": 793,
-        "LY": 588
+        "LY": 572
       },
       {
         "D": "M310 348 L327 348",
@@ -6015,7 +6078,7 @@
           "MOD-0011.depends_on.MOD-0021",
           "MOD-0026.depends_on.MOD-0017"
         ],
-        "Net": 11
+        "Net": 13
       },
       {
         "D": "M310 348 L310 416",
@@ -6027,14 +6090,14 @@
           "MOD-0026.depends_on.MOD-0017"
         ],
         "Count": 2,
-        "Net": 11,
+        "Net": 13,
         "LX": 315,
         "LY": 398
       },
       {
-        "D": "M690 340 L690 556 M306 556 L1098 556",
+        "D": "M690 340 L690 548 M537 548 L1098 548",
         "Kind": "bypass",
-        "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
+        "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독",
         "Joins": true,
         "Rels": [
           "MOD-0001.depends_on.MOD-0022",
@@ -6042,73 +6105,26 @@
           "MOD-0001.depends_on.MOD-0025",
           "MOD-0002.depends_on.MOD-0022",
           "MOD-0004.depends_on.MOD-0022",
-          "MOD-0020.depends_on.MOD-0022",
-          "MOD-0027.depends_on.MOD-0024",
           "MOD-0034.depends_on.MOD-0025",
-          "MOD-0039.depends_on.MOD-0022",
-          "MOD-0041.depends_on.MOD-0022"
+          "MOD-0039.depends_on.MOD-0022"
         ],
-        "Net": 12
+        "Net": 14
       },
       {
-        "D": "M537 556 L537 592",
+        "D": "M400 332 L400 500 M400 500 L400 652 M400 652 L788 652",
         "Kind": "bypass",
-        "Title": "abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/screen → internal/gitx: 계약을 거치지 않는 직접 의존, 판독\ninternal/store → internal/gitx: 계약을 거치지 않는 직접 의존",
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0022",
-          "MOD-0001.depends_on.MOD-0023",
-          "MOD-0001.depends_on.MOD-0025",
-          "MOD-0002.depends_on.MOD-0022",
-          "MOD-0004.depends_on.MOD-0022",
-          "MOD-0020.depends_on.MOD-0022",
-          "MOD-0027.depends_on.MOD-0024",
-          "MOD-0034.depends_on.MOD-0025",
-          "MOD-0039.depends_on.MOD-0022",
-          "MOD-0041.depends_on.MOD-0022"
-        ],
-        "Count": 5,
-        "Net": 12,
-        "LX": 516,
-        "LY": 588
-      },
-      {
-        "D": "M400 332 L400 516 M400 508 L400 660 M400 660 L788 660",
-        "Kind": "bypass",
-        "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
+        "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
         "Joins": true,
         "Rels": [
           "MOD-0009.depends_on.MOD-0030",
           "MOD-0013.depends_on.MOD-0030",
           "MOD-0014.depends_on.MOD-0031",
-          "MOD-0017.depends_on.MOD-0030",
-          "MOD-0018.depends_on.MOD-0032",
-          "MOD-0026.depends_on.MOD-0030",
-          "MOD-0041.depends_on.MOD-0030",
           "MOD-0054.depends_on.MOD-0030"
         ],
-        "Net": 13
+        "Net": 15
       },
       {
-        "D": "M682 660 L682 696",
-        "Kind": "bypass",
-        "Title": "internal/bootstrap → internal/model: 계약을 거치지 않는 직접 의존\ninternal/evidence → internal/model: 계약을 거치지 않는 직접 의존\ninternal/extract → internal/model: 계약을 거치지 않는 직접 의존\ninternal/identity → internal/model: 계약을 거치지 않는 직접 의존\ninternal/store → internal/model: 계약을 거치지 않는 직접 의존\ninternal/group → internal/model: 계약을 거치지 않는 직접 의존",
-        "Rels": [
-          "MOD-0009.depends_on.MOD-0030",
-          "MOD-0013.depends_on.MOD-0030",
-          "MOD-0014.depends_on.MOD-0031",
-          "MOD-0017.depends_on.MOD-0030",
-          "MOD-0018.depends_on.MOD-0032",
-          "MOD-0026.depends_on.MOD-0030",
-          "MOD-0041.depends_on.MOD-0030",
-          "MOD-0054.depends_on.MOD-0030"
-        ],
-        "Count": 6,
-        "Net": 13,
-        "LX": 661,
-        "LY": 692
-      },
-      {
-        "D": "M886 372 L886 508 M886 500 L886 668 M705 668 L886 668",
+        "D": "M886 372 L886 508 M886 500 L886 660 M705 660 L886 660",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Joins": true,
@@ -6124,10 +6140,10 @@
           "MOD-0047.depends_on.MOD-0030",
           "MOD-0047.depends_on.MOD-0031"
         ],
-        "Net": 14
+        "Net": 16
       },
       {
-        "D": "M705 668 L705 696",
+        "D": "M705 660 L705 688",
         "Kind": "contract",
         "Title": "abbd CLI → internal/model: relation key 계약을 거쳐 씁니다\ninternal/screen → internal/model: relation key 계약을 거쳐 씁니다\ninternal/topology → internal/model: relation key 계약을 거쳐 씁니다",
         "Rels": [
@@ -6143,9 +6159,9 @@
           "MOD-0047.depends_on.MOD-0031"
         ],
         "Count": 3,
-        "Net": 14,
-        "LX": 710,
-        "LY": 692
+        "Net": 16,
+        "LX": 684,
+        "LY": 684
       },
       {
         "D": "M497 380 L720 380",
@@ -6176,7 +6192,7 @@
           "MOD-0040.depends_on.MOD-0041",
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 15
+        "Net": 17
       },
       {
         "D": "M497 380 L497 416",
@@ -6185,7 +6201,7 @@
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 15
+        "Net": 17
       },
       {
         "D": "M573 380 L573 416",
@@ -6202,7 +6218,7 @@
           "MOD-0001.depends_on.MOD-0044",
           "MOD-0001.depends_on.MOD-0046"
         ],
-        "Net": 15
+        "Net": 17
       },
       {
         "D": "M641 380 L641 416",
@@ -6222,52 +6238,7 @@
           "MOD-0039.depends_on.MOD-0041",
           "MOD-0040.depends_on.MOD-0041"
         ],
-        "Net": 15
-      },
-      {
-        "D": "M788 356 L1010 356",
-        "Kind": "bypass",
-        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존\nabbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
-        "Joins": true,
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0047",
-          "MOD-0001.depends_on.MOD-0048",
-          "MOD-0002.depends_on.MOD-0047",
-          "MOD-0005.depends_on.MOD-0047",
-          "MOD-0034.depends_on.MOD-0047",
-          "MOD-0001.depends_on.MOD-0056",
-          "MOD-0034.depends_on.MOD-0056"
-        ],
-        "Net": 16
-      },
-      {
-        "D": "M788 356 L788 416",
-        "Kind": "bypass",
-        "Title": "abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/topology: 계약을 거치지 않는 직접 의존",
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0047",
-          "MOD-0001.depends_on.MOD-0048",
-          "MOD-0002.depends_on.MOD-0047",
-          "MOD-0005.depends_on.MOD-0047",
-          "MOD-0034.depends_on.MOD-0047"
-        ],
-        "Count": 2,
-        "Net": 16,
-        "LX": 793,
-        "LY": 412
-      },
-      {
-        "D": "M1010 356 L1010 416",
-        "Kind": "bypass",
-        "Title": "abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존\ninternal/screen → internal/narrative: 계약을 거치지 않는 직접 의존",
-        "Rels": [
-          "MOD-0001.depends_on.MOD-0056",
-          "MOD-0034.depends_on.MOD-0056"
-        ],
-        "Count": 2,
-        "Net": 16,
-        "LX": 1015,
-        "LY": 412
+        "Net": 17
       },
       {
         "D": "M193 108 L193 212 M193 212 L193 332 M102 332 L193 332",
@@ -6283,7 +6254,7 @@
           "FEAT-0012.depends_on.FEAT-0021",
           "FEAT-0015.depends_on.FEAT-0018"
         ],
-        "Net": 17
+        "Net": 18
       },
       {
         "D": "M106 332 L106 416",
@@ -6299,7 +6270,7 @@
           "FEAT-0015.depends_on.FEAT-0018"
         ],
         "Count": 2,
-        "Net": 17,
+        "Net": 18,
         "LX": 85,
         "LY": 412
       }
@@ -6386,7 +6357,7 @@
         "Kind": "bypass"
       },
       {
-        "X": 318,
+        "X": 310,
         "Y": 348,
         "Kind": "bypass"
       },
@@ -6441,11 +6412,6 @@
         "Kind": "bypass"
       },
       {
-        "X": 306,
-        "Y": 500,
-        "Kind": "bypass"
-      },
-      {
         "X": 432,
         "Y": 500,
         "Kind": "bypass"
@@ -6461,58 +6427,53 @@
         "Kind": "bypass"
       },
       {
-        "X": 400,
+        "X": 561,
         "Y": 508,
         "Kind": "bypass"
       },
       {
-        "X": 400,
-        "Y": 524,
-        "Kind": "bypass"
-      },
-      {
-        "X": 553,
-        "Y": 540,
-        "Kind": "bypass"
-      },
-      {
-        "X": 561,
-        "Y": 540,
-        "Kind": "bypass"
-      },
-      {
-        "X": 400,
-        "Y": 548,
-        "Kind": "bypass"
-      },
-      {
-        "X": 432,
-        "Y": 556,
-        "Kind": "bypass"
-      },
-      {
-        "X": 537,
-        "Y": 556,
-        "Kind": "bypass"
-      },
-      {
-        "X": 553,
-        "Y": 556,
-        "Kind": "bypass"
-      },
-      {
-        "X": 690,
-        "Y": 556,
+        "X": 628,
+        "Y": 516,
         "Kind": "bypass"
       },
       {
         "X": 788,
-        "Y": 564,
+        "Y": 524,
         "Kind": "bypass"
       },
       {
-        "X": 682,
-        "Y": 660,
+        "X": 432,
+        "Y": 540,
+        "Kind": "bypass"
+      },
+      {
+        "X": 537,
+        "Y": 540,
+        "Kind": "bypass"
+      },
+      {
+        "X": 553,
+        "Y": 540,
+        "Kind": "bypass"
+      },
+      {
+        "X": 628,
+        "Y": 540,
+        "Kind": "bypass"
+      },
+      {
+        "X": 537,
+        "Y": 548,
+        "Kind": "bypass"
+      },
+      {
+        "X": 690,
+        "Y": 548,
+        "Kind": "bypass"
+      },
+      {
+        "X": 628,
+        "Y": 652,
         "Kind": "bypass"
       }
     ]
@@ -7369,7 +7330,7 @@
             "LY": 502
           },
           {
-            "D": "M769 198 L769 86 M761 290 L761 198 M761 198 L769 198 M761 418 L761 290 M288 86 L769 86",
+            "D": "M769 198 L769 86 M761 290 L761 198 M761 418 L761 290 M288 86 L769 86 M761 198 L769 198",
             "Kind": "consumes",
             "Title": "/abbd record what a reader found consumes abbd record relation (via call), 판독\n/abbd what the human states consumes abbd record relation (via call), 판독",
             "Joins": true,
@@ -21949,7 +21910,7 @@
             "LY": 250
           },
           {
-            "D": "M377 70 L377 186 M377 186 L446 186 M446 178 L446 314 M377 314 L446 314",
+            "D": "M377 70 L377 186 M446 178 L446 314 M377 314 L446 314 M377 186 L446 186",
             "Kind": "consumes",
             "Title": "abbd CLI consumes evidence citation (via call), 판독\nquote matching consumes evidence citation (via call), 판독\nuntrusted-output gate consumes evidence citation (via call), 판독",
             "Joins": true,
@@ -21975,7 +21936,7 @@
             "LY": 354
           },
           {
-            "D": "M565 102 L565 170 M565 170 L642 170 M642 170 L642 322 M565 322 L642 322",
+            "D": "M565 102 L565 170 M642 170 L642 322 M565 170 L642 170 M565 322 L642 322",
             "Kind": "depends_on",
             "Title": "liveness and line moves depends_on guess versus topology rule (via call), 판독\ninternal/topology depends_on guess versus topology rule (via call), 판독",
             "Joins": true,
@@ -21999,7 +21960,7 @@
             "LY": 346
           },
           {
-            "D": "M743 62 L743 186 M743 186 L634 186 M634 186 L634 314 M634 314 L751 314",
+            "D": "M743 62 L743 186 M634 186 L634 314 M634 186 L743 186 M634 314 L751 314",
             "Kind": "depends_on",
             "Title": "abbd CLI depends_on relation grammar (via call), 판독\nkey and parent checks depends_on relation grammar (via call), 판독",
             "Joins": true,
@@ -26536,7 +26497,7 @@
                 "Code": true
               },
               {
-                "Text": " traces every relation along the drawn ink.",
+                "Text": " traces every relation along the drawn ink and counts the bends and the short jogs on its path.",
                 "Code": false
               }
             ]
@@ -27109,7 +27070,47 @@
                 "Code": true
               },
               {
-                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. ",
+                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. Boxes that the same two or more places all reach may share one arrival bus instead, from ",
+                "Code": false
+              },
+              {
+                "Text": "share",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " draws a view both ways and keeps those shared buses only when ",
+                "Code": false
+              },
+              {
+                "Text": "weigh",
+                "Code": true
+              },
+              {
+                "Text": ", on the routed ink, finds no more touching ink of one kind between unrelated places, crossings or side-by-side runs, and fewer bends and jogs along each line's whole way. A view with more than ",
+                "Code": false
+              },
+              {
+                "Text": "shareMost",
+                "Code": true
+              },
+              {
+                "Text": " requests is drawn plain, since ",
+                "Code": false
+              },
+              {
+                "Text": "weigh",
+                "Code": true
+              },
+              {
+                "Text": " compares every pair of strands. ",
                 "Code": false
               },
               {
