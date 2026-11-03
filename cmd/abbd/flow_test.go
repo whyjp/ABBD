@@ -16,19 +16,20 @@ steps:
     does: Charge() inserts the charge row
     calls: [DATA-0001]
     evidence:
-      - {path: billing/charge.go, lines: "3", quote: "INSERT INTO charges"}
+      - {path: billing/charge.go, lines: "3", symbol: Charge, quote: "INSERT INTO charges"}
   - unit: MOD-0001
     does: retries a failed insert
     fails: gives up after three tries
     evidence:
       - {path: billing/retry.go, lines: "3", quote: "const tries = 3"}
-      - {path: billing/charge.go, lines: "4", quote: "func Charge() {}"}
+      - {path: billing/charge.go, lines: "4", symbol: Charge, quote: "func Charge() {}"}
   - unit: MOD-0002
     does: Post() reads the charge into the book
     note: reads every charge, no cache
     calls: [DATA-0001]
     evidence:
       - {path: ledger/book.go, lines: "3-4", quote: "SELECT amount FROM charges"}
+      - {path: ledger/book.go, lines: "6", symbol: Post, quote: "func Post() {}"}
 ---
 
 From the insert to the book.
@@ -97,7 +98,7 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		{"const tries = 3", "const tries = 4", "the code does not hold"},
 		{`{path: billing/retry.go, lines: "3", quote: "const tries = 3"}`, `{path: billing/dup.go, lines: "2", quote: "retry"}`, "more than once"},
 		{"    does: retries a failed insert\n", "    does: ''\n", "says what it does"},
-		{"      - {path: billing/retry.go, lines: \"3\", quote: \"const tries = 3\"}\n      - {path: billing/charge.go, lines: \"4\", quote: \"func Charge() {}\"}", `      - {path: ledger/book.go, lines: "6", quote: "func Post() {}"}`, "none of the step's quotes is in the code of MOD-0001"},
+		{"      - {path: billing/retry.go, lines: \"3\", quote: \"const tries = 3\"}\n      - {path: billing/charge.go, lines: \"4\", symbol: Charge, quote: \"func Charge() {}\"}", `      - {path: ledger/book.go, lines: "6", quote: "func Post() {}"}`, "none of the step's quotes is in the code of MOD-0001"},
 	} {
 		draft := strings.Replace(chargeFlow, c.from, c.to, 1)
 		if draft == chargeFlow {
@@ -168,7 +169,7 @@ func TestAStaleStepStoredAgainUnreadIsRefused(t *testing.T) {
 	p.code("billing/retry.go", movedRetry())
 	p.resync()
 	p.want(1, "flow charge step 2", "status", "--check")
-	p.flow(1, "step 2 is STALE and comes back as it was", strings.Replace(chargeFlow, "Charge() inserts the charge row", "Charge() writes the charge row", 1))
+	p.flow(1, "step 2 says what a STALE step said", strings.Replace(chargeFlow, "Charge() inserts the charge row", "Charge() writes the charge row", 1))
 	p.want(1, "flow charge step 2", "status", "--check")
 	p.flow(0, "stored", strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1))
 	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
@@ -210,4 +211,39 @@ func TestAReaderKeepsTheQuestionAndCaptionOfAHumansFlow(t *testing.T) {
 	p.flow(1, "the question of flow charge is a human's word", strings.Replace(reread, "How does a charge reach the ledger?", "Why is the ledger empty?", 1))
 	p.flow(1, "the caption of flow charge is a human's word", strings.Replace(reread, "From the insert to the book.", "Only the insert.", 1))
 	p.flow(0, "stored flow charge, 3 steps, INFERRED", reread)
+}
+
+// The guard holds across stores: dropping a STALE step and storing it again,
+// or storing it with one more quote, does not bring it back CURRENT unread.
+func TestAStaleStepCannotComeBackUnreadAcrossStores(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	p.code("billing/retry.go", movedRetry())
+	p.resync()
+	p.want(1, "flow charge step 2", "status", "--check")
+	step2 := chargeFlow[strings.Index(chargeFlow, "  - unit: MOD-0001\n    does: retries"):strings.Index(chargeFlow, "  - unit: MOD-0002")]
+	p.flow(0, "stored flow charge, 2 steps", strings.Replace(chargeFlow, step2, "", 1))
+	p.flow(1, "step 2 says what a STALE step said", chargeFlow)
+	p.flow(1, "step 2 says what a STALE step said", strings.Replace(chargeFlow, "symbol: Charge, quote: \"func Charge() {}\"}", "symbol: Charge, quote: \"func Charge() {}\"}\n      - {path: billing/charge.go, lines: \"1\", quote: \"package billing\"}", 1))
+	p.want(0, "flows: 1 flow(s), 2 step(s), 0 STALE", "status", "--check")
+	p.flow(0, "stored", strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1))
+	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
+	p.code("billing/retry.go", retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"))
+	p.resync()
+	p.flow(0, "stored", chargeFlow)
+	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
+		t.Errorf("a retired step whose code is back as it was written is forgotten:\n%s", stored)
+	}
+}
+
+// A step rests on code its own unit holds: a quote in its unit's file but
+// outside the anchored symbol does not count, and a quote that names a symbol
+// must lie inside it.
+func TestAFlowStepCitesCodeItsOwnUnitHolds(t *testing.T) {
+	p := notesProject(t)
+	post := "\n      - {path: ledger/book.go, lines: \"6\", symbol: Post, quote: \"func Post() {}\"}"
+	p.flow(1, "none of the step's quotes is in the code of MOD-0002", strings.Replace(chargeFlow, post, "", 1))
+	p.flow(1, "lies outside Post", strings.Replace(chargeFlow, `{path: ledger/book.go, lines: "3-4", quote:`, `{path: ledger/book.go, lines: "3-4", symbol: Post, quote:`, 1))
+	p.flow(1, "declares no Book", strings.Replace(chargeFlow, "symbol: Post,", "symbol: Book,", 1))
+	p.flow(0, "stored flow charge, 3 steps", chargeFlow)
 }
