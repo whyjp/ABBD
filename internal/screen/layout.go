@@ -488,6 +488,19 @@ type wireReq struct {
 }
 
 func polyline(pts []pt) string {
+	var d strings.Builder
+	for i, p := range straight(pts) {
+		if i == 0 {
+			fmt.Fprintf(&d, "M%d %d", p.x, p.y)
+		} else {
+			fmt.Fprintf(&d, " L%d %d", p.x, p.y)
+		}
+	}
+	return d.String()
+}
+
+// straight drops repeated points and the points within a straight run.
+func straight(pts []pt) []pt {
 	var clean []pt
 	for _, p := range pts {
 		if len(clean) > 0 && clean[len(clean)-1] == p {
@@ -502,15 +515,7 @@ func polyline(pts []pt) string {
 		}
 		clean = append(clean, p)
 	}
-	var d strings.Builder
-	for i, p := range clean {
-		if i == 0 {
-			fmt.Fprintf(&d, "M%d %d", p.x, p.y)
-		} else {
-			fmt.Fprintf(&d, " L%d %d", p.x, p.y)
-		}
-	}
-	return d.String()
+	return clean
 }
 
 // gutter picks the space in row r nearest to x for a line passing through

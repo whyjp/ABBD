@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -22,6 +23,9 @@ import (
 //     merge midway and split only at the end. Boxes side by side in one
 //     row that are reached mostly from the same places share one arrival
 //     bus, which splits only in the gap above them.
+//   - Boxes that the same two or more places all reach may share one
+//     arrival bus instead (share), kept only where it spares a reader
+//     turns at no other cost (route).
 //
 // A bus is drawn once and carries the count of its lines. What is left of a
 // line between its buses is drawn on a track of its own.
@@ -115,8 +119,33 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 	return keys
 }
 
-// route draws every request.
+// route draws every request. Where lines could share arrival buses, it
+// draws the view both ways and keeps the shared buses only when they spare
+// the reader turns and cost nothing else, as weigh measures it.
 func (l *layout) route(reqs []wireReq) []drawn {
+	plain := l.lay(reqs, false)
+	if !plain.shares {
+		return plain.drawn
+	}
+	if shared := l.lay(reqs, true); weigh(shared, reqs).beats(weigh(plain, reqs)) {
+		return shared.drawn
+	}
+	return l.lay(reqs, false).drawn
+}
+
+// routing is one way to draw a view's lines.
+type routing struct {
+	drawn []drawn
+	// ways are the points each line turns at on its way from its start to
+	// its end, along the ink a reader follows, its buses' included.
+	ways [][]pt
+	// shares says some lines could share an arrival bus.
+	shares bool
+}
+
+// lay draws every request, with shared arrival buses where shared allows
+// them.
+func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -289,6 +318,13 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		return x, true
 	}
 	shareOf, shares := share(reqs, arrive)
+	can := len(shares) > 0
+	if shared = shared && can; !shared {
+		for i := range shareOf {
+			shareOf[i] = -1
+		}
+		shares = nil
+	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
 		if is := leave[k]; len(is) >= 2 {
@@ -350,16 +386,13 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		}
 		return true
 	}
-	for _, k := range sortedKeys(arrive) {
-		fed, is := -1, []int(nil)
-		for _, i := range arrive[k] {
-			if shareOf[i] >= 0 {
-				continue
-			}
+	for _, is := range gather(reqs, arrive, shared) {
+		fed := -1
+		is = slices.DeleteFunc(is, func(i int) bool { return shareOf[i] >= 0 })
+		for _, i := range is {
 			if b, ok := fedBy[place(reqs[i].to)+"|"+reqs[i].kind]; ok && !plans[i].up {
 				fed = b
 			}
-			is = append(is, i)
 		}
 		if len(is) > 0 && (fed >= 0 || len(is) >= busAt && !oneBus(is)) {
 			for _, i := range is {
@@ -653,7 +686,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 					// reaches past this row.
 					lo, hi := 1<<30, -1<<30
 					for _, m := range b.members {
-						if to := reqs[m].to.row; plans[m].up && to < r || !plans[m].up && to > r {
+						if to := reqs[m].to.row; !shared || plans[m].up && to < r || !plans[m].up && to > r {
 							lo, hi = min(lo, plans[m].tx), max(hi, plans[m].tx)
 						}
 					}
@@ -690,12 +723,12 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	// above its end instead: an arrival track that ended on that trunk
 	// would join the two the same way.
 	{
-		type step struct{ dep, arr int }
+		type step struct{ dep, arr, gap int }
 		var steps []step
 		for i := range plans {
 			p := &plans[i]
-			if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == len(p.gaps)-1 {
-				st := step{p.dep, p.arr}
+			if k := len(p.gaps); p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == k-1 {
+				st := step{p.dep, p.arr, p.gaps[k-1]}
 				if !slices.Contains(steps, st) {
 					steps = append(steps, st)
 				}
@@ -705,7 +738,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		for _, st := range steps {
 			lead := -1
 			for i := range plans {
-				if p := &plans[i]; p.dep == st.dep && p.arr == st.arr && p.ride == len(p.gaps)-1 {
+				if p, k := &plans[i], len(plans[i].gaps); p.dep == st.dep && p.arr == st.arr && p.ride == k-1 && p.gaps[k-1] == st.gap {
 					lead = i
 					break
 				}
@@ -723,7 +756,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				}
 				// A step down beside another box's stub would run into it.
 				for _, y := range l.stubs[g] {
-					if abs(x-y) < lane && y != p.xs[k-1] {
+					if shared && abs(x-y) < lane && y != p.xs[k-1] {
 						return false
 					}
 				}
@@ -743,7 +776,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		for i := range plans {
 			p := &plans[i]
 			if k := len(p.gaps); p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == k-1 {
-				p.xs[k] = at[step{p.dep, p.arr}]
+				p.xs[k] = at[step{p.dep, p.arr, p.gaps[k-1]}]
 			}
 		}
 	}
@@ -797,7 +830,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 					}
 				}
 				for _, y := range l.stubs[g] {
-					if abs(x-y) < lane && y != d {
+					if shared && abs(x-y) < lane && y != d {
 						return false
 					}
 				}
@@ -918,7 +951,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	// A shared bus's drop runs down from its track, so a bus whose track
 	// ends on that drop takes a track below it.
 	for b, bs := range buses {
-		if bs.fed < 0 {
+		if !bs.arrive || bs.fed < 0 {
 			continue
 		}
 		p := &plans[bs.members[0]]
@@ -1032,6 +1065,27 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			against = p.tx < p.fx
 		}
 		return against != (reqs[i].kind == "provides")
+	}
+	ways := make([][]pt, len(reqs))
+	for i := range reqs {
+		p := &plans[i]
+		k := len(p.gaps)
+		w := []pt{startOf(i)}
+		for j := 0; j < k; j++ {
+			y := trackY(p.gaps[j], owner(i, j))
+			if p.dep >= 0 && p.via >= 0 && j == p.ride {
+				d := trackY(p.gaps[j], busOwner(p.dep))
+				w = append(w, pt{p.xs[j], d}, pt{p.via, d}, pt{p.via, y})
+			} else {
+				w = append(w, pt{p.xs[j], y})
+			}
+			w = append(w, pt{p.xs[j+1], y})
+		}
+		if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == k-1 {
+			y := trackY(p.gaps[k-1], busOwner(p.arr))
+			w = append(w, pt{p.xs[k], y}, pt{p.tx, y})
+		}
+		ways[i] = straight(append(w, endOf(i)))
 	}
 	var out []drawn
 	nets := 0
@@ -1307,7 +1361,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
 	anchor(out, pieces(out), boxes)
-	return out
+	return routing{out, ways, can}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more
@@ -1405,6 +1459,49 @@ func share(reqs []wireReq, arrive map[slotKey][]int) ([]int, [][]int) {
 		shares = append(shares, is)
 	}
 	return of, shares
+}
+
+// gather groups the lines of each arrival slot into the arrival buses they
+// may share. Without shared buses, lines bound for boxes in one row, of one
+// kind and from exactly the same places, share one arrival trunk that
+// splits only in the gap above those boxes. A trunk shared by lines from
+// different places would draw a path from each of them to every box it
+// splits to. With shared buses, a shared bus covers that case.
+func gather(reqs []wireReq, arrive map[slotKey][]int, shared bool) [][]int {
+	type group struct {
+		members  []int
+		from     map[string]bool
+		row, way int
+		kind     string
+	}
+	var groups []*group
+	for _, k := range sortedKeys(arrive) {
+		is := slices.Clone(arrive[k])
+		to := reqs[is[0]].to
+		g := &group{members: is, from: map[string]bool{}, row: to.row, way: k.side, kind: reqs[is[0]].kind}
+		for _, i := range is {
+			g.from[reqs[i].from.key] = true
+		}
+		joined := false
+		for _, h := range groups {
+			if shared || to.node == "" || reqs[h.members[0]].to.node == "" || h.row != g.row || h.way != g.way || h.kind != g.kind {
+				continue
+			}
+			if maps.Equal(g.from, h.from) {
+				h.members = append(h.members, is...)
+				joined = true
+				break
+			}
+		}
+		if !joined {
+			groups = append(groups, g)
+		}
+	}
+	out := make([][]int, len(groups))
+	for k, g := range groups {
+		out[k] = g.members
+	}
+	return out
 }
 
 // place names where an end is drawn: its key, or for a frame port the
