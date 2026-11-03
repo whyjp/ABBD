@@ -280,6 +280,125 @@ func (g *layered) order() {
 	}
 }
 
+// crossCost is how many pixels of line a crossing is worth: a move that
+// adds one crossing must save a reader more line than this.
+const crossCost = 120
+
+// shorten moves an item along its row while that makes the lines shorter
+// by more than crossCost, each crossing counted at crossCost: a line that
+// crosses the whole drawing to dodge a few crossings reads worse than the
+// crossings, and a swap that saves a few pixels is not worth the churn. It
+// measures the lines where place set every item, at x, and reports whether
+// it moved any, so the rows are placed again. An item that moves takes the
+// room of the items it passes, and they give up the room it took. A
+// box joined to nothing stays where order left it.
+func (g *layered) shorten(x map[string]int) bool {
+	at := make([]map[string]int, len(g.rows))
+	for r, row := range g.rows {
+		at[r] = map[string]int{}
+		for _, id := range row {
+			at[r][id] = x[id] + g.w[id]/2
+		}
+	}
+	swapped := false
+	alone := func(id string) bool { return len(g.up[id])+len(g.down[id]) == 0 }
+	// gain is what moving u past the items passed in row r saves, moved
+	// holding the new centre of each item that moves: the line it shortens
+	// less the crossings it adds. Only u changes sides with the items it
+	// passes, so only a line of u and a line of one of them can cross or
+	// uncross. right says u moves right.
+	gain := func(r int, u string, passed []string, right bool, moved map[string]int) int {
+		saved := 0
+		for k, side := range []map[string]map[string]int{g.up, g.down} {
+			near := at[max(0, r-1)]
+			if k == 1 {
+				near = at[min(len(at)-1, r+1)]
+			}
+			for id, x := range moved {
+				for o, n := range side[id] {
+					saved += n * (abs(at[r][id]-near[o]) - abs(x-near[o]))
+				}
+			}
+			for _, v := range passed {
+				for a, na := range side[u] {
+					for b, nb := range side[v] {
+						xa, xb := near[a], near[b]
+						if !right {
+							xa, xb = xb, xa
+						}
+						switch {
+						case xa < xb:
+							saved -= crossCost * na * nb
+						case xa > xb:
+							saved += crossCost * na * nb
+						}
+					}
+				}
+			}
+		}
+		return saved
+	}
+	// moveTo is where u, at i in row r, would stand at j and where the items
+	// it passes would, each giving up the room u takes.
+	moveTo := func(r, i, j int) ([]string, map[string]int) {
+		row := g.rows[r]
+		u := row[i]
+		moved := map[string]int{}
+		var passed []string
+		if j > i {
+			passed = row[i+1 : j+1]
+			for _, v := range passed {
+				moved[v] = at[r][v] - g.w[u] - g.sep(u, v)
+			}
+			last := passed[len(passed)-1]
+			moved[u] = at[r][last] + g.w[last]/2 - g.w[u]/2
+		} else {
+			passed = row[j:i]
+			for _, v := range passed {
+				moved[v] = at[r][v] + g.w[u] + g.sep(v, u)
+			}
+			first := passed[0]
+			moved[u] = at[r][first] - g.w[first]/2 + g.w[u]/2
+		}
+		return passed, moved
+	}
+	for again, rounds := true, 0; again && rounds < 8; rounds++ {
+		again = false
+		for r := range g.rows {
+			for i := 0; i < len(g.rows[r]); i++ {
+				u := g.rows[r][i]
+				if alone(u) {
+					continue
+				}
+				best, bestGain := -1, crossCost
+				for j := range g.rows[r] {
+					if j == i {
+						continue
+					}
+					passed, moved := moveTo(r, i, j)
+					if slices.ContainsFunc(passed, alone) {
+						continue
+					}
+					if gn := gain(r, u, passed, j > i, moved); gn > bestGain {
+						best, bestGain = j, gn
+					}
+				}
+				if best < 0 {
+					continue
+				}
+				_, moved := moveTo(r, i, best)
+				for id, x := range moved {
+					at[r][id] = x
+				}
+				row := slices.Delete(g.rows[r], i, i+1)
+				g.rows[r] = slices.Insert(row, best, u)
+				again, swapped = true, true
+			}
+		}
+	}
+	return swapped
+}
+
 // shed takes the shortest chains out of the rows, one at a time, while the
 // rows with every chain crooked are still wider than budget: their lines
 // pass those rows in the gaps between boxes, as they would with no chain.

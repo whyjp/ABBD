@@ -374,11 +374,13 @@ type Metrics struct {
 	// Bends is how many times the lines turn, and MaxBends the most any
 	// one line does.
 	Bends, MaxBends int
+	// Length is how long, in pixels, the lines run in all.
+	Length int
 }
 
 func (m Metrics) String() string {
 	return fmt.Sprintf("forward %d, back %d, back drawn plain %d, split arrivals %d, ", m.Forward, m.Back, m.BackPlain, m.SplitIn) + fmt.Sprintf("boxes %d, split bundles %d, width %d, lines %d, crossings %d, too-close pairs %d, max per channel %d, cut labels %d, overflowing labels %d, escaped chips %d, origin-dashed %d, unmarked %d, unwired on frame %d, node overlaps %d, through-box %d",
-		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx, bends %d, most bends %d", m.Braid, m.Detour, m.MaxDetour, m.Bends, m.MaxBends)
+		m.Boxes, m.Split, m.Width, m.Wires, m.Crossings, m.TooClose, m.MaxChannel, m.Truncated, m.Overflow, m.Escaped, m.OriginDashed, m.Unmarked, m.UnwiredOnFrame, m.NodeOverlaps, m.ThroughBox) + fmt.Sprintf(", braid %dpx, detour %dpx, longest detour %dpx, bends %d, most bends %d, length %dpx", m.Braid, m.Detour, m.MaxDetour, m.Bends, m.MaxBends, m.Length)
 }
 
 func measure(s sheet) Metrics {
@@ -399,6 +401,9 @@ func measure(s sheet) Metrics {
 		n := bends(w.pts)
 		m.Bends += n
 		m.MaxBends = max(m.MaxBends, n)
+		for i := 1; i < len(w.pts); i++ {
+			m.Length += int(math.Abs(w.pts[i].x-w.pts[i-1].x) + math.Abs(w.pts[i].y-w.pts[i-1].y))
+		}
 	}
 	// R1: crossings between two lines, away from the ends where lines meet
 	// on purpose.

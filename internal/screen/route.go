@@ -111,7 +111,7 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 
 // route draws every request.
 func (l *layout) route(reqs []wireReq) []drawn {
-	l.lanes, l.beside, l.passes = map[[2]int]int{}, map[int][]int{}, map[int][]int{}
+	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
 	// side is +1 for a box's bottom, -1 for its top.
@@ -216,8 +216,13 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				}
 			}
 		}
+		// A chain no line runs down keeps no room: a line that left it
+		// passes the rows on its own and may take its place.
 		l.reserved = map[int][]int{}
 		for c, ch := range l.chains {
+			if !slices.Contains(chainOf, c) {
+				continue
+			}
 			for r := ch.top; r <= ch.bottom; r++ {
 				for k := 0; k < ch.lanes; k++ {
 					l.reserved[r] = append(l.reserved[r], l.pass[[2]int{c, r}]+k*chainLane)
@@ -448,6 +453,10 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	for k := range ends {
 		edges[k] = nil
 	}
+	// used holds the x every line takes on each edge of each box: a box's
+	// chips and the box itself spread their lines apart, and a line of one
+	// must not stand on a line of the other.
+	used := map[[2]string][]int{}
 	for _, k := range sortedKeys(edges) {
 		var slots []slot
 		seen := map[[2]int]int{}
@@ -513,15 +522,27 @@ func (l *layout) route(reqs []wireReq) []drawn {
 		// chains passing the row next to the edge, which its stub would
 		// otherwise run into.
 		adj := r.row + k.side
+		edgeOf := [2]string{r.node, fmt.Sprint(k.side)}
+		apart := func(x int) bool {
+			for _, y := range used[edgeOf] {
+				if abs(x-y) < slotGap {
+					return false
+				}
+			}
+			return true
+		}
 		xs := make([]int, len(slots))
 		pinned := make([]bool, len(slots))
 		for s, sl := range slots {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
-			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi {
+			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
 			}
 		}
 		clear := func(s, x int) bool {
+			if r.node != "" && !apart(x) {
+				return false
+			}
 			for _, y := range l.reserved[adj] {
 				if abs(x-y) < lane && !(pinned[s] && x == xs[s]) {
 					return false
@@ -555,6 +576,10 @@ func (l *layout) route(reqs []wireReq) []drawn {
 			xs[s] = min(xs[s], edge-gap)
 			edge = xs[s]
 		}
+		if r.node != "" {
+			used[edgeOf] = append(used[edgeOf], xs...)
+		}
+		l.stubs[adj] = append(l.stubs[adj], xs...)
 		for s, sl := range slots {
 			x := xs[s]
 			for _, i := range sl.is {
@@ -629,7 +654,7 @@ func (l *layout) route(reqs []wireReq) []drawn {
 				p.xs = append(p.xs, x)
 				continue
 			}
-			x := l.gutter(r, p.xs[len(p.xs)-1])
+			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}

@@ -46,7 +46,11 @@ type layout struct {
 	// passes are where lines pass through each row, beside or between its
 	// boxes. Two lines that pass rows next to each other at one x would
 	// meet in the gap between those rows and read as one.
-	passes         map[int][]int
+	passes map[int][]int
+	// stubs are the x where lines leave or reach a box on the edge that
+	// faces each row: a line passing that row there would run on the stub
+	// in the gap between them.
+	stubs          map[int][]int
 	heights        map[string]int
 	minGap, endGap int
 	// chains are the long lines' runs of dummies, and pass the left x of
@@ -351,6 +355,9 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 		x, width = g.ring(seat.focus, budget)
 	} else {
 		x, width = g.place(budget)
+		if g.shorten(x) {
+			x, width = g.place(budget)
+		}
 	}
 	l.width, l.chains = width, g.chains
 	for r, row := range g.rows {
@@ -498,7 +505,12 @@ func polyline(pts []pt) string {
 
 // gutter picks the space in row r nearest to x for a line passing through
 // it, and the lane in that space the line takes.
-func (l *layout) gutter(r, x int) int {
+func (l *layout) gutter(r, x int) int { return l.gutterTo(r, x, x) }
+
+// gutterTo is gutter for a line headed for to: of two spaces as far from x,
+// it takes the one nearer to, so a line that must step aside steps the way
+// it is going.
+func (l *layout) gutterTo(r, x, to int) int {
 	ids := l.rows[r]
 	type gap struct{ from, to int }
 	var gaps []gap
@@ -520,7 +532,8 @@ func (l *layout) gutter(r, x int) int {
 	cost := func(i int) int {
 		g := gaps[i]
 		used := l.lanes[[2]int{r, i}]
-		c := abs(clamp(x, g.from+6, g.to-6)-x) + 40*used
+		at := clamp(x, g.from+6, g.to-6)
+		c := abs(at-x) + abs(at-to)/2 - abs(x-to)/2 + 40*used
 		if used >= slots(i) {
 			c += 1 << 20
 		}
@@ -537,7 +550,7 @@ func (l *layout) gutter(r, x int) int {
 	l.lanes[[2]int{r, best}]++
 	if best > 0 && best < len(gaps)-1 {
 		at := func(k int) int { return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane }
-		for k+1 < slots(best) && (l.nextTo(r, at(k)) || l.taken(r, at(k))) {
+		for k+1 < slots(best) && (l.nextTo(r, at(k)) || l.taken(r, at(k)) || l.onStub(r, at(k))) {
 			k++
 			l.lanes[[2]int{r, best}]++
 		}
@@ -552,12 +565,23 @@ func (l *layout) gutter(r, x int) int {
 		out = 1
 	}
 	at := clamp(x, g.from+12, g.to-12)
-	for !l.free(r, at) || l.taken(r, at) {
+	for !l.free(r, at) || l.taken(r, at) || l.onStub(r, at) {
 		at += out * lane
 	}
 	l.beside[r] = append(l.beside[r], at)
 	l.passes[r] = append(l.passes[r], at)
 	return at
+}
+
+// onStub says a line passing row r at x would run on a line's stub into a
+// box beside that row.
+func (l *layout) onStub(r, x int) bool {
+	for _, y := range l.stubs[r] {
+		if abs(x-y) < lane {
+			return true
+		}
+	}
+	return false
 }
 
 // taken says x in row r lies on a chain's lane, or in its channel.
