@@ -14,11 +14,12 @@ func band(name string, ids ...model.ID) store.Part[model.Layer] {
 }
 
 // A stack is drawn as bands from the top down, each with the units it holds
-// linked into the tree. A relation that runs up the stack is drawn in the
-// band it leaves, and each module's inside lists the layers that hold its
+// linked into the tree. A relation by which a lower unit uses a higher one is
+// drawn in the band it leaves, a lower unit providing a higher layer's
+// contract is not, and each module's inside lists the layers that hold its
 // units.
 func TestAStackIsDrawnAsBandsLinkedIntoTheTree(t *testing.T) {
-	units := append(ripgrep(), inside("MOD-0006", "MOD-0004", rel("MOD-0002", model.DependsOn)))
+	units := append(ripgrep(), inside("MOD-0006", "MOD-0004", rel("MOD-0002", model.DependsOn), rel("IF-0003", model.Provides)), inside("IF-0003", "MOD-0003"))
 	top := band("binary", "MOD-0001")
 	top.Changed = []string{"src/main.rs (the lines around it changed)"}
 	m := Build(Input{Units: units, Figures: store.Figures{Stacks: []store.Stack{{

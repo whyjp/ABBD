@@ -157,7 +157,7 @@
 </section>
 {{end}}
 {{define "stack"}}<section class="inside stack" id="{{.ID}}">
-  <div class="drawhead"><h2>{{.Question}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if or .Stale .Reasons}} <span class="pill STALE" title="인용한 코드가 바뀌었거나 상태와 맞지 않는 층이 있습니다">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach" title="아래 층의 단위에서 위 층의 단위로 닿는 저장된 관계">거꾸로 {{.Breaches}}</span>{{end}}</h2><div class="views"><span class="muted">{{.Layers}}층</span> <a href="#overview">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>{{.Question}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if or .Stale .Reasons}} <span class="pill STALE" title="인용한 코드가 바뀌었거나 상태와 맞지 않는 층이 있습니다">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach" title="아래 층의 단위가 위 층의 단위를 쓰는 저장된 관계 (consumes, depends_on)">거꾸로 {{.Breaches}}</span>{{end}}</h2><div class="views"><span class="muted">{{.Layers}}층</span> <a href="#overview">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">위에서 아래로 쌓인 층입니다. 칸은 그 층이 담은 단위이고, 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. ↑ 칸은 아래 층의 단위에서 위 층의 단위로 거꾸로 닿는 저장된 관계입니다.</p>
   {{if .Caption}}<div class="caption text">{{template "blocks" .Caption}}</div>{{end}}
   {{if .Source}}<p class="muted" style="margin:0">출처 {{.Source}}</p>{{end}}

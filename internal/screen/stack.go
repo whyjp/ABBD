@@ -9,8 +9,8 @@ import (
 // holds. The page draws it as an HTML list, as it draws a flow, so every
 // line wraps and the bands read in their order. A stack stores no unit and
 // no relation. Each band names stored units, a click on one opens the inside
-// that shows it, and a stored relation that runs from a lower band up to a
-// higher one is drawn in the lower band as a breach.
+// that shows it, and a stored relation by which a lower band uses a higher
+// one is drawn in the lower band as a breach.
 
 // StackView is one stack as the page draws it. Badge is the weakest origin
 // of its layers and Source the one every layer shares, if any. Stale counts
@@ -41,8 +41,8 @@ type Band struct {
 // UnitChip is a unit a band names, linked to the inside that shows it.
 type UnitChip struct{ ID, Name, Kind, Href string }
 
-// BreachChip is a stored relation from a unit this band holds up to a unit
-// band Upper holds, named by its ends and the relation it rides.
+// BreachChip is a stored relation by which a unit this band holds uses a
+// unit band Upper holds, named by its ends and the relation it rides.
 type BreachChip struct {
 	From, To, FromName, ToName, Verb, Via, Origin, Href, UpperName string
 	Upper                                                          int
@@ -65,7 +65,10 @@ func (o *overview) stacks(in Input) []StackView {
 		layers := f.Claims()
 		breaches := model.Breaches(layers, in.Units)
 		v := StackView{ID: figureID[model.Layer](f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin()), Source: sharedSource(f), Caption: blocks(f.Caption),
-			Reasons: f.Gaps(in.Units), Layers: len(f.Parts), Breaches: len(breaches), held: model.Holders(layers, in.Units)}
+			Layers: len(f.Parts), Breaches: len(breaches), held: model.Holders(layers, in.Units)}
+		for _, g := range f.Gaps(in.Units) {
+			v.Reasons = append(v.Reasons, g.Text)
+		}
 		for i, p := range f.Parts {
 			b := Band{N: i + 1, ID: partID[model.Layer](f.Key, i+1), Name: p.Claim.Name, Role: p.Claim.Role, Reasons: p.Why(in.Units)}
 			b.Badge, b.Source = partMarks(p.Stamp, v.Badge, v.Source)

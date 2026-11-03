@@ -69,11 +69,11 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 		fmt.Fprintf(e.stdout, "kept the human's %s %s\n", kind.Parts, kept)
 	}
 	if len(replaced) > 0 {
-		fmt.Fprintf(e.stdout, "replaced the human's %s %s of the stored %s, since their code changed; ask again and store their word with abbd %s %s FILE --source REF\n", kind.Parts, replaced, kind.Noun, kind.Noun, k)
+		fmt.Fprintf(e.stdout, "replaced the human's %s %s of the stored %s, since they went STALE; ask again and store their word with abbd %s %s FILE --source REF\n", kind.Parts, replaced, kind.Noun, kind.Noun, k)
 	}
 	for i, p := range f.Parts {
 		for _, w := range p.Claim.Words() {
-			if n := len([]rune(w.Text)); n > 80 {
+			if n := len([]rune(w.Text)); w.Field == kind.Long && n > 80 {
 				fmt.Fprintf(e.stdout, "long: %s %s %s %d %s holds %d characters; a %s reads best under 80\n", kind.Noun, k, kind.Part, i+1, w.Field, n, kind.Part)
 			}
 		}
@@ -122,7 +122,11 @@ func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit
 		}
 	}
 	if gaps := f.Gaps(units); len(gaps) > 0 {
-		return errors.New(strings.Join(gaps, "; "))
+		var texts []string
+		for _, g := range gaps {
+			texts = append(texts, g.Text)
+		}
+		return errors.New(strings.Join(texts, "; "))
 	}
 	return nil
 }
@@ -149,8 +153,9 @@ func (hs humanParts) String() string {
 
 // retire carries the retired parts of the stored figure over to the draft f,
 // with each part of the stored figure whose code changed since it was
-// written. It forgets those whose code is back as they were written, a unit
-// of which left the state, or whose files are all gone. A reader's part of f
+// written, each kept as its claim retires it. It forgets those whose code is
+// back as they were written, a unit of whose own left the state, or whose
+// files are all gone. A reader's part of f
 // that repeats one of them is refused: it would read fresh with no one
 // reading that code again, however many stores ago it left the figure. A
 // human's store is the human's word, so it is not refused and clears the
@@ -161,17 +166,18 @@ func retire[C model.Claim[C]](e env, prev, f store.Figure[C], units []model.Unit
 	for _, u := range model.Present(units) {
 		present[u.ID] = true
 	}
-	gone := func(p store.Part[C]) bool {
-		return slices.ContainsFunc(p.Claim.Names(), func(id model.ID) bool { return !present[id] }) ||
-			!slices.ContainsFunc(p.Claim.Quotes(), func(ev model.Evidence) bool {
+	gone := func(c C) bool {
+		return slices.ContainsFunc(c.Names(), func(id model.ID) bool { return !present[id] }) ||
+			!slices.ContainsFunc(c.Quotes(), func(ev model.Evidence) bool {
 				_, err := os.Stat(filepath.Join(e.root, filepath.FromSlash(ev.Path)))
 				return err == nil
 			})
 	}
 	var out []store.Part[C]
 	for _, p := range append(slices.Clone(prev.Retired), prev.Parts...) {
-		if p.Stale() && !gone(p) && !slices.ContainsFunc(out, func(o store.Part[C]) bool { return said(o.Claim, p.Claim) && maps.Equal(o.Code, p.Code) }) {
-			out = append(out, store.Part[C]{Claim: p.Claim, Stamp: store.Stamp{Code: p.Code, Changed: p.Changed, Moved: p.Moved}})
+		c := p.Claim.Retire()
+		if p.Stale() && !gone(c) && !slices.ContainsFunc(out, func(o store.Part[C]) bool { return said(o.Claim, c) && maps.Equal(o.Code, p.Code) }) {
+			out = append(out, store.Part[C]{Claim: c, Stamp: store.Stamp{Code: p.Code, Changed: p.Changed, Moved: p.Moved}})
 		}
 	}
 	if e.writer() == model.Human {
@@ -206,10 +212,13 @@ func repeats[C model.Claim[C]](n, r store.Part[C]) bool {
 
 // mayReplace decides, part by part, whether the draft f may replace the
 // stored figure. A human may replace any part. A reader may replace only a
-// human's STALE parts: each current one must come back as written, in its
-// order, and keeps the human's word, as do the question and caption, so CI
-// never waits on the human for a part whose code moved and a human's word on
-// a part that still holds is never lost.
+// human's open parts: those STALE on their own, and those a gap of the whole
+// figure names, such as two layers that hold one unit after it moved under
+// another. Each other human part must come back as written, in its order,
+// and keeps the human's word, as do the question and caption, so CI never
+// waits on the human for a figure the state moved under and a human's word
+// on a part that still holds is never lost. An open part that comes back as
+// written keeps the human's word too.
 // kept are the human's parts f keeps and replaced those the reader took
 // over, each named by its place.
 func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figure[C], units []model.Unit) (kept, replaced humanParts, err error) {
@@ -217,12 +226,20 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 		return nil, nil, nil
 	}
 	kind := model.KindOf[C]()
-	stale := func(p store.Part[C]) bool { return len(p.Why(units)) > 0 }
 	human := func(p store.Part[C]) bool { return p.Writer == model.Human }
 	if slices.ContainsFunc(f.Parts, human) || !slices.ContainsFunc(prev.Parts, human) {
 		return nil, nil, nil
 	}
-	if !slices.ContainsFunc(prev.Parts, stale) {
+	open := make([]bool, len(prev.Parts))
+	for i, p := range prev.Parts {
+		open[i] = len(p.Why(units)) > 0
+	}
+	for _, g := range prev.Gaps(units) {
+		for _, n := range g.Parts {
+			open[n-1] = true
+		}
+	}
+	if !slices.Contains(open, true) {
 		return nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
 	}
 	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"caption", prev.Caption, f.Caption}} {
@@ -232,21 +249,21 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 	}
 	at := 0
 	for i, p := range prev.Parts {
-		switch {
-		case !human(p):
-			continue
-		case stale(p):
-			replaced = append(replaced, humanPart{i + 1, p.Source})
+		if !human(p) {
 			continue
 		}
 		j := slices.IndexFunc(f.Parts[at:], func(n store.Part[C]) bool { return samePart(p.Claim, n.Claim) })
-		if j < 0 {
+		switch {
+		case j >= 0:
+			at += j
+			f.Parts[at].Writer, f.Parts[at].Source = model.Human, p.Source
+			kept = append(kept, humanPart{at + 1, p.Source})
+			at++
+		case open[i]:
+			replaced = append(replaced, humanPart{i + 1, p.Source})
+		default:
 			return nil, nil, fmt.Errorf("%s %d is a human's word (%s) and current; keep it as abbd %s %s prints it, in its order, since only a human changes it, with --source", kind.Part, i+1, p.Source, kind.Noun, f.Key)
 		}
-		at += j
-		f.Parts[at].Writer, f.Parts[at].Source = model.Human, p.Source
-		kept = append(kept, humanPart{at + 1, p.Source})
-		at++
 	}
 	return kept, replaced, nil
 }
@@ -297,7 +314,7 @@ func statusFigures[C model.Claim[C]](e env, units []model.Unit, figs []store.Fig
 		}
 		for _, g := range f.Gaps(units) {
 			stale++
-			lines = append(lines, fmt.Sprintf("stale: %s %s: %s; store the %s again with abbd %s %s FILE", kind.Noun, f.Key, g, kind.Noun, kind.Noun, f.Key))
+			lines = append(lines, fmt.Sprintf("stale: %s %s: %s; store the %s again with abbd %s %s FILE", kind.Noun, f.Key, g.Text, kind.Noun, kind.Noun, f.Key))
 		}
 	}
 	fmt.Fprintf(e.stdout, "%s: %d %s(s), %d %s(s), %d STALE\n", kind.Dir, len(figs), kind.Noun, parts, kind.Part, stale)

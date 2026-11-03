@@ -52,38 +52,51 @@ func TestALayerIsNamedOnOneLineOnLiveEvidence(t *testing.T) {
 }
 
 // A layer holds each unit it names and every unit inside it, so a unit sits
-// in one layer only, counting what the units around it hold.
+// in one layer only, counting what the units around it hold. Each gap names
+// the layers it involves.
 func TestAStackHoldsEachUnitOnce(t *testing.T) {
 	whole := KindOf[Layer]().Whole
+	read := func(gaps []Gap) (string, []int) {
+		var texts []string
+		var parts []int
+		for _, g := range gaps {
+			texts = append(texts, g.Text)
+			parts = append(parts, g.Parts...)
+		}
+		return strings.Join(texts, "; "), parts
+	}
 	for _, c := range []struct {
 		layers []Layer
 		want   string
+		parts  []int
 	}{
-		{[]Layer{layer("commands", "MOD-0001"), layer("store", "MOD-0002"), layer("model", "MOD-0003")}, ""},
-		{[]Layer{layer("commands", "MOD-0001"), layer("store", "MOD-0002", "MOD-0001")}, "MOD-0001 is named by layer 1 and by layer 2"},
-		{[]Layer{layer("model", "MOD-0003"), layer("sub", "MOD-0004")}, "MOD-0004 is held by layer 2 and, inside MOD-0003, by layer 1"},
-		{[]Layer{layer("sub", "MOD-0004"), layer("model", "MOD-0003")}, "MOD-0004 is held by layer 1 and, inside MOD-0003, by layer 2"},
-		{[]Layer{layer("model", "MOD-0003", "MOD-0004"), layer("store", "MOD-0002")}, "layer 1 names MOD-0004 and MOD-0003, which holds it"},
+		{[]Layer{layer("commands", "MOD-0001"), layer("store", "MOD-0002"), layer("model", "MOD-0003")}, "", nil},
+		{[]Layer{layer("commands", "MOD-0001"), layer("store", "MOD-0002", "MOD-0001")}, "MOD-0001 is named by layer 1 and by layer 2", []int{1, 2}},
+		{[]Layer{layer("model", "MOD-0003"), layer("sub", "MOD-0004")}, "MOD-0004 is held by layer 2 and, inside MOD-0003, by layer 1", []int{1, 2}},
+		{[]Layer{layer("store", "MOD-0002"), layer("sub", "MOD-0004"), layer("model", "MOD-0003")}, "MOD-0004 is held by layer 2 and, inside MOD-0003, by layer 3", []int{2, 3}},
+		{[]Layer{layer("model", "MOD-0003", "MOD-0004"), layer("store", "MOD-0002")}, "layer 1 names MOD-0004 and MOD-0003, which holds it", []int{1}},
 	} {
-		got := strings.Join(whole(c.layers, cli()), "; ")
-		if c.want == "" && got != "" || !strings.Contains(got, c.want) {
-			t.Errorf("want %q, got %q", c.want, got)
+		got, parts := read(whole(c.layers, cli()))
+		if c.want == "" && got != "" || !strings.Contains(got, c.want) || !slices.Equal(parts, c.parts) {
+			t.Errorf("want %q on layers %v, got %q on %v", c.want, c.parts, got, parts)
 		}
 	}
 	var many []Layer
 	for i := range StackUnits + 1 {
 		many = append(many, layer(fmt.Sprint(i), ID(fmt.Sprintf("MOD-%04d", 100+i))))
 	}
-	if got := strings.Join(whole(many, cli()), "; "); !strings.Contains(got, "at most 16 units, and these name 17") {
-		t.Errorf("a stack names at most %d units: %q", StackUnits, got)
+	if got, parts := read(whole(many, cli())); !strings.Contains(got, "at most 16 units, and these name 17") || len(parts) != StackUnits+1 {
+		t.Errorf("a stack names at most %d units, and the gap involves every layer: %q on %v", StackUnits, got, parts)
 	}
 }
 
-// A breach is a live relation, in the direction it is stored, from a unit a
-// lower layer holds to one a higher layer holds. A unit inside a named unit
-// sits in that unit's layer. Relations within a layer, ones that skip down,
-// dead ones and ones with an end no layer holds are no breach.
-func TestABreachRunsUpTheStackInTheStoredDirection(t *testing.T) {
+// A breach is a live relation by which a unit a lower layer holds uses one a
+// higher layer holds: it consumes it or depends on it. A unit inside a named
+// unit sits in that unit's layer. A lower unit that provides a contract an
+// upper layer homes serves that layer and is no breach. Relations within a
+// layer, ones that skip down, dead ones and ones with an end no layer holds
+// are no breach either.
+func TestABreachIsALowerLayerUsingAHigherOne(t *testing.T) {
 	layers := []Layer{layer("commands", "MOD-0001"), layer("store", "MOD-0002", "MOD-0005"), layer("model", "MOD-0003")}
 	held := Holders(layers, cli())
 	if held["DATA-0001"] != 1 || held["MOD-0004"] != 3 || held["MOD-0005"] != 2 {
@@ -98,7 +111,6 @@ func TestABreachRunsUpTheStackInTheStoredDirection(t *testing.T) {
 	}
 	want := []string{
 		"MOD-0002 consumes DATA-0001 2>1 INFERRED",
-		"MOD-0003 provides IF-0001 3>2 EXTRACTED",
 		"MOD-0004 depends_on MOD-0002 3>2 ",
 	}
 	if !slices.Equal(got, want) {

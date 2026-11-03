@@ -91,8 +91,8 @@ func (f Figure[C]) Claims() []C {
 }
 
 // Gaps are what keep the figure's claims, taken together, from being true of
-// the state.
-func (f Figure[C]) Gaps(units []model.Unit) []string {
+// the state, each with the places of the parts it involves.
+func (f Figure[C]) Gaps(units []model.Unit) []model.Gap {
 	if whole := model.KindOf[C]().Whole; whole != nil {
 		return whole(f.Claims(), units)
 	}

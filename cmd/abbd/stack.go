@@ -26,13 +26,13 @@ func (e env) stack(key string, args []string) error {
 	if len(args) == 0 {
 		out = e.stderr
 	}
-	fmt.Fprintf(out, "breaches: %d relation(s) run up the stack, from a lower layer to a higher one; abbd status lists them\n", len(model.Breaches(s.Claims(), units)))
+	fmt.Fprintf(out, "breaches: %d relation(s) run up the stack, a lower layer using a higher one; abbd status lists them\n", len(model.Breaches(s.Claims(), units)))
 	return nil
 }
 
-// statusBreaches reports each stored relation that runs up a stack. A breach
-// is debt in the code or a layer drawn wrong, and only a design call clears
-// it, so it never fails the check.
+// statusBreaches reports each stored relation by which a lower layer of a
+// stack uses a higher one. A breach is debt in the code or a layer drawn
+// wrong, and only a design call clears it, so it never fails the check.
 func (e env) statusBreaches(units []model.Unit, stacks []store.Stack) {
 	name := map[model.ID]string{}
 	for _, u := range units {

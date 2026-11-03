@@ -103,7 +103,7 @@ func (s Step) Against(units []Unit) Reach {
 
 // Kind makes a flow's steps a kind of figure.
 func (Step) Kind() FigureKind[Step] {
-	return FigureKind[Step]{Noun: "flow", Dir: "flows", Part: "step", Parts: "steps", Min: 2, Max: FlowSteps}
+	return FigureKind[Step]{Noun: "flow", Dir: "flows", Part: "step", Parts: "steps", Long: "does", Min: 2, Max: FlowSteps}
 }
 
 func (s Step) Label() string              { return string(s.Unit) }
@@ -111,4 +111,5 @@ func (s Step) Names() []ID                { return append([]ID{s.Unit}, s.Calls.
 func (s Step) Words() []Word              { return []Word{{"does", s.Does}, {"note", s.Note}, {"fails", s.Fails}} }
 func (s Step) Quotes() []Evidence         { return s.Evidence }
 func (s Step) Requote(es []Evidence) Step { s.Evidence = es; return s }
+func (s Step) Retire() Step               { s.Calls = nil; return s }
 func (s Step) Gaps(units []Unit) []string { return s.Against(units).Gaps }

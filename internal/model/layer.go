@@ -29,7 +29,7 @@ type Layer struct {
 // Kind makes a stack's layers a kind of figure, whose layers hold each unit
 // once between them.
 func (Layer) Kind() FigureKind[Layer] {
-	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Min: 2, Max: StackLayers, Whole: holdOnce}
+	return FigureKind[Layer]{Noun: "stack", Dir: "stacks", Part: "layer", Parts: "layers", Long: "role", Min: 2, Max: StackLayers, Whole: holdOnce}
 }
 
 // Validate checks the layer on its own: a name and a role, one line each, the
@@ -62,6 +62,7 @@ func (l Layer) Names() []ID                 { return l.Units }
 func (l Layer) Words() []Word               { return []Word{{"name", l.Name}, {"role", l.Role}} }
 func (l Layer) Quotes() []Evidence          { return l.Evidence }
 func (l Layer) Requote(es []Evidence) Layer { l.Evidence = es; return l }
+func (l Layer) Retire() Layer               { return l }
 
 // Gaps reads the layer against the state. Each unit it names is present, and
 // one quote at least lies in code that one of them, or a unit inside one,
@@ -86,7 +87,8 @@ func (l Layer) Gaps(units []Unit) []string {
 // by another, through a unit that holds it, is held twice. The layers name
 // StackUnits units at most. A unit moved under another after the stack was
 // stored can break the first rule, and the stored stack then reads STALE.
-func holdOnce(layers []Layer, units []Unit) []string {
+// Each gap names the layers it involves.
+func holdOnce(layers []Layer, units []Unit) []Gap {
 	st := stateOf(units)
 	type named struct {
 		id    ID
@@ -98,9 +100,13 @@ func holdOnce(layers []Layer, units []Unit) []string {
 			all = append(all, named{id, i + 1})
 		}
 	}
-	var gaps []string
+	var gaps []Gap
 	if len(all) > StackUnits {
-		gaps = append(gaps, fmt.Sprintf("a stack's layers name at most %d units, and these name %d; split the question in two", StackUnits, len(all)))
+		every := make([]int, len(layers))
+		for i := range every {
+			every[i] = i + 1
+		}
+		gaps = append(gaps, Gap{fmt.Sprintf("a stack's layers name at most %d units, and these name %d; split the question in two", StackUnits, len(all)), every})
 	}
 	for i, a := range all {
 		for _, b := range all[i+1:] {
@@ -111,11 +117,11 @@ func holdOnce(layers []Layer, units []Unit) []string {
 			switch {
 			case !st.under(inner.id, outer.id):
 			case inner.id == outer.id:
-				gaps = append(gaps, fmt.Sprintf("%s is named by layer %d and by layer %d; a unit sits in one layer", a.id, a.layer, b.layer))
+				gaps = append(gaps, Gap{fmt.Sprintf("%s is named by layer %d and by layer %d; a unit sits in one layer", a.id, a.layer, b.layer), []int{a.layer, b.layer}})
 			case inner.layer == outer.layer:
-				gaps = append(gaps, fmt.Sprintf("layer %d names %s and %s, which holds it; name the outer unit alone", inner.layer, inner.id, outer.id))
+				gaps = append(gaps, Gap{fmt.Sprintf("layer %d names %s and %s, which holds it; name the outer unit alone", inner.layer, inner.id, outer.id), []int{inner.layer}})
 			default:
-				gaps = append(gaps, fmt.Sprintf("%s is held by layer %d and, inside %s, by layer %d; a unit sits in one layer", inner.id, inner.layer, outer.id, outer.layer))
+				gaps = append(gaps, Gap{fmt.Sprintf("%s is held by layer %d and, inside %s, by layer %d; a unit sits in one layer", inner.id, inner.layer, outer.id, outer.layer), []int{min(inner.layer, outer.layer), max(inner.layer, outer.layer)}})
 			}
 		}
 	}
@@ -148,8 +154,9 @@ func Holders(layers []Layer, units []Unit) map[ID]int {
 	return out
 }
 
-// Breach is a live stored relation that runs up a stack: From is held by a
-// lower layer than To, so Lower is greater than Upper.
+// Breach is a live stored relation by which a unit uses one higher up a
+// stack: From is held by a lower layer than To, so Lower is greater than
+// Upper.
 type Breach struct {
 	From, To     ID
 	Kind         RelationKind
@@ -158,11 +165,13 @@ type Breach struct {
 	Lower, Upper int
 }
 
-// Breaches are the live relations of the present units, of every kind and in
-// the direction they are stored, that run from a lower layer of the stack up
-// to a higher one. A relation within one layer, one that skips layers
-// downward, and one with an end no layer holds are no breach. They are
-// sorted by the lower layer, then by From, To and Kind.
+// Breaches are the live relations of the present units by which a unit a
+// lower layer holds uses one a higher layer holds: it consumes it or depends
+// on it. A provides is no breach, since the lower unit implements a contract
+// the higher one homes, which is how a lower layer serves an upper one. A
+// relation within one layer, one that skips layers downward, and one with an
+// end no layer holds are no breach either. They are sorted by the lower
+// layer, then by From, To and Kind.
 func Breaches(layers []Layer, units []Unit) []Breach {
 	held := Holders(layers, units)
 	var out []Breach
@@ -172,7 +181,7 @@ func Breaches(layers []Layer, units []Unit) []Breach {
 			continue
 		}
 		for _, r := range u.Relations {
-			if upper, ok := held[r.To]; ok && !r.Dead && upper < lower {
+			if upper, ok := held[r.To]; ok && !r.Dead && r.Kind.Uses() && upper < lower {
 				out = append(out, Breach{From: u.ID, To: r.To, Kind: r.Kind, Via: r.Via, Origin: r.Origin, Lower: lower, Upper: upper})
 			}
 		}

@@ -21,15 +21,25 @@ func ParseFigureKey[C Claim[C]](s string) (FigureKey, error) {
 // command do the rest for every kind. Noun names a figure of the kind and
 // the command that stores one, Dir the directory under .abbd that holds
 // them. Part names one claim and Parts the frontmatter key that lists them.
-// Min and Max bound how many claims a figure has. Whole says what keeps the
-// claims, taken together, from being true of the state: a draft with any is
-// refused, and a stored figure with any reads STALE. It is nil when each
-// claim stands alone.
+// Min and Max bound how many claims a figure has. Long is the word field a
+// store warns on past 80 characters. Whole says what keeps the claims, taken
+// together, from being true of the state: a draft with any gap is refused,
+// and a stored figure with any reads STALE. It is nil when each claim stands
+// alone.
 type FigureKind[C any] struct {
-	Noun, Dir, Part, Parts string
-	Min, Max               int
-	Whole                  func(claims []C, units []Unit) []string
+	Noun, Dir, Part, Parts, Long string
+	Min, Max                     int
+	Whole                        func(claims []C, units []Unit) []Gap
 }
+
+// Gap is one thing that keeps a figure's claims, taken together, from being
+// true of the state, with the places, from 1, of the claims it involves.
+type Gap struct {
+	Text  string
+	Parts []int
+}
+
+func (g Gap) String() string { return g.Text }
 
 // Claim is one part of a figure as a reader or a human found it in the code.
 // It names stored units and rests on quoted code, and stores neither.
@@ -45,6 +55,11 @@ type Claim[C any] interface {
 	// Words are the lines the claim says, each one line, in a fixed order.
 	Words() []Word
 	Quotes() []Evidence
+	// Retire is the claim as a retired part keeps it: what it said, on which
+	// code, about its own units only, so a retired part is forgotten once
+	// one of those units leaves the state and not when a unit it reached
+	// beyond them does.
+	Retire() C
 	// Requote is the same claim citing es.
 	Requote(es []Evidence) C
 	// Gaps are what keep the claim from being true of the state.
