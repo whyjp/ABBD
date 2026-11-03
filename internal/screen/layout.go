@@ -355,8 +355,18 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 		x, width = g.ring(seat.focus, budget)
 	} else {
 		x, width = g.place(budget)
+		rows := make([][]string, len(g.rows))
+		for r, row := range g.rows {
+			rows[r] = slices.Clone(row)
+		}
+		// A move changes the gaps in its row, so a row may come out wider:
+		// past the budget, the drawing keeps the rows as they were.
 		if g.shorten(x) {
-			x, width = g.place(budget)
+			if x2, w2 := g.place(budget); w2 <= max(width, budget) {
+				x, width = x2, w2
+			} else {
+				g.rows = rows
+			}
 		}
 	}
 	l.width, l.chains = width, g.chains

@@ -46,25 +46,48 @@ func TestGivingUpChainsKeepsEveryBoxOnTheCanvas(t *testing.T) {
 
 // Laying out a large random graph stays fast: placing every chain once,
 // not once per chain given up.
-func TestALargeGraphLaysOutQuickly(t *testing.T) {
-	r := rand.New(rand.NewSource(1))
+// randomGraph is n boxes joined by m lines from a fixed seed.
+func randomGraph(seed int64, n, m int) ([]lnode, []ledge) {
+	r := rand.New(rand.NewSource(seed))
 	var nodes []lnode
-	for i := 0; i < 200; i++ {
+	for i := 0; i < n; i++ {
 		nodes = append(nodes, lnode{id: fmt.Sprint("n", i), w: 80 + r.Intn(100), h: 40})
 	}
 	seen := map[ledge]bool{}
 	var edges []ledge
-	for len(edges) < 400 {
-		a, b := r.Intn(200), r.Intn(200)
+	for len(edges) < m {
+		a, b := r.Intn(n), r.Intn(n)
 		e := ledge{fmt.Sprint("n", min(a, b)), fmt.Sprint("n", max(a, b))}
 		if a != b && !seen[e] {
 			seen[e] = true
 			edges = append(edges, e)
 		}
 	}
-	start := time.Now()
-	arrange(nodes, edges, 1320, nil)
-	if took := time.Since(start); took > time.Second {
-		t.Errorf("200 boxes and 400 lines took %v to lay out, past 1s", took)
+	return nodes, edges
+}
+
+// A large graph lays out in well under a second, with a tight budget that
+// sheds most chains and with wide ones that keep them all.
+func TestALargeGraphLaysOutQuickly(t *testing.T) {
+	for _, c := range []struct {
+		seed         int64
+		n, m, budget int
+	}{{1, 200, 400, 1320}, {2, 200, 400, 4000}, {1, 200, 400, 20000}, {1, 100, 300, 100000}, {1, 400, 800, 8000}} {
+		nodes, edges := randomGraph(c.seed, c.n, c.m)
+		start := time.Now()
+		arrange(nodes, edges, c.budget, nil)
+		if took := time.Since(start); took > time.Second {
+			t.Errorf("%d boxes and %d lines at budget %d took %v to lay out, past 1s", c.n, c.m, c.budget, took)
+		}
+	}
+}
+
+// Moving boxes along their rows never takes a drawing past its budget.
+func TestShorteningKeepsTheBudget(t *testing.T) {
+	for seed := int64(1); seed <= 8; seed++ {
+		nodes, edges := randomGraph(seed, 60, 120)
+		if l := arrange(nodes, edges, 1320, nil); l.width > 1320 {
+			t.Errorf("seed %d: drawn %dpx wide, past the budget of 1320px", seed, l.width)
+		}
 	}
 }

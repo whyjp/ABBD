@@ -2024,7 +2024,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:655 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:665 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -25128,6 +25128,15 @@
             "Kind": "p",
             "Parts": [
               {
+                "Text": "--- unit: MOD-0034 origin: INFERRED digest: 8682e0ce8073f374 format: 3 code: internal/screen: bcb1aad9f103e44d internal/screen/entries.go: 664e091c321eb5e4 internal/screen/flow.go: d33a124bfdedea54 internal/screen/focus.go: 93f35bbbef97969b internal/screen/graph.go: b8b05c70a83b09b1 internal/screen/ink.go: 29fd14da33fa5595 internal/screen/inside.go: 64d1c9f04fa057c1 internal/screen/layered.go: a8a4d0f8904248f6 internal/screen/layout.go: dfeafdcea9fbc746 internal/screen/notes.go: 7286f722cc49f116 internal/screen/overview.go: 19398836427ed0ae internal/screen/page.go: 18551c80decabb72 internal/screen/route.go: f0c902732d8940a9 internal/screen/screen.go: 95948b9dd2a8e20f internal/screen/site.go: bc7ac55c254fc7b2 internal/screen/tree.go: 5f5a2cf672048736 internal/screen/words.go: e92c13b77c58c1dd ---",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
                 "Text": "--- unit: MOD-0034 origin: INFERRED digest: 7abd4bb061006083 format: 3 code: internal/screen: e46fd0865493587b internal/screen/entries.go: 664e091c321eb5e4 internal/screen/flow.go: d33a124bfdedea54 internal/screen/focus.go: 93f35bbbef97969b internal/screen/graph.go: b8b05c70a83b09b1 internal/screen/ink.go: 29fd14da33fa5595 internal/screen/inside.go: 64d1c9f04fa057c1 internal/screen/layered.go: 3738c77121c4bcfe internal/screen/layout.go: c1009cd143849bc5 internal/screen/notes.go: 7286f722cc49f116 internal/screen/overview.go: 19398836427ed0ae internal/screen/page.go: 18551c80decabb72 internal/screen/route.go: 7378a242c84c3b3e internal/screen/screen.go: 95948b9dd2a8e20f internal/screen/site.go: bc7ac55c254fc7b2 internal/screen/tree.go: 5f5a2cf672048736 internal/screen/words.go: e92c13b77c58c1dd ---",
                 "Code": false
               }
@@ -25934,7 +25943,15 @@
                 "Code": true
               },
               {
-                "Text": " then moves an item along its row, past one item or several, where that saves more than ",
+                "Text": " then moves an item along its row, past up to ",
+                "Code": false
+              },
+              {
+                "Text": "moveMost",
+                "Code": true
+              },
+              {
+                "Text": " items, where that saves more than ",
                 "Code": false
               },
               {
@@ -25950,7 +25967,7 @@
                 "Code": true
               },
               {
-                "Text": ", and the rows are placed again. A focus view passes a ",
+                "Text": ", and the rows are placed again unless that takes the drawing past its budget. A focus view passes a ",
                 "Code": false
               },
               {

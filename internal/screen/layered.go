@@ -284,6 +284,10 @@ func (g *layered) order() {
 // adds one crossing must save a reader more line than this.
 const crossCost = 120
 
+// moveMost is the most items one move passes, which keeps shorten linear
+// in a row's length.
+const moveMost = 8
+
 // shorten moves an item along its row while that makes the lines shorter
 // by more than crossCost, each crossing counted at crossCost: a line that
 // crosses the whole drawing to dodge a few crossings reads worse than the
@@ -371,16 +375,12 @@ func (g *layered) shorten(x map[string]int) bool {
 					continue
 				}
 				best, bestGain := -1, crossCost
-				for j := range g.rows[r] {
-					if j == i {
-						continue
-					}
-					passed, moved := moveTo(r, i, j)
-					if slices.ContainsFunc(passed, alone) {
-						continue
-					}
-					if gn := gain(r, u, passed, j > i, moved); gn > bestGain {
-						best, bestGain = j, gn
+				for _, step := range []int{-1, 1} {
+					for j := i + step; j >= 0 && j < len(g.rows[r]) && abs(j-i) <= moveMost && !alone(g.rows[r][j]); j += step {
+						passed, moved := moveTo(r, i, j)
+						if gn := gain(r, u, passed, j > i, moved); gn > bestGain {
+							best, bestGain = j, gn
+						}
 					}
 				}
 				if best < 0 {
@@ -618,9 +618,29 @@ func (g *layered) place(budget int) (map[string]int, int) {
 	// only adds to what the blocks must keep, so how far one can grow is
 	// found by halving.
 	var runs []run
-	fits := func(u run) bool { return compact(append(slices.Clone(runs), u)) && width <= budget }
+	fits := func(u run) bool {
+		runs = append(runs, u)
+		ok := compact(runs) && width <= budget
+		runs = runs[:len(runs)-1]
+		return ok
+	}
+	// Most drawings with room to spare take every chain straight at once.
+	for _, c := range cs {
+		runs = append(runs, run{c, g.chains[c].top, g.chains[c].bottom})
+	}
+	if compact(runs) && width <= budget {
+		cs = nil
+	} else {
+		runs = nil
+	}
 	for _, c := range cs {
 		ch := g.chains[c]
+		if fits(run{c, ch.top, ch.bottom}) {
+			if ch.bottom > ch.top {
+				runs = append(runs, run{c, ch.top, ch.bottom})
+			}
+			continue
+		}
 		for from := ch.top; from <= ch.bottom; {
 			lo, hi := from, ch.bottom
 			for lo < hi {
