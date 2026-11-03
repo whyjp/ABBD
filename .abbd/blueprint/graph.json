@@ -18325,15 +18325,6 @@
         "Stale": false,
         "Blocks": [
           {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0022 origin: INFERRED digest: 007bacf5a345ded3 format: 3 code: internal/gitx: 33e8a96ae8ad15e9 internal/gitx/gitx.go: a228ed7426b25613 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
             "Kind": "h",
             "Parts": [
               {
