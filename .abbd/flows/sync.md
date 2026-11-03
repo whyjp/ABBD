@@ -33,6 +33,7 @@ steps:
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
           lines: "434"
+          symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
       code:

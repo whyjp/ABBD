@@ -19,12 +19,15 @@ import (
 // Each step keeps its own Code, one hash per quote of the lines around it,
 // so an edit near one step's quotes stales that step alone, and its own
 // writer, so a reader who replaces a stale step keeps a human's word on the
-// others. The caption is the file's body. InputsHash covers .abbd/flows/, so
-// storing a flow stales the blueprint.
+// others. Retired are steps that went STALE and left the flow, each with the
+// code it was written against, kept while that code still differs, so their
+// words cannot come back on it unread. The caption is the file's body.
+// InputsHash covers .abbd/flows/, so storing a flow stales the blueprint.
 type Flow struct {
 	Question string     `yaml:"question"`
 	Format   int        `yaml:"format"`
 	Steps    []FlowStep `yaml:"steps"`
+	Retired  []FlowStep `yaml:"retired,omitempty"`
 	Caption  string     `yaml:"-"`
 	// Key is the file's name and File where it sits, from the project root.
 	// Known is false when the name is no flow key; status reports it.
@@ -38,7 +41,7 @@ type Flow struct {
 // places whose code moved since; LoadFlows fills it.
 type FlowStep struct {
 	model.Step `yaml:",inline"`
-	Writer     model.Writer      `yaml:"writer"`
+	Writer     model.Writer      `yaml:"writer,omitempty"`
 	Source     string            `yaml:"source,omitempty"`
 	Code       map[string]string `yaml:"code"`
 	Changed    []string          `yaml:"-"`
@@ -101,11 +104,15 @@ func (s Store) SaveFlow(f Flow) error {
 		if len(st.Code) == 0 {
 			return fmt.Errorf("flow %s step %d cites no code to check it against", f.Key, i+1)
 		}
-		ev := make([]model.Evidence, len(st.Evidence))
-		for j, e := range st.Evidence {
-			ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+	}
+	for _, steps := range [][]FlowStep{f.Steps, f.Retired} {
+		for i, st := range steps {
+			ev := make([]model.Evidence, len(st.Evidence))
+			for j, e := range st.Evidence {
+				ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+			}
+			steps[i].Evidence = ev
 		}
-		f.Steps[i].Evidence = ev
 	}
 	f.Format = FlowFormat
 	b, err := frontmatter(f, CleanText(f.Caption)+"\n")
@@ -163,6 +170,9 @@ func (s Store) LoadFlows() ([]Flow, []Stray, error) {
 			if len(st.Evidence) == 0 || len(st.Code) == 0 {
 				fl.Steps[i].Changed = []string{"the step cites no code abbd stamped, so nothing shows it is still true"}
 			}
+		}
+		for i, st := range fl.Retired {
+			fl.Retired[i].Changed = s.changed(st.Evidence, st.Code)
 		}
 		out = append(out, fl)
 	}

@@ -73,8 +73,10 @@ type Reach struct {
 }
 
 // Against reads the step against the state. The step rests on its unit's
-// code: one quote at least lies in the anchors of its unit, a unit inside
-// it, or a unit it calls. A call is reached when the
+// code: one quote at least lies in code that its unit, or a unit inside it,
+// anchors more closely than any other unit does, so a file two units share
+// lends a quote only to the unit whose anchor names it best, and a root
+// anchor of . only the files no closer anchor names. A call is reached when the
 // step's unit, or a unit inside it, holds a live relation to the called unit
 // or to a unit inside it, so a chip never draws an edge the graph lacks. The
 // kind is the strongest such relation: provides, then consumes, then
@@ -94,20 +96,25 @@ func (s Step) Against(units []Unit) Reach {
 		return false
 	}
 	r := Reach{Calls: map[ID]RelationKind{}}
-	cited := func(top ID) bool {
+	held := func(e Evidence) bool {
+		best, owners := 0, []ID(nil)
 		for _, u := range present {
 			for _, a := range u.Anchors {
-				if under(u.ID, top) && slices.ContainsFunc(s.Evidence, func(e Evidence) bool { return a.Holds(e.Path) }) {
-					return true
+				switch c := a.Closeness(e); {
+				case c < 0 || c < best:
+				case c > best || owners == nil:
+					best, owners = c, []ID{u.ID}
+				default:
+					owners = append(owners, u.ID)
 				}
 			}
 		}
-		return false
+		return slices.ContainsFunc(owners, func(id ID) bool { return under(id, s.Unit) })
 	}
 	if _, ok := present[s.Unit]; !ok {
 		r.Gaps = append(r.Gaps, fmt.Sprintf("%s is no longer in the state", s.Unit))
-	} else if !cited(s.Unit) && !slices.ContainsFunc(s.Calls, cited) {
-		r.Gaps = append(r.Gaps, fmt.Sprintf("none of the step's quotes is in the code of %s, a unit inside it or a unit it calls; cite the lines of that code that run the step", s.Unit))
+	} else if !slices.ContainsFunc(s.Evidence, held) {
+		r.Gaps = append(r.Gaps, fmt.Sprintf("none of the step's quotes is in the code of %s or a unit inside it; cite the lines of that code that run the step, naming the symbol when its anchor names one", s.Unit))
 	}
 	rank := map[RelationKind]int{Provides: 3, Consumes: 2, DependsOn: 1}
 	for _, c := range s.Calls {

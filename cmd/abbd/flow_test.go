@@ -231,8 +231,9 @@ func TestAStaleStepCannotComeBackUnreadAcrossStores(t *testing.T) {
 	p.code("billing/retry.go", retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"))
 	p.resync()
 	p.flow(0, "stored", chargeFlow)
-	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
-		t.Errorf("a retired step whose code is back as it was written is forgotten:\n%s", stored)
+	stored := p.read("flows/charge.md")
+	if _, retired, ok := strings.Cut(stored, "retired:"); !ok || strings.Contains(retired, "does: retries a failed insert\n") || !strings.Contains(retired, "after a backoff") {
+		t.Errorf("a retired step whose code is back as it was written is forgotten, and the step written on the moved code is retired:\n%s", stored)
 	}
 }
 
