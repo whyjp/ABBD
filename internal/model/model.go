@@ -432,6 +432,11 @@ var ends = map[RelationKind]struct{ from, to func(Kind) bool }{
 func implementer(k Kind) bool { return k == Module || k == Feature }
 func anyKind(Kind) bool       { return true }
 
+// Uses reports whether a relation of kind k runs from a unit that uses the
+// other: it consumes it or depends on it. A provides runs from the unit that
+// implements a contract to the contract it serves, and uses nothing.
+func (k RelationKind) Uses() bool { return k == Consumes || k == DependsOn }
+
 func (k RelationKind) Validate() error {
 	if _, ok := ends[k]; !ok {
 		return fmt.Errorf("unknown relation kind %q", k)

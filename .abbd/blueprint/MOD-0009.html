@@ -135,7 +135,7 @@ svg marker path { stroke: none; }
 }
 .questions { margin: 2px 0 8px; }
 .questions li { padding: 2px 0; }
-.flow .caption p { margin: 4px 0; }
+.flow .caption p, .stack .caption p { margin: 4px 0; }
 ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
 ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
 ol.dg-flow > li.lane:first-child { border-top: 0; }
@@ -157,6 +157,19 @@ li.step.stale .n { background: var(--stale); }
 li.step .chips { margin-top: 3px; }
 .chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.stack .gap { margin: 4px 0 0; font-size: 13px; color: var(--stale); }
+.pill.breach, .chips a.chip.breach { color: var(--bypass); border-color: var(--bypass); }
+ol.dg-stack { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+ol.dg-stack > li.band { display: grid; grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr); gap: 0 14px; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 8px 10px; }
+ol.dg-stack > li.band.stale { border-style: dashed; border-color: var(--stale); }
+.band-head { position: relative; min-width: 0; padding-left: 36px; overflow-wrap: anywhere; }
+.band-head .n { position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 13.5px; display: flex; align-items: center; justify-content: center; }
+li.band.stale .band-head .n { background: var(--stale); }
+.band-head strong { font-size: 14.5px; line-height: 26px; }
+.band-head .role { margin: 0; font-size: 13px; color: var(--muted); }
+.band-body { min-width: 0; }
+.band-body > .chips:first-child { margin-top: 2px; }
+@media (max-width: 560px) { ol.dg-stack > li.band { grid-template-columns: minmax(0, 1fr); } .band-head { margin-bottom: 4px; } }
 .shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
 nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
 nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
@@ -185,8 +198,8 @@ table.index td:first-child { width: 46%; }
   <a class="home" href="index.html">ABBD 청사진</a>
   <ul class="plain top">
     <li><a href="index.html">모듈과 계약</a></li>
-    <li><a href="contracts.html">계약 목록</a> <span class="muted">48</span></li>
-    <li><a href="units.html">단위 목록</a> <span class="muted">124</span></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">49</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">125</span></li>
   </ul>
   <h3>모듈</h3>
   <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="#m-MOD-0009" aria-current="page">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="MOD-0017.html">internal/extract</a></li><li class="d0"><a href="MOD-0022.html">internal/gitx</a></li><li class="d0"><a href="MOD-0054.html">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="MOD-0055.html">pstack (external)</a></li></ul>
@@ -227,6 +240,8 @@ internal/bootstrap/overlay.go:246 &#34;n := overlap(u.Anchors, d.Anchors)&#34;</
       
       <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="chip">contract code digest</span></div>
       
+      <h3>이 모듈이 놓인 층</h3>
+      <ul class="plain"><li><a href="index.html#stack-cli">What are the layers of the abbd CLI?</a> <span class="muted">층 4</span></li></ul>
       <h3>판독한 결합</h3>
       <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> abbd CLI → supplement fold <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> setup determinism proof and supplement fold → internal/bootstrap <span class="muted">(depends_on, via call)</span><div class="quote"><q>cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> internal/bootstrap → contract code digest <span class="muted">(provides, via data)</span><div class="quote"><q>internal/bootstrap/overlay.go:170 &#34;d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, \&#34;\&#34;, \&#34;\&#34;, nil&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> supplement fold → anchor matching <span class="muted">(depends_on, via call)</span><div class="quote"><q>internal/bootstrap/overlay.go:40 &#34;i, err := sc.match(d)&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> anchor matching → untrusted-output gate <span class="muted">(depends_on, via data)</span><div class="quote"><q>internal/bootstrap/overlay.go:246 &#34;n := overlap(u.Anchors, d.Anchors)&#34;</q></div><div class="quote"><q>internal/extract/extract.go:227 &#34;// Evidence locates a unit the script cannot see, so it anchors the unit&#39;s ID.&#34;</q></div></li></ul>
     </div>

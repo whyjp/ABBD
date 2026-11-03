@@ -61,6 +61,29 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
 
    Write the text as the code is now, in the present tense. Leave out dates, issue and PR numbers, and tags such as "migrated from X", because git keeps the history. Keep each section under 2,000 characters of prose, and split a longer one under `###` headings or into shorter sections. `abbd understand <MOD-ID> <FILE>` and `abbd status` report each section over that length and each phrase that reads as history. Neither refuses the text or fails the check, because a version number or a name can read as history too.
 
+8. When how or your own reading finds the layers of a part of the code, such as packages that each use only the ones below them, store them as a stack with `abbd stack <KEY> <FILE>`. A stack answers one question. The blueprint draws it as bands from the top down, each a named layer with its role and the units it holds, and lists it on the overview and on each module whose units it holds. Write the FILE as frontmatter and a caption:
+
+   ```markdown
+   ---
+   question: What are the layers of the abbd CLI?
+   layers:
+     - name: commands
+       role: parses one command line, runs its verb, and renders the blueprint after a write
+       units: [MOD-0001]
+       evidence:
+         - {path: cmd/abbd/main.go, quote: "var commands = map[string]command{"}
+     - name: store
+       role: reads and writes the .abbd directory
+       units: [MOD-0041]
+       evidence:
+         - {path: internal/store/store.go, quote: "// Package store reads and writes the .abbd directory."}
+   ---
+
+   One or two sentences on what keeps the layers apart.
+   ```
+
+   Take two to 8 layers from the top down, with 16 units at most between them. Give each layer a short name and a one-line `role` under 80 characters. A layer holds each unit it names and every unit inside it, so name a unit in one layer only. abbd refuses a unit named in two layers, and a unit named in one layer while a unit that holds it is named in another. Each layer cites the lines that show its role, such as a package's doc comment, each quote held once in its file and one at least in code its own units hold. It goes STALE on its own when that code changes. `abbd stack <KEY>` prints the stored stack as a draft to edit and store again. A human states a stack with `--source <REF>`, and a reader then replaces only its STALE layers, as for a flow. When a unit moves and two layers come to hold it, status names both, and a reader may replace those layers too. A breach is a stored `consumes` or `depends_on` from a unit a lower layer holds up to a unit a higher layer holds. A lower unit that `provides` a contract homed higher up is no breach. abbd reports each breach when it stores the stack and in `abbd status`, and the blueprint draws it. A breach is debt in the code or a layer drawn wrong. Say which in the reply, and do not reorder the layers only to hide it. Delete `.abbd/stacks/<KEY>.md` when the code no longer layers that way.
+
 ## What the human states
 
 When the human states a purpose, a responsibility or a coupling in the conversation, record it with where they said it. `<REF>` is the PR URL, or `conversation <date>` before a PR exists.
@@ -81,7 +104,7 @@ A sync rewrites the lines that tie the state to one tree in `.abbd/state.yaml` a
 
 ## Gate a hook or CI
 
-`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`, or `abbd understand <ID>.<SLOT> --reread-by <WHO>` when the note still holds as written), a flow's step is STALE (status names the step and why, so read that code again and `abbd flow <KEY> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
+`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`, or `abbd understand <ID>.<SLOT> --reread-by <WHO>` when the note still holds as written), a flow's step is STALE (status names the step and why, so read that code again and `abbd flow <KEY> <FILE>`), a stack's layer is STALE (status names the layer and why, so read that code again and `abbd stack <KEY> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. A breach, a stored relation that runs up a stack, is reported but does not fail it either. Only a design call clears it, by changing the code or drawing the layers again. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
 
 The check also exits 1 when the state or the blueprint is UNKNOWN, meaning abbd could not compare them, and the message names the cause. The state is UNKNOWN outside a git work tree or when git fails to fingerprint the tree, and no sync fixes that, so run the check in a git checkout. The blueprint is UNKNOWN when `blueprint/` holds no files or the state does not say what was rendered, and `abbd sync` writes both. An orphaned text, one whose module left the state or is no longer a module, is reported and skipped, because no command can restamp it. Delete its `.abbd/understanding/<MOD-ID>.md` to drop it. An orphaned note, one whose unit left the state, whose slot abbd no longer knows, or whose entry its contract no longer lists, is reported and skipped the same way. Status names its file and the `abbd forget <ID>.<SLOT>` that removes it.
 

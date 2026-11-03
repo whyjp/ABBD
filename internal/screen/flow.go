@@ -1,11 +1,7 @@
 package screen
 
 import (
-	"fmt"
-	"slices"
-
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/store"
 )
 
 // A flow answers one question with the order things happen in: numbered
@@ -59,30 +55,20 @@ type FlowRef struct {
 	Steps        []int
 }
 
-func flowID(k model.FlowKey) string { return "flow-" + string(k) }
-
-// stepID is a step's anchor. A key holds no dot, so flow a's step 1 and flow
-// a-1 never share one.
-func stepID(k model.FlowKey, n int) string { return fmt.Sprintf("%s.%d", flowID(k), n) }
-
 // flows derives each stored flow's view, in key order.
 func (o *overview) flows(in Input) []FlowView {
 	var out []FlowView
-	for _, f := range in.Flows {
+	for _, f := range in.Figures.Flows {
 		if !f.Known {
 			continue
 		}
-		v := FlowView{ID: flowID(f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin()), Source: sharedSource(f), Caption: blocks(f.Caption), Steps: len(f.Steps)}
-		for i, s := range f.Steps {
+		v := FlowView{ID: figureID[model.Step](f.Key), Key: string(f.Key), Question: f.Question, Badge: Badge(f.Origin()), Source: sharedSource(f), Caption: blocks(f.Caption), Steps: len(f.Parts)}
+		for i, p := range f.Parts {
+			s := p.Claim
 			reach := s.Against(in.Units)
-			sv := StepView{N: i + 1, ID: stepID(f.Key, i+1), Does: s.Does, Note: s.Note, Fails: s.Fails}
-			if b := Badge(s.Writer.Origin()); b != v.Badge {
-				sv.Badge = b
-			}
-			if s.Source != v.Source {
-				sv.Source = s.Source
-			}
-			sv.Reasons = append(slices.Clone(s.Changed), reach.Gaps...)
+			sv := StepView{N: i + 1, ID: partID[model.Step](f.Key, i+1), Does: s.Does, Note: s.Note, Fails: s.Fails}
+			sv.Badge, sv.Source = partMarks(p.Stamp, v.Badge, v.Source)
+			sv.Reasons = p.Why(in.Units)
 			sv.Stale = len(sv.Reasons) > 0
 			for _, e := range s.Evidence {
 				sv.Quotes = append(sv.Quotes, e.String())
@@ -104,19 +90,6 @@ func (o *overview) flows(in Input) []FlowView {
 		out = append(out, v)
 	}
 	return out
-}
-
-// sharedSource is the source every step of f was stated in, or "".
-func sharedSource(f store.Flow) string {
-	for _, s := range f.Steps {
-		if s.Source == "" || s.Source != f.Steps[0].Source {
-			return ""
-		}
-	}
-	if len(f.Steps) == 0 {
-		return ""
-	}
-	return f.Steps[0].Source
 }
 
 // unitName is a unit's name, or its ID when the state lost it.
@@ -147,29 +120,4 @@ func (o *overview) href(id model.ID) string {
 		}
 	}
 	return "#overview"
-}
-
-// linkFlows lists each flow on every inside whose subtree holds the unit of
-// one of its steps, with those steps' numbers.
-func (o *overview) linkFlows(m *Model) {
-	for i := range m.Insides {
-		ins := &m.Insides[i]
-		held := map[string]bool{}
-		for _, id := range o.tree.subtree(model.ID(ins.ID)) {
-			held[string(id)] = true
-		}
-		for _, f := range m.Flows {
-			ref := FlowRef{ID: f.ID, Question: f.Question}
-			for _, l := range f.Lanes {
-				for _, s := range l.Steps {
-					if held[l.Unit] {
-						ref.Steps = append(ref.Steps, s.N)
-					}
-				}
-			}
-			if len(ref.Steps) > 0 {
-				ins.Flows = append(ins.Flows, ref)
-			}
-		}
-	}
 }

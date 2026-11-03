@@ -113,7 +113,7 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		p.flow(1, c.want, draft)
 	}
 	one := chargeFlow[:strings.Index(chargeFlow, "  - unit: MOD-0001\n    does: retries")] + "---\n"
-	p.flow(1, "two steps or more", one)
+	p.flow(1, "a flow has 2 steps or more, and this one has 1", one)
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "flows", "charge.md")); err == nil {
 		t.Error("a refused draft must store nothing")
 	}
@@ -308,5 +308,37 @@ func TestARetiredStepOnAUnitThatLeftIsForgotten(t *testing.T) {
 	p.flow(0, "stored flow charge, 2 steps", two)
 	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
 		t.Errorf("MOD-0002 left the state, so its retired step is forgotten:\n%s", stored)
+	}
+}
+
+// A retired step keeps only its own unit, so it outlives a unit it merely
+// called: once that unit leaves the state, the step's old words still cannot
+// come back on the code that changed under them.
+func TestARetiredStepOutlivesAUnitItCalled(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n// cached\nfunc Post() {}\n")
+	p.resync()
+	uncalled := strings.ReplaceAll(chargeFlow, "    calls: [DATA-0001]\n", "")
+	two := uncalled[:strings.Index(uncalled, "  - unit: MOD-0002")] + "---\n\nFrom the insert to the book.\n"
+	p.flow(0, "stored flow charge, 2 steps", two)
+	if _, retired, ok := strings.Cut(p.read("flows/charge.md"), "retired:"); !ok || strings.Contains(retired, "calls:") {
+		t.Errorf("step 3 went STALE and left the flow, so it is retired without the units it called:\n%s", p.read("flows/charge.md"))
+	}
+	p.want(0, "retracted DATA-0001", "retract", "DATA-0001", "--reason", "not a table", "--source", "conversation 2026-11-03")
+	p.flow(1, "step 3 says what a STALE step said", uncalled)
+}
+
+// A store warns on a step whose does runs past 80 characters, and not on a
+// long note or failure, which hold a rule or a cause in full.
+func TestALongDoesWarnsAndALongNoteDoesNot(t *testing.T) {
+	p := notesProject(t)
+	long := strings.Repeat("and then some more ", 5)
+	out := p.flow(0, "stored", strings.Replace(strings.Replace(chargeFlow, "reads every charge, no cache", "reads every charge, no cache, "+long, 1), "gives up after three tries", "gives up after three tries, "+long, 1))
+	if strings.Contains(out, "long:") {
+		t.Errorf("a long note or failure is no warning:\n%s", out)
+	}
+	if out := p.flow(0, "stored", strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert "+long, 1)); !strings.Contains(out, "long: flow charge step 2 does holds") {
+		t.Errorf("a long does warns:\n%s", out)
 	}
 }

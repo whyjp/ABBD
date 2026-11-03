@@ -9,8 +9,8 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-func step(unit model.ID, does string, calls ...model.ID) store.FlowStep {
-	return store.FlowStep{Step: model.Step{Unit: unit, Does: does, Calls: calls, Evidence: []model.Evidence{{Path: "x", Lines: "1", Quote: does}}}}
+func step(unit model.ID, does string, calls ...model.ID) store.Part[model.Step] {
+	return store.Part[model.Step]{Claim: model.Step{Unit: unit, Does: does, Calls: calls, Evidence: []model.Evidence{{Path: "x", Lines: "1", Quote: does}}}}
 }
 
 // A flow is drawn as numbered steps in their order. Consecutive steps on one
@@ -21,15 +21,15 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", rel("IF-0002", model.Consumes)))
 	stale := step("MOD-0006", "reads a sink")
 	stale.Changed = []string{"src/a.rs (the lines around it changed)"}
-	in := Input{Units: units, Flows: []store.Flow{{
+	in := Input{Units: units, Figures: store.Figures{Flows: []store.Flow{{
 		Key: "search", Known: true, Question: "How does a search run?", Caption: "From argv to output.",
-		Steps: []store.FlowStep{
+		Parts: []store.Part[model.Step]{
 			step("MOD-0001", "parses argv", "IF-0001", "MOD-0005"),
 			step("MOD-0002", "builds the searcher"),
 			step("MOD-0002", "hands each file to it"),
 			stale,
 		},
-	}}}
+	}}}}
 	m := Build(in)
 	if len(m.Flows) != 1 {
 		t.Fatalf("one stored flow, one view: %+v", m.Flows)
@@ -76,11 +76,11 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 // A step's anchor cannot be another flow's: flow a's step 1 and flow a-1
 // each have their own.
 func TestFlowAnchorsNeverCollide(t *testing.T) {
-	two := []store.FlowStep{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
-	m := Build(Input{Units: ripgrep(), Flows: []store.Flow{
-		{Key: "a", Known: true, Question: "A?", Steps: two},
-		{Key: "a-1", Known: true, Question: "A1?", Steps: two},
-	}})
+	two := []store.Part[model.Step]{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
+	m := Build(Input{Units: ripgrep(), Figures: store.Figures{Flows: []store.Flow{
+		{Key: "a", Known: true, Question: "A?", Parts: two},
+		{Key: "a-1", Known: true, Question: "A1?", Parts: two},
+	}}})
 	seen := map[string]bool{}
 	for _, f := range m.Flows {
 		ids := []string{f.ID}

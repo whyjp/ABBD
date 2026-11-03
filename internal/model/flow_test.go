@@ -20,7 +20,7 @@ func TestAStepIsOneLineOnLiveEvidence(t *testing.T) {
 			t.Errorf("want an error saying %q, got %v", want, err)
 		}
 	}
-	if _, err := ParseFlowKey("Sync Flow"); err == nil {
+	if _, err := ParseFigureKey[Step]("Sync Flow"); err == nil {
 		t.Error("a flow key is lower-case letters, digits and hyphens")
 	}
 }

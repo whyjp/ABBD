@@ -127,7 +127,7 @@ svg marker path { stroke: none; }
 }
 .questions { margin: 2px 0 8px; }
 .questions li { padding: 2px 0; }
-.flow .caption p { margin: 4px 0; }
+.flow .caption p, .stack .caption p { margin: 4px 0; }
 ol.dg-flow { list-style: none; padding: 0; margin: 10px 0 0; }
 ol.dg-flow > li.lane { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr); gap: 0 14px; padding: 6px 0; border-top: 1px solid var(--line); }
 ol.dg-flow > li.lane:first-child { border-top: 0; }
@@ -149,6 +149,19 @@ li.step.stale .n { background: var(--stale); }
 li.step .chips { margin-top: 3px; }
 .chips a.chip { text-decoration: none; white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 560px) { ol.dg-flow > li.lane { grid-template-columns: minmax(0, 1fr); } .lane-unit { margin-bottom: 6px; } }
+.stack .gap { margin: 4px 0 0; font-size: 13px; color: var(--stale); }
+.pill.breach, .chips a.chip.breach { color: var(--bypass); border-color: var(--bypass); }
+ol.dg-stack { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+ol.dg-stack > li.band { display: grid; grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr); gap: 0 14px; border: 1.6px solid var(--ink); border-radius: 6px; background: var(--panel); padding: 8px 10px; }
+ol.dg-stack > li.band.stale { border-style: dashed; border-color: var(--stale); }
+.band-head { position: relative; min-width: 0; padding-left: 36px; overflow-wrap: anywhere; }
+.band-head .n { position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 13.5px; display: flex; align-items: center; justify-content: center; }
+li.band.stale .band-head .n { background: var(--stale); }
+.band-head strong { font-size: 14.5px; line-height: 26px; }
+.band-head .role { margin: 0; font-size: 13px; color: var(--muted); }
+.band-body { min-width: 0; }
+.band-body > .chips:first-child { margin-top: 2px; }
+@media (max-width: 560px) { ol.dg-stack > li.band { grid-template-columns: minmax(0, 1fr); } .band-head { margin-bottom: 4px; } }
 .shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
 nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
 nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }

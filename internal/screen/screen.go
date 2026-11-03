@@ -29,10 +29,10 @@ type Input struct {
 	// markdown files beside them that are no notes, from the project root.
 	Notes  map[model.ID][]store.Note
 	Strays []string
-	// Flows are the ordered walks readers and humans stored, each a
-	// question; FlowStrays the markdown files beside them that are no flows, and why.
-	Flows      []store.Flow
-	FlowStrays []store.Stray
+	// Figures are the questions readers and humans answered by kind, such as
+	// the ordered walks, with the markdown files beside them that are no
+	// figures, and why.
+	Figures store.Figures
 }
 
 // Load reads the store. It leaves Tree empty: snapshotting the working tree
@@ -58,7 +58,7 @@ func Load(st store.Store) (Input, error) {
 	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
 		return in, err
 	}
-	if in.Flows, in.FlowStrays, err = st.LoadFlows(); err != nil {
+	if in.Figures, err = st.LoadFigures(); err != nil {
 		return in, err
 	}
 	in.Digests = map[model.ID]string{}
@@ -130,8 +130,10 @@ type Model struct {
 	// Focus are the views derived from the overview when it is dense.
 	Focus   []Focus
 	Insides []Inside
-	// Flows are the stored flows, each a question answered in steps.
-	Flows []FlowView
+	// Flows are the stored flows, each a question answered in steps, and
+	// Stacks the stored stacks, each a question answered in layers.
+	Flows  []FlowView
+	Stacks []StackView
 	// Edges are every live relation between present units, for graph.json.
 	Edges   []Line
 	Extract []string
@@ -194,8 +196,8 @@ func Build(in Input) Model {
 		m.Insides = append(m.Insides, ins)
 	}
 	o.placeNotes(in, &m)
-	m.Flows = o.flows(in)
-	o.linkFlows(&m)
+	m.Flows, m.Stacks = o.flows(in), o.stacks(in)
+	o.linkFigures(&m)
 	return m
 }
 
