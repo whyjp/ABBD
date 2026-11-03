@@ -219,6 +219,9 @@ func (e env) explainNotes(u model.Unit) error {
 		if n.Why != nil {
 			fmt.Fprintf(e.stdout, "  why (USER_STATED, %s): %s\n", n.Why.Source, n.Why.Value)
 		}
+		if c := n.Reread; c != nil {
+			fmt.Fprintf(e.stdout, "  reread by %s on %s, after %s moved\n", c.By, c.On, strings.Join(c.Moved, ", "))
+		}
 		for _, ev := range n.Evidence {
 			fmt.Fprintf(e.stdout, "  cites %s\n", ev)
 		}

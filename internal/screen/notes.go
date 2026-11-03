@@ -17,6 +17,9 @@ type Note struct {
 	Quotes          []string
 	Why             *Fact  `json:",omitempty"`
 	Source          string `json:",omitempty"`
+	// RereadBy and RereadOn say who read the cited code again
+	// after it moved and kept the note as written, and when.
+	RereadBy, RereadOn string `json:",omitempty"`
 	// slot is the note's slot, so a contract's table takes its entries' notes.
 	slot string
 }
@@ -50,6 +53,9 @@ func notes(in Input, u model.Unit) []Note {
 		}
 		if n.Why != nil {
 			v.Why, v.Source = &Fact{Value: n.Why.Value, Badge: Badge(model.UserStated)}, n.Why.Source
+		}
+		if c := n.Reread; c != nil {
+			v.RereadBy, v.RereadOn = c.By, c.On
 		}
 		out = append(out, v)
 	}
