@@ -27094,7 +27094,23 @@
                 "Code": true
               },
               {
-                "Text": ", on the routed ink, finds no more touching ink of one kind between unrelated places, crossings or side-by-side runs, and fewer bends and jogs along each line's whole way. ",
+                "Text": ", on the routed ink, finds no more touching ink of one kind between unrelated places, crossings or side-by-side runs, and fewer bends and jogs along each line's whole way. A view with more than ",
+                "Code": false
+              },
+              {
+                "Text": "shareMost",
+                "Code": true
+              },
+              {
+                "Text": " requests is drawn plain, since ",
+                "Code": false
+              },
+              {
+                "Text": "weigh",
+                "Code": true
+              },
+              {
+                "Text": " compares every pair of strands. ",
                 "Code": false
               },
               {

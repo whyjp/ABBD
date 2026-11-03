@@ -121,10 +121,12 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 
 // route draws every request. Where lines could share arrival buses, it
 // draws the view both ways and keeps the shared buses only when they spare
-// the reader turns and cost nothing else, as weigh measures it.
+// the reader turns and cost nothing else, as weigh measures it. weigh
+// compares every pair of strands, so a view with more than shareMost
+// requests keeps the plain drawing rather than pay for that.
 func (l *layout) route(reqs []wireReq) []drawn {
 	plain := l.lay(reqs, false)
-	if !plain.shares {
+	if !plain.shares || len(reqs) > shareMost {
 		return plain.drawn
 	}
 	if shared := l.lay(reqs, true); weigh(shared, reqs).beats(weigh(plain, reqs)) {
@@ -132,6 +134,8 @@ func (l *layout) route(reqs []wireReq) []drawn {
 	}
 	return l.lay(reqs, false).drawn
 }
+
+const shareMost = 200
 
 // routing is one way to draw a view's lines.
 type routing struct {
