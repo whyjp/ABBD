@@ -162,3 +162,51 @@ func TestAReaderReplacesAHumansStackOnlyOnceItIsStale(t *testing.T) {
 		t.Errorf("the reader's layer must replace the human's stale one alone:\n%s", stored)
 	}
 }
+
+// A store warns on a layer whose role runs past 80 characters, and not on
+// its name.
+func TestALongRoleWarnsAndALongNameDoesNot(t *testing.T) {
+	p := notesProject(t)
+	long := strings.Repeat("and then some more ", 5)
+	if out := p.stack(0, "stored", strings.Replace(chargeStack, "name: books", "name: books "+long, 1)); strings.Contains(out, "long:") {
+		t.Errorf("a long name is no warning:\n%s", out)
+	}
+	if out := p.stack(0, "stored", strings.Replace(chargeStack, "posts each charge into the ledger", "posts each charge into the ledger "+long, 1)); !strings.Contains(out, "long: stack charge layer 1 role holds") {
+		t.Errorf("a long role warns:\n%s", out)
+	}
+}
+
+// auditTopo adds an audit module beside billing and ledger, so a stack can
+// name a unit that neither of them holds.
+const auditTopo = `{"units":[
+ {"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]},
+ {"key":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]},
+ {"key":"audit","kind":"MOD","name":"audit","anchors":[{"path":"audit/log.go","symbol":"Log"}]}
+]}`
+
+// A human's stack that a move in the state breaks as a whole is open to a
+// reader, as a stale layer is: once billing moves under the ledger, two
+// layers hold it, and a reader may replace the layers the break names, so
+// CI never waits on the human. A layer that comes back as written keeps the
+// human's word.
+func TestAReaderMendsAHumansStackTheStateBrokeAsAWhole(t *testing.T) {
+	p := notesProject(t)
+	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
+	p.extract(auditTopo)
+	p.resync()
+	p.stack(0, "stored stack charge, 2 layers, USER_STATED", chargeStack, "--source", "conversation 2026-11-03")
+	p.extract(strings.Replace(auditTopo, `"name":"billing",`, `"name":"billing","parent":"ledger",`, 1))
+	p.resync()
+	p.want(1, "MOD-0001 is held by layer 2 and, inside MOD-0002, by layer 1", "status", "--check")
+	mended := strings.Replace(strings.Replace(strings.Replace(strings.Replace(chargeStack,
+		"name: billing", "name: audit", 1),
+		"writes the charge rows and retries a failed insert", "logs each posted charge", 1),
+		"    units: [MOD-0001]", "    units: [MOD-0003]", 1),
+		`      - {path: billing/charge.go, lines: "4", symbol: Charge, quote: "func Charge() {}"}
+      - {path: billing/retry.go, lines: "3", quote: "const tries = 3"}`, `      - {path: audit/log.go, lines: "3", symbol: Log, quote: "func Log() {}"}`, 1)
+	out := p.stack(0, "stored stack charge, 2 layers, INFERRED", mended)
+	if !strings.Contains(out, "kept the human's layers 1 (conversation 2026-11-03)") || !strings.Contains(out, "replaced the human's layers 2 (conversation 2026-11-03)") {
+		t.Errorf("the reader keeps the human's layer that came back and replaces the one the break named:\n%s", out)
+	}
+	p.want(0, "stacks: 1 stack(s), 2 layer(s), 0 STALE", "status", "--check")
+}
