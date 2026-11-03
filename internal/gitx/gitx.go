@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -153,14 +154,16 @@ func unbornRepos(dir string) []string {
 
 // addFiles adds the files of the repository at repo, relative to dir, to
 // the index env names, as git add adds an untracked directory's files: the
-// ones on disk that neither repository ignores. hash-object and update-index
-// read their paths from the top of the work tree, so each takes prefix,
-// where dir sits in it.
+// files and symlinks on disk that neither repository ignores, but none below
+// a symlink. hash-object and update-index read their paths from the top of
+// the work tree, so each takes prefix, where dir sits in it.
 func addFiles(dir, prefix string, env []string, repo string) error {
+	modes := map[string]string{}
 	var paths []string
 	for _, f := range WorkingFiles(filepath.Join(dir, repo)) {
 		p := repo + "/" + f
-		if fi, err := os.Stat(filepath.Join(dir, filepath.FromSlash(p))); err == nil && fi.Mode().IsRegular() {
+		if m := addMode(dir, p); m != "" {
+			modes[p] = m
 			paths = append(paths, p)
 		}
 	}
@@ -168,30 +171,87 @@ func addFiles(dir, prefix string, env []string, repo string) error {
 	if err != nil || len(paths) == 0 {
 		return err
 	}
+	hashes := map[string]string{}
+	var files []string
 	var in strings.Builder
 	for _, p := range paths {
-		in.WriteString(prefix + p + "\n")
+		if modes[p] != "120000" {
+			files = append(files, p)
+			in.WriteString(`"` + cQuote.Replace(prefix+p) + "\"\n")
+			continue
+		}
+		target, err := os.Readlink(filepath.Join(dir, filepath.FromSlash(p)))
+		if err != nil {
+			return fmt.Errorf("reading the link %s in %s: %w", p, repo, err)
+		}
+		out, err := runInput(dir, nil, filepath.ToSlash(target), "hash-object", "-w", "--stdin")
+		if err != nil {
+			return fmt.Errorf("git hash-object in %s: %w", repo, err)
+		}
+		hashes[p] = strings.TrimSpace(out)
 	}
-	out, err := runInput(dir, nil, in.String(), "hash-object", "-w", "--stdin-paths")
-	if err != nil {
-		return fmt.Errorf("git hash-object in %s: %w", repo, err)
-	}
-	hashes := strings.Fields(out)
-	if len(hashes) != len(paths) {
-		return fmt.Errorf("git hash-object in %s: %d hashes for %d files", repo, len(hashes), len(paths))
+	if len(files) > 0 {
+		out, err := runInput(dir, nil, in.String(), "hash-object", "-w", "--stdin-paths")
+		if err != nil {
+			return fmt.Errorf("git hash-object in %s: %w", repo, err)
+		}
+		h := strings.Fields(out)
+		if len(h) != len(files) {
+			return fmt.Errorf("git hash-object in %s: %d hashes for %d files", repo, len(h), len(files))
+		}
+		for i, p := range files {
+			hashes[p] = h[i]
+		}
 	}
 	var info strings.Builder
-	for i, p := range paths {
-		mode := "100644"
-		if fi, err := os.Stat(filepath.Join(dir, filepath.FromSlash(p))); err == nil && fi.Mode()&0o111 != 0 {
-			mode = "100755"
-		}
-		fmt.Fprintf(&info, "%s %s\t%s%s\x00", mode, hashes[i], prefix, p)
+	for _, p := range paths {
+		fmt.Fprintf(&info, "%s %s\t%s%s\x00", modes[p], hashes[p], prefix, p)
 	}
 	if _, err := runInput(dir, env, info.String(), "update-index", "--add", "-z", "--index-info"); err != nil {
 		return fmt.Errorf("git update-index in %s: %w", repo, err)
 	}
 	return nil
+}
+
+// cQuote escapes a path for the C-style quotes hash-object --stdin-paths
+// reads, so a name may hold a newline.
+var cQuote = strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`, "\r", `\r`)
+
+// addMode returns the mode git add records for p, relative to dir, or ""
+// when git add skips it: p is neither a file nor a symlink, or sits below a
+// symlink, which git add does not follow. A Windows junction is not a
+// symlink to git, which walks into it as a directory, and Lstat reports it
+// as irregular, so a parent that is irregular and resolves to a directory
+// counts as one.
+func addMode(dir, p string) string {
+	for d := path.Dir(p); d != "."; d = path.Dir(d) {
+		at := filepath.Join(dir, filepath.FromSlash(d))
+		fi, err := os.Lstat(at)
+		if err != nil {
+			return ""
+		}
+		if fi.Mode()&os.ModeIrregular != 0 {
+			fi, err = os.Stat(at)
+			if err != nil {
+				return ""
+			}
+		}
+		if !fi.IsDir() {
+			return ""
+		}
+	}
+	fi, err := os.Lstat(filepath.Join(dir, filepath.FromSlash(p)))
+	switch {
+	case err != nil:
+		return ""
+	case fi.Mode()&os.ModeSymlink != 0:
+		return "120000"
+	case !fi.Mode().IsRegular():
+		return ""
+	case fi.Mode()&0o111 != 0:
+		return "100755"
+	}
+	return "100644"
 }
 
 // unignored drops the paths, relative to dir, that dir's repository ignores.

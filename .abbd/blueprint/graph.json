@@ -1725,7 +1725,7 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:80 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+        "internal/gitx/gitx.go:81 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
     },
     {
@@ -1746,8 +1746,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:242 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:249 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:302 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:309 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1768,8 +1768,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:107 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:109 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:108 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:110 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -3712,7 +3712,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+      "Quote": "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
     },
     {
       "From": "MOD-0024",
@@ -18325,6 +18325,15 @@
         "Stale": false,
         "Blocks": [
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0022 origin: INFERRED digest: 007bacf5a345ded3 format: 3 code: internal/gitx: 33e8a96ae8ad15e9 internal/gitx/gitx.go: a228ed7426b25613 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -18386,6 +18395,14 @@
               },
               {
                 "Text": "addFiles",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "addMode",
                 "Code": true
               },
               {
@@ -18783,7 +18800,7 @@
                 "Code": false
               },
               {
-                "Text": "hash-object -w --stdin-paths",
+                "Text": "hash-object -w",
                 "Code": true
               },
               {
@@ -18795,15 +18812,31 @@
                 "Code": true
               },
               {
-                "Text": ", so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository's index can list a file deleted or renamed before its first commit, and ",
+                "Text": ", so the fingerprint sees it as the untracked directory it is. ",
                 "Code": false
               },
               {
-                "Text": "unignored",
+                "Text": "addMode",
                 "Code": true
               },
               {
-                "Text": " drops what ",
+                "Text": " keeps what ",
+                "Code": false
+              },
+              {
+                "Text": "git add",
+                "Code": true
+              },
+              {
+                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. A Windows junction is not a symlink to git, which walks into it, and ",
+                "Code": false
+              },
+              {
+                "Text": "Lstat",
+                "Code": true
+              },
+              {
+                "Text": " calls it irregular, so a parent that is irregular and resolves to a directory counts as a directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
                 "Code": false
               },
               {
@@ -18811,7 +18844,31 @@
                 "Code": true
               },
               {
-                "Text": " says the project ignores. git reads the paths of ",
+                "Text": " would refuse a path below a symlink. ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
+                "Code": true
+              },
+              {
+                "Text": " then drops what ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": " says the project ignores. Each path to ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": " goes in C-style quotes, so a name may hold a newline. git reads the paths of ",
                 "Code": false
               },
               {
@@ -19323,7 +19380,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -24070,7 +24127,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
