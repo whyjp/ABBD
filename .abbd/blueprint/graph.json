@@ -1737,7 +1737,7 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:80 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+        "internal/gitx/gitx.go:81 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
     },
     {
@@ -1758,8 +1758,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:242 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:249 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:302 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:309 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1780,8 +1780,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:107 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:109 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:108 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:110 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -3063,7 +3063,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:21 \"return u, ok \u0026\u0026 u.Kind == model.Module\""
+      "Quote": "cmd/abbd/understand.go:22 \"return u, ok \u0026\u0026 u.Kind == model.Module\""
     },
     {
       "From": "MOD-0001",
@@ -3353,7 +3353,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0001",
@@ -3507,7 +3507,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0005",
@@ -3531,7 +3531,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
     },
     {
       "From": "MOD-0006",
@@ -3737,7 +3737,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+      "Quote": "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
     },
     {
       "From": "MOD-0024",
@@ -4117,7 +4117,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+      "Quote": "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
     },
     {
       "From": "MOD-0041",
@@ -4219,7 +4219,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go:82 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+      "Quote": "cmd/abbd/understand.go:83 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
     },
     {
       "From": "MOD-0047",
@@ -9700,7 +9700,7 @@
             "Origin": "inferred",
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -9755,7 +9755,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0006.consumes.DATA-0008"
@@ -10054,7 +10054,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/record.go:60 \"return e.st.SaveUnits([]model.Unit{u})\"",
-              "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
+              "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\"",
               "cmd/abbd/record.go:67 \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
             ],
             "Marks": [
@@ -10259,7 +10259,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/query.go:249 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -10273,7 +10273,7 @@
             "Title": "query commands consumes module understanding (via data), 판독\nrecord writers consumes module understanding (via data), 판독",
             "Quotes": [
               "cmd/abbd/query.go:249 \"texts, err := e.st.LoadUnderstandings()\"",
-              "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+              "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
             ],
             "Rels": [
               "MOD-0005.consumes.DATA-0008",
@@ -12128,7 +12128,31 @@
                 "Code": true
               },
               {
-                "Text": " of who, the date and the places that had moved. It refuses a current note, an empty WHO, and a note whose quote its file no longer holds exactly once. A note stored with new words drops that record. ",
+                "Text": " of who, the date and the places that had moved. It refuses a current note, an empty WHO, a note whose quote its file no longer holds exactly once, and a note whose stored ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " keys differ from the ones ",
+                "Code": false
+              },
+              {
+                "Text": "NoteStamp",
+                "Code": true
+              },
+              {
+                "Text": " gives its ",
+                "Code": false
+              },
+              {
+                "Text": "Evidence",
+                "Code": true
+              },
+              {
+                "Text": ", since a hand edit of its quotes left words written about other code. It moves each quote's lines to where the quote sits now. A note stored with new words drops that record. ",
                 "Code": false
               },
               {
@@ -12192,7 +12216,23 @@
                 "Code": true
               },
               {
-                "Text": " that removes it, including a file not at the path its frontmatter names. It warns about each markdown file there with no frontmatter, and lints notes beside the module texts. ",
+                "Text": " that removes it, including a file not at the path its frontmatter names. A file whose directory is no unit ID has no ",
+                "Code": false
+              },
+              {
+                "Text": "FileRef",
+                "Code": true
+              },
+              {
+                "Text": ", so ",
+                "Code": false
+              },
+              {
+                "Text": "dropNote",
+                "Code": true
+              },
+              {
+                "Text": " names the file to delete instead. It warns about each markdown file there with no frontmatter, and lints notes beside the module texts. ",
                 "Code": false
               },
               {
@@ -14163,7 +14203,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:21 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
+            "cmd/abbd/understand.go:22 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:246 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
@@ -14284,7 +14324,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:259 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -14440,7 +14480,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:259 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -14469,7 +14509,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:82 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
           ]
         },
         {
@@ -18579,6 +18619,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "addMode",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -18973,7 +19021,7 @@
                 "Code": false
               },
               {
-                "Text": "hash-object -w --stdin-paths",
+                "Text": "hash-object -w",
                 "Code": true
               },
               {
@@ -18985,15 +19033,31 @@
                 "Code": true
               },
               {
-                "Text": ", so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository's index can list a file deleted or renamed before its first commit, and ",
+                "Text": ", so the fingerprint sees it as the untracked directory it is. ",
                 "Code": false
               },
               {
-                "Text": "unignored",
+                "Text": "addMode",
                 "Code": true
               },
               {
-                "Text": " drops what ",
+                "Text": " keeps what ",
+                "Code": false
+              },
+              {
+                "Text": "git add",
+                "Code": true
+              },
+              {
+                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. A Windows junction is not a symlink to git, which walks into it, and ",
+                "Code": false
+              },
+              {
+                "Text": "Lstat",
+                "Code": true
+              },
+              {
+                "Text": " calls it irregular, so a parent that is irregular and resolves to a directory counts as a directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
                 "Code": false
               },
               {
@@ -19001,7 +19065,31 @@
                 "Code": true
               },
               {
-                "Text": " says the project ignores. git reads the paths of ",
+                "Text": " would refuse a path below a symlink. ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
+                "Code": true
+              },
+              {
+                "Text": " then drops what ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": " says the project ignores. Each path to ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": " goes in C-style quotes, so a name may hold a newline. git reads the paths of ",
                 "Code": false
               },
               {
@@ -19513,7 +19601,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -24260,7 +24348,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -24861,7 +24949,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Marks": [
               {
@@ -25077,7 +25165,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/screen.go:52 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -25091,7 +25179,7 @@
             "Title": "freshness verdicts depends_on internal/store (via convention), 판독\nunderstanding text depends_on internal/store (via convention), 판독",
             "Quotes": [
               "internal/screen/screen.go:52 \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
-              "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+              "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0041",
@@ -27692,7 +27780,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -28031,7 +28119,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/understand.go:82 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+              "cmd/abbd/understand.go:83 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
             ],
             "Marks": [
               {
@@ -29819,7 +29907,7 @@
                 "Code": true
               },
               {
-                "Text": " names a note by where its file sits, so a misfiled note can be named. ",
+                "Text": " names a note by where its file sits, so a misfiled note can be named. It gives a name only when the file's directory is a unit ID, which holds no dot, so no two files share one. ",
                 "Code": false
               },
               {
@@ -31079,7 +31167,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\"",
             "cmd/abbd/query.go:259 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
@@ -31148,7 +31236,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/understand.go:58 \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go:59 \"digest, code := e.st.Stamp(units, id)\""
           ]
         },
         {
@@ -31204,7 +31292,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:82 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
+            "cmd/abbd/understand.go:83 \"Digest: digest, Format: store.CodeFormat, Code: code, Text: text}\""
           ]
         },
         {
@@ -33370,7 +33458,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go:21 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
+            "cmd/abbd/understand.go:22 \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
             "cmd/abbd/query.go:246 \"if _, ok := textModule(units, u.ID); !ok {\""
           ]
         },
