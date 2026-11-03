@@ -74,9 +74,10 @@ type Reach struct {
 
 // Against reads the step against the state. The step rests on its unit's
 // code: one quote at least lies in code that its unit, or a unit inside it,
-// anchors more closely than any other unit does, so a file two units share
-// lends a quote only to the unit whose anchor names it best, and a root
-// anchor of . only the files no closer anchor names. A call is reached when the
+// anchors more closely than any other unit does, or that a contract it
+// provides anchors so, so a file two units share lends a quote only to the
+// unit whose anchor names it best, and a root anchor of . only the files no
+// closer anchor names. A call is reached when the
 // step's unit, or a unit inside it, holds a live relation to the called unit
 // or to a unit inside it, so a chip never draws an edge the graph lacks. The
 // kind is the strongest such relation: provides, then consumes, then
@@ -95,6 +96,14 @@ func (s Step) Against(units []Unit) Reach {
 		}
 		return false
 	}
+	provides := func(c ID) bool {
+		for _, u := range present {
+			if under(u.ID, s.Unit) && slices.ContainsFunc(u.Relations, func(rel Relation) bool { return !rel.Dead && rel.Kind == Provides && rel.To == c }) {
+				return true
+			}
+		}
+		return false
+	}
 	r := Reach{Calls: map[ID]RelationKind{}}
 	held := func(e Evidence) bool {
 		best, owners := 0, []ID(nil)
@@ -109,7 +118,7 @@ func (s Step) Against(units []Unit) Reach {
 				}
 			}
 		}
-		return slices.ContainsFunc(owners, func(id ID) bool { return under(id, s.Unit) })
+		return slices.ContainsFunc(owners, func(id ID) bool { return under(id, s.Unit) || provides(id) })
 	}
 	if _, ok := present[s.Unit]; !ok {
 		r.Gaps = append(r.Gaps, fmt.Sprintf("%s is no longer in the state", s.Unit))

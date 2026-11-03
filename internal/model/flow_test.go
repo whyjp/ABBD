@@ -50,12 +50,14 @@ func TestAStepReachesOnlyWhatTheGraphJoins(t *testing.T) {
 // A step rests on its own unit's code: one quote at least lies in code the
 // step's unit, or a unit inside it, holds most closely. A symbol anchor holds
 // only the quotes that name its symbol, a unit it calls lends it no code, and
-// the root anchor . holds only the files no closer anchor names.
+// the root anchor . holds only the files no closer anchor names. A contract's
+// code counts for the unit that provides it, not for one that consumes it.
 func TestAStepCitesTheCodeOfItsUnit(t *testing.T) {
 	units := []Unit{
-		{ID: "MOD-0001", Kind: Module, Anchors: []Anchor{{Path: "cmd/abbd"}}, Relations: []Relation{{To: "MOD-0002", Kind: DependsOn}}},
+		{ID: "MOD-0001", Kind: Module, Anchors: []Anchor{{Path: "cmd/abbd"}}, Relations: []Relation{{To: "MOD-0002", Kind: DependsOn}, {To: "IF-0022", Kind: Provides}}},
 		{ID: "MOD-0003", Kind: Module, Parent: "MOD-0001", Anchors: []Anchor{{Path: "cmd/abbd/sync.go", Symbol: "sync"}}},
-		{ID: "MOD-0002", Kind: Module, Anchors: []Anchor{{Path: "internal/store"}}},
+		{ID: "MOD-0002", Kind: Module, Anchors: []Anchor{{Path: "internal/store"}}, Relations: []Relation{{To: "IF-0022", Kind: Consumes}}},
+		{ID: "IF-0022", Kind: Interface, Anchors: []Anchor{{Path: "cmd/abbd/flow.go", Symbol: "flow"}}},
 		{ID: "MOD-0004", Kind: Module, Anchors: []Anchor{{Path: "."}}},
 	}
 	at := func(paths ...string) []Evidence {
@@ -78,6 +80,9 @@ func TestAStepCitesTheCodeOfItsUnit(t *testing.T) {
 		{Step{Unit: "MOD-0003", Evidence: at("cmd/abbd/sync.go#run")}, 1},
 		{Step{Unit: "MOD-0001", Evidence: at("cmd/abbd/sync.go#sync")}, 0},
 		{Step{Unit: "MOD-0003", Evidence: at("cmd/abbd/main.go")}, 1},
+		{Step{Unit: "MOD-0001", Evidence: at("cmd/abbd/flow.go#flow")}, 0},
+		{Step{Unit: "MOD-0003", Evidence: at("cmd/abbd/flow.go#flow")}, 1},
+		{Step{Unit: "MOD-0002", Evidence: at("cmd/abbd/flow.go#flow")}, 1},
 		{Step{Unit: "MOD-0001", Calls: []ID{"MOD-0002"}, Evidence: at("internal/store/flow.go")}, 1},
 		{Step{Unit: "MOD-0002", Evidence: at("cmd/abbd/main.go", "internal/store/x.go")}, 0},
 		{Step{Unit: "MOD-0004", Evidence: at("README.md")}, 0},

@@ -74,15 +74,21 @@ func TestAFlowStepGoesStaleOnItsOwn(t *testing.T) {
 	if !strings.Contains(out, "stale: flow charge step 2 (MOD-0001): billing/retry.go (the quote is gone") || strings.Contains(out, "step 1 (") || strings.Contains(out, "step 3 (") {
 		t.Errorf("only step 2 cites the changed code:\n%s", out)
 	}
+	if !strings.Contains(out, "read that code again and store the flow with abbd flow charge FILE") || strings.Contains(out, "to drop it") {
+		t.Errorf("status must say to read the code and store the flow again, not to delete the flow to clear a STALE step:\n%s", out)
+	}
 	p.flow(1, "the code does not hold", chargeFlow)
-	p.flow(0, "stored", strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1))
+	requoted := strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1)
+	p.flow(1, "step 2 says what a STALE step said", requoted)
+	fiveTries := strings.Replace(requoted, "gives up after three tries", "gives up after five tries", 1)
+	p.flow(0, "stored", fiveTries)
 	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
 
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}")+"// a new last line\n")
 	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"), "// line 4\n", "var backoff = 2\n", 1))
 	p.resync()
 	p.want(1, "flow charge step 2", "status", "--check")
-	p.flow(1, "read it again", strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1))
+	p.flow(1, "read it again", fiveTries)
 }
 
 // A draft enters only as an ordered walk through the state: a question, two
@@ -122,7 +128,7 @@ func TestAReaderReplacesAHumansFlowOnlyOnceItIsStale(t *testing.T) {
 	p.flow(1, "only a human changes it", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
 	p.resync()
-	p.flow(0, "replaced the human's steps 2 (conversation 2026-11-03)", strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1))
+	p.flow(0, "replaced the human's steps 2 (conversation 2026-11-03)", strings.Replace(strings.Replace(chargeFlow, "const tries = 3", "const tries = 5", 1), "gives up after three tries", "gives up after five tries", 1))
 	if stored := p.read("flows/charge.md"); strings.Count(stored, "writer: reader") != 1 || strings.Count(stored, "writer: human") != 2 {
 		t.Errorf("the reader's step must replace the human's stale one alone:\n%s", stored)
 	}
@@ -224,6 +230,10 @@ func TestAStaleStepCannotComeBackUnreadAcrossStores(t *testing.T) {
 	step2 := chargeFlow[strings.Index(chargeFlow, "  - unit: MOD-0001\n    does: retries"):strings.Index(chargeFlow, "  - unit: MOD-0002")]
 	p.flow(0, "stored flow charge, 2 steps", strings.Replace(chargeFlow, step2, "", 1))
 	p.flow(1, "step 2 says what a STALE step said", chargeFlow)
+	p.flow(1, "step 2 says what a STALE step said", strings.Replace(chargeFlow, "retries a failed insert", "Retries a failed  insert", 1))
+	onLedger := strings.Replace(strings.Replace(chargeFlow, "  - unit: MOD-0001\n    does: retries", "  - unit: MOD-0002\n    does: retries", 1),
+		`{path: billing/charge.go, lines: "4", symbol: Charge, quote: "func Charge() {}"}`, `{path: ledger/book.go, lines: "6", symbol: Post, quote: "func Post() {}"}`, 1)
+	p.flow(1, "step 2 says what a STALE step said", onLedger)
 	p.flow(1, "step 2 says what a STALE step said", strings.Replace(chargeFlow, "symbol: Charge, quote: \"func Charge() {}\"}", "symbol: Charge, quote: \"func Charge() {}\"}\n      - {path: billing/charge.go, lines: \"1\", quote: \"package billing\"}", 1))
 	p.want(0, "flows: 1 flow(s), 2 step(s), 0 STALE", "status", "--check")
 	p.flow(0, "stored", strings.Replace(chargeFlow, "retries a failed insert", "retries a failed insert after a backoff", 1))
@@ -244,7 +254,59 @@ func TestAFlowStepCitesCodeItsOwnUnitHolds(t *testing.T) {
 	p := notesProject(t)
 	post := "\n      - {path: ledger/book.go, lines: \"6\", symbol: Post, quote: \"func Post() {}\"}"
 	p.flow(1, "none of the step's quotes is in the code of MOD-0002", strings.Replace(chargeFlow, post, "", 1))
-	p.flow(1, "lies outside Post", strings.Replace(chargeFlow, `{path: ledger/book.go, lines: "3-4", quote:`, `{path: ledger/book.go, lines: "3-4", symbol: Post, quote:`, 1))
-	p.flow(1, "declares no Book", strings.Replace(chargeFlow, "symbol: Post,", "symbol: Book,", 1))
 	p.flow(0, "stored flow charge, 3 steps", chargeFlow)
+}
+
+// A quote's symbol is the reader's claim, used only to say which unit's code
+// the quote lies in. abbd does not read declarations, so it stores a claim
+// it cannot check.
+func TestAQuotesSymbolIsTheReadersClaim(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored flow charge, 3 steps", strings.Replace(chargeFlow, `{path: ledger/book.go, lines: "3-4", quote:`, `{path: ledger/book.go, lines: "3-4", symbol: Post, quote:`, 1))
+}
+
+// stepTwoRetired stores the charge flow, moves the code under step 2, and
+// stores the flow without step 2, so step 2 is kept among the retired steps.
+func stepTwoRetired(t *testing.T) *project {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	p.code("billing/retry.go", movedRetry())
+	p.resync()
+	step2 := chargeFlow[strings.Index(chargeFlow, "  - unit: MOD-0001\n    does: retries"):strings.Index(chargeFlow, "  - unit: MOD-0002")]
+	p.flow(0, "stored flow charge, 2 steps", strings.Replace(chargeFlow, step2, "", 1))
+	if !strings.Contains(p.read("flows/charge.md"), "retired:") {
+		t.Fatal("step 2 went STALE and left the flow, so it is retired")
+	}
+	return p
+}
+
+// A human is the authority on a flow: a retired step does not hold a human's
+// store back, and the human's word clears the retired steps it says again.
+func TestAHumanStoreClearsTheRetiredStepsItSays(t *testing.T) {
+	p := stepTwoRetired(t)
+	p.flow(0, "stored flow charge, 3 steps, USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
+	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
+		t.Errorf("the human said step 2 again, so it is no longer retired:\n%s", stored)
+	}
+}
+
+// A retired step is forgotten once its unit leaves the state, so the list
+// does not grow without bound.
+func TestARetiredStepOnAUnitThatLeftIsForgotten(t *testing.T) {
+	p := notesProject(t)
+	p.flow(0, "stored", chargeFlow)
+	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n// cached\nfunc Post() {}\n")
+	p.resync()
+	p.want(1, "flow charge step 3", "status", "--check")
+	two := chargeFlow[:strings.Index(chargeFlow, "  - unit: MOD-0002")] + "---\n\nFrom the insert to the book.\n"
+	p.flow(0, "stored flow charge, 2 steps", two)
+	if !strings.Contains(p.read("flows/charge.md"), "retired:") {
+		t.Fatal("step 3 went STALE and left the flow, so it is retired")
+	}
+	p.extract(`{"units":[{"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}]}`)
+	p.resync()
+	p.flow(0, "stored flow charge, 2 steps", two)
+	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
+		t.Errorf("MOD-0002 left the state, so its retired step is forgotten:\n%s", stored)
+	}
 }
