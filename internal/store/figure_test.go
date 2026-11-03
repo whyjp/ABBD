@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,18 +17,18 @@ func TestFlowsAreReadFromTheirOwnFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 	s := Open(root)
-	f, err := ParseFlowDraft([]byte("---\nquestion: ' Q? '\nwriter: human\nsteps:\n  - unit: MOD-0001\n    does: runs A\n    evidence: [{path: a.go, quote: func A()}]\n    code: {x: y}\n---\n\ncaption\n"))
+	f, err := ParseFigureDraft[model.Step]([]byte("---\nquestion: ' Q? '\nwriter: human\nsteps:\n  - unit: MOD-0001\n    does: runs A\n    evidence: [{path: a.go, quote: func A()}]\n    code: {x: y}\n---\n\ncaption\n"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if f.Question != "Q?" || f.Steps[0].Writer != "" || f.Steps[0].Code != nil || f.Caption != "caption" {
+	if f.Question != "Q?" || f.Parts[0].Writer != "" || f.Parts[0].Code != nil || f.Caption != "caption" {
 		t.Fatalf("a draft keeps the question, steps and caption only: %+v", f)
 	}
-	f.Key, f.Steps[0].Writer = "run", model.Reader
-	if err := s.SaveFlow(f); err == nil {
-		t.Fatal("an unstamped flow must be refused")
+	f.Key, f.Parts[0].Writer = "run", model.Reader
+	if err := SaveFigure(s, Flow{Key: "bare", Question: "Q?", Parts: []Part[model.Step]{{Claim: model.Step{Unit: "MOD-0001", Does: "runs A"}}}}); err == nil {
+		t.Fatal("a step that cites no code must be refused")
 	}
-	if err := s.SaveFlow(s.StampFlow(f)); err != nil {
+	if err := SaveFigure(s, f); err != nil {
 		t.Fatal(err)
 	}
 	for name, body := range map[string]string{"README.md": "notes\n", "Bad Name.md": "---\nquestion: q\n---\n"} {
@@ -35,22 +36,22 @@ func TestFlowsAreReadFromTheirOwnFiles(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	flows, strays, err := s.LoadFlows()
+	figs, err := s.LoadFigures()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(strays) != 1 || strays[0].File != Dir+"/flows/README.md" {
-		t.Errorf("a file without frontmatter is a stray: %v", strays)
+	if len(figs.Strays) != 1 || figs.Strays[0].File != Dir+"/flows/README.md" {
+		t.Errorf("a file without frontmatter is a stray: %v", figs.Strays)
 	}
 	known := map[string]bool{}
-	for _, f := range flows {
+	for _, f := range figs.Flows {
 		known[string(f.Key)] = f.Known
 	}
-	if !known["run"] || known["Bad Name"] || len(flows) != 2 {
+	if !known["run"] || known["Bad Name"] || len(figs.Flows) != 2 {
 		t.Errorf("run is a flow, Bad Name is read but no flow key: %v", known)
 	}
-	if fl, _, _ := s.LoadFlow("run"); fl.Steps[0].Stale() {
-		t.Errorf("a flow stamped on the code as it is reads current: %+v", fl.Steps[0])
+	if fl, _, _ := LoadFigure[model.Step](s, "run"); fl.Parts[0].Stale() {
+		t.Errorf("a flow stamped on the code as it is reads current: %+v", fl.Parts[0])
 	}
 }
 
@@ -69,11 +70,11 @@ func TestAFlowStepWithNoCodeReadsStale(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(root, Dir, "flows", "run.md"), []byte(body), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	fl, _, err := s.LoadFlow("run")
+	fl, _, err := LoadFigure[model.Step](s, "run")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, st := range fl.Steps {
+	for i, st := range fl.Parts {
 		if !st.Stale() {
 			t.Errorf("step %d cites no code to check and must read STALE: %+v", i+1, st)
 		}
@@ -93,11 +94,42 @@ func TestAMalformedFlowFileIsAStray(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	flows, strays, err := s.LoadFlows()
+	figs, err := s.LoadFigures()
 	if err != nil {
 		t.Fatalf("a malformed file must not stop the flows from loading: %v", err)
 	}
-	if len(flows) != 0 || len(strays) != 2 || strays[0].File != Dir+"/flows/bad.md" || strays[0].Why == "" || strays[1].File != Dir+"/flows/open.md" {
-		t.Errorf("each malformed file is a stray with its reason: %+v %+v", flows, strays)
+	if len(figs.Flows) != 0 || len(figs.Strays) != 2 || figs.Strays[0].File != Dir+"/flows/bad.md" || figs.Strays[0].Why == "" || figs.Strays[1].File != Dir+"/flows/open.md" {
+		t.Errorf("each malformed file is a stray with its reason: %+v %+v", figs.Flows, figs.Strays)
+	}
+}
+
+// A flow file reads and writes back to the same bytes, its retired steps
+// and a human's word included, so the flows stored before figures had kinds
+// stay as they are. testdata/flows/sync.md is this repository's own flow.
+func TestAFlowFileWritesBackTheSameBytes(t *testing.T) {
+	for _, key := range []model.FigureKey{"sync", "charge"} {
+		want, err := os.ReadFile(filepath.Join("testdata", "flows", string(key)+".md"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		root := t.TempDir()
+		s := Open(root)
+		if err := os.MkdirAll(filepath.Join(root, Dir, "flows"), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		file := filepath.Join(root, Dir, "flows", string(key)+".md")
+		if err := os.WriteFile(file, want, 0o644); err != nil {
+			t.Fatal(err)
+		}
+		f, ok, err := LoadFigure[model.Step](s, key)
+		if err != nil || !ok {
+			t.Fatalf("flow %s: %v", key, err)
+		}
+		if err := writeFigure(s, f); err != nil {
+			t.Fatal(err)
+		}
+		if got, _ := os.ReadFile(file); !bytes.Equal(got, want) {
+			t.Errorf("flow %s must write back as it was read:\n%s", key, got)
+		}
 	}
 }

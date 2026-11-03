@@ -113,7 +113,7 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 		p.flow(1, c.want, draft)
 	}
 	one := chargeFlow[:strings.Index(chargeFlow, "  - unit: MOD-0001\n    does: retries")] + "---\n"
-	p.flow(1, "two steps or more", one)
+	p.flow(1, "a flow has 2 steps or more, and this one has 1", one)
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "flows", "charge.md")); err == nil {
 		t.Error("a refused draft must store nothing")
 	}
