@@ -104,3 +104,69 @@ func TestForgetRemovesANoteAndSaysWhatItWas(t *testing.T) {
 	p.want(0, "forgot MOD-0001.failure (CURRENT)", "forget", "MOD-0001.failure")
 	p.want(1, "there is no note at", "forget", "MOD-0001.failure")
 }
+
+// A copy of a note in a directory that is no unit ID, such as
+// MOD-0001.decisions/k.md, has no ref that names only its file: status names
+// the file to delete instead of a forget that would remove the current note.
+func TestForgetNeverNamesTwoFilesByOneRef(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.decisions.k", "A charge is tried three times.", failureQuote)
+	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001.decisions", "k.md"), p.read("understanding/MOD-0001/decisions.k.md"))
+	p.resync()
+	out := p.want(0, "delete .abbd/understanding/MOD-0001.decisions/k.md to drop it", "status")
+	if strings.Contains(out, "abbd forget MOD-0001.decisions.k") {
+		t.Errorf("status must not name a forget that also matches the current note:\n%s", out)
+	}
+	p.want(0, "forgot MOD-0001.decisions.k (CURRENT): removed .abbd/understanding/MOD-0001/decisions.k.md", "forget", "MOD-0001.decisions.k")
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "understanding", "MOD-0001.decisions", "k.md")); err != nil {
+		t.Errorf("forget must leave the copy it was not named for: %v", err)
+	}
+}
+
+// A note whose evidence was edited by hand reads STALE because its stored
+// code was stamped against other quotes. A reread would bless words and a
+// human's why given about the old quote, so it is refused.
+func TestARereadIsRefusedWhenTheEvidenceWasEditedByHand(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.decisions.k", "The states run pending then charged.", statesQuote)
+	p.want(0, "recorded", "record", "fact", "MOD-0001.decisions.k", "--value", "refunds come later", "--source", "https://example.com/pr/7")
+	f := filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "decisions.k.md")
+	note := p.read("understanding/MOD-0001/decisions.k.md")
+	edited := strings.Replace(note, `var states = []string{"pending", "charged"}`, "const tries = 3", 1)
+	if edited == note {
+		t.Fatalf("the note must quote the states line:\n%s", note)
+	}
+	write(t, f, edited)
+	p.resync()
+	p.want(1, "1 note(s) STALE", "status", "--check")
+	p.want(1, "store it again with its words", "understand", "MOD-0001.decisions.k", "--reread-by", "claude")
+	p.want(1, "1 note(s) STALE", "status", "--check")
+}
+
+// A reread records where each quote sits now, as a store with fresh
+// --evidence would.
+func TestARereadMovesEachQuotesLinesToWhereItIsNow(t *testing.T) {
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.states", "pending then charged.", statesQuote)
+	p.code("billing/retry.go", "// new 1\n// new 2\n"+statesCommented())
+	p.resync()
+	p.want(1, "1 note(s) STALE", "status", "--check")
+	p.want(0, "stamped MOD-0001.states", "understand", "MOD-0001.states", "--reread-by", "claude")
+	if note := p.read("understanding/MOD-0001/states.md"); !regexp.MustCompile(`lines: "?27"?\n`).MatchString(note) {
+		t.Errorf("the reread note must cite the states line where it sits now, line 27:\n%s", note)
+	}
+	p.want(0, "notes: 1 slot note(s), 0 STALE", "status", "--check")
+}
+
+// The skill and the check's summary send a reader to the commands, not to
+// deleting a note's file by hand.
+func TestTheSkillAndTheCheckNameTheNoteCommands(t *testing.T) {
+	if text := readPlugin(t, "skills", "abbd", "SKILL.md"); strings.Contains(text, "Delete `.abbd/understanding/<ID>/") {
+		t.Error("the abbd skill must remove a note with abbd forget, not by deleting its file")
+	}
+	p := notesProject(t)
+	p.wantNote(0, "understood", "MOD-0001.states", "pending then charged.", statesQuote)
+	p.code("billing/retry.go", statesCommented())
+	p.resync()
+	p.want(1, "1 note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", "status", "--check")
+}

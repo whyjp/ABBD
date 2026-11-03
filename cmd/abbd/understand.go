@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -212,12 +213,21 @@ func (e env) reread(r model.NoteRef, args []string) error {
 		return fmt.Errorf("%s is current; nothing to stamp again", r)
 	}
 	c := evidence.New(e.root)
-	for _, ev := range n.Evidence {
+	for i, ev := range n.Evidence {
 		if c.Occurrences(ev) != 1 {
 			return fmt.Errorf("%s no longer holds %q exactly once, so %s does not rest on the code it quotes; read it again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE", ev.Path, ev.Quote, r, r)
 		}
+		if ev.Lines != "" {
+			n.Evidence[i].Lines = c.Check(ev).At
+		}
 	}
-	n.Digest, n.Code = e.st.NoteStamp(n.Evidence)
+	// A note whose evidence was edited by hand was stamped against other
+	// quotes, so its words and a human's why speak about other code.
+	digest, code := e.st.NoteStamp(n.Evidence)
+	if !slices.Equal(slices.Sorted(maps.Keys(code)), slices.Sorted(maps.Keys(n.Code))) {
+		return fmt.Errorf("%s was stamped against other quotes than its evidence names, so its words were not written about them; read the code it cites and store it again with its words, abbd understand %s FILE --evidence PATH:LINES:QUOTE", r, r)
+	}
+	n.Digest, n.Code = digest, code
 	n.Format = store.CodeFormat
 	n.Reread = &store.Reread{By: by, On: time.Now().UTC().Format(time.DateOnly), Moved: n.Changed}
 	if err := e.st.SaveNote(n); err != nil {
@@ -242,7 +252,7 @@ func (e env) forget(ref string) error {
 	// A misfiled note is listed under the unit it says it is, not its file's.
 	var n store.Note
 	for _, ns := range notes {
-		if i := slices.IndexFunc(ns, func(n store.Note) bool { return n.FileRef() == ref }); i >= 0 {
+		if i := slices.IndexFunc(ns, func(n store.Note) bool { got, ok := n.FileRef(); return ok && got == ref }); i >= 0 {
 			n = ns[i]
 		}
 	}

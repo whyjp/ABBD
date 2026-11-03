@@ -58,10 +58,16 @@ func NoteFile(unit model.ID, slot string) string {
 }
 
 // FileRef names a note by where its file sits, ID.SLOT[.KEY], so a note
-// whose frontmatter says it is another slot can still be named.
-func (n Note) FileRef() string {
-	rel := strings.TrimSuffix(strings.TrimPrefix(n.File, Dir+"/understanding/"), ".md")
-	return strings.Replace(rel, "/", ".", 1)
+// whose frontmatter says it is another slot can still be named. Only a file
+// in a directory named by a unit ID has one: a unit ID holds no dot, so no
+// other file maps to the same ref, while MOD-0001.decisions/k.md would share
+// MOD-0001/decisions.k.md's.
+func (n Note) FileRef() (string, bool) {
+	dir, name, _ := strings.Cut(strings.TrimSuffix(strings.TrimPrefix(n.File, Dir+"/understanding/"), ".md"), "/")
+	if _, _, err := model.ParseID(dir); err != nil {
+		return "", false
+	}
+	return dir + "." + name, true
 }
 
 // Stale reports whether the code a note cites changed since it was written.

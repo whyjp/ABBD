@@ -37,7 +37,7 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
    - `wire_sample`: a sample of what crosses the contract, in a fenced code block.
    - `entries`: one note per entry of a contract, as `<ID>.entries.<KEY>`, saying what the endpoint, method, flag or field is for and its caveats. `abbd explain <ID>` lists the keys. abbd refuses a key the contract does not list. The blueprint shows the note on the entry's row of the contract's table.
 
-   The blueprint shows a module's notes beside its inside, and a contract's in the inside of the module that provides it. `abbd explain <ID>` prints each one with whether it is current. Delete `.abbd/understanding/<ID>/<SLOT>.md` when the code no longer has what the note says.
+   The blueprint shows a module's notes beside its inside, and a contract's in the inside of the module that provides it. `abbd explain <ID>` prints each one with whether it is current. When the code no longer has what the note says, remove it with `abbd forget <ID>.<SLOT>`.
 
 7. When how or your own reading traces the order something happens in, such as what one command does, how a request crosses modules, or a pipeline's stages, store it as a flow with `abbd flow <KEY> <FILE>`. A flow answers one question. The blueprint draws it as numbered steps, each on the unit whose code runs it, and lists it on the overview and on each module it passes through. Write the FILE as frontmatter and a caption:
 
