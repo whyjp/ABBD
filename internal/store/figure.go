@@ -36,8 +36,12 @@ type Figure[C model.Claim[C]] struct {
 	Known bool
 }
 
-// Flow is a question answered in ordered steps.
-type Flow = Figure[model.Step]
+// Flow is a question answered in ordered steps, and Stack one answered in
+// layers from the top down.
+type (
+	Flow  = Figure[model.Step]
+	Stack = Figure[model.Layer]
+)
 
 // Part is one claim of a figure with its stamp. Go cannot embed a type
 // parameter, so the claim is a named field.
@@ -238,6 +242,7 @@ type Stray struct{ File, Why string }
 // are no figures.
 type Figures struct {
 	Flows  []Flow
+	Stacks []Stack
 	Strays []Stray
 }
 
@@ -245,10 +250,15 @@ type Figures struct {
 // of kinds.
 func (s Store) LoadFigures() (Figures, error) {
 	var fs Figures
+	var flows, stacks []Stray
 	var err error
-	if fs.Flows, fs.Strays, err = loadKind[model.Step](s); err != nil {
+	if fs.Flows, flows, err = loadKind[model.Step](s); err != nil {
 		return fs, err
 	}
+	if fs.Stacks, stacks, err = loadKind[model.Layer](s); err != nil {
+		return fs, err
+	}
+	fs.Strays = append(flows, stacks...)
 	return fs, nil
 }
 

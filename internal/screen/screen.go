@@ -130,8 +130,10 @@ type Model struct {
 	// Focus are the views derived from the overview when it is dense.
 	Focus   []Focus
 	Insides []Inside
-	// Flows are the stored flows, each a question answered in steps.
-	Flows []FlowView
+	// Flows are the stored flows, each a question answered in steps, and
+	// Stacks the stored stacks, each a question answered in layers.
+	Flows  []FlowView
+	Stacks []StackView
 	// Edges are every live relation between present units, for graph.json.
 	Edges   []Line
 	Extract []string
@@ -194,7 +196,7 @@ func Build(in Input) Model {
 		m.Insides = append(m.Insides, ins)
 	}
 	o.placeNotes(in, &m)
-	m.Flows = o.flows(in)
+	m.Flows, m.Stacks = o.flows(in), o.stacks(in)
 	o.linkFigures(&m)
 	return m
 }

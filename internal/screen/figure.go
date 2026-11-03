@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
@@ -50,7 +51,7 @@ func partMarks(st store.Stamp, badge, source string) (string, string) {
 }
 
 // linkFigures lists each figure on every inside whose subtree holds a unit
-// one of its parts is on, with those parts' numbers.
+// one of its parts is on or holds, with those parts' numbers.
 func (o *overview) linkFigures(m *Model) {
 	for i := range m.Insides {
 		ins := &m.Insides[i]
@@ -69,6 +70,18 @@ func (o *overview) linkFigures(m *Model) {
 			}
 			if len(ref.Steps) > 0 {
 				ins.Flows = append(ins.Flows, ref)
+			}
+		}
+		for _, s := range m.Stacks {
+			ref := StackRef{ID: s.ID, Question: s.Question}
+			for id, n := range s.held {
+				if held[string(id)] && !slices.Contains(ref.Layers, n) {
+					ref.Layers = append(ref.Layers, n)
+				}
+			}
+			slices.Sort(ref.Layers)
+			if len(ref.Layers) > 0 {
+				ins.Stacks = append(ins.Stacks, ref)
 			}
 		}
 	}

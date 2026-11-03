@@ -31,8 +31,10 @@ type Inside struct {
 	// Inferred are the couplings a reader found that touch this module, which
 	// the overview does not draw.
 	Inferred []Coupling
-	// Flows are the flows with a step on a unit this module holds.
-	Flows []FlowRef `json:",omitempty"`
+	// Flows are the flows with a step on a unit this module holds, and
+	// Stacks the stacks with a layer that holds one.
+	Flows  []FlowRef  `json:",omitempty"`
+	Stacks []StackRef `json:",omitempty"`
 	// Focus are the views derived from this one when it is dense, one per
 	// box (focus.go). graph.json leaves them out: they hold nothing the
 	// stored graph does not.

@@ -164,9 +164,13 @@ func (e env) status() error {
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", n))
 	}
-	if b := statusFigures(e, in.Units, in.Figures.Flows, in.Figures.Strays); b != "" {
-		behind = append(behind, b)
+	fs := in.Figures
+	for _, b := range []string{statusFigures(e, in.Units, fs.Flows, fs.Strays), statusFigures(e, in.Units, fs.Stacks, fs.Strays)} {
+		if b != "" {
+			behind = append(behind, b)
+		}
 	}
+	e.statusBreaches(in.Units, fs.Stacks)
 	if len(texts) > 0 {
 		readTexts(e.stdout, texts)
 	}

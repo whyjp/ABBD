@@ -103,6 +103,42 @@ func TestAMalformedFlowFileIsAStray(t *testing.T) {
 	}
 }
 
+// A stack is a figure of its own kind: its file sits under .abbd/stacks and
+// lists its layers under their own key, and a file there that is no stack is
+// a stray of that directory.
+func TestAStackIsStoredUnderItsOwnKind(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "a.go"), []byte("package a\nfunc A() {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s := Open(root)
+	f, err := ParseFigureDraft[model.Layer]([]byte("---\nquestion: What are the layers?\nlayers:\n  - name: top\n    role: runs A\n    units: [MOD-0001]\n    evidence: [{path: a.go, quote: func A()}]\n---\n\ncaption\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Key = "cli"
+	if err := SaveFigure(s, f); err != nil {
+		t.Fatal(err)
+	}
+	b, err := os.ReadFile(filepath.Join(root, Dir, "stacks", "cli.md"))
+	if err != nil || !bytes.Contains(b, []byte("\nlayers:\n")) || bytes.Contains(b, []byte("steps:")) {
+		t.Fatalf("a stack's file lists its layers: %v\n%s", err, b)
+	}
+	if err := os.WriteFile(filepath.Join(root, Dir, "stacks", "README.md"), []byte("notes\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	figs, err := s.LoadFigures()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(figs.Flows) != 0 || len(figs.Stacks) != 1 || figs.Stacks[0].Parts[0].Claim.Units[0] != "MOD-0001" || figs.Stacks[0].Parts[0].Stale() {
+		t.Errorf("the stack loads back as stored, among the stacks only: %+v", figs)
+	}
+	if len(figs.Strays) != 1 || figs.Strays[0].File != Dir+"/stacks/README.md" {
+		t.Errorf("a file there that is no stack is a stray of the stacks: %v", figs.Strays)
+	}
+}
+
 // A flow file reads and writes back to the same bytes, its retired steps
 // and a human's word included, so the flows stored before figures had kinds
 // stay as they are. testdata/flows/sync.md is this repository's own flow.
