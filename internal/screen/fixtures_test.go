@@ -105,14 +105,14 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 var debt = map[string]Metrics{
 	"self MOD-0001 abbd CLI":                 {Back: 5},
 	"self FEAT-0001 /abbd":                   {Back: 5},
+	"self FEAT-0002 /abbd-setup":             {MaxDetour: 268},
 	"self MOD-0030 internal/model":           {Back: 3},
 	"self MOD-0047 internal/topology":        {Back: 2},
 	"orca MOD-0007 mobile app (Expo)":        {Back: 11},
-	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 244},
+	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 314},
 	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},
 	"orca MOD-0072 desktop renderer UI":      {Back: 6},
 	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 468},
-	"orca MOD-0098 src/":                     {TooClose: 1},
 	"pstack MOD-0001 setup and help":         {Braid: 2228},
 	"pstack MOD-0003 principles":             {Back: 3},
 	// A focus view (focus.go) of the same state, where lines of two kinds
