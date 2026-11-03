@@ -182,7 +182,7 @@ func addFiles(dir, prefix string, env []string, repo string) error {
 		}
 		target, err := os.Readlink(filepath.Join(dir, filepath.FromSlash(p)))
 		if err != nil {
-			return err
+			return fmt.Errorf("reading the link %s in %s: %w", p, repo, err)
 		}
 		out, err := runInput(dir, nil, filepath.ToSlash(target), "hash-object", "-w", "--stdin")
 		if err != nil {
@@ -219,10 +219,24 @@ var cQuote = strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`, "\r", `\r`)
 
 // addMode returns the mode git add records for p, relative to dir, or ""
 // when git add skips it: p is neither a file nor a symlink, or sits below a
-// symlink, which git add does not follow.
+// symlink, which git add does not follow. A Windows junction is not a
+// symlink to git, which walks into it as a directory, and Lstat reports it
+// as irregular, so a parent that is irregular and resolves to a directory
+// counts as one.
 func addMode(dir, p string) string {
 	for d := path.Dir(p); d != "."; d = path.Dir(d) {
-		if fi, err := os.Lstat(filepath.Join(dir, filepath.FromSlash(d))); err != nil || !fi.IsDir() {
+		at := filepath.Join(dir, filepath.FromSlash(d))
+		fi, err := os.Lstat(at)
+		if err != nil {
+			return ""
+		}
+		if fi.Mode()&os.ModeIrregular != 0 {
+			fi, err = os.Stat(at)
+			if err != nil {
+				return ""
+			}
+		}
+		if !fi.IsDir() {
 			return ""
 		}
 	}

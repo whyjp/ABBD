@@ -1746,8 +1746,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:288 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:295 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:302 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:309 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -18325,6 +18325,15 @@
         "Stale": false,
         "Blocks": [
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0022 origin: INFERRED digest: 007bacf5a345ded3 format: 3 code: internal/gitx: 33e8a96ae8ad15e9 internal/gitx/gitx.go: a228ed7426b25613 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -18819,7 +18828,15 @@
                 "Code": true
               },
               {
-                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
+                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. A Windows junction is not a symlink to git, which walks into it, and ",
+                "Code": false
+              },
+              {
+                "Text": "Lstat",
+                "Code": true
+              },
+              {
+                "Text": " calls it irregular, so a parent that is irregular and resolves to a directory counts as a directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
                 "Code": false
               },
               {

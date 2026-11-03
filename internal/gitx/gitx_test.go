@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -104,6 +105,34 @@ func TestANestedRepositorySnapshotKeepsSymlinksAsLinks(t *testing.T) {
 		"n/real/f.go": "100644 package real\n",
 		"n/link":      "120000 real",
 		"n/alias.go":  "120000 real/f.go",
+	}
+	if got := snapshot(t, root, tree); !maps.Equal(got, want) {
+		t.Errorf("snapshot = %q, want %q", got, want)
+	}
+}
+
+// A Windows junction in a nested repository is a directory to git, so the
+// files below it are snapshotted as git add would record them.
+func TestANestedRepositorySnapshotWalksAJunction(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("junctions are Windows only")
+	}
+	root := t.TempDir()
+	git(t, root, "init", "-q")
+	n := filepath.Join(root, "n")
+	write(t, filepath.Join(n, "real", "f.go"), "package real\n")
+	if out, err := exec.Command("cmd", "/c", "mklink", "/J", filepath.Join(n, "junc"), filepath.Join(n, "real")).CombinedOutput(); err != nil {
+		t.Skipf("cannot make a junction here: %v %s", err, out)
+	}
+	git(t, n, "init", "-q")
+
+	tree, err := Snapshot(root, ".abbd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"n/real/f.go": "100644 package real\n",
+		"n/junc/f.go": "100644 package real\n",
 	}
 	if got := snapshot(t, root, tree); !maps.Equal(got, want) {
 		t.Errorf("snapshot = %q, want %q", got, want)
