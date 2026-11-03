@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/model"
@@ -34,6 +36,9 @@ func (e env) understand(ref string, args []string) error {
 	}
 	if len(e.evidence) > 0 {
 		return fmt.Errorf("a module's text describes all of its code and cites none; --evidence is for a slot such as %s.semantics", ref)
+	}
+	if e.rereadBy != "" {
+		return fmt.Errorf("--reread-by is for a slot note such as %s.semantics; a module's text reads its whole module, so run pstack how on it again", ref)
 	}
 	id := model.ID(ref)
 	units, err := e.st.LoadUnits()
@@ -109,21 +114,16 @@ func (e env) note(r model.NoteRef, args []string) error {
 	switch {
 	case e.restamp:
 		return fmt.Errorf("a note describes only the code it cites, so moving units never stales it; store it again with abbd understand %s FILE --evidence PATH:LINES:QUOTE", r)
+	case e.rereadBy != "":
+		return e.reread(r, args)
 	case len(args) == 0:
 		return fmt.Errorf("pass a FILE with the note's text")
 	case len(e.evidence) == 0:
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE that %s rests on", r)
 	}
-	units, err := e.st.LoadUnits()
+	u, err := e.noteUnit(r)
 	if err != nil {
 		return err
-	}
-	u, ok := presentUnit(units, r.Unit)
-	if !ok || !u.Kind.HoldsNotes() {
-		return fmt.Errorf("%s is not a module or a contract of the state", r.Unit)
-	}
-	if r.Unheld(u) {
-		return fmt.Errorf("%s lists no entry %s; abbd explain %s lists its entries", r.Unit, r.Key, r.Unit)
 	}
 	cited, err := e.citations()
 	if err != nil {
@@ -166,6 +166,120 @@ func (e env) note(r model.NoteRef, args []string) error {
 		fmt.Fprintf(e.stdout, "dropped the why %s stated, since the decision now cites other code; ask again and store it with abbd record fact %s --value WHY --source WHERE\n", prev.Why.Source, r)
 	}
 	readText(e.stdout, r.String(), text)
+	return nil
+}
+
+// noteUnit is the module or contract a note's slot belongs to, refusing a
+// unit that takes no notes and an entry its contract does not list.
+func (e env) noteUnit(r model.NoteRef) (model.Unit, error) {
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return model.Unit{}, err
+	}
+	u, ok := presentUnit(units, r.Unit)
+	if !ok || !u.Kind.HoldsNotes() {
+		return u, fmt.Errorf("%s is not a module or a contract of the state", r.Unit)
+	}
+	if r.Unheld(u) {
+		return u, fmt.Errorf("%s lists no entry %s; abbd explain %s lists its entries", r.Unit, r.Key, r.Unit)
+	}
+	return u, nil
+}
+
+// reread stamps a STALE note against its cited code again, keeping its
+// words and quotes, for a reader who read that code again and found the note
+// still holds, as after a whitespace or comment edit near a quote. It names
+// who read it and records that with the date and what had moved, and it is
+// refused while any quote is not in its file exactly once, word for word.
+func (e env) reread(r model.NoteRef, args []string) error {
+	by := strings.TrimSpace(e.rereadBy)
+	switch {
+	case len(args) > 0 || len(e.evidence) > 0:
+		return fmt.Errorf("--reread-by keeps %s's words and quotes; pass neither a FILE nor --evidence, or store new ones without it", r)
+	case by == "":
+		return fmt.Errorf("--reread-by names who read the code %s cites again", r)
+	}
+	u, err := e.noteUnit(r)
+	if err != nil {
+		return err
+	}
+	n, had, err := e.st.LoadNote(r)
+	switch {
+	case err != nil:
+		return err
+	case !had:
+		return fmt.Errorf("there is no note %s to stamp again; store one with abbd understand %s FILE --evidence PATH:LINES:QUOTE", r, r)
+	case !n.Stale():
+		return fmt.Errorf("%s is current; nothing to stamp again", r)
+	}
+	c := evidence.New(e.root)
+	for i, ev := range n.Evidence {
+		if c.Occurrences(ev) != 1 {
+			return fmt.Errorf("%s no longer holds %q exactly once, so %s does not rest on the code it quotes; read it again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE", ev.Path, ev.Quote, r, r)
+		}
+		if ev.Lines != "" {
+			n.Evidence[i].Lines = c.Check(ev).At
+		}
+	}
+	// A note whose evidence was edited by hand was stamped against other
+	// quotes, so its words and a human's why speak about other code.
+	digest, code := e.st.NoteStamp(n.Evidence)
+	if !slices.Equal(slices.Sorted(maps.Keys(code)), slices.Sorted(maps.Keys(n.Code))) {
+		return fmt.Errorf("%s was stamped against other quotes than its evidence names, so its words were not written about them; read the code it cites and store it again with its words, abbd understand %s FILE --evidence PATH:LINES:QUOTE", r, r)
+	}
+	n.Digest, n.Code = digest, code
+	n.Format = store.CodeFormat
+	n.Reread = &store.Reread{By: by, On: time.Now().UTC().Format(time.DateOnly), Moved: n.Changed}
+	if err := e.st.SaveNote(n); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "stamped %s %s again against the code it cites %s, reread by %s after %s moved; its words and quotes are unchanged\n", r, u.Name.Value, n.Digest, by, strings.Join(n.Changed, ", "))
+	return nil
+}
+
+// forget removes the note whose file ref names, with the human's why it
+// holds, and says what it was. It goes by the file and not by the slot, so a
+// note abbd no longer reads as its slot's, orphaned or misfiled, goes too.
+func (e env) forget(ref string) error {
+	unit, slot, ok := strings.Cut(ref, ".")
+	if !ok || unit == "" || slot == "" {
+		return fmt.Errorf("name the note as ID.SLOT[.KEY], as abbd status prints it")
+	}
+	notes, _, err := e.st.LoadNotes()
+	if err != nil {
+		return err
+	}
+	// A misfiled note is listed under the unit it says it is, not its file's.
+	var n store.Note
+	for _, ns := range notes {
+		if i := slices.IndexFunc(ns, func(n store.Note) bool { got, ok := n.FileRef(); return ok && got == ref }); i >= 0 {
+			n = ns[i]
+		}
+	}
+	if n.File == "" {
+		return fmt.Errorf("there is no note at %s", store.NoteFile(model.ID(unit), slot))
+	}
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	u, present := presentUnit(units, n.Unit)
+	state := "CURRENT"
+	switch {
+	case n.Misfiled:
+		state = fmt.Sprintf("misfiled, it says it is %s.%s", n.Unit, n.Slot)
+	case !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u):
+		state = "orphaned"
+	case n.Stale():
+		state = "STALE"
+	}
+	if err := e.st.RemoveNote(n); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "forgot %s (%s): removed %s\n", ref, state, n.File)
+	if n.Why != nil {
+		fmt.Fprintf(e.stdout, "the why stated at %s went with it: %s\n", n.Why.Source, n.Why.Value)
+	}
 	return nil
 }
 

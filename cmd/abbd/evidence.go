@@ -162,7 +162,7 @@ func (e env) status() error {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
 	}
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
-		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or delete the file status names", n))
+		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", n))
 	}
 	if n := e.statusFlows(in.Units, in.Flows, in.FlowStrays); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d flow step(s) STALE, read the code each cites again and store the flow with abbd flow KEY FILE, or delete the file status names", n))
@@ -189,6 +189,15 @@ func (e env) status() error {
 	return nil
 }
 
+// dropNote says how to remove an orphaned note: by abbd forget when its file
+// has a ref that names it alone, else by deleting the file.
+func dropNote(n store.Note, does string) string {
+	if ref, ok := n.FileRef(); ok {
+		return fmt.Sprintf("abbd forget %s %s", ref, does)
+	}
+	return fmt.Sprintf("delete %s to drop it", n.File)
+}
+
 // statusNotes reports the notes in slots: how many, which are STALE with the
 // places that moved, which are orphaned, so the check skips them, and the
 // markdown files beside them that are no notes. It
@@ -205,19 +214,19 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 			switch {
 			case n.Misfiled:
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s says it is %s, whose note belongs at %s, so nothing reads it and the check skips it; delete %s to drop it", n.File, ref, store.NoteFile(id, n.Slot), n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s says it is %s, whose note belongs at %s, so nothing reads it and the check skips it; %s", n.File, ref, store.NoteFile(id, n.Slot), dropNote(n, "drops it")))
 				continue
 			case !present || !u.Kind.HoldsNotes() || !n.Known:
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; delete %s to drop it", ref, n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; %s", ref, dropNote(n, "removes "+n.File)))
 				continue
 			case n.Ref.Unheld(u):
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s lists no entry %s now, so the check skips its note; delete %s to drop it", id, n.Ref.Key, n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s lists no entry %s now, so the check skips its note; %s", id, n.Ref.Key, dropNote(n, "removes "+n.File)))
 				continue
 			case n.Stale():
 				stale++
-				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s; read that code again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE, or delete %s to drop it", ref, strings.Join(n.Changed, ", "), ref, n.File))
+				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s; read that code again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE, or with abbd understand %s --reread-by WHO when it still holds as written, or drop it with abbd forget %s", ref, strings.Join(n.Changed, ", "), ref, ref, ref))
 			}
 			texts[ref] = n.Text
 		}
