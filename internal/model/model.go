@@ -102,11 +102,26 @@ type Anchor struct {
 
 func (a Anchor) Key() string { return a.Path + "#" + a.Symbol }
 
-// Holds reports whether path is the anchor's code: the anchor's own file, or
-// a file under it when it is a directory.
-func (a Anchor) Holds(path string) bool {
+// Closeness says how closely the anchor names the code a quote lies in, -1
+// when it does not hold it. A symbol anchor holds only a quote that names
+// its symbol in its file, and is closest; a file anchor holds its file; a
+// directory anchor the files under it, the deeper the closer; and . every
+// file, least closely.
+func (a Anchor) Closeness(e Evidence) int {
 	dir := strings.TrimSuffix(a.Path, "/")
-	return path == dir || dir == "." || strings.HasPrefix(path, dir+"/")
+	switch {
+	case a.Symbol != "":
+		if e.Path == dir && e.Symbol == a.Symbol {
+			return len(dir) + 2
+		}
+	case e.Path == dir:
+		return len(dir) + 1
+	case dir == ".":
+		return 0
+	case strings.HasPrefix(e.Path, dir+"/"):
+		return len(dir)
+	}
+	return -1
 }
 
 func SortAnchors(as []Anchor) []Anchor {

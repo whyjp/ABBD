@@ -33,6 +33,7 @@ steps:
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
           lines: "434"
+          symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
       code:
@@ -83,7 +84,7 @@ steps:
       note: .abbd/ is left out, so committing the state leaves the tree unchanged
       evidence:
         - path: internal/gitx/gitx.go
-          lines: "94"
+          lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
           lines: "387"
@@ -97,7 +98,7 @@ steps:
       fails: warns and finds no moves when the last snapshot is gone
       evidence:
         - path: internal/gitx/gitx.go
-          lines: "234"
+          lines: "294"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
           lines: "396"
@@ -111,7 +112,7 @@ steps:
       note: a sync of an unchanged tree keeps the stored revision
       evidence:
         - path: internal/gitx/gitx.go
-          lines: "30"
+          lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
           lines: "406"

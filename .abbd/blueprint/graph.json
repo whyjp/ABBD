@@ -239,7 +239,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -329,7 +329,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:608 \"if !u.Absent {\""
+        "internal/model/model.go:623 \"if !u.Absent {\""
       ]
     },
     {
@@ -383,7 +383,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -401,7 +401,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -1145,8 +1145,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:127 \"var idPattern = regexp.MustCompile(\"",
-        "internal/model/model.go:139 \"return ID(fmt.Sprintf(\\\"%s-%04d\\\", k, n))\""
+        "internal/model/model.go:142 \"var idPattern = regexp.MustCompile(\"",
+        "internal/model/model.go:154 \"return ID(fmt.Sprintf(\\\"%s-%04d\\\", k, n))\""
       ]
     },
     {
@@ -1168,8 +1168,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:529 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:507 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:544 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:522 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
@@ -1909,7 +1909,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:204 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
+        "internal/model/model.go:219 \"func (u Unit) Semantic() bool { return u.Name.Writer.Origin() == Inferred }\""
       ]
     },
     {
@@ -1931,8 +1931,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:411 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:442 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:426 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
+        "internal/model/model.go:457 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -3821,7 +3821,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -3837,7 +3837,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:608 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:623 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3845,7 +3845,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:121 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
+      "Quote": "internal/model/model.go:136 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
     },
     {
       "From": "MOD-0030",
@@ -3853,7 +3853,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3861,7 +3861,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -12382,7 +12382,15 @@
                 "Code": true
               },
               {
-                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. Each step records its writer: with ",
+                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. A quote's ",
+                "Code": false
+              },
+              {
+                "Text": "symbol",
+                "Code": true
+              },
+              {
+                "Text": " is not checked. Each step records its writer: with ",
                 "Code": false
               },
               {
@@ -12394,11 +12402,19 @@
                 "Code": false
               },
               {
-                "Text": "mayReplaceFlow",
+                "Text": "retire",
                 "Code": true
               },
               {
-                "Text": " refuses any STALE step that comes back with the same unit, words and citations, whatever else changed, so no reword restamps it. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too; ",
+                "Text": " carries the stored flow's ",
+                "Code": false
+              },
+              {
+                "Text": "Retired",
+                "Code": true
+              },
+              {
+                "Text": " steps forward with each stored step that is STALE. It forgets one whose code is back as written, whose unit left the state, or whose files are all gone. It refuses a reader's draft step that says a retired step's words, in any case or spacing and on any unit, and cites a file whose code changed under that step, however many stores ago it left the flow. A human's store is not refused and clears the retired steps it says again. It cannot tell a reworded step from a re-read one. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too; ",
                 "Code": false
               },
               {
@@ -12414,7 +12430,7 @@
                 "Code": true
               },
               {
-                "Text": " prints each STALE step with why, and each stray with its reason and how to clear it, and ",
+                "Text": " prints each STALE step with why and says to read that code and store the flow again, and each stray with its reason and how to clear it, and ",
                 "Code": false
               },
               {
@@ -22970,11 +22986,19 @@
                 "Code": false
               },
               {
-                "Text": "Holds",
+                "Text": "Closeness",
                 "Code": true
               },
               {
-                "Text": " reports whether a path is the anchor's file or lies under it as a directory. ",
+                "Text": " says how closely the anchor names the code a quote lies in, or -1 when it does not hold it: a symbol anchor holds only a quote that names its symbol in its file and is closest, then a file anchor, then a directory anchor, deeper first, and ",
+                "Code": false
+              },
+              {
+                "Text": ".",
+                "Code": true
+              },
+              {
+                "Text": " holds every file least closely. ",
                 "Code": false
               },
               {
@@ -24216,7 +24240,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it against the state: a gap for a unit that is gone, a gap when no quote lies in the anchors of the step's unit, a unit inside it or a unit it calls, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
+                "Text": " reads it against the state: a gap for a unit that is gone, a gap when no quote lies in code that the step's unit, or a unit inside it, anchors more closely than any other unit does, or that a contract it provides anchors so, so a shared file counts for the unit whose anchor names it best, a command's handler counts for the module that provides the command, and a unit it calls lends it no code, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
                 "Code": false
               },
               {
@@ -24366,7 +24390,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:563 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -24384,7 +24408,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:608 \"if !u.Absent {\""
+            "internal/model/model.go:623 \"if !u.Absent {\""
           ]
         },
         {
@@ -24393,7 +24417,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:121 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
+            "internal/model/model.go:136 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
           ]
         },
         {
@@ -24402,7 +24426,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:486 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -24411,7 +24435,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:506 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -27519,7 +27543,15 @@
                 "Code": true
               },
               {
-                "Text": " lists the views that do not keep them yet with what they measure now: a listed view may only improve, and the test fails once it keeps every rule and is still listed.",
+                "Text": " lists the views that do not keep them yet with what they measure now: a listed view may only improve, and the test fails once it keeps every rule and is still listed. ",
+                "Code": false
+              },
+              {
+                "Text": "chips_test.go",
+                "Code": true
+              },
+              {
+                "Text": " measures a small hand-written drawing whose chips leave their box and the canvas, so the escaped-chip count cannot read 0 unnoticed.",
                 "Code": false
               }
             ]
@@ -30479,7 +30511,15 @@
                 "Code": true
               },
               {
-                "Text": " per step and an edit near one step's quotes stales that step alone. A step with no evidence or no ",
+                "Text": " per step, and ",
+                "Code": false
+              },
+              {
+                "Text": "Moved",
+                "Code": true
+              },
+              {
+                "Text": " with the files of those places, and an edit near one step's quotes stales that step alone. A step with no evidence or no ",
                 "Code": false
               },
               {
@@ -30507,11 +30547,59 @@
                 "Code": false
               },
               {
+                "Text": "Retired",
+                "Code": true
+              },
+              {
+                "Text": " holds the steps that went STALE and left the flow, each with its words, its evidence and the ",
+                "Code": false
+              },
+              {
+                "Text": "Code",
+                "Code": true
+              },
+              {
+                "Text": " it was written against, and ",
+                "Code": false
+              },
+              {
+                "Text": "LoadFlows",
+                "Code": true
+              },
+              {
+                "Text": " fills their ",
+                "Code": false
+              },
+              {
+                "Text": "Changed",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Moved",
+                "Code": true
+              },
+              {
+                "Text": " too, so a command can drop one whose code is back as it was written and refuse a step that repeats one on a file whose code changed. ",
+                "Code": false
+              },
+              {
                 "Text": "ParseFlowDraft",
                 "Code": true
               },
               {
-                "Text": " keeps only a draft's question, steps and caption. A file there with no frontmatter, or whose frontmatter does not parse, is a ",
+                "Text": " keeps only a draft's question, steps and caption, so a draft can neither add nor clear ",
+                "Code": false
+              },
+              {
+                "Text": "Retired",
+                "Code": true
+              },
+              {
+                "Text": ". A file there with no frontmatter, or whose frontmatter does not parse, is a ",
                 "Code": false
               },
               {
@@ -33848,7 +33936,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:121 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
+            "internal/model/model.go:136 \"sort.Slice(out, func(i, j int) bool { return out[i].Key() \u003c out[j].Key() })\""
           ]
         },
         {
@@ -34964,7 +35052,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:94 \"func Snapshot(dir, exclude string) (string, error) {\"",
+                "internal/gitx/gitx.go:95 \"func Snapshot(dir, exclude string) (string, error) {\"",
                 "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
               ]
             },
@@ -34977,7 +35065,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:234 \"func Renames(dir, oldTree, newTree string)\"",
+                "internal/gitx/gitx.go:294 \"func Renames(dir, oldTree, newTree string)\"",
                 "cmd/abbd/main.go:396 \"last sync snapshot %s is gone\""
               ]
             },
@@ -34990,7 +35078,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:30 \"func Head(dir string) string {\"",
+                "internal/gitx/gitx.go:31 \"func Head(dir string) string {\"",
                 "cmd/abbd/main.go:406 \"if state.Fingerprint != tree || rev == \\\"\\\" {\""
               ]
             }

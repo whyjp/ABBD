@@ -194,7 +194,7 @@ func (s Store) noteChanged(n Note) []string {
 	if digest, _ := s.NoteStamp(n.Evidence); digest == n.Digest {
 		return nil
 	}
-	if out := s.changed(n.Evidence, n.Code); out != nil {
+	if out, _ := s.changed(n.Evidence, n.Code); out != nil {
 		return out
 	}
 	return []string{"its stored code does not match its evidence"}

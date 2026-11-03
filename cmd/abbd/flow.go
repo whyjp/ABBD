@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"maps"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -55,6 +58,9 @@ func (e env) flow(key string, args []string) error {
 		return err
 	}
 	f = e.st.StampFlow(f)
+	if f.Retired, err = e.retire(prev, f, units); err != nil {
+		return err
+	}
 	if err := e.st.SaveFlow(f); err != nil {
 		return err
 	}
@@ -134,13 +140,65 @@ func (hs humanSteps) String() string {
 	return fmt.Sprintf("%s (%s)", strings.Join(places, ", "), strings.Join(sources, "; "))
 }
 
+// retire carries the retired steps of the stored flow over to the stamped
+// draft f, with each step of the stored flow whose code changed since it was
+// written. It forgets those whose code is back as they were written, whose
+// unit left the state, or whose files are all gone. A reader's step of f
+// that repeats one of them is refused: it would read fresh with no one
+// reading that code again, however many stores ago it left the flow. A
+// human's store is the human's word, so it is not refused and clears the
+// retired steps it repeats.
+func (e env) retire(prev store.Flow, f store.Flow, units []model.Unit) ([]store.FlowStep, error) {
+	present := model.Present(units)
+	gone := func(s store.FlowStep) bool {
+		return !slices.ContainsFunc(present, func(u model.Unit) bool { return u.ID == s.Unit }) ||
+			!slices.ContainsFunc(s.Evidence, func(ev model.Evidence) bool {
+				_, err := os.Stat(filepath.Join(e.root, filepath.FromSlash(ev.Path)))
+				return err == nil
+			})
+	}
+	var out []store.FlowStep
+	for _, s := range append(slices.Clone(prev.Retired), prev.Steps...) {
+		if s.Stale() && !gone(s) && !slices.ContainsFunc(out, func(o store.FlowStep) bool { return said(o, s) && maps.Equal(o.Code, s.Code) }) {
+			out = append(out, store.FlowStep{Step: model.Step{Unit: s.Unit, Does: s.Does, Note: s.Note, Fails: s.Fails, Evidence: s.Evidence}, Code: s.Code, Changed: s.Changed, Moved: s.Moved})
+		}
+	}
+	if e.writer() == model.Human {
+		return slices.DeleteFunc(out, func(r store.FlowStep) bool {
+			return slices.ContainsFunc(f.Steps, func(n store.FlowStep) bool { return repeats(n, r) })
+		}), nil
+	}
+	for i, n := range f.Steps {
+		for _, r := range out {
+			if repeats(n, r) {
+				return nil, fmt.Errorf("step %d says what a STALE step said, on a file whose code changed since it was written (%s); read it again, then say in new words what it does now", i+1, strings.Join(r.Changed, ", "))
+			}
+		}
+	}
+	return out, nil
+}
+
+// said reports whether two steps say the same words, in any case and
+// spacing, whatever unit they name.
+func said(x, y store.FlowStep) bool {
+	same := func(a, b string) bool {
+		return strings.EqualFold(strings.Join(strings.Fields(a), ""), strings.Join(strings.Fields(b), ""))
+	}
+	return same(x.Does, y.Does) && same(x.Note, y.Note) && same(x.Fails, y.Fails)
+}
+
+// repeats reports whether step n says what the retired step r said and
+// cites a file whose code changed under r.
+func repeats(n, r store.FlowStep) bool {
+	return said(n, r) && slices.ContainsFunc(n.Evidence, func(ev model.Evidence) bool { return slices.Contains(r.Moved, ev.Path) })
+}
+
 // mayReplaceFlow decides, step by step, whether the draft f may replace the
-// stored flow. A STALE step that comes back as it was is refused whatever
-// else changed: it would read fresh with no one reading its code again. A
-// human may replace any step. A reader may replace only a human's STALE
-// steps: each current one must come back as written, in its order, and
-// keeps the human's word, as do the question and caption, so CI never waits on the human for a step whose
-// code moved and a human's word on a step that still holds is never lost.
+// stored flow. A human may replace any step. A reader may replace only a
+// human's STALE steps: each current one must come back as written, in its
+// order, and keeps the human's word, as do the question and caption, so CI
+// never waits on the human for a step whose code moved and a human's word on
+// a step that still holds is never lost.
 // kept are the human's steps f keeps and replaced those the reader took
 // over, each named by its place.
 func mayReplaceFlow(prev store.Flow, had bool, f *store.Flow, units []model.Unit) (kept, replaced humanSteps, err error) {
@@ -148,11 +206,6 @@ func mayReplaceFlow(prev store.Flow, had bool, f *store.Flow, units []model.Unit
 		return nil, nil, nil
 	}
 	stale := func(s store.FlowStep) bool { return s.Stale() || len(s.Against(units).Gaps) > 0 }
-	for i, s := range prev.Steps {
-		if stale(s) && slices.ContainsFunc(f.Steps, func(n store.FlowStep) bool { return sameStep(s, n) }) {
-			return nil, nil, fmt.Errorf("step %d is STALE and comes back as it was: the code it cites changed since it was written; read it again, then store what it does now or cite the code it rests on now", i+1)
-		}
-	}
 	human := func(s store.FlowStep) bool { return s.Writer == model.Human }
 	if slices.ContainsFunc(f.Steps, human) || !slices.ContainsFunc(prev.Steps, human) {
 		return nil, nil, nil
@@ -239,7 +292,7 @@ func (e env) statusFlows(units []model.Unit, flows []store.Flow, strays []store.
 				continue
 			}
 			stale++
-			lines = append(lines, fmt.Sprintf("stale: flow %s step %d (%s): %s; read that code again and store the flow with abbd flow %s FILE, or delete %s to drop it", f.Key, i+1, s.Unit, strings.Join(why, ", "), f.Key, f.File))
+			lines = append(lines, fmt.Sprintf("stale: flow %s step %d (%s): %s; read that code again and store the flow with abbd flow %s FILE (deleting %s drops the whole flow and what it remembers of its STALE steps)", f.Key, i+1, s.Unit, strings.Join(why, ", "), f.Key, f.File))
 		}
 	}
 	fmt.Fprintf(e.stdout, "flows: %d flow(s), %d step(s), %d STALE\n", len(flows), steps, stale)

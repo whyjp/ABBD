@@ -19,12 +19,15 @@ import (
 // Each step keeps its own Code, one hash per quote of the lines around it,
 // so an edit near one step's quotes stales that step alone, and its own
 // writer, so a reader who replaces a stale step keeps a human's word on the
-// others. The caption is the file's body. InputsHash covers .abbd/flows/, so
-// storing a flow stales the blueprint.
+// others. Retired are steps that went STALE and left the flow, each with the
+// code it was written against, kept while that code still differs, so their
+// words cannot come back on it unread. The caption is the file's body.
+// InputsHash covers .abbd/flows/, so storing a flow stales the blueprint.
 type Flow struct {
 	Question string     `yaml:"question"`
 	Format   int        `yaml:"format"`
 	Steps    []FlowStep `yaml:"steps"`
+	Retired  []FlowStep `yaml:"retired,omitempty"`
 	Caption  string     `yaml:"-"`
 	// Key is the file's name and File where it sits, from the project root.
 	// Known is false when the name is no flow key; status reports it.
@@ -35,13 +38,14 @@ type Flow struct {
 
 // FlowStep is a step, who wrote it and the code it was written against: a
 // human's step carries the Source they said it in. Changed lists the cited
-// places whose code moved since; LoadFlows fills it.
+// places whose code moved since, and Moved their files; LoadFlows fills both.
 type FlowStep struct {
 	model.Step `yaml:",inline"`
-	Writer     model.Writer      `yaml:"writer"`
+	Writer     model.Writer      `yaml:"writer,omitempty"`
 	Source     string            `yaml:"source,omitempty"`
 	Code       map[string]string `yaml:"code"`
 	Changed    []string          `yaml:"-"`
+	Moved      []string          `yaml:"-"`
 }
 
 // Origin is the weakest origin of the flow's steps: USER_STATED only when a
@@ -101,11 +105,15 @@ func (s Store) SaveFlow(f Flow) error {
 		if len(st.Code) == 0 {
 			return fmt.Errorf("flow %s step %d cites no code to check it against", f.Key, i+1)
 		}
-		ev := make([]model.Evidence, len(st.Evidence))
-		for j, e := range st.Evidence {
-			ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+	}
+	for _, steps := range [][]FlowStep{f.Steps, f.Retired} {
+		for i, st := range steps {
+			ev := make([]model.Evidence, len(st.Evidence))
+			for j, e := range st.Evidence {
+				ev[j] = model.Evidence{Path: e.Path, Lines: e.Lines, Symbol: e.Symbol, Quote: e.Quote}
+			}
+			steps[i].Evidence = ev
 		}
-		f.Steps[i].Evidence = ev
 	}
 	f.Format = FlowFormat
 	b, err := frontmatter(f, CleanText(f.Caption)+"\n")
@@ -159,10 +167,13 @@ func (s Store) LoadFlows() ([]Flow, []Stray, error) {
 			if st.Writer == "" {
 				fl.Steps[i].Writer = model.Reader
 			}
-			fl.Steps[i].Changed = s.changed(st.Evidence, st.Code)
+			fl.Steps[i].Changed, fl.Steps[i].Moved = s.changed(st.Evidence, st.Code)
 			if len(st.Evidence) == 0 || len(st.Code) == 0 {
 				fl.Steps[i].Changed = []string{"the step cites no code abbd stamped, so nothing shows it is still true"}
 			}
+		}
+		for i, st := range fl.Retired {
+			fl.Retired[i].Changed, fl.Retired[i].Moved = s.changed(st.Evidence, st.Code)
 		}
 		out = append(out, fl)
 	}
@@ -183,28 +194,35 @@ func (s Store) LoadFlow(k model.FlowKey) (Flow, bool, error) {
 }
 
 // changed lists each cited place whose code differs from what was written
-// against it: its lines changed, or its quote is gone.
-func (s Store) changed(cited []model.Evidence, code map[string]string) []string {
+// against it, as why: its lines changed, or its quote is gone. files are
+// the paths of those places.
+func (s Store) changed(cited []model.Evidence, code map[string]string) (why, files []string) {
 	_, now := s.NoteStamp(cited)
 	if maps.Equal(now, code) {
-		return nil
+		return nil, nil
 	}
-	var out []string
 	for k, h := range now {
 		if code[k] != h {
 			reason := "the lines around it changed"
 			if h == missing {
 				reason = "the quote is gone, or no longer once in the file"
 			}
-			out = append(out, fmt.Sprintf("%s (%s)", keyPath(k), reason))
+			why = append(why, fmt.Sprintf("%s (%s)", keyPath(k), reason))
+			files = append(files, keyPath(k))
 		}
 	}
-	slices.Sort(out)
-	out = slices.Compact(out)
-	if len(out) == 0 {
-		out = []string{"its stored code does not match its evidence"}
+	for k := range code {
+		if _, ok := now[k]; !ok {
+			files = append(files, keyPath(k))
+		}
 	}
-	return out
+	slices.Sort(why)
+	slices.Sort(files)
+	why, files = slices.Compact(why), slices.Compact(files)
+	if len(why) == 0 {
+		why = []string{"its stored code does not match its evidence"}
+	}
+	return why, files
 }
 
 // splitFrontmatter cuts a file into its frontmatter and its body.
