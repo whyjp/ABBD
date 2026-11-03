@@ -1511,7 +1511,6 @@
       },
       "Anchors": [
         "internal/evidence",
-        "internal/evidence/declared.go",
         "internal/evidence/evidence.go"
       ]
     },
@@ -1726,7 +1725,7 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:80 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
+        "internal/gitx/gitx.go:81 \"for _, b := range append(candidates, \\\"@{upstream}\\\", \\\"origin/main\\\", \\\"origin/master\\\", \\\"main\\\", \\\"master\\\") {\""
       ]
     },
     {
@@ -1747,8 +1746,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:242 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
-        "internal/gitx/gitx.go:249 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
+        "internal/gitx/gitx.go:302 \"\\\"diff-tree\\\", \\\"-r\\\", \\\"-M\\\", \\\"-l0\\\"\"",
+        "internal/gitx/gitx.go:309 \"case strings.HasPrefix(f[i], \\\"R\\\") \u0026\u0026 i+2 \u003c len(f):\""
       ]
     },
     {
@@ -1769,8 +1768,8 @@
       ],
       "Parent": "MOD-0022",
       "Evidence": [
-        "internal/gitx/gitx.go:107 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
-        "internal/gitx/gitx.go:109 \"\\\":(exclude)\\\"+exclude\""
+        "internal/gitx/gitx.go:108 \"env := []string{\\\"GIT_INDEX_FILE=\\\" + filepath.Join(tmp, \\\"index\\\")}\"",
+        "internal/gitx/gitx.go:110 \"\\\":(exclude)\\\"+exclude\""
       ]
     },
     {
@@ -3713,7 +3712,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+      "Quote": "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
     },
     {
       "From": "MOD-0024",
@@ -12216,15 +12215,7 @@
                 "Code": true
               },
               {
-                "Text": " steps, with a quote the code does not hold exactly once, with a quote that names a symbol but lies outside the lines ",
-                "Code": false
-              },
-              {
-                "Text": "evidence.Declared",
-                "Code": true
-              },
-              {
-                "Text": " finds for it, or with a unit or call that ",
+                "Text": " steps, with a quote the code does not hold exactly once, or with a unit or call that ",
                 "Code": false
               },
               {
@@ -12232,7 +12223,15 @@
                 "Code": true
               },
               {
-                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. Each step records its writer: with ",
+                "Text": " cannot place, and it moves each quote's lines to where the quote sits now. A quote's ",
+                "Code": false
+              },
+              {
+                "Text": "symbol",
+                "Code": true
+              },
+              {
+                "Text": " is not checked. Each step records its writer: with ",
                 "Code": false
               },
               {
@@ -12256,7 +12255,7 @@
                 "Code": true
               },
               {
-                "Text": " steps forward with each stored step that is STALE, and refuses a draft step with the same unit and words that cites a quote whose code changed under them, however many stores ago that step left the flow and whatever quotes the draft adds. It cannot tell a reworded step from a re-read one. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too; ",
+                "Text": " steps forward with each stored step that is STALE. It forgets one whose code is back as written, whose unit left the state, or whose files are all gone. It refuses a reader's draft step that says a retired step's words, in any case or spacing and on any unit, and cites a file whose code changed under that step, however many stores ago it left the flow. A human's store is not refused and clears the retired steps it says again. It cannot tell a reworded step from a re-read one. A human replaces any step. A reader may change a flow with a human's steps only once one is STALE, and each current human step must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too; ",
                 "Code": false
               },
               {
@@ -12272,7 +12271,7 @@
                 "Code": true
               },
               {
-                "Text": " prints each STALE step with why, and each stray with its reason and how to clear it, and ",
+                "Text": " prints each STALE step with why and says to read that code and store the flow again, and each stray with its reason and how to clear it, and ",
                 "Code": false
               },
               {
@@ -15489,19 +15488,11 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The package is two files, ",
+                "Text": "The package is one file, ",
                 "Code": false
               },
               {
                 "Text": "evidence.go",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "declared.go",
                 "Code": true
               },
               {
@@ -15737,23 +15728,7 @@
                 "Code": true
               },
               {
-                "Text": " calls it to mark a note's place missing once its quote is no longer unique. ",
-                "Code": false
-              },
-              {
-                "Text": "abbd flow",
-                "Code": true
-              },
-              {
-                "Text": " calls ",
-                "Code": false
-              },
-              {
-                "Text": "Declared",
-                "Code": true
-              },
-              {
-                "Text": " to refuse a step's quote that names a symbol but lies outside it.",
+                "Text": " calls it to mark a note's place missing once its quote is no longer unique.",
                 "Code": false
               }
             ]
@@ -16229,68 +16204,6 @@
               },
               {
                 "Text": " matches. It is 0 for a missing file or an empty quote.",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "li",
-            "Parts": [
-              {
-                "Text": "Declared",
-                "Code": true
-              },
-              {
-                "Text": " (",
-                "Code": false,
-                "Bold": true
-              },
-              {
-                "Text": "declared.go",
-                "Code": true
-              },
-              {
-                "Text": "): the lines that hold a symbol's code, found without a parser for any language. The declaration is the first line that names the symbol after declaring words only, such as ",
-                "Code": false
-              },
-              {
-                "Text": "func",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "type",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "def",
-                "Code": true
-              },
-              {
-                "Text": " or ",
-                "Code": false
-              },
-              {
-                "Text": "class",
-                "Code": true
-              },
-              {
-                "Text": " and a Go receiver, else the first line that opens with the symbol and assigns it, as in a const block. The span takes in the comment lines right above it and runs on through the lines indented deeper, to a closing brace or ",
-                "Code": false
-              },
-              {
-                "Text": "end",
-                "Code": true
-              },
-              {
-                "Text": " at its own depth. It is false for a missing file or a symbol no line declares so.",
                 "Code": false
               }
             ]
@@ -18492,6 +18405,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "addMode",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -18886,7 +18807,7 @@
                 "Code": false
               },
               {
-                "Text": "hash-object -w --stdin-paths",
+                "Text": "hash-object -w",
                 "Code": true
               },
               {
@@ -18898,15 +18819,31 @@
                 "Code": true
               },
               {
-                "Text": ", so the fingerprint sees it as the untracked directory it is. It keeps only the regular files on disk, since that repository's index can list a file deleted or renamed before its first commit, and ",
+                "Text": ", so the fingerprint sees it as the untracked directory it is. ",
                 "Code": false
               },
               {
-                "Text": "unignored",
+                "Text": "addMode",
                 "Code": true
               },
               {
-                "Text": " drops what ",
+                "Text": " keeps what ",
+                "Code": false
+              },
+              {
+                "Text": "git add",
+                "Code": true
+              },
+              {
+                "Text": " would add: a regular file as 100644 or 100755, and a symlink as 120000, whose blob is the link's target, not the target's content. It drops a path that is gone, is neither a file nor a symlink, or sits below a symlinked directory. A Windows junction is not a symlink to git, which walks into it, and ",
+                "Code": false
+              },
+              {
+                "Text": "Lstat",
+                "Code": true
+              },
+              {
+                "Text": " calls it irregular, so a parent that is irregular and resolves to a directory counts as a directory. That repository's index can list such a path when a file is deleted or renamed before the first commit, or when a directory later becomes a symlink, and ",
                 "Code": false
               },
               {
@@ -18914,7 +18851,31 @@
                 "Code": true
               },
               {
-                "Text": " says the project ignores. git reads the paths of ",
+                "Text": " would refuse a path below a symlink. ",
+                "Code": false
+              },
+              {
+                "Text": "unignored",
+                "Code": true
+              },
+              {
+                "Text": " then drops what ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": " says the project ignores. Each path to ",
+                "Code": false
+              },
+              {
+                "Text": "hash-object --stdin-paths",
+                "Code": true
+              },
+              {
+                "Text": " goes in C-style quotes, so a name may hold a newline. git reads the paths of ",
                 "Code": false
               },
               {
@@ -19426,7 +19387,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -24049,7 +24010,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it against the state: a gap for a unit that is gone, a gap when no quote lies in code that the step's unit, or a unit inside it, anchors more closely than any other unit does, so a shared file counts for the unit whose anchor names it best and a unit it calls lends it no code, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
+                "Text": " reads it against the state: a gap for a unit that is gone, a gap when no quote lies in code that the step's unit, or a unit inside it, anchors more closely than any other unit does, or that a contract it provides anchors so, so a shared file counts for the unit whose anchor names it best, a command's handler counts for the module that provides the command, and a unit it calls lends it no code, and for each call the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. ",
                 "Code": false
               },
               {
@@ -24181,7 +24142,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/gitx/gitx.go:50 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
+            "internal/gitx/gitx.go:51 \"\\\"ls-files\\\", \\\"-z\\\", \\\"--cached\\\", \\\"--others\\\", \\\"--exclude-standard\\\")\""
           ]
         },
         {
@@ -30296,7 +30257,15 @@
                 "Code": true
               },
               {
-                "Text": " per step and an edit near one step's quotes stales that step alone. A step with no evidence or no ",
+                "Text": " per step, and ",
+                "Code": false
+              },
+              {
+                "Text": "Moved",
+                "Code": true
+              },
+              {
+                "Text": " with the files of those places, and an edit near one step's quotes stales that step alone. A step with no evidence or no ",
                 "Code": false
               },
               {
@@ -30352,7 +30321,15 @@
                 "Code": true
               },
               {
-                "Text": " too, so a command can drop one whose code is back as it was written. ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Moved",
+                "Code": true
+              },
+              {
+                "Text": " too, so a command can drop one whose code is back as it was written and refuse a step that repeats one on a file whose code changed. ",
                 "Code": false
               },
               {
@@ -34821,7 +34798,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:94 \"func Snapshot(dir, exclude string) (string, error) {\"",
+                "internal/gitx/gitx.go:95 \"func Snapshot(dir, exclude string) (string, error) {\"",
                 "cmd/abbd/main.go:387 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
               ]
             },
@@ -34834,7 +34811,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:234 \"func Renames(dir, oldTree, newTree string)\"",
+                "internal/gitx/gitx.go:294 \"func Renames(dir, oldTree, newTree string)\"",
                 "cmd/abbd/main.go:396 \"last sync snapshot %s is gone\""
               ]
             },
@@ -34847,7 +34824,7 @@
               "Badge": "",
               "Source": "",
               "Quotes": [
-                "internal/gitx/gitx.go:30 \"func Head(dir string) string {\"",
+                "internal/gitx/gitx.go:31 \"func Head(dir string) string {\"",
                 "cmd/abbd/main.go:406 \"if state.Fingerprint != tree || rev == \\\"\\\" {\""
               ]
             }
