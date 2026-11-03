@@ -159,6 +159,10 @@ type Trace struct {
 	Bends, Jogs, Crossings []int
 	// Ways are the traced paths, by their turning points.
 	Ways []tracedWay
+	// Missing are the relations no ink carries, and Phantoms the paths of
+	// ink between places that no relation joins.
+	Missing  [][2]string
+	Phantoms []tracedWay
 	// UnmarkedT counts the points where ink splits or merges without a
 	// junction dot, CountAmbiguity the ×N labels that sit beside no line or
 	// beside more than one.
@@ -398,6 +402,7 @@ func trace(s sheet, rels [][2]string) Trace {
 			}
 			if !joined {
 				t.Phantom++
+				t.Phantoms = append(t.Phantoms, tracedWay{s.shapes[f].id, s.shapes[to].id, turns(b.pts)})
 				continue
 			}
 			t.Bends = append(t.Bends, b.bends)
@@ -412,6 +417,7 @@ func trace(s sheet, rels [][2]string) Trace {
 	for r := range want {
 		if !traced[r] {
 			t.Lost++
+			t.Missing = append(t.Missing, r)
 		}
 	}
 	// A point where ink of one colour goes three or more ways is a split or
@@ -621,7 +627,8 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 	}
 }
 
-// With ABBD_JOGS set, logJogs lists every traced path that jogs.
+// With ABBD_JOGS set, logJogs lists every traced path that jogs, and every
+// relation no ink carries and pair of places the ink joins wrongly.
 func logJogs(t *testing.T, got Trace) {
 	if os.Getenv("ABBD_JOGS") == "" {
 		return
@@ -632,6 +639,12 @@ func logJogs(t *testing.T, got Trace) {
 		if n := jogs(w.pts); n > 0 {
 			t.Logf("    jogs %d: %s to %s at %s", n, w.from, w.to, pointList(w.pts))
 		}
+	}
+	for _, r := range got.Missing {
+		t.Logf("    lost: %s to %s", r[0], r[1])
+	}
+	for _, w := range got.Phantoms {
+		t.Logf("    phantom: %s to %s at %s", w.from, w.to, pointList(w.pts))
 	}
 }
 
