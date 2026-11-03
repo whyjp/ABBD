@@ -26536,7 +26536,7 @@
                 "Code": true
               },
               {
-                "Text": " traces every relation along the drawn ink.",
+                "Text": " traces every relation along the drawn ink and counts the bends and the short jogs on its path.",
                 "Code": false
               }
             ]

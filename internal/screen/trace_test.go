@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -152,9 +153,12 @@ type Trace struct {
 	// of them no path of ink carries, and Phantom how many pairs of places
 	// the ink joins that no relation joins.
 	Relations, Lost, Phantom int
-	// Bends and Crossings are, per traced relation, how often its path turns
-	// and how many other lines it crosses on the way.
-	Bends, Crossings []int
+	// Bends, Jogs and Crossings are, per traced relation, how often its path
+	// turns, how many of its stretches between two turns are shorter than
+	// jogLen, and how many other lines it crosses on the way.
+	Bends, Jogs, Crossings []int
+	// Ways are the traced paths, by their turning points.
+	Ways []tracedWay
 	// UnmarkedT counts the points where ink splits or merges without a
 	// junction dot, CountAmbiguity the ×N labels that sit beside no line or
 	// beside more than one.
@@ -163,6 +167,48 @@ type Trace struct {
 	// Beside the share of the ink that runs alongside a row of boxes
 	// instead of through the gaps between rows.
 	SizeSpread, Beside float64
+}
+
+// tracedWay is one traced relation's path from the place it leaves to the
+// place it reaches.
+type tracedWay struct {
+	from, to string
+	pts      []fpt
+}
+
+// jogLen is how short a stretch between two turns may be before it reads as
+// a jog: a sideways step a person drawing the line by hand would not make.
+const jogLen = 24.0
+
+// turns keeps the points of a path where it turns, and its two ends.
+func turns(pts []fpt) []fpt {
+	out := []fpt{pts[0]}
+	for i := 1; i < len(pts)-1; i++ {
+		if dirOf(out[len(out)-1], pts[i]) != dirOf(pts[i], pts[i+1]) {
+			out = append(out, pts[i])
+		}
+	}
+	return append(out, pts[len(pts)-1])
+}
+
+// jogs counts the stretches of a path between two of its turns that are
+// shorter than jogLen.
+func jogs(pts []fpt) int {
+	n := 0
+	for i := 2; i < len(pts)-1; i++ {
+		if dist(pts[i-1], pts[i]) < jogLen {
+			n++
+		}
+	}
+	return n
+}
+
+func sum(xs []int) int {
+	s := 0
+	for _, x := range xs {
+		s += x
+	}
+	return s
 }
 
 func median(xs []int) float64 {
@@ -186,8 +232,14 @@ func maxOf(xs []int) int {
 }
 
 func (t Trace) String() string {
-	return fmt.Sprintf("relations %d, lost %d, phantom %d, bends median %.1f max %d, path crossings median %.1f max %d, unmarked T %d, count ambiguity %d, size spread %.1f, beside %.0f%%",
-		t.Relations, t.Lost, t.Phantom, median(t.Bends), maxOf(t.Bends), median(t.Crossings), maxOf(t.Crossings), t.UnmarkedT, t.CountAmbiguity, t.SizeSpread, 100*t.Beside)
+	over := 0
+	for _, b := range t.Bends {
+		if b > 2 {
+			over++
+		}
+	}
+	return fmt.Sprintf("relations %d, lost %d, phantom %d, bends median %.1f max %d total %d, over two bends %d, jogs %d, path crossings median %.1f max %d, unmarked T %d, count ambiguity %d, size spread %.1f, beside %.0f%%",
+		t.Relations, t.Lost, t.Phantom, median(t.Bends), maxOf(t.Bends), sum(t.Bends), over, sum(t.Jogs), median(t.Crossings), maxOf(t.Crossings), t.UnmarkedT, t.CountAmbiguity, t.SizeSpread, 100*t.Beside)
 }
 
 // shapeOf is the place a point on a drawing belongs to: the box it lies on,
@@ -254,6 +306,7 @@ func trace(s sheet, rels [][2]string) Trace {
 	type best struct {
 		bends int
 		path  []int
+		pts   []fpt
 	}
 	reach := func(from int) map[int]best {
 		dist := map[state]int{}
@@ -282,15 +335,17 @@ func trace(s sheet, rels [][2]string) Trace {
 			if id, ok := headAt[cur.k]; ok && id != from {
 				if b, seen := found[id]; !seen || d < b.bends {
 					var path []int
+					pts := []fpt{g.pos[cur.k]}
 					for st := cur; ; {
 						p, ok := prev[st]
 						if !ok {
 							break
 						}
 						path = append([]int{p.seg}, path...)
+						pts = append([]fpt{g.pos[p.s.k]}, pts...)
 						st = p.s
 					}
-					found[id] = best{d, path}
+					found[id] = best{d, path, pts}
 				}
 				continue
 			}
@@ -346,6 +401,9 @@ func trace(s sheet, rels [][2]string) Trace {
 				continue
 			}
 			t.Bends = append(t.Bends, b.bends)
+			way := turns(b.pts)
+			t.Jogs = append(t.Jogs, jogs(way))
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way})
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
@@ -551,15 +609,38 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 				t.Errorf("%s %s: rule 21: the tallest box is %.2f times the median, limit %.1f", name, v.name, got.SizeSpread, maxSpread)
 			}
 			t.Logf("%s %s: %s", name, v.name, got)
-			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside))
+			logJogs(t, got)
+			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside))
 		}
 	}
 	if f := os.Getenv("ABBD_METRICS"); f != "" {
-		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\n"
+		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\n"
 		if err := os.WriteFile(f, []byte(head+strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
+}
+
+// With ABBD_JOGS set, logJogs lists every traced path that jogs.
+func logJogs(t *testing.T, got Trace) {
+	if os.Getenv("ABBD_JOGS") == "" {
+		return
+	}
+	ways := slices.Clone(got.Ways)
+	sort.Slice(ways, func(i, j int) bool { return ways[i].from+ways[i].to < ways[j].from+ways[j].to })
+	for _, w := range ways {
+		if n := jogs(w.pts); n > 0 {
+			t.Logf("    jogs %d: %s to %s at %s", n, w.from, w.to, pointList(w.pts))
+		}
+	}
+}
+
+func pointList(pts []fpt) string {
+	var ps []string
+	for _, p := range pts {
+		ps = append(ps, fmt.Sprintf("%g,%g", p.x, p.y))
+	}
+	return strings.Join(ps, " ")
 }
 
 // The hand-laid reference drawing of this repository's overview,
@@ -589,6 +670,7 @@ func TestReferenceRanksFirst(t *testing.T) {
 		{"phantom", float64(ref.Phantom), float64(got.Phantom)},
 		{"bends median", median(ref.Bends), median(got.Bends)},
 		{"bends max", float64(maxOf(ref.Bends)), float64(maxOf(got.Bends))},
+		{"jogs", float64(sum(ref.Jogs)), float64(sum(got.Jogs))},
 		{"path crossings median", median(ref.Crossings), median(got.Crossings)},
 		{"path crossings max", float64(maxOf(ref.Crossings)), float64(maxOf(got.Crossings))},
 		{"unmarked T", float64(ref.UnmarkedT), float64(got.UnmarkedT)},
@@ -614,7 +696,9 @@ func TestTraceStore(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, v := range views(Build(Input{Units: units})) {
-		t.Logf("%s: %s", v.name, traced(t, v.d))
+		got := traced(t, v.d)
+		t.Logf("%s: %s", v.name, got)
+		logJogs(t, got)
 	}
 }
 
