@@ -354,10 +354,11 @@ func TestANoteFileAtTheWrongPathIsOrphaned(t *testing.T) {
 	out := p.want(1, "1 note(s) STALE", "status", "--check")
 	for _, want := range []string{
 		"orphaned: .abbd/understanding/MOD-0001/a.md says it is MOD-0001.states, whose note belongs at .abbd/understanding/MOD-0001/states.md",
-		"delete .abbd/understanding/MOD-0001/a.md",
+		"abbd forget MOD-0001.a drops it",
 		"stale: MOD-0001.states, the code it cites changed",
 		"abbd understand MOD-0001.states FILE --evidence",
-		"or delete .abbd/understanding/MOD-0001/states.md",
+		"abbd understand MOD-0001.states --reread-by WHO",
+		"drop it with abbd forget MOD-0001.states",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("status must say %q:\n%s", want, out)

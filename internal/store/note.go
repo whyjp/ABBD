@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -26,7 +27,10 @@ type Note struct {
 	Evidence []model.Evidence  `yaml:"evidence"`
 	Code     map[string]string `yaml:"code"`
 	Why      *model.Fact       `yaml:"why,omitempty"`
-	Text     string            `yaml:"-"`
+	// Reread is set when a reader read the cited code again after it
+	// moved and found the note still holds, so the words were kept.
+	Reread *Reread `yaml:"reread,omitempty"`
+	Text   string  `yaml:"-"`
 	// File is where the note sits, from the project root. Ref is the
 	// note's slot. Known is false when the slot is no longer one abbd knows
 	// or the file is not where the note of its slot belongs, Misfiled true
@@ -40,9 +44,24 @@ type Note struct {
 	Changed  []string      `yaml:"-"`
 }
 
+// Reread records who read a STALE note's cited code again and found
+// the note still holds, on which date, and which cited places had moved.
+type Reread struct {
+	By    string   `yaml:"by"`
+	On    string   `yaml:"on"`
+	Moved []string `yaml:"moved"`
+}
+
 // NoteFile is where the note of a unit's slot belongs, from the project root.
 func NoteFile(unit model.ID, slot string) string {
 	return Dir + "/understanding/" + string(unit) + "/" + slot + ".md"
+}
+
+// FileRef names a note by where its file sits, ID.SLOT[.KEY], so a note
+// whose frontmatter says it is another slot can still be named.
+func (n Note) FileRef() string {
+	rel := strings.TrimSuffix(strings.TrimPrefix(n.File, Dir+"/understanding/"), ".md")
+	return strings.Replace(rel, "/", ".", 1)
 }
 
 // Stale reports whether the code a note cites changed since it was written.
@@ -83,6 +102,19 @@ func (s Store) SaveNote(n Note) error {
 		return err
 	}
 	return writeFile(s.path("understanding", string(n.Unit), n.Slot+".md"), b)
+}
+
+// RemoveNote deletes the file of a note LoadNotes read, and its unit's
+// directory once that holds nothing else.
+func (s Store) RemoveNote(n Note) error {
+	f := s.path(filepath.FromSlash(strings.TrimPrefix(n.File, Dir+"/")))
+	if err := os.Remove(f); err != nil {
+		return err
+	}
+	if left, err := os.ReadDir(filepath.Dir(f)); err == nil && len(left) == 0 {
+		return os.Remove(filepath.Dir(f))
+	}
+	return nil
 }
 
 // LoadNotes reads every note, by unit, in slot order and then by key, each

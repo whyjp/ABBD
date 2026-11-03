@@ -205,19 +205,19 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 			switch {
 			case n.Misfiled:
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s says it is %s, whose note belongs at %s, so nothing reads it and the check skips it; delete %s to drop it", n.File, ref, store.NoteFile(id, n.Slot), n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s says it is %s, whose note belongs at %s, so nothing reads it and the check skips it; abbd forget %s drops it", n.File, ref, store.NoteFile(id, n.Slot), n.FileRef()))
 				continue
 			case !present || !u.Kind.HoldsNotes() || !n.Known:
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; delete %s to drop it", ref, n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s is no slot of a module or a contract now, so the check skips it; abbd forget %s removes %s", ref, n.FileRef(), n.File))
 				continue
 			case n.Ref.Unheld(u):
 				orphans++
-				lines = append(lines, fmt.Sprintf("orphaned: %s lists no entry %s now, so the check skips its note; delete %s to drop it", id, n.Ref.Key, n.File))
+				lines = append(lines, fmt.Sprintf("orphaned: %s lists no entry %s now, so the check skips its note; abbd forget %s removes %s", id, n.Ref.Key, n.FileRef(), n.File))
 				continue
 			case n.Stale():
 				stale++
-				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s; read that code again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE, or delete %s to drop it", ref, strings.Join(n.Changed, ", "), ref, n.File))
+				lines = append(lines, fmt.Sprintf("stale: %s, the code it cites changed: %s; read that code again and store the note with abbd understand %s FILE --evidence PATH:LINES:QUOTE, or with abbd understand %s --reread-by WHO when it still holds as written, or drop it with abbd forget %s", ref, strings.Join(n.Changed, ", "), ref, ref, ref))
 			}
 			texts[ref] = n.Text
 		}

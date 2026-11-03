@@ -72,6 +72,16 @@ abbd understand ID.SLOT[.KEY] FILE|- --evidence PATH:LINES:QUOTE [--evidence ...
                                      changes and not when other code of the unit does; a human's
                                      why is kept when the decision is stored again on the same
                                      quotes, and dropped when it cites other code
+abbd understand ID.SLOT[.KEY] --reread-by WHO [--root DIR]
+                                     stamp a STALE note again, keeping its words and quotes, once
+                                     WHO read the code it cites again and found it still holds;
+                                     the note records WHO, the date and what had moved; refused
+                                     when a quote is not in its file exactly once, word for word
+abbd forget ID.SLOT[.KEY] [--root DIR]
+                                     remove a note, with the human's why it holds, and say what
+                                     it removed; ID.SLOT[.KEY] names the file under
+                                     .abbd/understanding, so a STALE, orphaned or misfiled note
+                                     goes by the name abbd status gives it
 abbd flow KEY FILE|- [--source REF] [--root DIR]
                                      store an ordered flow: a question, and two to 16 steps, each a
                                      unit, what it does, an optional note and fails line, the
@@ -135,6 +145,7 @@ type opts struct {
 	asJSON, check    bool
 	features         bool
 	verbose, restamp bool
+	rereadBy         string
 	evidence         evidenceFlags
 	argv             []string
 }
@@ -172,6 +183,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"restamp": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.restamp, "restamp", false, "stamp the stored text against the module's code again, when only what the module holds moved")
 	},
+	"reread-by": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.rereadBy, "reread-by", "", "who read the code a STALE note cites again and found the note still holds")
+	},
 	"value": func(fs *flag.FlagSet, o *opts) { fs.StringVar(&o.value, "value", "", "the text the human stated") },
 	"reason": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.reason, "reason", "", "why the claim is wrong")
@@ -201,7 +215,8 @@ var commands = map[string]command{
 	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
-	"understand":      {flags: []string{"root", "restamp", "evidence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
+	"understand":      {flags: []string{"root", "restamp", "evidence", "reread-by"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
+	"forget":          {flags: []string{"root"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.forget(pos[0]) }},
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
