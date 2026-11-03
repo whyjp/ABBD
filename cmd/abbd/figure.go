@@ -16,10 +16,6 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// flow stores a flow from a draft, or prints the stored one, as figure does
-// for every kind.
-func (e env) flow(key string, args []string) error { return figure[model.Step](e, key, args) }
-
 // figure stores a figure of kind C from a draft, or prints the stored one as
 // a draft when no FILE is given. Every check of a draft happens here, so the
 // store and the screen trust what they read.
