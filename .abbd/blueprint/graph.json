@@ -239,7 +239,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+        "internal/model/model.go:583 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
       ]
     },
     {
@@ -329,7 +329,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:623 \"if !u.Absent {\""
+        "internal/model/model.go:628 \"if !u.Absent {\""
       ]
     },
     {
@@ -383,7 +383,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+        "internal/model/model.go:506 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
       ]
     },
     {
@@ -401,7 +401,7 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+        "internal/model/model.go:526 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
       ]
     },
     {
@@ -1168,8 +1168,8 @@
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go:544 \"is not PATH:LINES:QUOTE\"",
-        "internal/model/model.go:522 \"must cite the code, not ABBD's or git's own files\""
+        "internal/model/model.go:549 \"is not PATH:LINES:QUOTE\"",
+        "internal/model/model.go:527 \"must cite the code, not ABBD's or git's own files\""
       ]
     },
     {
@@ -1948,7 +1948,7 @@
       "Parent": "MOD-0030",
       "Evidence": [
         "internal/model/model.go:426 \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go:457 \"var vias = map[Via]bool{\""
+        "internal/model/model.go:462 \"var vias = map[Via]bool{\""
       ]
     },
     {
@@ -3852,7 +3852,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+      "Quote": "internal/model/model.go:583 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
     },
     {
       "From": "MOD-0030",
@@ -3868,7 +3868,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:623 \"if !u.Absent {\""
+      "Quote": "internal/model/model.go:628 \"if !u.Absent {\""
     },
     {
       "From": "MOD-0030",
@@ -3884,7 +3884,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+      "Quote": "internal/model/model.go:506 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
     },
     {
       "From": "MOD-0030",
@@ -3892,7 +3892,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+      "Quote": "internal/model/model.go:526 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
     },
     {
       "From": "MOD-0030",
@@ -12499,7 +12499,15 @@
                 "Code": true
               },
               {
-                "Text": " parts forward with each stored part that is STALE. It forgets one whose code is back as written, a unit of which left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part, however many stores ago it left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is STALE, and each current human part must come back as written and in its order, so it keeps the human's word, and the question and caption must come back as written too (",
+                "Text": " parts forward with each stored part that is STALE. It keeps each one as its claim's ",
+                "Code": false
+              },
+              {
+                "Text": "Retire",
+                "Code": true
+              },
+              {
+                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part, however many stores ago it left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question and caption must come back as written (",
                 "Code": false
               },
               {
@@ -12507,7 +12515,31 @@
                 "Code": true
               },
               {
-                "Text": "). The command prints which human parts it kept and which it replaced. ",
+                "Text": "). The command prints which human parts it kept and which it replaced, and warns on the kind's ",
+                "Code": false
+              },
+              {
+                "Text": "Long",
+                "Code": true
+              },
+              {
+                "Text": " field past 80 characters, a step's ",
+                "Code": false
+              },
+              {
+                "Text": "does",
+                "Code": true
+              },
+              {
+                "Text": " or a layer's ",
+                "Code": false
+              },
+              {
+                "Text": "role",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -12523,7 +12555,7 @@
                 "Code": true
               },
               {
-                "Text": " fails while a part is STALE. A stack also says how many stored relations run up it when it is stored, and ",
+                "Text": " fails while a part is STALE. A stack also says how many breaches it holds when it is stored, and ",
                 "Code": false
               },
               {
@@ -23847,6 +23879,30 @@
                 "Code": false
               },
               {
+                "Text": "Uses",
+                "Code": true
+              },
+              {
+                "Text": " is true for ",
+                "Code": false
+              },
+              {
+                "Text": "consumes",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": ", which run from the unit that uses the other. ",
+                "Code": false
+              },
+              {
                 "Text": "Via",
                 "Code": true
               },
@@ -24455,7 +24511,15 @@
                 "Code": true
               },
               {
-                "Text": " bound how many a figure has, and ",
+                "Text": " bound how many a figure has, ",
+                "Code": false
+              },
+              {
+                "Text": "Long",
+                "Code": true
+              },
+              {
+                "Text": " names the word field a store warns on past 80 characters, and ",
                 "Code": false
               },
               {
@@ -24463,7 +24527,15 @@
                 "Code": true
               },
               {
-                "Text": " checks the claims taken together, nil when each stands alone. ",
+                "Text": " checks the claims taken together, nil when each stands alone. It returns each ",
+                "Code": false
+              },
+              {
+                "Text": "Gap",
+                "Code": true
+              },
+              {
+                "Text": " with its text and the places of the claims it involves. ",
                 "Code": false
               },
               {
@@ -24535,7 +24607,15 @@
                 "Code": true
               },
               {
-                "Text": ", and its ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Retire",
+                "Code": true
+              },
+              {
+                "Text": ", the claim as a retired part keeps it, and its ",
                 "Code": false
               },
               {
@@ -24701,7 +24781,39 @@
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": ", its ",
+                "Code": false
+              },
+              {
+                "Text": "Long",
+                "Code": true
+              },
+              {
+                "Text": " field is ",
+                "Code": false
+              },
+              {
+                "Text": "does",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "Retire",
+                "Code": true
+              },
+              {
+                "Text": " drops its ",
+                "Code": false
+              },
+              {
+                "Text": "Calls",
+                "Code": true
+              },
+              {
+                "Text": ", so a retired step is forgotten only when its own unit leaves.",
                 "Code": false
               }
             ]
@@ -24811,6 +24923,22 @@
                 "Code": true
               },
               {
+                "Text": " and its ",
+                "Code": false
+              },
+              {
+                "Text": "Long",
+                "Code": true
+              },
+              {
+                "Text": " field is ",
+                "Code": false
+              },
+              {
+                "Text": "role",
+                "Code": true
+              },
+              {
                 "Text": ". A unit sits in one layer only, counting the units inside the ones a layer names, and the layers name ",
                 "Code": false
               },
@@ -24819,7 +24947,7 @@
                 "Code": true
               },
               {
-                "Text": ", 16, at most. ",
+                "Text": ", 16, at most. Each gap names the layers it involves. ",
                 "Code": false
               },
               {
@@ -24835,7 +24963,39 @@
                 "Code": true
               },
               {
-                "Text": " lists each live relation of a present unit, of any kind and in its stored direction, that runs from a lower layer up to a higher one, with its kind, via and origin. A relation within one layer, one that skips layers downward, and one with an end no layer holds are no breach.",
+                "Text": " lists each live relation by which a present unit a lower layer holds uses one a higher layer holds, ",
+                "Code": false
+              },
+              {
+                "Text": "consumes",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "depends_on",
+                "Code": true
+              },
+              {
+                "Text": " by ",
+                "Code": false
+              },
+              {
+                "Text": "RelationKind.Uses",
+                "Code": true
+              },
+              {
+                "Text": ", with its kind, via and origin. A ",
+                "Code": false
+              },
+              {
+                "Text": "provides",
+                "Code": true
+              },
+              {
+                "Text": " is no breach, since the lower unit serves a contract the upper layer homes. A relation within one layer, one that skips layers downward, and one with an end no layer holds are no breach.",
                 "Code": false
               }
             ]
@@ -24969,7 +25129,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:578 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
+            "internal/model/model.go:583 \"return !r.Dead \u0026\u0026 (r.Origin == Extracted || r.Origin == UserStated)\""
           ]
         },
         {
@@ -24987,7 +25147,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:623 \"if !u.Absent {\""
+            "internal/model/model.go:628 \"if !u.Absent {\""
           ]
         },
         {
@@ -25005,7 +25165,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:501 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
+            "internal/model/model.go:506 \"var linesPattern = regexp.MustCompile(`^(\\\\d+)(?:-(\\\\d+))?$`)\""
           ]
         },
         {
@@ -25014,7 +25174,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/model/model.go:521 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
+            "internal/model/model.go:526 \"case e.Path == \\\".abbd\\\" || strings.HasPrefix(e.Path, \\\".abbd/\\\") || e.Path == \\\".git\\\"\""
           ]
         },
         {
@@ -28205,7 +28365,23 @@
                 "Code": true
               },
               {
-                "Text": " that names both ends, the relation's verb and the higher layer, so a unit that both uses and provides one contract shows two chips that read apart. ",
+                "Text": " that names both ends, the relation's verb and the higher layer. A lower unit that provides a higher layer's contract shows no chip. A stack's ",
+                "Code": false
+              },
+              {
+                "Text": "Reasons",
+                "Code": true
+              },
+              {
+                "Text": " are the texts of ",
+                "Code": false
+              },
+              {
+                "Text": "Figure.Gaps",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -31372,7 +31548,15 @@
                 "Code": true
               },
               {
-                "Text": " runs the kind's check over all its claims. ",
+                "Text": " runs the kind's check over all its claims and returns each ",
+                "Code": false
+              },
+              {
+                "Text": "model.Gap",
+                "Code": true
+              },
+              {
+                "Text": " with the places of the parts it involves. ",
                 "Code": false
               },
               {
@@ -36164,7 +36348,7 @@
       ],
       "Layers": 6,
       "Stale": 0,
-      "Breaches": 6,
+      "Breaches": 2,
       "Bands": [
         {
           "N": 1,
@@ -36271,30 +36455,6 @@
               "Upper": 3
             },
             {
-              "From": "MOD-0026",
-              "To": "DATA-0003",
-              "FromName": "internal/identity",
-              "ToName": "merge candidates file",
-              "Verb": "제공",
-              "Via": "data",
-              "Origin": "inferred",
-              "Href": "#m-MOD-0041",
-              "UpperName": "store",
-              "Upper": 3
-            },
-            {
-              "From": "MOD-0026",
-              "To": "DATA-0018",
-              "FromName": "internal/identity",
-              "ToName": "ID high-water mark",
-              "Verb": "제공",
-              "Via": "data",
-              "Origin": "inferred",
-              "Href": "#m-MOD-0041",
-              "UpperName": "store",
-              "Upper": 3
-            },
-            {
               "From": "MOD-0047",
               "To": "DATA-0014",
               "FromName": "internal/topology",
@@ -36305,18 +36465,6 @@
               "Href": "#m-MOD-0034",
               "UpperName": "blueprint rendering",
               "Upper": 2
-            },
-            {
-              "From": "MOD-0054",
-              "To": "DATA-0018",
-              "FromName": "internal/group",
-              "ToName": "ID high-water mark",
-              "Verb": "제공",
-              "Via": "data",
-              "Origin": "inferred",
-              "Href": "#m-MOD-0041",
-              "UpperName": "store",
-              "Upper": 3
             }
           ],
           "Quotes": [
@@ -36379,20 +36527,6 @@
               "Name": "internal/model",
               "Kind": "모듈",
               "Href": "#m-MOD-0030"
-            }
-          ],
-          "Up": [
-            {
-              "From": "MOD-0030",
-              "To": "DATA-0017",
-              "FromName": "internal/model",
-              "ToName": "first anchor is a module's directory",
-              "Verb": "제공",
-              "Via": "data",
-              "Origin": "inferred",
-              "Href": "#m-MOD-0054",
-              "UpperName": "topology rules",
-              "Upper": 4
             }
           ],
           "Quotes": [
