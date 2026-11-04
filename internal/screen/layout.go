@@ -93,7 +93,9 @@ type focusSeat struct {
 	at    map[string]int
 }
 
-func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
+// arrange lays the boxes out in rows, ordered by tactic t. A focus view
+// orders its rows by its seat instead.
+func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic) layout {
 	slices.SortFunc(nodes, func(a, b lnode) int { return strings.Compare(a.id, b.id) })
 	byID := map[string]lnode{}
 	for _, n := range nodes {
@@ -324,7 +326,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 	// Order the layers with their chains, wrap a layer wider than the room
 	// into rows in that order, and order the rows again with the chains the
 	// wrapping adds.
-	sortRows, split := (*layered).order, wrap
+	sortRows, split := func(g *layered) { g.order(t) }, wrap
 	if seat != nil {
 		sortRows = func(g *layered) { g.seat(seat.at, seat.focus) }
 		split = brick

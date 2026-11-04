@@ -25,6 +25,8 @@ type Drawing struct {
 	// a relation the routing drops is lost; one the view never requests is
 	// not caught there.
 	Relations [][2]string `json:"-"`
+	// read is what the drawing costs a reader, as costOf measures its ink.
+	read cost
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -355,7 +357,7 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // overview, then keeps only that module's part of it and lays that out: the
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {
+func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -482,7 +484,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overvi
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))
+	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)
 	o.layout.top = padY
 	return o
 }
@@ -785,7 +787,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := l.route(reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), read: costOf(paths, reqs)}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]

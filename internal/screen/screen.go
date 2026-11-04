@@ -157,8 +157,17 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
-	o := planOverview(in.Units, "", nil)
-	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
+	type planned struct {
+		o *overview
+		d Drawing
+	}
+	p := choose(func(t tactic) (planned, cost) {
+		o := planOverview(in.Units, "", nil, t)
+		d := o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
+		return planned{o, d}, d.read
+	})
+	o := p.o
+	m.Overview = p.d
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
@@ -187,7 +196,10 @@ func Build(in Input) Model {
 		return nil
 	}
 	for _, id := range views {
-		ins := o.inside(id, in.Units, "", nil)
+		ins := choose(func(t tactic) (Inside, cost) {
+			ins := o.inside(id, in.Units, "", nil, t)
+			return ins, ins.Drawing.read
+		})
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
 		for i, iu := range ins.Units {

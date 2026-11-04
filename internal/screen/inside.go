@@ -95,7 +95,7 @@ func (ln line) String() string {
 
 // inside draws m's view. With a focus, it draws the focus view of that
 // child instead: the child, the children it meets, and only its own lines.
-func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {
+func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic) Inside {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
@@ -291,7 +291,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if focus != "" {
 		budget = overviewBudget
 	}
-	l := arrange(nodes, edges, budget-12, seatOf(focus, seat))
+	l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)
 
 	// A wired port sits on the side its lines flow from, rule 10: a contract
 	// the module provides and a caller from outside on top, what the module
@@ -434,7 +434,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), read: costOf(paths, reqs)}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)
