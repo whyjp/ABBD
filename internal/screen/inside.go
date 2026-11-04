@@ -345,6 +345,26 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	below := map[string]bool{}
 	lean := map[string]int{}
 	var tops, bottoms []attach
+	// shared holds the chip and unit of each line that runs down a chain
+	// from the frame's edge with lanes for more than one line.
+	shared := map[[2]string]bool{}
+	for _, ch := range l.chains {
+		u, exit := ch.lower, true
+		if ch.lower == frameBottomNode {
+			u, exit = ch.upper, false
+		} else if ch.upper != frameTopNode {
+			continue
+		}
+		if ch.lanes < 2 {
+			continue
+		}
+		for k, us := range wired {
+			if strings.HasSuffix(k, fmt.Sprint(exit)) && slices.Contains(us, model.ID(u)) {
+				shared[[2]string{k, u}] = true
+			}
+		}
+	}
+	covers := false
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)
 		us := wired[k]
@@ -356,13 +376,22 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			edge = frameBottomNode
 		}
 		x, r := 0, 0
+		// A covering tactic keeps a chip over its line where every line
+		// of the chip runs down one shared chain.
+		xs := map[int]bool{}
+		one := by.cover && focus == ""
 		for _, u := range us {
-			x += l.toward(string(u), edge)
+			ux := l.toward(string(u), edge)
+			x += ux
+			xs[ux] = true
+			one = one && shared[[2]string{k, string(u)}]
 			r += l.row[string(u)]
 		}
+		one = one && len(xs) == 1
+		covers = covers || one
 		lean[k] = 2*r - (len(l.rows)-1)*len(us)
 		below[k] = !p.exit
-		a := attach{key: k, label: p.label, other: x / len(us)}
+		a := attach{key: k, label: p.label, other: x / len(us), one: one}
 		if x, ok := l.seats[chipNode(edge, k)]; ok {
 			a.other = x
 		}
@@ -371,6 +400,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		} else {
 			tops = append(tops, a)
 		}
+	}
+	if by.cover && !covers {
+		return Inside{}, false
 	}
 	need := func(as []attach) int {
 		labels := []string{}

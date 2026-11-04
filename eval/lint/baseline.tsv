@@ -22,7 +22,7 @@ self FEAT-0001 focus FEAT-0006 /abbd record what a reader found	0	2	0	0	1	0	0	0	
 self FEAT-0001 focus FEAT-0007 /abbd what the human states	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
 self FEAT-0001 focus FEAT-0008 /abbd after work	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
 self FEAT-0001 focus FEAT-0009 /abbd evidence and CI gate	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self FEAT-0002 /abbd-setup	0	16	0	1	9	3	0	0	0	1	0	0	0	0	2	0	23	4	3	95	11	3	0	4	42	0
+self FEAT-0002 /abbd-setup	0	16	0	1	9	3	0	0	0	1	0	0	0	0	2	0	21	4	2	86	9	3	0	3	40	0
 self FEAT-0002 focus FEAT-0010 /abbd-setup preconditions and stance	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 self FEAT-0002 focus FEAT-0011 /abbd-setup find units with a reader swarm	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 self FEAT-0002 focus FEAT-0012 /abbd-setup build the deterministic extractor	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
@@ -137,7 +137,7 @@ orca MOD-0042 focus MOD-0069 desktop-main/ssh	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	
 orca MOD-0043 desktop-main/agent-hooks	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0
 orca MOD-0048 desktop-main/computer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 orca MOD-0052 desktop-main/ipc	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0
-orca MOD-0056 Orca runtime (RPC host)	1	59	11	1	35	11	0	0	0	0	0	0	1	0	0	1	116	13	13	477	78	16	0	23	154	7
+orca MOD-0056 Orca runtime (RPC host)	1	58	11	1	34	11	0	0	0	0	0	0	1	0	0	1	112	13	13	461	74	16	0	23	148	7
 orca MOD-0056 focus DATA-0003 orca-runtime.json	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 orca MOD-0056 focus MOD-0057 desktop-runtime/agent-session	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
 orca MOD-0056 focus MOD-0058 desktop-runtime/browser	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
@@ -176,7 +176,7 @@ orca MOD-0095 focus MOD-0005 @orca-cloud/cloud-database	0	0	0	0	0	0	0	0	0	0	0	0	
 orca MOD-0095 focus MOD-0006 @orca-cloud/postgres-schema	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 orca MOD-0096 mobile/	0	6	0	1	4	0	0	0	0	0	0	0	0	0	1	0	8	2	0	32	0	0	0	0	20	0
 orca MOD-0097 native/	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	22	0
-orca MOD-0098 src/	0	37	3	0	23	9	0	0	0	0	0	0	0	0	2	0	66	5	16	280	44	12	0	14	94	3
+orca MOD-0098 src/	0	35	3	0	23	7	0	0	0	0	0	0	0	0	2	0	62	5	18	266	40	10	0	14	90	3
 orca MOD-0098 focus MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
 orca MOD-0098 focus MOD-0042 desktop main process	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	18	0
 orca MOD-0098 focus MOD-0056 Orca runtime (RPC host)	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	8	1

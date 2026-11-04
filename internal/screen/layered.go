@@ -199,13 +199,19 @@ type tactic struct {
 	// started in all the way down, and one that ends on a box left of the
 	// others runs right of them and turns across them into its box.
 	loose bool
+	// cover lets settle stand a frame chip off centre, as far as its line
+	// still meets it, where the chip before it would push it off that line
+	// and every line of the chip runs down a chain from the frame that
+	// holds lines of other chips too.
+	cover bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
 	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true},
 	{laned: true}, {laned: true, median: true}, {laned: true, reversed: true},
 	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true},
-	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true}}
+	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true},
+	{cover: true}, {loose: true, cover: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by

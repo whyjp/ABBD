@@ -7802,7 +7802,7 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the spots the user circled that still turn, each by a box's unit ID, that the preload bridge line, now straight, breaks nothing, and the excess turns and steps that view measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, by its box's unit ID, that the native/ and preload bridge lines, now straight, break nothing, and the excess turns and steps that view measures.",
                 "Code": false
               }
             ]
@@ -20186,7 +20186,31 @@
                 "Code": true
               },
               {
-                "Text": " place every dummy of a chain from the frame's edge by its box end alone: otherwise a sweep down sets each under its dummy in the row above, so chains from the frame keep their first order all the way down, and one that ends on a box left of the others runs right of them and turns across them into it. The draw closure skips it for a view with no wired frame chip. ",
+                "Text": " place every dummy of a chain from the frame's edge by its box end alone: otherwise a sweep down sets each under its dummy in the row above, so chains from the frame keep their first order all the way down, and one that ends on a box left of the others runs right of them and turns across them into it. The draw closure skips it for a view with no wired frame chip. A ",
+                "Code": false
+              },
+              {
+                "Text": "cover",
+                "Code": true
+              },
+              {
+                "Text": " tactic, plain or loose, marks a chip ",
+                "Code": false
+              },
+              {
+                "Text": "one",
+                "Code": true
+              },
+              {
+                "Text": " when every line of it runs down a chain from the frame's edge that has lanes for more than one line, in a view that is not a focus view; ",
+                "Code": false
+              },
+              {
+                "Text": "settle",
+                "Code": true
+              },
+              {
+                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip. ",
                 "Code": false
               },
               {

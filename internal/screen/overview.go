@@ -526,6 +526,9 @@ type attach struct {
 	key   string
 	label string
 	other int
+	// one says every line of the chip runs at other, so settle may stand
+	// the chip off centre to keep it over that x.
+	one bool
 }
 
 // spread sets the chips on one edge of r, left to right in the order of
@@ -602,10 +605,23 @@ func settle(ps map[string]Port, items []attach, frame rect) map[string]Port {
 	}
 	at := make([]int, len(items))
 	edge := frame.X + 8
+	// A chip pushed so far that its line no longer meets it moves back
+	// until the line meets its first lane's room, and the chips before it
+	// give way while their own lines still meet them, so crowded chips
+	// stand off centre rather than bend their lines.
+	w := func(i int) int { return ps[items[i].key].W }
 	for i, a := range items {
-		p := ps[a.key]
-		at[i] = max(a.other-p.W/2, edge)
-		edge = at[i] + p.W + 4
+		at[i] = max(a.other-w(i)/2, edge)
+		if hi := a.other - 4; a.one && at[i] > hi && hi >= frame.X+8 {
+			at[i] = hi
+			for j := i - 1; j >= 0 && at[j]+w(j)+4 > at[j+1]; j-- {
+				at[j] = max(at[j+1]-4-w(j), items[j].other-w(j)+4, frame.X+8)
+			}
+			for j := 1; j <= i; j++ {
+				at[j] = max(at[j], at[j-1]+w(j-1)+4)
+			}
+		}
+		edge = at[i] + w(i) + 4
 	}
 	edge = frame.X + frame.W - 4
 	for i := len(items) - 1; i >= 0; i-- {

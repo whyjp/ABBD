@@ -56,11 +56,10 @@ func copyFixture(t *testing.T, name, debt string) string {
 }
 
 // Orca's src/ keeps every hard criterion, so lint passes, and it names the
-// three spots the user circled: the mobile/ line into the Orca runtime, down
-// from a staircase of 8 turns to 2, the native/ chip's two turns in its
-// clear column, which count as excess turns though they are no step, and
-// the preload bridge line, which now drops straight from its box to its
-// chip and so breaks nothing. Each breach names its boxes by unit ID too.
+// one spot the user circled that still turns: the mobile/ line into the
+// Orca runtime, down from a staircase of 8 turns to 2. The native/ line and
+// the preload bridge line now drop straight between chip and box and break
+// nothing. Each breach names its boxes by unit ID too.
 func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 	code, out := lintAt(t, fixtureRoot("orca"), "MOD-0098 src/", "--json")
 	if code != exitOK {
@@ -71,13 +70,14 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := map[string]bool{
-		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 2 times`:                            false,
-		`B1 the line from chip "← native/" to box "desktop main process" (MOD-0042) turns 2 times, allowed 0, 2 turns in excess`: false,
+		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 2 times`: false,
 	}
 	for _, v := range r.Views {
 		for _, b := range v.Breaches {
-			if strings.Contains(b.Text, `"desktop preload bridge" (MOD-0071) to chip "preload bridge"`) {
-				t.Errorf("the preload bridge line breaks %s: %s", b.Criterion, b.Text)
+			for _, straight := range []string{`"desktop preload bridge" (MOD-0071) to chip "preload bridge"`, `chip "← native/" to box "desktop main process" (MOD-0042)`} {
+				if strings.Contains(b.Text, straight) {
+					t.Errorf("a line that drops straight breaks %s: %s", b.Criterion, b.Text)
+				}
 			}
 			for w := range want {
 				if strings.HasPrefix(b.Criterion+" "+b.Text, w) {
@@ -96,8 +96,8 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 			t.Errorf("lint does not report %q", w)
 		}
 	}
-	if r.Schema != lintSchema || r.Totals.ExcessTurns != 66 || r.Totals.Steps != 44 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
-		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 66, 44, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
+	if r.Schema != lintSchema || r.Totals.ExcessTurns != 62 || r.Totals.Steps != 40 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
+		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 62, 40, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
 	}
 }
 
