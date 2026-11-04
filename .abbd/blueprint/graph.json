@@ -22386,7 +22386,7 @@
                 "Code": true
               },
               {
-                "Text": ") holds each ×N to rule 22: within reach of one stretch, clear of the next nearest, and nearer the ink of its own wire, the path ",
+                "Text": ") holds each ×N to rule 22: within reach of one stretch, clear of the next nearest, and nearer the ink of its own wire than any other wire's. ",
                 "Code": false
               },
               {
@@ -22394,7 +22394,7 @@
                 "Code": true
               },
               {
-                "Text": " read just before it, than any other wire's.",
+                "Text": " takes a count's wire to be the path just before it when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
                 "Code": false
               }
             ]
