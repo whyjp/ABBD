@@ -54,3 +54,42 @@ func TestSharedBusesMustSpareTurnsAtNoOtherCost(t *testing.T) {
 		}
 	}
 }
+
+// A view keeps the drawing with fewer touches whatever else it costs, and
+// among those, the one with fewer jogs, however many more lines it crosses.
+func TestStaircasesCostMoreThanCrossings(t *testing.T) {
+	best := cost{touches: 0, jogs: 5, crossings: 10, over2: 4, braid: 300, climb: 100}
+	for _, c := range []struct {
+		other cost
+		wins  bool
+	}{
+		{cost{touches: 1, jogs: 0}, false},
+		{cost{jogs: 4, crossings: 40, over2: 9, braid: 900, climb: 400}, true},
+		{cost{jogs: 6}, false},
+		{cost{jogs: 5, crossings: 9, over2: 9, braid: 900}, true},
+		{cost{jogs: 5, crossings: 10, over2: 3, braid: 900}, true},
+		{cost{jogs: 5, crossings: 10, over2: 4, braid: 299, climb: 900}, true},
+		{cost{jogs: 5, crossings: 10, over2: 4, braid: 300, climb: 99}, true},
+		{best, false},
+	} {
+		if got := c.other.beats(best); got != c.wins {
+			t.Errorf("%+v beats %+v = %v; want %v", c.other, best, got, c.wins)
+		}
+	}
+}
+
+// The jogs a view is judged on are counted once per pair of places, on
+// the way with the fewest turns, as a reader traces them.
+func TestJogsCountOncePerPairOfPlaces(t *testing.T) {
+	reqs := []wireReq{
+		{from: unitEnd("a", 0), to: unitEnd("b", 1), kind: "depends_on"},
+		{from: unitEnd("a", 0), to: unitEnd("b", 1), kind: "depends_on"},
+	}
+	r := routing{ways: [][]pt{
+		{{0, 0}, {0, 50}, {10, 50}, {10, 100}},
+		{{0, 0}, {0, 50}, {10, 50}, {10, 60}, {20, 60}, {20, 100}},
+	}}
+	if got := costOf(r, reqs).jogs; got != 1 {
+		t.Fatalf("jogs %d; want 1, from the way with fewer turns", got)
+	}
+}

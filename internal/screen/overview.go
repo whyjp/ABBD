@@ -806,8 +806,9 @@ func (o *overview) draw(href func(model.ID) string, read *cost) Drawing {
 		}
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
 	}
-	paths := l.route(reqs)
-	weighed(read, paths, reqs)
+	routed := l.route(reqs)
+	paths := routed.drawn
+	weighed(read, routed, reqs)
 	at = chips()
 
 	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}

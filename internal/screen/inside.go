@@ -97,7 +97,7 @@ func (ln line) String() string {
 // inside draws m's view, its rows ordered by tactic by, and weighs it into
 // read. With a focus, it draws the focus view of that child instead: the
 // child, the children it meets, and only its own lines.
-func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) Inside {
+func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
@@ -291,12 +291,6 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if by.narrow {
 		budget = narrowBudget
 	}
-	l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)
-
-	// A wired port sits on the side its lines flow from, rule 10: a contract
-	// the module provides and a caller from outside on top, what the module
-	// uses below. A side that cannot hold its chips hands the least
-	// committed ones to the other side.
 	wired := map[string][]model.ID{}
 	for _, ln := range lines {
 		if !ln.inner {
@@ -304,6 +298,42 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			wired[k] = append(wired[k], ln.from)
 		}
 	}
+	// A seated tactic sets each wired chip in the layout on the side rule
+	// 10 gives it. A side that cannot hold its chips hands some to the
+	// other side after the layout, so a view with one is not drawn seated,
+	// and neither is a focus view or one with no wired chip.
+	if by.seated {
+		labels, keys := map[bool][]string{}, map[bool][]string{}
+		for _, p := range ports {
+			if k := fmt.Sprint(p.id, p.exit); len(wired[k]) > 0 {
+				labels[p.exit], keys[p.exit] = append(labels[p.exit], p.label), append(keys[p.exit], k)
+			}
+		}
+		if focus != "" || len(keys[true])+len(keys[false]) == 0 || chipsWidth(labels[true])+12 > budget || chipsWidth(labels[false])+12 > budget {
+			return Inside{}, false
+		}
+		for exit, edge := range map[bool]string{true: frameTopNode, false: frameBottomNode} {
+			for i, l := range shorten(labels[exit]) {
+				nodes = append(nodes, lnode{id: chipNode(edge, keys[exit][i]), w: chipWidth(l)})
+			}
+		}
+		for _, ln := range lines {
+			k := fmt.Sprint(ln.to, ln.exit)
+			switch {
+			case ln.inner:
+			case ln.exit:
+				edges = append(edges, ledge{chipNode(frameTopNode, k), string(ln.from)})
+			default:
+				edges = append(edges, ledge{string(ln.from), chipNode(frameBottomNode, k)})
+			}
+		}
+	}
+	l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)
+
+	// A wired port sits on the side its lines flow from, rule 10: a contract
+	// the module provides and a caller from outside on top, what the module
+	// uses below. A side that cannot hold its chips hands the least
+	// committed ones to the other side.
 	below := map[string]bool{}
 	lean := map[string]int{}
 	var tops, bottoms []attach
@@ -313,18 +343,21 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if len(us) == 0 {
 			continue
 		}
+		edge := frameTopNode
+		if !p.exit {
+			edge = frameBottomNode
+		}
 		x, r := 0, 0
 		for _, u := range us {
-			edge := frameTopNode
-			if !p.exit {
-				edge = frameBottomNode
-			}
 			x += l.toward(string(u), edge)
 			r += l.row[string(u)]
 		}
 		lean[k] = 2*r - (len(l.rows)-1)*len(us)
 		below[k] = !p.exit
 		a := attach{key: k, label: p.label, other: x / len(us)}
+		if x, ok := l.seats[chipNode(edge, k)]; ok {
+			a.other = x
+		}
 		if below[k] {
 			bottoms = append(bottoms, a)
 		} else {
@@ -425,8 +458,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		reqs = append(reqs, r)
 	}
-	paths := l.route(reqs)
-	weighed(read, paths, reqs)
+	routed := l.route(reqs)
+	paths := routed.drawn
+	weighed(read, routed, reqs)
 
 	frame.H = l.gapTop[len(l.rows)] + l.gapH[len(l.rows)] - frame.Y
 	if len(bottoms) > 0 {
@@ -548,7 +582,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if focus == "" {
 		ins.Inferred = o.inferred(m, units)
 	}
-	return ins
+	return ins, true
 }
 
 // lastPart drops the leading path segments of a module's name, such as
