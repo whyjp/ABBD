@@ -4,7 +4,7 @@
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
     placement: 50
-    weighed: 1424
+    weighed: 1377
 debt:
     MOD-0030 internal/model:
         R: 1

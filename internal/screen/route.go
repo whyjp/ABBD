@@ -657,9 +657,9 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
 		// On a ring, where straight drops pin the slots at an edge's ends,
-		// the slots between pins move so that keeping the order never
-		// pushes a pinned line off the x it drops straight at. Elsewhere
-		// the even share stands: spreading there trades steps for crossings.
+		// the slots between pins spread over the room between them.
+		// Elsewhere they keep their even share where it fits between the
+		// pins (below): spreading there trades steps for crossings.
 		if l.ring {
 			counts := make([]int, len(slots))
 			for s, sl := range slots {
@@ -683,12 +683,28 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			if pinned[s] {
 				continue
 			}
-			for d := 0; d <= r.hi-r.lo; d += 2 {
-				if x := xs[s] + d; x <= r.hi && clear(s, x) {
+			// A slot keeps between the pinned slots on either side of it,
+			// with room for the slots between, so the order never pushes a
+			// pinned line off its chain.
+			lo, hi := r.lo, r.hi
+			for p := range slots {
+				switch {
+				case pinned[p] && p < s:
+					lo = max(lo, xs[p]+(s-p)*gap)
+				case pinned[p] && p > s:
+					hi = min(hi, xs[p]-(p-s)*gap)
+				}
+			}
+			if lo > hi {
+				lo, hi = r.lo, r.hi
+			}
+			xs[s] = clamp(xs[s], lo, hi)
+			for d := 0; d <= hi-lo; d += 2 {
+				if x := xs[s] + d; x <= hi && clear(s, x) {
 					xs[s] = x
 					break
 				}
-				if x := xs[s] - d; x >= r.lo && clear(s, x) {
+				if x := xs[s] - d; x >= lo && clear(s, x) {
 					xs[s] = x
 					break
 				}

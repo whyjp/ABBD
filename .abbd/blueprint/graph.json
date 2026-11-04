@@ -7802,7 +7802,7 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures.",
                 "Code": false
               }
             ]
@@ -20114,7 +20114,15 @@
                 "Code": true
               },
               {
-                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated or laned, since a chip handed to the other side would leave its lane behind, and the draw closure says so. A ",
+                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated or laned, since a chip handed to the other side would leave the seat or lane it was set over behind, and the draw closure says so. ",
+                "Code": false
+              },
+              {
+                "Text": "lane_flip_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds a one-box view and a three-row view to that guard, and shows the three-row view takes lanes once its chips fit. A ",
                 "Code": false
               },
               {
@@ -20162,7 +20170,79 @@
                 "Code": true
               },
               {
-                "Text": " then moves each lane among the other items of its row to where what it joins in the next row stands, rows bottom up for top lanes and top down for bottom ones, so a lane runs beside its box. ",
+                "Text": " then moves each lane among the other items of its row to where what it joins in the next row stands, rows bottom up for top lanes and top down for bottom ones, so a lane runs beside its box. A ",
+                "Code": false
+              },
+              {
+                "Text": "loose",
+                "Code": true
+              },
+              {
+                "Text": " tactic leaves the chips to be set after the layout but has both sweeps of ",
+                "Code": false
+              },
+              {
+                "Text": "order",
+                "Code": true
+              },
+              {
+                "Text": " place every dummy of a chain from the frame's edge by its box end alone: otherwise a sweep down sets each under its dummy in the row above, so chains from the frame keep their first order all the way down, and one that ends on a box left of the others runs right of them and turns across them into it. The draw closure skips it for a view with no wired frame chip. A ",
+                "Code": false
+              },
+              {
+                "Text": "cover",
+                "Code": true
+              },
+              {
+                "Text": " tactic, plain or loose, marks a chip ",
+                "Code": false
+              },
+              {
+                "Text": "one",
+                "Code": true
+              },
+              {
+                "Text": " when every line of it runs down a chain from the frame's edge that has lanes for more than one line, in a view that is not a focus view; ",
+                "Code": false
+              },
+              {
+                "Text": "settle",
+                "Code": true
+              },
+              {
+                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip. A ",
+                "Code": false
+              },
+              {
+                "Text": "reorder",
+                "Code": true
+              },
+              {
+                "Text": " tactic, loose and cover, then lets ",
+                "Code": false
+              },
+              {
+                "Text": "reorder",
+                "Code": true
+              },
+              {
+                "Text": " move chips of each frame edge to other places in their order while fewer chips stand over none of the x their lines run at (",
+                "Code": false
+              },
+              {
+                "Text": "attach.runs",
+                "Code": true
+              },
+              {
+                "Text": "), then less distance from them: on a crowded edge the order of the mean x pushed a chip with one line far off it while a chip whose lines spread wide stood where that line runs. It is drawn only where it moves a chip, and ",
+                "Code": false
+              },
+              {
+                "Text": "reorder_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds src/'s bottom edge to it. ",
                 "Code": false
               },
               {
@@ -20384,7 +20464,7 @@
                 "Code": true
               },
               {
-                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. Route and lint read hubs with one helper, ",
+                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. On any layout a slot no pin holds keeps between the pinned slots on either side of it, with room for the slots between, when that room is there, and only then steps off the chains passing the next row: otherwise a line that took the middle of a box's edge stepped onto the chain a pinned line drops down, and the order pushed the pinned line off it. Route and lint read hubs with one helper, ",
                 "Code": false
               },
               {

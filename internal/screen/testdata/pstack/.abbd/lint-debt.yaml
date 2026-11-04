@@ -4,7 +4,7 @@
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
     placement: 173
-    weighed: 4387
+    weighed: 4375
 debt:
     MOD-0001 focus FEAT-0008 docs/harness/claude-code.md:
         R: 1

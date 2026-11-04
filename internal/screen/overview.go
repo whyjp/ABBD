@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -526,6 +527,53 @@ type attach struct {
 	key   string
 	label string
 	other int
+	// one says every line of the chip runs at other, so settle may stand
+	// the chip off centre to keep it over that x.
+	one bool
+	// runs are the x each of its lines runs at toward the edge.
+	runs []int
+}
+
+// reorder moves chips of an edge settle set out to other places in their
+// order while that leaves fewer chips over none of their lines, then less
+// distance from them, and says whether it moved any. On a crowded edge the
+// order of the mean x can push a chip with one line far off it while a
+// chip whose lines spread wide stands where that line runs.
+func reorder(ps map[string]Port, items []attach, frame rect) (map[string]Port, bool) {
+	miss := func(ps map[string]Port) [2]int {
+		var m [2]int
+		for _, a := range items {
+			p := ps[a.key]
+			lo, hi := p.X+4, p.X+p.W-4
+			least := 1 << 20
+			for _, x := range a.runs {
+				least = min(least, max(0, x-hi, lo-x))
+			}
+			if least > 0 {
+				m[0]++
+			}
+			m[1] += least
+		}
+		return m
+	}
+	less := func(a, b [2]int) bool { return a[0] < b[0] || a[0] == b[0] && a[1] < b[1] }
+	best, moved := miss(ps), false
+	for again := true; again; {
+		again = false
+		for i := range items {
+			for j := range items {
+				if i == j {
+					continue
+				}
+				try := slices.Insert(slices.Delete(slices.Clone(items), i, i+1), j, items[i])
+				if q := settle(maps.Clone(ps), try, frame); less(miss(q), best) {
+					best, ps, again, moved = miss(q), q, true, true
+					copy(items, try)
+				}
+			}
+		}
+	}
+	return ps, moved
 }
 
 // spread sets the chips on one edge of r, left to right in the order of
@@ -602,10 +650,23 @@ func settle(ps map[string]Port, items []attach, frame rect) map[string]Port {
 	}
 	at := make([]int, len(items))
 	edge := frame.X + 8
+	// A chip pushed so far that its line no longer meets it moves back
+	// until the line meets its first lane's room, and the chips before it
+	// give way while their own lines still meet them, so crowded chips
+	// stand off centre rather than bend their lines.
+	w := func(i int) int { return ps[items[i].key].W }
 	for i, a := range items {
-		p := ps[a.key]
-		at[i] = max(a.other-p.W/2, edge)
-		edge = at[i] + p.W + 4
+		at[i] = max(a.other-w(i)/2, edge)
+		if hi := a.other - 4; a.one && at[i] > hi && hi >= frame.X+8 {
+			at[i] = hi
+			for j := i - 1; j >= 0 && at[j]+w(j)+4 > at[j+1]; j-- {
+				at[j] = max(at[j+1]-4-w(j), items[j].other-w(j)+4, frame.X+8)
+			}
+			for j := 1; j <= i; j++ {
+				at[j] = max(at[j], at[j-1]+w(j-1)+4)
+			}
+		}
+		edge = at[i] + w(i) + 4
 	}
 	edge = frame.X + frame.W - 4
 	for i := len(items) - 1; i >= 0; i-- {
