@@ -5479,7 +5479,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -19087,7 +19087,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20210,7 +20210,39 @@
                 "Code": true
               },
               {
-                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip. ",
+                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip. A ",
+                "Code": false
+              },
+              {
+                "Text": "reorder",
+                "Code": true
+              },
+              {
+                "Text": " tactic, loose and cover, then lets ",
+                "Code": false
+              },
+              {
+                "Text": "reorder",
+                "Code": true
+              },
+              {
+                "Text": " move chips of each frame edge to other places in their order while fewer chips stand over none of the x their lines run at (",
+                "Code": false
+              },
+              {
+                "Text": "attach.runs",
+                "Code": true
+              },
+              {
+                "Text": "), then less distance from them: on a crowded edge the order of the mean x pushed a chip with one line far off it while a chip whose lines spread wide stood where that line runs. It is drawn only where it moves a chip, and ",
+                "Code": false
+              },
+              {
+                "Text": "reorder_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds src/'s bottom edge to it. ",
                 "Code": false
               },
               {

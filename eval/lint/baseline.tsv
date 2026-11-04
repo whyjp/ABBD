@@ -65,7 +65,7 @@ self MOD-0034 focus MOD-0037 overview plan	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 self MOD-0034 focus MOD-0038 page template	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
 self MOD-0034 focus MOD-0039 freshness verdicts	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
 self MOD-0034 focus MOD-0040 understanding text	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0041 internal/store	0	7	0	0	6	1	0	0	0	0	0	0	0	0	0	0	18	0	0	72	12	2	0	4	26	2
+self MOD-0041 internal/store	0	7	0	0	6	1	0	0	0	0	0	0	0	0	0	0	17	0	0	68	9	1	0	4	26	2
 self MOD-0047 internal/topology	1	8	0	0	3	1	0	0	0	1	0	0	1	0	2	1	9	4	2	38	7	1	0	3	30	2
 self MOD-0054 internal/group	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1
 self MOD-0055 pstack (external)	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	10	0
@@ -176,7 +176,7 @@ orca MOD-0095 focus MOD-0005 @orca-cloud/cloud-database	0	0	0	0	0	0	0	0	0	0	0	0	
 orca MOD-0095 focus MOD-0006 @orca-cloud/postgres-schema	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
 orca MOD-0096 mobile/	0	6	0	1	4	0	0	0	0	0	0	0	0	0	1	0	8	2	0	32	0	0	0	0	20	0
 orca MOD-0097 native/	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	22	0
-orca MOD-0098 src/	0	35	3	0	23	7	0	0	0	0	0	0	0	0	2	0	62	5	18	266	40	10	0	14	90	3
+orca MOD-0098 src/	0	34	3	0	23	7	0	0	0	0	0	0	0	0	1	0	62	4	18	266	40	10	0	14	88	3
 orca MOD-0098 focus MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
 orca MOD-0098 focus MOD-0042 desktop main process	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	18	0
 orca MOD-0098 focus MOD-0056 Orca runtime (RPC host)	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	8	1

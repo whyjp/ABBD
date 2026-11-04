@@ -204,6 +204,9 @@ type tactic struct {
 	// and every line of the chip runs down a chain from the frame that
 	// holds lines of other chips too.
 	cover bool
+	// reorder moves chips of a crowded frame edge out of the order of
+	// their mean x, so more chips stand over one of their lines.
+	reorder bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
@@ -211,7 +214,7 @@ var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {na
 	{laned: true}, {laned: true, median: true}, {laned: true, reversed: true},
 	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true},
 	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true},
-	{cover: true}, {loose: true, cover: true}}
+	{cover: true}, {loose: true, cover: true}, {loose: true, cover: true, reorder: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by

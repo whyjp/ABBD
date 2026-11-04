@@ -392,6 +392,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		lean[k] = 2*r - (len(l.rows)-1)*len(us)
 		below[k] = !p.exit
 		a := attach{key: k, label: p.label, other: x / len(us), one: one}
+		for _, u := range us {
+			a.runs = append(a.runs, l.toward(string(u), edge))
+		}
 		if x, ok := l.seats[chipNode(edge, k)]; ok {
 			a.other = x
 		}
@@ -451,17 +454,30 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		for _, as := range [][]attach{tops, bottoms} {
 			for i := range as {
 				as[i].other += shift
+				for k := range as[i].runs {
+					as[i].runs[k] += shift
+				}
 			}
 		}
 		l.width = width
 	}
 	frame := rect{X: 6, Y: frameTop, W: width - 12}
 	at := map[string]Port{}
-	for k, p := range settle(spread(frame, false, tops, 1), tops, frame) {
-		at[k] = p
+	// A reordering tactic is drawn only where it moves a chip.
+	moved := false
+	for i, as := range [][]attach{tops, bottoms} {
+		ps := settle(spread(frame, i == 1, as, 1), as, frame)
+		if by.reorder {
+			var m bool
+			ps, m = reorder(ps, as, frame)
+			moved = moved || m
+		}
+		for k, p := range ps {
+			at[k] = p
+		}
 	}
-	for k, p := range settle(spread(frame, true, bottoms, 1), bottoms, frame) {
-		at[k] = p
+	if by.reorder && !moved {
+		return Inside{}, false
 	}
 	band := func(as []attach) int {
 		var labels []string
