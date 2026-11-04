@@ -30,57 +30,57 @@ FEAT-0009.consumes.IF-0001	call	diff --check	plugins/abbd/skills/abbd/SKILL.md	`
 FEAT-0009.consumes.IF-0002	call	quote listing	plugins/abbd/skills/abbd/SKILL.md	`abbd evidence` lists each quote and whether it is live, drifted or dead.
 FEAT-0001.consumes.IF-0003	call	status --check	plugins/abbd/skills/abbd/SKILL.md	abbd status --check
 FEAT-0004.consumes.IF-0003	call	state freshness	plugins/abbd/skills/abbd/SKILL.md	Run `abbd status` if you need to know whether the state matches the working tree.
-FEAT-0001.consumes.IF-0004	call	QUERIES --features	plugins/abbd/skills/abbd/SKILL.md	abbd impact <QUERIES> --features
-FEAT-0004.consumes.IF-0004	call	impact QUERIES	plugins/abbd/skills/abbd/SKILL.md	`abbd impact <QUERIES>`: what a change to those comma-separated units reaches.
+FEAT-0001.consumes.IF-0004	call	blast radius	plugins/abbd/skills/abbd/SKILL.md	abbd impact <QUERIES> --features
+FEAT-0004.consumes.IF-0004	call	units a change hits	plugins/abbd/skills/abbd/SKILL.md	`abbd impact <QUERIES>`: what a change to those comma-separated units reaches.
 FEAT-0008.consumes.IF-0006	call	sync then diff	plugins/abbd/skills/abbd/SKILL.md	Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.
-FEAT-0001.consumes.IF-0007	call	<QUERY> or <ID>	plugins/abbd/skills/abbd/SKILL.md	abbd explain <QUERY>
-FEAT-0004.consumes.IF-0007	call	explain QUERY	plugins/abbd/skills/abbd/SKILL.md	`abbd explain <QUERY>`: one unit at a glance
-FEAT-0001.consumes.IF-0008	call	<A> <B>	plugins/abbd/skills/abbd/SKILL.md	abbd path <A> <B>
-FEAT-0004.consumes.IF-0008	call	path A B	plugins/abbd/skills/abbd/SKILL.md	`abbd path <A> <B>`: how two units connect
-FEAT-0001.consumes.IF-0009	call	ID.FIELD --value	plugins/abbd/skills/abbd/SKILL.md	abbd record fact <ID.FIELD> --value
-FEAT-0007.consumes.IF-0009	call	--value --source	plugins/abbd/skills/abbd/SKILL.md	`abbd record fact <ID.FIELD> --value "<text>" --source <REF>`
-FEAT-0001.consumes.IF-0010	call	--via --phrase	plugins/abbd/skills/abbd/SKILL.md	--via <VIA> --phrase
-FEAT-0006.consumes.IF-0010	call	--via --phrase	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`
-FEAT-0007.consumes.IF-0010	call	--source REF	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --source <REF>`
-FEAT-0001.consumes.IF-0011	call	KIND NAME --parent	plugins/abbd/skills/abbd/SKILL.md	abbd record unit <KIND> <NAME> --parent
-FEAT-0006.consumes.IF-0011	call	--parent --evidence	plugins/abbd/skills/abbd/SKILL.md	`abbd record unit <KIND> <NAME> --parent <MOD-ID> --evidence <PATH:LINES:QUOTE>`
-FEAT-0001.consumes.IF-0013	call	MOD-ID FILE	plugins/abbd/skills/abbd/SKILL.md	abbd understand <MOD-ID> <FILE>
+FEAT-0001.consumes.IF-0007	call	unit's couplings	plugins/abbd/skills/abbd/SKILL.md	abbd explain <QUERY>
+FEAT-0004.consumes.IF-0007	call	unit account	plugins/abbd/skills/abbd/SKILL.md	`abbd explain <QUERY>`: one unit at a glance
+FEAT-0001.consumes.IF-0008	call	route between units	plugins/abbd/skills/abbd/SKILL.md	abbd path <A> <B>
+FEAT-0004.consumes.IF-0008	call	coupling chain	plugins/abbd/skills/abbd/SKILL.md	`abbd path <A> <B>`: how two units connect
+FEAT-0001.consumes.IF-0009	call	stated purpose	plugins/abbd/skills/abbd/SKILL.md	abbd record fact <ID.FIELD> --value
+FEAT-0007.consumes.IF-0009	call	human's own words	plugins/abbd/skills/abbd/SKILL.md	`abbd record fact <ID.FIELD> --value "<text>" --source <REF>`
+FEAT-0001.consumes.IF-0010	call	found coupling	plugins/abbd/skills/abbd/SKILL.md	--via <VIA> --phrase
+FEAT-0006.consumes.IF-0010	call	coupling and phrase	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`
+FEAT-0007.consumes.IF-0010	call	stated coupling	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --source <REF>`
+FEAT-0001.consumes.IF-0011	call	unseen unit	plugins/abbd/skills/abbd/SKILL.md	abbd record unit <KIND> <NAME> --parent
+FEAT-0006.consumes.IF-0011	call	unit the script misses	plugins/abbd/skills/abbd/SKILL.md	`abbd record unit <KIND> <NAME> --parent <MOD-ID> --evidence <PATH:LINES:QUOTE>`
+FEAT-0001.consumes.IF-0013	call	module text	plugins/abbd/skills/abbd/SKILL.md	abbd understand <MOD-ID> <FILE>
 FEAT-0006.consumes.IF-0013	call	how's text	plugins/abbd/skills/abbd/SKILL.md	store the new Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`
 FEAT-0001.consumes.IF-0014	convention	exit code	plugins/abbd/skills/abbd/SKILL.md	`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR
 FEAT-0009.consumes.IF-0014	convention	exit code	plugins/abbd/skills/abbd/SKILL.md	`abbd diff --check` exits 1 when a contract's signature changed
-FEAT-0001.consumes.IF-0020	call	TARGET --evidence	plugins/abbd/skills/abbd/SKILL.md	abbd record evidence <TARGET> --evidence
-FEAT-0001.consumes.IF-0021	call	TARGET --reason	plugins/abbd/skills/abbd/SKILL.md	abbd retract <TARGET> --reason
-FEAT-0001.consumes.IF-0022	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd flow <KEY> <FILE>
-FEAT-0001.consumes.IF-0023	call	ID.SLOT	plugins/abbd/skills/abbd/SKILL.md	abbd forget <ID>.<SLOT>
-FEAT-0001.consumes.IF-0024	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd stack <KEY> <FILE>
-FEAT-0001.consumes.IF-0025	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd table <KEY> <FILE>
-FEAT-0002.consumes.IF-0004	call	<QUERIES>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd impact <QUERIES>
+FEAT-0001.consumes.IF-0020	call	fresh quotes	plugins/abbd/skills/abbd/SKILL.md	abbd record evidence <TARGET> --evidence
+FEAT-0001.consumes.IF-0021	call	wrong claim	plugins/abbd/skills/abbd/SKILL.md	abbd retract <TARGET> --reason
+FEAT-0001.consumes.IF-0022	call	flow steps	plugins/abbd/skills/abbd/SKILL.md	abbd flow <KEY> <FILE>
+FEAT-0001.consumes.IF-0023	call	stale note	plugins/abbd/skills/abbd/SKILL.md	abbd forget <ID>.<SLOT>
+FEAT-0001.consumes.IF-0024	call	stack layers	plugins/abbd/skills/abbd/SKILL.md	abbd stack <KEY> <FILE>
+FEAT-0001.consumes.IF-0025	call	file grid	plugins/abbd/skills/abbd/SKILL.md	abbd table <KEY> <FILE>
+FEAT-0002.consumes.IF-0004	call	blast radius	plugins/abbd/skills/abbd-setup/SKILL.md	abbd impact <QUERIES>
 FEAT-0016.consumes.IF-0005	call	CLAUDE.md block	plugins/abbd/skills/abbd-setup/SKILL.md	Run `abbd install`.
-FEAT-0002.consumes.IF-0007	call	<QUERY>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd explain <QUERY>
-FEAT-0002.consumes.IF-0008	call	<A> <B>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd path <A> <B>
+FEAT-0002.consumes.IF-0007	call	unit account	plugins/abbd/skills/abbd-setup/SKILL.md	abbd explain <QUERY>
+FEAT-0002.consumes.IF-0008	call	route between units	plugins/abbd/skills/abbd-setup/SKILL.md	abbd path <A> <B>
 FEAT-0017.consumes.IF-0009	convention	reader claims stay	plugins/abbd/skills/abbd-setup/SKILL.md	What a reader stored through abbd record and what the human stated stay.
-FEAT-0002.consumes.IF-0012	call	--supplement FILE	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement
-FEAT-0014.consumes.IF-0012	call	setup --supplement	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
-FEAT-0002.consumes.IF-0013	call	MOD-ID FILE	plugins/abbd/skills/abbd-setup/SKILL.md	abbd understand <MOD-ID> <FILE>
+FEAT-0002.consumes.IF-0012	call	reader supplement	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement
+FEAT-0014.consumes.IF-0012	call	setup refusals	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
+FEAT-0002.consumes.IF-0013	call	module text	plugins/abbd/skills/abbd-setup/SKILL.md	abbd understand <MOD-ID> <FILE>
 FEAT-0015.consumes.IF-0013	call	how's text	plugins/abbd/skills/abbd-setup/SKILL.md	store its Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
-FEAT-0002.consumes.IF-0018	call	ID PARENT --evidence	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record parent ID PARENT --evidence
-FEAT-0017.consumes.IF-0018	convention	--evidence placing	plugins/abbd/skills/abbd-setup/SKILL.md	`abbd record parent ID PARENT --evidence ...` places one unit later.
-FEAT-0002.consumes.IF-0020	call	TARGET --evidence	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record evidence <TARGET> --evidence
+FEAT-0002.consumes.IF-0018	call	unit's parent	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record parent ID PARENT --evidence
+FEAT-0017.consumes.IF-0018	convention	parent placement	plugins/abbd/skills/abbd-setup/SKILL.md	`abbd record parent ID PARENT --evidence ...` places one unit later.
+FEAT-0002.consumes.IF-0020	call	fresh quotes	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record evidence <TARGET> --evidence
 MOD-0034.consumes.IF-0015	data	edge key	internal/screen/tree.go	t.vias[key(u.ID, r.Kind, r.To)] = r.Via
 MOD-0034.depends_on.MOD-0030	import	Unit, ID, DependsOn	internal/screen/tree.go	func newTree(units []model.Unit) tree {
 MOD-0037.depends_on.MOD-0030	data	relation origins	internal/screen/overview.go	origins[key(s, r.Kind, r.To)] = r.Origin
 MOD-0047.consumes.IF-0015	data	edge key	internal/topology/impact.go	Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}
 MOD-0047.depends_on.MOD-0030	import	Unit, ID, Origin	internal/topology/impact.go	func Links(units []model.Unit) []Link {
 MOD-0047.depends_on.MOD-0031	call	Relation.Counts	internal/topology/diff.go	if _, ok := units[r.To]; !ok || !r.Counts() {
-FEAT-0005.depends_on.FEAT-0018	call	skill steps	plugins/abbd/skills/abbd/SKILL.md	follow `<pstack>/skills/how/SKILL.md` unchanged
-FEAT-0005.depends_on.FEAT-0019	call	skill steps	plugins/abbd/skills/abbd/SKILL.md	or `<pstack>/skills/blast-radius/SKILL.md` for a change that spans several modules.
+FEAT-0005.depends_on.FEAT-0018	call	how's account	plugins/abbd/skills/abbd/SKILL.md	follow `<pstack>/skills/how/SKILL.md` unchanged
+FEAT-0005.depends_on.FEAT-0019	call	blast radius	plugins/abbd/skills/abbd/SKILL.md	or `<pstack>/skills/blast-radius/SKILL.md` for a change that spans several modules.
 FEAT-0016.depends_on.FEAT-0001	call	skill handoff	plugins/abbd/skills/abbd-setup/SKILL.md	From here on the abbd skill reads and queries the blueprint.
 FEAT-0003.depends_on.FEAT-0002	call	skill handoff	plugins/abbd/skills/abbd/SKILL.md	If the repository has no `.abbd/`, run the abbd-setup skill first.
 FEAT-0010.depends_on.MOD-0055	config	pstack 0.15.36	plugins/abbd/skills/abbd-setup/SKILL.md	If `<pstack>/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.
-FEAT-0011.depends_on.FEAT-0018	call	skill steps	plugins/abbd/skills/abbd-setup/SKILL.md	reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes
-FEAT-0011.depends_on.FEAT-0020	call	skill steps	plugins/abbd/skills/abbd-setup/SKILL.md	Follow `<pstack>/skills/swarm/SKILL.md`, partitioned into slices of related candidates
-FEAT-0012.depends_on.FEAT-0021	call	skill steps	plugins/abbd/skills/abbd-setup/SKILL.md	Build the lever, per `<pstack>/skills/principle-build-the-lever/SKILL.md`.
-FEAT-0015.depends_on.FEAT-0018	call	skill steps	plugins/abbd/skills/abbd-setup/SKILL.md	For each top-level module, follow `<pstack>/skills/how/SKILL.md` unchanged
+FEAT-0011.depends_on.FEAT-0018	call	explorer prompt	plugins/abbd/skills/abbd-setup/SKILL.md	reads its slice the way `<pstack>/skills/how/references/explorer-prompt.md` describes
+FEAT-0011.depends_on.FEAT-0020	call	reader slices	plugins/abbd/skills/abbd-setup/SKILL.md	Follow `<pstack>/skills/swarm/SKILL.md`, partitioned into slices of related candidates
+FEAT-0012.depends_on.FEAT-0021	call	extractor script	plugins/abbd/skills/abbd-setup/SKILL.md	Build the lever, per `<pstack>/skills/principle-build-the-lever/SKILL.md`.
+FEAT-0015.depends_on.FEAT-0018	call	Overview, Key Concepts	plugins/abbd/skills/abbd-setup/SKILL.md	For each top-level module, follow `<pstack>/skills/how/SKILL.md` unchanged
 DATA-0001.depends_on.FEAT-0001	call	/abbd pointer	cmd/abbd/install.go	The /abbd skill says how to read, query and record the topology.
 DATA-0001.depends_on.FEAT-0004	convention	query first	cmd/abbd/install.go	A query is what you have in hand: a unit ID or name, a file path, a symbol, or a few words.
 DATA-0001.depends_on.FEAT-0008	convention	sync then diff	cmd/abbd/install.go	After changing code, run
@@ -98,7 +98,7 @@ MOD-0001.depends_on.MOD-0025	call	git query	cmd/abbd/main.go	tree, err := gitx.S
 MOD-0002.depends_on.MOD-0022	call	git query	cmd/abbd/diff.go	if base, err = gitx.MergeBase(e.root); err != nil {
 MOD-0004.depends_on.MOD-0022	call	git query	cmd/abbd/main.go	renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)
 MOD-0001.depends_on.MOD-0026	call	ID reconcile	cmd/abbd/main.go	res, err := e.syncActual(ex, identity.Sync)
-MOD-0001.depends_on.MOD-0029	call	ID reconcile	cmd/abbd/setup.go	res, err := e.syncActual(ex, identity.Setup)
+MOD-0001.depends_on.MOD-0029	call	claims setup owns	cmd/abbd/setup.go	res, err := e.syncActual(ex, identity.Setup)
 MOD-0004.depends_on.MOD-0026	call	ID reconcile	cmd/abbd/main.go	identity.Reconcile(
 MOD-0001.depends_on.MOD-0034	call	render pages	cmd/abbd/screen.go	files, err := screen.Files(screen.Build(in))
 MOD-0001.depends_on.MOD-0039	call	blueprint freshness	cmd/abbd/evidence.go	switch in.BlueprintFreshness() {
