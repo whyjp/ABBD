@@ -1,0 +1,2 @@
+id	hypothesis	change	before	after	delta	tests	verdict	note
+0	baseline	none, the criteria and abbd lint added	steps 1438, weighed 6017, hard 61 (all debt)	same	0	go test ./... passes	kept	eval/lint/baseline.tsv, routing identical to eval/render-r6/jogs-first.tsv
