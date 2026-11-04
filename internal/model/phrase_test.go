@@ -127,6 +127,7 @@ func TestAPhraseIsShortAndNotTheScripts(t *testing.T) {
 		{"model types", "import", "repeats the via"},
 		{"Model Types", "import", "repeats the via"},
 		{"function call", "call", "repeats the via"},
+		{"함수 호출", "call", "repeats the via"},
 	} {
 		err := ValidatePhrase(tc.phrase, tc.via)
 		switch {
@@ -140,5 +141,38 @@ func TestAPhraseIsShortAndNotTheScripts(t *testing.T) {
 	u.Phrases = []PhraseNote{{To: "MOD-0002", Kind: DependsOn, Writer: Script, Text: "HTTP /api/v1"}}
 	if err := u.Validate(); err == nil || !strings.Contains(err.Error(), "phrase") {
 		t.Errorf("the script's phrase is accepted: %v", err)
+	}
+}
+
+// A stored note is checked against the via of each claim on its edge, so a
+// hand-edited store cannot hold a phrase that only repeats the via.
+func TestAStoredPhraseMayNotRepeatItsEdgesVia(t *testing.T) {
+	u := mod("MOD-0001")
+	u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Script, Via: "call"})
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Text: "호출", Evidence: cite})
+	if err := u.Validate(); err == nil || !strings.Contains(err.Error(), "repeats the via call") {
+		t.Errorf("a stored phrase that repeats the via is accepted: %v", err)
+	}
+}
+
+// A human's mask on an edge hides every lower writer's claim on it, whatever
+// its via, while a reader's mask stays bound to the claim's content.
+func TestAHumansRelationMaskHoldsWhateverTheVia(t *testing.T) {
+	r := Relation{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Via: "call", Evidence: cite}
+	u := mod("MOD-0001")
+	u.PutRelation(r)
+	u.PutMask(Mask{Target: RelationTarget(r.Kind, r.To), Writer: Human, Digest: RelationDigest(r), Reason: "wrong", Source: "conversation"})
+	r.Via = "data"
+	u.PutRelation(r)
+	if len(u.Relations) != 0 {
+		t.Errorf("a new via lifts a human's mask: %+v", u.Relations)
+	}
+	s := Relation{To: "MOD-0003", Kind: DependsOn, Writer: Supplement, Via: "call", Evidence: cite}
+	u.PutRelation(s)
+	u.PutMask(Mask{Target: RelationTarget(s.Kind, s.To), Writer: Reader, Digest: RelationDigest(s), Reason: "wrong"})
+	s.Via = "data"
+	u.PutRelation(s)
+	if len(u.Relations) != 1 {
+		t.Errorf("a reader's mask hides a changed claim: %+v", u.Relations)
 	}
 }
