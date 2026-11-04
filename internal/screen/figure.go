@@ -84,5 +84,16 @@ func (o *overview) linkFigures(m *Model) {
 				ins.Stacks = append(ins.Stacks, ref)
 			}
 		}
+		for _, t := range m.Tables {
+			ref := TableRef{ID: t.ID, Question: t.Question}
+			for i, id := range t.held {
+				if held[string(id)] {
+					ref.Rows = append(ref.Rows, i+1)
+				}
+			}
+			if len(ref.Rows) > 0 {
+				ins.Tables = append(ins.Tables, ref)
+			}
+		}
 	}
 }

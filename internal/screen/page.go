@@ -67,14 +67,15 @@ type Graph struct {
 	// the links to focus views, which graph.json does not hold.
 	Overview Drawing  `json:"overview"`
 	Modules  []Inside `json:"modules"`
-	// Flows and Stacks are the stored figures as the page draws them.
+	// Flows, Stacks and Tables are the stored figures as the page draws them.
 	Flows  []FlowView  `json:"flows,omitempty"`
 	Stacks []StackView `json:"stacks,omitempty"`
+	Tables []TableView `json:"tables,omitempty"`
 }
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks}
+	g := Graph{Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err
