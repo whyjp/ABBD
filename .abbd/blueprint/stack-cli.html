@@ -106,8 +106,7 @@ svg marker path { stroke: none; }
 
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
-.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
-.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
 .inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
 .inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
 .inside .text ul { padding-left: 18px; margin: 2px 0; }
@@ -127,7 +126,6 @@ svg marker path { stroke: none; }
 .entries td p { margin: 0 0 2px; }
 .entries .who { display: block; white-space: nowrap; }
 .units-list li { padding: 4px 0; }
-@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
 @media (max-width: 560px) {
   body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
   td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
