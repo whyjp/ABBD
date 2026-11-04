@@ -112,7 +112,7 @@ var debt = map[string]Metrics{
 	"orca MOD-0042 desktop main process":     {Crossings: 87, Back: 10, MaxDetour: 314},
 	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},
 	"orca MOD-0072 desktop renderer UI":      {Back: 6},
-	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 242},
+	"orca MOD-0081 shared types and schemas": {Boxes: 22, Back: 6, MaxDetour: 136},
 	"pstack MOD-0001 setup and help":         {Braid: 2228},
 	"pstack MOD-0003 principles":             {Back: 3},
 	// A focus view (focus.go) of the same state, where lines of two kinds

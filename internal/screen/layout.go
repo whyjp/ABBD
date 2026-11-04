@@ -336,10 +336,10 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 	wrapped := false
 	for _, row := range g.rows {
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
-		if seat == nil {
-			ids = sides(ids, keep)
-		}
 		rs := split(ids, byID, room)
+		if seat == nil && len(rs) > 1 {
+			rs = stack(rs, keep, byID, room)
+		}
 		wrapped = wrapped || len(rs) > 1
 		rows = append(rows, rs...)
 	}
@@ -428,16 +428,18 @@ func rowWidth(ids []string, byID map[string]lnode) int {
 	return w
 }
 
-// sides orders a layer before it wraps the way a person stacks the rows of
-// one layer: the boxes joined only to what lies above go first, so they
-// land in the top row near their lines, and the boxes joined only to what
-// lies below go last, so their lines leave from the bottom row and pass no
-// box of the layer on the way down. Each group keeps the order the
-// crossing count chose.
-func sides(ids []string, keep map[ledge]bool) []string {
-	up, down := map[string]bool{}, map[string]bool{}
+// stack wraps a layer the way a person stacks its rows when the boxes
+// with a line to what lies below fit in the last row: those boxes go
+// last, so their lines leave from the bottom row and pass no box of the
+// layer on the way down, and the boxes with no line below fill the rows
+// above, near the lines that reach them. Each group keeps the order the
+// crossing count chose. When the boxes with a line below spill out of the
+// last row, some of their lines pass a row of the layer anyway, so the
+// layer keeps rows as wrap made them.
+func stack(rs [][]string, keep map[ledge]bool, byID map[string]lnode, room int) [][]string {
+	down := map[string]bool{}
 	for e := range keep {
-		down[e.from], up[e.to] = true, true
+		down[e.from] = true
 	}
 	group := func(id string) int {
 		if down[id] {
@@ -445,8 +447,12 @@ func sides(ids []string, keep map[ledge]bool) []string {
 		}
 		return 0
 	}
-	out := slices.Clone(ids)
-	slices.SortStableFunc(out, func(a, b string) int { return group(a) - group(b) })
+	order := slices.Concat(rs...)
+	slices.SortStableFunc(order, func(a, b string) int { return group(a) - group(b) })
+	out := wrap(order, byID, room)
+	if slices.ContainsFunc(slices.Concat(out[:len(out)-1]...), func(id string) bool { return down[id] }) {
+		return rs
+	}
 	return out
 }
 
