@@ -98,6 +98,10 @@ svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent)
 svg circle.junction.bypass { fill: var(--bypass); }
 svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg text.lab { font-size: 10px; fill: var(--ink); }
+svg text.lab.contract, svg text.lab.consumes { fill: var(--accent); }
+svg text.lab.provides { fill: var(--ok); }
+svg text.lab.bypass, svg text.lab.mutual { fill: var(--bypass); }
 svg path.w.joins { marker-end: none; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
 svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
@@ -229,198 +233,198 @@ table.index .who { display: block; }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
 @media (hover:hover){
-svg:has(.p0:hover) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(.p0:hover) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
 svg:has(.p0:hover) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(.p1:hover) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(.p1:hover) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
 svg:has(.p1:hover) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(.p2:hover) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(.p2:hover) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
 svg:has(.p2:hover) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(.p3:hover) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(.p3:hover) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
 svg:has(.p3:hover) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(.p4:hover) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(.p4:hover) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
 svg:has(.p4:hover) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(.p5:hover) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(.p5:hover) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
 svg:has(.p5:hover) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(.p6:hover) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(.p6:hover) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
 svg:has(.p6:hover) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(.p7:hover) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(.p7:hover) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
 svg:has(.p7:hover) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(.p8:hover) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(.p8:hover) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
 svg:has(.p8:hover) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(.p9:hover) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(.p9:hover) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
 svg:has(.p9:hover) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(.p10:hover) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(.p10:hover) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
 svg:has(.p10:hover) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(.p11:hover) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(.p11:hover) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
 svg:has(.p11:hover) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(.p12:hover) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(.p12:hover) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
 svg:has(.p12:hover) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(.p13:hover) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(.p13:hover) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
 svg:has(.p13:hover) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(.p14:hover) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(.p14:hover) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
 svg:has(.p14:hover) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(.p15:hover) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(.p15:hover) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
 svg:has(.p15:hover) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(.p16:hover) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(.p16:hover) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
 svg:has(.p16:hover) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(.p17:hover) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(.p17:hover) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
 svg:has(.p17:hover) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(.p18:hover) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(.p18:hover) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
 svg:has(.p18:hover) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(.p19:hover) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(.p19:hover) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
 svg:has(.p19:hover) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(.p20:hover) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(.p20:hover) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
 svg:has(.p20:hover) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(.p21:hover) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(.p21:hover) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
 svg:has(.p21:hover) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(.p22:hover) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(.p22:hover) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
 svg:has(.p22:hover) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(.p23:hover) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(.p23:hover) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
 svg:has(.p23:hover) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(.p24:hover) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(.p24:hover) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
 svg:has(.p24:hover) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(.p25:hover) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(.p25:hover) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
 svg:has(.p25:hover) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(.p26:hover) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(.p26:hover) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
 svg:has(.p26:hover) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(.p27:hover) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(.p27:hover) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
 svg:has(.p27:hover) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(.p28:hover) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(.p28:hover) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
 svg:has(.p28:hover) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(.p29:hover) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(.p29:hover) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
 svg:has(.p29:hover) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(.p30:hover) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(.p30:hover) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
 svg:has(.p30:hover) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(.p31:hover) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(.p31:hover) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
 svg:has(.p31:hover) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(.p32:hover) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(.p32:hover) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
 svg:has(.p32:hover) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(.p33:hover) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(.p33:hover) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
 svg:has(.p33:hover) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(.p34:hover) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(.p34:hover) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
 svg:has(.p34:hover) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(.p35:hover) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(.p35:hover) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
 svg:has(.p35:hover) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(.p36:hover) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(.p36:hover) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
 svg:has(.p36:hover) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(.p37:hover) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(.p37:hover) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
 svg:has(.p37:hover) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(.p38:hover) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(.p38:hover) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
 svg:has(.p38:hover) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(.p39:hover) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(.p39:hover) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
 svg:has(.p39:hover) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(.p40:hover) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(.p40:hover) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
 svg:has(.p40:hover) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(.p41:hover) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(.p41:hover) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
 svg:has(.p41:hover) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(.p42:hover) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(.p42:hover) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
 svg:has(.p42:hover) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(.p43:hover) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(.p43:hover) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
 svg:has(.p43:hover) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(.p44:hover) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(.p44:hover) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
 svg:has(.p44:hover) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(.p45:hover) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(.p45:hover) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
 svg:has(.p45:hover) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(.p46:hover) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(.p46:hover) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
 svg:has(.p46:hover) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(.p47:hover) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(.p47:hover) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
 svg:has(.p47:hover) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 }
-svg:has(:focus-visible>.p0) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(:focus-visible>.p0) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
 svg:has(:focus-visible>.p0) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(:focus-visible>.p1) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(:focus-visible>.p1) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
 svg:has(:focus-visible>.p1) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(:focus-visible>.p2) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(:focus-visible>.p2) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
 svg:has(:focus-visible>.p2) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(:focus-visible>.p3) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(:focus-visible>.p3) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
 svg:has(:focus-visible>.p3) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(:focus-visible>.p4) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(:focus-visible>.p4) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
 svg:has(:focus-visible>.p4) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(:focus-visible>.p5) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(:focus-visible>.p5) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
 svg:has(:focus-visible>.p5) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(:focus-visible>.p6) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(:focus-visible>.p6) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
 svg:has(:focus-visible>.p6) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(:focus-visible>.p7) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(:focus-visible>.p7) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
 svg:has(:focus-visible>.p7) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(:focus-visible>.p8) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(:focus-visible>.p8) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
 svg:has(:focus-visible>.p8) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(:focus-visible>.p9) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(:focus-visible>.p9) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
 svg:has(:focus-visible>.p9) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(:focus-visible>.p10) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(:focus-visible>.p10) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
 svg:has(:focus-visible>.p10) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(:focus-visible>.p11) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(:focus-visible>.p11) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
 svg:has(:focus-visible>.p11) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(:focus-visible>.p12) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(:focus-visible>.p12) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
 svg:has(:focus-visible>.p12) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(:focus-visible>.p13) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(:focus-visible>.p13) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
 svg:has(:focus-visible>.p13) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(:focus-visible>.p14) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(:focus-visible>.p14) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
 svg:has(:focus-visible>.p14) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(:focus-visible>.p15) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(:focus-visible>.p15) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
 svg:has(:focus-visible>.p15) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(:focus-visible>.p16) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(:focus-visible>.p16) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
 svg:has(:focus-visible>.p16) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(:focus-visible>.p17) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(:focus-visible>.p17) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
 svg:has(:focus-visible>.p17) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(:focus-visible>.p18) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(:focus-visible>.p18) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
 svg:has(:focus-visible>.p18) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(:focus-visible>.p19) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(:focus-visible>.p19) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
 svg:has(:focus-visible>.p19) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(:focus-visible>.p20) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(:focus-visible>.p20) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
 svg:has(:focus-visible>.p20) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(:focus-visible>.p21) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(:focus-visible>.p21) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
 svg:has(:focus-visible>.p21) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(:focus-visible>.p22) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(:focus-visible>.p22) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
 svg:has(:focus-visible>.p22) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(:focus-visible>.p23) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(:focus-visible>.p23) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
 svg:has(:focus-visible>.p23) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(:focus-visible>.p24) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(:focus-visible>.p24) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
 svg:has(:focus-visible>.p24) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(:focus-visible>.p25) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(:focus-visible>.p25) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
 svg:has(:focus-visible>.p25) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(:focus-visible>.p26) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(:focus-visible>.p26) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
 svg:has(:focus-visible>.p26) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(:focus-visible>.p27) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(:focus-visible>.p27) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
 svg:has(:focus-visible>.p27) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(:focus-visible>.p28) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(:focus-visible>.p28) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
 svg:has(:focus-visible>.p28) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(:focus-visible>.p29) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(:focus-visible>.p29) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
 svg:has(:focus-visible>.p29) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(:focus-visible>.p30) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(:focus-visible>.p30) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
 svg:has(:focus-visible>.p30) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(:focus-visible>.p31) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(:focus-visible>.p31) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
 svg:has(:focus-visible>.p31) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(:focus-visible>.p32) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(:focus-visible>.p32) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
 svg:has(:focus-visible>.p32) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(:focus-visible>.p33) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(:focus-visible>.p33) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
 svg:has(:focus-visible>.p33) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(:focus-visible>.p34) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(:focus-visible>.p34) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
 svg:has(:focus-visible>.p34) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(:focus-visible>.p35) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(:focus-visible>.p35) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
 svg:has(:focus-visible>.p35) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(:focus-visible>.p36) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(:focus-visible>.p36) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
 svg:has(:focus-visible>.p36) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(:focus-visible>.p37) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(:focus-visible>.p37) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
 svg:has(:focus-visible>.p37) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(:focus-visible>.p38) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(:focus-visible>.p38) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
 svg:has(:focus-visible>.p38) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(:focus-visible>.p39) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(:focus-visible>.p39) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
 svg:has(:focus-visible>.p39) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(:focus-visible>.p40) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(:focus-visible>.p40) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
 svg:has(:focus-visible>.p40) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(:focus-visible>.p41) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(:focus-visible>.p41) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
 svg:has(:focus-visible>.p41) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(:focus-visible>.p42) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(:focus-visible>.p42) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
 svg:has(:focus-visible>.p42) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(:focus-visible>.p43) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(:focus-visible>.p43) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
 svg:has(:focus-visible>.p43) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(:focus-visible>.p44) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(:focus-visible>.p44) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
 svg:has(:focus-visible>.p44) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(:focus-visible>.p45) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(:focus-visible>.p45) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
 svg:has(:focus-visible>.p45) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(:focus-visible>.p46) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(:focus-visible>.p46) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
 svg:has(:focus-visible>.p46) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(:focus-visible>.p47) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(:focus-visible>.p47) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
 svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 
 </style>
@@ -454,8 +458,8 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="1194" height="843" viewBox="0 0 1194 843" role="img" aria-label="모듈과 계약">
 <defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker><mask id="x1b4bad66-32" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="428" y="385" width="8" height="6"/><rect x="493" y="385" width="8" height="6"/><rect x="557" y="385" width="8" height="6"/><rect x="569" y="385" width="8" height="6"/><rect x="637" y="385" width="8" height="6"/><rect x="686" y="385" width="8" height="6"/><rect x="784" y="385" width="8" height="6"/><rect x="882" y="385" width="8" height="6"/><rect x="1006" y="385" width="8" height="6"/></mask><mask id="x1b4bad66-33" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="189" y="217" width="8" height="6"/><rect x="520" y="217" width="8" height="6"/><rect x="548" y="217" width="8" height="6"/><rect x="629" y="217" width="8" height="6"/><rect x="673" y="217" width="8" height="6"/><rect x="749" y="217" width="8" height="6"/><rect x="793" y="217" width="8" height="6"/><rect x="797" y="345" width="8" height="6"/><rect x="866" y="345" width="8" height="6"/><rect x="1091" y="345" width="8" height="6"/></mask><mask id="x1b4bad66-34" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="568" y="233" width="8" height="6"/><rect x="782" y="233" width="8" height="6"/><rect x="306" y="369" width="8" height="6"/><rect x="396" y="369" width="8" height="6"/><rect x="428" y="369" width="8" height="6"/><rect x="557" y="369" width="8" height="6"/><rect x="568" y="369" width="8" height="6"/><rect x="686" y="369" width="8" height="6"/><rect x="716" y="369" width="8" height="6"/><rect x="784" y="369" width="8" height="6"/><rect x="866" y="369" width="8" height="6"/></mask><mask id="x1b4bad66-37" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="323" y="337" width="8" height="6"/><rect x="396" y="337" width="8" height="6"/><rect x="557" y="497" width="8" height="6"/></mask><mask id="x1b4bad66-38" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="716" y="337" width="8" height="6"/></mask><mask id="x1b4bad66-39" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="797" y="329" width="8" height="6"/></mask><mask id="x1b4bad66-41" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="396" y="537" width="8" height="6"/></mask><mask id="x1b4bad66-44" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="866" y="353" width="8" height="6"/></mask><mask id="x1b4bad66-47" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="189" y="225" width="8" height="6"/><rect x="323" y="225" width="8" height="6"/><rect x="531" y="225" width="8" height="6"/><rect x="548" y="225" width="8" height="6"/><rect x="629" y="225" width="8" height="6"/></mask><mask id="x1b4bad66-51" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="624" y="521" width="8" height="6"/><rect x="686" y="521" width="8" height="6"/><rect x="882" y="521" width="8" height="6"/><rect x="1094" y="521" width="8" height="6"/></mask><mask id="x1b4bad66-55" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="624" y="545" width="8" height="6"/><rect x="784" y="545" width="8" height="6"/><rect x="882" y="545" width="8" height="6"/></mask><mask id="x1b4bad66-59" maskUnits="userSpaceOnUse" x="0" y="0" width="1194" height="843"><rect width="1194" height="843" fill="#fff"/><rect x="557" y="377" width="8" height="6"/><rect x="686" y="377" width="8" height="6"/></mask></defs>
 
-<path class="w contract joins e2 e10" d="M633 372 L633 380"><title>abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다</title></path><path class="w contract joins e9 e10" d="M720 332 L720 380"><title>internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다</title></path><path class="w contract e2 e5" d="M298 372 L298 416"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다</title></path><path class="w contract joins back e2 e7" d="M572 248 L572 228" data-origin="inferred"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e2 e7" cx="572" cy="248" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w contract joins e7 e10" d="M572 308 L572 380" data-origin="inferred"><title>internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e7 e10" cx="572" cy="308" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w contract joins back e2 e9" d="M786 248 L786 228" data-origin="extracted"><title>internal/screen → abbd CLI: sync state 계약을 거쳐 씁니다; internal/screen → abbd CLI: module understanding 계약을 거쳐 씁니다; internal/screen → abbd CLI: slot notes 계약을 거쳐 씁니다</title></path><path class="w contract joins back e0 e2" d="M138 248 L138 228" data-origin="extracted"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다</title></path><path class="w contract e1 e2" d="M138 92 L138 100 L597 100 L597 128" data-origin="extracted"><title>/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다</title></path><path class="w contract joins e8 e9" d="M870 332 L870 380 L886 380"><title>internal/screen → internal/model: relation key 계약을 거쳐 씁니다</title></path><path class="w contract joins e8 e11" d="M762 476 L762 500 L886 500" data-origin="extracted"><title>internal/topology → internal/model: relation key 계약을 거쳐 씁니다</title></path><path class="w bypass joins e0 e13" d="M102 308 L102 332" data-origin="inferred"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e13" cx="102" cy="308" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w mutual both e0 e1" d="M94 92 L94 248" data-origin="inferred"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존
-/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e1" cx="94" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w bypass joins e1 e13" d="M126 92 L126 108 L193 108" data-origin="inferred"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e1 e13" cx="126" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w bypass e0 e2" d="M126 220 L126 248"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass e2 e3" d="M327 220 L327 248"><title>abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e4" d="M1106 500 L1106 524"><title>abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e6" d="M1098 500 L1098 548"><title>abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e7" d="M535 220 L535 248"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e9" d="M801 220 L801 248"><title>abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e11" d="M780 348 L780 356"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e12" d="M1095 220 L1095 248"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e14" d="M780 348 L780 356"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e3 e5" d="M327 332 L327 348"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e4 e8" d="M788 636 L788 652" data-origin="extracted"><title>internal/evidence → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e5 e7" d="M310 340 L310 348"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e6 e7" d="M432 500 L432 540"><title>internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass joins e9 e11" d="M801 340 L801 356"><title>internal/screen → internal/topology: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e9 e14" d="M801 340 L801 356"><title>internal/screen → internal/narrative: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e4 e10" d="M561 508 L561 524"><title>internal/store → internal/evidence: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e6 e10" d="M553 508 L553 540"><title>internal/store → internal/gitx: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass back e7 e10" d="M561 416 L561 332 L559 332 L559 308" data-origin="extracted"><title>internal/store → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e8 e10" d="M612 508 L612 516 L628 516"><title>internal/store → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e8 e12" d="M1095 308 L1095 388 L400 388" data-origin="extracted" mask="url(#x1b4bad66-32)"><title>internal/group → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e0 e2 e3 e4 e6 e7 e9 e11 e12 e14" d="M657 188 L657 220 M953 220 L953 348 M1106 348 L1106 500 M126 220 L1095 220 M780 348 L1106 348 M1098 500 L1106 500" data-origin="mixed" data-net="1" mask="url(#x1b4bad66-33)"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
+<path class="w contract joins e2 e10" d="M633 372 L633 380"><title>abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다</title></path><path class="w contract joins e9 e10" d="M720 332 L720 380"><title>internal/screen → internal/store: project.yaml 계약을 거쳐 씁니다; internal/screen → internal/store: unit files 계약을 거쳐 씁니다; internal/screen → internal/store: sync state 계약을 거쳐 씁니다; internal/screen → internal/store: module understanding 계약을 거쳐 씁니다; internal/screen → internal/store: slot notes 계약을 거쳐 씁니다</title></path><path class="w contract e2 e5" d="M298 372 L298 416"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다</title></path><path class="w contract joins back e2 e7" d="M572 248 L572 228" data-origin="inferred"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e2 e7" cx="572" cy="248" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w contract joins e7 e10" d="M572 308 L572 380" data-origin="inferred"><title>internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e7 e10" cx="572" cy="308" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab contract e7 e10" x="583" y="344" text-anchor="middle" transform="rotate(-90 583 344)">호출</text><path class="w contract joins back e2 e9" d="M786 248 L786 228" data-origin="extracted"><title>internal/screen → abbd CLI: sync state 계약을 거쳐 씁니다; internal/screen → abbd CLI: module understanding 계약을 거쳐 씁니다; internal/screen → abbd CLI: slot notes 계약을 거쳐 씁니다</title></path><path class="w contract joins back e0 e2" d="M138 248 L138 228" data-origin="extracted"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다</title></path><path class="w contract e1 e2" d="M138 92 L138 100 L597 100 L597 128" data-origin="extracted"><title>/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다</title></path><path class="w contract joins e8 e9" d="M870 332 L870 380 L886 380"><title>internal/screen → internal/model: relation key 계약을 거쳐 씁니다</title></path><path class="w contract joins e8 e11" d="M762 476 L762 500 L886 500" data-origin="extracted"><title>internal/topology → internal/model: relation key 계약을 거쳐 씁니다</title></path><path class="w bypass joins e0 e13" d="M102 308 L102 332" data-origin="inferred"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e13" cx="102" cy="308" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w mutual both e0 e1" d="M94 92 L94 248" data-origin="inferred"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존
+/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e1" cx="94" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab mutual e0 e1" x="90" y="170" text-anchor="middle" transform="rotate(-90 90 170)">호출</text><path class="w bypass joins e1 e13" d="M126 92 L126 108 L193 108" data-origin="inferred"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e1 e13" cx="126" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w bypass e0 e2" d="M126 220 L126 248"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass e2 e3" d="M327 220 L327 248"><title>abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e4" d="M1106 500 L1106 524"><title>abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e6" d="M1098 500 L1098 548"><title>abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e7" d="M535 220 L535 248"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e9" d="M801 220 L801 248"><title>abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e11" d="M780 348 L780 356"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e12" d="M1095 220 L1095 248"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e2 e14" d="M780 348 L780 356"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e3 e5" d="M327 332 L327 348"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e4 e8" d="M788 636 L788 652" data-origin="extracted"><title>internal/evidence → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e5 e7" d="M310 340 L310 348"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e6 e7" d="M432 500 L432 540"><title>internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass joins e9 e11" d="M801 340 L801 356"><title>internal/screen → internal/topology: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e9 e14" d="M801 340 L801 356"><title>internal/screen → internal/narrative: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e4 e10" d="M561 508 L561 524"><title>internal/store → internal/evidence: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e6 e10" d="M553 508 L553 540"><title>internal/store → internal/gitx: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass back e7 e10" d="M561 416 L561 332 L559 332 L559 308" data-origin="extracted"><title>internal/store → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e8 e10" d="M612 508 L612 516 L628 516"><title>internal/store → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e8 e12" d="M1095 308 L1095 388 L400 388" data-origin="extracted" mask="url(#x1b4bad66-32)"><title>internal/group → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e0 e2 e3 e4 e6 e7 e9 e11 e12 e14" d="M657 188 L657 220 M953 220 L953 348 M1106 348 L1106 500 M126 220 L1095 220 M780 348 L1106 348 M1098 500 L1106 500" data-origin="mixed" data-net="1" mask="url(#x1b4bad66-33)"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
@@ -560,7 +564,7 @@ internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판
 <defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
 
 <path class="w contract e0 e2" d="M332 188 L332 212 L460 212 L460 224" data-origin="extracted"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다</title></path><path class="w bypass e0 e1" d="M99 212 L99 224"><title>/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass e0 e3" d="M296 212 L296 224"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass joins e0 e1" d="M201 92 L201 100" data-origin="inferred"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e1" cx="201" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w bypass joins e0 e2" d="M391 92 L391 100" data-origin="inferred"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e2" cx="391" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w bypass joins e0 e1 e3" d="M296 188 L296 212 M99 212 L296 212" data-origin="inferred" data-net="1"><title>/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독
-/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e1 e3" cx="296" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3" cx="296" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3" x="301" y="200">×2</text><path class="w bypass joins e0 e1 e2" d="M201 100 L391 100" data-net="2"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존, 판독
+/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><circle class="origin inferred e0 e1 e3" cx="296" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3" cx="296" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3" x="301" y="200">×2</text><text class="lab bypass e0 e1 e3" x="197" y="208" text-anchor="middle">호출</text><path class="w bypass joins e0 e1 e2" d="M201 100 L391 100" data-net="2"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass e0 e1 e2" d="M296 100 L296 128" data-net="2"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><text class="count e0 e1 e2" x="301" y="124">×2</text>
 <circle class="junction bypass e0 e1 e2" cx="296" cy="100" r="3"/><circle class="junction bypass e0 e1 e3" cx="296" cy="212" r="3"/>
@@ -767,7 +771,7 @@ internal/store → internal/gitx: 계약을 거치지 않는 직접 의존</titl
 <path class="w contract e0 e3" d="M649 212 L649 232"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독</title></path><path class="w contract e3 e5" d="M482 212 L482 232"><title>internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독</title></path><path class="w bypass joins e0 e3" d="M577 92 L577 100" data-origin="extracted"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e1 e3" d="M102 220 L102 232"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e2 e3" d="M295 220 L295 232"><title>internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="w bypass e3 e4" d="M865 220 L865 232"><title>internal/identity → internal/model: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e3 e5" d="M387 92 L387 100" data-origin="extracted"><title>internal/store → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass joins e1 e2 e3 e4" d="M482 188 L482 220 M102 220 L865 220" data-origin="mixed" data-net="1" mask="url(#x80f2a9e-7)"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
 internal/identity → internal/model: 계약을 거치지 않는 직접 의존</title></path><circle class="origin inferred e1 e2 e3 e4" cx="482" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e1 e2 e3 e4" x="461" y="200">×3</text><path class="w contract joins e0 e3 e5" d="M519 188 L519 212 M482 212 L649 212" data-origin="inferred" data-net="2"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독
-internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e0 e3 e5" cx="519" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e3 e5" cx="519" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e3 e5" x="524" y="200">×2</text><path class="w bypass joins e0 e3 e5" d="M387 100 L577 100" data-net="3"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
+internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판독</title></path><circle class="origin inferred e0 e3 e5" cx="519" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e3 e5" cx="519" cy="188" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e3 e5" x="524" y="200">×2</text><text class="lab contract e0 e3 e5" x="565" y="208" text-anchor="middle">호출</text><path class="w bypass joins e0 e3 e5" d="M387 100 L577 100" data-net="3"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 internal/store → internal/identity: 계약을 거치지 않는 직접 의존</title></path><path class="w bypass e0 e3 e5" d="M482 100 L482 128" data-net="3"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 internal/store → internal/identity: 계약을 거치지 않는 직접 의존</title></path><text class="count e0 e3 e5" x="487" y="124">×2</text>
 <circle class="junction bypass e0 e3 e5" cx="482" cy="100" r="3"/><circle class="junction contract e0 e3 e5" cx="519" cy="212" r="3"/><circle class="junction bypass e1 e2 e3 e4" cx="295" cy="220" r="3"/><circle class="junction bypass e1 e2 e3 e4" cx="482" cy="220" r="3"/>

@@ -106,6 +106,9 @@ type Wire struct {
 	// Mask names the mask that cuts them (rule 24).
 	Gaps []Gap  `json:"-"`
 	Mask string `json:"-"`
+	// Label is the word that says how the line's relations arise, set
+	// along its own ink (rule 25).
+	Label *Label `json:",omitempty"`
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -891,7 +894,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
-	d.mark(paths)
+	d.mark(paths, o.tree)
 	d.hover()
 	return d
 }

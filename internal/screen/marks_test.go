@@ -3,8 +3,12 @@ package screen
 import (
 	"bytes"
 	"fmt"
+	"math"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/store"
 )
 
 type flatSeg struct {
@@ -104,4 +108,86 @@ func TestEveryCrossingIsAGap(t *testing.T) {
 		}
 	}
 	t.Logf("%d gapped points across the fixtures, which count %d crossings", total, crossings)
+}
+
+// Every label sits beside a straight stretch of its own line, off every
+// box, chip and other line (rule 25).
+func TestLabelsReadAlongTheirLine(t *testing.T) {
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		tr := newTree(units)
+		rels, worded, shown, all, labelled := 0, 0, 0, 0, 0
+		for _, v := range views(m) {
+			d := v.d
+			hs, vs := flatSegs(t, d)
+			segs := append(hs, vs...)
+			all++
+			any := false
+			drawn, word, said := map[string]bool{}, map[string]bool{}, map[string]bool{}
+			for _, w := range d.Wires {
+				for _, r := range w.Rels {
+					drawn[r] = true
+					if via(tr, w.Rels) != "" {
+						word[r] = true
+					}
+					if w.Label != nil {
+						said[r] = true
+					}
+				}
+			}
+			rels += len(drawn)
+			worded += len(word)
+			shown += len(said)
+			for i, w := range d.Wires {
+				l := w.Label
+				if l == nil {
+					continue
+				}
+				any = true
+				tw := float64(textWidth(l.S, labelPx))
+				lb := [4]float64{float64(l.X) - tw/2, float64(l.Y) - 8, tw, 9}
+				if l.Up {
+					lb = [4]float64{float64(l.X) - 8, float64(l.Y) - tw/2, 9, tw}
+				}
+				over := func(x, y, w, h float64) bool {
+					return lb[0] < x+w && x < lb[0]+lb[2] && lb[1] < y+h && y < lb[1]+lb[3]
+				}
+				for _, b := range d.Boxes {
+					if over(float64(b.X), float64(b.Y), float64(b.W), float64(b.H)) {
+						t.Errorf("%s %s: label %q on box %s", name, v.name, l.S, b.ID)
+					}
+				}
+				for _, p := range d.Ports {
+					if over(float64(p.X), float64(p.RectY()), float64(p.W), float64(p.H)) {
+						t.Errorf("%s %s: label %q on a chip", name, v.name, l.S)
+					}
+				}
+				near := false
+				for _, s := range segs {
+					x0, y0 := min(s.a.x, s.b.x), min(s.a.y, s.b.y)
+					if over(x0, y0, max(s.a.x, s.b.x)-x0, max(s.a.y, s.b.y)-y0) {
+						t.Errorf("%s %s: label %q on a line", name, v.name, l.S)
+					}
+					if s.wire != i && (w.Net == 0 || d.Wires[s.wire].Net != w.Net) {
+						continue
+					}
+					if l.Up && s.a.x == s.b.x && math.Abs(s.a.x-float64(l.X)) <= 12 && between(float64(l.Y), s.a.y, s.b.y, tw/2) ||
+						!l.Up && s.a.y == s.b.y && math.Abs(s.a.y-float64(l.Y)) <= 12 && between(float64(l.X), s.a.x, s.b.x, tw/2) {
+						near = true
+					}
+				}
+				if !near {
+					t.Errorf("%s %s: label %q beside no stretch of its line", name, v.name, l.S)
+				}
+			}
+			if any {
+				labelled++
+			}
+		}
+		t.Logf("%s: summed over views, %d drawn relations, %d on a line with one word, %d on a labelled line; %d of %d views carry a label", name, rels, worded, shown, labelled, all)
+	}
 }

@@ -98,6 +98,10 @@ svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent)
 svg circle.junction.bypass { fill: var(--bypass); }
 svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg text.lab { font-size: 10px; fill: var(--ink); }
+svg text.lab.contract, svg text.lab.consumes { fill: var(--accent); }
+svg text.lab.provides { fill: var(--ok); }
+svg text.lab.bypass, svg text.lab.mutual { fill: var(--bypass); }
 svg path.w.joins { marker-end: none; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
 svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
@@ -229,198 +233,198 @@ table.index .who { display: block; }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
 @media (hover:hover){
-svg:has(.p0:hover) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(.p0:hover) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
 svg:has(.p0:hover) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(.p1:hover) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(.p1:hover) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
 svg:has(.p1:hover) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(.p2:hover) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(.p2:hover) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
 svg:has(.p2:hover) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(.p3:hover) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(.p3:hover) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
 svg:has(.p3:hover) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(.p4:hover) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(.p4:hover) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
 svg:has(.p4:hover) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(.p5:hover) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(.p5:hover) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
 svg:has(.p5:hover) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(.p6:hover) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(.p6:hover) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
 svg:has(.p6:hover) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(.p7:hover) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(.p7:hover) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
 svg:has(.p7:hover) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(.p8:hover) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(.p8:hover) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
 svg:has(.p8:hover) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(.p9:hover) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(.p9:hover) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
 svg:has(.p9:hover) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(.p10:hover) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(.p10:hover) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
 svg:has(.p10:hover) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(.p11:hover) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(.p11:hover) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
 svg:has(.p11:hover) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(.p12:hover) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(.p12:hover) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
 svg:has(.p12:hover) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(.p13:hover) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(.p13:hover) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
 svg:has(.p13:hover) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(.p14:hover) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(.p14:hover) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
 svg:has(.p14:hover) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(.p15:hover) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(.p15:hover) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
 svg:has(.p15:hover) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(.p16:hover) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(.p16:hover) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
 svg:has(.p16:hover) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(.p17:hover) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(.p17:hover) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
 svg:has(.p17:hover) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(.p18:hover) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(.p18:hover) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
 svg:has(.p18:hover) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(.p19:hover) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(.p19:hover) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
 svg:has(.p19:hover) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(.p20:hover) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(.p20:hover) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
 svg:has(.p20:hover) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(.p21:hover) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(.p21:hover) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
 svg:has(.p21:hover) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(.p22:hover) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(.p22:hover) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
 svg:has(.p22:hover) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(.p23:hover) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(.p23:hover) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
 svg:has(.p23:hover) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(.p24:hover) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(.p24:hover) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
 svg:has(.p24:hover) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(.p25:hover) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(.p25:hover) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
 svg:has(.p25:hover) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(.p26:hover) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(.p26:hover) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
 svg:has(.p26:hover) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(.p27:hover) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(.p27:hover) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
 svg:has(.p27:hover) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(.p28:hover) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(.p28:hover) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
 svg:has(.p28:hover) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(.p29:hover) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(.p29:hover) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
 svg:has(.p29:hover) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(.p30:hover) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(.p30:hover) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
 svg:has(.p30:hover) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(.p31:hover) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(.p31:hover) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
 svg:has(.p31:hover) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(.p32:hover) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(.p32:hover) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
 svg:has(.p32:hover) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(.p33:hover) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(.p33:hover) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
 svg:has(.p33:hover) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(.p34:hover) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(.p34:hover) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
 svg:has(.p34:hover) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(.p35:hover) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(.p35:hover) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
 svg:has(.p35:hover) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(.p36:hover) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(.p36:hover) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
 svg:has(.p36:hover) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(.p37:hover) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(.p37:hover) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
 svg:has(.p37:hover) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(.p38:hover) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(.p38:hover) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
 svg:has(.p38:hover) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(.p39:hover) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(.p39:hover) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
 svg:has(.p39:hover) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(.p40:hover) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(.p40:hover) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
 svg:has(.p40:hover) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(.p41:hover) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(.p41:hover) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
 svg:has(.p41:hover) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(.p42:hover) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(.p42:hover) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
 svg:has(.p42:hover) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(.p43:hover) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(.p43:hover) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
 svg:has(.p43:hover) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(.p44:hover) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(.p44:hover) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
 svg:has(.p44:hover) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(.p45:hover) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(.p45:hover) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
 svg:has(.p45:hover) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(.p46:hover) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(.p46:hover) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
 svg:has(.p46:hover) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(.p47:hover) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(.p47:hover) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
 svg:has(.p47:hover) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 }
-svg:has(:focus-visible>.p0) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(:focus-visible>.p0) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
 svg:has(:focus-visible>.p0) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(:focus-visible>.p1) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(:focus-visible>.p1) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
 svg:has(:focus-visible>.p1) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(:focus-visible>.p2) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(:focus-visible>.p2) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
 svg:has(:focus-visible>.p2) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(:focus-visible>.p3) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(:focus-visible>.p3) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
 svg:has(:focus-visible>.p3) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(:focus-visible>.p4) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(:focus-visible>.p4) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
 svg:has(:focus-visible>.p4) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(:focus-visible>.p5) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(:focus-visible>.p5) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
 svg:has(:focus-visible>.p5) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(:focus-visible>.p6) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(:focus-visible>.p6) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
 svg:has(:focus-visible>.p6) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(:focus-visible>.p7) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(:focus-visible>.p7) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
 svg:has(:focus-visible>.p7) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(:focus-visible>.p8) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(:focus-visible>.p8) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
 svg:has(:focus-visible>.p8) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(:focus-visible>.p9) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(:focus-visible>.p9) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
 svg:has(:focus-visible>.p9) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(:focus-visible>.p10) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(:focus-visible>.p10) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
 svg:has(:focus-visible>.p10) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(:focus-visible>.p11) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(:focus-visible>.p11) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
 svg:has(:focus-visible>.p11) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(:focus-visible>.p12) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(:focus-visible>.p12) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
 svg:has(:focus-visible>.p12) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(:focus-visible>.p13) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(:focus-visible>.p13) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
 svg:has(:focus-visible>.p13) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(:focus-visible>.p14) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(:focus-visible>.p14) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
 svg:has(:focus-visible>.p14) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(:focus-visible>.p15) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(:focus-visible>.p15) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
 svg:has(:focus-visible>.p15) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(:focus-visible>.p16) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(:focus-visible>.p16) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
 svg:has(:focus-visible>.p16) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(:focus-visible>.p17) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(:focus-visible>.p17) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
 svg:has(:focus-visible>.p17) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(:focus-visible>.p18) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(:focus-visible>.p18) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
 svg:has(:focus-visible>.p18) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(:focus-visible>.p19) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(:focus-visible>.p19) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
 svg:has(:focus-visible>.p19) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(:focus-visible>.p20) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(:focus-visible>.p20) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
 svg:has(:focus-visible>.p20) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(:focus-visible>.p21) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(:focus-visible>.p21) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
 svg:has(:focus-visible>.p21) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(:focus-visible>.p22) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(:focus-visible>.p22) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
 svg:has(:focus-visible>.p22) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(:focus-visible>.p23) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(:focus-visible>.p23) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
 svg:has(:focus-visible>.p23) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(:focus-visible>.p24) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(:focus-visible>.p24) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
 svg:has(:focus-visible>.p24) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(:focus-visible>.p25) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(:focus-visible>.p25) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
 svg:has(:focus-visible>.p25) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(:focus-visible>.p26) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(:focus-visible>.p26) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
 svg:has(:focus-visible>.p26) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(:focus-visible>.p27) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(:focus-visible>.p27) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
 svg:has(:focus-visible>.p27) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(:focus-visible>.p28) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(:focus-visible>.p28) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
 svg:has(:focus-visible>.p28) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(:focus-visible>.p29) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(:focus-visible>.p29) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
 svg:has(:focus-visible>.p29) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(:focus-visible>.p30) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(:focus-visible>.p30) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
 svg:has(:focus-visible>.p30) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(:focus-visible>.p31) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(:focus-visible>.p31) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
 svg:has(:focus-visible>.p31) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(:focus-visible>.p32) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(:focus-visible>.p32) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
 svg:has(:focus-visible>.p32) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(:focus-visible>.p33) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(:focus-visible>.p33) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
 svg:has(:focus-visible>.p33) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(:focus-visible>.p34) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(:focus-visible>.p34) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
 svg:has(:focus-visible>.p34) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(:focus-visible>.p35) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(:focus-visible>.p35) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
 svg:has(:focus-visible>.p35) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(:focus-visible>.p36) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(:focus-visible>.p36) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
 svg:has(:focus-visible>.p36) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(:focus-visible>.p37) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(:focus-visible>.p37) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
 svg:has(:focus-visible>.p37) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(:focus-visible>.p38) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(:focus-visible>.p38) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
 svg:has(:focus-visible>.p38) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(:focus-visible>.p39) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(:focus-visible>.p39) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
 svg:has(:focus-visible>.p39) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(:focus-visible>.p40) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(:focus-visible>.p40) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
 svg:has(:focus-visible>.p40) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(:focus-visible>.p41) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(:focus-visible>.p41) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
 svg:has(:focus-visible>.p41) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(:focus-visible>.p42) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(:focus-visible>.p42) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
 svg:has(:focus-visible>.p42) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(:focus-visible>.p43) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(:focus-visible>.p43) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
 svg:has(:focus-visible>.p43) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(:focus-visible>.p44) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(:focus-visible>.p44) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
 svg:has(:focus-visible>.p44) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(:focus-visible>.p45) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(:focus-visible>.p45) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
 svg:has(:focus-visible>.p45) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(:focus-visible>.p46) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(:focus-visible>.p46) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
 svg:has(:focus-visible>.p46) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(:focus-visible>.p47) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(:focus-visible>.p47) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
 svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 
 </style>
@@ -455,37 +459,37 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 <rect class="frame" x="6" y="18" width="901" height="444" rx="8"/>
 <path class="w depends_on e0 e16" d="M128 302 L128 334 L43 334 L43 442" data-origin="inferred"><title>CLAUDE.md abbd block depends_on /abbd (via call), 판독
 cmd/abbd/install.go:29 &#34;The /abbd skill says how to read, query and record the topology.&#34;</title></path><circle class="origin inferred e0 e16" cx="128" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins e1 e10" d="M434 150 L434 182 L689 182" data-origin="inferred" mask="url(#x648d3668-1)"><title>review commands consumes unit files (via data), 판독
-cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e1 e10" cx="434" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins e1 e6" d="M369 190 L369 198"><title>review commands depends_on blueprint publish (via call), 판독
+cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e1 e10" cx="434" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e1 e10" x="561" y="178" text-anchor="middle">데이터</text><path class="w depends_on joins e1 e6" d="M369 190 L369 198"><title>review commands depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;</title></path><path class="w depends_on joins back e1 e18" d="M402 78 L402 62"><title>review commands depends_on internal/gitx (via call), 판독
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;</title></path><path class="w depends_on joins back e1 e19" d="M410 78 L410 70"><title>review commands depends_on internal/topology (via call), 판독
 cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;</title></path><path class="w provides e2 e12" d="M187 106 L187 62 L241 62 L241 38" data-origin="inferred"><title>argv parsing and dispatch provides abbd exit codes (via call), 판독
-cmd/abbd/main.go:307 &#34;return exitUsage&#34;</title></path><circle class="origin inferred e2 e12" cx="187" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins e2 e6" d="M187 150 L187 198" data-origin="inferred"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
-cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e2 e6" cx="187" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes back e3 e8" d="M585 62 L585 38"><title>sync pipeline consumes project.yaml (via config), 판독
+cmd/abbd/main.go:307 &#34;return exitUsage&#34;</title></path><circle class="origin inferred e2 e12" cx="187" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab provides e2 e12" x="214" y="58" text-anchor="middle">호출</text><path class="w depends_on joins e2 e6" d="M187 150 L187 198" data-origin="inferred"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
+cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e2 e6" cx="187" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e2 e6" x="183" y="174" text-anchor="middle" transform="rotate(-90 183 174)">호출</text><path class="w consumes back e3 e8" d="M585 62 L585 38"><title>sync pipeline consumes project.yaml (via config), 판독
 cmd/abbd/main.go:346 &#34;if len(p.Extract) == 0 {&#34;</title></path><path class="w consumes joins e3 e9" d="M543 150 L543 214 L245 214" data-origin="inferred" mask="url(#x648d3668-8)"><title>sync pipeline consumes extraction JSON (via data), 판독
-cmd/abbd/main.go:353 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e3 e9" cx="543" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes back e3 e14" d="M679 62 L679 38"><title>sync pipeline consumes sync state (via data), 판독
+cmd/abbd/main.go:353 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e3 e9" cx="543" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e3 e9" x="394" y="210" text-anchor="middle">데이터</text><path class="w consumes back e3 e14" d="M679 62 L679 38"><title>sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go:468 &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path><path class="w depends_on e3 e7" d="M517 222 L517 250"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
 cmd/abbd/main.go:347 &#34;project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first&#34;</title></path><path class="w depends_on joins e3 e17" d="M457 374 L457 382"><title>sync pipeline depends_on internal/evidence (via call), 판독
 cmd/abbd/main.go:450 &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;</title></path><path class="w depends_on joins back e3 e18" d="M554 106 L554 62" data-origin="inferred"><title>sync pipeline depends_on internal/gitx (via call), 판독
-cmd/abbd/main.go:431 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</title></path><circle class="origin inferred e3 e18" cx="554" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e3 e20" d="M424 374 L424 442"><title>sync pipeline depends_on internal/identity (via call), 판독
-cmd/abbd/main.go:449 &#34;identity.Reconcile(&#34;</title></path><path class="w consumes joins e4 e15" d="M865 150 L865 174" data-origin="inferred"><title>query commands consumes module understanding (via data), 판독
+cmd/abbd/main.go:431 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</title></path><circle class="origin inferred e3 e18" cx="554" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e3 e18" x="550" y="84" text-anchor="middle" transform="rotate(-90 550 84)">호출</text><path class="w depends_on e3 e20" d="M424 374 L424 442"><title>sync pipeline depends_on internal/identity (via call), 판독
+cmd/abbd/main.go:449 &#34;identity.Reconcile(&#34;</title></path><text class="lab depends_on e3 e20" x="420" y="408" text-anchor="middle" transform="rotate(-90 420 408)">호출</text><path class="w consumes joins e4 e15" d="M865 150 L865 174" data-origin="inferred"><title>query commands consumes module understanding (via data), 판독
 cmd/abbd/query.go:249 &#34;texts, err := e.st.LoadUnderstandings()&#34;</title></path><circle class="origin inferred e4 e15" cx="865" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e4 e5" d="M780 150 L780 174 L779 174 L779 258" data-origin="inferred"><title>query commands depends_on record writers (via convention), 판독
-cmd/abbd/understand.go:59 &#34;digest, code := e.st.Stamp(units, id)&#34;</title></path><circle class="origin inferred e4 e5" cx="780" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins back e4 e19" d="M811 106 L811 70" data-origin="inferred"><title>query commands depends_on internal/topology (via call), 판독
+cmd/abbd/understand.go:59 &#34;digest, code := e.st.Stamp(units, id)&#34;</title></path><circle class="origin inferred e4 e5" cx="780" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e4 e5" x="775" y="216" text-anchor="middle" transform="rotate(-90 775 216)">관례</text><path class="w depends_on joins back e4 e19" d="M811 106 L811 70" data-origin="inferred"><title>query commands depends_on internal/topology (via call), 판독
 cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><circle class="origin inferred e4 e19" cx="811" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins e5 e10" d="M810 390 L810 398"><title>record writers consumes unit files (via data), 판독
 cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><path class="w consumes joins e5 e15" d="M818 390 L818 414"><title>record writers consumes module understanding (via data), 판독
 cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {&#34;</title></path><path class="w consumes e5 e13" d="M697 390 L697 442"><title>record writers consumes relation key (via convention), 판독
-cmd/abbd/record.go:67 &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><path class="w depends_on joins e5 e17" d="M748 302 L748 382" data-origin="inferred"><title>record writers depends_on internal/evidence (via call), 판독
-cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e5 e17" cx="748" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w provides e6 e11" d="M316 258 L316 174 L313 174 L313 38" data-origin="inferred"><title>blueprint publish provides blueprint files (via data), 판독
-cmd/abbd/screen.go:31 &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e6 e11" cx="316" cy="258" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e6 e21" d="M343 302 L343 342 L113 342 L113 442" data-origin="inferred" mask="url(#x648d3668-22)"><title>blueprint publish depends_on internal/screen (via call), 판독
-cmd/abbd/screen.go:27 &#34;files, err := screen.Files(screen.Build(in))&#34;</title></path><circle class="origin inferred e6 e21" cx="343" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins e7 e9" d="M613 310 L613 358" data-origin="inferred"><title>setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
+cmd/abbd/record.go:67 &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><text class="lab consumes e5 e13" x="693" y="416" text-anchor="middle" transform="rotate(-90 693 416)">관례</text><path class="w depends_on joins e5 e17" d="M748 302 L748 382" data-origin="inferred"><title>record writers depends_on internal/evidence (via call), 판독
+cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e5 e17" cx="748" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e5 e17" x="744" y="342" text-anchor="middle" transform="rotate(-90 744 342)">호출</text><path class="w provides e6 e11" d="M316 258 L316 174 L313 174 L313 38" data-origin="inferred"><title>blueprint publish provides blueprint files (via data), 판독
+cmd/abbd/screen.go:31 &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e6 e11" cx="316" cy="258" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab provides e6 e11" x="309" y="106" text-anchor="middle" transform="rotate(-90 309 106)">데이터</text><path class="w depends_on e6 e21" d="M343 302 L343 342 L113 342 L113 442" data-origin="inferred" mask="url(#x648d3668-22)"><title>blueprint publish depends_on internal/screen (via call), 판독
+cmd/abbd/screen.go:27 &#34;files, err := screen.Files(screen.Build(in))&#34;</title></path><circle class="origin inferred e6 e21" cx="343" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e6 e21" x="228" y="338" text-anchor="middle">호출</text><path class="w consumes joins e7 e9" d="M613 310 L613 358" data-origin="inferred"><title>setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
 cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e7 e9" cx="613" cy="310" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on back e3 e7" d="M613 250 L613 174 L626 174 L626 150" data-origin="inferred"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
-cmd/abbd/setup.go:55 &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e3 e7" cx="613" cy="250" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e7 e22" d="M517 310 L517 350 L201 350 L201 442" data-origin="inferred" mask="url(#x648d3668-25)"><title>setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
-cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><circle class="origin inferred e7 e22" cx="517" cy="310" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes e0 e23" d="M128 38 L128 62 L65 62 L65 174 L128 174 L128 258" data-origin="inferred"><title>/abbd-setup verify, install and hand over consumes CLAUDE.md abbd block (via convention), 판독</title></path><circle class="origin inferred e0 e23" cx="128" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins back e1 e18 e19" d="M402 106 L402 78 M402 78 L410 78" data-origin="inferred" data-net="1"><title>review commands depends_on internal/gitx (via call), 판독
+cmd/abbd/setup.go:55 &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e3 e7" cx="613" cy="250" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e3 e7" x="609" y="212" text-anchor="middle" transform="rotate(-90 609 212)">호출</text><path class="w depends_on e7 e22" d="M517 310 L517 350 L201 350 L201 442" data-origin="inferred" mask="url(#x648d3668-25)"><title>setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
+cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><circle class="origin inferred e7 e22" cx="517" cy="310" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e7 e22" x="359" y="346" text-anchor="middle">호출</text><path class="w consumes e0 e23" d="M128 38 L128 62 L65 62 L65 174 L128 174 L128 258" data-origin="inferred"><title>/abbd-setup verify, install and hand over consumes CLAUDE.md abbd block (via convention), 판독</title></path><circle class="origin inferred e0 e23" cx="128" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e0 e23" x="61" y="118" text-anchor="middle" transform="rotate(-90 61 118)">관례</text><path class="w depends_on joins back e1 e18 e19" d="M402 106 L402 78 M402 78 L410 78" data-origin="inferred" data-net="1"><title>review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;</title></path><circle class="origin inferred e1 e18 e19" cx="402" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e1 e18 e19" cx="402" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e1 e18 e19" x="381" y="102">×2</text><path class="w depends_on joins e1 e6 e17" d="M369 150 L369 190 M369 190 L449 190" data-origin="inferred" data-net="2"><title>review commands depends_on blueprint publish (via call), 판독
 review commands depends_on internal/evidence (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
-cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e1 e6 e17" cx="369" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e1 e6 e17" cx="369" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e1 e6 e17" x="348" y="162">×2</text><path class="w consumes joins back e3 e8 e14" d="M616 106 L616 62 M585 62 L679 62" data-origin="inferred" data-net="3"><title>sync pipeline consumes project.yaml (via config), 판독
+cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e1 e6 e17" cx="369" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e1 e6 e17" cx="369" cy="150" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e1 e6 e17" x="348" y="162">×2</text><text class="lab depends_on e1 e6 e17" x="409" y="186" text-anchor="middle">호출</text><path class="w consumes joins back e3 e8 e14" d="M616 106 L616 62 M585 62 L679 62" data-origin="inferred" data-net="3"><title>sync pipeline consumes project.yaml (via config), 판독
 sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go:346 &#34;if len(p.Extract) == 0 {&#34;
 cmd/abbd/main.go:468 &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path><circle class="origin inferred e3 e8 e14" cx="616" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e3 e8 e14" cx="616" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e3 e8 e14" x="621" y="102">×2</text><path class="w depends_on joins e3 e7 e17 e20" d="M585 150 L585 222 M457 222 L457 374 M457 222 L585 222 M424 374 L457 374" data-origin="inferred" data-net="4" mask="url(#x648d3668-30)"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
@@ -501,19 +505,19 @@ cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understand
 cmd/abbd/record.go:67 &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><circle class="origin inferred e5 e10 e13 e15" cx="810" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e5 e10 e13 e15" cx="810" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e5 e10 e13 e15" cx="810" cy="302" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e5 e10 e13 e15" x="789" y="314">×3</text><path class="w depends_on joins back e1 e3 e18" d="M402 62 L554 62" data-net="6"><title>review commands depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/gitx (via call), 판독
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
-cmd/abbd/main.go:431 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</title></path><path class="w depends_on back e1 e3 e18" d="M493 62 L493 38" data-net="6"><title>review commands depends_on internal/gitx (via call), 판독
+cmd/abbd/main.go:431 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</title></path><text class="lab depends_on e1 e3 e18" x="478" y="58" text-anchor="middle">호출</text><path class="w depends_on back e1 e3 e18" d="M493 62 L493 38" data-net="6"><title>review commands depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/gitx (via call), 판독
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/main.go:431 &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;</title></path><text class="count e1 e3 e18" x="498" y="50">×2</text><path class="w depends_on joins back e1 e4 e19" d="M410 70 L811 70" data-net="7" mask="url(#x648d3668-34)"><title>review commands depends_on internal/topology (via call), 판독
 query commands depends_on internal/topology (via call), 판독
 cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;
-cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><path class="w depends_on back e1 e4 e19" d="M767 70 L767 38" data-net="7"><title>review commands depends_on internal/topology (via call), 판독
+cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><text class="lab depends_on e1 e4 e19" x="602" y="81" text-anchor="middle">호출</text><path class="w depends_on back e1 e4 e19" d="M767 70 L767 38" data-net="7"><title>review commands depends_on internal/topology (via call), 판독
 query commands depends_on internal/topology (via call), 판독
 cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;
 cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><text class="count e1 e4 e19" x="772" y="50">×2</text><path class="w consumes joins e3 e7 e9" d="M245 214 L245 358 M245 358 L613 358" data-net="8" mask="url(#x648d3668-36)"><title>sync pipeline consumes extraction JSON (via data), 판독
 setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
 cmd/abbd/main.go:353 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;
-cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><path class="w consumes e3 e7 e9" d="M314 358 L314 442" data-net="8"><title>sync pipeline consumes extraction JSON (via data), 판독
+cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><text class="lab consumes e3 e7 e9" x="429" y="369" text-anchor="middle">데이터</text><path class="w consumes e3 e7 e9" d="M314 358 L314 442" data-net="8"><title>sync pipeline consumes extraction JSON (via data), 판독
 setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
 cmd/abbd/main.go:353 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;
 cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><text class="count e3 e7 e9" x="319" y="434">×2</text><path class="w depends_on joins e1 e3 e5 e17" d="M449 190 L449 382 M449 382 L748 382" data-net="9" mask="url(#x648d3668-38)"><title>review commands depends_on internal/evidence (via call), 판독
@@ -521,7 +525,7 @@ sync pipeline depends_on internal/evidence (via call), 판독
 record writers depends_on internal/evidence (via call), 판독
 cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/main.go:450 &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
-cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><path class="w depends_on e1 e3 e5 e17" d="M515 382 L515 442" data-net="9"><title>review commands depends_on internal/evidence (via call), 판독
+cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><text class="lab depends_on e1 e3 e5 e17" x="598" y="378" text-anchor="middle">호출</text><path class="w depends_on e1 e3 e5 e17" d="M515 382 L515 442" data-net="9"><title>review commands depends_on internal/evidence (via call), 판독
 sync pipeline depends_on internal/evidence (via call), 판독
 record writers depends_on internal/evidence (via call), 판독
 cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;
@@ -529,19 +533,19 @@ cmd/abbd/main.go:450 &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)
 cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><text class="count e1 e3 e5 e17" x="520" y="434">×3</text><path class="w consumes joins e1 e5 e10" d="M689 182 L689 398 M604 398 L810 398" data-net="10" mask="url(#x648d3668-40)"><title>review commands consumes unit files (via data), 판독
 record writers consumes unit files (via data), 판독
 cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;
-cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><path class="w consumes e1 e5 e10" d="M604 398 L604 442" data-net="10"><title>review commands consumes unit files (via data), 판독
+cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><text class="lab consumes e1 e5 e10" x="685" y="290" text-anchor="middle" transform="rotate(-90 685 290)">데이터</text><path class="w consumes e1 e5 e10" d="M604 398 L604 442" data-net="10"><title>review commands consumes unit files (via data), 판독
 record writers consumes unit files (via data), 판독
 cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;
 cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><text class="count e1 e5 e10" x="583" y="434">×2</text><path class="w consumes joins e4 e5 e15" d="M865 174 L865 414 M818 414 L865 414" data-net="11"><title>query commands consumes module understanding (via data), 판독
 record writers consumes module understanding (via data), 판독
 cmd/abbd/query.go:249 &#34;texts, err := e.st.LoadUnderstandings()&#34;
-cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {&#34;</title></path><path class="w consumes e4 e5 e15" d="M865 414 L865 442" data-net="11"><title>query commands consumes module understanding (via data), 판독
+cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {&#34;</title></path><text class="lab consumes e4 e5 e15" x="861" y="294" text-anchor="middle" transform="rotate(-90 861 294)">데이터</text><path class="w consumes e4 e5 e15" d="M865 414 L865 442" data-net="11"><title>query commands consumes module understanding (via data), 판독
 record writers consumes module understanding (via data), 판독
 cmd/abbd/query.go:249 &#34;texts, err := e.st.LoadUnderstandings()&#34;
 cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {&#34;</title></path><text class="count e4 e5 e15" x="870" y="434">×2</text><path class="w depends_on joins e1 e2 e6" d="M187 198 L369 198" data-net="12" mask="url(#x648d3668-44)"><title>review commands depends_on blueprint publish (via call), 판독
 argv parsing and dispatch depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
-cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><path class="w depends_on e1 e2 e6" d="M304 198 L304 258" data-net="12"><title>review commands depends_on blueprint publish (via call), 판독
+cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><text class="lab depends_on e1 e2 e6" x="278" y="194" text-anchor="middle">호출</text><path class="w depends_on e1 e2 e6" d="M304 198 L304 258" data-net="12"><title>review commands depends_on blueprint publish (via call), 판독
 argv parsing and dispatch depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
 cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><text class="count e1 e2 e6" x="283" y="240">×2</text>
@@ -620,7 +624,7 @@ cmd/abbd/install.go:29 &#34;The /abbd skill says how to read, query and record t
 <defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker><mask id="x1dbcbc6-0" maskUnits="userSpaceOnUse" x="0" y="0" width="440" height="252"><rect width="440" height="252" fill="#fff"/><rect x="192" y="199" width="8" height="6"/></mask><mask id="x1dbcbc6-5" maskUnits="userSpaceOnUse" x="0" y="0" width="440" height="252"><rect width="440" height="252" fill="#fff"/><rect x="208" y="191" width="8" height="6"/></mask></defs>
 <rect class="frame" x="6" y="18" width="428" height="216" rx="8"/>
 <path class="w consumes e0 e2" d="M212 106 L212 202 L144 202 L144 214" data-origin="inferred" mask="url(#x1dbcbc6-0)"><title>review commands consumes unit files (via data), 판독
-cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e0 e2" cx="212" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e0 e1" d="M102 130 L102 142"><title>review commands depends_on blueprint publish (via call), 판독
+cmd/abbd/diff.go:23 &#34;was, err := e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e0 e2" cx="212" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e0 e2" x="208" y="154" text-anchor="middle" transform="rotate(-90 208 154)">데이터</text><path class="w depends_on e0 e1" d="M102 130 L102 142"><title>review commands depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;</title></path><path class="w depends_on e0 e3" d="M196 194 L196 214"><title>review commands depends_on internal/evidence (via call), 판독
 cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;</title></path><path class="w depends_on e0 e4" d="M309 194 L309 214"><title>review commands depends_on internal/gitx (via call), 판독
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;</title></path><path class="w depends_on e0 e5" d="M386 194 L386 214"><title>review commands depends_on internal/topology (via call), 판독
@@ -631,7 +635,7 @@ review commands depends_on internal/topology (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
 cmd/abbd/evidence.go:25 &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go:19 &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
-cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;</title></path><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3 e4 e5" x="175" y="118">×4</text>
+cmd/abbd/diff.go:31 &#34;d := topology.Compare(was, now)&#34;</title></path><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3 e4 e5" cx="196" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3 e4 e5" x="175" y="118">×4</text><text class="lab depends_on e0 e1 e3 e4 e5" x="291" y="190" text-anchor="middle">호출</text>
 <circle class="junction depends_on e0 e1 e3 e4 e5" cx="196" cy="130" r="3"/><circle class="junction depends_on e0 e1 e3 e4 e5" cx="196" cy="194" r="3"/><circle class="junction depends_on e0 e1 e3 e4 e5" cx="309" cy="194" r="3"/>
 <g class="box inner focus p0 n0 n1 n2 n3 n4 n5" data-id="MOD-0002"><title>MOD-0002 review commands: Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts.</title><rect x="147" y="62" width="146" height="44" rx="4"/><text class="name" x="155" y="81">review commands</text><text class="sub" x="155" y="98">모듈</text></g><a href="#f-MOD-0001--MOD-0007"><g class="box inner p1 n0 n1" data-id="MOD-0007"><title>MOD-0007 blueprint publish: Owns loading the screen input with the current tree snapshot and writing index.html then graph.json, the watermark file last.</title><rect x="24" y="142" width="156" height="44" rx="6"/><text class="name" x="32" y="161">blueprint publish</text><text class="sub" x="32" y="178">모듈</text></g></a>
 <g class="port design entry p2 n0 n2" data-id="port|DATA-0004false"><title>이 모듈이 쓰는 계약: unit files</title><rect x="103" y="214" width="82" height="17" rx="3"/><text class="chip" x="103" dx="4" y="214" dy="12.5">unit files</text></g><a href="MOD-0013.html"><g class="port other entry p3 n0 n3" data-id="port|MOD-0013false"><title>계약 없이 internal/evidence와 닿는 곳</title><rect x="189" y="214" width="87" height="17" rx="3"/><text class="chip" x="189" dx="4" y="214" dy="12.5">→ evidence</text></g></a><a href="MOD-0022.html"><g class="port other entry p4 n0 n4" data-id="port|MOD-0022false"><title>계약 없이 internal/gitx와 닿는 곳</title><rect x="280" y="214" width="59" height="17" rx="3"/><text class="chip" x="280" dx="4" y="214" dy="12.5">→ gitx</text></g></a><a href="MOD-0047.html"><g class="port other entry p5 n0 n5" data-id="port|MOD-0047false"><title>계약 없이 internal/topology와 닿는 곳</title><rect x="343" y="214" width="87" height="17" rx="3"/><text class="chip" x="343" dx="4" y="214" dy="12.5">→ topology</text></g></a>
@@ -721,9 +725,9 @@ cmd/abbd/main.go:449 &#34;identity.Reconcile(&#34;</title></path><circle class="
 <defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker><mask id="x11220784-3" maskUnits="userSpaceOnUse" x="0" y="0" width="376" height="248"><rect width="376" height="248" fill="#fff"/><rect x="176" y="127" width="8" height="6"/></mask></defs>
 <rect class="frame" x="6" y="18" width="364" height="212" rx="8"/>
 <path class="w consumes e0 e2" d="M180 106 L180 210" data-origin="inferred"><title>query commands consumes module understanding (via data), 판독
-cmd/abbd/query.go:249 &#34;texts, err := e.st.LoadUnderstandings()&#34;</title></path><circle class="origin inferred e0 e2" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e0 e1" d="M94 130 L94 142"><title>query commands depends_on record writers (via convention), 판독
+cmd/abbd/query.go:249 &#34;texts, err := e.st.LoadUnderstandings()&#34;</title></path><circle class="origin inferred e0 e2" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e0 e2" x="176" y="158" text-anchor="middle" transform="rotate(-90 176 158)">데이터</text><path class="w depends_on e0 e1" d="M94 130 L94 142"><title>query commands depends_on record writers (via convention), 판독
 cmd/abbd/understand.go:59 &#34;digest, code := e.st.Stamp(units, id)&#34;</title></path><path class="w depends_on e0 e3" d="M196 130 L196 194 L304 194 L304 210"><title>query commands depends_on internal/topology (via call), 판독
-cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><path class="w depends_on joins e0 e1 e3" d="M219 106 L219 130 M94 130 L219 130" data-origin="inferred" data-net="1" mask="url(#x11220784-3)"><title>query commands depends_on record writers (via convention), 판독
+cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><text class="lab depends_on e0 e3" x="250" y="190" text-anchor="middle">호출</text><path class="w depends_on joins e0 e1 e3" d="M219 106 L219 130 M94 130 L219 130" data-origin="inferred" data-net="1" mask="url(#x11220784-3)"><title>query commands depends_on record writers (via convention), 판독
 query commands depends_on internal/topology (via call), 판독
 cmd/abbd/understand.go:59 &#34;digest, code := e.st.Stamp(units, id)&#34;
 cmd/abbd/query.go:91 &#34;ex := topology.Explain(units, u.ID)&#34;</title></path><circle class="origin inferred e0 e1 e3" cx="219" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3" cx="219" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3" x="224" y="118">×2</text>
@@ -753,7 +757,7 @@ cmd/abbd/understand.go:59 &#34;digest, code := e.st.Stamp(units, id)&#34;</title
 cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><path class="w consumes e1 e4" d="M177 214 L177 226"><title>record writers consumes module understanding (via data), 판독
 cmd/abbd/understand.go:83 &#34;if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {&#34;</title></path><path class="w consumes e1 e3" d="M306 214 L306 226"><title>record writers consumes relation key (via convention), 판독
 cmd/abbd/record.go:67 &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><path class="w depends_on e1 e5" d="M258 182 L258 206 L401 206 L401 226" data-origin="inferred"><title>record writers depends_on internal/evidence (via call), 판독
-cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e1 e5" cx="258" cy="182" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes joins e1 e2 e3 e4" d="M196 182 L196 214 M55 214 L306 214" data-origin="inferred" data-net="1"><title>record writers consumes unit files (via data), 판독
+cmd/abbd/record.go:35 &#34;c := evidence.New(e.root)&#34;</title></path><circle class="origin inferred e1 e5" cx="258" cy="182" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab depends_on e1 e5" x="329" y="202" text-anchor="middle">호출</text><path class="w consumes joins e1 e2 e3 e4" d="M196 182 L196 214 M55 214 L306 214" data-origin="inferred" data-net="1"><title>record writers consumes unit files (via data), 판독
 record writers consumes module understanding (via data), 판독
 record writers consumes relation key (via convention), 판독
 cmd/abbd/record.go:60 &#34;return e.st.SaveUnits([]model.Unit{u})&#34;
@@ -783,11 +787,11 @@ cmd/abbd/record.go:67 &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;
 <path class="w depends_on joins e0 e2" d="M349 106 L349 114" data-origin="inferred"><title>review commands depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;</title></path><circle class="origin inferred e0 e2" cx="349" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins e1 e2" d="M134 106 L134 114" data-origin="inferred"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
 cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e1 e2" cx="134" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w provides e2 e3" d="M260 142 L260 38" data-origin="inferred"><title>blueprint publish provides blueprint files (via data), 판독
-cmd/abbd/screen.go:31 &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e2 e3" cx="260" cy="142" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e2 e4" d="M260 186 L260 210" data-origin="inferred"><title>blueprint publish depends_on internal/screen (via call), 판독
+cmd/abbd/screen.go:31 &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e2 e3" cx="260" cy="142" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab provides e2 e3" x="256" y="90" text-anchor="middle" transform="rotate(-90 256 90)">데이터</text><path class="w depends_on e2 e4" d="M260 186 L260 210" data-origin="inferred"><title>blueprint publish depends_on internal/screen (via call), 판독
 cmd/abbd/screen.go:27 &#34;files, err := screen.Files(screen.Build(in))&#34;</title></path><circle class="origin inferred e2 e4" cx="260" cy="186" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on joins e0 e1 e2" d="M134 114 L349 114" data-net="1" mask="url(#x9255df23-4)"><title>review commands depends_on blueprint publish (via call), 판독
 argv parsing and dispatch depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
-cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><path class="w depends_on e0 e1 e2" d="M225 114 L225 142" data-net="1"><title>review commands depends_on blueprint publish (via call), 판독
+cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><text class="lab depends_on e0 e1 e2" x="241" y="125" text-anchor="middle">호출</text><path class="w depends_on e0 e1 e2" d="M225 114 L225 142" data-net="1"><title>review commands depends_on blueprint publish (via call), 판독
 argv parsing and dispatch depends_on blueprint publish (via call), 판독
 cmd/abbd/evidence.go:78 &#34;in, err := e.screenInput()&#34;
 cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path><text class="count e0 e1 e2" x="204" y="138">×2</text>
@@ -814,12 +818,12 @@ cmd/abbd/main.go:316 &#34;if err := e.publish(); err != nil {&#34;</title></path
 <rect class="frame" x="6" y="18" width="364" height="304" rx="8"/>
 <path class="w depends_on e0 e1" d="M188 106 L188 138" data-origin="inferred"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
 cmd/abbd/main.go:347 &#34;project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first&#34;</title></path><circle class="origin inferred e0 e1" cx="188" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes e1 e2" d="M180 198 L180 302" data-origin="inferred"><title>setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
-cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e1 e2" cx="180" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e0 e1" d="M94 222 L94 234"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
+cmd/abbd/setup.go:34 &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e1 e2" cx="180" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab consumes e1 e2" x="176" y="250" text-anchor="middle" transform="rotate(-90 176 250)">데이터</text><path class="w depends_on e0 e1" d="M94 222 L94 234"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
 cmd/abbd/setup.go:55 &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><path class="w depends_on e1 e3" d="M196 222 L196 286 L294 286 L294 302"><title>setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
-cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><path class="w depends_on joins e0 e1 e3" d="M236 198 L236 222 M94 222 L236 222" data-origin="inferred" data-net="1" mask="url(#x60418532-4)"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
+cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><text class="lab depends_on e1 e3" x="245" y="282" text-anchor="middle">호출</text><path class="w depends_on joins e0 e1 e3" d="M236 198 L236 222 M94 222 L236 222" data-origin="inferred" data-net="1" mask="url(#x60418532-4)"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
 setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 cmd/abbd/setup.go:55 &#34;res, err := e.syncActual(ex, identity.Setup)&#34;
-cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><circle class="origin inferred e0 e1 e3" cx="236" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3" cx="236" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3" x="241" y="210">×2</text>
+cmd/abbd/setup.go:47 &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><circle class="origin inferred e0 e1 e3" cx="236" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e3" cx="236" cy="198" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e3" x="241" y="210">×2</text><text class="lab depends_on e0 e1 e3" x="165" y="218" text-anchor="middle">호출</text>
 <circle class="junction depends_on e0 e1 e3" cx="196" cy="222" r="3"/>
 <a href="#f-MOD-0001--MOD-0004"><g class="box inner p0 n0 n1" data-id="MOD-0004"><title>MOD-0004 sync pipeline: Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.</title><rect x="118" y="62" width="140" height="44" rx="6"/><text class="name" x="126" y="81">sync pipeline</text><text class="sub" x="126" y="98">모듈</text></g></a><g class="box inner focus p1 n0 n1 n2 n3" data-id="MOD-0008"><title>MOD-0008 setup determinism proof and supplement fold: Owns the three-run determinism proof (the third with reseeded PYTHONHASHSEED and PERL_HASH_SEED), reading the supplement relative to the root, and folding it over the script output before syncing with guesses replaced.</title><rect x="84" y="138" width="208" height="60" rx="4"/><text class="name" x="92" y="157">setup determinism proof</text><text class="name" x="92" y="173">and supplement fold</text><text class="sub" x="92" y="190">모듈</text></g><a href="#f-MOD-0001--MOD-0004"><g class="box inner twin p0 n0 n1" data-id="MOD-0004↓"><title>MOD-0004 sync pipeline: Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.
 서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다</title><rect x="24" y="234" width="140" height="44" rx="6"/><text class="name" x="32" y="253">sync pipeline</text><text class="sub" x="32" y="270">모듈 · 위에도 있음</text></g></a>

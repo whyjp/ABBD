@@ -90,6 +90,10 @@ svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent)
 svg circle.junction.bypass { fill: var(--bypass); }
 svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg text.lab { font-size: 10px; fill: var(--ink); }
+svg text.lab.contract, svg text.lab.consumes { fill: var(--accent); }
+svg text.lab.provides { fill: var(--ok); }
+svg text.lab.bypass, svg text.lab.mutual { fill: var(--bypass); }
 svg path.w.joins { marker-end: none; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
 svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
