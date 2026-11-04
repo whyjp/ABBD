@@ -115,8 +115,9 @@ def graph_data(s):
         g = json.loads(s)
     except ValueError:
         return s
-    for k in ("overview", "modules"):
-        g.pop(k, None)
+    g.pop("overview", None)
+    for m in g.get("modules") or []:
+        m.pop("Drawing", None)
     return json.dumps(g, indent=2, ensure_ascii=False)
 
 
