@@ -128,9 +128,13 @@ type tactic struct {
 	// median pulls an item to the weighted median of what it joins, not to
 	// the weighted mean.
 	median bool
+	// narrow packs each row as tight as its order lets it, and keeps a
+	// unit's view within narrowBudget. Otherwise the items spread over the
+	// whole budget toward what they join, so more lines drop straight.
+	narrow bool
 }
 
-var tactics = []tactic{{}, {median: true}, {reversed: true}}
+var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by
@@ -541,8 +545,9 @@ func (g *layered) sep(a, b string) int {
 // blocks start halfway between their leftmost and rightmost places, then
 // each moves, within what its neighbours leave it, toward the weighted
 // median of what it is joined to: a run that reaches an end of its chain
-// toward an x it can drop straight from that end.
-func (g *layered) place(budget int) (map[string]int, int) {
+// toward an x it can drop straight from that end. The blocks may spread up
+// to room wide, and the drawing is then trimmed to what they cover.
+func (g *layered) place(budget, room int) (map[string]int, int) {
 	// run is the dummies of chain c in rows from to to, set as one block.
 	type run struct{ c, from, to int }
 	cs := make([]int, len(g.chains))
@@ -688,10 +693,11 @@ func (g *layered) place(budget int) (map[string]int, int) {
 		}
 	}
 	compact(runs)
+	room = max(width, room)
 	right := make([]int, len(blocks))
 	for k := len(topo) - 1; k >= 0; k-- {
 		b := topo[k]
-		right[b] = width - padX - bw[b]
+		right[b] = room - padX - bw[b]
 		for s, d := range succ[b] {
 			right[b] = min(right[b], right[s]-d)
 		}
@@ -793,7 +799,7 @@ func (g *layered) place(budget int) (map[string]int, int) {
 				continue
 			}
 			m = chainWant(b, m)
-			lo, hi := padX, width-padX-bw[b]
+			lo, hi := padX, room-padX-bw[b]
 			for p, d := range pred[b] {
 				lo = max(lo, bx[p]+d)
 			}
@@ -803,11 +809,15 @@ func (g *layered) place(budget int) (map[string]int, int) {
 			bx[b] = clamp(m-bw[b]/2, lo, hi)
 		}
 	}
+	lo, hi := room, 0
+	for _, b := range topo {
+		lo, hi = min(lo, bx[b]), max(hi, bx[b]+bw[b])
+	}
 	out := map[string]int{}
 	for id, b := range blockOf {
-		out[id] = bx[b]
+		out[id] = bx[b] - lo + padX
 	}
-	return out, width
+	return out, max(width, hi-lo+2*padX)
 }
 
 // seat orders every row of a focus view by where its items stand in the

@@ -34,10 +34,13 @@ type cost struct {
 	climb int
 }
 
-// beats says c is no worse than o anywhere, climbing ink included, and
-// crosses or turns less.
+// beats says c joins fewer places a relation does not (rule 18), or else is
+// no worse than o anywhere, climbing ink included, and crosses or turns less.
 func (c cost) beats(o cost) bool {
-	return c.touches <= o.touches && c.crossings <= o.crossings && c.braid <= o.braid && c.turns <= o.turns && c.climb <= o.climb &&
+	if c.touches != o.touches {
+		return c.touches < o.touches
+	}
+	return c.crossings <= o.crossings && c.braid <= o.braid && c.turns <= o.turns && c.climb <= o.climb &&
 		(c.crossings < o.crossings || c.turns < o.turns)
 }
 
@@ -69,8 +72,8 @@ func weighed(read *cost, ds []drawn, reqs []wireReq) {
 }
 
 // choose draws a view with every tactic and keeps the first, the one the
-// plain tactic orders, unless a later one beats the best so far. draw
-// leaves what each drawing costs in its read.
+// plain tactic orders on the whole width, unless a later one beats the best
+// so far. draw leaves what each drawing costs in its read.
 func choose[T any](draw func(t tactic, read *cost) T) T {
 	var best T
 	var bc cost

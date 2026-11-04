@@ -287,11 +287,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 	}
 	nodes = append(nodes, lnode{id: frameTopNode}, lnode{id: frameBottomNode})
-	// A focus view stands on its own, with no text beside it, so it takes
-	// the overview's width.
 	budget := insideBudget
-	if focus != "" {
-		budget = overviewBudget
+	if by.narrow {
+		budget = narrowBudget
 	}
 	l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)
 

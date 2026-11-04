@@ -79,9 +79,13 @@ const (
 	// frameTopNode and frameBottomNode stand for a frame's top and bottom
 	// edge while a view is layered; they are never placed.
 	frameTopNode, frameBottomNode = "frame:top", "frame:bottom"
-	// Width budgets, rule 5: what the page shows of a drawing at 1440px wide.
+	// Width budgets, rule 3. Every drawing has the page's whole width, with
+	// its text below it, and 1320px is about what a desktop window shows.
+	// narrowBudget is what a unit's view kept when its text stood beside it;
+	// a narrow tactic still draws it that way.
 	overviewBudget = 1320
-	insideBudget   = 920
+	insideBudget   = 1320
+	narrowBudget   = 920
 	// minWidth is the narrowest an overview drawing is drawn.
 	minWidth = 320
 )
@@ -359,7 +363,11 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	if seat != nil {
 		x, width = g.ring(seat.focus, budget)
 	} else {
-		x, width = g.place(budget)
+		room := budget
+		if t.narrow {
+			room = 0
+		}
+		x, width = g.place(budget, room)
 		rows := make([][]string, len(g.rows))
 		for r, row := range g.rows {
 			rows[r] = slices.Clone(row)
@@ -367,7 +375,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		// A move changes the gaps in its row, so a row may come out wider:
 		// past the budget, the drawing keeps the rows as they were.
 		if g.shorten(x) {
-			if x2, w2 := g.place(budget); w2 <= max(width, budget) {
+			if x2, w2 := g.place(budget, room); w2 <= max(width, budget) {
 				x, width = x2, w2
 			} else {
 				g.rows = rows
