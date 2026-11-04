@@ -25,6 +25,8 @@ type Drawing struct {
 	// a relation the routing drops is lost; one the view never requests is
 	// not caught there.
 	Relations [][2]string `json:"-"`
+	// Heads are the markers the drawing's lines end in.
+	Heads []string `json:"-"`
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -38,6 +40,9 @@ type Box struct {
 	H       int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
+	// Hue is the palette key of the box's border and its bar (rule 11),
+	// empty for a box that stands for no unit's colour.
+	Hue string `json:"-"`
 	// Lit are the classes that light the box while a reader points at it
 	// or at a box it shares a line with (hover.go).
 	Lit string `json:"-"`
@@ -102,6 +107,20 @@ type Wire struct {
 	// that light it while a reader points at one of them (hover.go).
 	ends []string
 	Lit  string `json:"-"`
+	// Gaps are where the line is cut because another passes over it, and
+	// Mask names the mask that cuts them (rule 24).
+	Gaps []Gap  `json:"-"`
+	Mask string `json:"-"`
+	// Label is the word that says how the line's relations arise, set
+	// along its own ink (rule 25).
+	Label *Label `json:",omitempty"`
+	// Hue is the palette key the line is drawn in and Head the marker at
+	// its end, its shape for its kind and its colour (rule 11).
+	Hue  string `json:"-"`
+	Head string `json:"-"`
+	// srcs are the places each of the line's relations leaves, which give
+	// it its colour.
+	srcs []string
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -209,6 +228,11 @@ func chipHeight(label string) int { return chipH + (len(chipLines(label))-1)*chi
 
 // RectY is where the chip's rect starts: below its edge on top of a box or
 // frame, above it on the bottom.
+// Bar is the accent bar along the box's left edge, in its colour.
+func (b Box) Bar() string {
+	return fmt.Sprintf("M%d %d V%d", b.X+1, b.Y+5, b.Y+b.H-5)
+}
+
 func (p Port) RectY() int {
 	if p.Below {
 		return p.Y - p.H - 3
@@ -888,6 +912,7 @@ func (o *overview) draw(href func(model.ID) string, read *cost) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d
 }

@@ -9,7 +9,7 @@
 :root {
   --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
   --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
-  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #b93e0a;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   color-scheme: light;
 }
@@ -67,13 +67,15 @@ svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font-size: 11px; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
-svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
-svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.8; }
+svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
+svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
+svg .box.inner rect { stroke-width: 1.5; }
+svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
-svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
-svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
-svg .box.twin rect { stroke: var(--muted); }
+svg .box.focus rect { stroke-width: 3.4; }
+svg .box.twin rect { stroke-dasharray: 6 3; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
 .picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
@@ -83,31 +85,18 @@ svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
 svg .port.entry text { fill: var(--accent); }
 svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
 svg .port.other text { fill: var(--muted); }
-svg path.w { fill: none; stroke-width: 1.5; }
-svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
-svg path.w.both { marker-start: url(#m-bypass); }
-svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
-svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg path.w { fill: none; stroke: var(--c); stroke-width: 1.5; }
+svg path.provides { stroke-width: 2; }
+svg path.bypass, svg path.mutual { stroke-width: 2.6; }
 svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
-svg circle.junction { fill: var(--ink); }
-svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
-svg circle.junction.bypass { fill: var(--bypass); }
-svg circle.junction.provides { fill: var(--ok); }
+svg circle.junction { fill: var(--c); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
+svg text.lab { font-size: 11px; fill: var(--c); }
 svg path.w.joins { marker-end: none; }
-svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
-svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
-svg path.w.back.contract, svg path.w.back.consumes { stroke: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
-svg path.w.back.provides { stroke: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
-svg path.w.back.bypass, svg path.w.back.mutual { stroke: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
-svg circle.junction.back { fill: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
-svg circle.junction.back.contract, svg circle.junction.back.consumes { fill: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
-svg circle.junction.back.provides { fill: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
-svg circle.junction.back.bypass { fill: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
+svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
+svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
 svg path.w:hover { stroke-width: 3.5; }
@@ -228,6 +217,17 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+:root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
+:root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
+svg [data-h="0"] { --c: var(--h0); }
+svg [data-h="1"] { --c: var(--h1); }
+svg [data-h="2"] { --c: var(--h2); }
+svg [data-h="3"] { --c: var(--h3); }
+svg [data-h="4"] { --c: var(--h4); }
+svg [data-h="5"] { --c: var(--h5); }
+svg [data-h="b"] { --c: var(--hb); }
+svg [data-h="n"] { --c: var(--hn); }
 
 </style>
 </head>
@@ -283,7 +283,7 @@ table.index td:first-child { width: 46%; }
   <tr id="k-IF-0016"><td><a href="MOD-0030.html"><strong>unit ID format</strong></a> <span class="muted key">IF-0016</span></td><td><a href="MOD-0030.html">internal/model</a></td><td><span class="muted">기록 없음</span></td><td><span class="muted">기록 없음</span></td></tr>
   <tr class="kind"><th colspan="4">데이터</th></tr><tr id="k-DATA-0001"><td><a href="MOD-0001.html"><strong>CLAUDE.md abbd block</strong></a> <span class="muted key">DATA-0001</span></td><td><a href="MOD-0001.html">abbd CLI</a></td><td><span class="muted">기록 없음</span></td><td><a class="who" href="units.html#u-FEAT-0016" title="FEAT-0016">/abbd-setup verify, install and hand over</a></td></tr>
   <tr id="k-DATA-0018"><td><a href="MOD-0041.html"><strong>ID high-water mark</strong></a> <span class="muted key">DATA-0018</span></td><td><a href="MOD-0041.html">internal/store</a></td><td><a class="who" href="MOD-0026.html" title="MOD-0026">internal/identity</a><a class="who" href="MOD-0041.html" title="MOD-0041">internal/store</a><a class="who" href="MOD-0054.html" title="MOD-0054">internal/group</a></td><td><span class="muted">기록 없음</span></td></tr>
-  <tr id="k-DATA-0005"><td><a href="units.html#u-DATA-0005"><strong>blueprint files</strong></a> <span class="muted key">DATA-0005</span><div class="key muted sig">.abbd/blueprint/{&lt;ID&gt;.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}</div></td><td><span class="muted">최상위</span></td><td><a class="who" href="units.html#u-MOD-0007" title="MOD-0007">blueprint publish</a><a class="who" href="MOD-0034.html" title="MOD-0034">internal/screen</a><a class="who" href="units.html#u-MOD-0038" title="MOD-0038">page template</a></td><td><a class="who" href="MOD-0001.html" title="MOD-0001">abbd CLI</a><a class="who" href="units.html#u-MOD-0039" title="MOD-0039">freshness verdicts</a></td></tr>
+  <tr id="k-DATA-0005"><td><a href="units.html#u-DATA-0005"><strong>blueprint files</strong></a> <span class="muted key">DATA-0005</span><div class="key muted sig">.abbd/blueprint/{&lt;ID&gt;.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Label{S,X,Y},Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Label{S,X,Y},Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}</div></td><td><span class="muted">최상위</span></td><td><a class="who" href="units.html#u-MOD-0007" title="MOD-0007">blueprint publish</a><a class="who" href="MOD-0034.html" title="MOD-0034">internal/screen</a><a class="who" href="units.html#u-MOD-0038" title="MOD-0038">page template</a></td><td><a class="who" href="MOD-0001.html" title="MOD-0001">abbd CLI</a><a class="who" href="units.html#u-MOD-0039" title="MOD-0039">freshness verdicts</a></td></tr>
   <tr id="k-DATA-0022"><td><a href="MOD-0054.html"><strong>boxes in one view</strong></a> <span class="muted key">DATA-0022</span></td><td><a href="MOD-0054.html">internal/group</a></td><td><a class="who" href="MOD-0054.html" title="MOD-0054">internal/group</a></td><td><a class="who" href="MOD-0034.html" title="MOD-0034">internal/screen</a></td></tr>
   <tr id="k-DATA-0020"><td><a href="MOD-0030.html"><strong>citable evidence paths</strong></a> <span class="muted key">DATA-0020</span></td><td><a href="MOD-0030.html">internal/model</a></td><td><a class="who" href="MOD-0030.html" title="MOD-0030">internal/model</a></td><td><a class="who" href="MOD-0022.html" title="MOD-0022">internal/gitx</a></td></tr>
   <tr id="k-DATA-0021"><td><a href="MOD-0047.html"><strong>contract code digest</strong></a> <span class="muted key">DATA-0021</span></td><td><a href="MOD-0047.html">internal/topology</a></td><td><a class="who" href="MOD-0009.html" title="MOD-0009">internal/bootstrap</a><a class="who" href="MOD-0026.html" title="MOD-0026">internal/identity</a></td><td><a class="who" href="MOD-0047.html" title="MOD-0047">internal/topology</a></td></tr>

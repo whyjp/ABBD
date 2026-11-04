@@ -145,7 +145,7 @@ var hoverCSS = func() string {
 	rules := func(on string) {
 		for j := range hoverMax {
 			a := fmt.Sprintf(on, j)
-			fmt.Fprintf(&b, "svg:has(%s) :is(.w,.count,.origin,.junction):not(.e%d){opacity:.1}\n", a, j)
+			fmt.Fprintf(&b, "svg:has(%s) :is(.w,.count,.lab,.origin,.junction):not(.e%d){opacity:.1}\n", a, j)
 			fmt.Fprintf(&b, "svg:has(%s) :is(.box,.port[class*=\" n\"]):not(.n%d){opacity:.3}\n", a, j)
 		}
 	}

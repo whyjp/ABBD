@@ -543,6 +543,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.mark(paths, reqs, t)
 	d.hover()
 	ins.Drawing = d
 	if focus == "" {

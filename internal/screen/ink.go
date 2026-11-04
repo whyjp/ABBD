@@ -7,7 +7,7 @@ import (
 )
 
 // Ink is what the routed paths look like to a reader: straight pieces of
-// one colour, which meet where one ends on another. Rule 17 marks every
+// one kind, which meet where one ends on another. Rule 17 marks every
 // point where ink splits or merges with a dot, and rule 22 sets each ×N
 // beside the one stretch of ink it counts.
 
@@ -18,8 +18,10 @@ type Dot struct {
 	// Back says only climbing lines meet there, so the dot is drawn as
 	// faint as they are.
 	Back bool `json:",omitempty"`
-	// Lit are the classes that light the dot with its lines (hover.go).
+	// Lit are the classes that light the dot with its lines (hover.go),
+	// and Hue the palette key it is drawn in.
 	Lit string `json:"-"`
+	Hue string `json:"-"`
 }
 
 // faint marks the dots that only climbing lines meet at.
@@ -54,8 +56,8 @@ type piece struct {
 	kind string
 }
 
-// hue is the colour a kind is drawn in: two modules that use each other are
-// joined in the direct-dependency colour.
+// hue is the ink a kind joins: two modules that use each other are joined
+// as a direct dependency.
 func hue(kind string) string {
 	if kind == "mutual" {
 		return "bypass"
