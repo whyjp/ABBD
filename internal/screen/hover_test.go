@@ -1,6 +1,9 @@
 package screen
 
 import (
+	"bytes"
+	"fmt"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -62,6 +65,41 @@ func TestPointingAtAShapeKeepsWhatItJoins(t *testing.T) {
 					}
 				}
 			}
+		}
+	}
+}
+
+// A drawing with more shapes than the rules can name takes no part in
+// pointing, so pointing at one of its boxes fades nothing it joins.
+func TestADrawingPastTheCapTakesNoPart(t *testing.T) {
+	var units []model.Unit
+	for i := 1; i <= hoverMax+2; i++ {
+		var rels []model.Relation
+		if i <= hoverMax+1 {
+			rels = append(rels, rel(model.ID(fmt.Sprintf("MOD-%04d", i+1)), model.DependsOn))
+		}
+		units = append(units, called(model.ID(fmt.Sprintf("MOD-%04d", i)), fmt.Sprintf("m%d", i), rels...))
+	}
+	m := Build(Input{Units: units})
+	if len(m.Overview.Boxes) <= hoverMax {
+		t.Fatalf("the overview draws %d boxes, want more than %d", len(m.Overview.Boxes), hoverMax)
+	}
+	var b bytes.Buffer
+	if err := site.ExecuteTemplate(&b, "drawing", m.Overview); err != nil {
+		t.Fatal(err)
+	}
+	if c := regexp.MustCompile(`class="[^"]*\b[pne]\d+\b`).FindString(b.String()); c != "" {
+		t.Errorf("a drawing of %d boxes still takes part in pointing: %s", len(m.Overview.Boxes), c)
+	}
+}
+
+// Only a page with a drawing carries the pointing rules.
+func TestOnlyPagesWithADrawingCarryThePointingRules(t *testing.T) {
+	for name, page := range pages(t, Build(Input{Units: ripgrep()})) {
+		has := strings.Contains(page, ":focus-visible>.p0")
+		drawn := strings.Contains(page, "<svg xmlns")
+		if has != drawn {
+			t.Errorf("%s: pointing rules %v, drawing %v", name, has, drawn)
 		}
 	}
 }

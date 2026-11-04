@@ -11,25 +11,27 @@ import (
 
 // A dense view is a braid however it is laid out, so the page lets a reader
 // follow one box. While the pointer rests on a box or a frame chip, or a
-// box has the keyboard's focus, every line with no end there fades, and so
-// does every box and chip no relation joins to it. The page holds no
+// box that is a link has the keyboard's focus, every line with no end there
+// fades, and so does every box and chip no relation joins to it. The page holds no
 // script, so this is plain CSS. Each drawing numbers its shapes. A shape
 // carries pN for its own number and nN for itself and each shape a relation
 // of the view joins it to. A line or a dot carries eN for each shape at an
 // end of a line it carries. One fixed set of rules (hoverCSS) then serves
 // every drawing.
 
-// hoverMax is how many shapes of one drawing take part. A twin counts with
-// its unit, and a chip that stands for several ports counts once. The
-// fixtures' largest drawing holds 35, and a test fails when a real drawing
-// holds more than this.
+// hoverMax is how many shapes a drawing may hold and still take part. A
+// twin counts with its unit, and a chip that stands for several ports
+// counts once. A drawing with more takes no part at all, since a shape the
+// rules cannot name would fade whatever was pointed at. The fixtures'
+// largest drawing holds 35, and a test fails when a real drawing holds
+// more than this.
 const hoverMax = 48
 
 func (d *Drawing) hover() {
 	at := map[string]int{}
 	n := 0
 	number := func(keys ...string) {
-		if n >= hoverMax || len(keys) == 0 {
+		if len(keys) == 0 {
 			return
 		}
 		if _, ok := at[keys[0]]; ok {
@@ -45,6 +47,9 @@ func (d *Drawing) hover() {
 	}
 	for _, p := range d.Ports {
 		number(p.Keys...)
+	}
+	if n > hoverMax {
+		return
 	}
 	num := func(id string) (int, bool) {
 		j, ok := at[string(base(model.ID(id)))]
