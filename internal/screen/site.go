@@ -10,9 +10,13 @@ import (
 )
 
 // The blueprint is a site of pages cut from one model, as a reader moves
-// from the whole to a part to one unit: index.html holds the overview and
-// the flows, each module that holds units has a page of its own, and
-// contracts.html and units.html index every contract and every unit. The
+// from the whole to a part to one unit. index.html holds only the overview,
+// at the level of modules. Each unit the overview draws has a page of its
+// own when it holds units or has a focus view there: its focus view on the
+// overview, then its inside and the inside's focus views. Each flow, stack
+// and table has a page, and contracts.html and units.html index every
+// contract and every unit. So a change rewrites the pages of the views that
+// draw it, and a change inside one module rewrites that module's page. The
 // template links by anchor as if it were one page; link turns each anchor
 // into the page that holds it.
 const (
@@ -26,7 +30,14 @@ type page struct {
 	*Model
 	File, Title, Template, Current string
 	Inside                         *Inside
-	// Trail is the chain of modules from the top down to this page's.
+	// Around is the focus view of the page's unit on the overview, and
+	// Flow, Stack or Table the one figure a figure's page draws.
+	Around *Focus
+	Flow   *FlowView
+	Stack  *StackView
+	Table  *TableView
+	// Trail is the chain of modules from the top down to this page's. Nav
+	// is the tree of every module, which only the overview lists.
 	Trail     []NavItem
 	Nav       []NavItem
 	Contracts []ContractRow
@@ -63,18 +74,53 @@ func Pages(m Model) (map[string][]byte, error) {
 		m.Insides[i].Drawing = linkFocus(m.Insides[i].Drawing, m.Insides[i].Focus)
 	}
 	nav, parent := navTree(m)
-	shared := page{Model: &m, Nav: nav, Contracts: contractRows(m), Paged: map[string]bool{}}
+	shared := page{Model: &m, Contracts: contractRows(m), Paged: map[string]bool{}}
 	for _, ins := range m.Insides {
 		shared.Paged[ins.ID] = true
 	}
-	pages := []page{withPage(shared, PageFile, "모듈과 계약", "index", "overview")}
+	trail := func(p *page, id string) {
+		for ; id != ""; id = parent[id] {
+			p.Trail = append([]NavItem{{ID: id, Name: nameOf(m, id)}}, p.Trail...)
+		}
+	}
+	// Only the overview lists every module, so a module that comes or goes
+	// rewrites the overview and its own page, and no other.
+	index := withPage(shared, PageFile, "모듈과 계약", "index", "overview")
+	index.Nav = nav
+	pages := []page{index}
+	around := map[string]*Focus{}
+	for i := range m.Focus {
+		around[m.Focus[i].Unit] = &m.Focus[i]
+	}
 	for i := range m.Insides {
 		ins := &m.Insides[i]
 		p := withPage(shared, ins.ID+".html", ins.Name, "module", "m-"+ins.ID)
-		p.Inside = ins
-		for id := ins.ID; id != ""; id = parent[id] {
-			p.Trail = append([]NavItem{{ID: id, Name: nameOf(m, id)}}, p.Trail...)
+		p.Inside, p.Around = ins, around[ins.ID]
+		delete(around, ins.ID)
+		trail(&p, ins.ID)
+		pages = append(pages, p)
+	}
+	for i := range m.Focus {
+		if f := &m.Focus[i]; around[f.Unit] != nil {
+			p := withPage(shared, f.Unit+".html", f.Name, "around", f.ID)
+			p.Around = f
+			trail(&p, f.Unit)
+			pages = append(pages, p)
 		}
+	}
+	for i := range m.Flows {
+		p := withPage(shared, m.Flows[i].ID+".html", m.Flows[i].Question, "flowpage", m.Flows[i].ID)
+		p.Flow = &m.Flows[i]
+		pages = append(pages, p)
+	}
+	for i := range m.Stacks {
+		p := withPage(shared, m.Stacks[i].ID+".html", m.Stacks[i].Question, "stackpage", m.Stacks[i].ID)
+		p.Stack = &m.Stacks[i]
+		pages = append(pages, p)
+	}
+	for i := range m.Tables {
+		p := withPage(shared, m.Tables[i].ID+".html", m.Tables[i].Question, "tablepage", m.Tables[i].ID)
+		p.Table = &m.Tables[i]
 		pages = append(pages, p)
 	}
 	pages = append(pages,

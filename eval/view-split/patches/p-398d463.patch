@@ -1,0 +1,28 @@
+diff --git a/cmd/abbd/figure.go b/cmd/abbd/figure.go
+index c05ecfa..4f48dc3 100644
+--- a/cmd/abbd/figure.go
++++ b/cmd/abbd/figure.go
+@@ -16,10 +16,6 @@ import (
+ 	"github.com/whyjp/abbd/internal/store"
+ )
+ 
+-// flow stores a flow from a draft, or prints the stored one, as figure does
+-// for every kind.
+-func (e env) flow(key string, args []string) error { return figure[model.Step](e, key, args) }
+-
+ // figure stores a figure of kind C from a draft, or prints the stored one as
+ // a draft when no FILE is given. Every check of a draft happens here, so the
+ // store and the screen trust what they read.
+diff --git a/cmd/abbd/flow.go b/cmd/abbd/flow.go
+new file mode 100644
+index 0000000..aacc88e
+--- /dev/null
++++ b/cmd/abbd/flow.go
+@@ -0,0 +1,7 @@
++package main
++
++import "github.com/whyjp/abbd/internal/model"
++
++// flow stores a flow from a draft, or prints the stored one, as figure does
++// for every kind.
++func (e env) flow(key string, args []string) error { return figure[model.Step](e, key, args) }

@@ -77,7 +77,7 @@ func (o *overview) stacks(in Input) []StackView {
 				b.Units = append(b.Units, UnitChip{ID: string(id), Name: o.unitName(id), Kind: kindWord(o.tree.units[id].Kind), Href: o.href(id)})
 			}
 			for _, e := range p.Claim.Evidence {
-				b.Quotes = append(b.Quotes, e.String())
+				b.Quotes = append(b.Quotes, cite(e))
 			}
 			for _, br := range breaches {
 				if br.Lower == b.N {

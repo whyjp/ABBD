@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -13,6 +14,14 @@ type Line struct {
 	From, To, Kind, Origin string
 	Via                    string `json:",omitempty"`
 	Quote                  string `json:",omitempty"`
+}
+
+// cite names the code a quote rests on by its file and its words. The
+// blueprint leaves out the lines, which an edit above the quote moves
+// though the quote still says the same, so such an edit rewrites no page.
+// The store and abbd evidence keep the lines.
+func cite(e model.Evidence) string {
+	return fmt.Sprintf("%s %q", e.Path, e.Quote)
 }
 
 func lines(units []model.Unit) []Line {
@@ -28,7 +37,7 @@ func lines(units []model.Unit) []Line {
 			}
 			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via)}
 			if len(r.Evidence) > 0 {
-				l.Quote = r.Evidence[0].String()
+				l.Quote = cite(r.Evidence[0])
 			}
 			out = append(out, l)
 		}

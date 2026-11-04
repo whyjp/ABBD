@@ -66,7 +66,7 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	}
 	b := renderAll(t, m)
 	page := b.String()
-	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="#flow-search">How does a search run?</a>`} {
+	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="flow-search.html">How does a search run?</a>`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must hold %q", want)
 		}
@@ -75,6 +75,20 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 
 // A step's anchor cannot be another flow's: flow a's step 1 and flow a-1
 // each have their own.
+// A figure has a page of its own, and the page shows it on opening, though
+// the page CSS hides a view no link targets. The overview links the page.
+func TestAFigureHasAPageThatShowsItOpen(t *testing.T) {
+	two := []store.Part[model.Step]{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
+	m := Build(Input{Units: ripgrep(), Figures: store.Figures{Flows: []store.Flow{{Key: "a", Known: true, Question: "A?", Parts: two}}}})
+	ps := pages(t, m)
+	if !strings.Contains(ps["flow-a.html"], `<div class="solo"><section class="inside flow" id="flow-a">`) || !strings.Contains(pageCSS, ".solo > .inside") {
+		t.Errorf("flow-a.html must show its flow open:\n%.600s", ps["flow-a.html"])
+	}
+	if strings.Contains(ps[PageFile], `id="flow-a"`) || !strings.Contains(ps[PageFile], `href="flow-a.html"`) {
+		t.Error("the overview links the flow's page and holds no flow")
+	}
+}
+
 func TestFlowAnchorsNeverCollide(t *testing.T) {
 	two := []store.Part[model.Step]{step("MOD-0001", "parses argv"), step("MOD-0002", "builds the searcher")}
 	m := Build(Input{Units: ripgrep(), Figures: store.Figures{Flows: []store.Flow{

@@ -49,7 +49,7 @@ func notes(in Input, u model.Unit) []Note {
 		}
 		v := Note{Ref: n.Ref.String(), Title: n.Ref.Slot.Title, Key: n.Ref.Key, Stale: n.Stale(), Changed: n.Changed, Blocks: blocks(n.Text), slot: n.Ref.Slot.Name}
 		for _, e := range n.Evidence {
-			v.Quotes = append(v.Quotes, e.String())
+			v.Quotes = append(v.Quotes, cite(e))
 		}
 		if n.Why != nil {
 			v.Why, v.Source = &Fact{Value: n.Why.Value, Badge: Badge(model.UserStated)}, n.Why.Source

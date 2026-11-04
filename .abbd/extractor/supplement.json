@@ -36,7 +36,7 @@
         }
       ],
       "purpose": "lets a human read the topology in a browser and tools read it without the CLI",
-      "responsibility": "fixes the rendered files, the pages (index.html, one <ID>.html per module or feature that holds units, contracts.html and units.html) and graph.json, and graph.json's shape: units, live edges, both drawing levels and the flows. No file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
+      "responsibility": "fixes the rendered files, the pages (index.html, one <ID>.html per unit on the overview that holds units or has a focus view, one page per flow, stack and table, contracts.html and units.html) and graph.json, and graph.json's shape: units, live edges, each module's inside without its drawing, and the figures. No file holds a value of the sync that rendered it; the state records which inputs it was rendered from"
     },
     {
       "ref": "data-extraction",

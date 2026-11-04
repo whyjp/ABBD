@@ -1,0 +1,71 @@
+diff --git a/cmd/abbd/coupling_test.go b/cmd/abbd/coupling_test.go
+index 371e2e7..67c3435 100644
+--- a/cmd/abbd/coupling_test.go
++++ b/cmd/abbd/coupling_test.go
+@@ -1,6 +1,9 @@
+ package main
+ 
+-import "testing"
++import (
++	"strings"
++	"testing"
++)
+ 
+ func couplingProject(t *testing.T) (*project, string) {
+ 	t.Helper()
+@@ -30,3 +33,26 @@ func TestASupplementCouplingStillChecksItsEnds(t *testing.T) {
+   "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
+ 	p.setup(1, "is not a relation ABBD knows", "--supplement", p.file(t, "kind.json", wrongKind), "--", exe)
+ }
++
++// The supplement may restate a script unit under a ref of its own. A
++// coupling from that ref to the script's ref is the unit to itself.
++func TestASupplementCouplingMayNotJoinAUnitToItself(t *testing.T) {
++	p, exe := couplingProject(t)
++	self := `{"units":[{"ref":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}],
++  "relations":[{"from":"l","to":"ledger","kind":"depends_on","via":"call",
++  "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
++	p.setup(1, `relates MOD "ledger" to itself`, "--supplement", p.file(t, "self.json", self), "--", exe)
++}
++
++// A supplement ref that names another unit than the script's same ref
++// changes what every coupling by that ref joins, so setup says so.
++func TestSetupWarnsWhenASupplementRefShadowsAScriptRef(t *testing.T) {
++	p, exe := couplingProject(t)
++	shadow := `{"units":[{"ref":"billing","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}]}`
++	out := p.setup(0, "synced: 2 unit(s)", "--supplement", p.file(t, "shadow.json", shadow), "--", exe)
++	contains(t, out, `supplement ref "billing" names MOD "ledger", which shadows the script's ref "billing" for MOD "billing"`)
++	same := `{"units":[{"ref":"ledger","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}]}`
++	if out := p.setup(0, "synced: 2 unit(s)", "--supplement", p.file(t, "same.json", same), "--", exe); strings.Contains(out, "shadows") {
++		t.Errorf("a ref that restates the script's unit under the same ref shadows nothing:\n%s", out)
++	}
++}
+diff --git a/internal/bootstrap/overlay.go b/internal/bootstrap/overlay.go
+index 715f1e9..bcbe475 100644
+--- a/internal/bootstrap/overlay.go
++++ b/internal/bootstrap/overlay.go
+@@ -84,7 +84,13 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
+ 		sort.Strings(gaps)
+ 		return base, f, fmt.Errorf("the supplement names units the script did not report and gives them no evidence; fix the script, or cite the code each one rests on:\n  %s", strings.Join(gaps, "\n  "))
+ 	}
+-	// A ref names the supplement's unit first, then the script's.
++	// A ref names the supplement's unit first, then the script's, so a
++	// supplement ref that names another unit hides the script's.
++	for ref, i := range docTo {
++		if j, ok := sc.key[ref]; ok && j != i {
++			f.Conflicts = append(f.Conflicts, fmt.Sprintf("supplement ref %q names %s %q, which shadows the script's ref %q for %s %q", ref, out.Units[i].Kind, out.Units[i].Name.Value, ref, out.Units[j].Kind, out.Units[j].Name.Value))
++		}
++	}
+ 	resolve := func(ref string) (int, bool) {
+ 		if i, ok := docTo[ref]; ok {
+ 			return i, true
+@@ -133,6 +139,9 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
+ 			}
+ 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s names %q, which is neither the supplement's ref nor the script's", r.From, r.Kind, r.To, name)
+ 		}
++		if fi == ti {
++			return base, f, fmt.Errorf("supplement relation %s -%s-> %s relates %s %q to itself; both refs name the same unit", r.From, r.Kind, r.To, out.Units[fi].Kind, out.Units[fi].Name.Value)
++		}
+ 		if err := r.Kind.Joins(out.Units[fi].Kind, out.Units[ti].Kind); err != nil {
+ 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)
+ 		}

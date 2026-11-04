@@ -1,0 +1,136 @@
+case	file	bytes	lines	causes
+add-func	MOD-0022.html	413	4	{"quote-lines": 304, "content": 109}
+add-func	MOD-0030.html	304	2	{"quote-lines": 304}
+add-func	graph.json	2007	18	{"quote-lines": 1960, "graph-data": 47}
+add-func	units.html	1238	6	{"quote-lines": 1238}
+add-func	TOTAL 4 files	3962	30	
+add-func-end	MOD-0056.html	109	2	{"content": 109}
+add-func-end	graph.json	47	2	{"graph-data": 47}
+add-func-end	TOTAL 2 files	156	4	
+doc-string	MOD-0056.html	109	2	{"content": 109}
+doc-string	graph.json	265	10	{"graph-data": 265}
+doc-string	index.html	419	6	{"index-figures": 377, "content": 42}
+doc-string	TOTAL 3 files	793	18	
+evidence-lines	MOD-0026.html	212	2	{"quote-lines": 212}
+evidence-lines	MOD-0030.html	286	2	{"quote-lines": 286}
+evidence-lines	MOD-0034.html	206	2	{"quote-lines": 206}
+evidence-lines	MOD-0041.html	1397	6	{"quote-lines": 1288, "content": 109}
+evidence-lines	graph.json	4738	54	{"quote-lines": 4502, "graph-data": 236}
+evidence-lines	index.html	390	6	{"index-figures": 348, "content": 42}
+evidence-lines	units.html	1834	14	{"quote-lines": 1834}
+evidence-lines	TOTAL 7 files	9063	86	
+new-dep	MOD-0056.html	109	2	{"content": 109}
+new-dep	graph.json	15127	603	{"graph-geometry": 14961, "graph-data": 166}
+new-dep	index.html	82411	155	{"hue": 4400, "mask-id": 1422, "index-overview-focus": 35192, "content": 41397}
+new-dep	TOTAL 3 files	97647	760	
+add-module	FEAT-0001.html	112	4	{"nav": 112}
+add-module	FEAT-0002.html	112	4	{"nav": 112}
+add-module	MOD-0001.html	112	4	{"nav": 112}
+add-module	MOD-0009.html	112	4	{"nav": 112}
+add-module	MOD-0013.html	112	4	{"nav": 112}
+add-module	MOD-0017.html	112	4	{"nav": 112}
+add-module	MOD-0022.html	112	4	{"nav": 112}
+add-module	MOD-0026.html	112	4	{"nav": 112}
+add-module	MOD-0030.html	112	4	{"nav": 112}
+add-module	MOD-0034.html	112	4	{"nav": 112}
+add-module	MOD-0041.html	112	4	{"nav": 112}
+add-module	MOD-0047.html	112	4	{"nav": 112}
+add-module	MOD-0054.html	112	4	{"nav": 112}
+add-module	MOD-0055.html	112	4	{"nav": 112}
+add-module	MOD-0056.html	112	4	{"nav": 112}
+add-module	MOD-0057.html	37059	495	{"nav": 1566, "cross-page-href": 30, "content": 35463}
+add-module	contracts.html	112	4	{"nav": 112}
+add-module	graph.json	2577	87	{"graph-geometry": 1976, "graph-data": 601}
+add-module	index.html	23394	88	{"hue": 913, "mask-id": 5764, "nav": 112, "cross-page-href": 39, "index-overview-focus": 14709, "content": 1857}
+add-module	units.html	518	9	{"nav": 112, "header-counts": 148, "cross-page-href": 13, "content": 245}
+add-module	TOTAL 20 files	65340	743	
+add-command	FEAT-0001.html	94	4	{"nav": 94}
+add-command	FEAT-0002.html	94	4	{"nav": 94}
+add-command	MOD-0001.html	9563	96	{"quote-lines": 8852, "nav": 94, "content": 617}
+add-command	MOD-0009.html	94	4	{"nav": 94}
+add-command	MOD-0013.html	450	6	{"quote-lines": 356, "nav": 94}
+add-command	MOD-0017.html	94	4	{"nav": 94}
+add-command	MOD-0022.html	1596	12	{"quote-lines": 1502, "nav": 94}
+add-command	MOD-0026.html	1096	6	{"quote-lines": 1002, "nav": 94}
+add-command	MOD-0030.html	246	6	{"quote-lines": 152, "nav": 94}
+add-command	MOD-0034.html	428	6	{"quote-lines": 334, "nav": 94}
+add-command	MOD-0041.html	414	6	{"quote-lines": 320, "nav": 94}
+add-command	MOD-0047.html	94	4	{"nav": 94}
+add-command	MOD-0054.html	94	4	{"nav": 94}
+add-command	MOD-0055.html	94	4	{"nav": 94}
+add-command	MOD-0056.html	94	4	{"nav": 94}
+add-command	contracts.html	645	7	{"nav": 94, "header-counts": 174, "cross-page-href": 33, "content": 344}
+add-command	graph.json	14999	205	{"quote-lines": 13604, "graph-geometry": 387, "graph-data": 1008}
+add-command	index.html	608	8	{"nav": 94, "index-overview-focus": 257, "content": 257}
+add-command	units.html	1374	15	{"quote-lines": 736, "nav": 94, "header-counts": 148, "content": 396}
+add-command	TOTAL 19 files	32171	405	
+add-file	MOD-0022.html	109	2	{"content": 109}
+add-file	graph.json	81	3	{"graph-data": 81}
+add-file	units.html	166	2	{"content": 166}
+add-file	TOTAL 3 files	356	7	
+p-0140720	MOD-0001.html	109	2	{"content": 109}
+p-0140720	MOD-0026.html	212	2	{"quote-lines": 212}
+p-0140720	MOD-0030.html	286	2	{"quote-lines": 286}
+p-0140720	MOD-0034.html	206	2	{"quote-lines": 206}
+p-0140720	MOD-0041.html	1397	6	{"quote-lines": 1288, "content": 109}
+p-0140720	graph.json	4596	48	{"quote-lines": 4502, "graph-data": 94}
+p-0140720	units.html	1834	14	{"quote-lines": 1834}
+p-0140720	TOTAL 7 files	8640	76	
+p-186aeeb	MOD-0030.html	144	2	{"quote-lines": 144}
+p-186aeeb	MOD-0041.html	140	2	{"quote-lines": 140}
+p-186aeeb	MOD-0047.html	303	2	{"quote-lines": 303}
+p-186aeeb	MOD-0054.html	1042	2	{"quote-lines": 1042}
+p-186aeeb	graph.json	3218	30	{"quote-lines": 3218}
+p-186aeeb	units.html	455	4	{"quote-lines": 455}
+p-186aeeb	TOTAL 6 files	5302	42	
+p-2bd37d4	MOD-0056.html	109	2	{"content": 109}
+p-2bd37d4	graph.json	47	2	{"graph-data": 47}
+p-2bd37d4	TOTAL 2 files	156	4	
+p-398d463	FEAT-0001.html	64	2	{"content": 64}
+p-398d463	MOD-0001.html	1481	6	{"content": 1481}
+p-398d463	contracts.html	168	2	{"cross-page-href": 64, "content": 104}
+p-398d463	graph.json	12563	145	{"quote-lines": 6, "graph-geometry": 9820, "graph-data": 2737}
+p-398d463	index.html	20200	18	{"index-overview-focus": 8298, "content": 11902}
+p-398d463	units.html	1614	12	{"content": 1614}
+p-398d463	TOTAL 6 files	36090	185	
+p-3b587e3	MOD-0001.html	109	2	{"content": 109}
+p-3b587e3	MOD-0009.html	703	6	{"quote-lines": 594, "content": 109}
+p-3b587e3	MOD-0017.html	164	2	{"quote-lines": 164}
+p-3b587e3	MOD-0047.html	272	2	{"quote-lines": 272}
+p-3b587e3	graph.json	1746	20	{"quote-lines": 1652, "graph-data": 94}
+p-3b587e3	units.html	136	2	{"quote-lines": 136}
+p-3b587e3	TOTAL 6 files	3130	34	
+p-6949919	MOD-0022.html	109	2	{"content": 109}
+p-6949919	graph.json	463	6	{"quote-lines": 416, "graph-data": 47}
+p-6949919	units.html	450	2	{"quote-lines": 450}
+p-6949919	TOTAL 3 files	1022	10	
+p-84b1206	MOD-0001.html	4043	24	{"quote-lines": 3934, "content": 109}
+p-84b1206	MOD-0034.html	746	10	{"quote-lines": 746}
+p-84b1206	MOD-0041.html	831	6	{"quote-lines": 722, "content": 109}
+p-84b1206	MOD-0047.html	172	2	{"quote-lines": 172}
+p-84b1206	graph.json	5908	52	{"quote-lines": 5814, "graph-data": 94}
+p-84b1206	TOTAL 5 files	11700	94	
+p-da2d346	MOD-0001.html	109	2	{"content": 109}
+p-da2d346	MOD-0030.html	109	2	{"content": 109}
+p-da2d346	graph.json	94	4	{"graph-data": 94}
+p-da2d346	TOTAL 3 files	312	8	
+p-eec1ae2	MOD-0001.html	109	2	{"content": 109}
+p-eec1ae2	graph.json	47	2	{"graph-data": 47}
+p-eec1ae2	TOTAL 2 files	156	4	
+p-fb55533	MOD-0001.html	109	2	{"content": 109}
+p-fb55533	MOD-0047.html	109	2	{"content": 109}
+p-fb55533	graph.json	94	4	{"graph-data": 94}
+p-fb55533	TOTAL 3 files	312	8	
+
+cause	bytes
+content	98062
+quote-lines	67700
+index-overview-focus	58456
+graph-geometry	27144
+mask-id	7186
+graph-data	5799
+hue	5313
+nav	5274
+index-figures	725
+header-counts	470
+cross-page-href	179

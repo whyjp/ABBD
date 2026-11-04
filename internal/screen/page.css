@@ -201,7 +201,7 @@ nav.site a[aria-current="page"] { color: var(--ink); font-weight: 700; }
 nav.site .tree a { display: block; overflow-wrap: anywhere; }
 .tree .d1 { padding-left: 12px; } .tree .d2 { padding-left: 24px; } .tree .d3 { padding-left: 36px; } .tree .d4 { padding-left: 48px; }
 .crumbs { margin: 0; font-size: 14px; }
-.inside.page { display: block; }
+.inside.page, .solo > .inside { display: block; }
 table.index th { text-align: left; font-size: 13px; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--line); }
 table.index .sig { font-size: 12px; }
 table.index .who { display: block; }

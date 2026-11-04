@@ -60,7 +60,7 @@ func TestAStackIsDrawnAsBandsLinkedIntoTheTree(t *testing.T) {
 		t.Errorf("each inside lists the layers that hold its units: %v", refs)
 	}
 	page := renderAll(t, m).String()
-	for _, want := range []string{`<section class="inside stack" id="stack-layers">`, `id="stack-layers.4"`, "Each crate uses the ones below.", `<a href="#stack-layers">What are the layers of ripgrep?</a>`, "↑ ", "거꾸로 1"} {
+	for _, want := range []string{`<section class="inside stack" id="stack-layers">`, `id="stack-layers.4"`, "Each crate uses the ones below.", `<a href="stack-layers.html">What are the layers of ripgrep?</a>`, "↑ ", "거꾸로 1"} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must hold %q", want)
 		}

@@ -1,0 +1,93 @@
+diff --git a/internal/group/group.go b/internal/group/group.go
+index 2fac137..7913a37 100644
+--- a/internal/group/group.go
++++ b/internal/group/group.go
+@@ -75,6 +75,19 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
+ 	for i, u := range out {
+ 		at[u.ID] = i
+ 	}
++	// A path is a directory when an anchor lies under it. The
++	// store says so on every machine alike, and a file never has one.
++	dirs := map[string]bool{}
++	for _, u := range out {
++		if u.Absent || Made(u) {
++			continue
++		}
++		for _, a := range u.Anchors {
++			for d := path.Dir(a.Path); d != "." && d != "/" && !dirs[d]; d = path.Dir(d) {
++				dirs[d] = true
++			}
++		}
++	}
+ 	var split func(container model.ID)
+ 	split = func(container model.ID) {
+ 		// Only units below the container's own directory group: a group of
+@@ -82,7 +95,7 @@ func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[mode
+ 		// outside it has no directory of the container's to go in.
+ 		own := ""
+ 		if container != "" {
+-			own = span(out[at[container]])
++			own = span(out[at[container]], dirs)
+ 		}
+ 		var members []int
+ 		for i, u := range out {
+@@ -170,14 +183,19 @@ func home(u model.Unit) string {
+ }
+ 
+ // span is the directory a container spans: a group's own, or the deepest
+-// directory that holds every anchor of a module, "" for the root.
+-func span(u model.Unit) string {
++// directory that holds every anchor of a module, "" for the root. An anchor
++// in dirs is a directory and holds itself.
++func span(u model.Unit, dirs map[string]bool) string {
+ 	if Made(u) {
+ 		return u.Anchors[0].Path
+ 	}
+ 	var common []string
+ 	for i, a := range u.Anchors {
+-		parts := strings.Split(path.Dir(a.Path), "/")
++		d := a.Path
++		if !dirs[d] {
++			d = path.Dir(d)
++		}
++		parts := strings.Split(d, "/")
+ 		if parts[0] == "." {
+ 			return ""
+ 		}
+diff --git a/internal/group/repeat_test.go b/internal/group/repeat_test.go
+index e9b2166..0744f16 100644
+--- a/internal/group/repeat_test.go
++++ b/internal/group/repeat_test.go
+@@ -60,3 +60,32 @@ func TestAContainersSubdirectoriesStillGroup(t *testing.T) {
+ 		t.Fatalf("web/x.ts left core: %v", p)
+ 	}
+ }
++
++// A module anchored at a directory spans that directory, not the one above
++// it, so no group inside it repeats the directory, whether or not it also
++// anchors a file there.
++func TestADirectoryAnchoredModuleIsItsDirectory(t *testing.T) {
++	for _, anchors := range [][]model.Anchor{
++		{{Path: "src/core"}},
++		{{Path: "src/core"}, {Path: "src/core/a.ts"}},
++	} {
++		us := []model.Unit{{ID: "MOD-0001", Kind: model.Module, Name: model.Said(model.Script, "core"), Anchors: anchors}}
++		in := func(u model.Unit) model.Unit {
++			u.PutParent(model.ParentClaim{To: "MOD-0001", Writer: model.Script})
++			return u
++		}
++		for i := 2; i <= 19; i++ {
++			dir := "src/core"
++			if i > 10 {
++				dir = "src/core/sub"
++			}
++			us = append(us, in(module(i, fmt.Sprintf("%s/m%d.ts", dir, i))))
++		}
++		got, _ := Fallback(us, map[model.Kind]int{model.Module: 19})
++		for _, u := range model.Present(got) {
++			if Made(u) && !below(u.Anchors[0].Path, "src/core") {
++				t.Errorf("anchors %v: %s %q repeats the directory of the module it sits in: %v", anchors, u.ID, u.Name.Value, parents(got))
++			}
++		}
++	}
++}

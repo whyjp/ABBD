@@ -116,28 +116,57 @@ func TestAModuleBoxOpensItsPage(t *testing.T) {
 	}
 }
 
-// Every page carries the same nav: the overview, both indexes and every
-// module, under the module that holds it, with the page's own marked.
+// Every page's nav links the overview and both indexes. Only the overview's
+// lists every module, under the module that holds it, so a module that comes
+// or goes rewrites no other page. A module's page lists the modules it sits
+// in, down to its own, which it marks.
 func TestEveryPageCarriesTheNav(t *testing.T) {
 	m := fixture(t, "orca")
 	ps := pages(t, m)
-	for f, p := range ps {
-		_, nav, _ := strings.Cut(p, "<nav ")
+	navOf := func(f string) string {
+		_, nav, _ := strings.Cut(ps[f], "<nav ")
 		nav, _, ok := strings.Cut(nav, "</nav>")
 		if !ok {
 			t.Fatalf("%s has no nav", f)
 		}
+		return nav
+	}
+	for f := range ps {
+		nav := navOf(f)
 		for _, to := range []string{PageFile, ContractsFile, UnitsFile} {
 			if f != to && !strings.Contains(nav, `href="`+to+`"`) {
 				t.Errorf("%s's nav has no link to %s", f, to)
 			}
 		}
-		if n := strings.Count(nav, `aria-current="page"`); n != 1 {
+		if n := strings.Count(nav, `aria-current="page"`); n > 1 {
 			t.Errorf("%s's nav marks %d pages as the current one", f, n)
 		}
-		for _, ins := range m.Insides {
-			if f != ins.ID+".html" && !strings.Contains(nav, `href="`+ins.ID+`.html"`) {
-				t.Errorf("%s's nav does not list %s", f, ins.ID)
+	}
+	for _, f := range []string{PageFile, ContractsFile, UnitsFile} {
+		if n := strings.Count(navOf(f), `aria-current="page"`); n != 1 {
+			t.Errorf("%s's nav marks %d pages as the current one", f, n)
+		}
+	}
+	parent := map[string]string{}
+	for _, u := range m.Units {
+		parent[u.ID] = u.Parent
+	}
+	for _, ins := range m.Insides {
+		if !strings.Contains(navOf(PageFile), `href="`+ins.ID+`.html"`) {
+			t.Errorf("the overview's nav does not list %s", ins.ID)
+		}
+		nav := navOf(ins.ID + ".html")
+		if !strings.Contains(nav, `href="#m-`+ins.ID+`" aria-current="page"`) {
+			t.Errorf("%s's nav does not mark its own page", ins.ID)
+		}
+		for p := parent[ins.ID]; p != ""; p = parent[p] {
+			if ps[p+".html"] != "" && !strings.Contains(nav, `href="`+p+`.html"`) {
+				t.Errorf("%s's nav does not list %s, which holds it", ins.ID, p)
+			}
+		}
+		for _, other := range m.Insides {
+			if other.ID != ins.ID && parent[other.ID] == parent[ins.ID] && strings.Contains(nav, `href="`+other.ID+`.html"`) {
+				t.Errorf("%s's nav lists its sibling %s", ins.ID, other.ID)
 			}
 		}
 	}
@@ -194,11 +223,11 @@ func TestTheUnitIndexListsEveryUnitWithItsFiles(t *testing.T) {
 	}
 }
 
-// The nav lists the features apart from the modules, as an engineer names
-// them: what the code is made of, then what it does for a user.
+// The overview's nav lists the features apart from the modules, as an
+// engineer names them: what the code is made of, then what it does for a user.
 func TestTheNavListsFeaturesApartFromModules(t *testing.T) {
 	m := fixture(t, "self")
-	nav := pages(t, m)[UnitsFile]
+	nav := pages(t, m)[PageFile]
 	_, nav, _ = strings.Cut(nav, "<nav ")
 	modules, features, ok := strings.Cut(nav, "<h3>기능</h3>")
 	if !ok {

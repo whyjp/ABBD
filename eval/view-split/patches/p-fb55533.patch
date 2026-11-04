@@ -1,0 +1,49 @@
+diff --git a/cmd/abbd/byfeature_test.go b/cmd/abbd/byfeature_test.go
+index 13d9d51..57b2d5f 100644
+--- a/cmd/abbd/byfeature_test.go
++++ b/cmd/abbd/byfeature_test.go
+@@ -59,3 +59,15 @@ func TestExplainNamesTheEntriesAFeatureUses(t *testing.T) {
+ 	p.setup(0, "synced", "--", exe)
+ 	p.want(0, "IF-0001 http api (extracted): GET /charges", "explain", "FEAT-0002")
+ }
++
++// A part of a page that uses a contract whole makes the page use it whole,
++// whatever entries the page names itself.
++func TestImpactKeepsAFeaturesWholeUse(t *testing.T) {
++	p, exe := bare(t)
++	p.extract(strings.Replace(pagesExtraction, `{"from":"chart","to":"lib","kind":"depends_on"},`, `{"from":"chart","to":"lib","kind":"depends_on"},{"from":"chart","to":"api","kind":"consumes"},`, 1))
++	p.setup(0, "synced", "--", exe)
++	out := p.want(0, "uses IF-0001 http api, no entry named\nfeature FEAT-0004", "impact", "IF-0001", "--features")
++	if strings.Contains(out, "uses IF-0001 http api: GET /charges") {
++		t.Errorf("the chart's whole use is hidden by the page's route:\n%s", out)
++	}
++}
+diff --git a/internal/topology/feature.go b/internal/topology/feature.go
+index f6ec492..a07a040 100644
+--- a/internal/topology/feature.go
++++ b/internal/topology/feature.go
+@@ -71,6 +71,9 @@ func ByFeature(units []model.Unit, im Impact) ([]Feature, []Tiered) {
+ 			groups[f].Items = append(groups[f].Items, Tiered{it, t.name})
+ 		}
+ 	}
++	// whole marks a contract a feature, or a unit inside it, uses whole, so
++	// no other unit's narrowed use hides it.
++	whole := map[[2]model.ID]bool{}
+ 	for _, l := range Links(units) {
+ 		f := home(l.From)
+ 		if g := groups[f]; g != nil && l.Kind == model.Consumes && impacted[l.To] {
+@@ -79,7 +82,13 @@ func ByFeature(units []model.Unit, im Impact) ([]Feature, []Tiered) {
+ 				g.Uses = append(g.Uses, ContractUse{Contract: l.To})
+ 				i = len(g.Uses) - 1
+ 			}
+-			g.Uses[i].Entries = slices.Compact(slices.Sorted(slices.Values(append(g.Uses[i].Entries, l.Entries...))))
++			k := [2]model.ID{f, l.To}
++			whole[k] = whole[k] || len(l.Entries) == 0
++			if whole[k] {
++				g.Uses[i].Entries = nil
++			} else {
++				g.Uses[i].Entries = slices.Compact(slices.Sorted(slices.Values(append(g.Uses[i].Entries, l.Entries...))))
++			}
+ 		}
+ 	}
+ 	var out []Feature

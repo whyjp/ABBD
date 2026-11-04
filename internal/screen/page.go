@@ -26,7 +26,7 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 	"head": head,
 	"tip":  func(k string) string { return tips[k] },
 	"css": func(tmpl string) template.CSS {
-		if tmpl == "index" || tmpl == "module" {
+		if tmpl == "index" || tmpl == "module" || tmpl == "around" {
 			return template.CSS(pageCSS + hueCSS + hoverCSS)
 		}
 		return template.CSS(pageCSS + hueCSS)
@@ -61,14 +61,14 @@ const (
 
 // Graph is graph.json: the blueprint's data, for tools that do not read the
 // page. It holds no value of the sync that rendered it, which the state
-// records, so two syncs of unrelated changes rewrite different lines.
+// records, and no drawing, which the pages hold, so a change that moves
+// boxes or lines rewrites the pages that draw them and not this file.
 type Graph struct {
 	Units []UnitRow `json:"units"`
 	Edges []Line    `json:"edges"`
-	// Overview and Modules are the two levels as the page draws them, less
-	// the links to focus views, which graph.json does not hold.
-	Overview Drawing  `json:"overview"`
-	Modules  []Inside `json:"modules"`
+	// Modules are the modules' insides as their pages list them, less the
+	// drawings.
+	Modules []Inside `json:"modules"`
 	// Flows, Stacks and Tables are the stored figures as the page draws them.
 	Flows  []FlowView  `json:"flows,omitempty"`
 	Stacks []StackView `json:"stacks,omitempty"`
@@ -77,7 +77,7 @@ type Graph struct {
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	g := Graph{Units: m.Units, Edges: m.Edges, Overview: m.Overview, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err
