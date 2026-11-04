@@ -2097,8 +2097,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {\"",
-        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
+        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
       ]
     },
     {
@@ -4344,7 +4344,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
     },
     {
       "From": "MOD-0038",
@@ -18814,8 +18814,17 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0034 ---",
+                "Code": false
+              }
+            ]
+          },
           {
             "Kind": "h",
             "Parts": [
@@ -19705,7 +19714,7 @@
                 "Code": true
               },
               {
-                "Text": " lays each full view out with every tactic, and ",
+                "Text": " lays each view of a unit out with every tactic, and ",
                 "Code": false
               },
               {
@@ -19721,7 +19730,7 @@
                 "Code": true
               },
               {
-                "Text": " beats the best so far, which starts as the first tactic's. ",
+                "Text": " beats the best so far, which starts as the first tactic's. The overview is laid out with the plain tactic only and never weighed, since every module's page holds a focus view seated by it. ",
                 "Code": false
               },
               {
@@ -19729,7 +19738,15 @@
                 "Code": true
               },
               {
-                "Text": " compares touches, then breaks of rules 13 and 15, then the jogs along each line's way from the ",
+                "Text": " compares touches, then breaks of rules 13 and 15, then ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " times the staircase steps plus the crossings, the steps counted once per pair of places along each line's way from the ",
                 "Code": false
               },
               {
@@ -19745,7 +19762,7 @@
                 "Code": true
               },
               {
-                "Text": " returns, counted once per pair of places, then crossings, paths that turn more than twice, braid and dashed ink, and the first measure that differs decides, so a staircase costs more than a crossing. A ",
+                "Text": " returns, then the steps alone, paths that turn more than twice, braid and dashed ink, and the first measure that differs decides. A step is a turn past a line's second or a jog, and it weighs as much as 4 crossings. A ",
                 "Code": false
               },
               {
@@ -21912,7 +21929,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
           ]
         },
         {
