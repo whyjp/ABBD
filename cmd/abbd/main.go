@@ -137,6 +137,13 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
+abbd lint [VIEW] [--json] [--root DIR]
+                                     hold every drawing of the blueprint, or the views whose name
+                                     starts with VIEW or holds it as a word, such as a unit ID, to
+                                     the drawing criteria of docs/blueprint-svg.md; prints each
+                                     breach with the boxes, lines or chips it involves, what it
+                                     measures against what is allowed and why, then the totals per
+                                     view and in all; exits 1 only on a hard breach
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
@@ -264,6 +271,7 @@ var commands = map[string]command{
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"lint":            {flags: []string{"root", "json"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
 type invocation struct {

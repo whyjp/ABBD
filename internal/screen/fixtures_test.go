@@ -25,26 +25,6 @@ func fixture(t *testing.T, name string) Model {
 	return Build(Input{Units: units})
 }
 
-type view struct {
-	name   string
-	d      Drawing
-	budget int
-}
-
-func views(m Model) []view {
-	out := []view{{"overview", m.Overview, overviewWidth}}
-	for _, f := range m.Focus {
-		out = append(out, view{"overview focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
-	}
-	for _, ins := range m.Insides {
-		out = append(out, view{ins.ID + " " + ins.Name, ins.Drawing, insideWidth})
-		for _, f := range ins.Focus {
-			out = append(out, view{ins.ID + " focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
-		}
-	}
-	return out
-}
-
 func measured(t *testing.T, d Drawing) Metrics {
 	t.Helper()
 	var b bytes.Buffer
