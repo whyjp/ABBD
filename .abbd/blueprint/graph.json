@@ -26478,7 +26478,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -28855,7 +28855,7 @@
                 "Code": true
               },
               {
-                "Text": " draws a flow as a numbered list, a stack as a list of bands and a table as an HTML table, all of which wrap every line, and lists every figure by its question on the overview. At 560px and below a lane's unit and a band's name stand above their contents, and a table's rows fold to one card each, every filled cell under its column's label.",
+                "Text": " draws a flow as a numbered list, a stack as a list of bands and a table as an HTML table, all of which wrap every line, and lists every figure by its question on the overview. At 560px and below a lane's unit and a band's name stand above their contents, and a table's rows fold to one card each, the row's unit across its top and every filled cell under its column's label.",
                 "Code": false
               }
             ]
