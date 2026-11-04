@@ -657,9 +657,9 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
 		// On a ring, where straight drops pin the slots at an edge's ends,
-		// the slots between pins move so that keeping the order never
-		// pushes a pinned line off the x it drops straight at. Elsewhere
-		// the even share stands: spreading there trades steps for crossings.
+		// the slots between pins spread over the room between them.
+		// Elsewhere they keep their even share where it fits between the
+		// pins (below): spreading there trades steps for crossings.
 		if l.ring {
 			counts := make([]int, len(slots))
 			for s, sl := range slots {
