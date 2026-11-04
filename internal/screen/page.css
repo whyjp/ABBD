@@ -91,7 +91,14 @@ svg circle.junction.bypass { fill: var(--bypass); }
 svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg path.w.joins { marker-end: none; }
-svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
+svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
+svg path.w.back.consumes { stroke: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
+svg path.w.back.provides { stroke: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
+svg path.w.back.bypass, svg path.w.back.mutual { stroke: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
+svg circle.junction.back { opacity: .6; }
+svg path.w { transition: opacity .12s; }
+svg .box, svg .port { transition: opacity .12s; }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }

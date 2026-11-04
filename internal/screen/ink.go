@@ -15,6 +15,32 @@ import (
 type Dot struct {
 	X, Y int
 	Kind string
+	// Back says only climbing lines meet there, so the dot is drawn as
+	// faint as they are.
+	Back bool `json:",omitempty"`
+	// Lit are the classes that light the dot with its lines (hover.go).
+	Lit string `json:"-"`
+}
+
+// faint marks the dots that only climbing lines meet at.
+func faint(dots []Dot, out []drawn) []Dot {
+	for i, d := range dots {
+		p, any, all := pt{d.X, d.Y}, false, true
+		for _, w := range out {
+			if hue(w.kind) != d.Kind {
+				continue
+			}
+			for _, part := range w.parts {
+				for j := 1; j < len(part); j++ {
+					if on(p, part[j-1], part[j]) {
+						any, all = true, all && w.back
+					}
+				}
+			}
+		}
+		dots[i].Back = any && all
+	}
+	return dots
 }
 
 // join is where a line of one kind crosses onto a trunk of its kind.
@@ -77,7 +103,7 @@ func junctions(ps []piece, joins []join) []Dot {
 		key := fmt.Sprint(k, p)
 		if arms[key] == nil {
 			arms[key] = map[pt]bool{}
-			where[key] = Dot{p.x, p.y, k}
+			where[key] = Dot{X: p.x, Y: p.y, Kind: k}
 		}
 		arms[key][pt{sign(to.x - p.x), sign(to.y - p.y)}] = true
 	}

@@ -99,7 +99,14 @@ svg circle.junction.bypass { fill: var(--bypass); }
 svg circle.junction.provides { fill: var(--ok); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg path.w.joins { marker-end: none; }
-svg path.w.back { stroke-dasharray: 6 4; }
+svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
+svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
+svg path.w.back.consumes { stroke: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
+svg path.w.back.provides { stroke: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
+svg path.w.back.bypass, svg path.w.back.mutual { stroke: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
+svg circle.junction.back { opacity: .6; }
+svg path.w { transition: opacity .12s; }
+svg .box, svg .port { transition: opacity .12s; }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
@@ -189,6 +196,200 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+@media (hover:hover){
+svg:has(.p0:hover) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(.p0:hover) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
+svg:has(.p1:hover) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(.p1:hover) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
+svg:has(.p2:hover) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(.p2:hover) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
+svg:has(.p3:hover) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(.p3:hover) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
+svg:has(.p4:hover) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(.p4:hover) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
+svg:has(.p5:hover) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(.p5:hover) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
+svg:has(.p6:hover) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(.p6:hover) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
+svg:has(.p7:hover) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(.p7:hover) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
+svg:has(.p8:hover) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(.p8:hover) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
+svg:has(.p9:hover) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(.p9:hover) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
+svg:has(.p10:hover) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(.p10:hover) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
+svg:has(.p11:hover) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(.p11:hover) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
+svg:has(.p12:hover) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(.p12:hover) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
+svg:has(.p13:hover) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(.p13:hover) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
+svg:has(.p14:hover) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(.p14:hover) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
+svg:has(.p15:hover) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(.p15:hover) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
+svg:has(.p16:hover) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(.p16:hover) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
+svg:has(.p17:hover) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(.p17:hover) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
+svg:has(.p18:hover) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(.p18:hover) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
+svg:has(.p19:hover) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(.p19:hover) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
+svg:has(.p20:hover) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(.p20:hover) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
+svg:has(.p21:hover) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(.p21:hover) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
+svg:has(.p22:hover) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(.p22:hover) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
+svg:has(.p23:hover) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(.p23:hover) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
+svg:has(.p24:hover) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(.p24:hover) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
+svg:has(.p25:hover) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(.p25:hover) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
+svg:has(.p26:hover) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(.p26:hover) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
+svg:has(.p27:hover) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(.p27:hover) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
+svg:has(.p28:hover) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(.p28:hover) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
+svg:has(.p29:hover) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(.p29:hover) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
+svg:has(.p30:hover) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(.p30:hover) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
+svg:has(.p31:hover) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(.p31:hover) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
+svg:has(.p32:hover) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(.p32:hover) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
+svg:has(.p33:hover) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(.p33:hover) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
+svg:has(.p34:hover) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(.p34:hover) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
+svg:has(.p35:hover) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(.p35:hover) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
+svg:has(.p36:hover) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(.p36:hover) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
+svg:has(.p37:hover) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(.p37:hover) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
+svg:has(.p38:hover) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(.p38:hover) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
+svg:has(.p39:hover) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(.p39:hover) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
+svg:has(.p40:hover) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(.p40:hover) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
+svg:has(.p41:hover) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(.p41:hover) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
+svg:has(.p42:hover) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(.p42:hover) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
+svg:has(.p43:hover) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(.p43:hover) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
+svg:has(.p44:hover) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(.p44:hover) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
+svg:has(.p45:hover) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(.p45:hover) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
+svg:has(.p46:hover) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(.p46:hover) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
+svg:has(.p47:hover) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(.p47:hover) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
+}
+svg:has(:focus-visible>.p0) :is(.w,.count,.origin,.junction):not(.e0){opacity:.1}
+svg:has(:focus-visible>.p0) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
+svg:has(:focus-visible>.p1) :is(.w,.count,.origin,.junction):not(.e1){opacity:.1}
+svg:has(:focus-visible>.p1) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
+svg:has(:focus-visible>.p2) :is(.w,.count,.origin,.junction):not(.e2){opacity:.1}
+svg:has(:focus-visible>.p2) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
+svg:has(:focus-visible>.p3) :is(.w,.count,.origin,.junction):not(.e3){opacity:.1}
+svg:has(:focus-visible>.p3) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
+svg:has(:focus-visible>.p4) :is(.w,.count,.origin,.junction):not(.e4){opacity:.1}
+svg:has(:focus-visible>.p4) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
+svg:has(:focus-visible>.p5) :is(.w,.count,.origin,.junction):not(.e5){opacity:.1}
+svg:has(:focus-visible>.p5) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
+svg:has(:focus-visible>.p6) :is(.w,.count,.origin,.junction):not(.e6){opacity:.1}
+svg:has(:focus-visible>.p6) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
+svg:has(:focus-visible>.p7) :is(.w,.count,.origin,.junction):not(.e7){opacity:.1}
+svg:has(:focus-visible>.p7) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
+svg:has(:focus-visible>.p8) :is(.w,.count,.origin,.junction):not(.e8){opacity:.1}
+svg:has(:focus-visible>.p8) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
+svg:has(:focus-visible>.p9) :is(.w,.count,.origin,.junction):not(.e9){opacity:.1}
+svg:has(:focus-visible>.p9) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
+svg:has(:focus-visible>.p10) :is(.w,.count,.origin,.junction):not(.e10){opacity:.1}
+svg:has(:focus-visible>.p10) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
+svg:has(:focus-visible>.p11) :is(.w,.count,.origin,.junction):not(.e11){opacity:.1}
+svg:has(:focus-visible>.p11) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
+svg:has(:focus-visible>.p12) :is(.w,.count,.origin,.junction):not(.e12){opacity:.1}
+svg:has(:focus-visible>.p12) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
+svg:has(:focus-visible>.p13) :is(.w,.count,.origin,.junction):not(.e13){opacity:.1}
+svg:has(:focus-visible>.p13) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
+svg:has(:focus-visible>.p14) :is(.w,.count,.origin,.junction):not(.e14){opacity:.1}
+svg:has(:focus-visible>.p14) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
+svg:has(:focus-visible>.p15) :is(.w,.count,.origin,.junction):not(.e15){opacity:.1}
+svg:has(:focus-visible>.p15) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
+svg:has(:focus-visible>.p16) :is(.w,.count,.origin,.junction):not(.e16){opacity:.1}
+svg:has(:focus-visible>.p16) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
+svg:has(:focus-visible>.p17) :is(.w,.count,.origin,.junction):not(.e17){opacity:.1}
+svg:has(:focus-visible>.p17) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
+svg:has(:focus-visible>.p18) :is(.w,.count,.origin,.junction):not(.e18){opacity:.1}
+svg:has(:focus-visible>.p18) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
+svg:has(:focus-visible>.p19) :is(.w,.count,.origin,.junction):not(.e19){opacity:.1}
+svg:has(:focus-visible>.p19) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
+svg:has(:focus-visible>.p20) :is(.w,.count,.origin,.junction):not(.e20){opacity:.1}
+svg:has(:focus-visible>.p20) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
+svg:has(:focus-visible>.p21) :is(.w,.count,.origin,.junction):not(.e21){opacity:.1}
+svg:has(:focus-visible>.p21) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
+svg:has(:focus-visible>.p22) :is(.w,.count,.origin,.junction):not(.e22){opacity:.1}
+svg:has(:focus-visible>.p22) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
+svg:has(:focus-visible>.p23) :is(.w,.count,.origin,.junction):not(.e23){opacity:.1}
+svg:has(:focus-visible>.p23) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
+svg:has(:focus-visible>.p24) :is(.w,.count,.origin,.junction):not(.e24){opacity:.1}
+svg:has(:focus-visible>.p24) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
+svg:has(:focus-visible>.p25) :is(.w,.count,.origin,.junction):not(.e25){opacity:.1}
+svg:has(:focus-visible>.p25) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
+svg:has(:focus-visible>.p26) :is(.w,.count,.origin,.junction):not(.e26){opacity:.1}
+svg:has(:focus-visible>.p26) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
+svg:has(:focus-visible>.p27) :is(.w,.count,.origin,.junction):not(.e27){opacity:.1}
+svg:has(:focus-visible>.p27) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
+svg:has(:focus-visible>.p28) :is(.w,.count,.origin,.junction):not(.e28){opacity:.1}
+svg:has(:focus-visible>.p28) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
+svg:has(:focus-visible>.p29) :is(.w,.count,.origin,.junction):not(.e29){opacity:.1}
+svg:has(:focus-visible>.p29) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
+svg:has(:focus-visible>.p30) :is(.w,.count,.origin,.junction):not(.e30){opacity:.1}
+svg:has(:focus-visible>.p30) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
+svg:has(:focus-visible>.p31) :is(.w,.count,.origin,.junction):not(.e31){opacity:.1}
+svg:has(:focus-visible>.p31) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
+svg:has(:focus-visible>.p32) :is(.w,.count,.origin,.junction):not(.e32){opacity:.1}
+svg:has(:focus-visible>.p32) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
+svg:has(:focus-visible>.p33) :is(.w,.count,.origin,.junction):not(.e33){opacity:.1}
+svg:has(:focus-visible>.p33) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
+svg:has(:focus-visible>.p34) :is(.w,.count,.origin,.junction):not(.e34){opacity:.1}
+svg:has(:focus-visible>.p34) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
+svg:has(:focus-visible>.p35) :is(.w,.count,.origin,.junction):not(.e35){opacity:.1}
+svg:has(:focus-visible>.p35) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
+svg:has(:focus-visible>.p36) :is(.w,.count,.origin,.junction):not(.e36){opacity:.1}
+svg:has(:focus-visible>.p36) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
+svg:has(:focus-visible>.p37) :is(.w,.count,.origin,.junction):not(.e37){opacity:.1}
+svg:has(:focus-visible>.p37) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
+svg:has(:focus-visible>.p38) :is(.w,.count,.origin,.junction):not(.e38){opacity:.1}
+svg:has(:focus-visible>.p38) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
+svg:has(:focus-visible>.p39) :is(.w,.count,.origin,.junction):not(.e39){opacity:.1}
+svg:has(:focus-visible>.p39) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
+svg:has(:focus-visible>.p40) :is(.w,.count,.origin,.junction):not(.e40){opacity:.1}
+svg:has(:focus-visible>.p40) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
+svg:has(:focus-visible>.p41) :is(.w,.count,.origin,.junction):not(.e41){opacity:.1}
+svg:has(:focus-visible>.p41) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
+svg:has(:focus-visible>.p42) :is(.w,.count,.origin,.junction):not(.e42){opacity:.1}
+svg:has(:focus-visible>.p42) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
+svg:has(:focus-visible>.p43) :is(.w,.count,.origin,.junction):not(.e43){opacity:.1}
+svg:has(:focus-visible>.p43) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
+svg:has(:focus-visible>.p44) :is(.w,.count,.origin,.junction):not(.e44){opacity:.1}
+svg:has(:focus-visible>.p44) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
+svg:has(:focus-visible>.p45) :is(.w,.count,.origin,.junction):not(.e45){opacity:.1}
+svg:has(:focus-visible>.p45) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
+svg:has(:focus-visible>.p46) :is(.w,.count,.origin,.junction):not(.e46){opacity:.1}
+svg:has(:focus-visible>.p46) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
+svg:has(:focus-visible>.p47) :is(.w,.count,.origin,.junction):not(.e47){opacity:.1}
+svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 
 </style>
 </head>
@@ -220,18 +421,18 @@ table.index td:first-child { width: 46%; }
       <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="244" viewBox="0 0 360 244" role="img" aria-label="모듈의 안">
 <defs><marker id="m-contract" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--accent)"/></marker><marker id="m-bypass" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--bypass)"/></marker><marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ink)"/></marker><marker id="m-ok" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--ok)"/></marker></defs>
 <rect class="frame" x="6" y="18" width="348" height="208" rx="8"/>
-<path class="w depends_on" d="M180 106 L180 138" data-origin="inferred"><title>supplement fold depends_on anchor matching (via call), 판독
-internal/bootstrap/overlay.go:40 &#34;i, err := sc.match(d)&#34;</title></path><circle class="origin inferred" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M180 182 L180 206" data-origin="inferred"><title>anchor matching depends_on internal/extract (via data), 판독
-internal/bootstrap/overlay.go:246 &#34;n := overlap(u.Anchors, d.Anchors)&#34;</title></path><circle class="origin inferred" cx="180" cy="182" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on" d="M180 38 L180 62" data-origin="inferred"><title>abbd CLI depends_on supplement fold (via call), 판독</title></path><circle class="origin inferred" cx="180" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
+<path class="w depends_on e0 e1" d="M180 106 L180 138" data-origin="inferred"><title>supplement fold depends_on anchor matching (via call), 판독
+internal/bootstrap/overlay.go:40 &#34;i, err := sc.match(d)&#34;</title></path><circle class="origin inferred e0 e1" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e1 e2" d="M180 182 L180 206" data-origin="inferred"><title>anchor matching depends_on internal/extract (via data), 판독
+internal/bootstrap/overlay.go:246 &#34;n := overlap(u.Anchors, d.Anchors)&#34;</title></path><circle class="origin inferred e1 e2" cx="180" cy="182" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e0 e3" d="M180 38 L180 62" data-origin="inferred"><title>abbd CLI depends_on supplement fold (via call), 판독</title></path><circle class="origin inferred e0 e3" cx="180" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
 
-<g class="box inner" data-id="MOD-0010"><title>MOD-0010 supplement fold: Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.</title><rect x="109" y="62" width="142" height="44" rx="4"/><text class="name" x="117" y="81">supplement fold</text><text class="sub" x="117" y="98">모듈</text></g><g class="box inner" data-id="MOD-0011"><title>MOD-0011 anchor matching: Picks the script unit of the same kind sharing the most anchors with a supplement unit, and fails when none shares one or two share the same count.</title><rect x="109" y="138" width="142" height="44" rx="4"/><text class="name" x="117" y="157">anchor matching</text><text class="sub" x="117" y="174">모듈</text></g>
-<a href="MOD-0017.html"><g class="port other entry" data-id="port|MOD-0017false"><title>계약 없이 internal/extract와 닿는 곳</title><rect x="140" y="206" width="80" height="17" rx="3"/><text class="chip" x="140" dx="4" y="206" dy="12.5">→ extract</text></g></a><a href="MOD-0001.html"><g class="port other exit" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="134" y="21" width="93" height="17" rx="3"/><text class="chip" x="134" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
+<g class="box inner p0 n0 n1 n3" data-id="MOD-0010"><title>MOD-0010 supplement fold: Copies supplement purpose and responsibility onto the matched script unit as INFERRED, refuses an evidence unit that would merge into a script unit, skips couplings the script already extracted, and refuses a reader coupling with no evidence.</title><rect x="109" y="62" width="142" height="44" rx="4"/><text class="name" x="117" y="81">supplement fold</text><text class="sub" x="117" y="98">모듈</text></g><g class="box inner p1 n0 n1 n2" data-id="MOD-0011"><title>MOD-0011 anchor matching: Picks the script unit of the same kind sharing the most anchors with a supplement unit, and fails when none shares one or two share the same count.</title><rect x="109" y="138" width="142" height="44" rx="4"/><text class="name" x="117" y="157">anchor matching</text><text class="sub" x="117" y="174">모듈</text></g>
+<a href="MOD-0017.html"><g class="port other entry p2 n1 n2" data-id="port|MOD-0017false"><title>계약 없이 internal/extract와 닿는 곳</title><rect x="140" y="206" width="80" height="17" rx="3"/><text class="chip" x="140" dx="4" y="206" dy="12.5">→ extract</text></g></a><a href="MOD-0001.html"><g class="port other exit p3 n0 n3" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="134" y="21" width="93" height="17" rx="3"/><text class="chip" x="134" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
 </svg></div>
       <div class="legend">
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ok);stroke-width:2"/></svg>제공(구현)</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--accent);stroke-width:1.5"/></svg>씀</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
-<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:color-mix(in srgb, var(--ink) 55%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4"/></svg>옅은 점선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로). 상자에 마우스를 올리면 그 상자의 선만 남습니다</span>
 <span title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
 <span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>

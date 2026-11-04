@@ -38,6 +38,9 @@ type Box struct {
 	H       int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
+	// Lit are the classes that light the box while a reader points at it
+	// or at a box it shares a line with (hover.go).
+	Lit string `json:"-"`
 }
 
 // Text is one line of a label and where it starts; Mid centres it on X.
@@ -66,6 +69,7 @@ type Port struct {
 	// Keys name a frame port as the lines that join it do: one chip that
 	// stands for several ports carries every one's key.
 	Keys []string `json:"-"`
+	Lit  string   `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
@@ -94,6 +98,10 @@ type Wire struct {
 	Count  int `json:",omitempty"`
 	Net    int `json:",omitempty"`
 	LX, LY int `json:",omitempty"`
+	// ends are the places the line's requests join, and Lit the classes
+	// that light it while a reader points at one of them (hover.go).
+	ends []string
+	Lit  string `json:"-"`
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -777,7 +785,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := l.route(reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: junctions(pieces(paths), joinPoints(paths)), Relations: wanted(reqs)}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -876,8 +884,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
 		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
+		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.hover()
 	return d
 }
 

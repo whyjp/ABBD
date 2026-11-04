@@ -109,11 +109,11 @@
 {{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
 <defs>{{range $k := marks}}<marker id="m-{{$k}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--{{markColor $k}})"/></marker>{{end}}</defs>
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
-{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
-{{.}}{{end}}</title></path>{{range .Marks}}<circle class="origin {{.Origin}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
-{{range .Dots}}<circle class="junction {{.Kind}}" cx="{{.X}}" cy="{{.Y}}" r="3"/>{{end}}
-{{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}" data-id="{{.ID}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
-{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{.RectY}}" width="{{.W}}" height="{{.H}}" rx="3"/>{{$p := .}}{{range $i, $l := .Lines}}<text class="chip" x="{{$p.X}}" dx="4" y="{{$p.LineY $i}}" dy="12.5">{{$l}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}{{with .Lit}} {{.}}{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}}><title>{{.Title}}{{range .Quotes}}
+{{.}}{{end}}</title></path>{{$lit := .Lit}}{{range .Marks}}<circle class="origin {{.Origin}}{{with $lit}} {{.}}{{end}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count{{with .Lit}} {{.}}{{end}}" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{end}}
+{{range .Dots}}<circle class="junction {{.Kind}}{{if .Back}} back{{end}}{{with .Lit}} {{.}}{{end}}" cx="{{.X}}" cy="{{.Y}}" r="3"/>{{end}}
+{{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}{{with .Lit}} {{.}}{{end}}" data-id="{{.ID}}"><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
+{{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}{{with .Lit}} {{.}}{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{.RectY}}" width="{{.W}}" height="{{.H}}" rx="3"/>{{$p := .}}{{range $i, $l := .Lines}}<text class="chip" x="{{$p.X}}" dx="4" y="{{$p.LineY $i}}" dy="12.5">{{$l}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 </svg>{{end}}
 {{define "howhead"}}<span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}{{end}}
 {{define "howtext"}}{{template "blocks" .Blocks}}{{end}}
@@ -143,7 +143,7 @@
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--ink);stroke-width:1.5"/></svg>의존</span>
 {{template "origins"}}
 {{end}}</div>{{end}}
-{{define "origins"}}<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4"/></svg>끊긴 선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로)</span>
+{{define "origins"}}<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:color-mix(in srgb, var(--ink) 55%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4"/></svg>옅은 점선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로). 상자에 마우스를 올리면 그 상자의 선만 남습니다</span>
 <span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
 <span title="{{tip "stated"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>

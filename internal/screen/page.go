@@ -28,7 +28,7 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 		return map[string]string{"contract": "accent", "bypass": "bypass", "ink": "ink", "ok": "ok"}[k]
 	},
 	"tip":    func(k string) string { return tips[k] },
-	"css":    func() template.CSS { return template.CSS(pageCSS) },
+	"css":    func() template.CSS { return template.CSS(pageCSS + hoverCSS) },
 	"nameOf": func(m *Model, id string) string { return nameOf(*m, id) },
 	"label": func(k string) string {
 		if l, ok := labels[k]; ok {

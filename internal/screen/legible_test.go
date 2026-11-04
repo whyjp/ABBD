@@ -202,10 +202,8 @@ func readSVG(src string) (sheet, error) {
 					s.markers = append(s.markers, fpt{num(attr(t, "cx")), num(attr(t, "cy"))})
 				case hasClass(t, "junction"):
 					j := junction{at: fpt{num(attr(t, "cx")), num(attr(t, "cy"))}}
-					for _, c := range strings.Fields(attr(t, "class")) {
-						if c != "junction" {
-							j.kind = c
-						}
+					if cs := strings.Fields(attr(t, "class")); len(cs) > 1 {
+						j.kind = cs[1]
 					}
 					s.junctions = append(s.junctions, j)
 				}
