@@ -60,12 +60,23 @@ func costOf(ds []drawn, reqs []wireReq) cost {
 	return c
 }
 
-// choose builds a view with every tactic and keeps the first, the one the
-// plain tactic orders, unless a later one beats the best so far.
-func choose[T any](build func(tactic) (T, cost)) T {
-	best, bc := build(tactics[0])
-	for _, t := range tactics[1:] {
-		if v, c := build(t); c.beats(bc) {
+// weighed keeps what routed ink costs a reader in read. A focus view has no
+// read, so it is never weighed.
+func weighed(read *cost, ds []drawn, reqs []wireReq) {
+	if read != nil {
+		*read = costOf(ds, reqs)
+	}
+}
+
+// choose draws a view with every tactic and keeps the first, the one the
+// plain tactic orders, unless a later one beats the best so far. draw
+// leaves what each drawing costs in its read.
+func choose[T any](draw func(t tactic, read *cost) T) T {
+	var best T
+	var bc cost
+	for i, t := range tactics {
+		var c cost
+		if v := draw(t, &c); i == 0 || c.beats(bc) {
 			best, bc = v, c
 		}
 	}

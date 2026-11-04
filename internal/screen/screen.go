@@ -161,10 +161,9 @@ func Build(in Input) Model {
 		o *overview
 		d Drawing
 	}
-	p := choose(func(t tactic) (planned, cost) {
+	p := choose(func(t tactic, read *cost) planned {
 		o := planOverview(in.Units, "", nil, t)
-		d := o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
-		return planned{o, d}, d.read
+		return planned{o, o.draw(func(id model.ID) string { return viewOf(o.tree, id) }, read)}
 	})
 	o := p.o
 	m.Overview = p.d
@@ -196,9 +195,8 @@ func Build(in Input) Model {
 		return nil
 	}
 	for _, id := range views {
-		ins := choose(func(t tactic) (Inside, cost) {
-			ins := o.inside(id, in.Units, "", nil, t)
-			return ins, ins.Drawing.read
+		ins := choose(func(t tactic, read *cost) Inside {
+			return o.inside(id, in.Units, "", nil, t, read)
 		})
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)

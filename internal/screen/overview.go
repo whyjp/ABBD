@@ -25,8 +25,6 @@ type Drawing struct {
 	// a relation the routing drops is lost; one the view never requests is
 	// not caught there.
 	Relations [][2]string `json:"-"`
-	// read is what the drawing costs a reader, as costOf measures its ink.
-	read cost
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -632,7 +630,7 @@ func chipRowWidth(labels []string) int {
 	return sum
 }
 
-func (o *overview) draw(href func(model.ID) string) Drawing {
+func (o *overview) draw(href func(model.ID) string, read *cost) Drawing {
 	l := &o.layout
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
 
@@ -785,9 +783,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
 	}
 	paths := l.route(reqs)
+	weighed(read, paths, reqs)
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), read: costOf(paths, reqs)}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
