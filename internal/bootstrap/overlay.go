@@ -125,9 +125,9 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		from, to string
 		kind     model.RelationKind
 	}
-	extracted := map[edge]bool{}
+	extracted := map[edge]model.Via{}
 	for _, r := range out.Relations {
-		extracted[edge{r.From, r.To, r.Kind}] = true
+		extracted[edge{r.From, r.To, r.Kind}] = r.Via
 	}
 	for _, r := range doc.Relations {
 		fi, okf := resolve(r.From)
@@ -146,13 +146,23 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)
 		}
 		e := edge{out.Units[fi].Key, out.Units[ti].Key, r.Kind}
-		if extracted[e] {
-			continue
+		via, read := extracted[e]
+		if !read {
+			if len(r.Evidence) == 0 {
+				return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
+			}
+			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
 		}
-		if len(r.Evidence) == 0 {
-			return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
+		// A phrase only names what crosses the edge, so on an edge the script
+		// reads it is all the supplement adds.
+		for _, p := range doc.Phrases {
+			if p.From == r.From && p.To == r.To && p.Kind == r.Kind {
+				if err := model.ValidatePhrase(p.Text, via); err != nil {
+					return base, f, fmt.Errorf("supplement relation %s -%s-> %s, on the edge the script reads: %w", r.From, r.Kind, r.To, err)
+				}
+				out.Phrases = append(out.Phrases, extract.Phrase{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Text: p.Text, Evidence: p.Evidence})
+			}
 		}
-		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
 	}
 	sort.Strings(f.Conflicts)
 	return out, f, nil

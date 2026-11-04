@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"math"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -336,14 +337,25 @@ func (r rendered) lineOf(w lettered, i int) bool {
 // Every label stands upright on the canvas beside a straight stretch of
 // its own line, and keeps 2px off every box, chip, count, dot, origin mark,
 // arrowhead, other label and other line (rule 25).
+//
+// With ABBD_LABEL_ROOT set to a project root, it reads that project's
+// .abbd too, such as this repository's own, whose couplings carry phrases.
 func TestLabelsReadAlongTheirLine(t *testing.T) {
-	type tally struct{ rels, worded, shown, views, labelled, total, beside int }
+	type tally struct{ rels, worded, shown, phrased, named, views, labelled, total, beside int }
+	roots := map[string]string{}
+	names := slices.Clone(fixtures)
 	for _, name := range fixtures {
-		m := fixture(t, name)
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		roots[name] = filepath.Join("testdata", name)
+	}
+	if root := os.Getenv("ABBD_LABEL_ROOT"); root != "" {
+		roots["root"], names = root, append(names, "root")
+	}
+	for _, name := range names {
+		units, err := store.Open(roots[name]).LoadUnits()
 		if err != nil {
 			t.Fatal(err)
 		}
+		m := Build(Input{Units: units})
 		tr := newTree(units)
 		var n tally
 		for _, v := range views(m) {
@@ -351,21 +363,29 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 			r := render(t, d)
 			hs, vs := r.pieces()
 			n.views++
-			drawn, word, said := map[string]bool{}, map[string]bool{}, map[string]bool{}
+			drawn, worded, shown, phrased, named := map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
 			for _, w := range d.Wires {
 				for _, rel := range w.Rels {
 					drawn[rel] = true
-					if via(tr, w.Rels) != "" {
-						word[rel] = true
+					if word(tr, w.Rels) != "" {
+						worded[rel] = true
 					}
 					if w.Label != nil {
-						said[rel] = true
+						shown[rel] = true
+					}
+					if tr.phrases[rel].text != "" {
+						phrased[rel] = true
+						if w.Label != nil && strings.TrimSuffix(w.Label.S, most) == tr.phrases[rel].text {
+							named[rel] = true
+						}
 					}
 				}
 			}
 			n.rels += len(drawn)
-			n.worded += len(word)
-			n.shown += len(said)
+			n.worded += len(worded)
+			n.shown += len(shown)
+			n.phrased += len(phrased)
+			n.named += len(named)
 			if len(r.words) > 0 {
 				n.labelled++
 			}
@@ -445,6 +465,13 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 				}
 			}
 		}
-		t.Logf("%s: summed over views, %d drawn relations, %d on a line with one word, %d on a labelled line; %d labels, %d beside a vertical stretch; %d of %d views carry a label", name, n.rels, n.worded, n.shown, n.total, n.beside, n.labelled, n.views)
+		t.Logf("%s: summed over views, %d drawn relations, %d on a line with one word, %d on a labelled line; %d with a phrase, %d on a line its phrase labels; %d labels, %d beside a vertical stretch; %d of %d views carry a label", name, n.rels, n.worded, n.shown, n.phrased, n.named, n.total, n.beside, n.labelled, n.views)
+		labels := 0
+		for _, w := range m.Overview.Wires {
+			if w.Label != nil {
+				labels++
+			}
+		}
+		t.Logf("%s overview: %d labels on %d paths", name, labels, len(m.Overview.Wires))
 	}
 }

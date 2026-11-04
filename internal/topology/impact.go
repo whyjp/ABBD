@@ -16,8 +16,11 @@ import (
 // a reader's coupling, the code it rests on.
 type Link struct {
 	model.Edge
-	Origin   model.Origin
-	Via      model.Via
+	Origin model.Origin
+	Via    model.Via
+	// Phrase is the note that names what crosses the link, with its own
+	// writer and evidence, while it is live or drifted.
+	Phrase   *model.PhraseNote
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the link narrows to.
 	Entries []string
@@ -26,17 +29,37 @@ type Link struct {
 	Drifted bool
 }
 
-// Label says where the link comes from and how it arises: " (inferred, via data)".
+// Label says where the link comes from and how it arises, then what crosses
+// it and whose words those are: " (extracted; phrase "Cypher", inferred)".
 func (l Link) Label() string {
-	s := map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}[l.Origin]
+	s := origins[l.Origin]
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
 	}
 	if l.Drifted {
 		s += ", drifted"
 	}
+	if p := l.PhraseLabel(); p != "" {
+		s += "; " + p
+	}
 	return " (" + s + ")"
 }
+
+// PhraseLabel says what crosses the link, by its note's own origin and
+// status, or "" when no note names it.
+func (l Link) PhraseLabel() string {
+	n := l.Phrase
+	if n == nil {
+		return ""
+	}
+	s := fmt.Sprintf("phrase %q, %s", n.Text, origins[n.Writer.Origin()])
+	if n.Status() == model.Drifted {
+		s += ", drifted"
+	}
+	return s
+}
+
+var origins = map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}
 
 // Links lists every live relation between present units: what the script
 // read, what a human stated, and a reader's couplings while their evidence lives.
@@ -49,7 +72,11 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()})
+				l := Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()}
+				if n, ok := u.Note(r.Kind, r.To); ok {
+					l.Phrase = &n
+				}
+				out = append(out, l)
 			}
 		}
 	}

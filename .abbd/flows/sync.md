@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "451"
+          lines: "482"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "302"
+          lines: "363"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "306"
+          lines: "367"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "309"
+          lines: "370"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "434"
+          lines: "495"
           symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
@@ -45,10 +45,10 @@ steps:
         - DATA-0002
       evidence:
         - path: internal/extract/extract.go
-          lines: "97"
+          lines: "110"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "313"
+          lines: "374"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -65,13 +65,13 @@ steps:
           lines: "85"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "262"
+          lines: "293"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "277"
+          lines: "308"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "375"
+          lines: "436"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "387"
+          lines: "448"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "294"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "396"
+          lines: "457"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "406"
+          lines: "467"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "400"
+          lines: "461"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -145,7 +145,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "410"
+          lines: "471"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -158,7 +158,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "411"
+          lines: "472"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -170,10 +170,10 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "242"
+          lines: "273"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "267"
+          lines: "298"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
@@ -188,17 +188,40 @@ steps:
           lines: "524"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "352"
+          lines: "383"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
         internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
-      does: publish() → every page and graph.json, after every command that writes
+      does: publish() → every page and graph.json, after a command writes, or saves part of what it then refuses
       note: then records in state.yaml the inputs hash it rendered from and the hash of the files it wrote
       calls:
         - DATA-0005
+      evidence:
+        - path: cmd/abbd/main.go
+          lines: "334"
+          quote: if err := e.publish(); err != nil {
+        - path: cmd/abbd/screen.go
+          lines: "27"
+          quote: files, err := screen.Files(screen.Build(in))
+        - path: cmd/abbd/screen.go
+          lines: "31"
+          quote: if err := e.st.SaveBlueprint(files); err != nil {
+        - path: cmd/abbd/screen.go
+          lines: "34"
+          quote: in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
+      writer: reader
+      code:
+        cmd/abbd/main.go#quote-e69b8656: f18ecffa6b9f3e6e
+        cmd/abbd/screen.go#quote-18c7c622: 8d8ed08440cabc5e
+        cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
+        cmd/abbd/screen.go#quote-f313962c: 4a93f263f38fbe1b
+retired:
+    - unit: MOD-0007
+      does: publish() → every page and graph.json, after every command that writes
+      note: then records in state.yaml the inputs hash it rendered from and the hash of the files it wrote
       evidence:
         - path: cmd/abbd/main.go
           lines: "276"
@@ -212,7 +235,6 @@ steps:
         - path: cmd/abbd/screen.go
           lines: "34"
           quote: in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)
-      writer: reader
       code:
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
         cmd/abbd/screen.go#quote-18c7c622: 8d8ed08440cabc5e

@@ -81,6 +81,10 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		u.Parents = clonedParents(u.Parents)
 		u.Evidence = slices.Clone(u.Evidence)
 		u.Relations, u.Hidden = clonedRelations(u.Relations), clonedRelations(u.Hidden)
+		u.Phrases = slices.Clone(u.Phrases)
+		for j := range u.Phrases {
+			u.Phrases[j].Evidence = slices.Clone(u.Phrases[j].Evidence)
+		}
 		u.EachEvidence(func(_ model.Writer, e *model.Evidence) {
 			if to, ok := renames[e.Path]; ok {
 				e.Path = to
@@ -220,6 +224,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 	res.Keys = keyed(input, ids)
 	setParents(res.Units, input, ids, ws)
 	setRelations(res.Units, input, ids, extraction.Relations, ws)
+	setPhrases(res.Units, input, ids, extraction.Phrases, ws)
 	model.Resolve(res.Units)
 	res.Candidates = keepLive(append(prior, fresh...), res.Units)
 	res.HighWater = hw
@@ -325,6 +330,39 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 				r.Evidence = carry(r.Evidence, was, all)
 			}
 			u.PutRelation(r)
+		}
+	}
+}
+
+// setPhrases replaces the phrase notes the extraction's writers hold on the
+// units it reports with the ones it gives, as setRelations does for claims.
+func setPhrases(units []model.Unit, input []extract.Unit, ids []model.ID, phrases []extract.Phrase, ws Writers) {
+	byKey := keyed(input, ids)
+	reported := map[model.ID]bool{}
+	for _, id := range ids {
+		reported[id] = true
+	}
+	made := map[model.ID][]model.PhraseNote{}
+	for _, p := range phrases {
+		f := byKey[p.From]
+		made[f] = append(made[f], model.PhraseNote{To: byKey[p.To], Kind: p.Kind, Writer: p.Writer, Text: p.Text, Evidence: p.Evidence})
+	}
+	for i := range units {
+		u := &units[i]
+		if !reported[u.ID] {
+			continue
+		}
+		old, all := slices.Clone(u.Phrases), items(*u)
+		u.DropNotes(func(n model.PhraseNote) bool { return ws.own(n.Writer) })
+		for _, n := range made[u.ID] {
+			var was []model.Evidence
+			for _, o := range old {
+				if o.To == n.To && o.Kind == n.Kind && o.Writer == n.Writer {
+					was = o.Evidence
+				}
+			}
+			n.Evidence = carry(n.Evidence, was, all)
+			u.PutNote(n)
 		}
 	}
 }

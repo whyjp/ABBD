@@ -58,8 +58,14 @@ func (e env) checkEvidence() error {
 			}
 		}
 		for _, r := range u.Relations {
+			edge := model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()
 			for _, ev := range r.Evidence {
-				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Writer, r.Via, ev)
+				line(edge, r.Writer, r.Via, ev)
+			}
+			if n, ok := u.Note(r.Kind, r.To); ok && !r.Dead {
+				for _, ev := range n.Evidence {
+					line(fmt.Sprintf("%s.phrase %q", edge, n.Text), n.Writer, "", ev)
+				}
 			}
 		}
 	}
@@ -184,6 +190,15 @@ func (e env) status() error {
 		for _, m := range u.Masks {
 			fmt.Fprintf(e.stdout, "retracted: %s %s by a %s: %s\n", u.ID, m.Target, m.Writer, m.Reason)
 		}
+	}
+	if ds := model.Dangling(in.Units); len(ds) > 0 {
+		for _, d := range ds {
+			// Only a human retracts a human's note, and a human's retraction
+			// cites where the human said it.
+			by := map[bool]string{true: " --source REF"}[d.Writer == model.Human]
+			fmt.Fprintf(e.stdout, "dangling: %s.phrase names no line now, since nothing shows on the edge; abbd retract %s.phrase --reason TEXT%s drops it\n", d.Edge, d.Edge, by)
+		}
+		behind = append(behind, fmt.Sprintf("%d phrase(s) dangling, retract each", len(ds)))
 	}
 	for _, c := range model.ParentConflicts(in.Units) {
 		fmt.Fprintln(e.stdout, "conflict:", c)
