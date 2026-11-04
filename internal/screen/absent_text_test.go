@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-// A page without its text reads as its drawing and its unit names. It says
-// once that the module has no text, and no unit repeats that it has none.
+// A page without its text says once that the module has no text, and no
+// unit repeats that it has none.
 func TestAPageWithoutTextSaysSoOnce(t *testing.T) {
 	m := Build(Input{Units: append(ripgrep(), inside("DATA-0001", "MOD-0004"))})
 	for name, page := range pages(t, m) {

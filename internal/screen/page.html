@@ -74,7 +74,7 @@
       {{with .Understanding}}
       <div>{{template "howhead" .}}</div>
       {{template "howtext" .}}
-      {{else}}<p class="muted">이 모듈의 설명은 아직 없습니다. 지금은 그림과 안의 단위 목록이 아는 전부입니다. 채우는 법: <code>abbd understand {{.ID}} FILE</code></p>{{end}}
+      {{else}}<p class="muted">이 모듈의 설명은 아직 없습니다. <code>abbd understand {{.ID}} FILE</code>로 채웁니다.</p>{{end}}
       {{template "notes" .Notes}}
       {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
       {{if .Units}}<h3>안의 단위</h3>
