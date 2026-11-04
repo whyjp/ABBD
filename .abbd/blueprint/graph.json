@@ -2530,7 +2530,7 @@
       "Via": "convention",
       "Phrase": "sync then diff",
       "PhraseOrigin": "INFERRED",
-      "Quote": "cmd/abbd/install.go \"After changing code, run\""
+      "Quote": "cmd/abbd/install.go \"After changing code, run \""
     },
     {
       "From": "FEAT-0001",
@@ -2562,7 +2562,7 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "QUERIES --features",
+      "Phrase": "blast radius",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd impact\""
     },
@@ -2578,7 +2578,7 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "\u003cQUERY\u003e or \u003cID\u003e",
+      "Phrase": "unit's couplings",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd explain\""
     },
@@ -2587,7 +2587,7 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "\u003cA\u003e \u003cB\u003e",
+      "Phrase": "route between units",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd path\""
     },
@@ -2596,7 +2596,7 @@
       "To": "IF-0009",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "ID.FIELD --value",
+      "Phrase": "stated purpose",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record fact\""
     },
@@ -2605,7 +2605,7 @@
       "To": "IF-0010",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "--via --phrase",
+      "Phrase": "found coupling",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record relation\""
     },
@@ -2614,7 +2614,7 @@
       "To": "IF-0011",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "KIND NAME --parent",
+      "Phrase": "unseen unit",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record unit\""
     },
@@ -2623,7 +2623,7 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "MOD-ID FILE",
+      "Phrase": "module text",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd understand\""
     },
@@ -2647,7 +2647,7 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "TARGET --evidence",
+      "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record evidence\""
     },
@@ -2656,7 +2656,7 @@
       "To": "IF-0021",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "TARGET --reason",
+      "Phrase": "wrong claim",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd retract\""
     },
@@ -2665,7 +2665,7 @@
       "To": "IF-0022",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "KEY FILE",
+      "Phrase": "flow steps",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd flow\""
     },
@@ -2674,7 +2674,7 @@
       "To": "IF-0023",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "ID.SLOT",
+      "Phrase": "stale note",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd forget\""
     },
@@ -2683,7 +2683,7 @@
       "To": "IF-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "KEY FILE",
+      "Phrase": "stack layers",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd stack\""
     },
@@ -2692,7 +2692,7 @@
       "To": "IF-0025",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "KEY FILE",
+      "Phrase": "file grid",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd table\""
     },
@@ -2715,7 +2715,7 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "\u003cQUERIES\u003e",
+      "Phrase": "blast radius",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd impact\""
     },
@@ -2738,7 +2738,7 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "\u003cQUERY\u003e",
+      "Phrase": "unit account",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd explain\""
     },
@@ -2747,7 +2747,7 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "\u003cA\u003e \u003cB\u003e",
+      "Phrase": "route between units",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd path\""
     },
@@ -2756,7 +2756,7 @@
       "To": "IF-0012",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "--supplement FILE",
+      "Phrase": "reader supplement",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup\""
     },
@@ -2765,7 +2765,7 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "MOD-ID FILE",
+      "Phrase": "module text",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
     },
@@ -2780,7 +2780,7 @@
       "To": "IF-0018",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "ID PARENT --evidence",
+      "Phrase": "unit's parent",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record parent\""
     },
@@ -2796,7 +2796,7 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "TARGET --evidence",
+      "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
     },
@@ -2826,7 +2826,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "impact QUERIES",
+      "Phrase": "units a change hits",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd impact \u003cQUERIES\u003e`: what a change to those comma-separated units reaches.\""
     },
@@ -2836,7 +2836,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "explain QUERY",
+      "Phrase": "unit account",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd explain \u003cQUERY\u003e`: one unit at a glance\""
     },
@@ -2846,7 +2846,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "path A B",
+      "Phrase": "coupling chain",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd path \u003cA\u003e \u003cB\u003e`: how two units connect\""
     },
@@ -2864,7 +2864,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "how's account",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
     },
@@ -2874,7 +2874,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "blast radius",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
     },
@@ -2892,7 +2892,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "--via --phrase",
+      "Phrase": "coupling and phrase",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --phrase \\\"\u003cPHRASE\u003e\\\" --evidence \u003cPATH:LINES:QUOTE\u003e`\""
     },
@@ -2902,7 +2902,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "--parent --evidence",
+      "Phrase": "unit the script misses",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record unit \u003cKIND\u003e \u003cNAME\u003e --parent \u003cMOD-ID\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\""
     },
@@ -2922,7 +2922,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "--value --source",
+      "Phrase": "human's own words",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
     },
@@ -2932,7 +2932,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "--source REF",
+      "Phrase": "stated coupling",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
     },
@@ -3010,7 +3010,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "explorer prompt",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
     },
@@ -3020,7 +3020,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "reader slices",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
     },
@@ -3046,7 +3046,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "extractor script",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
     },
@@ -3080,7 +3080,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "setup --supplement",
+      "Phrase": "setup refusals",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup --supplement .abbd/extractor/supplement.json -- \u003cinterpreter\u003e .abbd/extractor/extract.\u003cext\u003e\""
     },
@@ -3090,7 +3090,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "skill steps",
+      "Phrase": "Overview, Key Concepts",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
     },
@@ -3156,7 +3156,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Phrase": "--evidence placing",
+      "Phrase": "parent placement",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
     },
@@ -3492,7 +3492,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "ID reconcile",
+      "Phrase": "claims setup owns",
       "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\""
     },
@@ -4281,7 +4281,7 @@
       "To": "MOD-0042",
       "Kind": "depends_on",
       "Origin": "INFERRED",
-      "Via": "call",
+      "Via": "convention",
       "Phrase": "inputs hash",
       "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
@@ -4854,7 +4854,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/install.go \"After changing code, run\""
+            "cmd/abbd/install.go \"After changing code, run \""
           ]
         },
         {
@@ -6169,7 +6169,7 @@
                 "Code": true
               },
               {
-                "Text": " refuses a reader's claim on an edge a human stated, and one on an edge the script already claims, unless it carries a ",
+                "Text": " refuses a reader's claim on an edge a human stated, and one on an edge the script already claims. With ",
                 "Code": false
               },
               {
@@ -6177,7 +6177,15 @@
                 "Code": true
               },
               {
-                "Text": ". Then it stores only the writer's phrase note, which labels the line and is never a claim. It refuses a reader's claim or note that a human's mask hides, so a phrase never brings back a retracted coupling. It checks the phrase against the via of every claim on the edge, so a phrase on the script's edge cannot restate the script's via. ",
+                "Text": " on an edge that already shows, whoever's claim shows there, it stores only the writer's phrase note, which labels the line and is never a claim, and leaves every claim's evidence, via and origin as they were. On an edge that does not show yet it records the claim and the note. It refuses a reader's note that a human's mask hides, and a reader's claim on an edge a human's mask stands on, whatever its via, through ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.RelationMasked",
+                "Code": true
+              },
+              {
+                "Text": ", so neither a phrase nor a new via brings back a retracted coupling. It checks the phrase against the via of every claim on the edge, so a phrase on the script's edge cannot restate the script's via. ",
                 "Code": false
               },
               {
@@ -6325,7 +6333,39 @@
                 "Code": true
               },
               {
-                "Text": " removes the writer's own claim on the target and masks each lower INFERRED claim on it, bound to that claim's content. A run that can change nothing, including one on a target with no claim left, says the target is already retracted and succeeds. It fails only when the claim left is one it may not hide, such as the script's.",
+                "Text": " removes the writer's own claim on the target and masks each lower INFERRED claim on it, bound to that claim's content. On an edge that still shows after it, because the script's or a higher writer's claim holds it, it saves what it took, returns a ",
+                "Code": false
+              },
+              {
+                "Text": "partial",
+                "Code": true
+              },
+              {
+                "Text": " error that says so, as in ",
+                "Code": false
+              },
+              {
+                "Text": "retracted the phrase on X. The edge is the script's and stays",
+                "Code": true
+              },
+              {
+                "Text": ", and exits 1, and ",
+                "Code": false
+              },
+              {
+                "Text": "run",
+                "Code": true
+              },
+              {
+                "Text": " still renders the blueprint for a ",
+                "Code": false
+              },
+              {
+                "Text": "partial",
+                "Code": true
+              },
+              {
+                "Text": ". A run that can change nothing, including one on a target with no claim left, says the target is already retracted and succeeds. It fails only when the claim left is one it may not hide, such as the script's.",
                 "Code": false
               }
             ]
@@ -6575,7 +6615,15 @@
                 "Code": true
               },
               {
-                "Text": " on the merged tree. It prints the unit, relation and module-text counts, the drifted and dead items, every mask and every parent conflict. With ",
+                "Text": " on the merged tree. It prints the unit, relation and module-text counts, the drifted and dead items, every mask and every parent conflict. Each dangling phrase gets the retract command its writer needs, with ",
+                "Code": false
+              },
+              {
+                "Text": "--source REF",
+                "Code": true
+              },
+              {
+                "Text": " for a human's note. With ",
                 "Code": false
               },
               {
@@ -9388,7 +9436,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/install.go \"After changing code, run\""
+            "cmd/abbd/install.go \"After changing code, run \""
           ]
         },
         {
@@ -9479,7 +9527,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -9488,7 +9537,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\""
+            "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\"",
+            "cmd/abbd/main.go \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -9506,7 +9556,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\""
+            "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\"",
+            "cmd/abbd/evidence.go \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
           ]
         },
         {
@@ -9533,7 +9584,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/query.go \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -9698,7 +9750,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\""
+            "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\"",
+            "cmd/abbd/impact.go \"im := topology.ImpactOf(units, seeds)\""
           ]
         },
         {
@@ -10354,7 +10407,15 @@
                 "Code": true
               },
               {
-                "Text": ", as a note and never a claim.",
+                "Text": ", as a note and never a claim. On an edge the script reads, ",
+                "Code": false
+              },
+              {
+                "Text": "model.ValidatePhrase",
+                "Code": true
+              },
+              {
+                "Text": " checks the phrase against the script's via too, so it cannot restate it.",
                 "Code": false
               }
             ]
@@ -10477,7 +10538,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go \"n := overlap(u.Anchors, d.Anchors)\""
+            "internal/bootstrap/overlay.go \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/extract/extract.go \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         }
       ],
@@ -12216,7 +12278,7 @@
                 "Code": true
               },
               {
-                "Text": ", apart from the relation. Every parsed relation's writer is ",
+                "Text": ", apart from the relation. One edge takes one phrase, so two lines of one edge with different phrases are refused. Every parsed relation's writer is ",
                 "Code": false
               },
               {
@@ -12802,7 +12864,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/bootstrap/overlay.go \"n := overlap(u.Anchors, d.Anchors)\""
+            "internal/bootstrap/overlay.go \"n := overlap(u.Anchors, d.Anchors)\"",
+            "internal/extract/extract.go \"// Evidence locates a unit the script cannot see, so it anchors the unit's ID.\""
           ]
         },
         {
@@ -13921,7 +13984,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -13976,7 +14040,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go \"if to, ok := renames[a.Path]; ok {\""
+            "internal/identity/identity.go \"if to, ok := renames[a.Path]; ok {\"",
+            "cmd/abbd/main.go \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -13994,7 +14059,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ],
@@ -14998,7 +15064,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\""
+            "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\"",
+            "cmd/abbd/main.go \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -15072,7 +15139,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/identity/identity.go \"if to, ok := renames[a.Path]; ok {\""
+            "internal/identity/identity.go \"if to, ok := renames[a.Path]; ok {\"",
+            "cmd/abbd/main.go \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -15081,7 +15149,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+            "internal/store/store.go \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/identity/identity.go \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         }
       ],
@@ -16734,7 +16803,31 @@
                 "Code": true
               },
               {
-                "Text": " lists the notes whose edge no longer shows. ",
+                "Text": " lists, as a ",
+                "Code": false
+              },
+              {
+                "Text": "DanglingNote",
+                "Code": true
+              },
+              {
+                "Text": " with its edge and writer, the notes whose edge no longer shows by ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Shown",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Validate",
+                "Code": true
+              },
+              {
+                "Text": " checks each note against the via of every claim on its edge. ",
                 "Code": false
               },
               {
@@ -17474,7 +17567,15 @@
                 "Code": true
               },
               {
-                "Text": " adds a mask only once. A claim whose content changes no longer matches and shows again.",
+                "Text": " adds a mask only once. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationMasked",
+                "Code": true
+              },
+              {
+                "Text": " tests a relation claim, where a human's mask on the edge holds whatever the via, so a lower writer cannot bring the edge back with another via, while a reader's stays bound to the content. A claim whose content changes no longer matches and shows again.",
                 "Code": false
               }
             ]
@@ -18549,7 +18650,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+            "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -19619,7 +19721,31 @@
                 "Code": true
               },
               {
-                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. The draw closure leaves each drawing's cost in the ",
+                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. Fewer touches beat outright. Each ordering is drawn twice: wide, where ",
+                "Code": false
+              },
+              {
+                "Text": "place",
+                "Code": true
+              },
+              {
+                "Text": " lets every block spread over the whole budget toward what it joins and then trims the drawing to what the blocks cover, and ",
+                "Code": false
+              },
+              {
+                "Text": "narrow",
+                "Code": true
+              },
+              {
+                "Text": ", packed as tight as the order lets it, at ",
+                "Code": false
+              },
+              {
+                "Text": "narrowBudget",
+                "Code": true
+              },
+              {
+                "Text": " for a unit's view. The draw closure leaves each drawing's cost in the ",
                 "Code": false
               },
               {
@@ -20109,7 +20235,7 @@
                 "Code": true
               },
               {
-                "Text": ". A bus whose lines all say one word is labelled once. ",
+                "Text": ". A phrase is set in italic, so it reads apart from a via word. A label keeps more than twice its offset from any other line parallel to its stretch, so it never stands between two lines. A bus whose lines all say one word is labelled once. ",
                 "Code": false
               },
               {
@@ -20155,7 +20281,7 @@
                 "Code": true
               },
               {
-                "Text": ", within a 920 pixel budget against the overview's 1320. Its frame carries the module's contracts and dashed ",
+                "Text": ", within the overview's 1320 pixel budget, or 920 for a narrow tactic. Its frame carries the module's contracts and dashed ",
                 "Code": false
               },
               {
@@ -20219,7 +20345,7 @@
                 "Code": true
               },
               {
-                "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text beside its own inside. One that holds none has no view, and ",
+                "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text below its own inside. One that holds none has no view, and ",
                 "Code": false
               },
               {
@@ -20863,7 +20989,7 @@
                 "Code": true
               },
               {
-                "Text": " into every page, so each page opens on its own. A module's page shows its inside as ",
+                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its legend and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
                 "Code": false
               },
               {
@@ -21606,7 +21732,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\""
+            "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\"",
+            "cmd/abbd/evidence.go \"fmt.Fprintln(e.stdout, \\\"blueprint:\\\", in.BlueprintFreshness())\""
           ]
         },
         {
@@ -21686,9 +21813,10 @@
           "From": "internal/screen",
           "To": "store staleness hashes",
           "Kind": "depends_on",
-          "Via": "call",
+          "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
+            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
+            "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
           ]
         },
         {
@@ -21697,7 +21825,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/screen.go \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+            "internal/screen/screen.go \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
+            "internal/screen/screen.go \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -21725,7 +21854,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+            "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -21795,7 +21925,8 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\""
+            "internal/screen/screen.go \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\"",
+            "cmd/abbd/main.go \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -21804,7 +21935,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -21813,7 +21945,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
+            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
+            "internal/store/store.go \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -22277,7 +22410,31 @@
                 "Code": true
               },
               {
-                "Text": ". It refuses a file that spells both with different refs, as the extraction refuses a unit with a different ",
+                "Text": ". It refuses a relation that still carries the old ",
+                "Code": false
+              },
+              {
+                "Text": "phrase:",
+                "Code": true
+              },
+              {
+                "Text": " field, through ",
+                "Code": false
+              },
+              {
+                "Text": "oldPhrase",
+                "Code": true
+              },
+              {
+                "Text": ", and says to move it to ",
+                "Code": false
+              },
+              {
+                "Text": "phrases:",
+                "Code": true
+              },
+              {
+                "Text": ", so the phrase is not dropped without a word. It refuses a file that spells both with different refs, as the extraction refuses a unit with a different ",
                 "Code": false
               },
               {
@@ -24920,7 +25077,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\""
+            "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/query.go \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
           ]
         },
         {
@@ -24956,9 +25114,10 @@
           "From": "internal/screen",
           "To": "store staleness hashes",
           "Kind": "depends_on",
-          "Via": "call",
+          "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
+            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
+            "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
           ]
         },
         {
@@ -24967,7 +25126,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/screen.go \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
+            "internal/screen/screen.go \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
+            "internal/screen/screen.go \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -24976,7 +25136,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
+            "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
+            "internal/store/store.go \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
           ]
         },
         {
@@ -25031,7 +25192,8 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/store/store.go \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
+            "internal/store/store.go \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\"",
+            "internal/identity/identity.go \"ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,\""
           ]
         },
         {
@@ -26434,7 +26596,8 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\""
+            "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\"",
+            "cmd/abbd/impact.go \"im := topology.ImpactOf(units, seeds)\""
           ]
         },
         {
@@ -27667,7 +27830,7 @@
             {
               "N": 13,
               "ID": "flow-sync.13",
-              "Does": "publish() → every page and graph.json, after every command that writes",
+              "Does": "publish() → every page and graph.json, after a command writes, or saves part of what it then refuses",
               "Note": "then records in state.yaml the inputs hash it rendered from and the hash of the files it wrote",
               "Fails": "",
               "Badge": "",
@@ -27718,7 +27881,7 @@
           "N": 1,
           "ID": "stack-cli.1",
           "Name": "commands",
-          "Role": "runs the verb of one command line from the table, and renders after a write",
+          "Role": "runs one command line's verb, and renders after a write or a partial refusal",
           "Badge": "",
           "Source": "",
           "Units": [
@@ -28040,7 +28203,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "writes the unit a record names, with its claim, phrase note, fact or parent",
+              "Says": "writes a record's claim, fact or parent, or just a phrase note on a shown edge",
               "Verb": "사용"
             },
             {

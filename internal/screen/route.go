@@ -750,6 +750,7 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			p := &plans[lead]
 			k := len(p.gaps)
 			g := p.gaps[k-1]
+			mixed := slices.ContainsFunc(buses[st.arr].members, func(m int) bool { return m < len(reqs) && place(reqs[m].from) != place(reqs[lead].from) })
 			free := func(x int) bool {
 				for _, r := range []int{g - 1, g} {
 					for _, y := range l.passes[r] {
@@ -760,12 +761,21 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				}
 				// A step down beside another box's stub would run into it.
 				for _, y := range l.stubs[g] {
-					if shared && abs(x-y) < lane && y != p.xs[k-1] {
+					if abs(x-y) < lane && y != p.xs[k-1] {
 						return false
 					}
 				}
 				for o, y := range at {
 					if o != st && abs(x-y) < lane {
+						return false
+					}
+				}
+				// A line of the same trunk that drops to its end in this gap
+				// on no arrival bus would run on the step, and a reader
+				// coming along the arrival track from another place could
+				// turn down it.
+				for _, q := range plans {
+					if n := len(q.gaps); mixed && q.dep == st.dep && q.arr < 0 && q.ride == n-1 && q.gaps[n-1] == g && abs(x-q.tx) < lane {
 						return false
 					}
 				}
@@ -813,6 +823,16 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				first, set = g, true
 			}
 		}
+		// A line that drops from its box straight onto the trunk's top holds
+		// that top: a departure track meeting it there would let a reader
+		// follow that line onto the track and to the track's other places.
+		held := false
+		for _, m := range b.members {
+			if q := &plans[m]; (q.dep < 0 || q.onto) && len(q.xs) > 1 && q.fx == q.xs[1] {
+				g, ok := joinAt(m)
+				held = held || ok && g == first
+			}
+		}
 		top := -1
 		for _, m := range b.members {
 			q := &plans[m]
@@ -820,7 +840,7 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			if !ok || q.dep < 0 || q.onto {
 				continue
 			}
-			if g == first && (top < 0 || top == q.dep) {
+			if g == first && !held && (top < 0 || top == q.dep) {
 				top = q.dep
 				continue
 			}
@@ -834,7 +854,7 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 					}
 				}
 				for _, y := range l.stubs[g] {
-					if shared && abs(x-y) < lane && y != d {
+					if abs(x-y) < lane && y != d {
 						return false
 					}
 				}

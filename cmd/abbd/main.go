@@ -322,13 +322,12 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
 	c := commands[inv.name]
-	if err := c.run(e, inv.pos); err != nil {
-		fmt.Fprintln(stderr, "abbd:", err)
-		if errors.As(err, new(partial)) {
-			if err := e.publish(); err != nil {
-				fmt.Fprintln(stderr, "abbd: rendering the blueprint:", err)
-			}
-		}
+	ran := c.run(e, inv.pos)
+	if ran != nil {
+		fmt.Fprintln(stderr, "abbd:", ran)
+	}
+	// A partial refusal saved part of the state, so it is rendered too.
+	if ran != nil && !errors.As(ran, new(partial)) {
 		return exitError
 	}
 	if c.writes {
@@ -336,6 +335,9 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "abbd: rendering the blueprint:", err)
 			return exitError
 		}
+	}
+	if ran != nil {
+		return exitError
 	}
 	return exitOK
 }

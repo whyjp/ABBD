@@ -20,7 +20,7 @@ const (
 	// 1: boxes per view.
 	viewBudget = 16
 	// 3: width budgets.
-	overviewWidth, insideWidth = 1320, 920
+	overviewWidth, insideWidth = 1320, 1320
 	// 5: lines side by side within channelGap share a channel.
 	maxPerChannel = 4
 	channelGap    = 12.0
