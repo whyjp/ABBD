@@ -26,6 +26,63 @@ func (w weight) beats(o weight) bool {
 	return w.touches <= o.touches && w.crossings <= o.crossings && w.braid <= o.braid && w.turns < o.turns
 }
 
+// cost is what a whole drawn view costs a reader: weigh's measures over its
+// ink, with turns counted along each stroke, and climb, the length of the
+// dashed ink of the lines that climb (rule 13).
+type cost struct {
+	weight
+	climb int
+}
+
+// beats says c is no worse than o anywhere, climbing ink included, and
+// crosses or turns less.
+func (c cost) beats(o cost) bool {
+	return c.touches <= o.touches && c.crossings <= o.crossings && c.braid <= o.braid && c.turns <= o.turns && c.climb <= o.climb &&
+		(c.crossings < o.crossings || c.turns < o.turns)
+}
+
+func costOf(ds []drawn, reqs []wireReq) cost {
+	c := cost{weight: weigh(routing{drawn: ds}, reqs)}
+	for _, d := range ds {
+		for _, p := range d.parts {
+			pts := straight(p)
+			c.turns += max(0, len(pts)-2)
+			for i := 1; i < len(pts); i++ {
+				if i >= 2 && i < len(pts)-1 && span(pts[i-1], pts[i]) < jogUnder {
+					c.turns++
+				}
+				if d.back {
+					c.climb += span(pts[i-1], pts[i])
+				}
+			}
+		}
+	}
+	return c
+}
+
+// weighed keeps what routed ink costs a reader in read. A focus view has no
+// read, so it is never weighed.
+func weighed(read *cost, ds []drawn, reqs []wireReq) {
+	if read != nil {
+		*read = costOf(ds, reqs)
+	}
+}
+
+// choose draws a view with every tactic and keeps the first, the one the
+// plain tactic orders, unless a later one beats the best so far. draw
+// leaves what each drawing costs in its read.
+func choose[T any](draw func(t tactic, read *cost) T) T {
+	var best T
+	var bc cost
+	for i, t := range tactics {
+		var c cost
+		if v := draw(t, &c); i == 0 || c.beats(bc) {
+			best, bc = v, c
+		}
+	}
+	return best
+}
+
 type strand struct {
 	pts   []pt
 	group int

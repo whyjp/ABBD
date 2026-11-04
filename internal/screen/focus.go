@@ -147,13 +147,13 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m, centres(full))
+		f := planOverview(units, m, centres(full), tactic{})
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
 			}
 			return "#" + focusID("", base(id))
-		})
+		}, nil)
 		out = append(out, o.focus("", "#overview", "모듈과 계약", m, d))
 	}
 	return out
@@ -167,7 +167,7 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 	var out []Focus
 	for _, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
-		d := o.inside(scope, units, id, centres(full.Drawing)).Drawing
+		d := o.inside(scope, units, id, centres(full.Drawing), tactic{}, nil).Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
 	}
 	return out

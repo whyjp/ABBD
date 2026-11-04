@@ -24,7 +24,7 @@ func TestGivingUpChainsKeepsEveryBoxOnTheCanvas(t *testing.T) {
 		}
 		edges = append(edges, ledge{"me", id})
 	}
-	l := arrange(nodes, edges, 920, nil)
+	l := arrange(nodes, edges, 920, nil, tactic{})
 	if l.width > 920 {
 		t.Errorf("width %d past the budget 920", l.width)
 	}
@@ -75,7 +75,7 @@ func TestALargeGraphLaysOutQuickly(t *testing.T) {
 	}{{1, 200, 400, 1320}, {2, 200, 400, 4000}, {1, 200, 400, 20000}, {1, 100, 300, 100000}, {1, 400, 800, 8000}} {
 		nodes, edges := randomGraph(c.seed, c.n, c.m)
 		start := time.Now()
-		arrange(nodes, edges, c.budget, nil)
+		arrange(nodes, edges, c.budget, nil, tactic{})
 		if took := time.Since(start); took > time.Second {
 			t.Errorf("%d boxes and %d lines at budget %d took %v to lay out, past 1s", c.n, c.m, c.budget, took)
 		}
@@ -86,7 +86,7 @@ func TestALargeGraphLaysOutQuickly(t *testing.T) {
 func TestShorteningKeepsTheBudget(t *testing.T) {
 	for seed := int64(1); seed <= 8; seed++ {
 		nodes, edges := randomGraph(seed, 60, 120)
-		if l := arrange(nodes, edges, 1320, nil); l.width > 1320 {
+		if l := arrange(nodes, edges, 1320, nil, tactic{}); l.width > 1320 {
 			t.Errorf("seed %d: drawn %dpx wide, past the budget of 1320px", seed, l.width)
 		}
 	}
