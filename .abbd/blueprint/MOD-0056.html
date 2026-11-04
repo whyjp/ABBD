@@ -30,12 +30,12 @@
 * { box-sizing: border-box; }
 html, body { overflow-x: hidden; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { min-width: 0; padding: 10px 16px 16px; }
+main { min-width: 0; padding: 10px 10px 16px; }
 header { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
 h1 { font-size: 18px; margin: 0; }
 h2 { font-size: 16px; margin: 0 0 6px; }
 h3 { font-size: 14px; margin: 12px 0 4px; color: var(--muted); font-weight: 600; }
-section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-width: 0; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 10px; margin: 0 0 12px; min-width: 0; }
 code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
 .muted { color: var(--muted); }
 .pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
@@ -106,8 +106,7 @@ svg marker path { stroke: none; }
 
 .inside { display: none; border-color: var(--accent); }
 .inside:target { display: block; }
-.inside .cols { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
-.inside .text { max-height: 760px; overflow-y: auto; }
+.inside .text { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: 0 28px; align-items: start; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
 .inside .text h4 { margin: 10px 0 2px; font-size: 14px; }
 .inside .text p, .inside .text li { font-size: 14px; margin: 2px 0; }
 .inside .text ul { padding-left: 18px; margin: 2px 0; }
@@ -127,7 +126,6 @@ svg marker path { stroke: none; }
 .entries td p { margin: 0 0 2px; }
 .entries .who { display: block; white-space: nowrap; }
 .units-list li { padding: 4px 0; }
-@media (max-width: 1000px) { .inside .cols { grid-template-columns: minmax(0, 1fr); } .inside .text { max-height: none; } }
 @media (max-width: 560px) {
   body { font-size: 14px; } main { padding: 8px 16px; } section { padding: 10px; }
   td { display: block; border: 0; padding: 2px 0; } tr { display: block; border-bottom: 1px solid var(--line); padding: 4px 0; } td.id { width: auto; }
@@ -198,7 +196,7 @@ table.dg-matrix td.unsaid { color: var(--bypass); }
   table.dg-matrix tbody tr:last-child > * { border-bottom: 1px solid var(--line); }
   table.dg-matrix tbody tr > :last-child { border-bottom: 0; }
 }
-.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
+.shell { display: grid; grid-template-columns: 13rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
 nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
 nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
 nav.site ul.plain li { border-bottom: 0; padding: 1px 0; }
@@ -447,9 +445,7 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 <section class="inside page" id="m-MOD-0056">
   <div class="drawhead"><h2>internal/narrative의 안 <span class="muted key">MOD-0056</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
-  <div class="cols">
-    <div>
-      <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="116" viewBox="0 0 360 116" role="img" aria-label="모듈의 안">
+  <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="116" viewBox="0 0 360 116" role="img" aria-label="모듈의 안">
 <defs></defs>
 <rect class="frame" x="6" y="18" width="348" height="80" rx="8"/>
 
@@ -457,7 +453,7 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 
 
 </svg></div>
-      <div class="legend">
+  <div class="legend">
 <span><svg width="34" height="10"><path d="M0 5 H25" style="stroke:var(--hn);stroke-width:2"/><path d="M25 1 L33 5 L25 9 z" style="fill:var(--bg);stroke:var(--hn);stroke-width:1.4"/></svg>제공(구현)</span>
 <span><svg width="34" height="10"><path d="M0 5 H26" style="stroke:var(--hn);stroke-width:1.5"/><path d="M24 1 L33 5 L24 9 z" style="fill:var(--hn)"/></svg>씀</span>
 <span><svg width="34" height="10"><path d="M0 5 H31" style="stroke:var(--hn);stroke-width:1.5"/><path d="M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hn);stroke-width:1.6"/></svg>의존</span>
@@ -470,24 +466,26 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
 </div>
-      
-      
-      
-      <h3>이 모듈이 놓인 층</h3>
-      <ul class="plain"><li><a href="stack-cli.html">What are the layers of the abbd CLI?</a> <span class="muted">층 5</span></li></ul>
-      
-      
-    </div>
-    <div class="text">
+  
+  <div class="text">
+    <div class="about">
       
       <div><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span></div>
       <h4>Overview</h4><p><code>internal/narrative</code> reads a module&#39;s text the way a human reader meets it on the blueprint: as sections, each describing the code as it is now. It has two checks. <code>Long</code> finds a section whose prose runs past <code>MaxSection</code>, 2000 characters. <code>History</code> finds a phrase that reads as the code&#39;s history rather than its present: a date, an issue or PR number, or a tag such as <code>migrated from</code>. The package only reads text and returns what it found. <code>Lines</code> is how both checks and the blueprint read a text line by line, so they split it at the same headings and treat the same lines as code. The abbd CLI prints the findings when <code>abbd understand</code> stores a text and when <code>abbd status</code> runs, and neither command refuses a text or fails a check on them, because a version number or a name can read as history.</p><h4>Key Concepts</h4><ul><li><code>Lines</code><strong> (</strong><code>narrative.go</code>): each line of a text with its <code>LineKind</code>: <code>Prose</code>, <code>Heading</code>, <code>Fence</code> or <code>Code</code>. A line starting with three or more backticks or tildes is a <code>Fence</code> that opens a code block, and a line of only as many or more of the same closes it. After a run of backticks the rest of the line may hold no backtick, as CommonMark has it, so a line that starts with an inline code span stays <code>Prose</code>. An unclosed block runs to the text&#39;s end. Every line inside is <code>Code</code>, kept with its indentation, so a <code># comment</code> or <code>#include</code> there is no heading. Outside a block, a line that starts with <code>#</code> is a <code>Heading</code>, holding the heading&#39;s words. <code>screen.blocks</code> reads the same <code>Lines</code>.</li></ul><ul><li><strong>Section</strong> (<code>narrative.go</code>): the lines under one heading, up to the next heading of any level. A heading is a <code>Heading</code> line from <code>Lines</code>, the same rule the blueprint uses to draw one, so <code>###</code> subsections split a long section for the counter and the reader alike. Prose before the first heading forms a section with an empty heading. <code>Chars</code> counts the runes of the section&#39;s non-blank lines, code and fences included, without the heading.</li></ul><ul><li><strong>Long</strong> (<code>narrative.go</code>): each section over <code>MaxSection</code>. The threshold is a report line for the agent who writes the text, never a gate.</li></ul><ul><li><strong>History marks</strong> (<code>narrative.go</code>): <code>History</code> runs an ordered table of patterns over each <code>Prose</code> line, so a code block is never read. Dates come first, then history tags, then issue and PR references from the most specific (<code>PR #12</code>, <code>owner/repo#12</code>) to a bare <code>#12</code>. <code>quoted</code> marks each <code>code</code> span and each URL, a scheme followed by <code>://</code> up to the next blank, and <code>History</code> skips them, so a fragment such as <code>https://x.com/a#12</code> is not an issue number. A span one pattern reports is taken, so a later pattern never reports it again. A <code>Mark</code> names its section, what it reads as, and the phrase. Version numbers, identifiers, anchors such as <code>#overview</code>, and words such as &#34;no longer&#34; or &#34;old format&#34; describe code as it is, and no pattern matches them.</li></ul>
       
       
       
+    </div>
+    <div class="units">
       <p class="muted">안의 단위가 아직 없습니다.</p>
     </div>
   </div>
+  
+  
+  <h3>이 모듈이 놓인 층</h3>
+  <ul class="plain"><li><a href="stack-cli.html">What are the layers of the abbd CLI?</a> <span class="muted">층 5</span></li></ul>
+  
+  
   
 </section>
 <section class="inside" id="f-overview--MOD-0056">

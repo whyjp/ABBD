@@ -19142,7 +19142,31 @@
                 "Code": true
               },
               {
-                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. The draw closure leaves each drawing's cost in the ",
+                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. Fewer touches beat outright. Each ordering is drawn twice: wide, where ",
+                "Code": false
+              },
+              {
+                "Text": "place",
+                "Code": true
+              },
+              {
+                "Text": " lets every block spread over the whole budget toward what it joins and then trims the drawing to what the blocks cover, and ",
+                "Code": false
+              },
+              {
+                "Text": "narrow",
+                "Code": true
+              },
+              {
+                "Text": ", packed as tight as the order lets it, at ",
+                "Code": false
+              },
+              {
+                "Text": "narrowBudget",
+                "Code": true
+              },
+              {
+                "Text": " for a unit's view. The draw closure leaves each drawing's cost in the ",
                 "Code": false
               },
               {
@@ -19638,7 +19662,7 @@
                 "Code": true
               },
               {
-                "Text": ", within a 920 pixel budget against the overview's 1320. Its frame carries the module's contracts and dashed ",
+                "Text": ", within the overview's 1320 pixel budget, or 920 for a narrow tactic. Its frame carries the module's contracts and dashed ",
                 "Code": false
               },
               {
@@ -19702,7 +19726,7 @@
                 "Code": true
               },
               {
-                "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text beside its own inside. One that holds none has no view, and ",
+                "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text below its own inside. One that holds none has no view, and ",
                 "Code": false
               },
               {
@@ -20346,7 +20370,7 @@
                 "Code": true
               },
               {
-                "Text": " into every page, so each page opens on its own. A module's page shows its inside as ",
+                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its legend and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
                 "Code": false
               },
               {
