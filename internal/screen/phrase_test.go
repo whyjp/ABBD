@@ -42,3 +42,15 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		t.Errorf("the tooltip lists %v, want each phrase once with whose words it is", got)
 	}
 }
+
+// A label's glyphs are centred on its X, so the area it keeps clear covers
+// half a pixel more on each side when its word is of odd width.
+func TestALabelsAreaCoversItsGlyphs(t *testing.T) {
+	for _, s := range []string{"skill handoff", "quote check", "ab", "a"} {
+		tw := float64(textWidth(s, labelPx))
+		a := Label{S: s, X: 100, Y: 50}.area()
+		if float64(a.x) > 100-tw/2 || float64(a.x+a.w) < 100+tw/2 {
+			t.Errorf("%q is %.0fpx wide about x=100, and its area spans %d to %d", s, tw, a.x, a.x+a.w)
+		}
+	}
+}
