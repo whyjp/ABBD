@@ -539,12 +539,16 @@ func measure(s sheet) Metrics {
 		}
 	}
 	through := map[int]bool{}
-	for _, w := range ws {
+	for i, w := range ws {
+		var si []sample
 		for _, sh := range s.shapes {
-			if sh.r.grow(5).contains(w.pts[0], 0) || sh.r.grow(5).contains(w.pts[len(w.pts)-1], 0) {
+			if apart(box[i], sh.r, 2) || sh.r.grow(5).contains(w.pts[0], 0) || sh.r.grow(5).contains(w.pts[len(w.pts)-1], 0) {
 				continue
 			}
-			for _, sm := range samples(w.pts, 3) {
+			if si == nil {
+				si = samples(w.pts, 3)
+			}
+			for _, sm := range si {
 				if sh.r.contains(sm.p, 2) {
 					through[w.group] = true
 					break

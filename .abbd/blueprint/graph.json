@@ -20018,7 +20018,15 @@
                 "Code": true
               },
               {
-                "Text": " does. ",
+                "Text": " does, except one that already loses to the best so far on the touches and breaks of its routing, which ",
+                "Code": false
+              },
+              {
+                "Text": "beats",
+                "Code": true
+              },
+              {
+                "Text": " compares first. ",
                 "Code": false
               },
               {

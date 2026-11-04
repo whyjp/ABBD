@@ -167,14 +167,25 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 
 // choose draws a view with every tactic and keeps the first, the one the
 // plain tactic orders on the whole width, unless a later one beats the best
-// so far. draw leaves what each drawing costs in its read, and says false
-// for a tactic that has nothing to draw differently in this view.
-func choose[T any](draw func(t tactic, read *cost) (T, bool)) T {
+// so far. draw leaves what each routing costs in its read, and says false
+// for a tactic that has nothing to draw differently in this view. judge
+// adds what lint reads from the drawn view. It runs only on a drawing that
+// does not already lose on the touches and breaks its routing costs, since
+// beats compares those first and lint is most of the work.
+func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
 	for i, t := range tactics {
 		var c cost
-		if v, ok := draw(t, &c); ok && (i == 0 || c.beats(bc)) {
+		v, ok := draw(t, &c)
+		if !ok {
+			continue
+		}
+		if i > 0 && (c.touches > bc.touches || c.touches == bc.touches && c.breaks > bc.breaks) {
+			continue
+		}
+		judge(v, &c)
+		if i == 0 || c.beats(bc) {
 			best, bc = v, c
 		}
 	}
