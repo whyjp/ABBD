@@ -193,12 +193,19 @@ type tactic struct {
 	laned bool
 	// follow orders the lanes in each row as the boxes they reach stand.
 	follow bool
+	// loose orders every dummy of a chain from the frame's edge by the box
+	// end of its chain alone. Otherwise a sweep down orders it under its
+	// dummy in the row above, so chains from the frame keep the order they
+	// started in all the way down, and one that ends on a box left of the
+	// others runs right of them and turns across them into its box.
+	loose bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
 	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true},
 	{laned: true}, {laned: true, median: true}, {laned: true, reversed: true},
-	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true}}
+	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true},
+	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by
@@ -265,13 +272,27 @@ func (g *layered) order(t tactic) {
 		return t
 	}
 	key := make([]float64, len(ids))
-	sweep := func(r int, side, other [][]link) {
+	// open says v is a dummy of a chain whose end on that side is the
+	// frame's edge, which is set only after the layout.
+	open := func(v int, downward bool) bool {
+		c, ok := g.chainOf[ids[v]]
+		if !ok || !t.loose {
+			return false
+		}
+		if downward {
+			return g.chains[c].upper == frameTopNode
+		}
+		return g.chains[c].lower == frameBottomNode
+	}
+	sweep := func(r int, side, other [][]link, downward bool) {
 		for _, v := range rows[r] {
 			sum, k := 0.0, 0
 			// An item joined only the other way, as a chain from the
-			// frame is, follows that side.
+			// frame is, follows that side. So does every dummy of a chain
+			// from the frame: the frame's end of it stands wherever the
+			// chain does, so only its box end orders it.
 			near := side[v]
-			if len(near) == 0 {
+			if len(near) == 0 || open(v, downward) {
 				near = other[v]
 			}
 			for _, l := range near {
@@ -346,11 +367,11 @@ func (g *layered) order(t tactic) {
 	for i := 0; i < 12; i++ {
 		if i%2 == 0 {
 			for r := 1; r < len(rows); r++ {
-				sweep(r, up, down)
+				sweep(r, up, down, true)
 			}
 		} else {
 			for r := len(rows) - 2; r >= 0; r-- {
-				sweep(r, down, up)
+				sweep(r, down, up, false)
 			}
 		}
 		transpose()

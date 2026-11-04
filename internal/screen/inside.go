@@ -298,6 +298,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			wired[k] = append(wired[k], ln.from)
 		}
 	}
+	// A loose tactic orders only the chains from the frame differently.
+	if by.loose && len(wired) == 0 {
+		return Inside{}, false
+	}
 	// A seated tactic sets each wired chip in the layout on the side rule
 	// 10 gives it. A side that cannot hold its chips hands some to the
 	// other side after the layout, so a view with one is not drawn seated,

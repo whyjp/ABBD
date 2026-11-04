@@ -7802,7 +7802,7 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the spots the user circled, each by a box's unit ID, with the excess turns and steps that view measures.",
                 "Code": false
               }
             ]
@@ -20114,7 +20114,15 @@
                 "Code": true
               },
               {
-                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated or laned, since a chip handed to the other side would leave its lane behind, and the draw closure says so. A ",
+                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated or laned, since a chip handed to the other side would leave the seat or lane it was set over behind, and the draw closure says so. ",
+                "Code": false
+              },
+              {
+                "Text": "lane_flip_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds a one-box view and a three-row view to that guard, and shows the three-row view takes lanes once its chips fit. A ",
                 "Code": false
               },
               {
@@ -20162,7 +20170,23 @@
                 "Code": true
               },
               {
-                "Text": " then moves each lane among the other items of its row to where what it joins in the next row stands, rows bottom up for top lanes and top down for bottom ones, so a lane runs beside its box. ",
+                "Text": " then moves each lane among the other items of its row to where what it joins in the next row stands, rows bottom up for top lanes and top down for bottom ones, so a lane runs beside its box. A ",
+                "Code": false
+              },
+              {
+                "Text": "loose",
+                "Code": true
+              },
+              {
+                "Text": " tactic leaves the chips to be set after the layout but has both sweeps of ",
+                "Code": false
+              },
+              {
+                "Text": "order",
+                "Code": true
+              },
+              {
+                "Text": " place every dummy of a chain from the frame's edge by its box end alone: otherwise a sweep down sets each under its dummy in the row above, so chains from the frame keep their first order all the way down, and one that ends on a box left of the others runs right of them and turns across them into it. The draw closure skips it for a view with no wired frame chip. ",
                 "Code": false
               },
               {

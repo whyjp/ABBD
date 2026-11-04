@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/screen"
 )
 
 func lintAt(t *testing.T, root string, args ...string) (int, string) {
@@ -53,10 +56,12 @@ func copyFixture(t *testing.T, name, debt string) string {
 }
 
 // Orca's src/ keeps every hard criterion, so lint passes, and it names the
-// three spots the user circled: the mobile/ staircase, the native/ chip's
-// two turns in its clear column, which count as excess turns though they
-// are no step, and the preload bridge chip that stands past its box. Each
-// breach names its boxes by unit ID too.
+// three spots the user circled: the mobile/ line into the Orca runtime, down
+// from a staircase of 8 turns to 2, the native/ chip's two turns in its
+// clear column, which count as excess turns though they are no step, and
+// the preload bridge line, whose chip now stands over its box but which
+// still turns twice where it leaves the box. Each breach names its boxes by
+// unit ID too.
 func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 	code, out := lintAt(t, fixtureRoot("orca"), "MOD-0098 src/", "--json")
 	if code != exitOK {
@@ -67,17 +72,19 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := map[string]bool{
-		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 8 times`:                            false,
+		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 2 times`:                            false,
 		`B1 the line from chip "← native/" to box "desktop main process" (MOD-0042) turns 2 times, allowed 0, 2 turns in excess`: false,
-		`F1 chip "preload bridge" stands 5px right of box "desktop preload bridge" (MOD-0071)`:                                   false,
+		`B1 the line from box "desktop preload bridge" (MOD-0071) to chip "preload bridge" turns 2 times`:                        false,
 	}
 	for _, v := range r.Views {
 		for _, b := range v.Breaches {
 			for w := range want {
 				if strings.HasPrefix(b.Criterion+" "+b.Text, w) {
 					want[w] = true
-					if last := b.Items[len(b.Items)-1]; last.Kind != "box" || last.ID == "" || !strings.Contains(b.Text, "("+last.ID+")") {
-						t.Errorf("%s: the last item %+v names no unit ID", w, last)
+					if !slices.ContainsFunc(b.Items, func(it screen.Item) bool {
+						return it.Kind == "box" && it.ID != "" && strings.Contains(b.Text, "("+it.ID+")")
+					}) {
+						t.Errorf("%s: no box among %+v names its unit ID", w, b.Items)
 					}
 				}
 			}
@@ -88,8 +95,8 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 			t.Errorf("lint does not report %q", w)
 		}
 	}
-	if r.Schema != lintSchema || r.Totals.ExcessTurns != 85 || r.Totals.Steps != 57 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
-		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 85, 57, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
+	if r.Schema != lintSchema || r.Totals.ExcessTurns != 69 || r.Totals.Steps != 45 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
+		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 69, 45, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
 	}
 }
 
