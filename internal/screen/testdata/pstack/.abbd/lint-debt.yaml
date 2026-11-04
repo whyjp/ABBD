@@ -3,8 +3,8 @@
 # past its ceiling, and on a placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
-    placement: 175
-    weighed: 4783
+    placement: 174
+    weighed: 4818
 debt:
     MOD-0001 focus FEAT-0008 docs/harness/claude-code.md:
         R: 1

@@ -20026,7 +20026,7 @@
                 "Code": true
               },
               {
-                "Text": " compares touches, then breaks of rules 13 and 15, then lint's hard breaches, then lint's weighed sum with ",
+                "Text": " compares touches, then breaks of rules 13 and 15, then lint's hard breaches, then the crossings plus the excess turns plus ",
                 "Code": false
               },
               {
@@ -20034,7 +20034,15 @@
                 "Code": true
               },
               {
-                "Text": " more for each placement breach and each chip folded into a \"+N\" chip, then ",
+                "Text": " times the staircase steps lint traces on the page, then lint's weighed sum, both with ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " more for each placement breach and each chip folded into a \"+N\" chip, so a line that turns twice in a clear column, 2 excess turns and no step, cannot buy crossings, then ",
                 "Code": false
               },
               {

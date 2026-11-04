@@ -41,9 +41,10 @@ func (w weight) beats(o weight) bool {
 // cost is what a whole drawn view costs a reader, in the order a reader
 // pays it: ink that joins places no relation joins (rule 18), then breaks
 // of rules 13 and 15, then what abbd lint reads from the drawing (hard
-// breaches, then the weighed sum), then the staircase steps along each
-// line's way with its crossings, then lines that turn more than twice,
-// braid, and the dashed ink of the lines that climb (rule 13). breaks counts the lines
+// breaches, then the staircases a reader sees with the crossings, then the
+// weighed sum), then the staircase steps along each routed line's way with
+// its crossings, then lines that turn more than twice, braid, and the
+// dashed ink of the lines that climb (rule 13). breaks counts the lines
 // that run more than detourLimit out of their way and the back lines past
 // rule 13's bound. steps counts, once per pair of places, each turn past
 // the second and each stretch between two turns shorter than jogUnder (a
@@ -51,29 +52,40 @@ func (w weight) beats(o weight) bool {
 // its steps.
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
-	// hard and linted are what abbd lint reads from the drawn view (judge).
-	hard, linted int
+	// hard, seen and linted are what abbd lint reads from the drawn view
+	// (judge).
+	hard, seen, linted int
 }
 
 // judge reads the drawn view the way abbd lint does: its hard breaches,
-// then its weighed sum with each placement breach and each chip the frame
-// folds into a "+N" chip counted as one more excess turn. A drawing that
-// saves turns by folding chips or by standing boxes and chips away from
-// what they join reads no better.
+// then seen, the crossings, one more for each excess turn and
+// stepCrossings for each staircase step lint traces on the page, then
+// linted, its weighed sum. Both count each
+// placement breach and each chip the frame folds into a "+N" chip as
+// stepCrossings more, so a drawing that saves turns by folding chips or by
+// standing boxes and chips away from what they join reads no better. The
+// steps come before the excess turns because a line that turns twice in a
+// clear column has 2 excess turns and no step, and weighing those as 4
+// crossings each traded crossings for corners a reader does not see as a
+// staircase. Weighing them as none let one crossing buy 12 of them.
 func (c *cost) judge(d Drawing) {
 	vl, err := lintView(view{d: d, budget: insideWidth})
 	if err != nil {
 		c.hard = 1 << 20
 		return
 	}
-	c.hard, c.linted = vl.Totals.Hard, vl.Totals.Weighed+stepCrossings*vl.Totals.Placement
+	t := vl.Totals
+	moved := t.Placement
 	for _, p := range d.Ports {
 		if n, ok := strings.CutPrefix(p.Label, "+"); ok {
 			if k, err := strconv.Atoi(n); err == nil {
-				c.linted += stepCrossings * k
+				moved += k
 			}
 		}
 	}
+	c.hard = t.Hard
+	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
+	c.linted = t.Weighed + stepCrossings*moved
 }
 
 // beats says c reads better than o: the first measure in which they differ
@@ -81,8 +93,8 @@ func (c *cost) judge(d Drawing) {
 // stepCrossings crossings, so a drawing with fewer wins unless it buys each
 // one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, c.hard, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, o.hard, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.seen, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.seen, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
