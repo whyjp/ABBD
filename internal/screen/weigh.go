@@ -1,10 +1,5 @@
 package screen
 
-import (
-	"strconv"
-	"strings"
-)
-
 // A routing is weighed by what a reader pays to follow it, measured the way
 // docs/blueprint-svg.md bounds a drawing: where lines of different bundles
 // meet or run together away from their ends, and how often lines turn.
@@ -77,10 +72,8 @@ func (c *cost) judge(d Drawing) {
 	t := vl.Totals
 	moved := t.Placement
 	for _, p := range d.Ports {
-		if n, ok := strings.CutPrefix(p.Label, "+"); ok {
-			if k, err := strconv.Atoi(n); err == nil {
-				moved += k
-			}
+		if p.Folded {
+			moved++
 		}
 	}
 	c.hard = t.Hard

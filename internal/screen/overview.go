@@ -75,6 +75,8 @@ type Port struct {
 	// stands for several ports carries every one's key.
 	Keys []string `json:"-"`
 	Lit  string   `json:"-"`
+	// Folded says the edge folds this port into its row's "+N" chip.
+	Folded bool `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
@@ -565,7 +567,7 @@ func spread(r rect, below bool, items []attach, rows int) map[string]Port {
 				l = fmt.Sprintf("+%d", end-shown)
 			}
 			w := chipWidth(l)
-			out[items[i].key] = Port{X: x + 4, Y: y, W: w, H: h, Label: l, Lines: chipLines(l), Below: below}
+			out[items[i].key] = Port{X: x + 4, Y: y, W: w, H: h, Label: l, Lines: chipLines(l), Below: below, Folded: i >= shown}
 			if i < shown {
 				x += w + 4
 			}

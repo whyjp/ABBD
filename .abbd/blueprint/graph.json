@@ -20050,7 +20050,23 @@
                 "Code": true
               },
               {
-                "Text": " more for each placement breach and each chip folded into a \"+N\" chip, so a line that turns twice in a clear column, 2 excess turns and no step, cannot buy crossings, then ",
+                "Text": " more for each placement breach and each chip folded into a \"+N\" chip, which its ",
+                "Code": false
+              },
+              {
+                "Text": "Port",
+                "Code": true
+              },
+              {
+                "Text": " marks ",
+                "Code": false
+              },
+              {
+                "Text": "Folded",
+                "Code": true
+              },
+              {
+                "Text": ", so a line that turns twice in a clear column, 2 excess turns and no step, cannot buy crossings, then ",
                 "Code": false
               },
               {
