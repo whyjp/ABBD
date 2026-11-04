@@ -22086,6 +22086,22 @@
                 "Code": false
               },
               {
+                "Text": "measure",
+                "Code": true
+              },
+              {
+                "Text": " skips each pair of strokes whose ",
+                "Code": false
+              },
+              {
+                "Text": "bounds",
+                "Code": true
+              },
+              {
+                "Text": " lie too far apart to cross or run side by side. ",
+                "Code": false
+              },
+              {
                 "Text": "trace",
                 "Code": true
               },

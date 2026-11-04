@@ -403,11 +403,12 @@ func measure(s sheet) Metrics {
 			}
 		}
 	}
+	box := bounds(ws)
 	// R1: crossings between two lines, away from the ends where lines meet
 	// on purpose.
 	for i := range ws {
 		for j := i + 1; j < len(ws); j++ {
-			if ws[i].group == ws[j].group {
+			if ws[i].group == ws[j].group || apart(box[i], box[j], 0) {
 				continue
 			}
 			var seen []fpt
@@ -430,8 +431,12 @@ func measure(s sheet) Metrics {
 		}
 	}
 	// R3: two lines running side by side closer than minGap.
+	sampled := make([][]sample, len(ws))
+	for i, w := range ws {
+		sampled[i] = samples(w.pts, 2)
+	}
 	close := func(i, j int) bool {
-		si := samples(ws[i].pts, 2)
+		si := sampled[i]
 		run := 0.0
 		for k, sm := range si {
 			if nearEnds(sm.p, ws[i], endZone) || nearEnds(sm.p, ws[j], endZone) {
@@ -458,7 +463,7 @@ func measure(s sheet) Metrics {
 	for i := range ws {
 		for j := i + 1; j < len(ws); j++ {
 			g := [2]int{ws[i].group, ws[j].group}
-			if g[0] != g[1] && !pairs[g] && (close(i, j) || close(j, i)) {
+			if g[0] != g[1] && !pairs[g] && !apart(box[i], box[j], minGap) && (close(i, j) || close(j, i)) {
 				pairs[g] = true
 				m.TooClose++
 			}
@@ -677,14 +682,33 @@ func measure(s sheet) Metrics {
 
 // braid sums, over each pair of lines of different bundles, how far one
 // runs beside the other within braidGap, away from both lines' ends.
+// bounds bounds each stroke, so pairs too far apart to meet are skipped.
+func bounds(ws []stroke) []frect {
+	out := make([]frect, len(ws))
+	for i, w := range ws {
+		lo, hi := w.pts[0], w.pts[0]
+		for _, p := range w.pts {
+			lo, hi = fpt{math.Min(lo.x, p.x), math.Min(lo.y, p.y)}, fpt{math.Max(hi.x, p.x), math.Max(hi.y, p.y)}
+		}
+		out[i] = frect{lo.x, lo.y, hi.x - lo.x, hi.y - lo.y}
+	}
+	return out
+}
+
+// apart says no point of a comes within gap of a point of b.
+func apart(a, b frect, gap float64) bool {
+	return a.x > b.x+b.w+gap || b.x > a.x+a.w+gap || a.y > b.y+b.h+gap || b.y > a.y+a.h+gap
+}
+
 func braid(ws []stroke) int {
 	total := 0.0
+	box := bounds(ws)
 	for i := range ws {
+		si := samples(ws[i].pts, 2)
 		for j := i + 1; j < len(ws); j++ {
-			if ws[i].group == ws[j].group {
+			if ws[i].group == ws[j].group || apart(box[i], box[j], braidGap) {
 				continue
 			}
-			si := samples(ws[i].pts, 2)
 			for k, sm := range si {
 				if k == 0 || nearEnds(sm.p, ws[i], endZone) || nearEnds(sm.p, ws[j], endZone) {
 					continue
