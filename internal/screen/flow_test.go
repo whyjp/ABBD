@@ -136,14 +136,15 @@ func TestAFrameShowsOnlyWhatIsOutside(t *testing.T) {
 }
 
 // Two lines of one kind that reach one edge of a box apart count as a split
-// arrival; drawn as one bundle they do not.
+// arrival, though hover gives each its own classes; drawn as one bundle
+// they do not.
 func TestTheCheckerCountsLinesThatArriveApart(t *testing.T) {
 	sheet := func(net int) Metrics {
 		d := Drawing{Width: 400, Height: 300,
 			Boxes: []Box{{ID: "a", X: 20, Y: 20, W: 100, H: 40}, {ID: "b", X: 260, Y: 20, W: 100, H: 40}, {ID: "c", X: 140, Y: 200, W: 100, H: 40}},
 			Wires: []Wire{
-				{D: polyline([]pt{{70, 60}, {70, 120}, {170, 120}, {170, 200}}), Kind: "depends_on", Net: net},
-				{D: polyline([]pt{{310, 60}, {310, 120}, {210, 120}, {210, 200}}), Kind: "depends_on", Net: net},
+				{D: polyline([]pt{{70, 60}, {70, 120}, {170, 120}, {170, 200}}), Kind: "depends_on", Net: net, Lit: "e1"},
+				{D: polyline([]pt{{310, 60}, {310, 120}, {210, 120}, {210, 200}}), Kind: "depends_on", Net: net, Lit: "e2"},
 			},
 		}
 		return measured(t, d)
@@ -153,6 +154,28 @@ func TestTheCheckerCountsLinesThatArriveApart(t *testing.T) {
 	}
 	if m := sheet(1); m.SplitIn != 0 {
 		t.Errorf("two lines into c drawn as one bundle are not: %s", m)
+	}
+}
+
+// Two lines of one kind that leave one edge of a box apart count as a
+// split, though hover gives each its own classes; a line that drops
+// straight into the box below needs no bundle and does not.
+func TestTheCheckerCountsLinesThatLeaveApart(t *testing.T) {
+	sheet := func(second []pt) Metrics {
+		d := Drawing{Width: 400, Height: 300,
+			Boxes: []Box{{ID: "a", X: 140, Y: 20, W: 100, H: 40}, {ID: "b", X: 20, Y: 200, W: 100, H: 40}, {ID: "c", X: 160, Y: 200, W: 100, H: 40}},
+			Wires: []Wire{
+				{D: polyline([]pt{{170, 60}, {170, 120}, {70, 120}, {70, 200}}), Kind: "depends_on", Lit: "e1"},
+				{D: polyline(second), Kind: "depends_on", Lit: "e2"},
+			},
+		}
+		return measured(t, d)
+	}
+	if m := sheet([]pt{{200, 60}, {200, 140}, {220, 140}, {220, 200}}); m.Split != 1 || !slices.ContainsFunc(m.violations(400), func(v string) bool { return strings.HasPrefix(v, "4: ") }) {
+		t.Errorf("two lines out of a drawn apart are a split, against rule 4: %s", m)
+	}
+	if m := sheet([]pt{{200, 60}, {200, 200}}); m.Split != 0 {
+		t.Errorf("a line that drops straight from a into c is not: %s", m)
 	}
 }
 
