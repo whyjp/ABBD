@@ -559,8 +559,10 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			if x, ok := near(i, sl.leave); ok {
 				return x, true
 			}
-			// A line alone in its slot between rows next to each other
-			// drops straight where its other end already stands.
+			// A line alone in its slot that passes no row, between boxes
+			// in rows next to each other or between a frame chip and a
+			// first- or last-row box, drops straight where its other end
+			// already stands.
 			x, ok := set[i][!sl.leave]
 			return x, ok && len(sl.is) == 1 && len(plans[i].gaps) == 1
 		}
