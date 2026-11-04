@@ -1517,21 +1517,37 @@ func place(e end) string {
 	return e.key
 }
 
+// endID names an end as the drawing names its shape: the box's id, or the
+// frame port's key.
+func endID(e end) string {
+	if e.node != "" {
+		return e.node
+	}
+	return e.key
+}
+
+// endsOf are the places the requests is join, each once.
+func endsOf(reqs []wireReq, is []int) []string {
+	var out []string
+	for _, i := range is {
+		for _, e := range []end{reqs[i].from, reqs[i].to} {
+			if id := endID(e); !slices.Contains(out, id) {
+				out = append(out, id)
+			}
+		}
+	}
+	return out
+}
+
 // wanted are the pairs of places the requests join: a box, or a frame
 // port. A line between two modules that use each other stands for both
 // directions.
 func wanted(reqs []wireReq) [][2]string {
-	id := func(e end) string {
-		if e.node != "" {
-			return e.node
-		}
-		return e.key
-	}
 	var out [][2]string
 	for _, r := range reqs {
-		out = append(out, [2]string{id(r.from), id(r.to)})
+		out = append(out, [2]string{endID(r.from), endID(r.to)})
 		if r.kind == "mutual" {
-			out = append(out, [2]string{id(r.to), id(r.from)})
+			out = append(out, [2]string{endID(r.to), endID(r.from)})
 		}
 	}
 	return out
