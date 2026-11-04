@@ -182,7 +182,9 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if rr.Phrase != "" && len(evidence) == 0 {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives a phrase without evidence; a phrase rests on the code it quotes", i, rr.From, rr.To)
 		}
-		if rr.Phrase != "" && !slices.ContainsFunc(res.Phrases, func(o Phrase) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }) {
+		if j := slices.IndexFunc(res.Phrases, func(o Phrase) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); rr.Phrase != "" && j >= 0 && res.Phrases[j].Text != rr.Phrase {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives two phrases for one edge, %q and %q; keep one", i, rr.From, rr.To, res.Phrases[j].Text, rr.Phrase)
+		} else if rr.Phrase != "" && j < 0 {
 			res.Phrases = append(res.Phrases, Phrase{From: rr.From, To: rr.To, Kind: rr.Kind, Text: rr.Phrase, Evidence: evidence})
 		}
 		// One claim holds an edge, so the entries of two lines of one edge add

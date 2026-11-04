@@ -303,6 +303,9 @@ const (
 type Label struct {
 	S    string
 	X, Y int
+	// Said marks a phrase, which is set in italic so it reads apart from a
+	// via word.
+	Said bool `json:",omitempty"`
 }
 
 // area is where a label's glyphs stand.
@@ -435,6 +438,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if tw > labelMax {
 			continue
 		}
+		said := slices.ContainsFunc(d.Wires[i].Rels, func(r string) bool { return t.phrases[r].text == strings.TrimSuffix(s, most) })
 		var mine []seg
 		for _, g := range segs {
 			if mate(i, g.wire) {
@@ -469,8 +473,14 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				if o == g {
 					continue
 				}
-				// A line's stroke reaches 1.3px off its centre at most.
-				if hit(lb, grow(o.bounds(), labelRoom+1)) {
+				// A line's stroke reaches 1.3px off its centre at most. Another
+				// line parallel to g keeps more than twice the label's offset
+				// from it, so the label reads as g's and not the other's.
+				room := labelRoom + 1
+				if o.flat() == g.flat() && !mate(i, o.wire) {
+					room = 2*labelOff + 2
+				}
+				if hit(lb, grow(o.bounds(), room)) {
 					return false
 				}
 				along := o.flat() == g.flat() && (g.flat() && o.a.y == g.a.y || !g.flat() && o.a.x == g.a.x)
@@ -500,10 +510,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 					var opts []Label
 					if g.flat() {
 						y := g.a.y
-						opts = []Label{{s, c, y - labelOff - 1}, {s, c, y + labelOff + labelH - 1}}
+						opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
 					} else {
 						x, y := g.a.x, c+labelH/2-1
-						opts = []Label{{s, x + labelOff + tw/2 + 1, y}, {s, x - labelOff - tw/2 - 1, y}}
+						opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
 					}
 					for _, l := range opts {
 						if clear(g, l, c-half, c+half) {

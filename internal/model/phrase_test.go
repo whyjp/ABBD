@@ -38,7 +38,7 @@ func TestAPhraseWithoutALineDangles(t *testing.T) {
 	if len(units[0].Relations) != 0 {
 		t.Errorf("the note became a claim: %+v", units[0].Relations)
 	}
-	if d := Dangling(units); len(d) != 1 || d[0] != "MOD-0001.depends_on.MOD-0002" {
+	if d := Dangling(units); len(d) != 1 || d[0].Edge.String() != "MOD-0001.depends_on.MOD-0002" || d[0].Writer != Reader {
 		t.Errorf("dangling %v", d)
 	}
 	n := 0

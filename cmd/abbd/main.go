@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -34,8 +35,9 @@ abbd record relation FROM KIND TO --via VIA [--phrase TEXT] --evidence PATH:LINE
                                      --phrase names in at most 4 words and 24 characters what
                                      crosses it, such as a route, a message or a query, and the
                                      blueprint draws it beside the line, as a note with its own
-                                     origin; on an edge the script reads, the note is all it
-                                     stores, and it never brings back a retracted coupling
+                                     origin; on an edge that already shows, from any writer, the
+                                     note is all it stores and every claim stays as it was;
+                                     it never brings back a coupling a human retracted
 abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--evidence ...] [--root DIR]
                                      a coupling a human stated, USER_STATED
 abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
@@ -322,6 +324,11 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	c := commands[inv.name]
 	if err := c.run(e, inv.pos); err != nil {
 		fmt.Fprintln(stderr, "abbd:", err)
+		if errors.As(err, new(partial)) {
+			if err := e.publish(); err != nil {
+				fmt.Fprintln(stderr, "abbd: rendering the blueprint:", err)
+			}
+		}
 		return exitError
 	}
 	if c.writes {

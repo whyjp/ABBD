@@ -160,7 +160,8 @@ func (u *Unit) DropParents(ws ...Writer) {
 }
 
 // Mask hides lower writers' claims on one target of a unit, as long as the
-// claim's content still matches Digest. A changed claim shows again.
+// claim's content still matches Digest. A changed claim shows again, except
+// that a human's mask on an edge holds whatever the via.
 type Mask struct {
 	// Target is "unit", "parent", "purpose", "responsibility", or KIND.TO
 	// for a relation.
@@ -211,6 +212,16 @@ func FactDigest(f Fact) string          { return Digest(f.Value) }
 func (u Unit) Masked(target string, w Writer, digest string) bool {
 	return slices.ContainsFunc(u.Masks, func(m Mask) bool {
 		return m.Target == target && m.Digest == digest && Hides(m.Writer, w)
+	})
+}
+
+// RelationMasked reports whether a mask hides the claim. A human's mask holds
+// the whole edge, whatever the via, so a lower writer cannot bring the edge
+// back by naming another via. A reader's mask stays bound to the content.
+func (u Unit) RelationMasked(r Relation) bool {
+	target := RelationTarget(r.Kind, r.To)
+	return u.Masked(target, r.Writer, RelationDigest(r)) || slices.ContainsFunc(u.Masks, func(m Mask) bool {
+		return m.Target == target && m.Writer == Human && Hides(Human, r.Writer)
 	})
 }
 
@@ -289,7 +300,7 @@ func (u *Unit) resolve() {
 	}
 	key := func(r Relation) int {
 		k := order(RelationField, r.Writer, r.Status())
-		if u.Masked(RelationTarget(r.Kind, r.To), r.Writer, RelationDigest(r)) {
+		if u.RelationMasked(r) {
 			k += 1 << 20
 		}
 		return k
@@ -304,7 +315,7 @@ func (u *Unit) resolve() {
 	u.Relations, u.Hidden = nil, nil
 	for i, r := range all {
 		first := i == 0 || all[i-1].To != r.To || all[i-1].Kind != r.Kind
-		if first && !u.Masked(RelationTarget(r.Kind, r.To), r.Writer, RelationDigest(r)) {
+		if first && !u.RelationMasked(r) {
 			u.Relations = append(u.Relations, r)
 		} else {
 			u.Hidden = append(u.Hidden, r)

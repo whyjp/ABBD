@@ -202,6 +202,9 @@ func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 		}
 		u.SupplementRef = cmp.Or(u.SupplementRef, key.Key)
 	}
+	if err := oldPhrase(front); err != nil {
+		return u, old, err
+	}
 	if i := bytes.Index(body, []byte("\n"+notesHeading)); i >= 0 {
 		u.Notes = string(body[i+1:])
 	}
@@ -209,6 +212,34 @@ func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 		return u, old, fmt.Errorf("file name does not match id %s", u.ID)
 	}
 	return u, old, u.Validate()
+}
+
+// oldPhrase refuses a relation that still carries the phrase field an
+// earlier draft stored on the claim, which the unit model no longer reads,
+// so the phrase is not dropped without a word.
+func oldPhrase(front []byte) error {
+	if !bytes.Contains(front, []byte("phrase:")) {
+		return nil
+	}
+	type claim struct {
+		To     string `yaml:"to"`
+		Kind   string `yaml:"kind"`
+		Writer string `yaml:"writer"`
+		Phrase string `yaml:"phrase"`
+	}
+	var old struct {
+		Relations []claim `yaml:"relations"`
+		Hidden    []claim `yaml:"hidden"`
+	}
+	if err := yaml.Unmarshal(front, &old); err != nil {
+		return err
+	}
+	for _, r := range append(old.Relations, old.Hidden...) {
+		if r.Phrase != "" {
+			return fmt.Errorf("the %s's relation %s.%s holds phrase: %q, which a claim no longer carries; move it to phrases: as a note with to, kind, writer, text and the evidence it rests on", r.Writer, r.Kind, r.To, r.Phrase)
+		}
+	}
+	return nil
 }
 
 func renderUnit(u model.Unit) ([]byte, error) {

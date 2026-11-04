@@ -193,7 +193,10 @@ func (e env) status() error {
 	}
 	if ds := model.Dangling(in.Units); len(ds) > 0 {
 		for _, d := range ds {
-			fmt.Fprintf(e.stdout, "dangling: %s.phrase names no line now, since nothing shows on the edge; abbd retract %s.phrase --reason TEXT drops it\n", d, d)
+			// Only a human retracts a human's note, and a human's retraction
+			// cites where the human said it.
+			by := map[bool]string{true: " --source REF"}[d.Writer == model.Human]
+			fmt.Fprintf(e.stdout, "dangling: %s.phrase names no line now, since nothing shows on the edge; abbd retract %s.phrase --reason TEXT%s drops it\n", d.Edge, d.Edge, by)
 		}
 		behind = append(behind, fmt.Sprintf("%d phrase(s) dangling, retract each", len(ds)))
 	}

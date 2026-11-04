@@ -273,7 +273,7 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	}
 	for i := range u.Phrases {
 		n := &u.Phrases[i]
-		if s, ok := u.Note(n.Kind, n.To); ok && s.Writer == n.Writer && u.shown(n.Kind, n.To) {
+		if s, ok := u.Note(n.Kind, n.To); ok && s.Writer == n.Writer && u.Shown(n.Kind, n.To) {
 			for j := range n.Evidence {
 				f(n.Writer, &n.Evidence[j])
 			}
@@ -281,8 +281,8 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	}
 }
 
-// shown reports whether a live or drifted claim shows on the edge.
-func (u Unit) shown(kind RelationKind, to ID) bool {
+// Shown reports whether a live or drifted claim shows on the edge.
+func (u Unit) Shown(kind RelationKind, to ID) bool {
 	return slices.ContainsFunc(u.Relations, func(r Relation) bool { return r.To == to && r.Kind == kind && !r.Dead })
 }
 
@@ -304,23 +304,29 @@ func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
 	return best, ok
 }
 
-// Dangling lists, as FROM.KIND.TO, the edges of present units whose phrase
-// note names no line: the edge has no live or drifted claim, or its far end
-// is gone. A note never becomes the edge, so it waits for a reader to
-// retract it.
-func Dangling(units []Unit) []string {
+// DanglingNote is a phrase note that names no line, by its edge and writer.
+type DanglingNote struct {
+	Edge   Edge
+	Writer Writer
+}
+
+// Dangling lists the edges of present units whose phrase note names no
+// line: the edge has no live or drifted claim, or its far end is gone. A
+// note never becomes the edge, so it waits until a writer who may retract it
+// does: a reader for a reader's or the supplement's, a human for a human's.
+func Dangling(units []Unit) []DanglingNote {
 	present := map[ID]bool{}
 	for _, u := range units {
 		present[u.ID] = !u.Absent
 	}
-	var out []string
+	var out []DanglingNote
 	for _, u := range Present(units) {
 		for _, n := range u.Phrases {
 			if s, ok := u.Note(n.Kind, n.To); !ok || s.Writer != n.Writer {
 				continue
 			}
-			if !present[n.To] || !u.shown(n.Kind, n.To) {
-				out = append(out, Edge{From: u.ID, To: n.To, Kind: n.Kind}.String())
+			if !present[n.To] || !u.Shown(n.Kind, n.To) {
+				out = append(out, DanglingNote{Edge{From: u.ID, To: n.To, Kind: n.Kind}, n.Writer})
 			}
 		}
 	}
@@ -406,6 +412,14 @@ func (u Unit) Validate() error {
 	for _, n := range u.Phrases {
 		if err := n.validate(); err != nil {
 			return fmt.Errorf("%s phrase on %s %s: %w", u.ID, n.Kind, n.To, err)
+		}
+		for _, r := range u.Claims() {
+			if r.To != n.To || r.Kind != n.Kind {
+				continue
+			}
+			if err := ValidatePhrase(n.Text, r.Via); err != nil {
+				return fmt.Errorf("%s phrase on %s %s: %w", u.ID, n.Kind, n.To, err)
+			}
 		}
 		k := fmt.Sprintf("%s %s %s", n.Kind, n.To, n.Writer)
 		if notes[k] {
@@ -510,7 +524,7 @@ func ValidatePhrase(p string, via Via) error {
 // viaSynonyms are phrases that say no more than their via, in lower case.
 var viaSynonyms = map[Via][]string{
 	"import":        {"imports", "types", "model types", "type import", "package import", "uses"},
-	"call":          {"calls", "function call", "method call", "invokes", "invocation"},
+	"call":          {"calls", "function call", "method call", "invokes", "invocation", "함수 호출"},
 	"data":          {"reads data", "writes data", "data flow"},
 	"config":        {"configuration", "settings", "options"},
 	"trait":         {"interface", "implements"},

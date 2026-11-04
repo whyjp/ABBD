@@ -164,7 +164,7 @@ func TestAHumansPhraseLeavesAReadersEdgeInferred(t *testing.T) {
 	if after := claimsOf(p.read("architecture/MOD-0002.md")); after != before {
 		t.Fatalf("a human's phrase changed the edge's claims:\n%s\nwas:\n%s", after, before)
 	}
-	contains(t, p.want(0, "", "explain", "MOD-0002"), `phrase "charge post", user-stated`)
+	contains(t, p.want(0, "", "explain", "MOD-0002"), "inferred couplings:", `depends_on MOD-0001 billing via call; phrase "charge post", stated`)
 }
 
 // A human retracts a reader's coupling. A reader who records the same edge
