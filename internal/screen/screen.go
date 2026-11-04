@@ -192,7 +192,7 @@ func Build(in Input) Model {
 	for _, id := range views {
 		ins := choose(func(t tactic, read *cost) (Inside, bool) {
 			return o.inside(id, in.Units, "", nil, t, read)
-		})
+		}, func(ins Inside, read *cost) { read.judge(ins.Drawing) })
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
 		for i, iu := range ins.Units {

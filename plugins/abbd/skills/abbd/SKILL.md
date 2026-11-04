@@ -161,7 +161,7 @@ pre-push:
 - It exits 1 on a hard breach past the debt `.abbd/lint-debt.yaml` records for its view, or, over every view, on a total past its ceiling there. A breach the view owes prints as `hard debt`.
 - `abbd lint <VIEW>` checks the views whose name starts with VIEW or holds it as a word, so `abbd lint MOD-0098` checks that unit's inside and its focus views. `abbd lint --list` names every view.
 - `abbd lint --json` prints the report with a `schema` version. Each breach carries `debt` and its boxes and chips by `id` and `name`. The report ends with the gate's `failures`.
-- `abbd lint --record` writes what the drawings measure now to `.abbd/lint-debt.yaml`, as their debt and ceilings.
+- `abbd lint --record` writes what the drawings measure now to `.abbd/lint-debt.yaml`, as their debt and ceilings. It never raises a ceiling. A total above its ceiling but within the gate's slack keeps the ceiling it had.
 - `abbd lint --root internal/screen/testdata/orca MOD-0098` lints a view of a fixture.
 
 The target is the excess turns. They are each line's turns past what its two ends allow under B1, plus every jog under B2. A line in a clear column is allowed 0 turns, so a line that turns twice there has 2 excess turns though it has no step. The weighed sum is the crossings plus 4 times the excess turns. The placement debt is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. A change to the renderer is kept only through this gate:

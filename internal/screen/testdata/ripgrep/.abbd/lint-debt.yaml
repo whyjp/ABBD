@@ -4,4 +4,4 @@
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
     placement: 9
-    weighed: 612
+    weighed: 528

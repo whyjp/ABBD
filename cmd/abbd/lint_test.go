@@ -132,8 +132,28 @@ func TestLintFailsOnAHardBreachPastItsDebt(t *testing.T) {
 func TestLintHoldsTheTotalsToTheirCeilings(t *testing.T) {
 	debt := "ceilings:\n  weighed: 100\n  placement: 50\ndebt:\n  MOD-0030 internal/model: {R: 1}\n  MOD-0047 internal/topology: {R: 1}\n"
 	code, out := lintAt(t, copyFixture(t, "self", debt))
-	if code != exitError || !strings.Contains(out, "weighed 2128, past its ceiling 100 by more than 0") || strings.Contains(out, "placement 50, past") {
+	if code != exitError || !strings.Contains(out, ", past its ceiling 100 by more than 0") || strings.Contains(out, "placement 50, past") {
 		t.Fatalf("exit %d, want 1 on the weighed sum alone:\n%s", code, out)
+	}
+}
+
+// --record lowers a ceiling above what the drawings measure and keeps one
+// below it, so the slack the gate allows never ratchets a ceiling up.
+func TestLintRecordNeverRaisesACeiling(t *testing.T) {
+	root := copyFixture(t, "self", "ceilings:\n  weighed: 999999\n  placement: 1\n")
+	if code, out := lintAt(t, root, "--record"); code != exitOK {
+		t.Fatalf("exit %d:\n%s", code, out)
+	}
+	var r lintReport
+	code, out := lintAt(t, root, "--json")
+	if err := json.NewDecoder(strings.NewReader(out)).Decode(&r); err != nil {
+		t.Fatalf("exit %d: %v\n%s", code, err, out)
+	}
+	if r.Ceilings["placement"] != 1 || r.Totals.Placement <= 1 {
+		t.Errorf("placement ceiling %d with %d measured, want the ceiling kept at 1", r.Ceilings["placement"], r.Totals.Placement)
+	}
+	if r.Ceilings["weighed"] != r.Totals.Weighed {
+		t.Errorf("weighed ceiling %d, want it lowered to the %d measured", r.Ceilings["weighed"], r.Totals.Weighed)
 	}
 }
 

@@ -99,8 +99,10 @@ func Lowerable(views []ViewLint, d store.LintDebt, every bool) []string {
 }
 
 // Record is the debt of every drawing as views measure it: each view's
-// hard breaches by criterion, and the ceilings at their totals.
-func Record(views []ViewLint) store.LintDebt {
+// hard breaches by criterion, and each ceiling at its total or at what prior
+// sets it to, whichever is lower. A ceiling never rises on its own, so the
+// slack the gate allows a total cannot ratchet it up one record at a time.
+func Record(views []ViewLint, prior store.LintDebt) store.LintDebt {
 	d := store.LintDebt{Ceilings: map[string]int{}, Views: map[string]map[string]int{}}
 	for _, v := range views {
 		for _, c := range criteria {
@@ -115,6 +117,9 @@ func Record(views []ViewLint) store.LintDebt {
 	t := Sum(views)
 	for _, g := range gated {
 		d.Ceilings[g.name] = g.total(t)
+		if c, ok := prior.Ceilings[g.name]; ok && c < d.Ceilings[g.name] {
+			d.Ceilings[g.name] = c
+		}
 	}
 	return d
 }

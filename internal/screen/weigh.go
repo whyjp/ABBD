@@ -35,7 +35,9 @@ func (w weight) beats(o weight) bool {
 
 // cost is what a whole drawn view costs a reader, in the order a reader
 // pays it: ink that joins places no relation joins (rule 18), then breaks
-// of rules 13 and 15, then the staircase steps along each line's way with
+// of rules 13 and 15, then what abbd lint reads from the drawing (hard
+// breaches, then the staircases a reader sees with the crossings, then the
+// weighed sum), then the staircase steps along each routed line's way with
 // its crossings, then lines that turn more than twice, braid, and the
 // dashed ink of the lines that climb (rule 13). breaks counts the lines
 // that run more than detourLimit out of their way and the back lines past
@@ -45,15 +47,47 @@ func (w weight) beats(o weight) bool {
 // its steps.
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
+	// hard, seen and linted are what abbd lint reads from the drawn view
+	// (judge).
+	hard, seen, linted int
+}
+
+// judge reads the drawn view the way abbd lint does: its hard breaches,
+// then seen, the crossings, one more for each excess turn and
+// stepCrossings for each staircase step lint traces on the page, then
+// linted, its weighed sum. Both count each
+// placement breach and each chip the frame folds into a "+N" chip as
+// stepCrossings more, so a drawing that saves turns by folding chips or by
+// standing boxes and chips away from what they join reads no better. The
+// steps come before the excess turns because a line that turns twice in a
+// clear column has 2 excess turns and no step, and weighing those as 4
+// crossings each traded crossings for corners a reader does not see as a
+// staircase. Weighing them as none let one crossing buy 12 of them.
+func (c *cost) judge(d Drawing) {
+	vl, err := lintView(view{d: d, budget: insideWidth})
+	if err != nil {
+		c.hard = 1 << 20
+		return
+	}
+	t := vl.Totals
+	moved := t.Placement
+	for _, p := range d.Ports {
+		if p.Folded {
+			moved++
+		}
+	}
+	c.hard = t.Hard
+	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
+	c.linted = t.Weighed + stepCrossings*moved
 }
 
 // beats says c reads better than o: the first measure in which they differ
-// is lower in c. A staircase step costs a reader stepCrossings crossings,
-// so a drawing with fewer steps wins unless it buys each step it saves with
-// more crossings than that.
+// is lower in c. An excess turn or a staircase step costs a reader
+// stepCrossings crossings, so a drawing with fewer wins unless it buys each
+// one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.seen, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.seen, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
@@ -126,14 +160,25 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 
 // choose draws a view with every tactic and keeps the first, the one the
 // plain tactic orders on the whole width, unless a later one beats the best
-// so far. draw leaves what each drawing costs in its read, and says false
-// for a tactic that has nothing to draw differently in this view.
-func choose[T any](draw func(t tactic, read *cost) (T, bool)) T {
+// so far. draw leaves what each routing costs in its read, and says false
+// for a tactic that has nothing to draw differently in this view. judge
+// adds what lint reads from the drawn view. It runs only on a drawing that
+// does not already lose on the touches and breaks its routing costs, since
+// beats compares those first and lint is most of the work.
+func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
 	for i, t := range tactics {
 		var c cost
-		if v, ok := draw(t, &c); ok && (i == 0 || c.beats(bc)) {
+		v, ok := draw(t, &c)
+		if !ok {
+			continue
+		}
+		if i > 0 && (c.touches > bc.touches || c.touches == bc.touches && c.breaks > bc.breaks) {
+			continue
+		}
+		judge(v, &c)
+		if i == 0 || c.beats(bc) {
 			best, bc = v, c
 		}
 	}
