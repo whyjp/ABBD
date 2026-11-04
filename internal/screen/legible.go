@@ -103,6 +103,8 @@ type junction struct {
 type countLabel struct {
 	at   fpt
 	text string
+	// group is the stroke group of the wire the count is drawn with.
+	group int
 }
 
 func num(s string) float64 {
@@ -132,6 +134,8 @@ func readSVG(src string) (sheet, error) {
 	var inText bool
 	var title *string
 	var count *countLabel
+	// last is the group of the path read last: a count follows its wire.
+	last := -1
 	for {
 		tok, err := dec.Token()
 		if err != nil {
@@ -139,6 +143,13 @@ func readSVG(src string) (sheet, error) {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
+			// A count follows its wire's path, past only the path's title
+			// and origin marks; anything else between them leaves it unowned.
+			switch {
+			case t.Name.Local == "path", t.Name.Local == "title", t.Name.Local == "circle" && hasClass(t, "origin"), t.Name.Local == "text" && hasClass(t, "count"):
+			default:
+				last = -1
+			}
 			switch t.Name.Local {
 			case "svg":
 				s.width, s.height = num(attr(t, "width")), num(attr(t, "height"))
@@ -158,7 +169,7 @@ func readSVG(src string) (sheet, error) {
 				}
 			case "text":
 				if hasClass(t, "count") {
-					s.counts = append(s.counts, countLabel{at: fpt{num(attr(t, "x")), num(attr(t, "y"))}})
+					s.counts = append(s.counts, countLabel{at: fpt{num(attr(t, "x")), num(attr(t, "y"))}, group: last})
 					count = &s.counts[len(s.counts)-1]
 				}
 				inText = group != nil && !hasClass(t, "sub")
@@ -187,6 +198,7 @@ func readSVG(src string) (sheet, error) {
 					} else {
 						s.groups++
 					}
+					last = g
 					for _, p := range parts {
 						s.strokes = append(s.strokes, stroke{group: g, class: attr(t, "class"), origin: attr(t, "data-origin"), pts: p})
 					}

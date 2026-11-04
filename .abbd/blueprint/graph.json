@@ -22370,7 +22370,31 @@
                 "Code": true
               },
               {
-                "Text": " reads.",
+                "Text": " reads. ",
+                "Code": false
+              },
+              {
+                "Text": "countAmbiguity",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "trace.go",
+                "Code": true
+              },
+              {
+                "Text": ") holds each ×N to rule 22: within reach of one stretch, clear of the next nearest, and nearer the ink of its own wire than any other wire's. ",
+                "Code": false
+              },
+              {
+                "Text": "readSVG",
+                "Code": true
+              },
+              {
+                "Text": " takes a count's wire to be the path just before it when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
                 "Code": false
               }
             ]

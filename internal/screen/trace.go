@@ -571,7 +571,26 @@ func countAmbiguity(s sheet, g ink) int {
 			ds = append(ds, d)
 		}
 		sort.Float64s(ds)
-		if len(ds) == 0 || ds[0] > countReach || len(ds) > 1 && ds[1]-ds[0] < countClear {
+		// It must also sit closer to the ink of its own wire than to any
+		// other wire's: a count drawn across another line counts that one.
+		own, other := 0.0, math.Inf(1)
+		if c.group >= 0 {
+			own = math.Inf(1)
+		}
+		for _, st := range s.strokes {
+			if c.group < 0 {
+				break
+			}
+			for i := 1; i < len(st.pts); i++ {
+				d := rectSegDist(box, st.pts[i-1], st.pts[i])
+				if st.group == c.group {
+					own = math.Min(own, d)
+				} else {
+					other = math.Min(other, d)
+				}
+			}
+		}
+		if len(ds) == 0 || ds[0] > countReach || len(ds) > 1 && ds[1]-ds[0] < countClear || other-own < countClear {
 			bad++
 		}
 	}
