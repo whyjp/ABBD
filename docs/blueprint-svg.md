@@ -158,7 +158,7 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 4. The traced bends and the paths that turn more than twice are tie-breakers. Between two changes that weigh the same, the one with fewer wins. Neither has a ceiling.
 5. The phantom pairs and the climbing lines have no ceiling of their own. J3 holds the phantoms at their debt, and rule 13 bounds the climbing lines.
 6. Any view whose weighed sum rises by more than 8 needs a look by eye, even when the totals fall. `eval/lint/compare.py` lists those views.
-7. After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure.
+7. After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure. It never raises a ceiling. A total the gate lets pass its ceiling, as the placement debt may by 2%, keeps the ceiling it had, so the slack cannot ratchet a ceiling up one kept change at a time. Raising a ceiling is an edit to the file that a review sees.
 
 `abbd lint` checks the first three over every view and fails when one breaks. With a VIEW it checks only the first. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. When the criteria were set, the fixtures' 274 views measured as follows.
 

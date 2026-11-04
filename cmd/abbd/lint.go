@@ -57,17 +57,17 @@ func (e env) lint(pos []string) error {
 	if len(views) == 0 {
 		return fmt.Errorf("no view is named %q; abbd lint --list names them", only)
 	}
+	debt, err := e.st.LoadLintDebt()
+	if err != nil {
+		return err
+	}
 	if e.record {
-		d := screen.Record(views)
+		d := screen.Record(views, debt)
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
 		}
 		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, placement %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["placement"], store.Dir)
 		return nil
-	}
-	debt, err := e.st.LoadLintDebt()
-	if err != nil {
-		return err
 	}
 	every := only == ""
 	r := lintReport{Schema: lintSchema, Criteria: screen.Criteria(), Views: views, Failures: screen.Gate(views, debt, every), Lowerable: screen.Lowerable(views, debt, every)}

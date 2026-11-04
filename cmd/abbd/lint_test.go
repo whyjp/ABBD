@@ -137,6 +137,26 @@ func TestLintHoldsTheTotalsToTheirCeilings(t *testing.T) {
 	}
 }
 
+// --record lowers a ceiling above what the drawings measure and keeps one
+// below it, so the slack the gate allows never ratchets a ceiling up.
+func TestLintRecordNeverRaisesACeiling(t *testing.T) {
+	root := copyFixture(t, "self", "ceilings:\n  weighed: 999999\n  placement: 1\n")
+	if code, out := lintAt(t, root, "--record"); code != exitOK {
+		t.Fatalf("exit %d:\n%s", code, out)
+	}
+	var r lintReport
+	code, out := lintAt(t, root, "--json")
+	if err := json.NewDecoder(strings.NewReader(out)).Decode(&r); err != nil {
+		t.Fatalf("exit %d: %v\n%s", code, err, out)
+	}
+	if r.Ceilings["placement"] != 1 || r.Totals.Placement <= 1 {
+		t.Errorf("placement ceiling %d with %d measured, want the ceiling kept at 1", r.Ceilings["placement"], r.Totals.Placement)
+	}
+	if r.Ceilings["weighed"] != r.Totals.Weighed {
+		t.Errorf("weighed ceiling %d, want it lowered to the %d measured", r.Ceilings["weighed"], r.Totals.Weighed)
+	}
+}
+
 // This repository's own blueprint keeps the gate its debt file sets.
 func TestLintPassesThisRepository(t *testing.T) {
 	if code, out := lintAt(t, filepath.Join("..", "..")); code != exitOK {

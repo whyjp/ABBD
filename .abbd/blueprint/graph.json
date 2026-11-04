@@ -7778,7 +7778,7 @@
                 "Code": true
               },
               {
-                "Text": " of every view with ",
+                "Text": " of every view, given the debt file it replaces, with ",
                 "Code": false
               },
               {
@@ -22242,7 +22242,7 @@
                 "Code": true
               },
               {
-                "Text": " the debt of what is measured now. ",
+                "Text": " the debt of what is measured now, each ceiling at the lower of its total and the ceiling the old debt sets, so a ceiling never rises on its own. ",
                 "Code": false
               },
               {
