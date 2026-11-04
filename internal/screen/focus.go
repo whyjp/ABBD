@@ -147,13 +147,13 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m, centres(full), tactic{})
+		f := planOverview(units, m, centres(full))
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
 			}
 			return "#" + focusID("", base(id))
-		}, nil)
+		})
 		out = append(out, o.focus("", "#overview", "모듈과 계약", m, d))
 	}
 	return out

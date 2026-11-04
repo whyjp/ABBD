@@ -16,6 +16,8 @@ const (
 	// longer than the shortest grid path between its ends one line may run.
 	backShare   = 0.2
 	detourLimit = 240
+	// stepCrossings is how many crossings one staircase step is worth.
+	stepCrossings = 4
 )
 
 // weight is what one routing costs a reader. touches counts pairs of strokes
@@ -33,23 +35,25 @@ func (w weight) beats(o weight) bool {
 
 // cost is what a whole drawn view costs a reader, in the order a reader
 // pays it: ink that joins places no relation joins (rule 18), then breaks
-// of rules 13 and 15, then the staircases along each line's way, then
-// crossings, lines that turn more than twice, braid, and the dashed ink of
-// the lines that climb (rule 13). breaks counts the lines that run more
-// than detourLimit out of their way and the back lines past rule 13's
-// bound. jogs counts, once per pair of places, the stretches between two
-// turns shorter than jogUnder, as the trace in trace_test.go counts them
-// on the page.
+// of rules 13 and 15, then the staircase steps along each line's way with
+// its crossings, then lines that turn more than twice, braid, and the
+// dashed ink of the lines that climb (rule 13). breaks counts the lines
+// that run more than detourLimit out of their way and the back lines past
+// rule 13's bound. steps counts, once per pair of places, each turn past
+// the second and each stretch between two turns shorter than jogUnder (a
+// jog), so a line that turns many times reads as a staircase however long
+// its steps.
 type cost struct {
-	touches, breaks, jogs, crossings, over2, braid, climb int
+	touches, breaks, steps, crossings, over2, braid, climb int
 }
 
 // beats says c reads better than o: the first measure in which they differ
-// is lower in c. A staircase costs a reader more than a crossing, so a
-// drawing with fewer jogs wins whatever it crosses.
+// is lower in c. A staircase step costs a reader stepCrossings crossings,
+// so a drawing with fewer steps wins unless it buys each step it saves with
+// more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, c.jogs, c.crossings, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, o.jogs, o.crossings, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
@@ -78,10 +82,11 @@ func costOf(r routing, reqs []wireReq) cost {
 		pts := best[k]
 		if len(pts) > 4 {
 			c.over2++
+			c.steps += len(pts) - 4
 		}
 		for i := 2; i < len(pts)-1; i++ {
 			if span(pts[i-1], pts[i]) < jogUnder {
-				c.jogs++
+				c.steps++
 			}
 		}
 	}

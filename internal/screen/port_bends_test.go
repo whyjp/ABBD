@@ -11,7 +11,7 @@ import (
 // in `src/`. A person draws that line straight up, or with one bend. Both
 // may only fall (docs/blueprint-svg.md, "Known gaps", "Seated chips in
 // src/").
-const portBendDebt, preloadBendDebt = 782, 2
+const portBendDebt, preloadBendDebt = 777, 2
 
 func TestFramePortLinesTurnLittle(t *testing.T) {
 	over, preload := 0, -1

@@ -120,8 +120,8 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 // in, and where a sweep pulls an item among the items it joins. Each finds
 // orders the others miss, and the count order minimizes is not the one a
 // reader sees: it leaves out the frame's chips, the buses and the lines
-// that climb. So a view is drawn with every tactic and keeps the drawing
-// that reads best (choose).
+// that climb. So a unit's view is drawn with every tactic and keeps the
+// drawing that reads best (choose). The overview takes the plain tactic.
 type tactic struct {
 	// reversed starts every row in reverse.
 	reversed bool

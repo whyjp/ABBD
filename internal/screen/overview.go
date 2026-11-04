@@ -379,7 +379,7 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // overview, then keeps only that module's part of it and lays that out: the
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {
+func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -506,7 +506,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tact
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)
+	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})
 	o.layout.top = padY
 	return o
 }
@@ -654,7 +654,7 @@ func chipRowWidth(labels []string) int {
 	return sum
 }
 
-func (o *overview) draw(href func(model.ID) string, read *cost) Drawing {
+func (o *overview) draw(href func(model.ID) string) Drawing {
 	l := &o.layout
 	isModule := func(id model.ID) bool { return slices.Contains(o.modules, id) }
 
@@ -808,7 +808,6 @@ func (o *overview) draw(href func(model.ID) string, read *cost) Drawing {
 	}
 	routed := l.route(reqs)
 	paths := routed.drawn
-	weighed(read, routed, reqs)
 	at = chips()
 
 	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
