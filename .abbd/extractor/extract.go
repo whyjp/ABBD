@@ -929,7 +929,7 @@ func edgeKeySig() (string, error) {
 }
 
 func blueprintSig() (string, error) {
-	names := []string{"<ID>.html"}
+	names := []string{"<ID>.html", "flow-<KEY>.html", "stack-<KEY>.html", "table-<KEY>.html"}
 	for _, path := range []string{"internal/screen/page.go", "internal/screen/site.go"} {
 		for _, d := range files[path].ast.Decls {
 			g, ok := d.(*ast.GenDecl)
