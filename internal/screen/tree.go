@@ -14,16 +14,34 @@ import (
 type tree struct {
 	units    map[model.ID]model.Unit
 	children map[model.ID][]model.ID
-	// vias say how each stored relation arises, by its key.
-	vias map[string]model.Via
+	// vias say how each stored relation arises, and phrases what crosses
+	// it, by its key.
+	vias    map[string]model.Via
+	phrases map[string]phrase
+}
+
+// phrase is a live note's words and the origin of whoever wrote them.
+type phrase struct {
+	text   string
+	origin model.Origin
+}
+
+// livePhrase is the note that names the edge while its code is as quoted.
+// A drifted one waits for a reader to refresh it.
+func livePhrase(u model.Unit, kind model.RelationKind, to model.ID) (model.PhraseNote, bool) {
+	n, ok := u.Note(kind, to)
+	return n, ok && n.Status() == model.Live
 }
 
 func newTree(units []model.Unit) tree {
-	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}}
+	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]phrase{}}
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 		for _, r := range u.Relations {
 			t.vias[key(u.ID, r.Kind, r.To)] = r.Via
+			if n, ok := livePhrase(u, r.Kind, r.To); ok {
+				t.phrases[key(u.ID, r.Kind, r.To)] = phrase{n.Text, n.Writer.Origin()}
+			}
 		}
 	}
 	// A unit whose parent is not present sits at the top level, so nothing

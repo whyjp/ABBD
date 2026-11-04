@@ -65,6 +65,9 @@ const (
 	SignatureField      Field = "signature"
 	RelationField       Field = "relation"
 	ParentField         Field = "parent"
+	// PhraseField is a phrase note on an edge. The script and the group
+	// never write one.
+	PhraseField Field = "phrase"
 )
 
 // Precedence lists, per field, the writers that may claim it, highest first.
@@ -78,6 +81,7 @@ var Precedence = map[Field][]Writer{
 	SignatureField:      {Script, Reader, Supplement},
 	RelationField:       {Script, Human, Reader, Supplement},
 	ParentField:         {Human, Group, Script, Reader, Supplement},
+	PhraseField:         {Human, Reader, Supplement},
 }
 
 func rank(f Field, w Writer) int {
@@ -156,7 +160,8 @@ func (u *Unit) DropParents(ws ...Writer) {
 }
 
 // Mask hides lower writers' claims on one target of a unit, as long as the
-// claim's content still matches Digest. A changed claim shows again.
+// claim's content still matches Digest. A changed claim shows again, except
+// that a human's mask on an edge holds whatever the via.
 type Mask struct {
 	// Target is "unit", "parent", "purpose", "responsibility", or KIND.TO
 	// for a relation.
@@ -194,8 +199,12 @@ func Digest(parts ...string) string {
 // RelationTarget names the relation claims on one edge for a mask.
 func RelationTarget(kind RelationKind, to ID) string { return string(kind) + "." + string(to) }
 
+// PhraseTarget names the phrase notes on one edge for a mask.
+func PhraseTarget(kind RelationKind, to ID) string { return "phrase." + RelationTarget(kind, to) }
+
 // MaskDigest is the content a mask on target binds to for each kind of claim.
 func RelationDigest(r Relation) string  { return Digest(string(r.Kind), string(r.To), string(r.Via)) }
+func PhraseDigest(n PhraseNote) string  { return Digest(n.Text) }
 func ParentDigest(c ParentClaim) string { return Digest(string(c.To)) }
 func FactDigest(f Fact) string          { return Digest(f.Value) }
 
@@ -203,6 +212,16 @@ func FactDigest(f Fact) string          { return Digest(f.Value) }
 func (u Unit) Masked(target string, w Writer, digest string) bool {
 	return slices.ContainsFunc(u.Masks, func(m Mask) bool {
 		return m.Target == target && m.Digest == digest && Hides(m.Writer, w)
+	})
+}
+
+// RelationMasked reports whether a mask hides the claim. A human's mask holds
+// the whole edge, whatever the via, so a lower writer cannot bring the edge
+// back by naming another via. A reader's mask stays bound to the content.
+func (u Unit) RelationMasked(r Relation) bool {
+	target := RelationTarget(r.Kind, r.To)
+	return u.Masked(target, r.Writer, RelationDigest(r)) || slices.ContainsFunc(u.Masks, func(m Mask) bool {
+		return m.Target == target && m.Writer == Human && Hides(Human, r.Writer)
 	})
 }
 
@@ -224,6 +243,24 @@ func (u *Unit) PutRelation(r Relation) {
 	u.DropRelations(func(o Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer })
 	u.Hidden = append(u.Hidden, r)
 	u.resolve()
+}
+
+// PutNote replaces the writer's phrase note on n's edge with n.
+func (u *Unit) PutNote(n PhraseNote) {
+	u.DropNotes(func(o PhraseNote) bool { return o.To == n.To && o.Kind == n.Kind && o.Writer == n.Writer })
+	u.Phrases = append(u.Phrases, n)
+	sort.SliceStable(u.Phrases, func(i, j int) bool {
+		a, b := u.Phrases[i], u.Phrases[j]
+		return a.To < b.To || a.To == b.To && a.Kind < b.Kind
+	})
+}
+
+// DropNotes removes every phrase note that drop matches.
+func (u *Unit) DropNotes(drop func(PhraseNote) bool) {
+	u.Phrases = slices.DeleteFunc(slices.Clone(u.Phrases), drop)
+	if len(u.Phrases) == 0 {
+		u.Phrases = nil
+	}
 }
 
 // DropRelations removes every claim, shown or hidden, that drop matches.
@@ -263,7 +300,7 @@ func (u *Unit) resolve() {
 	}
 	key := func(r Relation) int {
 		k := order(RelationField, r.Writer, r.Status())
-		if u.Masked(RelationTarget(r.Kind, r.To), r.Writer, RelationDigest(r)) {
+		if u.RelationMasked(r) {
 			k += 1 << 20
 		}
 		return k
@@ -278,7 +315,7 @@ func (u *Unit) resolve() {
 	u.Relations, u.Hidden = nil, nil
 	for i, r := range all {
 		first := i == 0 || all[i-1].To != r.To || all[i-1].Kind != r.Kind
-		if first && !u.Masked(RelationTarget(r.Kind, r.To), r.Writer, RelationDigest(r)) {
+		if first && !u.RelationMasked(r) {
 			u.Relations = append(u.Relations, r)
 		} else {
 			u.Hidden = append(u.Hidden, r)

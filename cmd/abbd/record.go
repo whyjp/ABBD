@@ -61,8 +61,13 @@ func (e env) save(u model.Unit) error {
 }
 
 // recordRelation writes a coupling. A reader's finding is INFERRED and rests
-// on live evidence; with --source it is what a human stated. Each writer
-// holds its own claim on an edge, and the precedence table picks the shown one.
+// on live evidence. With --source it is what a human stated. Each writer
+// holds its own claim on an edge, and the precedence table picks the shown
+// one. With --phrase on an edge that already shows, whoever's claim shows
+// there, it stores only the writer's phrase note and leaves every claim's
+// evidence, via and origin as they were. On an edge that does not show yet,
+// it records the claim and the note. A phrase labels a line and never makes,
+// keeps or changes one.
 func (e env) recordRelation(pos []string) error {
 	edge, err := model.ParseEdge(strings.Join(pos, "."))
 	if err != nil {
@@ -70,18 +75,20 @@ func (e env) recordRelation(pos []string) error {
 	}
 	w := e.writer()
 	rel := model.Relation{To: edge.To, Kind: edge.Kind, Writer: w, Via: model.Via(e.via)}
+	note := model.PhraseNote{To: edge.To, Kind: edge.Kind, Writer: w, Text: e.phrase}
 	if w == model.Human {
-		rel.Source = e.sourceRef()
+		rel.Source, note.Source = e.sourceRef(), e.sourceRef()
 	}
 	switch {
 	case edge.From == edge.To:
 		return fmt.Errorf("%s couples a unit to itself", edge)
-	case w == model.Reader && rel.Via == "":
-		return fmt.Errorf("say how the coupling arises with --via")
 	case w == model.Reader && len(e.evidence) == 0:
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE, or give the --source where a human stated it")
 	}
 	if err := rel.Via.Validate(); err != nil {
+		return err
+	}
+	if err := model.ValidatePhrase(note.Text, rel.Via); err != nil {
 		return err
 	}
 	if err := edge.Joins(); err != nil {
@@ -98,21 +105,73 @@ func (e env) recordRelation(pos []string) error {
 	if rel.Evidence, err = e.citations(); err != nil {
 		return err
 	}
+	note.Evidence = slices.Clone(rel.Evidence)
+	held := ""
 	for _, o := range u.Claims() {
+		if o.To != edge.To || o.Kind != edge.Kind {
+			continue
+		}
+		if err := model.ValidatePhrase(note.Text, o.Via); err != nil {
+			return err
+		}
 		switch {
-		case o.To != edge.To || o.Kind != edge.Kind:
 		case o.Writer == model.Script:
-			return fmt.Errorf("%s is already EXTRACTED from the code", edge)
+			held = fmt.Sprintf("%s is already EXTRACTED from the code", edge)
 		case o.Writer == model.Human && w == model.Reader:
-			return fmt.Errorf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, o.Source)
+			held = fmt.Sprintf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, o.Source)
 		}
 	}
-	u.PutRelation(rel)
+	phrased := note.Text != ""
+	labels := phrased && u.Shown(edge.Kind, edge.To)
+	phraseKey := model.PhraseTarget(edge.Kind, edge.To)
+	switch {
+	case phrased && u.Masked(phraseKey, w, model.PhraseDigest(note)):
+		return fmt.Errorf("%s: a human retracted the phrase %q (%s)", edge, note.Text, maskReason(u, phraseKey, model.PhraseDigest(note)))
+	case labels:
+	case held != "" && !phrased:
+		return fmt.Errorf("%s; name what crosses it with --phrase", held)
+	case held != "":
+		return fmt.Errorf("%s", held)
+	case w == model.Reader && rel.Via == "":
+		return fmt.Errorf("say how the coupling arises with --via")
+	case u.RelationMasked(rel):
+		return fmt.Errorf("%s: a human retracted it (%s); a reader's finding does not bring it back, whatever its via", edge, maskReason(u, model.RelationTarget(edge.Kind, edge.To), model.RelationDigest(rel)))
+	}
+	if !labels {
+		u.PutRelation(rel)
+	}
+	if phrased {
+		u.PutNote(note)
+	}
 	if err := e.save(u); err != nil {
 		return err
 	}
-	fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, w.Origin())
+	if !labels {
+		fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, w.Origin())
+	}
+	if phrased {
+		fmt.Fprintf(e.stdout, "recorded %s.phrase, %s: %q names what crosses it while its evidence is live and a claim shows on the edge\n", edge, w.Origin(), note.Text)
+	}
+	if labels {
+		fmt.Fprintf(e.stdout, "the edge already shows, so its claims stay as they were\n")
+	}
 	return nil
+}
+
+// maskReason is why the mask over the content was stored, or else why a
+// human's mask on the whole target was.
+func maskReason(u model.Unit, target, digest string) string {
+	for _, m := range u.Masks {
+		if m.Target == target && m.Digest == digest {
+			return m.Reason
+		}
+	}
+	for _, m := range u.Masks {
+		if m.Target == target && m.Writer == model.Human {
+			return m.Reason
+		}
+	}
+	return ""
 }
 
 // recordUnit writes a unit the extraction script cannot see. Its evidence
@@ -308,9 +367,15 @@ type target struct {
 	id    model.ID
 	field string // "", "parent", "purpose" or "responsibility"
 	edge  *model.Edge
+	// phrase says the target is the phrase note on edge, not its claims.
+	phrase bool
 }
 
 func parseTarget(s string) (target, error) {
+	if e, ok := strings.CutSuffix(s, ".phrase"); ok && strings.Count(e, ".") == 2 {
+		edge, err := model.ParseEdge(e)
+		return target{id: edge.From, edge: &edge, phrase: true}, err
+	}
 	if strings.Count(s, ".") == 2 {
 		edge, err := model.ParseEdge(s)
 		return target{id: edge.From, edge: &edge}, err
@@ -322,7 +387,7 @@ func parseTarget(s string) (target, error) {
 	switch field {
 	case "", "parent", "purpose", "responsibility":
 	default:
-		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility or an edge such as MOD-0001.depends_on.MOD-0002", s)
+		return target{}, fmt.Errorf("%q is not ID, ID.parent, ID.purpose, ID.responsibility, an edge such as MOD-0001.depends_on.MOD-0002 or its phrase, EDGE.phrase", s)
 	}
 	return target{id: model.ID(id), field: field}, nil
 }
@@ -362,6 +427,19 @@ func (e env) refresh(s string) error {
 		return err
 	}
 	switch {
+	case t.phrase:
+		var base *model.PhraseNote
+		for _, n := range u.Phrases {
+			if n.To == t.edge.To && n.Kind == t.edge.Kind && (n.Writer == model.Reader || n.Writer == model.Supplement && base == nil) {
+				base = &n
+			}
+		}
+		if base == nil {
+			return fmt.Errorf("%s has no INFERRED phrase to refresh", s)
+		}
+		n := *base
+		n.Writer, n.Evidence = model.Reader, es
+		u.PutNote(n)
 	case t.edge != nil:
 		var base *model.Relation
 		for _, r := range u.Claims() {
@@ -401,6 +479,10 @@ func (e env) refresh(s string) error {
 	return nil
 }
 
+// partial is a refusal after the command saved part of what it was asked,
+// so the blueprint is still rendered for what it saved.
+type partial struct{ error }
+
 // retract removes the writer's own claim on the target and masks each lower
 // INFERRED claim on it, bound to that claim's content. Run again, it finds
 // nothing left to do.
@@ -426,18 +508,42 @@ func (e env) retract(s string) error {
 		return u.PutMask(model.Mask{Target: target, Writer: w, Digest: digest, Reason: reason, Source: e.sourceRef()})
 	}
 	changed, held := false, ""
+	// what is what an edge retraction took, said when the edge still shows.
+	what := ""
 	switch {
 	case t.edge != nil:
-		key := model.RelationTarget(t.edge.Kind, t.edge.To)
+		// Retracting a line retracts the words on it too.
+		key := model.PhraseTarget(t.edge.Kind, t.edge.To)
+		for _, n := range slices.Clone(u.Phrases) {
+			switch {
+			case n.To != t.edge.To || n.Kind != t.edge.Kind:
+			case n.Writer == w:
+				u.DropNotes(func(o model.PhraseNote) bool { return o.To == n.To && o.Kind == n.Kind && o.Writer == w })
+				changed = true
+			case model.Hides(w, n.Writer):
+				changed = mask(key, model.PhraseDigest(n)) || changed
+			case t.phrase && !u.Masked(key, n.Writer, model.PhraseDigest(n)):
+				held = string(n.Writer)
+			}
+		}
+		if t.phrase {
+			break
+		}
+		if changed {
+			what = "the phrase"
+		}
+		key = model.RelationTarget(t.edge.Kind, t.edge.To)
 		claims := slices.DeleteFunc(u.Claims(), func(r model.Relation) bool { return r.To != t.edge.To || r.Kind != t.edge.Kind })
 		for _, r := range claims {
 			switch {
 			case r.Writer == w:
 				u.DropRelations(func(o model.Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == w })
-				changed = true
+				changed, what = true, fmt.Sprintf("the %s's claim", w)
 			case model.Hides(w, r.Writer):
-				changed = mask(key, model.RelationDigest(r)) || changed
-			case !u.Masked(key, r.Writer, model.RelationDigest(r)):
+				if mask(key, model.RelationDigest(r)) {
+					changed, what = true, "the lower claims"
+				}
+			case !u.RelationMasked(r):
 				held = string(r.Writer)
 			}
 		}
@@ -478,8 +584,17 @@ func (e env) retract(s string) error {
 			held = string(u.Name.Writer)
 		}
 	}
+	fixed := map[bool]string{true: ", and a wrong code fact is fixed in the extractor"}[held == string(model.Script) || held == string(model.Group)]
 	if held != "" && !changed {
-		return fmt.Errorf("%s is the %s's; a %s does not retract it%s", s, held, w, map[bool]string{true: ", and a wrong code fact is fixed in the extractor"}[held == string(model.Script) || held == string(model.Group)])
+		return fmt.Errorf("%s is the %s's; a %s does not retract it%s", s, held, w, fixed)
+	}
+	if held != "" && what != "" {
+		// The edge still shows, so the command did not do what it was asked
+		// and says what it did instead.
+		if err := e.save(u); err != nil {
+			return err
+		}
+		return partial{fmt.Errorf("retracted %s on %s. The edge is the %s's and stays%s", what, s, held, fixed)}
 	}
 	if !changed {
 		fmt.Fprintf(e.stdout, "%s is already retracted\n", s)

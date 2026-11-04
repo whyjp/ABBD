@@ -39,6 +39,7 @@ type rawRelation struct {
 	To       string             `json:"to"`
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
+	Phrase   string             `json:"phrase,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
 }
@@ -52,6 +53,18 @@ type rawResult struct {
 type Result struct {
 	Units     []Unit
 	Relations []Relation
+	// Phrases are the supplement's words for what crosses its edges.
+	Phrases []Phrase
+}
+
+// Phrase is a supplement's words for what crosses an edge, by key. It
+// becomes a phrase note, never a claim on the edge.
+type Phrase struct {
+	From, To string
+	Kind     model.RelationKind
+	Writer   model.Writer
+	Text     string
+	Evidence []model.Evidence
 }
 
 type Relation struct {
@@ -152,6 +165,12 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err := rr.Via.Validate(); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
+		if rr.Phrase != "" && !foreignParents {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) carries a phrase; a phrase is a reader's words, so the supplement gives it and the script does not", i, rr.From, rr.To)
+		}
+		if err := model.ValidatePhrase(rr.Phrase, rr.Via); err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
 		evidence, err := NormalizeEvidence(rr.Evidence)
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
@@ -159,6 +178,14 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		keys, err := entryKeys(rr.Entries, entries[rr.To])
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
+		if rr.Phrase != "" && len(evidence) == 0 {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives a phrase without evidence; a phrase rests on the code it quotes", i, rr.From, rr.To)
+		}
+		if j := slices.IndexFunc(res.Phrases, func(o Phrase) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); rr.Phrase != "" && j >= 0 && res.Phrases[j].Text != rr.Phrase {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives two phrases for one edge, %q and %q; keep one", i, rr.From, rr.To, res.Phrases[j].Text, rr.Phrase)
+		} else if rr.Phrase != "" && j < 0 {
+			res.Phrases = append(res.Phrases, Phrase{From: rr.From, To: rr.To, Kind: rr.Kind, Text: rr.Phrase, Evidence: evidence})
 		}
 		// One claim holds an edge, so the entries of two lines of one edge add
 		// up, and a line that names none uses the whole contract.

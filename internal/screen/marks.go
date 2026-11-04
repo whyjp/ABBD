@@ -5,6 +5,7 @@ import (
 	"hash/fnv"
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -282,13 +283,6 @@ func heads(ws []Wire, paths []drawn) []box {
 	return out
 }
 
-// viaWords are the words a line's label shows for how its relations arise.
-var viaWords = map[model.Via]string{
-	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
-	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
-	"build-feature": "빌드 기능",
-}
-
 const (
 	// labelPx is a label's font size, and labelH the height its glyphs
 	// take, from 9px above its baseline to 1px below. labelPad is how far
@@ -296,9 +290,12 @@ const (
 	// how far it stands off its line, and labelRoom how far it keeps from
 	// every other mark.
 	labelPx, labelH, labelPad, labelOff, labelRoom = 11, 10, 10, 3, 2
-	// labelMax is the widest a label may be. A longer word is left to the
-	// tooltip.
-	labelMax = 60
+	// labelMax is the widest a label may be, about a phrase of
+	// model.PhraseMax letters. A longer one is left to the tooltip.
+	labelMax = 170
+	// most is the mark after a phrase that names most of a line's
+	// relations but not all.
+	most = " 등"
 )
 
 // Label is a word set upright beside one straight stretch of a line,
@@ -306,26 +303,62 @@ const (
 type Label struct {
 	S    string
 	X, Y int
+	// Said marks a phrase, which is set in italic so it reads apart from a
+	// via word.
+	Said bool `json:",omitempty"`
 }
 
-// area is where a label's glyphs stand.
+// area is where a label's glyphs stand. They are centred on X, so a word of
+// odd width reaches half a pixel past X - tw/2, and the box takes that pixel.
 func (l Label) area() box {
-	tw := textWidth(l.S, labelPx)
-	return box{l.X - tw/2, l.Y - labelH + 1, tw, labelH}
+	half := (textWidth(l.S, labelPx) + 1) / 2
+	return box{l.X - half, l.Y - labelH + 1, 2 * half, labelH}
 }
 
-// via is the word for how every relation a wire stands for arises, or ""
-// when they arise in different ways or the store does not say.
-func via(t tree, rels []string) string {
-	word := ""
+// word is what a wire's label says about the relations it stands for: the
+// phrase they all share; else, when more than half of them carry a phrase,
+// the phrase that names more than half of those, marked with 등 for the
+// rest; else the via word they all share; else "".
+func word(t tree, rels []string) string {
+	n, phrased := map[string]int{}, 0
+	for _, r := range rels {
+		if p := t.phrases[r].text; p != "" {
+			n[p]++
+			phrased++
+		}
+	}
+	for p, c := range n {
+		switch {
+		case c == len(rels):
+			return p
+		case 2*c > phrased && 2*phrased > len(rels):
+			return p + most
+		}
+	}
+	via := ""
 	for i, r := range rels {
-		w := viaWords[t.vias[r]]
-		if w == "" || i > 0 && w != word {
+		w := t.vias[r].Word()
+		if w == "" || i > 0 && w != via {
 			return ""
 		}
-		word = w
+		via = w
 	}
-	return word
+	return via
+}
+
+// said lists the phrases of a wire's relations, each once and with whose
+// words they are, for its tooltip.
+func said(t tree, rels []string) []string {
+	var out []string
+	for _, r := range rels {
+		if p := t.phrases[r]; p.text != "" {
+			if s := fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)]); !slices.Contains(out, s) {
+				out = append(out, s)
+			}
+		}
+	}
+	slices.Sort(out)
+	return out
 }
 
 func hit(a, b box) bool {
@@ -361,7 +394,7 @@ func (d *Drawing) marked(heads []box) []box {
 	return append(out, heads...)
 }
 
-// labels sets each line's word upright beside a straight stretch of its own
+// labels sets each line's word (see word) upright beside a straight stretch of its own
 // ink long enough to hold it, on the canvas and clear of every other mark
 // and line. A horizontal stretch holds the word above or below it, a
 // vertical one beside it. Horizontal stretches are tried first, nearest the
@@ -375,7 +408,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	canvas := box{0, 0, d.Width, d.Height}
 	words := make([]string, len(d.Wires))
 	for i, w := range d.Wires {
-		words[i] = via(t, w.Rels)
+		words[i] = word(t, w.Rels)
+		if ps := said(t, w.Rels); len(ps) > 0 {
+			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
+		}
 	}
 	// whole says every path of a net says one word, so the net is labelled
 	// as one line.
@@ -403,6 +439,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if tw > labelMax {
 			continue
 		}
+		said := slices.ContainsFunc(d.Wires[i].Rels, func(r string) bool { return t.phrases[r].text == strings.TrimSuffix(s, most) })
 		var mine []seg
 		for _, g := range segs {
 			if mate(i, g.wire) {
@@ -437,8 +474,14 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				if o == g {
 					continue
 				}
-				// A line's stroke reaches 1.3px off its centre at most.
-				if hit(lb, grow(o.bounds(), labelRoom+1)) {
+				// A line's stroke reaches 1.3px off its centre at most. Another
+				// line parallel to g keeps more than twice the label's offset
+				// from it, so the label reads as g's and not the other's.
+				room := labelRoom + 1
+				if o.flat() == g.flat() && !mate(i, o.wire) {
+					room = 2*labelOff + 2
+				}
+				if hit(lb, grow(o.bounds(), room)) {
 					return false
 				}
 				along := o.flat() == g.flat() && (g.flat() && o.a.y == g.a.y || !g.flat() && o.a.x == g.a.x)
@@ -468,10 +511,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 					var opts []Label
 					if g.flat() {
 						y := g.a.y
-						opts = []Label{{s, c, y - labelOff - 1}, {s, c, y + labelOff + labelH - 1}}
+						opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
 					} else {
 						x, y := g.a.x, c+labelH/2-1
-						opts = []Label{{s, x + labelOff + tw/2 + 1, y}, {s, x - labelOff - tw/2 - 1, y}}
+						opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
 					}
 					for _, l := range opts {
 						if clear(g, l, c-half, c+half) {

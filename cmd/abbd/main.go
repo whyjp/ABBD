@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -29,9 +30,15 @@ abbd install [--root DIR]            write or replace the abbd block in the proj
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
                                      IDs, write the state and render the blueprint; prints
                                      counts and what needs attention, --verbose every unit
-abbd record relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
-                                     a reader's coupling, INFERRED while its evidence is live
-abbd record relation FROM KIND TO --source REF [--via VIA] [--evidence ...] [--root DIR]
+abbd record relation FROM KIND TO --via VIA [--phrase TEXT] --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     a reader's coupling, INFERRED while its evidence is live;
+                                     --phrase names in at most 4 words and 24 characters what
+                                     crosses it, such as a route, a message or a query, and the
+                                     blueprint draws it beside the line, as a note with its own
+                                     origin; on an edge that already shows, from any writer, the
+                                     note is all it stores and every claim stays as it was;
+                                     it never brings back a coupling a human retracted
+abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--evidence ...] [--root DIR]
                                      a coupling a human stated, USER_STATED
 abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
                                      a unit the script cannot see, INFERRED
@@ -41,11 +48,13 @@ abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
                                      a human's reason for a decision a reader stored, USER_STATED
 abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      refresh a reader's claim with live evidence; TARGET is an ID,
-                                     ID.parent or an edge FROM.KIND.TO; a supplement claim gets a
-                                     reader's claim above it
+                                     ID.parent, an edge FROM.KIND.TO or its phrase
+                                     FROM.KIND.TO.phrase; a supplement claim gets a reader's
+                                     claim above it
 abbd retract TARGET --reason TEXT [--source REF] [--root DIR]
                                      remove your own claim on TARGET (ID, ID.parent, ID.purpose,
-                                     ID.responsibility or an edge) and hide the lower INFERRED
+                                     ID.responsibility, an edge with its phrases, or an edge's
+                                     phrase FROM.KIND.TO.phrase) and hide the lower INFERRED
                                      claims on it until their content changes; a human's with --source
 abbd migrate [--supplement FILE] [--root DIR]
                                      convert an old-format state once, telling the supplement's
@@ -132,7 +141,8 @@ abbd status [--check] [--root DIR]   whether the state and the blueprint are CUR
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
                                      text, a note, a flow's step, a stack's layer or a table's row
-                                     is STALE or an evidence item drifted, for a hook or CI;
+                                     is STALE, an evidence item drifted or a phrase names no
+                                     line, for a hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
                                      error, or no graph.json), and says which; dead evidence, an
@@ -161,6 +171,7 @@ type env struct {
 type opts struct {
 	root, supplement string
 	via, parent      string
+	phrase           string
 	responsibility   string
 	value, src       string
 	reason           string
@@ -180,6 +191,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"via": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call")
+	},
+	"phrase": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
 	},
 	"evidence": func(fs *flag.FlagSet, o *opts) {
 		fs.Var(&o.evidence, "evidence", "PATH:LINES:QUOTE, a verbatim excerpt of the code; repeat for more")
@@ -231,7 +245,7 @@ type command struct {
 var commands = map[string]command{
 	"setup":           {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, writes: true, run: func(e env, _ []string) error { return e.setup() }},
 	"sync":            {flags: []string{"root", "verbose"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
-	"record relation": {flags: []string{"root", "via", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
+	"record relation": {flags: []string{"root", "via", "phrase", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},
@@ -308,8 +322,12 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
 	c := commands[inv.name]
-	if err := c.run(e, inv.pos); err != nil {
-		fmt.Fprintln(stderr, "abbd:", err)
+	ran := c.run(e, inv.pos)
+	if ran != nil {
+		fmt.Fprintln(stderr, "abbd:", ran)
+	}
+	// A partial refusal saved part of the state, so it is rendered too.
+	if ran != nil && !errors.As(ran, new(partial)) {
 		return exitError
 	}
 	if c.writes {
@@ -317,6 +335,9 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "abbd: rendering the blueprint:", err)
 			return exitError
 		}
+	}
+	if ran != nil {
+		return exitError
 	}
 	return exitOK
 }

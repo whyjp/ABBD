@@ -54,6 +54,22 @@ SYNTH = {
     "add-file": lambda root:open(os.path.join(root, "internal/gitx/extra.go"), "w").write("package gitx\n\nfunc extra() {}\n"),
 }
 
+# A reader names what crosses one relation. Each case records one phrase
+# through the CLI, the way a reader does, and sync then renders it.
+PHRASES = {
+    "phrase-overview": ["MOD-0001", "depends_on", "MOD-0054", "--via", "call", "--phrase", "group fallback",
+                        "--evidence", "cmd/abbd/main.go::res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)"],
+    "phrase-inside": ["MOD-0050", "depends_on", "MOD-0051", "--via", "call", "--phrase", "live links",
+                      "--evidence", "internal/topology/impact.go::links := Links(units)"],
+}
+
+
+def record(argv):
+    return lambda root: run([ABBD, "record", "relation", *argv], root)
+
+
+SYNTH.update({k: record(v) for k, v in PHRASES.items()})
+
 
 def run(cmd, cwd):
     r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace")

@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 type Origin string
@@ -201,7 +202,10 @@ type Unit struct {
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
 	Hidden    []Relation `yaml:"hidden,omitempty"`
-	Masks     []Mask     `yaml:"masks,omitempty"`
+	// Phrases holds each writer's words for what crosses an edge from the
+	// unit. They label lines and never make, keep or bring back one.
+	Phrases []PhraseNote `yaml:"phrases,omitempty"`
+	Masks   []Mask       `yaml:"masks,omitempty"`
 	// Absent marks a unit that is no longer there, and AbsentReason says why.
 	Absent       bool         `yaml:"absent,omitempty"`
 	AbsentReason AbsentReason `yaml:"absent_reason,omitempty"`
@@ -242,11 +246,17 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 			}
 		}
 	}
+	for i := range u.Phrases {
+		for j := range u.Phrases[i].Evidence {
+			f(u.Phrases[i].Writer, &u.Phrases[i].Evidence[j])
+		}
+	}
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's and each shown relation's. An outranked
-// claim's items cannot change what anyone sees.
+// own, its winning parent claim's, each shown relation's, and the note
+// that names each shown edge. An outranked claim's items cannot change what
+// anyone sees.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -261,6 +271,66 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
 		}
 	}
+	for i := range u.Phrases {
+		n := &u.Phrases[i]
+		if s, ok := u.Note(n.Kind, n.To); ok && s.Writer == n.Writer && u.Shown(n.Kind, n.To) {
+			for j := range n.Evidence {
+				f(n.Writer, &n.Evidence[j])
+			}
+		}
+	}
+}
+
+// Shown reports whether a live or drifted claim shows on the edge.
+func (u Unit) Shown(kind RelationKind, to ID) bool {
+	return slices.ContainsFunc(u.Relations, func(r Relation) bool { return r.To == to && r.Kind == kind && !r.Dead })
+}
+
+// Note is the phrase note that names what crosses an edge: the first, by
+// status and then the table, that is neither dead nor masked. It says
+// nothing about whether the edge still shows; Dangling does.
+func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
+	var best PhraseNote
+	ok := false
+	for _, n := range u.Phrases {
+		s := n.Status()
+		if n.To != to || n.Kind != kind || s == Dead || u.Masked(PhraseTarget(kind, to), n.Writer, PhraseDigest(n)) {
+			continue
+		}
+		if !ok || order(PhraseField, n.Writer, s) < order(PhraseField, best.Writer, best.Status()) {
+			best, ok = n, true
+		}
+	}
+	return best, ok
+}
+
+// DanglingNote is a phrase note that names no line, by its edge and writer.
+type DanglingNote struct {
+	Edge   Edge
+	Writer Writer
+}
+
+// Dangling lists the edges of present units whose phrase note names no
+// line: the edge has no live or drifted claim, or its far end is gone. A
+// note never becomes the edge, so it waits until a writer who may retract it
+// does: a reader for a reader's or the supplement's, a human for a human's.
+func Dangling(units []Unit) []DanglingNote {
+	present := map[ID]bool{}
+	for _, u := range units {
+		present[u.ID] = !u.Absent
+	}
+	var out []DanglingNote
+	for _, u := range Present(units) {
+		for _, n := range u.Phrases {
+			if s, ok := u.Note(n.Kind, n.To); !ok || s.Writer != n.Writer {
+				continue
+			}
+			if !present[n.To] || !u.Shown(n.Kind, n.To) {
+				out = append(out, DanglingNote{Edge{From: u.ID, To: n.To, Kind: n.Kind}, n.Writer})
+			}
+		}
+	}
+	return out
 }
 
 // ShownParent is the parent claim Resolve picked, or nil.
@@ -338,6 +408,25 @@ func (u Unit) Validate() error {
 		}
 		claims[k] = true
 	}
+	notes := map[string]bool{}
+	for _, n := range u.Phrases {
+		if err := n.validate(); err != nil {
+			return fmt.Errorf("%s phrase on %s %s: %w", u.ID, n.Kind, n.To, err)
+		}
+		for _, r := range u.Claims() {
+			if r.To != n.To || r.Kind != n.Kind {
+				continue
+			}
+			if err := ValidatePhrase(n.Text, r.Via); err != nil {
+				return fmt.Errorf("%s phrase on %s %s: %w", u.ID, n.Kind, n.To, err)
+			}
+		}
+		k := fmt.Sprintf("%s %s %s", n.Kind, n.To, n.Writer)
+		if notes[k] {
+			return fmt.Errorf("%s: two phrases by the %s on %s %s", u.ID, n.Writer, n.Kind, n.To)
+		}
+		notes[k] = true
+	}
 	for _, m := range u.Masks {
 		if err := m.validate(); err != nil {
 			return fmt.Errorf("%s mask on %s: %w", u.ID, m.Target, err)
@@ -369,6 +458,86 @@ func (r Relation) validate() error {
 		return fmt.Errorf("an INFERRED coupling needs evidence")
 	}
 	return nil
+}
+
+// PhraseNote is one writer's words for what crosses an edge from the unit
+// that holds it, such as a route, a message or a query. It is not a claim on
+// the edge: it labels the line while one shows, and names nothing once none
+// does.
+type PhraseNote struct {
+	To       ID           `yaml:"to"`
+	Kind     RelationKind `yaml:"kind"`
+	Writer   Writer       `yaml:"writer"`
+	Source   string       `yaml:"source,omitempty"`
+	Text     string       `yaml:"text"`
+	Evidence []Evidence   `yaml:"evidence,omitempty"`
+}
+
+// Status is the note's: live while any item is, else drifted while any is.
+func (n PhraseNote) Status() Status { return StatusOf(n.Evidence) }
+
+func (n PhraseNote) validate() error {
+	if err := n.Kind.Validate(); err != nil {
+		return err
+	}
+	if !slices.Contains(Precedence[PhraseField], n.Writer) {
+		return fmt.Errorf("a phrase is a reader's or a human's words, not the %s's", n.Writer)
+	}
+	if err := sourced(n.Writer, n.Source); err != nil {
+		return err
+	}
+	if err := validateEvidence(n.Evidence); err != nil {
+		return err
+	}
+	switch {
+	case n.Writer.Origin() == Inferred && len(n.Evidence) == 0:
+		return fmt.Errorf("an INFERRED phrase needs evidence")
+	case n.Text == "":
+		return fmt.Errorf("a phrase needs its text")
+	}
+	return ValidatePhrase(n.Text, "")
+}
+
+const (
+	// PhraseMax and PhraseWords bound a phrase, so it fits beside a line.
+	PhraseMax, PhraseWords = 24, 4
+)
+
+// ValidatePhrase checks that a phrase is a few words on one line that say
+// more than its via does.
+func ValidatePhrase(p string, via Via) error {
+	switch {
+	case p == "":
+		return nil
+	case strings.TrimSpace(p) != p || strings.ContainsAny(p, "\n\r\t"):
+		return fmt.Errorf("phrase %q: one line, with no space at either end", p)
+	case utf8.RuneCountInString(p) > PhraseMax:
+		return fmt.Errorf("phrase %q: at most %d characters", p, PhraseMax)
+	case len(strings.Fields(p)) > PhraseWords:
+		return fmt.Errorf("phrase %q: at most %d words", p, PhraseWords)
+	case via != "" && via.restates(p):
+		return fmt.Errorf("phrase %q only repeats the via %s; name what crosses, such as a route, a message or a query", p, via)
+	}
+	return nil
+}
+
+// viaSynonyms are phrases that say no more than their via, in lower case.
+var viaSynonyms = map[Via][]string{
+	"import":        {"imports", "types", "model types", "type import", "package import", "uses"},
+	"call":          {"calls", "function call", "method call", "invokes", "invocation", "함수 호출"},
+	"data":          {"reads data", "writes data", "data flow"},
+	"config":        {"configuration", "settings", "options"},
+	"trait":         {"interface", "implements"},
+	"callback":      {"callbacks", "hook"},
+	"macro":         {"macros"},
+	"build-feature": {"build feature", "feature flag"},
+	"convention":    {"conventions", "naming"},
+}
+
+// restates reports whether a phrase only says the via in other words.
+func (v Via) restates(p string) bool {
+	l := strings.ToLower(p)
+	return l == string(v) || p == v.Word() || slices.Contains(viaSynonyms[v], l)
 }
 
 func validateEvidence(es []Evidence) error {
@@ -463,6 +632,15 @@ var vias = map[Via]bool{
 	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
 	"build-feature": true, "data": true, "convention": true, "call": true,
 }
+
+var viaWords = map[Via]string{
+	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
+	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
+	"build-feature": "빌드 기능",
+}
+
+// Word is the via in the blueprint's words, or "" for none.
+func (v Via) Word() string { return viaWords[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
