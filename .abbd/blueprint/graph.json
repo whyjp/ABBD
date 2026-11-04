@@ -12542,7 +12542,7 @@
                 "Code": true
               },
               {
-                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part, however many stores ago it left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question, the column head and the caption must come back as written (",
+                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part. For a table the cells compare by text whatever column holds them, so renaming a column does not make a retired row new. The refusal holds however many stores ago the part left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question, the column head and the caption must come back as written (",
                 "Code": false
               },
               {
@@ -12550,7 +12550,7 @@
                 "Code": true
               },
               {
-                "Text": "). The command prints which human parts it kept and which it replaced, and warns on the kind's ",
+                "Text": "). A column a gap names, such as one whose unit left the state, is open as well, so the reader may drop its unit or point it at another unit. The command prints which human parts it kept and which it replaced, and which of the human's columns it changed, and warns on the kind's ",
                 "Code": false
               },
               {
@@ -24659,7 +24659,15 @@
                 "Code": true
               },
               {
-                "Text": " with its text and the places of the claims it involves. ",
+                "Text": " with its text, the places of the claims it involves and the names of the columns it involves. ",
+                "Code": false
+              },
+              {
+                "Text": "Renamed",
+                "Code": true
+              },
+              {
+                "Text": " is true for a kind whose word fields are its own column names, so a retired claim's words compare by text alone. ",
                 "Code": false
               },
               {
@@ -25205,7 +25213,7 @@
                 "Code": true
               },
               {
-                "Text": ", 32, characters at most and may name the stored unit it stands for. A row has a unit, its ",
+                "Text": ", 32, characters at most, with no spaces around it, and may name the stored unit it stands for. A row has a unit, its ",
                 "Code": false
               },
               {
@@ -25261,7 +25269,7 @@
                 "Code": true
               },
               {
-                "Text": ": a unit heads one row, a cell sits under a column the head names, and each unit a column names is present. ",
+                "Text": ": a unit heads one row, a cell sits under a column the head names, and each unit a column names is present. A gap for a column whose unit is gone names that column, so a reader may change it on a human's table. ",
                 "Code": false
               },
               {
@@ -37046,7 +37054,7 @@
       ],
       "Rows": 5,
       "Stale": 0,
-      "Unbacked": 8,
+      "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
         {
@@ -37121,8 +37129,9 @@
             },
             {
               "Column": "module texts",
-              "Says": "",
-              "Verb": ""
+              "Says": "re-stamps each old-format text whose module's code still matches",
+              "Verb": "",
+              "Unbacked": true
             },
             {
               "Column": "blueprint",
@@ -37139,6 +37148,7 @@
             "cmd/abbd/main.go:452 \"if err := st.SaveUnits(res.Units); err != nil {\"",
             "cmd/abbd/main.go:423 \"state, err := st.LoadState()\"",
             "cmd/abbd/main.go:469 \"return res, st.SaveState(state)\"",
+            "cmd/abbd/main.go:458 \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
             "cmd/abbd/main.go:342 \"p, err := e.st.LoadProject()\""
           ]
         },

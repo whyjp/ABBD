@@ -15,6 +15,7 @@ columns:
 rows:
     - unit: MOD-0004
       cells:
+        module texts: re-stamps each old-format text whose module's code still matches
         project.yaml: reads the extraction argv to run the project's script
         state.yaml: reads the ID high-water mark, then writes revision and fingerprint
         unit files: rewrites every unit file from the reconciled extraction
@@ -32,11 +33,16 @@ rows:
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
+          lines: "458"
+          symbol: syncActual
+          quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
+        - path: cmd/abbd/main.go
           lines: "342"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
         cmd/abbd/main.go#quote-045deabc: 277a8a331c1c57f6
+        cmd/abbd/main.go#quote-714f2ba0: 59f3f48639d38179
         cmd/abbd/main.go#quote-22175f6c: 228fd02a0d005209
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-e28fdf28: b662511d12a95a22
