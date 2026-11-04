@@ -219,8 +219,16 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	chainOf := make([]int, len(reqs))
 	{
 		byPair := map[[2]string]int{}
+		// lanes are the lanes of the chips set out after the layout (proper).
+		lanes := map[string]int{}
 		for c, ch := range l.chains {
 			byPair[pairKey(ch.upper, ch.lower)] = c
+			switch {
+			case ch.lower == "":
+				lanes[ch.upper] = c
+			case ch.upper == "":
+				lanes[ch.lower] = c
+			}
 		}
 		// A line to a seated chip runs down the chip's own chain.
 		id := func(e end) string {
@@ -239,6 +247,16 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		for i, r := range reqs {
 			chainOf[i] = -1
+			if abs(r.from.row-r.to.row) > 1 {
+				if c, ok := lanes[id(r.from)]; ok {
+					chainOf[i] = c
+					continue
+				}
+				if c, ok := lanes[id(r.to)]; ok {
+					chainOf[i] = c
+					continue
+				}
+			}
 			c, ok := byPair[pairKey(id(r.from), id(r.to))]
 			if !ok {
 				continue
@@ -259,9 +277,8 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			if r.from.node != "" && r.to.node != "" {
 				continue
 			}
-			ch := l.chains[c]
 			a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
-			for row := ch.top; row <= ch.bottom; row++ {
+			for row := min(r.from.row, r.to.row) + 1; row < max(r.from.row, r.to.row); row++ {
 				x := l.pass[[2]int{c, row}]
 				if abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
 					chainOf[i] = -1
@@ -298,11 +315,14 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		if k, ok := laneOf[i]; c < 0 || !ok || k >= l.chains[c].lanes {
 			return 0, false
 		}
-		ch := l.chains[c]
 		r := reqs[i]
-		row := ch.bottom
-		if start == (r.from.row < r.to.row) {
-			row = ch.top
+		step := 1
+		if r.to.row < r.from.row {
+			step = -1
+		}
+		row := r.to.row - step
+		if start {
+			row = r.from.row + step
 		}
 		return l.pass[[2]int{c, row}] + laneOf[i]*chainLane, true
 	}

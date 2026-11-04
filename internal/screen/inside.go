@@ -302,14 +302,16 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	// 10 gives it. A side that cannot hold its chips hands some to the
 	// other side after the layout, so a view with one is not drawn seated,
 	// and neither is a focus view or one with no wired chip.
-	if by.seated {
+	// A laned tactic gives each wired chip a lane down the rows its lines
+	// pass (proper) and sets the chip over it after the layout.
+	if by.seated || by.laned {
 		labels, keys := map[bool][]string{}, map[bool][]string{}
 		for _, p := range ports {
 			if k := fmt.Sprint(p.id, p.exit); len(wired[k]) > 0 {
 				labels[p.exit], keys[p.exit] = append(labels[p.exit], p.label), append(keys[p.exit], k)
 			}
 		}
-		if focus != "" || len(keys[true])+len(keys[false]) == 0 || chipsWidth(labels[true])+12 > budget || chipsWidth(labels[false])+12 > budget {
+		if focus != "" || len(keys[true])+len(keys[false]) == 0 || by.seated && (chipsWidth(labels[true])+12 > budget || chipsWidth(labels[false])+12 > budget) {
 			return Inside{}, false
 		}
 		for exit, edge := range map[bool]string{true: frameTopNode, false: frameBottomNode} {
