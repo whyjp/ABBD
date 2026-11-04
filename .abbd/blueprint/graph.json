@@ -20114,7 +20114,7 @@
                 "Code": true
               },
               {
-                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated, and the draw closure says so. A ",
+                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated or laned, since a chip handed to the other side would leave its lane behind, and the draw closure says so. A ",
                 "Code": false
               },
               {
@@ -20178,7 +20178,15 @@
                 "Code": true
               },
               {
-                "Text": ", its placement breaches and folded chips, exceeds the least of the view's unlaned drawings by more than ",
+                "Text": ", its placement breaches and folded chips, exceeds the least of the view's unlaned drawings that ",
+                "Code": false
+              },
+              {
+                "Text": "judge",
+                "Code": true
+              },
+              {
+                "Text": " read by more than ",
                 "Code": false
               },
               {
@@ -20186,7 +20194,7 @@
                 "Code": true
               },
               {
-                "Text": " (1), or whose weighed sum passes theirs: lanes save steps by standing chips off their boxes and trade excess turns for steps, which ",
+                "Text": " (1), or whose weighed sum passes the least of theirs: lanes save steps by standing chips off their boxes and trade excess turns for steps, which ",
                 "Code": false
               },
               {
