@@ -23,6 +23,9 @@ import (
 //     merge midway and split only at the end. Boxes side by side in one
 //     row that are reached mostly from the same places share one arrival
 //     bus, which splits only in the gap above them.
+//   - In a focus view (ring), a line between rows next to each other
+//     whose two boxes' spans meet drops straight and joins no bus, except
+//     into a hub, which takes its lines as one trunk (H2).
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
@@ -340,9 +343,30 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		shares = nil
 	}
+	// drops says line i can drop straight from box to box: they stand in
+	// rows next to each other and their spans meet, so it needs no bus.
+	drops := func(i int) bool {
+		f, t := reqs[i].from, reqs[i].to
+		return l.ring && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+	}
+	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
+	// A hub, a box hubUsers or more places use, still takes its lines as
+	// one trunk (H2).
+	users := map[string]map[string]bool{}
+	for _, r := range reqs {
+		if r.to.node != "" {
+			if users[r.to.node] == nil {
+				users[r.to.node] = map[string]bool{}
+			}
+			users[r.to.node][place(r.from)] = true
+		}
+	}
+	free := func(is []int) []int {
+		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { return drops(i) && len(users[reqs[i].to.node]) < hubUsers })
+	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
-		if is := leave[k]; len(is) >= 2 {
+		if is := alone(leave[k]); len(is) >= 2 {
 			for _, i := range is {
 				plans[i].dep = len(buses)
 			}
@@ -403,7 +427,7 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	}
 	for _, is := range gather(reqs, arrive, shared) {
 		fed := -1
-		is = slices.DeleteFunc(is, func(i int) bool { return shareOf[i] >= 0 })
+		is = slices.DeleteFunc(free(is), func(i int) bool { return shareOf[i] >= 0 })
 		for _, i := range is {
 			if b, ok := fedBy[place(reqs[i].to)+"|"+reqs[i].kind]; ok && !plans[i].up {
 				fed = b
@@ -610,6 +634,13 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
 			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
+			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
+				// A line that drops straight stands as near its share of
+				// the edge as the span both its ends meet in lets it.
+				f, t := reqs[i].from, reqs[i].to
+				if x := clamp(xs[s], max(f.lo, t.lo), min(f.hi, t.hi)); r.node == "" || apart(x) {
+					xs[s], pinned[s] = x, true
+				}
 			}
 		}
 		clear := func(s, x int) bool {
