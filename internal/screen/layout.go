@@ -336,6 +336,9 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat) layout {
 	wrapped := false
 	for _, row := range g.rows {
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
+		if seat == nil {
+			ids = sides(ids, keep)
+		}
 		rs := split(ids, byID, room)
 		wrapped = wrapped || len(rs) > 1
 		rows = append(rows, rs...)
@@ -423,6 +426,28 @@ func rowWidth(ids []string, byID map[string]lnode) int {
 		w += byID[id].w
 	}
 	return w
+}
+
+// sides orders a layer before it wraps the way a person stacks the rows of
+// one layer: the boxes joined only to what lies above go first, so they
+// land in the top row near their lines, and the boxes joined only to what
+// lies below go last, so their lines leave from the bottom row and pass no
+// box of the layer on the way down. Each group keeps the order the
+// crossing count chose.
+func sides(ids []string, keep map[ledge]bool) []string {
+	up, down := map[string]bool{}, map[string]bool{}
+	for e := range keep {
+		down[e.from], up[e.to] = true, true
+	}
+	group := func(id string) int {
+		if down[id] {
+			return 1
+		}
+		return 0
+	}
+	out := slices.Clone(ids)
+	slices.SortStableFunc(out, func(a, b string) int { return group(a) - group(b) })
+	return out
 }
 
 // wrap splits a layer wider than room into rows of about equal width.

@@ -2055,7 +2055,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:670 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:695 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -26952,7 +26952,15 @@
                 "Code": true
               },
               {
-                "Text": " splits a layer wider than the budget. ",
+                "Text": " splits a layer wider than the budget into rows. Before it does, ",
+                "Code": false
+              },
+              {
+                "Text": "sides",
+                "Code": true
+              },
+              {
+                "Text": " puts the boxes with a line to what lies below last, so their lines leave from the bottom row. ",
                 "Code": false
               },
               {
