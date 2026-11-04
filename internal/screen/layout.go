@@ -133,7 +133,11 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 	}
 	nodes = slices.DeleteFunc(nodes, func(n lnode) bool { return isChip(n.id) })
-	seated := len(tops)+len(bottoms) > 0
+	chips := len(tops)+len(bottoms) > 0
+	// Chips not seated in rows of their own get lanes instead (proper).
+	if !t.seated {
+		tops, bottoms = nil, nil
+	}
 	out := map[string][]string{}
 	touched := map[string]bool{}
 	// lines counts the edges between each pair of places, either way: each
@@ -450,7 +454,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		ch.top, ch.bottom = ch.top-lead, ch.bottom-lead
 		l.chains = append(l.chains, ch)
 	}
-	if seated {
+	if chips {
 		l.seats = map[string]int{}
 	}
 	for r, row := range g.rows {
@@ -472,6 +476,15 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 			l.pos[id] = rect{X: x[id], W: byID[id].w, H: byID[id].h}
 		}
 		l.rows = append(l.rows, ids)
+	}
+	// A chip with a lane stands over it, where it leaves the frame.
+	for c, ch := range l.chains {
+		switch {
+		case ch.lower == "":
+			l.seats[ch.upper] = l.pass[[2]int{c, ch.top}] + g.w[dummy(c, ch.top+lead)]/2
+		case ch.upper == "":
+			l.seats[ch.lower] = l.pass[[2]int{c, ch.bottom}] + g.w[dummy(c, ch.bottom+lead)]/2
+		}
 	}
 	return l
 }

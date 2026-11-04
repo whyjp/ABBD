@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -79,6 +80,15 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 		g.up[b][a] += n
 	}
 	isBox := func(id string) bool { return id != frameTopNode && id != frameBottomNode }
+	// A frame chip set out after the layout gets a lane (below).
+	reach := map[string][]string{}
+	for _, p := range pairs {
+		if _, ok := rowOf[p[0]]; !ok && isChip(p[0]) {
+			reach[p[0]] = append(reach[p[0]], p[1])
+		} else if _, ok := rowOf[p[1]]; !ok && isChip(p[1]) {
+			reach[p[1]] = append(reach[p[1]], p[0])
+		}
+	}
 	for _, p := range pairs {
 		a, b := p[0], p[1]
 		ra, okA := rowOf[a]
@@ -113,6 +123,44 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 			join(prev, b, n)
 		}
 	}
+	// A lane is one chain from the frame's edge through every row a chip's
+	// lines pass, open at the frame end and joined in each row to the
+	// boxes it meets in the next. Its lines run
+	// down it as one trunk, the chip stands over it, and the boxes it passes
+	// step aside for it.
+	for _, chip := range slices.Sorted(maps.Keys(reach)) {
+		top := strings.HasPrefix(chip, frameTopNode+"|")
+		lo, hi, n := len(rows), -1, 0
+		for _, u := range reach[chip] {
+			lo, hi, n = min(lo, rowOf[u]), max(hi, rowOf[u]), n+lines[pairKey(chip, u)]
+		}
+		ch := chain{upper: chip, top: 0, bottom: hi - 1, lanes: min(n, 4)}
+		if !top {
+			ch = chain{lower: chip, top: lo + 1, bottom: len(rows) - 1, lanes: min(n, 4)}
+		}
+		if ch.top > ch.bottom {
+			continue
+		}
+		c := len(g.chains)
+		g.chains = append(g.chains, ch)
+		for r := ch.top; r <= ch.bottom; r++ {
+			d := dummy(c, r)
+			g.rows[r] = append(g.rows[r], d)
+			g.chainOf[d] = c
+			g.w[d] = chainLane * (ch.lanes - 1)
+			if r > ch.top {
+				join(dummy(c, r-1), d, n)
+			}
+			for _, u := range reach[chip] {
+				switch k := lines[pairKey(chip, u)]; {
+				case top && rowOf[u] == r+1:
+					join(d, u, k)
+				case !top && rowOf[u] == r-1:
+					join(u, d, k)
+				}
+			}
+		}
+	}
 	return g
 }
 
@@ -139,10 +187,18 @@ type tactic struct {
 	// their row. Only the whole budget seats chips: packed narrow, three
 	// more drawings per view cut 1 jog and 3 crossings over 274 views.
 	seated bool
+	// laned gives each frame chip a lane instead (proper): one chain down
+	// the rows its lines pass, which its lines run down and the chip stands
+	// over after the layout.
+	laned bool
+	// follow orders the lanes in each row as the boxes they reach stand.
+	follow bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
-	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true}}
+	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true},
+	{laned: true}, {laned: true, median: true}, {laned: true, reversed: true},
+	{laned: true, follow: true}, {laned: true, median: true, follow: true}, {laned: true, reversed: true, follow: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by
@@ -301,6 +357,60 @@ func (g *layered) order(t tactic) {
 		if c := all(); c < bestN {
 			best, bestN = snapshot(), c
 		}
+	}
+	// The crossings counted above leave a lane wherever it crosses least,
+	// often past the boxes beside the one it reaches, where its chip
+	// stands off that box. With follow, rows from the bottom up, each lane
+	// from the frame's top moves among the other items of its row to where
+	// what it joins in the next row stands, so it runs beside the box it
+	// reaches; the lanes from the bottom likewise, top down.
+	if t.follow {
+		follow := func(r int, top bool) {
+			side := down
+			if !top {
+				side = up
+			}
+			var lanes, rest []int
+			for _, v := range rows[r] {
+				sum, k := 0.0, 0
+				for _, l := range side[v] {
+					sum += pos[l.o] * float64(l.n)
+					k += l.n
+				}
+				key[v] = pos[v]
+				if k > 0 {
+					key[v] = sum / float64(k)
+				}
+				if c, ok := g.chainOf[ids[v]]; ok && (top && g.chains[c].lower == "" || !top && g.chains[c].upper == "") {
+					lanes = append(lanes, v)
+				} else {
+					rest = append(rest, v)
+				}
+			}
+			sort.SliceStable(lanes, func(i, j int) bool { return key[lanes[i]] < key[lanes[j]] })
+			row := rows[r][:0]
+			for _, v := range rest {
+				for len(lanes) > 0 && key[lanes[0]] < key[v] {
+					row, lanes = append(row, lanes[0]), lanes[1:]
+				}
+				row = append(row, v)
+			}
+			row = append(row, lanes...)
+			for i, v := range row {
+				pos[v] = float64(i)
+			}
+		}
+		for i, r := range best {
+			rows[i] = slices.Clone(r)
+		}
+		index()
+		for r := len(rows) - 2; r >= 0; r-- {
+			follow(r, true)
+		}
+		for r := 1; r < len(rows); r++ {
+			follow(r, false)
+		}
+		best = snapshot()
 	}
 	// A box joined to nothing in the rows next to its own crosses no line
 	// wherever it stands, so it stands last, out of the way of the lines
@@ -721,9 +831,10 @@ func (g *layered) place(budget, room int) (map[string]int, int) {
 	center := func(id string) int { return x(id) + g.w[id]/2 }
 	// span is where a chain may meet a box and drop straight from it.
 	span := func(id string) (int, int, bool) {
-		switch {
-		case id == frameTopNode || id == frameBottomNode:
+		if _, ok := blockOf[id]; !ok {
 			return 0, 0, false
+		}
+		switch {
 		case isChip(id):
 			return x(id) + 4, x(id) + g.w[id] - 4, true
 		}
@@ -782,6 +893,26 @@ func (g *layered) place(budget, room int) (map[string]int, int) {
 			return cur
 		}
 		ch := g.chains[u.c]
+		// A lane heads for the nearest box its lines reach, so its chip
+		// stands over that box and the line into it drops straight.
+		if ch.upper == "" || ch.lower == "" {
+			best, found := cur, false
+			for _, id := range blocks[b] {
+				for _, side := range []map[string]map[string]int{g.up, g.down} {
+					for o := range side[id] {
+						lo, hi, ok := span(o)
+						if !ok || blockOf[o] == b {
+							continue
+						}
+						x := clamp(cur, lo, hi)
+						if d, e := abs(x-cur), abs(best-cur); !found || d < e || d == e && x < best {
+							best, found = x, true
+						}
+					}
+				}
+			}
+			return best
+		}
 		alo, ahi, aok := span(ch.upper)
 		blo, bhi, bok := span(ch.lower)
 		aok = aok && u.from == ch.top

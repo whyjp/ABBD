@@ -50,6 +50,8 @@ type cost struct {
 	// hard, seen and linted are what abbd lint reads from the drawn view
 	// (judge).
 	hard, seen, linted int
+	// moved counts the placement breaches and folded chips.
+	moved int
 }
 
 // judge reads the drawn view the way abbd lint does: its hard breaches,
@@ -76,7 +78,7 @@ func (c *cost) judge(d Drawing) {
 			moved++
 		}
 	}
-	c.hard = t.Hard
+	c.hard, c.moved = t.Hard, moved
 	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
 	c.linted = t.Weighed + stepCrossings*moved
 }
@@ -158,16 +160,26 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 	}
 }
 
+// laneMoves is how many more placement breaches and folded chips a laned
+// drawing may have than the unlaned drawings of its view: its lanes save
+// steps by standing chips away from their boxes, and seen weighs each
+// chip moved as only one step.
+const laneMoves = 1
+
 // choose draws a view with every tactic and keeps the first, the one the
 // plain tactic orders on the whole width, unless a later one beats the best
 // so far. draw leaves what each routing costs in its read, and says false
 // for a tactic that has nothing to draw differently in this view. judge
 // adds what lint reads from the drawn view. It runs only on a drawing that
 // does not already lose on the touches and breaks its routing costs, since
-// beats compares those first and lint is most of the work.
+// beats compares those first and lint is most of the work. A laned drawing
+// that stands more than laneMoves more chips or boxes off what they join
+// than the least of the unlaned ones, or whose weighed sum passes theirs,
+// is passed over, however few its steps.
 func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
+	least, plain := 1<<20, 1<<20
 	for i, t := range tactics {
 		var c cost
 		v, ok := draw(t, &c)
@@ -178,6 +190,11 @@ func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, re
 			continue
 		}
 		judge(v, &c)
+		if !t.laned {
+			least, plain = min(least, c.moved), min(plain, c.linted-stepCrossings*c.moved)
+		} else if c.moved > least+laneMoves || c.linted-stepCrossings*c.moved > plain {
+			continue
+		}
 		if i == 0 || c.beats(bc) {
 			best, bc = v, c
 		}
