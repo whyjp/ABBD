@@ -3,19 +3,19 @@ question: What are the layers of the abbd CLI?
 format: 1
 layers:
     - name: commands
-      role: parses one command line, runs its verb, and renders the blueprint after a write
+      role: runs the verb of one command line from the table, and renders after a write
       units:
         - MOD-0001
       evidence:
         - path: cmd/abbd/main.go
-          lines: "219"
+          lines: "239"
           quote: var commands = map[string]command{
         - path: cmd/abbd/main.go
-          lines: "303"
+          lines: "324"
           quote: if err := e.publish(); err != nil {
       writer: reader
       code:
-        cmd/abbd/main.go#quote-16c07118: 2f0d969b30da3d70
+        cmd/abbd/main.go#quote-16c07118: 1684ffa51db59b44
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
     - name: blueprint rendering
       role: derives the pages and graph.json a human reads, and never writes the topology
@@ -97,11 +97,26 @@ layers:
         - MOD-0030
       evidence:
         - path: internal/model/model.go
-          lines: "175"
+          lines: "176"
           quote: type Unit struct {
       writer: reader
       code:
         internal/model/model.go#quote-44d7f48b: 17dfd679365e70ca
+retired:
+    - name: commands
+      role: parses one command line, runs its verb, and renders the blueprint after a write
+      units:
+        - MOD-0001
+      evidence:
+        - path: cmd/abbd/main.go
+          lines: "219"
+          quote: var commands = map[string]command{
+        - path: cmd/abbd/main.go
+          lines: "303"
+          quote: if err := e.publish(); err != nil {
+      code:
+        cmd/abbd/main.go#quote-16c07118: 2f0d969b30da3d70
+        cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
 ---
 
 Each layer imports only the layers below it. The commands wire every layer together, and the vocabulary imports nothing of abbd's own.

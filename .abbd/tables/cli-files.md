@@ -21,23 +21,23 @@ rows:
         unit files: rewrites every unit file from the reconciled extraction
       evidence:
         - path: cmd/abbd/main.go
-          lines: "452"
+          lines: "460"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "423"
+          lines: "431"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "469"
+          lines: "477"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "458"
+          lines: "466"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "342"
+          lines: "350"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
@@ -49,10 +49,10 @@ rows:
     - unit: MOD-0006
       cells:
         module texts: writes how's text with the module's digest and cited code
-        unit files: writes the one unit a relation, fact or parent record names
+        unit files: writes the one unit a record names, with its relation and phrase, fact or parent
       evidence:
         - path: cmd/abbd/record.go
-          lines: "110"
+          lines: "118"
           symbol: recordRelation
           quote: u.PutRelation(rel)
         - path: cmd/abbd/understand.go
@@ -61,7 +61,7 @@ rows:
           quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
       writer: reader
       code:
-        cmd/abbd/record.go#quote-96b34390: 77467f8b8d20a875
+        cmd/abbd/record.go#quote-96b34390: 5ffeca89905aa31f
         cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
     - unit: MOD-0005
       cells:
@@ -69,11 +69,11 @@ rows:
         unit files: reads every unit to resolve and answer a query
       evidence:
         - path: cmd/abbd/query.go
-          lines: "249"
+          lines: "252"
           symbol: explainHow
           quote: texts, err := e.st.LoadUnderstandings()
         - path: cmd/abbd/query.go
-          lines: "259"
+          lines: "262"
           symbol: explainHow
           quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
       writer: reader
@@ -128,6 +128,23 @@ rows:
         cmd/abbd/diff.go#quote-c3e410f2: 2bbb4ade6758f770
         cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
         cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
+retired:
+    - unit: MOD-0006
+      cells:
+        module texts: writes how's text with the module's digest and cited code
+        unit files: writes the one unit a relation, fact or parent record names
+      evidence:
+        - path: cmd/abbd/record.go
+          lines: "110"
+          symbol: recordRelation
+          quote: u.PutRelation(rel)
+        - path: cmd/abbd/understand.go
+          lines: "83"
+          symbol: understand
+          quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
+      code:
+        cmd/abbd/record.go#quote-96b34390: 77467f8b8d20a875
+        cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
 ---
 
 Each row is one part of the CLI and each column one file under `.abbd/`. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.
