@@ -2,7 +2,9 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"math"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -386,7 +388,9 @@ func trace(s sheet, rels [][2]string) Trace {
 	sort.Ints(froms)
 	traced := map[[2]string]bool{}
 	for _, f := range froms {
-		for to, b := range reach(f) {
+		found := reach(f)
+		for _, to := range slices.Sorted(maps.Keys(found)) {
+			b := found[to]
 			// A chip that stands for several ports joins each of them, so
 			// ink between two places traces every relation between them.
 			joined := false

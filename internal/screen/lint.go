@@ -274,9 +274,9 @@ func (l *look) name(i int) string {
 	sh := l.s.shapes[i]
 	label := strings.Join(sh.lines, " ")
 	if sh.kind == "port" {
-		return fmt.Sprintf("chip %q", label)
+		return `chip "` + label + `"`
 	}
-	return fmt.Sprintf("box %q (%s)", label, strings.Fields(sh.id + " ?")[0])
+	return fmt.Sprintf(`box "%s" (%s)`, label, strings.Fields(sh.id + " ?")[0])
 }
 
 func (l *look) shapeName(id string) string {
