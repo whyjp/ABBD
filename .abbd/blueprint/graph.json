@@ -2048,7 +2048,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) Inside {\""
+        "internal/screen/inside.go \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {\""
       ]
     },
     {
@@ -19142,7 +19142,55 @@
                 "Code": true
               },
               {
-                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. Fewer touches beat outright. Each ordering is drawn twice: wide, where ",
+                "Text": " beats the best so far, which starts as the first tactic's. ",
+                "Code": false
+              },
+              {
+                "Text": "cost.beats",
+                "Code": true
+              },
+              {
+                "Text": " compares touches, then breaks of rules 13 and 15, then the jogs along each line's way from the ",
+                "Code": false
+              },
+              {
+                "Text": "routing",
+                "Code": true
+              },
+              {
+                "Text": " that ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " returns, counted once per pair of places, then crossings, paths that turn more than twice, braid and dashed ink, and the first measure that differs decides, so a staircase costs more than a crossing. A ",
+                "Code": false
+              },
+              {
+                "Text": "seated",
+                "Code": true
+              },
+              {
+                "Text": " tactic also sets a unit's wired frame chips as ",
+                "Code": false
+              },
+              {
+                "Text": "chipNode",
+                "Code": true
+              },
+              {
+                "Text": " rows above and below the boxes, ordered and placed with them, so each chip stands over the chain its line takes and keeps that x as ",
+                "Code": false
+              },
+              {
+                "Text": "settle",
+                "Code": true
+              },
+              {
+                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated, and the draw closure says so. Each ordering is drawn twice: wide, where ",
                 "Code": false
               },
               {
