@@ -74,11 +74,11 @@
       {{with .Understanding}}
       <div>{{template "howhead" .}}</div>
       {{template "howtext" .}}
-      {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
+      {{else}}<p class="muted">이 모듈의 설명은 아직 없습니다. 지금은 그림과 안의 단위 목록이 아는 전부입니다. 채우는 법: <code>abbd understand {{.ID}} FILE</code></p>{{end}}
       {{template "notes" .Notes}}
       {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
       {{if .Units}}<h3>안의 단위</h3>
-      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
+      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
       {{else}}<p class="muted">안의 단위가 아직 없습니다.</p>{{end}}
     </div>
   </div>

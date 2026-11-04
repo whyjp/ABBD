@@ -27676,7 +27676,7 @@
                 "Code": true
               },
               {
-                "Text": " template the notes use too. It escapes the text and never trusts its markup.",
+                "Text": " template the notes use too. It escapes the text and never trusts its markup. A module with no text says so once at the top of its page, and a unit with no responsibility sentence shows only its name and kind.",
                 "Code": false
               }
             ]
