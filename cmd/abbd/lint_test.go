@@ -132,7 +132,7 @@ func TestLintFailsOnAHardBreachPastItsDebt(t *testing.T) {
 func TestLintHoldsTheTotalsToTheirCeilings(t *testing.T) {
 	debt := "ceilings:\n  weighed: 100\n  placement: 50\ndebt:\n  MOD-0030 internal/model: {R: 1}\n  MOD-0047 internal/topology: {R: 1}\n"
 	code, out := lintAt(t, copyFixture(t, "self", debt))
-	if code != exitError || !strings.Contains(out, "weighed 2128, past its ceiling 100 by more than 0") || strings.Contains(out, "placement 50, past") {
+	if code != exitError || !strings.Contains(out, ", past its ceiling 100 by more than 0") || strings.Contains(out, "placement 50, past") {
 		t.Fatalf("exit %d, want 1 on the weighed sum alone:\n%s", code, out)
 	}
 }

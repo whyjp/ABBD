@@ -7786,7 +7786,23 @@
                 "Code": true
               },
               {
-                "Text": ", the one write lint makes.",
+                "Text": ", the one write lint makes. ",
+                "Code": false
+              },
+              {
+                "Text": "lint_test.go",
+                "Code": true
+              },
+              {
+                "Text": " runs the command on this repository, on the fixtures and on copies of the ",
+                "Code": false
+              },
+              {
+                "Text": "self",
+                "Code": true
+              },
+              {
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures.",
                 "Code": false
               }
             ]
@@ -19990,11 +20006,35 @@
                 "Code": false
               },
               {
+                "Text": "judge",
+                "Code": true
+              },
+              {
+                "Text": " lints each drawing of a unit's view as ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint",
+                "Code": true
+              },
+              {
+                "Text": " does. ",
+                "Code": false
+              },
+              {
                 "Text": "cost.beats",
                 "Code": true
               },
               {
-                "Text": " compares touches, then breaks of rules 13 and 15, then ",
+                "Text": " compares touches, then breaks of rules 13 and 15, then lint's hard breaches, then lint's weighed sum with ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " more for each placement breach and each chip folded into a \"+N\" chip, then ",
                 "Code": false
               },
               {

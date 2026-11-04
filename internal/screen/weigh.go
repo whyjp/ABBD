@@ -1,5 +1,10 @@
 package screen
 
+import (
+	"strconv"
+	"strings"
+)
+
 // A routing is weighed by what a reader pays to follow it, measured the way
 // docs/blueprint-svg.md bounds a drawing: where lines of different bundles
 // meet or run together away from their ends, and how often lines turn.
@@ -35,9 +40,10 @@ func (w weight) beats(o weight) bool {
 
 // cost is what a whole drawn view costs a reader, in the order a reader
 // pays it: ink that joins places no relation joins (rule 18), then breaks
-// of rules 13 and 15, then the staircase steps along each line's way with
-// its crossings, then lines that turn more than twice, braid, and the
-// dashed ink of the lines that climb (rule 13). breaks counts the lines
+// of rules 13 and 15, then what abbd lint reads from the drawing (hard
+// breaches, then the weighed sum), then the staircase steps along each
+// line's way with its crossings, then lines that turn more than twice,
+// braid, and the dashed ink of the lines that climb (rule 13). breaks counts the lines
 // that run more than detourLimit out of their way and the back lines past
 // rule 13's bound. steps counts, once per pair of places, each turn past
 // the second and each stretch between two turns shorter than jogUnder (a
@@ -45,15 +51,38 @@ func (w weight) beats(o weight) bool {
 // its steps.
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
+	// hard and linted are what abbd lint reads from the drawn view (judge).
+	hard, linted int
+}
+
+// judge reads the drawn view the way abbd lint does: its hard breaches,
+// then its weighed sum with each placement breach and each chip the frame
+// folds into a "+N" chip counted as one more excess turn. A drawing that
+// saves turns by folding chips or by standing boxes and chips away from
+// what they join reads no better.
+func (c *cost) judge(d Drawing) {
+	vl, err := lintView(view{d: d, budget: insideWidth})
+	if err != nil {
+		c.hard = 1 << 20
+		return
+	}
+	c.hard, c.linted = vl.Totals.Hard, vl.Totals.Weighed+stepCrossings*vl.Totals.Placement
+	for _, p := range d.Ports {
+		if n, ok := strings.CutPrefix(p.Label, "+"); ok {
+			if k, err := strconv.Atoi(n); err == nil {
+				c.linted += stepCrossings * k
+			}
+		}
+	}
 }
 
 // beats says c reads better than o: the first measure in which they differ
-// is lower in c. A staircase step costs a reader stepCrossings crossings,
-// so a drawing with fewer steps wins unless it buys each step it saves with
-// more crossings than that.
+// is lower in c. An excess turn or a staircase step costs a reader
+// stepCrossings crossings, so a drawing with fewer wins unless it buys each
+// one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
