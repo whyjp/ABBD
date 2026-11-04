@@ -104,6 +104,7 @@ func Pages(m Model) (map[string][]byte, error) {
 		if f := &m.Focus[i]; around[f.Unit] != nil {
 			p := withPage(shared, f.Unit+".html", f.Name, "around", f.ID)
 			p.Around = f
+			trail(&p, f.Unit)
 			pages = append(pages, p)
 		}
 	}

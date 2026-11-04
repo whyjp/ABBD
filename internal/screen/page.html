@@ -23,12 +23,12 @@
   <h3>기능</h3>
   <ul class="plain tree">{{range .Nav}}{{if .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>
   {{else if .Trail}}<h3>이 모듈이 놓인 곳</h3>
-  <ul class="plain tree">{{range $i, $t := .Trail}}<li class="d{{$i}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}</ul>
+  <ul class="plain tree">{{range $i, $t := .Trail}}<li class="d{{$i}}">{{if index $.Paged .ID}}<a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a>{{else}}<strong>{{.Name}}</strong>{{end}}</li>{{end}}</ul>
   <p class="muted">모듈의 전체 목록은 <a href="#overview">모듈과 계약</a>에 있습니다.</p>{{end}}
 </nav>
 <main>
 <header>
-  <p class="crumbs"><a href="#overview">청사진</a>{{range .Trail}} › <a href="#m-{{.ID}}">{{.Name}}</a>{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
+  <p class="crumbs"><a href="#overview">청사진</a>{{range .Trail}} › {{if index $.Paged .ID}}<a href="#m-{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
   <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
 </header>
 {{end}}
@@ -43,7 +43,7 @@
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
   </div>
-  {{if or .Flows .Stacks .Tables}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span></li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span></li>{{end}}</ul>{{end}}{{if .Tables}}<h3>표로 읽는 대응</h3><ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Rows}}행 × {{len .Columns}}열</span></li>{{end}}</ul>{{end}}<p class="muted">STALE과 거꾸로 닿는 관계는 각 그림의 쪽에 표시합니다.</p></div>{{end}}
+  {{if or .Flows .Stacks .Tables}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span>{{if .Stale}} <span class="pill STALE">STALE {{.Stale}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach">거꾸로 {{.Breaches}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Tables}}<h3>표로 읽는 대응</h3><ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Rows}}행 × {{len .Columns}}열</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Unbacked}} <span class="pill breach">관계 없는 칸 {{.Unbacked}}</span>{{end}}{{if .Unsaid}} <span class="pill breach">빈 칸 {{.Unsaid}}</span>{{end}}</li>{{end}}</ul>{{end}}</div>{{end}}
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" "overview"}}
@@ -116,7 +116,7 @@
 {{define "drawing"}}<svg xmlns="http://www.w3.org/2000/svg" width="{{.Width}}" height="{{.Height}}" viewBox="0 0 {{.Width}} {{.Height}}" role="img" aria-label="{{if .Frame}}모듈의 안{{else}}모듈과 계약{{end}}">
 <defs>{{range .Heads}}<marker id="m-{{.}}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse">{{head .}}</marker>{{end}}{{$d := .}}{{range .Wires}}{{if .Mask}}<mask id="{{.Mask}}" maskUnits="userSpaceOnUse" x="0" y="0" width="{{$d.Width}}" height="{{$d.Height}}"><rect width="{{$d.Width}}" height="{{$d.Height}}" fill="#fff"/>{{range .Gaps}}<rect x="{{.Left}}" y="{{plus .Y -3}}" width="{{.Width}}" height="6"/>{{end}}</mask>{{end}}{{end}}</defs>
 {{with .Frame}}<rect class="frame" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="8"/>{{end}}
-{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}{{with .Lit}} {{.}}{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}} data-h="{{.Hue}}"{{with .Head}} marker-end="url(#m-{{.}})"{{end}}{{if .Both}} marker-start="url(#m-{{.Head}})"{{end}}{{with .Mask}} mask="url(#{{.}})"{{end}}><title>{{.Title}}{{range .Quotes}}
+{{range .Wires}}<path class="w {{.Kind}}{{if .Joins}} joins{{end}}{{if .Back}} back{{end}}{{if .Both}} both{{end}}{{with .Lit}} {{.}}{{end}}" d="{{.D}}"{{if .Origin}} data-origin="{{.Origin}}"{{end}}{{if .Net}} data-net="{{.Net}}"{{end}} data-h="{{.Hue}}"{{with .Head}} marker-end="url(#m-{{.}})"{{end}}{{if and .Both .Head}} marker-start="url(#m-{{.Head}})"{{end}}{{with .Mask}} mask="url(#{{.}})"{{end}}><title>{{.Title}}{{range .Quotes}}
 {{.}}{{end}}</title></path>{{$lit := .Lit}}{{range .Marks}}<circle class="origin {{.Origin}}{{with $lit}} {{.}}{{end}}" cx="{{.X}}" cy="{{.Y}}" r="3.5"><title>{{label .Origin}}: {{tip .Origin}}</title></circle>{{end}}{{if .Count}}<text class="count{{with .Lit}} {{.}}{{end}}" x="{{.LX}}" y="{{.LY}}">×{{.Count}}</text>{{end}}{{$hue := .Hue}}{{with .Label}}<text class="lab{{with $lit}} {{.}}{{end}}" data-h="{{$hue}}" x="{{.X}}" y="{{.Y}}" text-anchor="middle">{{.S}}</text>{{end}}{{end}}
 {{range .Dots}}<circle class="junction {{.Kind}}{{if .Back}} back{{end}}{{with .Lit}} {{.}}{{end}}" data-h="{{.Hue}}" cx="{{.X}}" cy="{{.Y}}" r="3"/>{{end}}
 {{range .Boxes}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="box {{.Class}}{{with .Lit}} {{.}}{{end}}" data-id="{{.ID}}"{{with .Hue}} data-h="{{.}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="{{if .Href}}6{{else}}4{{end}}"/>{{if .Hue}}<path class="bar" d="{{.Bar}}"/>{{end}}{{range .Lines}}<text class="name" x="{{.X}}" y="{{.Y}}"{{if .Mid}} text-anchor="middle"{{end}}>{{.S}}</text>{{end}}{{with .Sub}}<text class="sub" x="{{.X}}" y="{{.Y}}">{{.S}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
