@@ -229,13 +229,6 @@ func (d *Drawing) gaps(segs []seg) {
 			w.Gaps = append(w.Gaps, Gap{x, x, y})
 		}
 	}
-	// Mask ids are unique to the drawing's ink, so two drawings on one page
-	// never share one unless they draw the same lines.
-	f := fnv.New32a()
-	fmt.Fprint(f, d.Width, d.Height)
-	for _, w := range d.Wires {
-		fmt.Fprint(f, w.D)
-	}
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		if len(w.Gaps) == 0 {
@@ -248,7 +241,12 @@ func (d *Drawing) gaps(segs []seg) {
 			return a.X0 - b.X0
 		})
 		w.Gaps = slices.Compact(w.Gaps)
-		w.Mask = fmt.Sprintf("x%x-%d", f.Sum32(), i)
+		// A mask's id names what it cuts: its line and its holes on a canvas
+		// of its size. So a change to one line renames only that line's mask,
+		// and two masks on one page share an id only when they are the same.
+		f := fnv.New64a()
+		fmt.Fprint(f, d.Width, d.Height, w.D, w.Gaps)
+		w.Mask = fmt.Sprintf("x%x", f.Sum64())
 	}
 }
 
