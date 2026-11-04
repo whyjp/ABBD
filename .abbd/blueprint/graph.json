@@ -22474,7 +22474,15 @@
                 "Code": true
               },
               {
-                "Text": " takes a count's wire to be the path just before it when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
+                "Text": " takes a count's wire to be the net of the path just before it, every path that shares its ",
+                "Code": false
+              },
+              {
+                "Text": "data-net",
+                "Code": true
+              },
+              {
+                "Text": ", when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
                 "Code": false
               }
             ]

@@ -134,7 +134,8 @@ func readSVG(src string) (sheet, error) {
 	var inText bool
 	var title *string
 	var count *countLabel
-	// last is the group of the path read last: a count follows its wire.
+	// last is the group of the path read last, its whole data-net when it
+	// has one: a count follows its wire, and its wire is that path's net.
 	last := -1
 	for {
 		tok, err := dec.Token()
