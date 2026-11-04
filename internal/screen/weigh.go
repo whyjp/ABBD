@@ -174,8 +174,10 @@ const laneMoves = 1
 // does not already lose on the touches and breaks its routing costs, since
 // beats compares those first and lint is most of the work. A laned drawing
 // that stands more than laneMoves more chips or boxes off what they join
-// than the least of the unlaned ones, or whose weighed sum passes theirs,
-// is passed over, however few its steps.
+// than the least of the unlaned ones, or whose weighed sum passes the least
+// of theirs, is passed over, however few its steps. Both bounds are mins
+// over the unlaned drawings judge read; one the touches and breaks passed
+// over sets neither.
 func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
