@@ -7802,7 +7802,7 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the spots the user circled, each by a box's unit ID, with the excess turns and steps that view measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the spots the user circled that still turn, each by a box's unit ID, that the preload bridge line, now straight, breaks nothing, and the excess turns and steps that view measures.",
                 "Code": false
               }
             ]
@@ -20408,7 +20408,7 @@
                 "Code": true
               },
               {
-                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. Route and lint read hubs with one helper, ",
+                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. On any layout a slot no pin holds keeps between the pinned slots on either side of it, with room for the slots between, when that room is there, and only then steps off the chains passing the next row: otherwise a line that took the middle of a box's edge stepped onto the chain a pinned line drops down, and the order pushed the pinned line off it. Route and lint read hubs with one helper, ",
                 "Code": false
               },
               {

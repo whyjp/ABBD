@@ -4,7 +4,7 @@
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
     placement: 44
-    weighed: 1307
+    weighed: 1287
 debt:
     MOD-0047 internal/topology:
         R: 1
