@@ -330,3 +330,27 @@ func TestALongChipNameWrapsInsideItsEdge(t *testing.T) {
 		}
 	}
 }
+
+// A wrapped layer puts the boxes with a line below in its last row when
+// they fit there, and keeps its rows when they would spill into a row above.
+func TestStackPutsLinesDownInTheLastRow(t *testing.T) {
+	byID := map[string]lnode{}
+	var ids []string
+	for _, id := range []string{"a", "b", "c", "d", "e", "f"} {
+		byID[id] = lnode{id: id, w: 100, h: 40}
+		ids = append(ids, id)
+	}
+	room := 3*100 + 3*gapX
+	rs := wrap(ids, byID, room)
+	if len(rs) != 2 {
+		t.Fatalf("six boxes in room for three wrap into %d rows", len(rs))
+	}
+	got := stack(rs, map[ledge]bool{{"a", "z"}: true}, byID, room)
+	if last := got[len(got)-1]; !slices.Contains(last, "a") {
+		t.Errorf("a has a line below, rows %v", got)
+	}
+	spill := map[ledge]bool{{"a", "z"}: true, {"b", "z"}: true, {"c", "z"}: true, {"d", "z"}: true}
+	if got := stack(rs, spill, byID, room); !reflect.DeepEqual(got, rs) {
+		t.Errorf("four boxes with a line below fill more than the last row, rows %v, want %v", got, rs)
+	}
+}

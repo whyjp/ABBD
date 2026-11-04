@@ -2070,7 +2070,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:670 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:701 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -27313,7 +27313,15 @@
                 "Code": true
               },
               {
-                "Text": " splits a layer wider than the budget. ",
+                "Text": " splits a layer wider than the budget into rows. Where the boxes with a line to what lies below fit in a wrapped layer's last row, ",
+                "Code": false
+              },
+              {
+                "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": " puts them there, so their lines leave from the bottom row. ",
                 "Code": false
               },
               {
