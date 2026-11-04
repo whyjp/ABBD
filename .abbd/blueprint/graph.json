@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Label{S,X,Y},Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Label{S,X,Y},Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -311,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go:46 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -2009,10 +2009,12 @@
         "internal/screen/focus.go",
         "internal/screen/graph.go",
         "internal/screen/hover.go",
+        "internal/screen/hues.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
         "internal/screen/layered.go",
         "internal/screen/layout.go",
+        "internal/screen/marks.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
@@ -2095,8 +2097,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go:358 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {\"",
-        "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+        "internal/screen/overview.go:382 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {\"",
+        "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
       ]
     },
     {
@@ -3966,7 +3968,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:292 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+      "Quote": "internal/screen/overview.go:316 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
     },
     {
       "From": "MOD-0034",
@@ -3974,7 +3976,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
+      "Quote": "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
     },
     {
       "From": "MOD-0034",
@@ -3982,7 +3984,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:315 \"return Badge(model.Extracted)\""
+      "Quote": "internal/screen/overview.go:339 \"return Badge(model.Extracted)\""
     },
     {
       "From": "MOD-0034",
@@ -3990,7 +3992,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:221 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:225 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -3998,7 +4000,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:479 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:503 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -4006,7 +4008,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:383 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:407 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -4090,7 +4092,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:300 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+      "Quote": "internal/screen/overview.go:324 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
       "From": "MOD-0037",
@@ -4098,7 +4100,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+      "Quote": "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
     },
     {
       "From": "MOD-0038",
@@ -4114,7 +4116,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+      "Quote": "internal/screen/page.css:84 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
     },
     {
       "From": "MOD-0038",
@@ -5291,7 +5293,12 @@
         ],
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
-        ]
+        ],
+        "Label": {
+          "S": "호출",
+          "X": 588,
+          "Y": 348
+        }
       },
       {
         "D": "M786 248 L786 228",
@@ -5434,7 +5441,12 @@
         "Rels": [
           "FEAT-0016.depends_on.FEAT-0001",
           "FEAT-0003.depends_on.FEAT-0002"
-        ]
+        ],
+        "Label": {
+          "S": "호출",
+          "X": 110,
+          "Y": 174
+        }
       },
       {
         "D": "M126 92 L126 108 L193 108",
@@ -5589,7 +5601,12 @@
         "Joins": true,
         "Rels": [
           "MOD-0027.depends_on.MOD-0024"
-        ]
+        ],
+        "Label": {
+          "S": "데이터",
+          "X": 454,
+          "Y": 524
+        }
       },
       {
         "D": "M801 340 L801 356",
@@ -6054,7 +6071,12 @@
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 11
+        "Net": 11,
+        "Label": {
+          "S": "호출",
+          "X": 693,
+          "Y": 212
+        }
       },
       {
         "D": "M753 228 L753 188",
@@ -6235,7 +6257,12 @@
         "Rels": [
           "MOD-0026.consumes.DATA-0006"
         ],
-        "Net": 17
+        "Net": 17,
+        "Label": {
+          "S": "호출",
+          "X": 513,
+          "Y": 402
+        }
       },
       {
         "D": "M573 380 L573 416",
@@ -6909,7 +6936,12 @@
             ],
             "Rels": [
               "FEAT-0003.depends_on.FEAT-0002"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 450,
+              "Y": 502
+            }
           },
           {
             "D": "M91 334 L91 306 L48 306 L48 62 L114 62 L114 38",
@@ -6930,7 +6962,12 @@
             ],
             "Rels": [
               "FEAT-0004.consumes.IF-0003"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 81,
+              "Y": 58
+            }
           },
           {
             "D": "M59 514 L59 550",
@@ -6942,7 +6979,12 @@
             ],
             "Rels": [
               "FEAT-0004.consumes.IF-0004"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 75,
+              "Y": 536
+            }
           },
           {
             "D": "M171 514 L171 550",
@@ -6954,7 +6996,12 @@
             ],
             "Rels": [
               "FEAT-0004.consumes.IF-0007"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 187,
+              "Y": 536
+            }
           },
           {
             "D": "M246 514 L246 550",
@@ -6966,7 +7013,12 @@
             ],
             "Rels": [
               "FEAT-0004.consumes.IF-0008"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 262,
+              "Y": 536
+            }
           },
           {
             "D": "M170 282 L170 298",
@@ -7009,7 +7061,12 @@
             "Rels": [
               "FEAT-0005.depends_on.FEAT-0018",
               "FEAT-0005.depends_on.FEAT-0019"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 277,
+              "Y": 74
+            }
           },
           {
             "D": "M288 190 L288 206 L131 206 L131 222",
@@ -7029,7 +7086,12 @@
             ],
             "Rels": [
               "FEAT-0006.depends_on.FEAT-0005"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 185,
+              "Y": 218
+            }
           },
           {
             "D": "M288 102 L288 86",
@@ -7056,7 +7118,12 @@
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0011"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 514,
+              "Y": 74
+            }
           },
           {
             "D": "M622 102 L622 38",
@@ -7069,7 +7136,12 @@
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0013"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 638,
+              "Y": 74
+            }
           },
           {
             "D": "M626 490 L626 514 L613 514 L613 550",
@@ -7089,7 +7161,12 @@
             ],
             "Rels": [
               "FEAT-0007.consumes.IF-0009"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 629,
+              "Y": 536
+            }
           },
           {
             "D": "M626 430 L626 418 L761 418",
@@ -7111,7 +7188,12 @@
             ],
             "Rels": [
               "FEAT-0007.consumes.IF-0010"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 693,
+              "Y": 414
+            }
           },
           {
             "D": "M320 514 L320 522",
@@ -7136,7 +7218,12 @@
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0006"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 327,
+              "Y": 536
+            }
           },
           {
             "D": "M806 514 L806 522",
@@ -7161,7 +7248,12 @@
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0002"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 746,
+              "Y": 536
+            }
           },
           {
             "D": "M844 514 L844 550",
@@ -7173,7 +7265,12 @@
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0014"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 860,
+              "Y": 536
+            }
           },
           {
             "D": "M68 290 L68 298",
@@ -7192,7 +7289,12 @@
             "Via": "convention",
             "Rels": [
               "DATA-0001.depends_on.FEAT-0008"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 419,
+              "Y": 320
+            }
           },
           {
             "D": "M231 38 L231 70 M68 70 L68 198 M68 198 L68 290 M68 70 L231 70 M68 290 L403 290",
@@ -7219,7 +7321,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 236,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "관례",
+              "X": 149,
+              "Y": 66
+            }
           },
           {
             "D": "M114 394 L114 418 M114 418 L114 514 M59 514 L246 514",
@@ -7257,7 +7364,12 @@
             "Count": 3,
             "Net": 2,
             "LX": 119,
-            "LY": 406
+            "LY": 406,
+            "Label": {
+              "S": "호출",
+              "X": 152,
+              "Y": 510
+            }
           },
           {
             "D": "M288 130 L288 102 M288 102 L622 102",
@@ -7296,7 +7408,12 @@
             "Count": 3,
             "Net": 3,
             "LX": 267,
-            "LY": 126
+            "LY": 126,
+            "Label": {
+              "S": "호출",
+              "X": 455,
+              "Y": 98
+            }
           },
           {
             "D": "M395 386 L395 418 M320 418 L320 514 M320 418 L395 418 M311 514 L320 514",
@@ -7327,7 +7444,12 @@
             "Count": 2,
             "Net": 4,
             "LX": 400,
-            "LY": 398
+            "LY": 398,
+            "Label": {
+              "S": "호출",
+              "X": 357,
+              "Y": 414
+            }
           },
           {
             "D": "M806 490 L806 514 M730 514 L844 514",
@@ -7381,7 +7503,12 @@
               "FEAT-0006.consumes.IF-0010",
               "FEAT-0007.consumes.IF-0010"
             ],
-            "Net": 6
+            "Net": 6,
+            "Label": {
+              "S": "호출",
+              "X": 528,
+              "Y": 98
+            }
           },
           {
             "D": "M761 86 L761 38",
@@ -7414,7 +7541,12 @@
               "FEAT-0008.consumes.IF-0001",
               "FEAT-0009.consumes.IF-0001"
             ],
-            "Net": 7
+            "Net": 7,
+            "Label": {
+              "S": "호출",
+              "X": 563,
+              "Y": 518
+            }
           },
           {
             "D": "M509 522 L509 550",
@@ -8187,7 +8319,12 @@
             ],
             "Rels": [
               "FEAT-0010.depends_on.MOD-0055"
-            ]
+            ],
+            "Label": {
+              "S": "설정",
+              "X": 451,
+              "Y": 498
+            }
           },
           {
             "D": "M369 370 L369 378",
@@ -8260,7 +8397,12 @@
             ],
             "Rels": [
               "FEAT-0013.depends_on.FEAT-0017"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 343,
+              "Y": 262
+            }
           },
           {
             "D": "M194 146 L194 158",
@@ -8304,7 +8446,12 @@
             ],
             "Rels": [
               "FEAT-0014.consumes.IF-0012"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 568,
+              "Y": 366
+            }
           },
           {
             "D": "M668 474 L668 514",
@@ -8325,7 +8472,12 @@
             ],
             "Rels": [
               "FEAT-0015.depends_on.FEAT-0018"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 684,
+              "Y": 498
+            }
           },
           {
             "D": "M763 474 L763 498 L842 498 L842 550",
@@ -8345,7 +8497,12 @@
             ],
             "Rels": [
               "FEAT-0015.consumes.IF-0013"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 802,
+              "Y": 494
+            }
           },
           {
             "D": "M733 522 L733 550",
@@ -8369,7 +8526,12 @@
             ],
             "Rels": [
               "FEAT-0016.depends_on.FEAT-0001"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 634,
+              "Y": 314
+            }
           },
           {
             "D": "M610 242 L610 258",
@@ -8406,7 +8568,12 @@
             ],
             "Rels": [
               "FEAT-0017.consumes.IF-0009"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 92,
+              "Y": 528
+            }
           },
           {
             "D": "M211 498 L211 550",
@@ -8418,7 +8585,12 @@
             ],
             "Rels": [
               "FEAT-0017.consumes.IF-0018"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 227,
+              "Y": 528
+            }
           },
           {
             "D": "M369 346 L369 370 M281 370 L369 370",
@@ -8519,7 +8691,12 @@
             "Count": 2,
             "Net": 3,
             "LX": 449,
-            "LY": 134
+            "LY": 134,
+            "Label": {
+              "S": "데이터",
+              "X": 319,
+              "Y": 142
+            }
           },
           {
             "D": "M696 218 L696 242 M708 242 L708 386 M601 386 L601 522 M696 242 L708 242 M601 386 L708 386 M601 522 L733 522",
@@ -8612,7 +8789,12 @@
             "Count": 2,
             "Net": 6,
             "LX": 191,
-            "LY": 486
+            "LY": 486,
+            "Label": {
+              "S": "관례",
+              "X": 143,
+              "Y": 494
+            }
           },
           {
             "D": "M281 370 L281 514 M281 514 L668 514",
@@ -8669,7 +8851,12 @@
               "FEAT-0012.depends_on.FEAT-0011",
               "FEAT-0016.depends_on.FEAT-0011"
             ],
-            "Net": 8
+            "Net": 8,
+            "Label": {
+              "S": "데이터",
+              "X": 489,
+              "Y": 254
+            }
           },
           {
             "D": "M369 258 L369 286",
@@ -8703,7 +8890,12 @@
               "FEAT-0012.depends_on.FEAT-0017",
               "FEAT-0013.depends_on.FEAT-0017"
             ],
-            "Net": 9
+            "Net": 9,
+            "Label": {
+              "S": "데이터",
+              "X": 307,
+              "Y": 390
+            }
           },
           {
             "D": "M255 378 L255 414",
@@ -9522,7 +9714,12 @@
             ],
             "Rels": [
               "MOD-0002.consumes.DATA-0004"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 521,
+              "Y": 178
+            }
           },
           {
             "D": "M369 190 L369 198",
@@ -9583,7 +9780,12 @@
             ],
             "Rels": [
               "MOD-0003.provides.IF-0014"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 214,
+              "Y": 58
+            }
           },
           {
             "D": "M187 150 L187 198",
@@ -9604,7 +9806,12 @@
             ],
             "Rels": [
               "MOD-0003.depends_on.MOD-0007"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 203,
+              "Y": 178
+            }
           },
           {
             "D": "M585 62 L585 38",
@@ -9638,7 +9845,12 @@
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0002"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 394,
+              "Y": 210
+            }
           },
           {
             "D": "M679 62 L679 38",
@@ -9698,7 +9910,12 @@
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0022"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 570,
+              "Y": 88
+            }
           },
           {
             "D": "M424 374 L424 442",
@@ -9710,7 +9927,12 @@
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 440,
+              "Y": 412
+            }
           },
           {
             "D": "M865 150 L865 174",
@@ -9751,7 +9973,12 @@
             ],
             "Rels": [
               "MOD-0005.depends_on.MOD-0006"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 795,
+              "Y": 220
+            }
           },
           {
             "D": "M811 106 L811 70",
@@ -9773,7 +10000,12 @@
             ],
             "Rels": [
               "MOD-0005.depends_on.MOD-0047"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 827,
+              "Y": 92
+            }
           },
           {
             "D": "M810 390 L810 398",
@@ -9811,7 +10043,12 @@
             ],
             "Rels": [
               "MOD-0006.consumes.IF-0015"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 713,
+              "Y": 420
+            }
           },
           {
             "D": "M748 302 L748 382",
@@ -9832,7 +10069,12 @@
             ],
             "Rels": [
               "MOD-0006.depends_on.MOD-0013"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 764,
+              "Y": 346
+            }
           },
           {
             "D": "M316 258 L316 174 L313 174 L313 38",
@@ -9852,7 +10094,12 @@
             ],
             "Rels": [
               "MOD-0007.provides.DATA-0005"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 338,
+              "Y": 228
+            }
           },
           {
             "D": "M343 302 L343 342 L113 342 L113 442",
@@ -9872,7 +10119,12 @@
             ],
             "Rels": [
               "MOD-0007.depends_on.MOD-0034"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 228,
+              "Y": 338
+            }
           },
           {
             "D": "M613 310 L613 358",
@@ -9893,7 +10145,12 @@
             ],
             "Rels": [
               "MOD-0008.consumes.DATA-0002"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 635,
+              "Y": 338
+            }
           },
           {
             "D": "M613 250 L613 174 L626 174 L626 150",
@@ -9914,7 +10171,12 @@
             ],
             "Rels": [
               "MOD-0008.depends_on.MOD-0004"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 629,
+              "Y": 216
+            }
           },
           {
             "D": "M517 310 L517 350 L201 350 L201 442",
@@ -9934,7 +10196,12 @@
             ],
             "Rels": [
               "MOD-0008.depends_on.MOD-0009"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 359,
+              "Y": 346
+            }
           },
           {
             "D": "M128 38 L128 62 L65 62 L65 174 L128 174 L128 258",
@@ -9951,7 +10218,12 @@
             ],
             "Rels": [
               "FEAT-0016.consumes.DATA-0001"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 96,
+              "Y": 58
+            }
           },
           {
             "D": "M402 106 L402 78 M402 78 L410 78",
@@ -10014,7 +10286,12 @@
             "Count": 2,
             "Net": 2,
             "LX": 348,
-            "LY": 162
+            "LY": 162,
+            "Label": {
+              "S": "호출",
+              "X": 409,
+              "Y": 186
+            }
           },
           {
             "D": "M616 106 L616 62 M585 62 L679 62",
@@ -10138,7 +10415,12 @@
               "MOD-0002.depends_on.MOD-0022",
               "MOD-0004.depends_on.MOD-0022"
             ],
-            "Net": 6
+            "Net": 6,
+            "Label": {
+              "S": "호출",
+              "X": 474,
+              "Y": 58
+            }
           },
           {
             "D": "M493 62 L493 38",
@@ -10172,7 +10454,12 @@
               "MOD-0002.depends_on.MOD-0047",
               "MOD-0005.depends_on.MOD-0047"
             ],
-            "Net": 7
+            "Net": 7,
+            "Label": {
+              "S": "호출",
+              "X": 598,
+              "Y": 82
+            }
           },
           {
             "D": "M767 70 L767 38",
@@ -10205,7 +10492,12 @@
               "MOD-0004.consumes.DATA-0002",
               "MOD-0008.consumes.DATA-0002"
             ],
-            "Net": 8
+            "Net": 8,
+            "Label": {
+              "S": "데이터",
+              "X": 425,
+              "Y": 370
+            }
           },
           {
             "D": "M314 358 L314 442",
@@ -10239,7 +10531,12 @@
               "MOD-0004.depends_on.MOD-0013",
               "MOD-0006.depends_on.MOD-0013"
             ],
-            "Net": 9
+            "Net": 9,
+            "Label": {
+              "S": "호출",
+              "X": 598,
+              "Y": 378
+            }
           },
           {
             "D": "M515 382 L515 442",
@@ -10273,7 +10570,12 @@
               "MOD-0002.consumes.DATA-0004",
               "MOD-0006.consumes.DATA-0004"
             ],
-            "Net": 10
+            "Net": 10,
+            "Label": {
+              "S": "데이터",
+              "X": 747,
+              "Y": 410
+            }
           },
           {
             "D": "M604 398 L604 442",
@@ -10305,7 +10607,12 @@
               "MOD-0005.consumes.DATA-0008",
               "MOD-0006.consumes.DATA-0008"
             ],
-            "Net": 11
+            "Net": 11,
+            "Label": {
+              "S": "데이터",
+              "X": 887,
+              "Y": 298
+            }
           },
           {
             "D": "M865 414 L865 442",
@@ -10337,7 +10644,12 @@
               "MOD-0002.depends_on.MOD-0007",
               "MOD-0003.depends_on.MOD-0007"
             ],
-            "Net": 12
+            "Net": 12,
+            "Label": {
+              "S": "호출",
+              "X": 278,
+              "Y": 194
+            }
           },
           {
             "D": "M304 198 L304 258",
@@ -14969,7 +15281,12 @@
             ],
             "Rels": [
               "MOD-0010.depends_on.MOD-0011"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 196,
+              "Y": 126
+            }
           },
           {
             "D": "M180 182 L180 206",
@@ -15805,7 +16122,12 @@
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0031"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 282,
+              "Y": 220
+            }
           },
           {
             "D": "M211 186 L211 194 L250 194 L250 302",
@@ -15893,7 +16215,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 159,
-            "LY": 118
+            "LY": 118,
+            "Label": {
+              "S": "호출",
+              "X": 223,
+              "Y": 126
+            }
           }
         ],
         "Dots": [
@@ -17002,7 +17329,12 @@
             ],
             "Rels": [
               "MOD-0018.depends_on.MOD-0032"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 463,
+              "Y": 206
+            }
           },
           {
             "D": "M290 202 L290 226",
@@ -17042,7 +17374,12 @@
             ],
             "Rels": [
               "MOD-0021.consumes.IF-0017"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 398,
+              "Y": 206
+            }
           },
           {
             "D": "M102 130 L102 150",
@@ -17114,7 +17451,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 295,
-            "LY": 118
+            "LY": 118,
+            "Label": {
+              "S": "호출",
+              "X": 196,
+              "Y": 126
+            }
           }
         ],
         "Dots": [
@@ -18721,7 +19063,12 @@
             ],
             "Rels": [
               "MOD-0027.depends_on.MOD-0024"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 121,
+              "Y": 68
+            }
           },
           {
             "D": "M198 38 L198 70 L190 70",
@@ -18739,7 +19086,12 @@
             ],
             "Rels": [
               "MOD-0034.depends_on.MOD-0025"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 214,
+              "Y": 58
+            }
           },
           {
             "D": "M258 38 L258 62 M190 62 L292 62",
@@ -18766,7 +19118,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 263,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "호출",
+              "X": 241,
+              "Y": 58
+            }
           },
           {
             "D": "M190 62 L190 150 M99 150 L190 150",
@@ -20119,7 +20476,12 @@
             ],
             "Rels": [
               "MOD-0027.depends_on.MOD-0024"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 109,
+              "Y": 212
+            }
           },
           {
             "D": "M356 38 L356 94",
@@ -20136,7 +20498,12 @@
             ],
             "Rels": [
               "MOD-0001.depends_on.MOD-0029"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 372,
+              "Y": 70
+            }
           },
           {
             "D": "M131 38 L131 102",
@@ -20153,7 +20520,12 @@
             ],
             "Rels": [
               "MOD-0043.depends_on.MOD-0027"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 147,
+              "Y": 74
+            }
           }
         ],
         "Frame": {
@@ -21621,7 +21993,12 @@
             ],
             "Rels": [
               "MOD-0001.depends_on.MOD-0032"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 690,
+              "Y": 74
+            }
           },
           {
             "D": "M260 274 L260 282",
@@ -21642,7 +22019,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0013.provides.DATA-0019"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 103,
+              "Y": 308
+            }
           },
           {
             "D": "M406 38 L406 118 L598 118",
@@ -21660,7 +22042,12 @@
             ],
             "Rels": [
               "MOD-0014.depends_on.MOD-0031"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 486,
+              "Y": 130
+            }
           },
           {
             "D": "M394 38 L394 62",
@@ -21696,7 +22083,12 @@
             ],
             "Rels": [
               "MOD-0018.depends_on.MOD-0032"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 732,
+              "Y": 58
+            }
           },
           {
             "D": "M647 38 L647 142 L394 142",
@@ -21714,7 +22106,12 @@
             ],
             "Rels": [
               "MOD-0021.consumes.IF-0017"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 536,
+              "Y": 138
+            }
           },
           {
             "D": "M154 38 L154 214",
@@ -21731,7 +22128,12 @@
             ],
             "Rels": [
               "MOD-0022.consumes.DATA-0020"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 176,
+              "Y": 130
+            }
           },
           {
             "D": "M268 38 L268 62",
@@ -21807,7 +22209,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0047.consumes.DATA-0019"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 201,
+              "Y": 316
+            }
           },
           {
             "D": "M495 38 L495 102 L598 102",
@@ -21825,7 +22232,12 @@
             ],
             "Rels": [
               "MOD-0047.depends_on.MOD-0031"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 546,
+              "Y": 98
+            }
           },
           {
             "D": "M329 38 L329 78 L268 78",
@@ -21844,7 +22256,12 @@
             ],
             "Rels": [
               "MOD-0054.provides.DATA-0015"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 298,
+              "Y": 90
+            }
           },
           {
             "D": "M371 38 L371 70 M251 70 L251 162 M260 162 L260 274 M251 70 L371 70 M251 162 L260 162 M81 274 L260 274",
@@ -21872,7 +22289,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 350,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 307,
+              "Y": 66
+            }
           },
           {
             "D": "M452 38 L452 110 M504 110 L504 178 M504 178 L504 274 M452 110 L504 110",
@@ -21899,7 +22321,12 @@
             "Count": 2,
             "Net": 2,
             "LX": 431,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 474,
+              "Y": 78
+            }
           },
           {
             "D": "M529 38 L529 86 M692 86 L692 162 M692 162 L692 290 M529 86 L692 86 M179 290 L692 290",
@@ -21926,7 +22353,12 @@
             "Count": 2,
             "Net": 3,
             "LX": 534,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 610,
+              "Y": 98
+            }
           },
           {
             "D": "M572 38 L572 126 M520 126 L520 162 M520 162 L520 274 M520 126 L572 126 M402 162 L520 162",
@@ -21970,7 +22402,12 @@
               "MOD-0034.consumes.DATA-0010",
               "MOD-0047.consumes.DATA-0010"
             ],
-            "Net": 5
+            "Net": 5,
+            "Label": {
+              "S": "데이터",
+              "X": 730,
+              "Y": 120
+            }
           },
           {
             "D": "M708 298 L708 326",
@@ -21996,7 +22433,12 @@
               "MOD-0001.consumes.DATA-0015",
               "MOD-0041.consumes.DATA-0015"
             ],
-            "Net": 6
+            "Net": 6,
+            "Label": {
+              "S": "데이터",
+              "X": 470,
+              "Y": 278
+            }
           },
           {
             "D": "M383 282 L383 334",
@@ -22035,7 +22477,12 @@
               "MOD-0026.provides.DATA-0015",
               "MOD-0054.provides.DATA-0015"
             ],
-            "Net": 7
+            "Net": 7,
+            "Label": {
+              "S": "데이터",
+              "X": 292,
+              "Y": 278
+            }
           },
           {
             "D": "M325 282 L325 334",
@@ -22062,7 +22509,12 @@
               "MOD-0015.consumes.IF-0017",
               "MOD-0021.consumes.IF-0017"
             ],
-            "Net": 8
+            "Net": 8,
+            "Label": {
+              "S": "호출",
+              "X": 378,
+              "Y": 120
+            }
           },
           {
             "D": "M394 170 L394 214",
@@ -22087,7 +22539,12 @@
               "MOD-0014.depends_on.MOD-0031",
               "MOD-0047.depends_on.MOD-0031"
             ],
-            "Net": 9
+            "Net": 9,
+            "Label": {
+              "S": "호출",
+              "X": 614,
+              "Y": 136
+            }
           },
           {
             "D": "M598 162 L598 206",
@@ -22111,7 +22568,12 @@
               "MOD-0001.depends_on.MOD-0032",
               "MOD-0018.depends_on.MOD-0032"
             ],
-            "Net": 10
+            "Net": 10,
+            "Label": {
+              "S": "호출",
+              "X": 808,
+              "Y": 116
+            }
           },
           {
             "D": "M792 162 L792 214",
@@ -25512,7 +25974,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:292 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:316 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -25521,8 +25983,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:300 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:315 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:324 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:339 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -25897,11 +26359,16 @@
             "Title": "overview plan depends_on internal/model (via data), 판독",
             "Via": "data",
             "Quotes": [
-              "internal/screen/overview.go:300 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+              "internal/screen/overview.go:324 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0030"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 73,
+              "Y": 378
+            }
           },
           {
             "D": "M103 322 L103 330",
@@ -25910,7 +26377,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+              "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -25942,7 +26409,7 @@
             "Title": "page template depends_on module inside (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+              "internal/screen/page.css:84 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0035"
@@ -25971,7 +26438,12 @@
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0040"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 281,
+              "Y": 240
+            }
           },
           {
             "D": "M372 426 L372 462",
@@ -25983,7 +26455,12 @@
             ],
             "Rels": [
               "MOD-0039.consumes.DATA-0005"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 394,
+              "Y": 448
+            }
           },
           {
             "D": "M450 426 L450 462",
@@ -25995,7 +26472,12 @@
             ],
             "Rels": [
               "MOD-0039.consumes.DATA-0006"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 472,
+              "Y": 448
+            }
           },
           {
             "D": "M550 426 L550 462",
@@ -26007,7 +26489,12 @@
             ],
             "Rels": [
               "MOD-0039.depends_on.MOD-0022"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 566,
+              "Y": 448
+            }
           },
           {
             "D": "M475 426 L475 434",
@@ -26040,7 +26527,12 @@
             ],
             "Rels": [
               "MOD-0040.consumes.DATA-0008"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 225,
+              "Y": 438
+            }
           },
           {
             "D": "M271 298 L271 322",
@@ -26078,7 +26570,12 @@
             ],
             "Rels": [
               "MOD-0001.depends_on.MOD-0039"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 386,
+              "Y": 206
+            }
           },
           {
             "D": "M397 38 L397 62",
@@ -26135,8 +26632,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/overview.go:300 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+              "internal/screen/overview.go:324 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+              "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
             ],
             "Marks": [
               {
@@ -26166,7 +26663,7 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+              "internal/screen/page.css:84 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
               "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\"",
               "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\""
             ],
@@ -26195,7 +26692,12 @@
             "Count": 3,
             "Net": 3,
             "LX": 193,
-            "LY": 118
+            "LY": 118,
+            "Label": {
+              "S": "관례",
+              "X": 145,
+              "Y": 126
+            }
           },
           {
             "D": "M459 298 L459 322 M459 322 L459 426 M372 426 L459 426",
@@ -26226,7 +26728,12 @@
             "Count": 2,
             "Net": 4,
             "LX": 438,
-            "LY": 310
+            "LY": 310,
+            "Label": {
+              "S": "데이터",
+              "X": 415,
+              "Y": 422
+            }
           },
           {
             "D": "M475 298 L475 322 M475 322 L475 426 M475 426 L550 426",
@@ -26257,7 +26764,12 @@
             "Count": 2,
             "Net": 5,
             "LX": 480,
-            "LY": 310
+            "LY": 310,
+            "Label": {
+              "S": "관례",
+              "X": 512,
+              "Y": 422
+            }
           },
           {
             "D": "M271 322 L271 434 M271 434 L475 434",
@@ -26272,7 +26784,12 @@
               "MOD-0039.depends_on.MOD-0041",
               "MOD-0040.depends_on.MOD-0041"
             ],
-            "Net": 6
+            "Net": 6,
+            "Label": {
+              "S": "관례",
+              "X": 357,
+              "Y": 430
+            }
           },
           {
             "D": "M271 434 L271 462",
@@ -26298,13 +26815,18 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:295 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)\"",
-              "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+              "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
               "MOD-0037.depends_on.MOD-0036"
             ],
-            "Net": 7
+            "Net": 7,
+            "Label": {
+              "S": "호출",
+              "X": 142,
+              "Y": 326
+            }
           },
           {
             "D": "M181 330 L181 358",
@@ -26312,7 +26834,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
               "internal/screen/inside.go:295 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)\"",
-              "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+              "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -26801,7 +27323,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The overview draws each top-level module and feature as a box, and a top-level contract no module provides as a loose box. A blue ",
+                "Text": "The overview draws each top-level module and feature as a box, and a top-level contract no module provides as a loose box. A ",
                 "Code": false
               },
               {
@@ -26817,7 +27339,7 @@
                 "Code": true
               },
               {
-                "Text": " chip on the provider. A thick orange ",
+                "Text": " chip on the provider. A thick ",
                 "Code": false
               },
               {
@@ -26825,7 +27347,7 @@
                 "Code": true
               },
               {
-                "Text": " line marks a module dependency no contract line already carries. Two modules that depend on each other that way share one ",
+                "Text": " line with an open head marks a module dependency no contract line already carries. Two modules that depend on each other that way share one ",
                 "Code": false
               },
               {
@@ -27645,6 +28167,212 @@
               },
               {
                 "Text": " sets each ×N beside its own stub or drop, on the side where the nearest other ink is farthest.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "mark",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "gaps",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "marks.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "hues.go",
+                "Code": true
+              },
+              {
+                "Text": "): what the page adds to the routed ink after the dots and counts. ",
+                "Code": false
+              },
+              {
+                "Text": "mark",
+                "Code": true
+              },
+              {
+                "Text": " records the place each line's relations leave, cuts the gaps and sets the labels. After every view is drawn, ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": " calls ",
+                "Code": false
+              },
+              {
+                "Text": "colours",
+                "Code": true
+              },
+              {
+                "Text": " once over all of ",
+                "Code": false
+              },
+              {
+                "Text": "Model.drawings",
+                "Code": true
+              },
+              {
+                "Text": ", so a unit wears one colour in every view. Two units are joined when some view draws a line between their boxes, a contract's chip included, and ",
+                "Code": false
+              },
+              {
+                "Text": "colours",
+                "Code": true
+              },
+              {
+                "Text": " colours the most constrained unit first, picking the colour its joined units hold least. ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " then gives each box its colour, drawn as a left accent bar and a tinted border, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the reserved warning orange instead, whatever box it leaves. ",
+                "Code": false
+              },
+              {
+                "Text": "palette",
+                "Code": true
+              },
+              {
+                "Text": " is the one table of six colours, and ",
+                "Code": false
+              },
+              {
+                "Text": "hueCSS",
+                "Code": true
+              },
+              {
+                "Text": " writes it, neutral and the warning into the page for both themes. ",
+                "Code": false
+              },
+              {
+                "Text": "TestEveryHueReadsOnBothThemes",
+                "Code": true
+              },
+              {
+                "Text": " holds each at 3:1 or better, ",
+                "Code": false
+              },
+              {
+                "Text": "TestTheWarningStandsApart",
+                "Code": true
+              },
+              {
+                "Text": " keeps every colour 30 or more from the warning under normal vision, protanopia and deuteranopia, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestJoinedBoxesWearDifferentColours",
+                "Code": true
+              },
+              {
+                "Text": " holds joined boxes to different colours. ",
+                "Code": false
+              },
+              {
+                "Text": "gaps",
+                "Code": true
+              },
+              {
+                "Text": " cuts a horizontal piece wherever a vertical piece of another line crosses it away from both pieces' turns and ends, unless a dot of the kind both lines share joins them, as a ",
+                "Code": false
+              },
+              {
+                "Text": "Gap",
+                "Code": true
+              },
+              {
+                "Text": " in an SVG mask on that line's path. Crossings closer than ",
+                "Code": false
+              },
+              {
+                "Text": "gapJoin",
+                "Code": true
+              },
+              {
+                "Text": " on one piece share one cut, so no sliver is left. The path keeps its points, so the checker's ink graph is unchanged. ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " then sets the word for a line's ",
+                "Code": false
+              },
+              {
+                "Text": "via",
+                "Code": true
+              },
+              {
+                "Text": " (호출, 데이터, ...) upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines, when every relation the line stands for names that one ",
+                "Code": false
+              },
+              {
+                "Text": "via",
+                "Code": true
+              },
+              {
+                "Text": ". A bus whose lines all say one word is labelled once. ",
+                "Code": false
+              },
+              {
+                "Text": "TestEveryCrossingIsAGap",
+                "Code": true
+              },
+              {
+                "Text": " reads the rendered SVG and holds every crossing to a hole wide enough for the stroke over it, every hole to a crossing, and no sliver under 4px. ",
+                "Code": false
+              },
+              {
+                "Text": "TestLabelsReadAlongTheirLine",
+                "Code": true
+              },
+              {
+                "Text": " holds each word upright, on the canvas, beside its own line and off everything else.",
                 "Code": false
               }
             ]
@@ -29080,7 +29808,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:292 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:316 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -29089,7 +29817,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -29098,7 +29826,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:315 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:339 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -29107,8 +29835,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:221 \"return \\\"stated\\\"\"",
-            "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/screen.go:225 \"return \\\"stated\\\"\"",
+            "internal/screen/page.go:46 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -29117,7 +29845,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:479 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:503 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -29126,7 +29854,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:383 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:407 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -29183,8 +29911,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:300 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:315 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:324 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:339 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -29193,7 +29921,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+            "internal/screen/overview.go:509 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
           ]
         },
         {
@@ -29211,7 +29939,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+            "internal/screen/page.css:84 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
             "internal/screen/inside.go:523 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
             "internal/screen/page.html:66 \"{{if .Unwired}}\"",
             "internal/screen/inside.go:465 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
@@ -29224,7 +29952,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.html:86 \"svg path.bypass { stroke: var(--bypass)\"",
-            "internal/screen/overview.go:698 \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
+            "internal/screen/overview.go:722 \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
             "internal/screen/screen.go:158 \"return \\\"#m-\\\" + string(id)\"",
             "internal/screen/page.html:184 \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
@@ -29612,7 +30340,12 @@
             ],
             "Rels": [
               "MOD-0042.provides.DATA-0006"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 485,
+              "Y": 66
+            }
           },
           {
             "D": "M164 266 L164 366",
@@ -29632,7 +30365,12 @@
             ],
             "Rels": [
               "MOD-0043.depends_on.MOD-0027"
-            ]
+            ],
+            "Label": {
+              "S": "관례",
+              "X": 148,
+              "Y": 320
+            }
           },
           {
             "D": "M734 222 L734 186 L742 186 L742 38",
@@ -29661,7 +30399,12 @@
             "Via": "call",
             "Rels": [
               "MOD-0001.depends_on.MOD-0043"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 242,
+              "Y": 208
+            }
           },
           {
             "D": "M450 186 L450 222",
@@ -29670,7 +30413,12 @@
             "Via": "call",
             "Rels": [
               "MOD-0001.depends_on.MOD-0044"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 466,
+              "Y": 208
+            }
           },
           {
             "D": "M710 186 L710 194",
@@ -29697,7 +30445,12 @@
             ],
             "Rels": [
               "MOD-0026.consumes.DATA-0003"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 165,
+              "Y": 82
+            }
           },
           {
             "D": "M111 98 L111 134",
@@ -29707,7 +30460,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0026.provides.DATA-0003"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 89,
+              "Y": 120
+            }
           },
           {
             "D": "M111 98 L111 106",
@@ -29774,7 +30532,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 169,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 89,
+              "Y": 84
+            }
           },
           {
             "D": "M464 38 L464 78 M556 78 L556 106 M464 78 L556 78 M556 106 L726 106",
@@ -29834,7 +30597,12 @@
             "Count": 3,
             "Net": 3,
             "LX": 526,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "호출",
+              "X": 628,
+              "Y": 58
+            }
           },
           {
             "D": "M332 62 L332 106 M111 106 L332 106",
@@ -29846,7 +30614,12 @@
               "MOD-0026.provides.DATA-0018",
               "MOD-0054.provides.DATA-0018"
             ],
-            "Net": 4
+            "Net": 4,
+            "Label": {
+              "S": "데이터",
+              "X": 221,
+              "Y": 102
+            }
           },
           {
             "D": "M332 106 L332 134",
@@ -33431,7 +34204,12 @@
             ],
             "Rels": [
               "MOD-0049.provides.DATA-0009"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 304,
+              "Y": 442
+            }
           },
           {
             "D": "M566 134 L566 158 L784 158",
@@ -33452,7 +34230,12 @@
             ],
             "Rels": [
               "MOD-0050.depends_on.MOD-0051"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 675,
+              "Y": 154
+            }
           },
           {
             "D": "M704 278 L704 286",
@@ -33495,7 +34278,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0001.consumes.DATA-0009"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 50,
+              "Y": 306
+            }
           },
           {
             "D": "M110 158 L110 198",
@@ -33505,7 +34293,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0001.consumes.DATA-0011"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 88,
+              "Y": 182
+            }
           },
           {
             "D": "M191 38 L191 62 L228 62 L228 314",
@@ -33522,7 +34315,12 @@
             ],
             "Rels": [
               "MOD-0001.depends_on.MOD-0048"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 244,
+              "Y": 196
+            }
           },
           {
             "D": "M260 38 L260 62",
@@ -33560,7 +34358,12 @@
             ],
             "Rels": [
               "MOD-0026.provides.DATA-0021"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 298,
+              "Y": 66
+            }
           },
           {
             "D": "M126 182 L126 198",
@@ -33579,7 +34382,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0034.consumes.DATA-0013"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 360,
+              "Y": 208
+            }
           },
           {
             "D": "M220 182 L220 286 L590 286 L590 314",
@@ -33588,7 +34396,12 @@
             "Via": "data",
             "Rels": [
               "MOD-0034.consumes.DATA-0023"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 417,
+              "Y": 298
+            }
           },
           {
             "D": "M118 38 L118 70 L142 70",
@@ -33606,7 +34419,12 @@
             ],
             "Rels": [
               "MOD-0054.consumes.DATA-0011"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 96,
+              "Y": 58
+            }
           },
           {
             "D": "M158 38 L158 62 M110 62 L110 158 M110 62 L158 62 M28 158 L110 158",
@@ -33633,7 +34451,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 163,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 69,
+              "Y": 154
+            }
           },
           {
             "D": "M401 38 L401 78 M126 78 L126 182 M126 78 L401 78 M126 182 L338 182",
@@ -33666,7 +34489,12 @@
             "Count": 3,
             "Net": 2,
             "LX": 406,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "데이터",
+              "X": 283,
+              "Y": 90
+            }
           },
           {
             "D": "M382 134 L382 166 M704 166 L704 278 M382 166 L704 166 M395 278 L704 278",
@@ -33709,7 +34537,12 @@
               "MOD-0034.consumes.DATA-0011",
               "MOD-0054.consumes.DATA-0011"
             ],
-            "Net": 4
+            "Net": 4,
+            "Label": {
+              "S": "데이터",
+              "X": 164,
+              "Y": 138
+            }
           },
           {
             "D": "M142 198 L142 226",
@@ -33735,7 +34568,12 @@
               "MOD-0009.provides.DATA-0021",
               "MOD-0026.provides.DATA-0021"
             ],
-            "Net": 5
+            "Net": 5,
+            "Label": {
+              "S": "데이터",
+              "X": 411,
+              "Y": 186
+            }
           },
           {
             "D": "M562 174 L562 226",
@@ -33798,7 +34636,12 @@
               "MOD-0052.depends_on.MOD-0051",
               "MOD-0053.depends_on.MOD-0051"
             ],
-            "Net": 7
+            "Net": 7,
+            "Label": {
+              "S": "호출",
+              "X": 744,
+              "Y": 282
+            }
           },
           {
             "D": "M784 286 L784 314",
@@ -35264,7 +36107,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:27 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -35273,7 +36116,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:315 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:339 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -35282,7 +36125,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:383 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:407 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -35552,7 +36395,12 @@
             ],
             "Rels": [
               "MOD-0034.consumes.DATA-0022"
-            ]
+            ],
+            "Label": {
+              "S": "데이터",
+              "X": 331,
+              "Y": 58
+            }
           }
         ],
         "Frame": {
@@ -35616,7 +36464,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:479 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:503 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -35833,7 +36681,12 @@
             "Via": "call",
             "Rels": [
               "FEAT-0005.depends_on.FEAT-0019"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 310,
+              "Y": 88
+            }
           },
           {
             "D": "M423 62 L423 70",
@@ -35853,7 +36706,12 @@
             "Via": "call",
             "Rels": [
               "FEAT-0011.depends_on.FEAT-0020"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 510,
+              "Y": 88
+            }
           },
           {
             "D": "M682 62 L682 98",
@@ -35862,7 +36720,12 @@
             "Via": "call",
             "Rels": [
               "FEAT-0012.depends_on.FEAT-0021"
-            ]
+            ],
+            "Label": {
+              "S": "호출",
+              "X": 698,
+              "Y": 84
+            }
           },
           {
             "D": "M194 38 L194 62 M194 62 L294 62",
@@ -35889,7 +36752,12 @@
             "Count": 2,
             "Net": 1,
             "LX": 173,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "호출",
+              "X": 244,
+              "Y": 58
+            }
           },
           {
             "D": "M423 38 L423 62 M423 62 L682 62",
@@ -35923,7 +36791,12 @@
             "Count": 3,
             "Net": 2,
             "LX": 402,
-            "LY": 50
+            "LY": 50,
+            "Label": {
+              "S": "호출",
+              "X": 552,
+              "Y": 58
+            }
           },
           {
             "D": "M94 70 L423 70",
@@ -35935,7 +36808,12 @@
               "FEAT-0011.depends_on.FEAT-0018",
               "FEAT-0015.depends_on.FEAT-0018"
             ],
-            "Net": 3
+            "Net": 3,
+            "Label": {
+              "S": "호출",
+              "X": 258,
+              "Y": 82
+            }
           },
           {
             "D": "M94 70 L94 106",
