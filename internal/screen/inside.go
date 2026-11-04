@@ -13,7 +13,8 @@ import (
 // implements or uses each one out to it.
 type Inside struct {
 	ID, Name string
-	Drawing  Drawing `json:",omitzero"`
+	// Drawing is what the module's page draws. graph.json leaves it out.
+	Drawing Drawing `json:"-"`
 	// Units lists the inside units with the one sentence each is responsible for.
 	Units []InsideUnit
 	// Understanding is what pstack's how wrote about the module.

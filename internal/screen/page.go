@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"html/template"
-	"slices"
 	"strings"
 )
 
@@ -78,11 +77,7 @@ type Graph struct {
 
 // Files renders every file.
 func Files(m Model) (map[string][]byte, error) {
-	mods := slices.Clone(m.Insides)
-	for i := range mods {
-		mods[i].Drawing = Drawing{}
-	}
-	g := Graph{Units: m.Units, Edges: m.Edges, Modules: mods, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
+	g := Graph{Units: m.Units, Edges: m.Edges, Modules: m.Insides, Flows: m.Flows, Stacks: m.Stacks, Tables: m.Tables}
 	graph, err := json.MarshalIndent(g, "", "  ")
 	if err != nil {
 		return nil, err
