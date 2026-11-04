@@ -197,6 +197,10 @@ func Build(in Input) Model {
 		}
 		m.Insides = append(m.Insides, ins)
 	}
+	hues := colours(m.drawings(), o.tree)
+	for _, d := range m.drawings() {
+		d.paint(hues)
+	}
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = o.flows(in), o.stacks(in), o.tables(in)
 	o.linkFigures(&m)

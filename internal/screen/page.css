@@ -1,7 +1,7 @@
 :root {
   --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1c1a; --muted: #6a675f; --line: #dcd8cc;
   --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
-  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #c2410c;
+  --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #b93e0a;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   color-scheme: light;
 }
@@ -59,7 +59,9 @@ svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font-size: 11px; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--c, var(--ink)); stroke-width: 1.8; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.8; }
+svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
+svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
@@ -83,7 +85,7 @@ svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
 svg circle.junction { fill: var(--c); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
-svg text.lab { font-size: 10px; fill: var(--c); }
+svg text.lab { font-size: 11px; fill: var(--c); }
 svg path.w.joins { marker-end: none; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }

@@ -3,8 +3,8 @@ package screen
 import (
 	"fmt"
 	"hash/fnv"
+	"maps"
 	"slices"
-	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -16,19 +16,44 @@ import (
 const (
 	// gapHalf is how far a gap reaches each side of the line that passes
 	// over it, the over line's stroke included, and gapEnd how far a
-	// crossing must stand from the ends of both pieces to be gapped: closer
-	// in, it reads as a line that ends on the other.
-	gapHalf, gapEnd = 4, 6
+	// crossing must stand from a turn of either piece to be gapped: closer
+	// in, it reads as a line that ends on the other. gapKeep is the least
+	// ink a cut leaves, so no sliver reads as a stray mark. A crossing
+	// keeps gapHalf+gapKeep from the end of a line, and two crossings on
+	// one stretch closer than gapJoin share one cut.
+	gapHalf, gapEnd, gapKeep = 4, 6, 4
+	gapJoin                  = 2*gapHalf + gapKeep
 )
 
-// Gap is where a horizontal stretch of a line is cut because a vertical
-// line crosses over it there.
-type Gap struct{ X, Y int }
+// Gap is where a horizontal stretch of a line is cut, at height Y, because
+// vertical lines cross over it from X0 to X1.
+type Gap struct{ X0, X1, Y int }
 
-// seg is one straight stretch of a wire's ink.
+// Left and Width are the cut's extent along the line.
+func (g Gap) Left() int  { return g.X0 - gapHalf }
+func (g Gap) Width() int { return g.X1 - g.X0 + 2*gapHalf }
+
+// seg is one straight stretch of a wire's ink. aEnd and bEnd say a or b
+// is where a piece of the line ends, not where it turns.
 type seg struct {
-	a, b pt
-	wire int
+	a, b       pt
+	wire       int
+	aEnd, bEnd bool
+}
+
+// room is how far a crossing must stand from the stretch's low end and
+// from its high end to be gapped.
+func (s seg) room() (int, int) {
+	r := [2]int{gapEnd, gapEnd}
+	for i, e := range [2]bool{s.aEnd, s.bEnd} {
+		if e {
+			r[i] = gapHalf + gapKeep
+		}
+	}
+	if s.a.x+s.a.y > s.b.x+s.b.y {
+		return r[1], r[0]
+	}
+	return r[0], r[1]
 }
 
 func (s seg) flat() bool { return s.a.y == s.b.y }
@@ -59,7 +84,7 @@ func segsOf(paths []drawn) []seg {
 			part = straight(part)
 			for k := 1; k < len(part); k++ {
 				if part[k-1] != part[k] {
-					out = append(out, seg{part[k-1], part[k], i})
+					out = append(out, seg{part[k-1], part[k], i, k == 1, k == len(part)-1})
 				}
 			}
 		}
@@ -67,66 +92,78 @@ func segsOf(paths []drawn) []seg {
 	return out
 }
 
-// mark adds the marks to d, whose wires were built from paths in order.
+// mark adds the marks to d, whose wires were built from paths in order:
+// the gaps, the labels, and the places each line leaves, which paint
+// colours it by.
 func (d *Drawing) mark(paths []drawn, reqs []wireReq, t tree) {
-	segs := segsOf(paths)
-	d.paint(paths, reqs, t)
-	d.gaps(segs)
-	d.labels(segs, t)
-}
-
-// heads are the arrowhead shapes that say a line's kind: a filled head for
-// a use through a contract, an open one for a direct dependency, and a
-// hollow one for a unit that provides a contract.
-var heads = map[string]string{
-	"contract": "use", "consumes": "use",
-	"depends_on": "dep", "bypass": "dep", "mutual": "dep",
-	"provides": "impl",
-}
-
-// paint colours each box by its unit, each line by the boxes its lines
-// leave, and each dot by the lines through it (rule 11). A line that
-// leaves a frame's chip takes the colour of the box it reaches. Ink whose
-// lines leave boxes of different colours is neutral.
-func (d *Drawing) paint(paths []drawn, reqs []wireReq, t tree) {
-	colour := func(node string) int {
-		if i, ok := t.hues[base(model.ID(node))]; ok && node != "" {
-			return i
-		}
-		return -1
-	}
-	for i, b := range d.Boxes {
-		if !strings.Contains(" "+b.Class+" ", " loose ") {
-			d.Boxes[i].Hue = hueKey(colour(b.ID))
-		}
-	}
-	used := map[string]bool{}
 	for i, p := range paths {
-		h, set := -1, false
 		for _, k := range p.reqs {
 			e := reqs[k].from
 			if e.node == "" {
 				e = reqs[k].to
 			}
-			c := colour(e.node)
-			if !set {
-				h, set = c, true
-			} else if c != h {
-				h = -1
+			d.Wires[i].srcs = append(d.Wires[i].srcs, e.node)
+		}
+	}
+	segs := segsOf(paths)
+	d.gaps(segs)
+	d.labels(segs, heads(d.Wires, paths), t)
+}
+
+// shapes are the arrowhead shapes that say a line's kind: a filled head for
+// a use through a contract, an open one for a direct dependency, and a
+// hollow one for a unit that provides a contract.
+var shapes = map[string]string{
+	"contract": "use", "consumes": "use",
+	"depends_on": "dep", "bypass": "dep", "mutual": "dep",
+	"provides": "impl",
+}
+
+// warns says a kind is a direct dependency that skips the contract
+// boundary the overview shows. Its line wears the warning colour, whatever
+// box it leaves.
+func warns(kind string) bool { return kind == "bypass" || kind == "mutual" }
+
+// paint colours each box by its unit, each line by the boxes its lines
+// leave, and each dot by the lines through it (rule 11). A line that
+// leaves a frame's chip takes the colour of the box it reaches. Ink whose
+// lines leave boxes of different colours is neutral, and a line that skips
+// the contract boundary wears the warning colour.
+func (d *Drawing) paint(hues map[model.ID]int) {
+	colour := func(node string) string {
+		if h, ok := hues[base(model.ID(node))]; ok && node != "" {
+			return hueKey(h)
+		}
+		return hueKey(-1)
+	}
+	for i, b := range d.Boxes {
+		if coloured(b) {
+			d.Boxes[i].Hue = colour(b.ID)
+		}
+	}
+	used := map[string]bool{}
+	for i := range d.Wires {
+		w := &d.Wires[i]
+		w.Hue = ""
+		for _, n := range w.srcs {
+			if c := colour(n); w.Hue == "" {
+				w.Hue = c
+			} else if c != w.Hue {
+				w.Hue = hueKey(-1)
 			}
 		}
-		w := &d.Wires[i]
-		w.Hue = hueKey(h)
+		if w.Hue == "" {
+			w.Hue = hueKey(-1)
+		}
+		if warns(w.Kind) {
+			w.Hue = warnKey
+		}
 		if !w.Joins {
-			w.Head = heads[w.Kind] + "-" + w.Hue
+			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
 		}
 	}
-	d.Heads = nil
-	for h := range used {
-		d.Heads = append(d.Heads, h)
-	}
-	slices.Sort(d.Heads)
+	d.Heads = slices.Sorted(maps.Keys(used))
 	for i, dot := range d.Dots {
 		p, got := pt{dot.X, dot.Y}, ""
 		for _, w := range d.Wires {
@@ -136,24 +173,25 @@ func (d *Drawing) paint(paths []drawn, reqs []wireReq, t tree) {
 			if got == "" {
 				got = w.Hue
 			} else if got != w.Hue {
-				got = "n"
+				got = hueKey(-1)
 			}
 		}
 		if got == "" {
-			got = "n"
+			got = hueKey(-1)
 		}
 		d.Dots[i].Hue = got
 	}
 }
 
 // gaps cuts every horizontal piece where a vertical piece of another line
-// crosses it away from both pieces' ends and no dot joins them. The
-// horizontal line is always the one broken, so the choice never depends on
-// the order the lines are drawn in.
+// crosses it away from both pieces' ends, unless a dot joins them there: a
+// dot of the kind both lines are. The horizontal line is always the one
+// broken, so the choice never depends on the order the lines are drawn in.
+// Crossings on one piece closer than gapJoin share one cut.
 func (d *Drawing) gaps(segs []seg) {
-	dot := map[pt]bool{}
+	dot := map[string]bool{}
 	for _, j := range d.Dots {
-		dot[pt{j.X, j.Y}] = true
+		dot[fmt.Sprint(j.Kind, pt{j.X, j.Y})] = true
 	}
 	var hs, vs []seg
 	for _, s := range segs {
@@ -165,19 +203,30 @@ func (d *Drawing) gaps(segs []seg) {
 	}
 	inside := func(v, lo, hi, room int) bool { return lo+room <= v && v <= hi-room }
 	for _, h := range hs {
+		var xs []int
+		y, hk := h.a.y, hue(d.Wires[h.wire].Kind)
 		for _, v := range vs {
-			x, y := v.a.x, h.a.y
-			if v.wire == h.wire || dot[pt{x, y}] || !inside(x, h.lo(), h.hi(), gapEnd) || !inside(y, v.lo(), v.hi(), gapEnd) {
+			x := v.a.x
+			lo, hi := h.room()
+			if v.wire == h.wire || hk == hue(d.Wires[v.wire].Kind) && dot[fmt.Sprint(hk, pt{x, y})] || x < h.lo()+lo || x > h.hi()-hi || !inside(y, v.lo(), v.hi(), gapEnd) {
 				continue
 			}
 			// The hole would cut the horizontal line's own vertical ink.
 			own := slices.ContainsFunc(vs, func(o seg) bool {
 				return o.wire == h.wire && abs(o.a.x-x) <= gapHalf && inside(y, o.lo(), o.hi(), -gapHalf)
 			})
-			w := &d.Wires[h.wire]
-			if g := (Gap{x, y}); !own && !slices.Contains(w.Gaps, g) {
-				w.Gaps = append(w.Gaps, g)
+			if !own {
+				xs = append(xs, x)
 			}
+		}
+		slices.Sort(xs)
+		w := &d.Wires[h.wire]
+		for k, x := range xs {
+			if k > 0 && x-xs[k-1] < gapJoin {
+				w.Gaps[len(w.Gaps)-1].X1 = x
+				continue
+			}
+			w.Gaps = append(w.Gaps, Gap{x, x, y})
 		}
 	}
 	// Mask ids are unique to the drawing's ink, so two drawings on one page
@@ -196,10 +245,43 @@ func (d *Drawing) gaps(segs []seg) {
 			if a.Y != b.Y {
 				return a.Y - b.Y
 			}
-			return a.X - b.X
+			return a.X0 - b.X0
 		})
+		w.Gaps = slices.Compact(w.Gaps)
 		w.Mask = fmt.Sprintf("x%x-%d", f.Sum32(), i)
 	}
+}
+
+// heads are where the arrowheads stand. A marker sits at the last point of
+// a whole path, and at its first too for a line that reads both ways, not
+// at each piece's ends. Its tip is on the point and it reaches 9px back
+// along the line, 5px to each side.
+func heads(ws []Wire, paths []drawn) []box {
+	var out []box
+	at := func(tip, from pt) {
+		dx, dy := sign(tip.x-from.x), sign(tip.y-from.y)
+		back := pt{tip.x - 9*dx, tip.y - 9*dy}
+		b := box{min(tip.x, back.x), min(tip.y, back.y), abs(tip.x - back.x), abs(tip.y - back.y)}
+		if dx == 0 {
+			b.x, b.w = b.x-5, 10
+		} else {
+			b.y, b.h = b.y-5, 10
+		}
+		out = append(out, b)
+	}
+	for i, w := range ws {
+		ps := paths[i].parts
+		if w.Joins || len(ps) == 0 {
+			continue
+		}
+		if last := straight(ps[len(ps)-1]); len(last) > 1 {
+			at(last[len(last)-1], last[len(last)-2])
+		}
+		if first := straight(ps[0]); len(first) > 1 && w.Both {
+			at(first[0], first[1])
+		}
+	}
+	return out
 }
 
 // viaWords are the words a line's label shows for how its relations arise.
@@ -210,21 +292,28 @@ var viaWords = map[model.Via]string{
 }
 
 const (
-	// labelPx is a label's font size. labelPad is how far a label keeps
-	// from its stretch's ends, where an arrowhead, an origin mark or a turn
-	// stands, and labelOff how far it stands off its line.
-	labelPx, labelPad, labelOff = 10, 10, 3
+	// labelPx is a label's font size, and labelH the height its glyphs
+	// take, from 9px above its baseline to 1px below. labelPad is how far
+	// a label keeps from its stretch's ends, where a turn stands, labelOff
+	// how far it stands off its line, and labelRoom how far it keeps from
+	// every other mark.
+	labelPx, labelH, labelPad, labelOff, labelRoom = 11, 10, 10, 3, 2
 	// labelMax is the widest a label may be. A longer word is left to the
 	// tooltip.
 	labelMax = 60
 )
 
-// Label is a word set along one straight stretch of a line. Up says the
-// stretch is vertical and the word reads upward along it.
+// Label is a word set upright beside one straight stretch of a line,
+// centred on X with its baseline at Y.
 type Label struct {
 	S    string
 	X, Y int
-	Up   bool `json:",omitempty"`
+}
+
+// area is where a label's glyphs stand.
+func (l Label) area() box {
+	tw := textWidth(l.S, labelPx)
+	return box{l.X - tw/2, l.Y - labelH + 1, tw, labelH}
 }
 
 // via is the word for how every relation a wire stands for arises, or ""
@@ -247,29 +336,45 @@ func hit(a, b box) bool {
 
 func grow(b box, n int) box { return box{b.x - n, b.y - n, b.w + 2*n, b.h + 2*n} }
 
-// labels sets each line's word on a straight stretch of its own ink long
-// enough to hold it, beside the line and clear of every box, chip, count,
-// other label and other line. A bus whose lines all say the same word is
-// labelled once, anywhere along it. Otherwise a line is labelled only where
-// its ink is its own, such as the drop into its box, since a word on a
-// shared trunk would name lines it does not stand for. A line with no room
-// keeps its word in its tooltip only.
-func (d *Drawing) labels(segs []seg, t tree) {
-	var taken []box
+// marked is everything a label keeps off besides lines: boxes, chips, the
+// frame, counts, dots, origin marks and arrowheads.
+func (d *Drawing) marked(heads []box) []box {
+	var out []box
 	for _, b := range d.Boxes {
-		taken = append(taken, box{b.X, b.Y, b.W, b.H})
+		out = append(out, box{b.X, b.Y, b.W, b.H})
 	}
 	for _, p := range d.Ports {
-		taken = append(taken, box{p.X, p.RectY(), p.W, p.H})
+		out = append(out, box{p.X, p.RectY(), p.W, p.H})
 	}
 	if f := d.Frame; f != nil {
-		taken = append(taken, box{f.X, f.Y, f.W, 0}, box{f.X, f.Y + f.H, f.W, 0}, box{f.X, f.Y, 0, f.H}, box{f.X + f.W, f.Y, 0, f.H})
+		out = append(out, box{f.X, f.Y, f.W, 0}, box{f.X, f.Y + f.H, f.W, 0}, box{f.X, f.Y, 0, f.H}, box{f.X + f.W, f.Y, 0, f.H})
 	}
 	for _, w := range d.Wires {
 		if w.Count > 1 {
-			taken = append(taken, box{w.LX, w.LY - 9, textWidth(fmt.Sprintf("×%d", w.Count), 11) + 2, 11})
+			out = append(out, box{w.LX, w.LY - 9, textWidth(fmt.Sprintf("×%d", w.Count), 11) + 2, 11})
+		}
+		for _, m := range w.Marks {
+			out = append(out, box{m.X - 4, m.Y - 4, 8, 8})
 		}
 	}
+	for _, j := range d.Dots {
+		out = append(out, box{j.X - 3, j.Y - 3, 6, 6})
+	}
+	return append(out, heads...)
+}
+
+// labels sets each line's word upright beside a straight stretch of its own
+// ink long enough to hold it, on the canvas and clear of every other mark
+// and line. A horizontal stretch holds the word above or below it, a
+// vertical one beside it. Horizontal stretches are tried first, nearest the
+// line's start first. A bus whose lines all say the same word is labelled
+// once, anywhere along it. Otherwise a line is labelled only where its ink
+// is its own, such as the drop into its box, since a word on a shared
+// trunk would name lines it does not stand for. A line with no room keeps
+// its word in its tooltip only.
+func (d *Drawing) labels(segs []seg, heads []box, t tree) {
+	taken := d.marked(heads)
+	canvas := box{0, 0, d.Width, d.Height}
 	words := make([]string, len(d.Wires))
 	for i, w := range d.Wires {
 		words[i] = via(t, w.Rels)
@@ -306,13 +411,27 @@ func (d *Drawing) labels(segs []seg, t tree) {
 				mine = append(mine, g)
 			}
 		}
-		slices.SortStableFunc(mine, func(a, b seg) int { return (b.hi() - b.lo()) - (a.hi() - a.lo()) })
-		// clear says the label's box lb, set beside g between lo and hi,
-		// keeps off everything else, and no other line's ink runs along g
-		// there.
-		clear := func(g seg, lb box, lo, hi int) bool {
+		// Horizontal stretches come first, and among them the one nearest
+		// where the line leaves, as the stretches run in its order.
+		slices.SortStableFunc(mine, func(a, b seg) int {
+			if a.flat() == b.flat() {
+				return 0
+			}
+			if a.flat() {
+				return -1
+			}
+			return 1
+		})
+		// clear says the label at l, set beside g between lo and hi, stands
+		// on the canvas and keeps off every other mark and line, and no
+		// other line's ink runs along g there.
+		clear := func(g seg, l Label, lo, hi int) bool {
+			lb := l.area()
+			if lb.x < 0 || lb.y < 0 || lb.x+lb.w > canvas.w || lb.y+lb.h > canvas.h {
+				return false
+			}
 			for _, o := range taken {
-				if hit(lb, grow(o, 2)) {
+				if hit(lb, grow(o, labelRoom)) {
 					return false
 				}
 			}
@@ -320,7 +439,8 @@ func (d *Drawing) labels(segs []seg, t tree) {
 				if o == g {
 					continue
 				}
-				if hit(lb, grow(o.bounds(), 1)) {
+				// A line's stroke reaches 1.3px off its centre at most.
+				if hit(lb, grow(o.bounds(), labelRoom+1)) {
 					return false
 				}
 				along := o.flat() == g.flat() && (g.flat() && o.a.y == g.a.y || !g.flat() && o.a.x == g.a.x)
@@ -331,10 +451,13 @@ func (d *Drawing) labels(segs []seg, t tree) {
 			return true
 		}
 		var got *Label
-		var at box
 	search:
 		for _, g := range mine {
-			lo, hi := g.lo()+labelPad+tw/2, g.hi()-labelPad-tw/2
+			half := tw / 2
+			if !g.flat() {
+				half = labelH / 2
+			}
+			lo, hi := g.lo()+labelPad+half, g.hi()-labelPad-half
 			if lo > hi {
 				continue
 			}
@@ -344,27 +467,17 @@ func (d *Drawing) labels(segs []seg, t tree) {
 					if c < lo || c > hi {
 						continue
 					}
-					type option struct {
-						lb box
-						l  Label
-					}
-					var opts []option
+					var opts []Label
 					if g.flat() {
 						y := g.a.y
-						opts = []option{
-							{box{c - tw/2, y - labelOff - 9, tw, 9}, Label{s, c, y - labelOff - 1, false}},
-							{box{c - tw/2, y + labelOff, tw, 9}, Label{s, c, y + labelOff + 8, false}},
-						}
+						opts = []Label{{s, c, y - labelOff - 1}, {s, c, y + labelOff + labelH - 1}}
 					} else {
-						x := g.a.x
-						opts = []option{
-							{box{x - labelOff - 9, c - tw/2, 9, tw}, Label{s, x - labelOff - 1, c, true}},
-							{box{x + labelOff, c - tw/2, 9, tw}, Label{s, x + labelOff + 8, c, true}},
-						}
+						x, y := g.a.x, c+labelH/2-1
+						opts = []Label{{s, x + labelOff + tw/2 + 1, y}, {s, x - labelOff - tw/2 - 1, y}}
 					}
-					for _, o := range opts {
-						if clear(g, o.lb, c-tw/2, c+tw/2) {
-							got, at = &o.l, o.lb
+					for _, l := range opts {
+						if clear(g, l, c-half, c+half) {
+							got = &l
 							break search
 						}
 					}
@@ -375,7 +488,7 @@ func (d *Drawing) labels(segs []seg, t tree) {
 			continue
 		}
 		d.Wires[i].Label = got
-		taken = append(taken, at)
+		taken = append(taken, got.area())
 		if n != 0 && whole[n] {
 			done[n] = true
 		}
