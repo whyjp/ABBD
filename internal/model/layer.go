@@ -88,7 +88,7 @@ func (l Layer) Gaps(units []Unit) []string {
 // StackUnits units at most. A unit moved under another after the stack was
 // stored can break the first rule, and the stored stack then reads STALE.
 // Each gap names the layers it involves.
-func holdOnce(layers []Layer, units []Unit) []Gap {
+func holdOnce(_ []Column, layers []Layer, units []Unit) []Gap {
 	st := stateOf(units)
 	type named struct {
 		id    ID

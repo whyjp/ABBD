@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 )
 
@@ -21,15 +22,18 @@ func ParseFigureKey[C Claim[C]](s string) (FigureKey, error) {
 // command do the rest for every kind. Noun names a figure of the kind and
 // the command that stores one, Dir the directory under .abbd that holds
 // them. Part names one claim and Parts the frontmatter key that lists them.
-// Min and Max bound how many claims a figure has. Long is the word field a
-// store warns on past 80 characters. Whole says what keeps the claims, taken
-// together, from being true of the state: a draft with any gap is refused,
-// and a stored figure with any reads STALE. It is nil when each claim stands
+// Min and Max bound how many claims a figure has, and MinColumns and
+// MaxColumns how many columns its head names: none for a kind without a
+// head. Long is the word field a store warns on past 80 characters, or ""
+// for every word. Whole says what keeps the claims, taken together with the
+// head, from being true of the state: a draft with any gap is refused, and a
+// stored figure with any reads STALE. It is nil when each claim stands
 // alone.
 type FigureKind[C any] struct {
 	Noun, Dir, Part, Parts, Long string
 	Min, Max                     int
-	Whole                        func(claims []C, units []Unit) []Gap
+	MinColumns, MaxColumns       int
+	Whole                        func(cols []Column, claims []C, units []Unit) []Gap
 }
 
 // Gap is one thing that keeps a figure's claims, taken together, from being
@@ -132,4 +136,22 @@ func (st state) rests(tops []ID, quotes []Evidence) bool {
 		return slices.ContainsFunc(owners, func(id ID) bool { return st.within(id, tops) || provides(id) })
 	}
 	return slices.ContainsFunc(quotes, held)
+}
+
+// strongest is the strongest live relation by which from, or a unit inside
+// it, reaches to or a unit inside it: provides, then consumes, then
+// depends_on. ok is false when none does.
+func (st state) strongest(from, to ID) (rel Relation, ok bool) {
+	rank := map[RelationKind]int{Provides: 3, Consumes: 2, DependsOn: 1}
+	for _, id := range slices.Sorted(maps.Keys(st)) {
+		if !st.under(id, from) {
+			continue
+		}
+		for _, r := range st[id].Relations {
+			if !r.Dead && st.under(r.To, to) && rank[r.Kind] > rank[rel.Kind] {
+				rel = r
+			}
+		}
+	}
+	return rel, rel.Kind != ""
 }

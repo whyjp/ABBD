@@ -73,7 +73,7 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 	}
 	for i, p := range f.Parts {
 		for _, w := range p.Claim.Words() {
-			if n := len([]rune(w.Text)); w.Field == kind.Long && n > 80 {
+			if n := len([]rune(w.Text)); (kind.Long == "" || w.Field == kind.Long) && n > 80 {
 				fmt.Fprintf(e.stdout, "long: %s %s %s %d %s holds %d characters; a %s reads best under 80\n", kind.Noun, k, kind.Part, i+1, w.Field, n, kind.Part)
 			}
 		}
@@ -82,18 +82,28 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 }
 
 // checkFigure refuses a draft that is no figure of its kind true of the
-// state: no question, too few or too many parts, a part that is not well
-// formed, a quote the code does not hold once, a part the state does not
-// bear out, or parts the state does not bear out taken together.
+// state: no question, too few or too many parts or columns, a column or a
+// part that is not well formed, a quote the code does not hold once, a part
+// the state does not bear out, or parts the state does not bear out taken
+// together with the head.
 func checkFigure[C model.Claim[C]](e env, f *store.Figure[C], units []model.Unit) error {
 	kind := model.KindOf[C]()
 	switch {
 	case f.Question == "" || strings.ContainsAny(f.Question, "\r\n"):
 		return fmt.Errorf("a %s answers one question, on one line, in its question field", kind.Noun)
+	case kind.MaxColumns == 0 && len(f.Columns) > 0:
+		return fmt.Errorf("a %s has no columns; drop the columns field", kind.Noun)
+	case len(f.Columns) < kind.MinColumns:
+		return fmt.Errorf("a %s names %d columns or more in its columns field, and this one names %d", kind.Noun, kind.MinColumns, len(f.Columns))
+	case len(f.Columns) > kind.MaxColumns:
+		return fmt.Errorf("a %s names at most %d columns, and this one names %d; split the question in two", kind.Noun, kind.MaxColumns, len(f.Columns))
 	case len(f.Parts) < kind.Min:
 		return fmt.Errorf("a %s has %d %s or more, and this one has %d", kind.Noun, kind.Min, kind.Parts, len(f.Parts))
 	case len(f.Parts) > kind.Max:
 		return fmt.Errorf("a %s has at most %d %s, and this one has %d; split the question in two", kind.Noun, kind.Max, kind.Parts, len(f.Parts))
+	}
+	if err := model.ValidateColumns(f.Columns); err != nil {
+		return err
 	}
 	c := evidence.New(e.root)
 	for i := range f.Parts {
@@ -195,11 +205,11 @@ func retire[C model.Claim[C]](e env, prev, f store.Figure[C], units []model.Unit
 	return out, nil
 }
 
-// said reports whether two claims say the same words, in any case and
-// spacing, whatever units they name.
+// said reports whether two claims say the same words in the same fields, in
+// any case and spacing, whatever units they name.
 func said[C model.Claim[C]](x, y C) bool {
 	same := func(a, b model.Word) bool {
-		return strings.EqualFold(strings.Join(strings.Fields(a.Text), ""), strings.Join(strings.Fields(b.Text), ""))
+		return a.Field == b.Field && strings.EqualFold(strings.Join(strings.Fields(a.Text), ""), strings.Join(strings.Fields(b.Text), ""))
 	}
 	return slices.EqualFunc(x.Words(), y.Words(), same)
 }
@@ -242,7 +252,7 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 	if !slices.Contains(open, true) {
 		return nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
 	}
-	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"caption", prev.Caption, f.Caption}} {
+	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(prev.Columns), head(f.Columns)}, {"caption", prev.Caption, f.Caption}} {
 		if !sameWords(w.was, w.now) {
 			return nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
 		}
@@ -269,10 +279,20 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 }
 
 // samePart reports whether two claims name the same units and say the same
-// thing in the same words on the same quotes.
+// thing in the same words, in the same fields, on the same quotes.
 func samePart[C model.Claim[C]](x, y C) bool {
 	return slices.Equal(x.Names(), y.Names()) && sameCitations(x.Quotes(), y.Quotes()) &&
-		slices.EqualFunc(x.Words(), y.Words(), func(a, b model.Word) bool { return sameWords(a.Text, b.Text) })
+		slices.EqualFunc(x.Words(), y.Words(), func(a, b model.Word) bool { return a.Field == b.Field && sameWords(a.Text, b.Text) })
+}
+
+// head is a figure's columns as one line, so a human's head compares as a
+// human's question does.
+func head(cols []model.Column) string {
+	var out []string
+	for _, c := range cols {
+		out = append(out, c.Name+"="+string(c.Unit))
+	}
+	return strings.Join(out, " | ")
 }
 
 // printFigure writes the stored figure as a draft to edit, and says on
