@@ -76,7 +76,7 @@ func TestAStackHoldsEachUnitOnce(t *testing.T) {
 		{[]Layer{layer("store", "MOD-0002"), layer("sub", "MOD-0004"), layer("model", "MOD-0003")}, "MOD-0004 is held by layer 2 and, inside MOD-0003, by layer 3", []int{2, 3}},
 		{[]Layer{layer("model", "MOD-0003", "MOD-0004"), layer("store", "MOD-0002")}, "layer 1 names MOD-0004 and MOD-0003, which holds it", []int{1}},
 	} {
-		got, parts := read(whole(c.layers, cli()))
+		got, parts := read(whole(nil, c.layers, cli()))
 		if c.want == "" && got != "" || !strings.Contains(got, c.want) || !slices.Equal(parts, c.parts) {
 			t.Errorf("want %q on layers %v, got %q on %v", c.want, c.parts, got, parts)
 		}
@@ -85,7 +85,7 @@ func TestAStackHoldsEachUnitOnce(t *testing.T) {
 	for i := range StackUnits + 1 {
 		many = append(many, layer(fmt.Sprint(i), ID(fmt.Sprintf("MOD-%04d", 100+i))))
 	}
-	if got, parts := read(whole(many, cli())); !strings.Contains(got, "at most 16 units, and these name 17") || len(parts) != StackUnits+1 {
+	if got, parts := read(whole(nil, many, cli())); !strings.Contains(got, "at most 16 units, and these name 17") || len(parts) != StackUnits+1 {
 		t.Errorf("a stack names at most %d units, and the gap involves every layer: %q on %v", StackUnits, got, parts)
 	}
 }

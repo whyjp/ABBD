@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,graph.json,index.html,units.html}; graph.json {edges{From,Kind,Origin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Drawing{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},overview{Boxes{Class,H,Href,ID,Kind,Lines{Mid,S,X,Y},Name,Sub{Mid,S,X,Y},Title,W,X,Y},Dots{Back,Kind,X,Y},Frame{H,W,X,Y},Height,Ports{Below,Class,Contract,Exit,H,Href,Label,Rels,Title,W,X,Y},Width,Wires{Back,Both,Count,D,Joins,Kind,LX,LY,Marks{Origin,X,Y},Net,Origin,Quotes,Rels,Title,Via}},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -311,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:44 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -596,7 +596,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:89 \"When the human states a purpose, a responsibility or a coupling in the conversation\""
+        "plugins/abbd/skills/abbd/SKILL.md:117 \"When the human states a purpose, a responsibility or a coupling in the conversation\""
       ]
     },
     {
@@ -614,7 +614,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:98 \"Put the topology difference in the reply and in the PR description\""
+        "plugins/abbd/skills/abbd/SKILL.md:126 \"Put the topology difference in the reply and in the PR description\""
       ]
     },
     {
@@ -632,7 +632,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md:103 \"for a CI job that labels the PR\""
+        "plugins/abbd/skills/abbd/SKILL.md:131 \"for a CI job that labels the PR\""
       ]
     },
     {
@@ -1257,6 +1257,18 @@
       ]
     },
     {
+      "ID": "IF-0025",
+      "Kind": "IF",
+      "Name": "abbd table",
+      "Signature": "abbd table pos{1,2}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/table.go table"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1285,6 +1297,7 @@
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
         "cmd/abbd/stack.go",
+        "cmd/abbd/table.go",
         "cmd/abbd/uncovered.go",
         "cmd/abbd/understand.go"
       ]
@@ -1335,9 +1348,9 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:256 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
-        "cmd/abbd/main.go:312 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
-        "cmd/abbd/main.go:302 \"if c.writes {\""
+        "cmd/abbd/main.go:269 \"if _, ok := commands[inv.name+\\\" \\\"+args[0]]; ok {\"",
+        "cmd/abbd/main.go:325 \"func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {\"",
+        "cmd/abbd/main.go:315 \"if c.writes {\""
       ]
     },
     {
@@ -1359,7 +1372,7 @@
       ],
       "Parent": "MOD-0001",
       "Evidence": [
-        "cmd/abbd/main.go:436 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+        "cmd/abbd/main.go:449 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
       ]
     },
     {
@@ -1903,7 +1916,8 @@
         "internal/model/flow.go",
         "internal/model/layer.go",
         "internal/model/model.go",
-        "internal/model/slot.go"
+        "internal/model/slot.go",
+        "internal/model/table.go"
       ]
     },
     {
@@ -2006,6 +2020,7 @@
         "internal/screen/screen.go",
         "internal/screen/site.go",
         "internal/screen/stack.go",
+        "internal/screen/table.go",
         "internal/screen/tree.go",
         "internal/screen/weigh.go",
         "internal/screen/words.go"
@@ -2031,7 +2046,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go:96 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {\""
+        "internal/screen/inside.go:98 \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {\""
       ]
     },
     {
@@ -2056,7 +2071,7 @@
       "Evidence": [
         "internal/screen/layout.go:45 \"func arrange(nodes []lnode, edges []ledge, top int) layout {\"",
         "internal/screen/layout.go:274 \"func (l *layout) route(from pt, a int, to pt, b int) string {\"",
-        "internal/screen/layout.go:670 \"func textWidth(s string, px int) int {\""
+        "internal/screen/layout.go:701 \"func textWidth(s string, px int) int {\""
       ]
     },
     {
@@ -2514,14 +2529,14 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:97 \"abbd diff\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:125 \"abbd diff\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:97 \"abbd evidence\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:125 \"abbd evidence\""
     },
     {
       "From": "FEAT-0001",
@@ -2597,14 +2612,14 @@
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:103 \"abbd migrate\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:131 \"abbd migrate\""
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:97 \"abbd record evidence\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:125 \"abbd record evidence\""
     },
     {
       "From": "FEAT-0001",
@@ -2633,6 +2648,13 @@
       "Kind": "consumes",
       "Origin": "EXTRACTED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md:64 \"abbd stack\""
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0025",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:87 \"abbd table\""
     },
     {
       "From": "FEAT-0002",
@@ -2826,7 +2848,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:91 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:119 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
     },
     {
       "From": "FEAT-0007",
@@ -2834,7 +2856,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:92 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:120 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
     },
     {
       "From": "FEAT-0008",
@@ -2842,7 +2864,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
       "From": "FEAT-0008",
@@ -2850,7 +2872,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
       "From": "FEAT-0009",
@@ -2858,7 +2880,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
       "From": "FEAT-0009",
@@ -2866,7 +2888,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
     },
     {
       "From": "FEAT-0009",
@@ -2874,7 +2896,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
       "From": "FEAT-0010",
@@ -3106,7 +3128,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:473 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+      "Quote": "cmd/abbd/main.go:486 \"return u.ID == id \u0026\u0026 !u.Absent })\""
     },
     {
       "From": "MOD-0001",
@@ -3262,6 +3284,12 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0025",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED"
@@ -3286,7 +3314,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0001",
@@ -3314,7 +3342,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0001",
@@ -3460,7 +3488,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:294 \"return exitUsage\""
+      "Quote": "cmd/abbd/main.go:307 \"return exitUsage\""
     },
     {
       "From": "MOD-0003",
@@ -3468,7 +3496,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:303 \"if err := e.publish(); err != nil {\""
+      "Quote": "cmd/abbd/main.go:316 \"if err := e.publish(); err != nil {\""
     },
     {
       "From": "MOD-0004",
@@ -3476,7 +3504,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:333 \"if len(p.Extract) == 0 {\""
+      "Quote": "cmd/abbd/main.go:346 \"if len(p.Extract) == 0 {\""
     },
     {
       "From": "MOD-0004",
@@ -3484,7 +3512,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:340 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+      "Quote": "cmd/abbd/main.go:353 \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
       "From": "MOD-0004",
@@ -3492,7 +3520,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:455 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
+      "Quote": "cmd/abbd/main.go:468 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
     },
     {
       "From": "MOD-0004",
@@ -3500,7 +3528,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "config",
-      "Quote": "cmd/abbd/main.go:334 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+      "Quote": "cmd/abbd/main.go:347 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
     },
     {
       "From": "MOD-0004",
@@ -3508,7 +3536,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+      "Quote": "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
       "From": "MOD-0004",
@@ -3516,7 +3544,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+      "Quote": "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
       "From": "MOD-0004",
@@ -3524,7 +3552,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:436 \"identity.Reconcile(\""
+      "Quote": "cmd/abbd/main.go:449 \"identity.Reconcile(\""
     },
     {
       "From": "MOD-0005",
@@ -3778,7 +3806,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+      "Quote": "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
       "From": "MOD-0026",
@@ -3786,7 +3814,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/main.go:406 \"prior, err := st.LoadCandidates()\""
+      "Quote": "cmd/abbd/main.go:419 \"prior, err := st.LoadCandidates()\""
     },
     {
       "From": "MOD-0026",
@@ -3802,7 +3830,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "cmd/abbd/main.go:436 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+      "Quote": "cmd/abbd/main.go:449 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
       "From": "MOD-0026",
@@ -3962,7 +3990,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:209 \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/screen.go:211 \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -4046,7 +4074,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/inside.go:292 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
+      "Quote": "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
     },
     {
       "From": "MOD-0035",
@@ -4054,7 +4082,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+      "Quote": "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
     },
     {
       "From": "MOD-0037",
@@ -4078,7 +4106,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/page.html:57 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+      "Quote": "internal/screen/page.html:58 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
     },
     {
       "From": "MOD-0038",
@@ -4094,7 +4122,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+      "Quote": "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
     },
     {
       "From": "MOD-0038",
@@ -4142,7 +4170,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go:183 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go:185 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -4758,9 +4786,9 @@
     "Ports": [
       {
         "Contract": "",
-        "Label": "계약 18개",
+        "Label": "계약 19개",
         "Class": "design",
-        "Title": "/abbd가 쓰는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract, abbd flow, abbd forget, abbd stack",
+        "Title": "/abbd가 쓰는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract, abbd flow, abbd forget, abbd stack, abbd table",
         "Exit": false,
         "Below": true,
         "X": 104,
@@ -4799,7 +4827,8 @@
           "FEAT-0001.consumes.IF-0021",
           "FEAT-0001.consumes.IF-0022",
           "FEAT-0001.consumes.IF-0023",
-          "FEAT-0001.consumes.IF-0024"
+          "FEAT-0001.consumes.IF-0024",
+          "FEAT-0001.consumes.IF-0025"
         ]
       },
       {
@@ -4874,9 +4903,9 @@
       },
       {
         "Contract": "",
-        "Label": "계약 18개",
+        "Label": "계약 19개",
         "Class": "design",
-        "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract, abbd flow, abbd forget, abbd stack",
+        "Title": "abbd CLI가 제공하는 계약: abbd diff, abbd evidence, abbd status, abbd impact, abbd sync, abbd explain, abbd path, abbd record fact, abbd record relation, abbd record unit, abbd understand, abbd exit codes, abbd migrate, abbd record evidence, abbd retract, abbd flow, abbd forget, abbd stack, abbd table",
         "Exit": true,
         "X": 490,
         "Y": 128,
@@ -4901,7 +4930,8 @@
           "MOD-0001.provides.IF-0021",
           "MOD-0001.provides.IF-0022",
           "MOD-0001.provides.IF-0023",
-          "MOD-0001.provides.IF-0024"
+          "MOD-0001.provides.IF-0024",
+          "MOD-0001.provides.IF-0025"
         ]
       },
       {
@@ -5281,7 +5311,7 @@
       {
         "D": "M138 248 L138 228",
         "Kind": "contract",
-        "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다",
+        "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다",
         "Origin": "extracted",
         "Joins": true,
         "Back": true,
@@ -5317,7 +5347,8 @@
           "FEAT-0001.consumes.IF-0021",
           "FEAT-0001.consumes.IF-0022",
           "FEAT-0001.consumes.IF-0023",
-          "FEAT-0001.consumes.IF-0024"
+          "FEAT-0001.consumes.IF-0024",
+          "FEAT-0001.consumes.IF-0025"
         ]
       },
       {
@@ -5927,7 +5958,7 @@
       {
         "D": "M138 228 L786 228",
         "Kind": "contract",
-        "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다; internal/screen → abbd CLI: module understanding 계약을 거쳐 씁니다; internal/screen → abbd CLI: slot notes 계약을 거쳐 씁니다\n/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다",
+        "Title": "internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독\ninternal/screen → abbd CLI: sync state 계약을 거쳐 씁니다; internal/screen → abbd CLI: module understanding 계약을 거쳐 씁니다; internal/screen → abbd CLI: slot notes 계약을 거쳐 씁니다\n/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다",
         "Joins": true,
         "Back": true,
         "Rels": [
@@ -5968,14 +5999,15 @@
           "FEAT-0001.consumes.IF-0021",
           "FEAT-0001.consumes.IF-0022",
           "FEAT-0001.consumes.IF-0023",
-          "FEAT-0001.consumes.IF-0024"
+          "FEAT-0001.consumes.IF-0024",
+          "FEAT-0001.consumes.IF-0025"
         ],
         "Net": 11
       },
       {
         "D": "M524 228 L524 188",
         "Kind": "contract",
-        "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다",
+        "Title": "/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다",
         "Back": true,
         "Rels": [
           "FEAT-0001.consumes.IF-0001",
@@ -6009,7 +6041,8 @@
           "FEAT-0001.consumes.IF-0021",
           "FEAT-0001.consumes.IF-0022",
           "FEAT-0001.consumes.IF-0023",
-          "FEAT-0001.consumes.IF-0024"
+          "FEAT-0001.consumes.IF-0024",
+          "FEAT-0001.consumes.IF-0025"
         ],
         "Net": 11
       },
@@ -7045,7 +7078,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:91 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:119 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
             ],
             "Marks": [
               {
@@ -7067,7 +7100,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:92 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:120 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Marks": [
               {
@@ -7087,7 +7120,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001"
@@ -7099,7 +7132,7 @@
             "Title": "/abbd after work consumes abbd sync (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0006"
@@ -7112,7 +7145,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0001"
@@ -7124,7 +7157,7 @@
             "Title": "/abbd evidence and CI gate consumes abbd evidence (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0002"
@@ -7136,7 +7169,7 @@
             "Title": "/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0009.consumes.IF-0014"
@@ -7272,8 +7305,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
             ],
             "Marks": [
               {
@@ -7303,9 +7336,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\"",
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\"",
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Marks": [
               {
@@ -7342,7 +7375,7 @@
             "Back": true,
             "Quotes": [
               "plugins/abbd/skills/abbd/SKILL.md:26 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\"",
-              "plugins/abbd/skills/abbd/SKILL.md:92 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:120 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0010",
@@ -7357,7 +7390,7 @@
             "Back": true,
             "Quotes": [
               "plugins/abbd/skills/abbd/SKILL.md:26 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\"",
-              "plugins/abbd/skills/abbd/SKILL.md:92 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+              "plugins/abbd/skills/abbd/SKILL.md:120 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
             ],
             "Rels": [
               "FEAT-0006.consumes.IF-0010",
@@ -7374,8 +7407,8 @@
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd diff (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001",
@@ -7388,8 +7421,8 @@
             "Kind": "consumes",
             "Title": "/abbd after work consumes abbd diff (via call), 판독\n/abbd evidence and CI gate consumes abbd diff (via call), 판독",
             "Quotes": [
-              "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
-              "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+              "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\"",
+              "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
             ],
             "Rels": [
               "FEAT-0008.consumes.IF-0001",
@@ -7582,7 +7615,8 @@
             "retract",
             "flow",
             "forget",
-            "stack"
+            "stack",
+            "table"
           ]
         }
       ],
@@ -7732,7 +7766,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:91 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
+            "plugins/abbd/skills/abbd/SKILL.md:119 \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
           ]
         },
         {
@@ -7741,7 +7775,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:92 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
+            "plugins/abbd/skills/abbd/SKILL.md:120 \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
           ]
         },
         {
@@ -7750,7 +7784,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+            "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
           ]
         },
         {
@@ -7759,7 +7793,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:97 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
+            "plugins/abbd/skills/abbd/SKILL.md:125 \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
           ]
         },
         {
@@ -7768,7 +7802,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+            "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
           ]
         },
         {
@@ -7777,7 +7811,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
+            "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
           ]
         },
         {
@@ -7786,7 +7820,7 @@
           "Kind": "consumes",
           "Via": "convention",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md:103 \"`abbd diff --check` exits 1 when a contract's signature changed\""
+            "plugins/abbd/skills/abbd/SKILL.md:131 \"`abbd diff --check` exits 1 when a contract's signature changed\""
           ]
         },
         {
@@ -9538,7 +9572,7 @@
             "Origin": "inferred",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:294 \"return exitUsage\""
+              "cmd/abbd/main.go:307 \"return exitUsage\""
             ],
             "Marks": [
               {
@@ -9559,7 +9593,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:303 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:316 \"if err := e.publish(); err != nil {\""
             ],
             "Marks": [
               {
@@ -9579,7 +9613,7 @@
             "Back": true,
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:333 \"if len(p.Extract) == 0 {\""
+              "cmd/abbd/main.go:346 \"if len(p.Extract) == 0 {\""
             ],
             "Rels": [
               "MOD-0004.consumes.CFG-0002"
@@ -9593,7 +9627,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:340 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+              "cmd/abbd/main.go:353 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Marks": [
               {
@@ -9613,7 +9647,7 @@
             "Back": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:455 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:468 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
             ],
             "Rels": [
               "MOD-0004.consumes.DATA-0006"
@@ -9625,7 +9659,7 @@
             "Title": "sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독",
             "Via": "config",
             "Quotes": [
-              "cmd/abbd/main.go:334 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
+              "cmd/abbd/main.go:347 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0008"
@@ -9638,7 +9672,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+              "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0013"
@@ -9653,7 +9687,7 @@
             "Back": true,
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Marks": [
               {
@@ -9672,7 +9706,7 @@
             "Title": "sync pipeline depends_on internal/identity (via call), 판독",
             "Via": "call",
             "Quotes": [
-              "cmd/abbd/main.go:436 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:449 \"identity.Reconcile(\""
             ],
             "Rels": [
               "MOD-0004.depends_on.MOD-0026"
@@ -9990,8 +10024,8 @@
             "Joins": true,
             "Back": true,
             "Quotes": [
-              "cmd/abbd/main.go:333 \"if len(p.Extract) == 0 {\"",
-              "cmd/abbd/main.go:455 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
+              "cmd/abbd/main.go:346 \"if len(p.Extract) == 0 {\"",
+              "cmd/abbd/main.go:468 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
             ],
             "Marks": [
               {
@@ -10021,9 +10055,9 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:334 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
-              "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
-              "cmd/abbd/main.go:436 \"identity.Reconcile(\""
+              "cmd/abbd/main.go:347 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+              "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:449 \"identity.Reconcile(\""
             ],
             "Marks": [
               {
@@ -10098,7 +10132,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10113,7 +10147,7 @@
             "Back": true,
             "Quotes": [
               "cmd/abbd/diff.go:19 \"if base, err = gitx.MergeBase(e.root); err != nil {\"",
-              "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+              "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0022",
@@ -10164,7 +10198,7 @@
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:340 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:353 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -10178,7 +10212,7 @@
             "Kind": "consumes",
             "Title": "sync pipeline consumes extraction JSON (via data), 판독\nsetup determinism proof and supplement fold consumes extraction JSON (via data), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:340 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
+              "cmd/abbd/main.go:353 \"ex, err := extract.Parse(bytes.NewReader(out))\"",
               "cmd/abbd/setup.go:34 \"ex, err := extract.Parse(bytes.NewReader(out))\""
             ],
             "Rels": [
@@ -10197,7 +10231,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -10213,7 +10247,7 @@
             "Title": "review commands depends_on internal/evidence (via call), 판독\nsync pipeline depends_on internal/evidence (via call), 판독\nrecord writers depends_on internal/evidence (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:25 \"c := evidence.New(e.root)\"",
-              "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
+              "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\"",
               "cmd/abbd/record.go:35 \"c := evidence.New(e.root)\""
             ],
             "Rels": [
@@ -10297,7 +10331,7 @@
             "Joins": true,
             "Quotes": [
               "cmd/abbd/evidence.go:78 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:303 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:316 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -10311,7 +10345,7 @@
             "Title": "review commands depends_on blueprint publish (via call), 판독\nargv parsing and dispatch depends_on blueprint publish (via call), 판독",
             "Quotes": [
               "cmd/abbd/evidence.go:78 \"in, err := e.screenInput()\"",
-              "cmd/abbd/main.go:303 \"if err := e.publish(); err != nil {\""
+              "cmd/abbd/main.go:316 \"if err := e.publish(); err != nil {\""
             ],
             "Rels": [
               "MOD-0002.depends_on.MOD-0007",
@@ -10574,7 +10608,7 @@
                 "Code": true
               },
               {
-                "Text": " skill for how to use it. The usage text calls the CLI a lever. It registers the project's extraction script and proves it deterministic. It keeps unit IDs stable across runs and checks every quoted piece of evidence against the working tree. It records what readers infer and what humans state, refreshes and retracts those claims, and converts an old-format state once. It stores pstack how's module texts, the notes in their slots, and the flows and stacks readers draw, and answers ",
+                "Text": " skill for how to use it. The usage text calls the CLI a lever. It registers the project's extraction script and proves it deterministic. It keeps unit IDs stable across runs and checks every quoted piece of evidence against the working tree. It records what readers infer and what humans state, refreshes and retracts those claims, and converts an old-format state once. It stores pstack how's module texts, the notes in their slots, and the flows, stacks and tables readers draw, and answers ",
                 "Code": false
               },
               {
@@ -10614,7 +10648,7 @@
                 "Code": true
               },
               {
-                "Text": " only exits 1 when the state, the blueprint, a module text, a note, a flow's step or a stack's layer is STALE or a quote drifted.",
+                "Text": " only exits 1 when the state, the blueprint, a module text, a note, a flow's step, a stack's layer or a table's row is STALE or a quote drifted.",
                 "Code": false
               }
             ]
@@ -12364,6 +12398,14 @@
                 "Code": false
               },
               {
+                "Text": "table.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
                 "Text": "evidence.go",
                 "Code": true
               },
@@ -12376,11 +12418,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "abbd stack KEY FILE",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd table KEY FILE",
                 "Code": true
               },
               {
@@ -12392,11 +12442,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "abbd stack KEY",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd table KEY",
                 "Code": true
               },
               {
@@ -12408,11 +12466,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "table",
                 "Code": true
               },
               {
@@ -12424,7 +12490,7 @@
                 "Code": true
               },
               {
-                "Text": ", once for a flow's steps and once for a stack's layers, so every rule here holds for both kinds and its messages take the kind's nouns. ",
+                "Text": ", for a flow's steps, a stack's layers or a table's rows, so every rule here holds for every kind and its messages take the kind's nouns. ",
                 "Code": false
               },
               {
@@ -12432,7 +12498,15 @@
                 "Code": true
               },
               {
-                "Text": " refuses a draft without one question on one line, with fewer or more parts than the kind allows, with a quote the code does not hold exactly once, with a part whose ",
+                "Text": " refuses a draft without one question on one line, with fewer or more parts or columns than the kind allows, with a column ",
+                "Code": false
+              },
+              {
+                "Text": "model.ValidateColumns",
+                "Code": true
+              },
+              {
+                "Text": " refuses, with a quote the code does not hold exactly once, with a part whose ",
                 "Code": false
               },
               {
@@ -12480,7 +12554,7 @@
                 "Code": true
               },
               {
-                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part, however many stores ago it left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question and caption must come back as written (",
+                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part. For a table the cells compare by text whatever column holds them, so renaming a column does not make a retired row new. The refusal holds however many stores ago the part left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question, the column head and the caption must come back as written (",
                 "Code": false
               },
               {
@@ -12488,7 +12562,7 @@
                 "Code": true
               },
               {
-                "Text": "). The command prints which human parts it kept and which it replaced, and warns on the kind's ",
+                "Text": "). A column a gap names, such as one whose unit left the state, is open as well, so the reader may drop its unit or point it at another unit. The command prints which human parts it kept and which it replaced, and which of the human's columns it changed, and warns on the kind's ",
                 "Code": false
               },
               {
@@ -12504,7 +12578,7 @@
                 "Code": true
               },
               {
-                "Text": " or a layer's ",
+                "Text": ", a layer's ",
                 "Code": false
               },
               {
@@ -12512,7 +12586,7 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " or any cell of a row. ",
                 "Code": false
               },
               {
@@ -12536,7 +12610,23 @@
                 "Code": true
               },
               {
-                "Text": " lists each with its ends, their layers and its origin. A breach never fails the check.",
+                "Text": " lists each with its ends, their layers and its origin. A breach never fails the check. A table says how many cells under a unit's column ",
+                "Code": false
+              },
+              {
+                "Text": "model.Readings",
+                "Code": true
+              },
+              {
+                "Text": " finds unbacked or unsaid when it is stored, and ",
+                "Code": false
+              },
+              {
+                "Text": "statusCells",
+                "Code": true
+              },
+              {
+                "Text": " lists each with its row, its ends and the relation's origin. Neither fails the check, since only a reader of the code can say whether the cell or the graph is wrong.",
                 "Code": false
               }
             ]
@@ -14246,6 +14336,33 @@
             "Users": false,
             "Data": false
           }
+        },
+        {
+          "ID": "IF-0025",
+          "Name": "abbd table",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0025",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "source",
+                "Name": "--source",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false
+          }
         }
       ],
       "Unwired": [
@@ -14271,7 +14388,8 @@
             "retract",
             "flow",
             "forget",
-            "stack"
+            "stack",
+            "table"
           ]
         },
         {
@@ -14364,7 +14482,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:473 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:486 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -14391,7 +14509,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -14409,7 +14527,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -14420,7 +14538,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:344 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:357 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -14530,7 +14648,7 @@
           "Kind": "provides",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:294 \"return exitUsage\"",
+            "cmd/abbd/main.go:307 \"return exitUsage\"",
             "cmd/abbd/main.go:209 \"return exitError\""
           ]
         },
@@ -14540,7 +14658,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:303 \"if err := e.publish(); err != nil {\""
+            "cmd/abbd/main.go:316 \"if err := e.publish(); err != nil {\""
           ]
         },
         {
@@ -14549,7 +14667,7 @@
           "Kind": "consumes",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:333 \"if len(p.Extract) == 0 {\""
+            "cmd/abbd/main.go:346 \"if len(p.Extract) == 0 {\""
           ]
         },
         {
@@ -14558,7 +14676,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:340 \"ex, err := extract.Parse(bytes.NewReader(out))\""
+            "cmd/abbd/main.go:353 \"ex, err := extract.Parse(bytes.NewReader(out))\""
           ]
         },
         {
@@ -14567,7 +14685,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:455 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
+            "cmd/abbd/main.go:468 \"state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}\""
           ]
         },
         {
@@ -14576,7 +14694,7 @@
           "Kind": "depends_on",
           "Via": "config",
           "Quotes": [
-            "cmd/abbd/main.go:334 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
+            "cmd/abbd/main.go:347 \"project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first\"",
             "cmd/abbd/setup.go:51 \"p.Extract = argv\""
           ]
         },
@@ -14586,7 +14704,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -14595,7 +14713,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -14604,7 +14722,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:436 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:449 \"identity.Reconcile(\""
           ]
         },
         {
@@ -14734,6 +14852,19 @@
           "Question": "What are the layers of the abbd CLI?",
           "Layers": [
             1
+          ]
+        }
+      ],
+      "Tables": [
+        {
+          "ID": "table-cli-files",
+          "Question": "Which part of the abbd CLI reads and writes which .abbd file?",
+          "Rows": [
+            1,
+            2,
+            3,
+            4,
+            5
           ]
         }
       ]
@@ -16603,7 +16734,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -16621,7 +16752,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:437 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
+            "cmd/abbd/main.go:450 \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
           ]
         },
         {
@@ -18553,7 +18684,7 @@
             "Joins": true,
             "Via": "data",
             "Quotes": [
-              "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Marks": [
               {
@@ -18643,7 +18774,7 @@
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -18657,7 +18788,7 @@
             "Kind": "depends_on",
             "Title": "rename detection depends_on working-tree snapshot (via data), 판독\nabbd CLI depends_on working-tree snapshot (via call), 판독\ninternal/screen depends_on working-tree snapshot (via convention), 판독",
             "Quotes": [
-              "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+              "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
             ],
             "Rels": [
               "MOD-0024.depends_on.MOD-0025",
@@ -19742,7 +19873,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
@@ -19761,7 +19892,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -19788,8 +19919,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:418 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\"",
+            "cmd/abbd/main.go:431 \"gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -19799,7 +19930,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -19818,7 +19949,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         }
       ],
@@ -20977,7 +21108,7 @@
           "Via": "call",
           "Quotes": [
             "cmd/abbd/setup.go:55 \"res, err := e.syncActual(ex, identity.Setup)\"",
-            "cmd/abbd/main.go:344 \"res, err := e.syncActual(ex, identity.Sync)\""
+            "cmd/abbd/main.go:357 \"res, err := e.syncActual(ex, identity.Sync)\""
           ]
         },
         {
@@ -20986,7 +21117,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:436 \"identity.Reconcile(\""
+            "cmd/abbd/main.go:449 \"identity.Reconcile(\""
           ]
         },
         {
@@ -20995,7 +21126,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:419 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -21006,7 +21137,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:442 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:455 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -21015,7 +21146,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/main.go:436 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
+            "cmd/abbd/main.go:449 \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
           ]
         },
         {
@@ -21052,7 +21183,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:409 \"if to, ok := renames[a.Path]; ok {\"",
-            "cmd/abbd/main.go:418 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
+            "cmd/abbd/main.go:431 \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
           ]
         },
         {
@@ -22261,7 +22392,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -22269,7 +22400,15 @@
                 "Code": true
               },
               {
-                "Text": " hold the two kinds, a flow's steps and a stack's layers, with the stack's rules for holding units and for breaches. Every other internal package but ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "table.go",
+                "Code": true
+              },
+              {
+                "Text": " hold the three kinds: a flow's steps, a stack's layers and a table's rows. The stack adds its rules for holding units and for breaches, and the table its rules for a grid and for reading its cells against the relations. Every other internal package but ",
                 "Code": false
               },
               {
@@ -24491,11 +24630,35 @@
                 "Code": false
               },
               {
+                "Text": "MinColumns",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "MaxColumns",
+                "Code": true
+              },
+              {
+                "Text": " how many ",
+                "Code": false
+              },
+              {
+                "Text": "Column",
+                "Code": true
+              },
+              {
+                "Text": "s its head names, none for a kind without a head, ",
+                "Code": false
+              },
+              {
                 "Text": "Long",
                 "Code": true
               },
               {
-                "Text": " names the word field a store warns on past 80 characters, and ",
+                "Text": " names the word field a store warns on past 80 characters, or every word when it is empty, and ",
                 "Code": false
               },
               {
@@ -24503,7 +24666,7 @@
                 "Code": true
               },
               {
-                "Text": " checks the claims taken together, nil when each stands alone. It returns each ",
+                "Text": " checks the claims taken together with the head, nil when each stands alone. It returns each ",
                 "Code": false
               },
               {
@@ -24511,7 +24674,15 @@
                 "Code": true
               },
               {
-                "Text": " with its text and the places of the claims it involves. ",
+                "Text": " with its text, the places of the claims it involves and the names of the columns it involves. ",
+                "Code": false
+              },
+              {
+                "Text": "Renamed",
+                "Code": true
+              },
+              {
+                "Text": " is true for a kind whose word fields are its own column names, so a retired claim's words compare by text alone. ",
                 "Code": false
               },
               {
@@ -24631,7 +24802,7 @@
                 "Code": true
               },
               {
-                "Text": " walks a unit's parent chain, and ",
+                "Text": " walks a unit's parent chain, ",
                 "Code": false
               },
               {
@@ -24639,7 +24810,15 @@
                 "Code": true
               },
               {
-                "Text": " holds the closest-anchor rule for a set of units. One quote at least must lie in code that one of them, or a unit inside one, anchors more closely than any other unit does, or that a contract one of them provides anchors so. So a shared file counts for the unit whose anchor names it best, a command's handler counts for the module that provides the command, and a unit a step calls lends it no code.",
+                "Text": " holds the closest-anchor rule for a set of units, and ",
+                "Code": false
+              },
+              {
+                "Text": "strongest",
+                "Code": true
+              },
+              {
+                "Text": " finds the strongest live relation, provides then consumes then depends_on, from one unit or a unit inside it to another or a unit inside that. One quote at least must lie in code that one of them, or a unit inside one, anchors more closely than any other unit does, or that a contract one of them provides anchors so. So a shared file counts for the unit whose anchor names it best, a command's handler counts for the module that provides the command, and a unit a step calls lends it no code.",
                 "Code": false
               }
             ]
@@ -24741,7 +24920,15 @@
                 "Code": true
               },
               {
-                "Text": ". For each call it finds the strongest live relation, provides then consumes then depends_on, from the step's unit or a unit inside it to the called unit or a unit inside that, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. A step's ",
+                "Text": ". For each call it finds the relation ",
+                "Code": false
+              },
+              {
+                "Text": "strongest",
+                "Code": true
+              },
+              {
+                "Text": " gives from the step's unit to the called unit, or a gap when none joins them. So a flow's call never stands for an edge the graph lacks. A step's ",
                 "Code": false
               },
               {
@@ -24975,6 +25162,172 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Row",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "table.go",
+                "Code": true
+              },
+              {
+                "Text": "): one row of a table, the kind ",
+                "Code": false
+              },
+              {
+                "Text": "table",
+                "Code": true
+              },
+              {
+                "Text": " whose parts are ",
+                "Code": false
+              },
+              {
+                "Text": "rows",
+                "Code": true
+              },
+              {
+                "Text": ", two to ",
+                "Code": false
+              },
+              {
+                "Text": "TableRows",
+                "Code": true
+              },
+              {
+                "Text": ", 16, under two to ",
+                "Code": false
+              },
+              {
+                "Text": "TableColumns",
+                "Code": true
+              },
+              {
+                "Text": ", 8, columns. A ",
+                "Code": false
+              },
+              {
+                "Text": "Column",
+                "Code": true
+              },
+              {
+                "Text": " is a short label of ",
+                "Code": false
+              },
+              {
+                "Text": "ColumnName",
+                "Code": true
+              },
+              {
+                "Text": ", 32, characters at most, with no spaces around it, and may name the stored unit it stands for. A row has a unit, its ",
+                "Code": false
+              },
+              {
+                "Text": "Cells",
+                "Code": true
+              },
+              {
+                "Text": " by column name, each a one-line statement, and the evidence that shows them. A column the row leaves out is an empty cell. ",
+                "Code": false
+              },
+              {
+                "Text": "Validate",
+                "Code": true
+              },
+              {
+                "Text": " checks a row alone, ",
+                "Code": false
+              },
+              {
+                "Text": "ValidateColumns",
+                "Code": true
+              },
+              {
+                "Text": " checks the head alone, and ",
+                "Code": false
+              },
+              {
+                "Text": "Gaps",
+                "Code": true
+              },
+              {
+                "Text": " finds a unit that is gone or no quote resting on it. The kind's ",
+                "Code": false
+              },
+              {
+                "Text": "Long",
+                "Code": true
+              },
+              {
+                "Text": " is empty, so every cell is a word a store warns on. Its ",
+                "Code": false
+              },
+              {
+                "Text": "Whole",
+                "Code": true
+              },
+              {
+                "Text": " is ",
+                "Code": false
+              },
+              {
+                "Text": "fillGrid",
+                "Code": true
+              },
+              {
+                "Text": ": a unit heads one row, a cell sits under a column the head names, and each unit a column names is present. A gap for a column whose unit is gone names that column, so a reader may change it on a human's table. ",
+                "Code": false
+              },
+              {
+                "Text": "Readings",
+                "Code": true
+              },
+              {
+                "Text": " reads each cell under a unit's column against the relation ",
+                "Code": false
+              },
+              {
+                "Text": "strongest",
+                "Code": true
+              },
+              {
+                "Text": " gives from the row's unit to the column's. A ",
+                "Code": false
+              },
+              {
+                "Text": "Reading",
+                "Code": true
+              },
+              {
+                "Text": " is ",
+                "Code": false
+              },
+              {
+                "Text": "Unbacked",
+                "Code": true
+              },
+              {
+                "Text": " when the cell says something with no relation under it and ",
+                "Code": false
+              },
+              {
+                "Text": "Unsaid",
+                "Code": true
+              },
+              {
+                "Text": " when the cell is empty over one.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -25006,7 +25359,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:473 \"return u.ID == id \u0026\u0026 !u.Absent })\""
+            "cmd/abbd/main.go:486 \"return u.ID == id \u0026\u0026 !u.Absent })\""
           ]
         },
         {
@@ -25532,7 +25885,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037"
@@ -25570,7 +25923,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/page.html:57 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+              "internal/screen/page.html:58 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
             ],
             "Marks": [
               {
@@ -25602,7 +25955,7 @@
             "Joins": true,
             "Via": "convention",
             "Quotes": [
-              "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0037"
@@ -25676,7 +26029,7 @@
             "Origin": "inferred",
             "Via": "data",
             "Quotes": [
-              "internal/screen/screen.go:183 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+              "internal/screen/screen.go:185 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
             ],
             "Marks": [
               {
@@ -25751,8 +26104,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:292 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+              "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
             ],
             "Marks": [
               {
@@ -25814,7 +26167,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-              "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
+              "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
               "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\""
             ],
             "Marks": [
@@ -25944,7 +26297,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/inside.go:292 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
               "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
@@ -25958,7 +26311,7 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
-              "internal/screen/inside.go:292 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
+              "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
               "internal/screen/overview.go:485 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
@@ -25976,8 +26329,8 @@
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Joins": true,
             "Quotes": [
-              "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
-              "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -25990,8 +26343,8 @@
             "Kind": "depends_on",
             "Title": "module inside depends_on overview plan (via call), 판독\npage template depends_on overview plan (via convention), 판독",
             "Quotes": [
-              "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
-              "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+              "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\"",
+              "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0037",
@@ -26215,7 +26568,7 @@
                 "Code": true
               },
               {
-                "Text": " holds the overview, the flows and the stacks, each module or feature that holds units has its own ",
+                "Text": " holds the overview, the flows, the stacks and the tables, each module or feature that holds units has its own ",
                 "Code": false
               },
               {
@@ -26340,6 +26693,14 @@
               },
               {
                 "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "table",
                 "Code": true
               },
               {
@@ -26921,7 +27282,15 @@
                 "Code": true
               },
               {
-                "Text": " rules then fade the rest while a reader points at one shape, with no script on the page. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": " rules then fade the rest while a reader points at one shape, with no script on the page. A drawing with more than ",
+                "Code": false
+              },
+              {
+                "Text": "hoverMax",
+                "Code": true
+              },
+              {
+                "Text": " shapes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
@@ -26991,7 +27360,15 @@
                 "Code": true
               },
               {
-                "Text": " splits a layer wider than the budget. ",
+                "Text": " splits a layer wider than the budget into rows. Where the boxes with a line to what lies below fit in a wrapped layer's last row, ",
+                "Code": false
+              },
+              {
+                "Text": "stack",
+                "Code": true
+              },
+              {
+                "Text": " puts them there, so their lines leave from the bottom row. ",
                 "Code": false
               },
               {
@@ -27715,7 +28092,15 @@
                 "Code": true
               },
               {
-                "Text": " template the notes use too. It escapes the text and never trusts its markup.",
+                "Text": " template the notes use too. It escapes the text and never trusts its markup. A module with no text gets one line that says so and names the ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand",
+                "Code": true
+              },
+              {
+                "Text": " command that stores one, and a unit with no responsibility line shows none.",
                 "Code": false
               }
             ]
@@ -28261,6 +28646,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "table.go",
+                "Code": true
+              },
+              {
                 "Text": "): ",
                 "Code": false
               },
@@ -28277,7 +28670,7 @@
                 "Code": true
               },
               {
-                "Text": " per stored flow and ",
+                "Text": " per stored flow, ",
                 "Code": false
               },
               {
@@ -28293,7 +28686,23 @@
                 "Code": true
               },
               {
-                "Text": " per stored stack. ",
+                "Text": " per stored stack and ",
+                "Code": false
+              },
+              {
+                "Text": "tables",
+                "Code": true
+              },
+              {
+                "Text": " one ",
+                "Code": false
+              },
+              {
+                "Text": "TableView",
+                "Code": true
+              },
+              {
+                "Text": " per stored table. ",
                 "Code": false
               },
               {
@@ -28309,11 +28718,19 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "stack-KEY",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "table-KEY",
                 "Code": true
               },
               {
@@ -28333,11 +28750,19 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "stack-KEY.N",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "table-KEY.N",
                 "Code": true
               },
               {
@@ -28421,6 +28846,62 @@
                 "Code": true
               },
               {
+                "Text": ", and so are a table's. In a table, each ",
+                "Code": false
+              },
+              {
+                "Text": "ColumnHead",
+                "Code": true
+              },
+              {
+                "Text": " links the unit its column stands for, each ",
+                "Code": false
+              },
+              {
+                "Text": "RowView",
+                "Code": true
+              },
+              {
+                "Text": " heads its row with a ",
+                "Code": false
+              },
+              {
+                "Text": "UnitChip",
+                "Code": true
+              },
+              {
+                "Text": ", and each ",
+                "Code": false
+              },
+              {
+                "Text": "CellView",
+                "Code": true
+              },
+              {
+                "Text": " takes the verb of the relation ",
+                "Code": false
+              },
+              {
+                "Text": "model.Readings",
+                "Code": true
+              },
+              {
+                "Text": " finds under it and marks a cell ",
+                "Code": false
+              },
+              {
+                "Text": "Unbacked",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "Unsaid",
+                "Code": true
+              },
+              {
                 "Text": ". ",
                 "Code": false
               },
@@ -28437,7 +28918,7 @@
                 "Code": true
               },
               {
-                "Text": " lists on each inside the steps on the units it holds and the layers that hold its units, by number. ",
+                "Text": " lists on each inside the steps on the units it holds, the layers that hold its units and the rows its units head, by number. ",
                 "Code": false
               },
               {
@@ -28445,7 +28926,7 @@
                 "Code": true
               },
               {
-                "Text": " draws a flow as a numbered list and a stack as a list of bands, both in HTML that wraps every line, and lists every flow and every stack by its question on the overview. At 560px and below a lane's unit and a band's name stand above their contents.",
+                "Text": " draws a flow as a numbered list, a stack as a list of bands and a table as an HTML table, all of which wrap every line, and lists every figure by its question on the overview. At 560px and below a lane's unit and a band's name stand above their contents, and a table's rows fold to one card each, the row's unit across its top and every filled cell under its column's label.",
                 "Code": false
               }
             ]
@@ -28586,8 +29067,8 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:209 \"return \\\"stated\\\"\"",
-            "internal/screen/page.go:44 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/screen.go:211 \"return \\\"stated\\\"\"",
+            "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -28634,7 +29115,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:66 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:183 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:185 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -28643,7 +29124,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/inside.go:292 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
+            "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\""
           ]
         },
         {
@@ -28652,7 +29133,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/screen.go:188 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
+            "internal/screen/screen.go:190 \"ins := o.inside(id, in.Units, \\\"\\\", nil)\""
           ]
         },
         {
@@ -28680,7 +29161,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/page.html:57 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
+            "internal/screen/page.html:58 \"\u003csection class=\\\"inside page\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
           ]
         },
         {
@@ -28690,9 +29171,9 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
-            "internal/screen/inside.go:519 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
-            "internal/screen/page.html:65 \"{{if .Unwired}}\"",
-            "internal/screen/inside.go:461 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
+            "internal/screen/inside.go:521 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
+            "internal/screen/page.html:66 \"{{if .Unwired}}\"",
+            "internal/screen/inside.go:463 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
           ]
         },
         {
@@ -28701,7 +29182,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/screen.go:159 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
+            "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\""
           ]
         },
         {
@@ -28711,7 +29192,7 @@
           "Via": "convention",
           "Quotes": [
             "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\"",
-            "internal/screen/page.html:121 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
+            "internal/screen/page.html:124 \"{{define \\\"blocks\\\"}}{{range .}}{{if eq .Kind \\\"h\\\"}}\""
           ]
         },
         {
@@ -28730,7 +29211,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:98 \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\"",
-            "cmd/abbd/main.go:455 \"state = store.State{Revision: rev, Fingerprint: tree\""
+            "cmd/abbd/main.go:468 \"state = store.State{Revision: rev, Fingerprint: tree\""
           ]
         },
         {
@@ -28740,7 +29221,7 @@
           "Via": "convention",
           "Quotes": [
             "cmd/abbd/screen.go:16 \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\"",
-            "cmd/abbd/main.go:414 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
+            "cmd/abbd/main.go:427 \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
           ]
         },
         {
@@ -28759,7 +29240,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go:183 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go:185 \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -29614,11 +30095,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "stacks/",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "tables/",
                 "Code": true
               },
               {
@@ -31430,11 +31919,19 @@
                 "Code": true
               },
               {
-                "Text": " or a stack at ",
+                "Text": ", a stack at ",
                 "Code": false
               },
               {
                 "Text": "stacks/\u003cKEY\u003e.md",
+                "Code": true
+              },
+              {
+                "Text": " or a table at ",
+                "Code": false
+              },
+              {
+                "Text": "tables/\u003cKEY\u003e.md",
                 "Code": true
               },
               {
@@ -31446,7 +31943,15 @@
                 "Code": true
               },
               {
-                "Text": " holds a question, the ordered ",
+                "Text": " holds a question, the ",
+                "Code": false
+              },
+              {
+                "Text": "Columns",
+                "Code": true
+              },
+              {
+                "Text": " of a kind that has a head, the ordered ",
                 "Code": false
               },
               {
@@ -31470,7 +31975,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -31478,7 +31983,15 @@
                 "Code": true
               },
               {
-                "Text": " name the two kinds. Each ",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Table",
+                "Code": true
+              },
+              {
+                "Text": " name the three kinds. Each ",
                 "Code": false
               },
               {
@@ -31590,7 +32103,7 @@
                 "Code": true
               },
               {
-                "Text": " runs the kind's check over all its claims and returns each ",
+                "Text": " runs the kind's check over all its claims and its head and returns each ",
                 "Code": false
               },
               {
@@ -31646,7 +32159,7 @@
                 "Code": true
               },
               {
-                "Text": " writes the frontmatter in the order a reader reads it: the question, the format, the parts under the kind's own key and the retired parts. So a flow file keeps the bytes it had before figures had kinds, which ",
+                "Text": " writes the frontmatter in the order a reader reads it: the question, the format, the columns when there are any, the parts under the kind's own key and the retired parts. So a flow file keeps the bytes it had before figures had kinds, which ",
                 "Code": false
               },
               {
@@ -31670,7 +32183,7 @@
                 "Code": true
               },
               {
-                "Text": " keeps only a draft's question, parts and caption, so a draft can neither add nor clear ",
+                "Text": " keeps only a draft's question, columns, parts and caption, so a draft can neither add nor clear ",
                 "Code": false
               },
               {
@@ -32360,7 +32873,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/main.go:406 \"prior, err := st.LoadCandidates()\"",
+            "cmd/abbd/main.go:419 \"prior, err := st.LoadCandidates()\"",
             "internal/identity/identity.go:95 \"prior = keepLive(prior, units)\""
           ]
         },
@@ -32371,7 +32884,7 @@
           "Via": "data",
           "Quotes": [
             "internal/identity/identity.go:196 \"fresh = append(fresh, Candidate{New: ids[i], Existing: u.ID, Shared: shared(before[j], in.Anchors)})\"",
-            "cmd/abbd/main.go:442 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
+            "cmd/abbd/main.go:455 \"if err := st.SaveCandidates(res.Candidates); err != nil {\""
           ]
         },
         {
@@ -32400,7 +32913,7 @@
           "Via": "call",
           "Quotes": [
             "internal/screen/screen.go:66 \"in.Digests[id] = st.ModuleDigest(in.Units, id)\"",
-            "internal/screen/screen.go:183 \"Stale: u.Digest != in.Digests[id]\""
+            "internal/screen/screen.go:185 \"Stale: u.Digest != in.Digests[id]\""
           ]
         },
         {
@@ -36574,6 +37087,316 @@
           ],
           "Quotes": [
             "internal/model/model.go:175 \"type Unit struct {\""
+          ]
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "ID": "table-cli-files",
+      "Key": "cli-files",
+      "Question": "Which part of the abbd CLI reads and writes which .abbd file?",
+      "Badge": "inferred",
+      "Source": "",
+      "Caption": [
+        {
+          "Kind": "p",
+          "Parts": [
+            {
+              "Text": "Each row is one part of the CLI and each column one file under ",
+              "Code": false
+            },
+            {
+              "Text": ".abbd/",
+              "Code": true
+            },
+            {
+              "Text": ". Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.",
+              "Code": false
+            }
+          ]
+        }
+      ],
+      "Rows": 5,
+      "Stale": 0,
+      "Unbacked": 9,
+      "Unsaid": 0,
+      "Columns": [
+        {
+          "Name": "unit files",
+          "Unit": {
+            "ID": "DATA-0004",
+            "Name": "unit files",
+            "Kind": "데이터",
+            "Href": "#m-MOD-0041"
+          }
+        },
+        {
+          "Name": "state.yaml",
+          "Unit": {
+            "ID": "DATA-0006",
+            "Name": "sync state",
+            "Kind": "데이터",
+            "Href": "#m-MOD-0001"
+          }
+        },
+        {
+          "Name": "module texts",
+          "Unit": {
+            "ID": "DATA-0008",
+            "Name": "module understanding",
+            "Kind": "데이터",
+            "Href": "#m-MOD-0001"
+          }
+        },
+        {
+          "Name": "blueprint",
+          "Unit": {
+            "ID": "DATA-0005",
+            "Name": "blueprint files",
+            "Kind": "데이터",
+            "Href": "#m-MOD-0034"
+          }
+        },
+        {
+          "Name": "project.yaml",
+          "Unit": {
+            "ID": "CFG-0002",
+            "Name": "project.yaml",
+            "Kind": "설정",
+            "Href": "#m-MOD-0041"
+          }
+        }
+      ],
+      "Body": [
+        {
+          "N": 1,
+          "ID": "table-cli-files.1",
+          "Badge": "",
+          "Source": "",
+          "Unit": {
+            "ID": "MOD-0004",
+            "Name": "sync pipeline",
+            "Kind": "모듈",
+            "Href": "#m-MOD-0001"
+          },
+          "Cells": [
+            {
+              "Column": "unit files",
+              "Says": "rewrites every unit file from the reconciled extraction",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "state.yaml",
+              "Says": "reads the ID high-water mark, then writes revision and fingerprint",
+              "Verb": "사용"
+            },
+            {
+              "Column": "module texts",
+              "Says": "re-stamps each old-format text whose module's code still matches",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "blueprint",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "project.yaml",
+              "Says": "reads the extraction argv to run the project's script",
+              "Verb": "사용"
+            }
+          ],
+          "Quotes": [
+            "cmd/abbd/main.go:452 \"if err := st.SaveUnits(res.Units); err != nil {\"",
+            "cmd/abbd/main.go:423 \"state, err := st.LoadState()\"",
+            "cmd/abbd/main.go:469 \"return res, st.SaveState(state)\"",
+            "cmd/abbd/main.go:458 \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
+            "cmd/abbd/main.go:342 \"p, err := e.st.LoadProject()\""
+          ]
+        },
+        {
+          "N": 2,
+          "ID": "table-cli-files.2",
+          "Badge": "",
+          "Source": "",
+          "Unit": {
+            "ID": "MOD-0006",
+            "Name": "record writers",
+            "Kind": "모듈",
+            "Href": "#m-MOD-0001"
+          },
+          "Cells": [
+            {
+              "Column": "unit files",
+              "Says": "writes the one unit a relation, fact or parent record names",
+              "Verb": "사용"
+            },
+            {
+              "Column": "state.yaml",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "module texts",
+              "Says": "writes how's text with the module's digest and cited code",
+              "Verb": "사용"
+            },
+            {
+              "Column": "blueprint",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "project.yaml",
+              "Says": "",
+              "Verb": ""
+            }
+          ],
+          "Quotes": [
+            "cmd/abbd/record.go:110 \"u.PutRelation(rel)\"",
+            "cmd/abbd/understand.go:83 \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest\""
+          ]
+        },
+        {
+          "N": 3,
+          "ID": "table-cli-files.3",
+          "Badge": "",
+          "Source": "",
+          "Unit": {
+            "ID": "MOD-0005",
+            "Name": "query commands",
+            "Kind": "모듈",
+            "Href": "#m-MOD-0001"
+          },
+          "Cells": [
+            {
+              "Column": "unit files",
+              "Says": "reads every unit to resolve and answer a query",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "state.yaml",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "module texts",
+              "Says": "reads how's text and says whether the module's code moved since",
+              "Verb": "사용"
+            },
+            {
+              "Column": "blueprint",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "project.yaml",
+              "Says": "",
+              "Verb": ""
+            }
+          ],
+          "Quotes": [
+            "cmd/abbd/query.go:249 \"texts, err := e.st.LoadUnderstandings()\"",
+            "cmd/abbd/query.go:259 \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+          ]
+        },
+        {
+          "N": 4,
+          "ID": "table-cli-files.4",
+          "Badge": "",
+          "Source": "",
+          "Unit": {
+            "ID": "MOD-0007",
+            "Name": "blueprint publish",
+            "Kind": "모듈",
+            "Href": "#m-MOD-0001"
+          },
+          "Cells": [
+            {
+              "Column": "unit files",
+              "Says": "reads every unit a page draws",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "state.yaml",
+              "Says": "records which inputs it rendered and which files it wrote",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "module texts",
+              "Says": "reads how's texts to draw beside each module",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "blueprint",
+              "Says": "writes every page and graph.json",
+              "Verb": "제공"
+            },
+            {
+              "Column": "project.yaml",
+              "Says": "reads the extraction argv the page foot names",
+              "Verb": "",
+              "Unbacked": true
+            }
+          ],
+          "Quotes": [
+            "cmd/abbd/screen.go:12 \"in, err := screen.Load(e.st)\"",
+            "cmd/abbd/screen.go:31 \"if err := e.st.SaveBlueprint(files); err != nil {\"",
+            "cmd/abbd/screen.go:34 \"in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)\""
+          ]
+        },
+        {
+          "N": 5,
+          "ID": "table-cli-files.5",
+          "Badge": "",
+          "Source": "",
+          "Unit": {
+            "ID": "MOD-0002",
+            "Name": "review commands",
+            "Kind": "모듈",
+            "Href": "#m-MOD-0001"
+          },
+          "Cells": [
+            {
+              "Column": "unit files",
+              "Says": "compares the stored units with the base revision's",
+              "Verb": "사용"
+            },
+            {
+              "Column": "state.yaml",
+              "Says": "reads the fingerprint to say whether the state is CURRENT",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "module texts",
+              "Says": "",
+              "Verb": ""
+            },
+            {
+              "Column": "blueprint",
+              "Says": "says whether its files are the ones the state rendered",
+              "Verb": "",
+              "Unbacked": true
+            },
+            {
+              "Column": "project.yaml",
+              "Says": "",
+              "Verb": ""
+            }
+          ],
+          "Quotes": [
+            "cmd/abbd/diff.go:23 \"was, err := e.st.UnitsAt(base)\"",
+            "cmd/abbd/evidence.go:103 \"case in.Synced.Fingerprint == \\\"\\\":\"",
+            "cmd/abbd/evidence.go:106 \"switch in.BlueprintFreshness() {\""
           ]
         }
       ]

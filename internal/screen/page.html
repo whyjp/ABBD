@@ -40,7 +40,7 @@
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
   </div>
-  {{if or .Flows .Stacks}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span>{{if .Stale}} <span class="pill STALE">STALE {{.Stale}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach">거꾸로 {{.Breaches}}</span>{{end}}</li>{{end}}</ul>{{end}}</div>{{end}}
+  {{if or .Flows .Stacks .Tables}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span>{{if .Stale}} <span class="pill STALE">STALE {{.Stale}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach">거꾸로 {{.Breaches}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Tables}}<h3>표로 읽는 대응</h3><ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Rows}}행 × {{len .Columns}}열</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Unbacked}} <span class="pill breach">관계 없는 칸 {{.Unbacked}}</span>{{end}}{{if .Unsaid}} <span class="pill breach">빈 칸 {{.Unsaid}}</span>{{end}}</li>{{end}}</ul>{{end}}</div>{{end}}
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" "overview"}}
@@ -51,6 +51,7 @@
 </section>
 {{range .Flows}}{{template "flow" .}}{{end}}
 {{range .Stacks}}{{template "stack" .}}{{end}}
+{{range .Tables}}{{template "table" .}}{{end}}
 {{range .Focus}}{{template "focus" .}}{{end}}
 {{template "foot" .}}{{end}}
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
@@ -67,6 +68,8 @@
       <ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">단계 {{range $i, $n := .Steps}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
       {{if .Stacks}}<h3>이 모듈이 놓인 층</h3>
       <ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">층 {{range $i, $n := .Layers}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
+      {{if .Tables}}<h3>이 모듈이 행으로 놓인 표</h3>
+      <ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">행 {{range $i, $n := .Rows}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
       {{if .Inferred}}<h3>판독한 결합</h3>
       <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
     </div>
@@ -74,11 +77,11 @@
       {{with .Understanding}}
       <div>{{template "howhead" .}}</div>
       {{template "howtext" .}}
-      {{else}}<p class="muted">아직 이 모듈의 설명이 없습니다. pstack how의 Overview와 Key Concepts를 <code>abbd understand {{.ID}} FILE</code>로 넣으면 여기에 보입니다.</p>{{end}}
+      {{else}}<p class="muted">이 모듈의 설명은 아직 없습니다. <code>abbd understand {{.ID}} FILE</code>로 채웁니다.</p>{{end}}
       {{template "notes" .Notes}}
       {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
       {{if .Units}}<h3>안의 단위</h3>
-      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{else}}<div class="muted">책임 문장이 아직 없습니다.</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
+      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
       {{else}}<p class="muted">안의 단위가 아직 없습니다.</p>{{end}}
     </div>
   </div>
@@ -163,5 +166,15 @@
   {{if .Source}}<p class="muted" style="margin:0">출처 {{.Source}}</p>{{end}}
   {{range .Reasons}}<p class="gap">STALE: {{.}}</p>{{end}}
   <ol class="dg-stack">{{range .Bands}}<li class="band{{if .Stale}} stale{{end}}" id="{{.ID}}" value="{{.N}}"><div class="band-head"><span class="n">{{.N}}</span><strong>{{.Name}}</strong>{{with .Badge}} <span class="pill {{.}}" title="{{tip .}}">{{label .}}</span>{{end}}{{with .Source}} <span class="muted">출처 {{.}}</span>{{end}}{{if .Stale}} <span class="pill STALE" title="{{join .Reasons ", "}}">STALE</span>{{end}}<p class="role">{{.Role}}</p></div><div class="band-body"><div class="chips">{{range .Units}}<a class="chip" href="{{.Href}}" title="{{.ID}}">{{.Name}} <span class="muted">{{.Kind}}</span></a>{{end}}</div>{{if .Up}}<div class="chips up">{{range .Up}}<a class="chip breach" href="{{.Href}}" title="{{.From}} → {{.To}}: 저장된 관계 {{.Verb}}{{if .Via}}, via {{.Via}}{{end}}, {{label .Origin}}">↑ {{.FromName}} → {{.ToName}} <span class="muted">{{.Verb}} · {{.Upper}}층 {{.UpperName}}</span></a>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400;font-size:12.5px">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></div></li>{{end}}</ol>
+</section>
+{{end}}
+{{define "table"}}<section class="inside matrix" id="{{.ID}}">
+  <div class="drawhead"><h2>{{.Question}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{if or .Stale .Reasons}} <span class="pill STALE" title="인용한 코드가 바뀌었거나 상태와 맞지 않는 행이 있습니다">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Unbacked}} <span class="pill breach" title="저장된 관계 없이 쓴다고 말하는 칸">관계 없는 칸 {{.Unbacked}}</span>{{end}}{{if .Unsaid}} <span class="pill breach" title="저장된 관계가 있는데 비어 있는 칸">빈 칸 {{.Unsaid}}</span>{{end}}</h2><div class="views"><span class="muted">{{.Rows}}행 × {{len .Columns}}열</span> <a href="#overview">모듈과 계약으로</a></div></div>
+  <p class="muted" style="margin:0">행마다 한 단위입니다. 행 머리를 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. 열이 단위를 가리키면 그 열의 칸을 저장된 관계와 맞춰 봅니다. 점선 칸은 저장된 관계 없이 쓴다고 말하는 칸이고, ◦ 칸은 저장된 관계가 있는데 비어 있는 칸입니다.</p>
+  {{if .Caption}}<div class="caption text">{{template "blocks" .Caption}}</div>{{end}}
+  {{if .Source}}<p class="muted" style="margin:0">출처 {{.Source}}</p>{{end}}
+  {{range .Reasons}}<p class="gap">STALE: {{.}}</p>{{end}}
+  <div class="matrix-box"><table class="dg-matrix"><thead><tr><th scope="col" class="corner">단위</th>{{range .Columns}}<th scope="col">{{with .Unit}}<a href="{{.Href}}" title="{{.ID}} {{.Name}}">{{end}}{{.Name}}{{with .Unit}}</a>{{end}}</th>{{end}}</tr></thead>
+  <tbody>{{range .Body}}<tr class="row{{if .Stale}} stale{{end}}" id="{{.ID}}"><th scope="row"><a class="chip" href="{{.Unit.Href}}" title="{{.Unit.ID}}">{{.Unit.Name}} <span class="muted">{{.Unit.Kind}}</span></a>{{with .Badge}} <span class="pill {{.}}" title="{{tip .}}">{{label .}}</span>{{end}}{{with .Source}} <span class="muted">출처 {{.}}</span>{{end}}{{if .Stale}} <span class="pill STALE" title="{{join .Reasons ", "}}">STALE</span>{{end}}<details><summary class="muted">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></th>{{range .Cells}}<td data-col="{{.Column}}" class="{{if .Unbacked}}unbacked{{else if .Unsaid}}unsaid{{else if not .Says}}empty{{end}}"{{if .Unbacked}} title="저장된 관계 없음"{{else if .Verb}} title="저장된 관계 {{.Verb}}"{{end}}>{{if .Says}}{{.Says}}{{else if .Unsaid}}<span class="muted">◦ {{.Verb}}</span>{{end}}</td>{{end}}</tr>{{end}}</tbody></table></div>
 </section>
 {{end}}
