@@ -25,6 +25,8 @@ type Drawing struct {
 	// a relation the routing drops is lost; one the view never requests is
 	// not caught there.
 	Relations [][2]string `json:"-"`
+	// Heads are the markers the drawing's lines end in.
+	Heads []string `json:"-"`
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -38,6 +40,9 @@ type Box struct {
 	H       int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
+	// Hue is the palette key of the box's border (rule 11), empty for a
+	// box that stands for no unit's colour.
+	Hue string `json:"-"`
 	// Lit are the classes that light the box while a reader points at it
 	// or at a box it shares a line with (hover.go).
 	Lit string `json:"-"`
@@ -109,6 +114,10 @@ type Wire struct {
 	// Label is the word that says how the line's relations arise, set
 	// along its own ink (rule 25).
 	Label *Label `json:",omitempty"`
+	// Hue is the palette key the line is drawn in and Head the marker at
+	// its end, its shape for its kind and its colour (rule 11).
+	Hue  string `json:"-"`
+	Head string `json:"-"`
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -894,7 +903,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
-	d.mark(paths, o.tree)
+	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d
 }

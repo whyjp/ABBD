@@ -23,16 +23,13 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 		}
 		return s
 	},
-	"marks": func() []string { return []string{"contract", "bypass", "ink", "ok"} },
-	"markColor": func(k string) string {
-		return map[string]string{"contract": "accent", "bypass": "bypass", "ink": "ink", "ok": "ok"}[k]
-	},
-	"tip": func(k string) string { return tips[k] },
+	"head": head,
+	"tip":  func(k string) string { return tips[k] },
 	"css": func(tmpl string) template.CSS {
 		if tmpl == "index" || tmpl == "module" {
-			return template.CSS(pageCSS + hoverCSS)
+			return template.CSS(pageCSS + hueCSS + hoverCSS)
 		}
-		return template.CSS(pageCSS)
+		return template.CSS(pageCSS + hueCSS)
 	},
 	"nameOf": func(m *Model, id string) string { return nameOf(*m, id) },
 	"label": func(k string) string {

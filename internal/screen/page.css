@@ -59,13 +59,13 @@ svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font-size: 11px; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.6; }
-svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
-svg .box.inner.has rect { stroke: var(--ink); stroke-width: 1.8; }
+svg .box rect { fill: var(--panel); stroke: var(--c, var(--ink)); stroke-width: 1.8; }
+svg .box.inner rect { stroke-width: 1.5; }
+svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
-svg .box.inner rect { stroke: var(--muted); stroke-width: 1.2; }
-svg .box.focus rect { stroke: var(--accent); stroke-width: 3; }
-svg .box.twin rect { stroke: var(--muted); }
+svg .box.focus rect { stroke-width: 3.4; }
+svg .box.twin rect { stroke-dasharray: 6 3; }
+svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
 .picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
@@ -75,35 +75,18 @@ svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
 svg .port.entry text { fill: var(--accent); }
 svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
 svg .port.other text { fill: var(--muted); }
-svg path.w { fill: none; stroke-width: 1.5; }
-svg path.contract { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.bypass, svg path.mutual { stroke: var(--bypass); stroke-width: 2; marker-end: url(#m-bypass); }
-svg path.w.both { marker-start: url(#m-bypass); }
-svg path.depends_on { stroke: var(--ink); marker-end: url(#m-ink); }
-svg path.consumes { stroke: var(--accent); marker-end: url(#m-contract); }
-svg path.provides { stroke: var(--ok); stroke-width: 2; marker-end: url(#m-ok); }
+svg path.w { fill: none; stroke: var(--c); stroke-width: 1.5; }
+svg path.provides { stroke-width: 2; }
+svg path.bypass, svg path.mutual { stroke-width: 2.6; }
 svg circle.origin { stroke-width: 1.5; }
 svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }
 svg circle.origin.stated { fill: var(--ok); stroke: var(--ok); }
-svg circle.junction { fill: var(--ink); }
-svg circle.junction.contract, svg circle.junction.consumes { fill: var(--accent); }
-svg circle.junction.bypass { fill: var(--bypass); }
-svg circle.junction.provides { fill: var(--ok); }
+svg circle.junction { fill: var(--c); }
 svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
-svg text.lab { font-size: 10px; fill: var(--ink); }
-svg text.lab.contract, svg text.lab.consumes { fill: var(--accent); }
-svg text.lab.provides { fill: var(--ok); }
-svg text.lab.bypass, svg text.lab.mutual { fill: var(--bypass); }
+svg text.lab { font-size: 10px; fill: var(--c); }
 svg path.w.joins { marker-end: none; }
-svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; }
-svg path.w.back.depends_on { stroke: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
-svg path.w.back.contract, svg path.w.back.consumes { stroke: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
-svg path.w.back.provides { stroke: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
-svg path.w.back.bypass, svg path.w.back.mutual { stroke: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
-svg circle.junction.back { fill: color-mix(in srgb, var(--ink) 55%, var(--bg)); }
-svg circle.junction.back.contract, svg circle.junction.back.consumes { fill: color-mix(in srgb, var(--accent) 75%, var(--bg)); }
-svg circle.junction.back.provides { fill: color-mix(in srgb, var(--ok) 75%, var(--bg)); }
-svg circle.junction.back.bypass { fill: color-mix(in srgb, var(--bypass) 75%, var(--bg)); }
+svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
+svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
 svg path.w:hover { stroke-width: 3.5; }

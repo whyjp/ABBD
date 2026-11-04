@@ -311,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go:46 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -2009,6 +2009,7 @@
         "internal/screen/focus.go",
         "internal/screen/graph.go",
         "internal/screen/hover.go",
+        "internal/screen/hues.go",
         "internal/screen/ink.go",
         "internal/screen/inside.go",
         "internal/screen/layered.go",
@@ -2096,8 +2097,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go:365 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
-        "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+        "internal/screen/overview.go:374 \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
+        "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
       ]
     },
     {
@@ -3967,7 +3968,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:299 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+      "Quote": "internal/screen/overview.go:308 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
     },
     {
       "From": "MOD-0034",
@@ -3975,7 +3976,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
+      "Quote": "internal/screen/tree.go:34 \"if _, ok := t.units[u.Parent]; !ok {\""
     },
     {
       "From": "MOD-0034",
@@ -3983,7 +3984,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:322 \"return Badge(model.Extracted)\""
+      "Quote": "internal/screen/overview.go:331 \"return Badge(model.Extracted)\""
     },
     {
       "From": "MOD-0034",
@@ -3999,7 +4000,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:486 \"if len(o.providers[c]) == 0 {\""
+      "Quote": "internal/screen/overview.go:495 \"if len(o.providers[c]) == 0 {\""
     },
     {
       "From": "MOD-0034",
@@ -4007,7 +4008,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:390 \"if p := o.units[c].Parent; isModule[p] {\""
+      "Quote": "internal/screen/overview.go:399 \"if p := o.units[c].Parent; isModule[p] {\""
     },
     {
       "From": "MOD-0034",
@@ -4091,7 +4092,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/overview.go:307 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+      "Quote": "internal/screen/overview.go:316 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
       "From": "MOD-0037",
@@ -4099,7 +4100,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+      "Quote": "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
     },
     {
       "From": "MOD-0038",
@@ -4115,7 +4116,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "convention",
-      "Quote": "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+      "Quote": "internal/screen/page.css:82 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
     },
     {
       "From": "MOD-0038",
@@ -25930,7 +25931,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:299 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:308 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -25939,8 +25940,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:307 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:322 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:316 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:331 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -26315,7 +26316,7 @@
             "Title": "overview plan depends_on internal/model (via data), 판독",
             "Via": "data",
             "Quotes": [
-              "internal/screen/overview.go:307 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
+              "internal/screen/overview.go:316 \"origins[key(s, r.Kind, r.To)] = r.Origin\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0030"
@@ -26334,7 +26335,7 @@
             "Joins": true,
             "Via": "call",
             "Quotes": [
-              "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0037.depends_on.MOD-0036"
@@ -26366,7 +26367,7 @@
             "Title": "page template depends_on module inside (via convention), 판독",
             "Via": "convention",
             "Quotes": [
-              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
+              "internal/screen/page.css:82 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\""
             ],
             "Rels": [
               "MOD-0038.depends_on.MOD-0035"
@@ -26570,8 +26571,8 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/overview.go:307 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-              "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:316 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+              "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Marks": [
               {
@@ -26601,7 +26602,7 @@
             "Origin": "inferred",
             "Joins": true,
             "Quotes": [
-              "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+              "internal/screen/page.css:82 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
               "internal/screen/screen.go:161 \"m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })\"",
               "internal/screen/words.go:18 \"// Kind is \\\"h\\\" for a heading, \\\"li\\\" for a list item, \\\"p\\\" for a paragraph,\""
             ],
@@ -26755,7 +26756,7 @@
             "Joins": true,
             "Quotes": [
               "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -26775,7 +26776,7 @@
             "Title": "module inside depends_on layered layout and routing (via call), 판독\noverview plan depends_on layered layout and routing (via call), 판독",
             "Quotes": [
               "internal/screen/inside.go:294 \"l := arrange(nodes, edges, budget-12, seatOf(focus, seat))\"",
-              "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+              "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
             ],
             "Rels": [
               "MOD-0035.depends_on.MOD-0036",
@@ -27264,7 +27265,7 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The overview draws each top-level module and feature as a box, and a top-level contract no module provides as a loose box. A blue ",
+                "Text": "The overview draws each top-level module and feature as a box, and a top-level contract no module provides as a loose box. A ",
                 "Code": false
               },
               {
@@ -27280,7 +27281,7 @@
                 "Code": true
               },
               {
-                "Text": " chip on the provider. A thick orange ",
+                "Text": " chip on the provider. A thick ",
                 "Code": false
               },
               {
@@ -27288,7 +27289,7 @@
                 "Code": true
               },
               {
-                "Text": " line marks a module dependency no contract line already carries. Two modules that depend on each other that way share one ",
+                "Text": " line with an open head marks a module dependency no contract line already carries. Two modules that depend on each other that way share one ",
                 "Code": false
               },
               {
@@ -28084,7 +28085,23 @@
                 "Code": false
               },
               {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
                 "Text": "gaps",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
                 "Code": true
               },
               {
@@ -28097,7 +28114,55 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "hues.go",
+                "Code": true
+              },
+              {
                 "Text": "): what the page adds to the routed ink after the dots and counts. ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " gives each box the palette colour ",
+                "Code": false
+              },
+              {
+                "Text": "tree.colours",
+                "Code": true
+              },
+              {
+                "Text": " chose for its unit, where siblings joined by a relation take different colours in ID order, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. ",
+                "Code": false
+              },
+              {
+                "Text": "palette",
+                "Code": true
+              },
+              {
+                "Text": " is the one table of colours, and ",
+                "Code": false
+              },
+              {
+                "Text": "hueCSS",
+                "Code": true
+              },
+              {
+                "Text": " writes it into the page for both themes. ",
+                "Code": false
+              },
+              {
+                "Text": "TestEveryHueReadsOnBothThemes",
+                "Code": true
+              },
+              {
+                "Text": " holds each at 3:1 or better. ",
                 "Code": false
               },
               {
@@ -29589,7 +29654,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:299 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
+            "internal/screen/overview.go:308 \"if _, live := t.units[r.To]; !live || !ok || to == id || r.Dead {\""
           ]
         },
         {
@@ -29598,7 +29663,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:34 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -29607,7 +29672,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:322 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:331 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -29617,7 +29682,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go:211 \"return \\\"stated\\\"\"",
-            "internal/screen/page.go:49 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/page.go:46 \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -29626,7 +29691,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:486 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:495 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {
@@ -29635,7 +29700,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:390 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:399 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -29691,8 +29756,8 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:307 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
-            "internal/screen/overview.go:322 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:316 \"origins[key(s, r.Kind, r.To)] = r.Origin\"",
+            "internal/screen/overview.go:331 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -29701,7 +29766,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go:492 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
+            "internal/screen/overview.go:501 \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at))\""
           ]
         },
         {
@@ -29719,7 +29784,7 @@
           "Kind": "depends_on",
           "Via": "convention",
           "Quotes": [
-            "internal/screen/page.css:86 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
+            "internal/screen/page.css:82 \"svg circle.origin.inferred { fill: var(--panel); stroke: var(--guess); }\"",
             "internal/screen/inside.go:521 \"w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})\"",
             "internal/screen/page.html:66 \"{{if .Unwired}}\"",
             "internal/screen/inside.go:463 \"ins.Unwired = groups(unwired, func(p port) string { return o.name(p.id) })\""
@@ -35872,7 +35937,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/tree.go:32 \"if _, ok := t.units[u.Parent]; !ok {\""
+            "internal/screen/tree.go:34 \"if _, ok := t.units[u.Parent]; !ok {\""
           ]
         },
         {
@@ -35881,7 +35946,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:322 \"return Badge(model.Extracted)\""
+            "internal/screen/overview.go:331 \"return Badge(model.Extracted)\""
           ]
         },
         {
@@ -35890,7 +35955,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:390 \"if p := o.units[c].Parent; isModule[p] {\""
+            "internal/screen/overview.go:399 \"if p := o.units[c].Parent; isModule[p] {\""
           ]
         },
         {
@@ -36224,7 +36289,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/overview.go:486 \"if len(o.providers[c]) == 0 {\""
+            "internal/screen/overview.go:495 \"if len(o.providers[c]) == 0 {\""
           ]
         },
         {

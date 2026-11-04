@@ -14,8 +14,10 @@ import (
 type tree struct {
 	units    map[model.ID]model.Unit
 	children map[model.ID][]model.ID
-	// vias say how each stored relation arises, by its key.
+	// vias say how each stored relation arises, by its key, and hues are
+	// each unit's palette index (hues.go).
 	vias map[string]model.Via
+	hues map[model.ID]int
 }
 
 func newTree(units []model.Unit) tree {
@@ -38,6 +40,7 @@ func newTree(units []model.Unit) tree {
 	for k := range t.children {
 		slices.Sort(t.children[k])
 	}
+	t.hues = t.colours()
 	return t
 }
 

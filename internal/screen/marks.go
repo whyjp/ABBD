@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -67,10 +68,82 @@ func segsOf(paths []drawn) []seg {
 }
 
 // mark adds the marks to d, whose wires were built from paths in order.
-func (d *Drawing) mark(paths []drawn, t tree) {
+func (d *Drawing) mark(paths []drawn, reqs []wireReq, t tree) {
 	segs := segsOf(paths)
+	d.paint(paths, reqs, t)
 	d.gaps(segs)
 	d.labels(segs, t)
+}
+
+// heads are the arrowhead shapes that say a line's kind: a filled head for
+// a use through a contract, an open one for a direct dependency, and a
+// hollow one for a unit that provides a contract.
+var heads = map[string]string{
+	"contract": "use", "consumes": "use",
+	"depends_on": "dep", "bypass": "dep", "mutual": "dep",
+	"provides": "impl",
+}
+
+// paint colours each box by its unit, each line by the boxes its lines
+// leave, and each dot by the lines through it (rule 11). A line that
+// leaves a frame's chip takes the colour of the box it reaches. Ink whose
+// lines leave boxes of different colours is neutral.
+func (d *Drawing) paint(paths []drawn, reqs []wireReq, t tree) {
+	colour := func(node string) int {
+		if i, ok := t.hues[base(model.ID(node))]; ok && node != "" {
+			return i
+		}
+		return -1
+	}
+	for i, b := range d.Boxes {
+		if !strings.Contains(" "+b.Class+" ", " loose ") {
+			d.Boxes[i].Hue = hueKey(colour(b.ID))
+		}
+	}
+	used := map[string]bool{}
+	for i, p := range paths {
+		h, set := -1, false
+		for _, k := range p.reqs {
+			e := reqs[k].from
+			if e.node == "" {
+				e = reqs[k].to
+			}
+			c := colour(e.node)
+			if !set {
+				h, set = c, true
+			} else if c != h {
+				h = -1
+			}
+		}
+		w := &d.Wires[i]
+		w.Hue = hueKey(h)
+		if !w.Joins {
+			w.Head = heads[w.Kind] + "-" + w.Hue
+			used[w.Head] = true
+		}
+	}
+	d.Heads = nil
+	for h := range used {
+		d.Heads = append(d.Heads, h)
+	}
+	slices.Sort(d.Heads)
+	for i, dot := range d.Dots {
+		p, got := pt{dot.X, dot.Y}, ""
+		for _, w := range d.Wires {
+			if hue(w.Kind) != dot.Kind || !through(w.D, p) {
+				continue
+			}
+			if got == "" {
+				got = w.Hue
+			} else if got != w.Hue {
+				got = "n"
+			}
+		}
+		if got == "" {
+			got = "n"
+		}
+		d.Dots[i].Hue = got
+	}
 }
 
 // gaps cuts every horizontal piece where a vertical piece of another line
