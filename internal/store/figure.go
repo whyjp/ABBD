@@ -22,11 +22,13 @@ import (
 // and its own writer, so a reader who replaces a stale part keeps a human's
 // word on the others. Retired are parts that went STALE and left the figure,
 // each with the code it was written against, kept while that code still
-// differs, so their words cannot come back on it unread. The caption is the
-// file's body. InputsHash covers every kind's directory, so storing a figure
-// stales the blueprint.
+// differs, so their words cannot come back on it unread. Columns are the
+// head of a kind that has one, such as a table's. The caption is the file's
+// body. InputsHash covers every kind's directory, so storing a figure stales
+// the blueprint.
 type Figure[C model.Claim[C]] struct {
 	Question       string
+	Columns        []model.Column
 	Parts, Retired []Part[C]
 	Caption        string
 	// Key is the file's name and File where it sits, from the project root.
@@ -36,11 +38,13 @@ type Figure[C model.Claim[C]] struct {
 	Known bool
 }
 
-// Flow is a question answered in ordered steps, and Stack one answered in
-// layers from the top down.
+// Flow is a question answered in ordered steps, Stack one answered in
+// layers from the top down, and Table one answered in rows of cells under
+// named columns.
 type (
 	Flow  = Figure[model.Step]
 	Stack = Figure[model.Layer]
+	Table = Figure[model.Row]
 )
 
 // Part is one claim of a figure with its stamp. Go cannot embed a type
@@ -90,11 +94,11 @@ func (f Figure[C]) Claims() []C {
 	return out
 }
 
-// Gaps are what keep the figure's claims, taken together, from being true of
-// the state, each with the places of the parts it involves.
+// Gaps are what keep the figure's claims, taken together with its head, from
+// being true of the state, each with the places of the parts it involves.
 func (f Figure[C]) Gaps(units []model.Unit) []model.Gap {
 	if whole := model.KindOf[C]().Whole; whole != nil {
-		return whole(f.Claims(), units)
+		return whole(f.Columns, f.Claims(), units)
 	}
 	return nil
 }
@@ -107,7 +111,8 @@ const figureFormat = 1
 func FigureDir[C model.Claim[C]]() string { return Dir + "/" + model.KindOf[C]().Dir }
 
 // ParseFigureDraft reads the file a reader or a human writes: the stored
-// format, of which it keeps the question, the parts and the caption. abbd
+// format, of which it keeps the question, the head, the parts and the
+// caption. abbd
 // sets the rest when it stores the figure.
 func ParseFigureDraft[C model.Claim[C]](b []byte) (Figure[C], error) {
 	front, body, err := splitFrontmatter(b)
@@ -118,15 +123,15 @@ func ParseFigureDraft[C model.Claim[C]](b []byte) (Figure[C], error) {
 	if err != nil {
 		return Figure[C]{}, fmt.Errorf("the draft's frontmatter: %w", err)
 	}
-	out := Figure[C]{Question: strings.TrimSpace(f.Question), Caption: CleanText(string(body))}
+	out := Figure[C]{Question: strings.TrimSpace(f.Question), Columns: f.Columns, Caption: CleanText(string(body))}
 	for _, p := range f.Parts {
 		out.Parts = append(out.Parts, Part[C]{Claim: p.Claim})
 	}
 	return out, nil
 }
 
-// FigureDraft is the stored figure as a draft to edit: its question, claims
-// and caption, without what abbd sets.
+// FigureDraft is the stored figure as a draft to edit: its question, head,
+// claims and caption, without what abbd sets.
 func FigureDraft[C model.Claim[C]](f Figure[C]) ([]byte, error) {
 	front, err := encodeFigure(f, false)
 	if err != nil {
@@ -172,8 +177,9 @@ func writeFigure[C model.Claim[C]](s Store, f Figure[C]) error {
 }
 
 // encodeFigure writes a figure's frontmatter in the order a reader reads it:
-// the question, then for a stored figure its format, its parts under the
-// kind's own key and its retired parts, and for a draft its claims alone.
+// the question, then for a stored figure its format, then the head of a kind
+// that has one, then for a stored figure its parts under the kind's own key
+// and its retired parts, and for a draft its claims alone.
 func encodeFigure[C model.Claim[C]](f Figure[C], stored bool) ([]byte, error) {
 	var m yaml.Node
 	var head any = struct {
@@ -195,6 +201,11 @@ func encodeFigure[C model.Claim[C]](f Figure[C], stored bool) ([]byte, error) {
 		}
 		m.Content = append(m.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, &n)
 		return nil
+	}
+	if len(f.Columns) > 0 {
+		if err := add("columns", f.Columns); err != nil {
+			return nil, err
+		}
 	}
 	parts := model.KindOf[C]().Parts
 	if !stored {
@@ -224,7 +235,7 @@ func decodeFigure[C model.Claim[C]](front []byte) (Figure[C], error) {
 	for _, field := range []struct {
 		key string
 		v   any
-	}{{"question", &f.Question}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
+	}{{"question", &f.Question}, {"columns", &f.Columns}, {model.KindOf[C]().Parts, &f.Parts}, {"retired", &f.Retired}} {
 		if n, ok := m[field.key]; ok {
 			if err := n.Decode(field.v); err != nil {
 				return f, err
@@ -243,6 +254,7 @@ type Stray struct{ File, Why string }
 type Figures struct {
 	Flows  []Flow
 	Stacks []Stack
+	Tables []Table
 	Strays []Stray
 }
 
@@ -250,7 +262,7 @@ type Figures struct {
 // of kinds.
 func (s Store) LoadFigures() (Figures, error) {
 	var fs Figures
-	var flows, stacks []Stray
+	var flows, stacks, tables []Stray
 	var err error
 	if fs.Flows, flows, err = loadKind[model.Step](s); err != nil {
 		return fs, err
@@ -258,7 +270,10 @@ func (s Store) LoadFigures() (Figures, error) {
 	if fs.Stacks, stacks, err = loadKind[model.Layer](s); err != nil {
 		return fs, err
 	}
-	fs.Strays = append(flows, stacks...)
+	if fs.Tables, tables, err = loadKind[model.Row](s); err != nil {
+		return fs, err
+	}
+	fs.Strays = slices.Concat(flows, stacks, tables)
 	return fs, nil
 }
 

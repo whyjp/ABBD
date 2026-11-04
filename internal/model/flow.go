@@ -75,28 +75,17 @@ func (s Step) Against(units []Unit) Reach {
 	} else if !st.rests([]ID{s.Unit}, s.Evidence) {
 		r.Gaps = append(r.Gaps, fmt.Sprintf("none of the step's quotes is in the code of %s or a unit inside it; cite the lines of that code that run the step, naming the symbol when its anchor names one", s.Unit))
 	}
-	rank := map[RelationKind]int{Provides: 3, Consumes: 2, DependsOn: 1}
 	for _, c := range s.Calls {
 		if _, ok := st[c]; !ok {
 			r.Gaps = append(r.Gaps, fmt.Sprintf("%s, which the step calls, is no longer in the state", c))
 			continue
 		}
-		var best RelationKind
-		for _, u := range Present(units) {
-			if !st.under(u.ID, s.Unit) {
-				continue
-			}
-			for _, rel := range u.Relations {
-				if !rel.Dead && st.under(rel.To, c) && rank[rel.Kind] > rank[best] {
-					best = rel.Kind
-				}
-			}
-		}
-		if best == "" {
+		best, ok := st.strongest(s.Unit, c)
+		if !ok {
 			r.Gaps = append(r.Gaps, fmt.Sprintf("no live relation joins %s to %s, which the step calls; record the relation first", s.Unit, c))
 			continue
 		}
-		r.Calls[c] = best
+		r.Calls[c] = best.Kind
 	}
 	return r
 }

@@ -100,6 +100,17 @@ abbd stack KEY FILE|- [--source REF] [--root DIR]
                                      with --source USER_STATED; it says how many stored relations
                                      run up the stack, from a lower layer to a higher one
 abbd stack KEY [--root DIR]          print the stored stack as a draft to edit and store again
+abbd table KEY FILE|- [--source REF] [--root DIR]
+                                     store a table: a question, two to 8 columns, each a short
+                                     label and optionally the stored unit it stands for, and two
+                                     to 16 rows, each a stored unit, a one-line statement under
+                                     each column it fills, and the code it cites; a unit heads
+                                     one row; each row is stamped with the lines around its
+                                     quotes, so it goes STALE when that code changes; a reader's
+                                     is INFERRED, a human's with --source USER_STATED; it says
+                                     how many cells under a unit's column the stored relations
+                                     do not bear out
+abbd table KEY [--root DIR]          print the stored table as a draft to edit and store again
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, how's text;
                                      QUERY is a unit ID or name, a file or directory path, a
@@ -120,14 +131,15 @@ abbd evidence [--root DIR]           check every quote against the working tree:
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
-                                     text, a note, a flow's step or a stack's layer is STALE or an
-                                     evidence item drifted, for a hook or CI;
+                                     text, a note, a flow's step, a stack's layer or a table's row
+                                     is STALE or an evidence item drifted, for a hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
                                      error, or no graph.json), and says which; dead evidence, an
                                      orphaned text, one whose module is gone or no longer
-                                     top-level, and a relation that runs up a stack are reported
-                                     but do not fail it`
+                                     top-level, a relation that runs up a stack, and a table's
+                                     cell the stored relations do not bear out are reported but
+                                     do not fail it`
 
 const (
 	exitOK    = 0
@@ -230,6 +242,7 @@ var commands = map[string]command{
 	"forget":          {flags: []string{"root"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.forget(pos[0]) }},
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
+	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},

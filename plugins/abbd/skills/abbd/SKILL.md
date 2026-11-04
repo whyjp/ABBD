@@ -84,6 +84,34 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
 
    Take two to 8 layers from the top down, with 16 units at most between them. Give each layer a short name and a one-line `role` under 80 characters. A layer holds each unit it names and every unit inside it, so name a unit in one layer only. abbd refuses a unit named in two layers, and a unit named in one layer while a unit that holds it is named in another. Each layer cites the lines that show its role, such as a package's doc comment, each quote held once in its file and one at least in code its own units hold. It goes STALE on its own when that code changes. `abbd stack <KEY>` prints the stored stack as a draft to edit and store again. A human states a stack with `--source <REF>`, and a reader then replaces only its STALE layers, as for a flow. When a unit moves and two layers come to hold it, status names both, and a reader may replace those layers too. A breach is a stored `consumes` or `depends_on` from a unit a lower layer holds up to a unit a higher layer holds. A lower unit that `provides` a contract homed higher up is no breach. abbd reports each breach when it stores the stack and in `abbd status`, and the blueprint draws it. A breach is debt in the code or a layer drawn wrong. Say which in the reply, and do not reorder the layers only to hide it. Delete `.abbd/stacks/<KEY>.md` when the code no longer layers that way.
 
+9. When how or your own reading answers which part does what to which thing, such as which command reads and writes which file, or which module handles which part of a request, store it as a table with `abbd table <KEY> <FILE>`. A table answers one question. The blueprint draws it as a grid, one row per unit, and lists it on the overview and on each module whose units head its rows. Write the FILE as frontmatter and a caption:
+
+   ```markdown
+   ---
+   question: Which part of the abbd CLI reads and writes which .abbd file?
+   columns:
+     - {name: unit files, unit: DATA-0004}
+     - {name: state.yaml, unit: DATA-0006}
+   rows:
+     - unit: MOD-0004
+       cells:
+         unit files: rewrites every unit file from the reconciled extraction
+         state.yaml: reads the ID high-water mark, then writes revision and fingerprint
+       evidence:
+         - {path: cmd/abbd/main.go, symbol: syncActual, quote: "if err := st.SaveUnits(res.Units); err != nil {"}
+         - {path: cmd/abbd/main.go, symbol: syncActual, quote: "return res, st.SaveState(state)"}
+     - unit: MOD-0002
+       cells:
+         unit files: compares the stored units with the base revision's
+       evidence:
+         - {path: cmd/abbd/diff.go, symbol: diff, quote: "was, err := e.st.UnitsAt(base)"}
+   ---
+
+   One or two sentences on what the grid shows.
+   ```
+
+   Take two to 8 columns and two to 16 rows. Give each column a short label of 32 characters at most, with no spaces around it, and give it `unit:` when it stands for a stored unit, such as a contract. Each row is a stored unit, named in one row only. Fill a cell with one line under 80 characters on what the row's unit does, and leave a column out of `cells` when the cell is empty. Each row cites the lines that show its cells, each quote held once in its file and one at least in code its own unit holds. It goes STALE on its own when that code changes. `abbd table <KEY>` prints the stored table as a draft to edit and store again. A human states a table with `--source <REF>`, and a reader then replaces only its STALE rows, as for a flow, and keeps the human's columns. A reader may drop the unit of a column whose unit left the state, or point the column at another unit, and abbd says it changed the human's head. abbd reads each cell under a unit's column against the stored relations. A filled cell with no relation from the row's unit to the column's unit is unbacked, and an empty cell over such a relation is unsaid. abbd reports both when it stores the table and in `abbd status`, and the blueprint marks them. Neither fails the check. For an unbacked cell, record the coupling with `abbd record relation <FROM> <KIND> <TO> --evidence <PATH:LINES:QUOTE>` when the code shows it, or read the cell again. For an unsaid one, fill the cell when the row's code makes that use. Say in the reply which you did. Delete `.abbd/tables/<KEY>.md` when the question no longer fits the code.
+
 ## What the human states
 
 When the human states a purpose, a responsibility or a coupling in the conversation, record it with where they said it. `<REF>` is the PR URL, or `conversation <date>` before a PR exists.
@@ -104,7 +132,7 @@ A sync rewrites the lines that tie the state to one tree in `.abbd/state.yaml` a
 
 ## Gate a hook or CI
 
-`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`, or `abbd understand <ID>.<SLOT> --reread-by <WHO>` when the note still holds as written), a flow's step is STALE (status names the step and why, so read that code again and `abbd flow <KEY> <FILE>`), a stack's layer is STALE (status names the layer and why, so read that code again and `abbd stack <KEY> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. A breach, a stored relation that runs up a stack, is reported but does not fail it either. Only a design call clears it, by changing the code or drawing the layers again. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
+`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR: the state or the blueprint is STALE (`abbd sync` was not run or not committed), a module text is STALE (run how again and `abbd understand <MOD-ID> <FILE>`), a note is STALE (status names the quotes whose code changed, so read them again and `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE>`, or `abbd understand <ID>.<SLOT> --reread-by <WHO>` when the note still holds as written), a flow's step is STALE (status names the step and why, so read that code again and `abbd flow <KEY> <FILE>`), a stack's layer is STALE (status names the layer and why, so read that code again and `abbd stack <KEY> <FILE>`), a table's row is STALE (status names the row and why, so read that code again and `abbd table <KEY> <FILE>`), or an evidence item drifted (refresh or retract it). Dead evidence is reported but does not fail it: a dead item is already out of every view, and only `abbd retract <TARGET> --reason "<why>"` would clear it. A breach, a stored relation that runs up a stack, is reported but does not fail it either. Only a design call clears it, by changing the code or drawing the layers again. An unbacked or unsaid table cell is reported and does not fail it. The readability report, long sections and phrases that read as history, never fails it. The state fingerprints untracked files too, so run the check on a clean checkout before any step writes files. It does not run the extraction script.
 
 The check also exits 1 when the state or the blueprint is UNKNOWN, meaning abbd could not compare them, and the message names the cause. The state is UNKNOWN outside a git work tree or when git fails to fingerprint the tree, and no sync fixes that, so run the check in a git checkout. The blueprint is UNKNOWN when `blueprint/` holds no files or the state does not say what was rendered, and `abbd sync` writes both. An orphaned text, one whose module left the state or is no longer a module, is reported and skipped, because no command can restamp it. Delete its `.abbd/understanding/<MOD-ID>.md` to drop it. An orphaned note, one whose unit left the state, whose slot abbd no longer knows, or whose entry its contract no longer lists, is reported and skipped the same way. Status names its file and the `abbd forget <ID>.<SLOT>` that removes it.
 
