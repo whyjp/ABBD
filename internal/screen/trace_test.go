@@ -605,6 +605,7 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 		m := fixture(t, name)
 		for _, v := range views(m) {
 			got := traced(t, v.d)
+			ms := measured(t, v.d)
 			if got.Lost > 0 {
 				t.Errorf("%s %s: %d relations no ink carries", name, v.name, got.Lost)
 			}
@@ -616,15 +617,26 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 			}
 			t.Logf("%s %s: %s", name, v.name, got)
 			logJogs(t, got)
-			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside))
+			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside, ms.Crossings, ms.Bends, ms.Back, ms.BackLength, ms.Length, ms.MaxDetour, ms.Braid, over2(got.Bends), ms.Width))
 		}
 	}
 	if f := os.Getenv("ABBD_METRICS"); f != "" {
-		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\n"
+		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\tcrossings\tbends\tback\tback_ink\tink\tmax_detour\tbraid\tpaths_over2\twidth\n"
 		if err := os.WriteFile(f, []byte(head+strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
+}
+
+// over2 counts the traced paths that turn more than twice.
+func over2(bends []int) int {
+	n := 0
+	for _, b := range bends {
+		if b > 2 {
+			n++
+		}
+	}
+	return n
 }
 
 // With ABBD_JOGS set, logJogs lists every traced path that jogs, and every

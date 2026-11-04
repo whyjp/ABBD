@@ -374,8 +374,9 @@ type Metrics struct {
 	// Bends is how many times the lines turn, and MaxBends the most any
 	// one line does.
 	Bends, MaxBends int
-	// Length is how long, in pixels, the lines run in all.
-	Length int
+	// Length is how long, in pixels, the lines run in all, and BackLength
+	// how much of that is drawn dashed: the ink of the lines that climb.
+	Length, BackLength int
 }
 
 func (m Metrics) String() string {
@@ -402,7 +403,11 @@ func measure(s sheet) Metrics {
 		m.Bends += n
 		m.MaxBends = max(m.MaxBends, n)
 		for i := 1; i < len(w.pts); i++ {
-			m.Length += int(math.Abs(w.pts[i].x-w.pts[i-1].x) + math.Abs(w.pts[i].y-w.pts[i-1].y))
+			d := int(math.Abs(w.pts[i].x-w.pts[i-1].x) + math.Abs(w.pts[i].y-w.pts[i-1].y))
+			m.Length += d
+			if strings.Contains(" "+w.class+" ", " back ") {
+				m.BackLength += d
+			}
 		}
 	}
 	// R1: crossings between two lines, away from the ends where lines meet

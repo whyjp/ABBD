@@ -170,6 +170,35 @@ li.band.stale .band-head .n { background: var(--stale); }
 .band-body { min-width: 0; }
 .band-body > .chips:first-child { margin-top: 2px; }
 @media (max-width: 560px) { ol.dg-stack > li.band { grid-template-columns: minmax(0, 1fr); } .band-head { margin-bottom: 4px; } }
+.matrix .caption p { margin: 4px 0; }
+.matrix .gap { margin: 4px 0 0; font-size: 13px; color: var(--stale); }
+.matrix-box { overflow-x: auto; margin-top: 10px; }
+table.dg-matrix { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13.5px; border: 1.6px solid var(--ink); border-radius: 6px; }
+table.dg-matrix th, table.dg-matrix td { padding: 7px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); overflow-wrap: anywhere; }
+table.dg-matrix tr > :first-child { border-left: 0; }
+table.dg-matrix tbody tr:last-child > * { border-bottom: 0; }
+table.dg-matrix thead th { background: var(--bg); font-weight: 700; font-size: 13px; border-bottom: 1.6px solid var(--ink); min-width: 6rem; }
+table.dg-matrix thead th.corner { color: var(--muted); font-weight: 600; }
+table.dg-matrix tbody th { width: 14rem; min-width: 10rem; font-weight: 400; background: var(--panel); }
+table.dg-matrix tbody th .chip { font-weight: 600; }
+table.dg-matrix tbody th details { margin-top: 3px; }
+table.dg-matrix tbody th summary { font-size: 12px; font-weight: 400; }
+table.dg-matrix tbody th .quote { font-size: 12px; }
+table.dg-matrix tr.stale > th { box-shadow: inset 3px 0 0 var(--stale); }
+table.dg-matrix td.unbacked { outline: 1.6px dashed var(--bypass); outline-offset: -4px; }
+table.dg-matrix td.unsaid { color: var(--bypass); }
+@media (max-width: 560px) {
+  table.dg-matrix, table.dg-matrix tbody, table.dg-matrix tr, table.dg-matrix th, table.dg-matrix td { display: block; width: auto; }
+  table.dg-matrix { border: 0; }
+  table.dg-matrix thead { display: none; }
+  table.dg-matrix tbody tr { border: 1.6px solid var(--ink); border-radius: 6px; margin: 0 0 8px; padding: 0; }
+  table.dg-matrix tbody th { width: auto; min-width: 0; border-bottom: 1px solid var(--line); }
+  table.dg-matrix td { border-left: 0; padding: 4px 10px; }
+  table.dg-matrix td::before { content: attr(data-col); display: block; font-size: 12px; font-weight: 700; color: var(--muted); }
+  table.dg-matrix td.empty { display: none; }
+  table.dg-matrix tbody tr:last-child > * { border-bottom: 1px solid var(--line); }
+  table.dg-matrix tbody tr > :last-child { border-bottom: 0; }
+}
 .shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); max-width: 1680px; margin: 0 auto; }
 nav.site { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 12px 10px 16px 16px; font-size: 13.5px; border-right: 1px solid var(--line); }
 nav.site .home { display: block; font-weight: 700; font-size: 16px; color: var(--ink); text-decoration: none; margin-bottom: 6px; }
@@ -198,8 +227,8 @@ table.index td:first-child { width: 46%; }
   <a class="home" href="index.html">ABBD 청사진</a>
   <ul class="plain top">
     <li><a href="index.html">모듈과 계약</a></li>
-    <li><a href="contracts.html">계약 목록</a> <span class="muted">49</span></li>
-    <li><a href="units.html">단위 목록</a> <span class="muted">125</span></li>
+    <li><a href="contracts.html">계약 목록</a> <span class="muted">50</span></li>
+    <li><a href="units.html">단위 목록</a> <span class="muted">126</span></li>
   </ul>
   <h3>모듈</h3>
   <ul class="plain tree"><li class="d0"><a href="MOD-0001.html">abbd CLI</a></li><li class="d0"><a href="MOD-0009.html">internal/bootstrap</a></li><li class="d0"><a href="MOD-0013.html">internal/evidence</a></li><li class="d0"><a href="MOD-0017.html">internal/extract</a></li><li class="d0"><a href="MOD-0022.html">internal/gitx</a></li><li class="d0"><a href="MOD-0054.html">internal/group</a></li><li class="d0"><a href="MOD-0026.html">internal/identity</a></li><li class="d0"><a href="MOD-0030.html">internal/model</a></li><li class="d0"><a href="MOD-0056.html">internal/narrative</a></li><li class="d0"><a href="MOD-0034.html">internal/screen</a></li><li class="d0"><a href="MOD-0041.html">internal/store</a></li><li class="d0"><a href="MOD-0047.html">internal/topology</a></li><li class="d0"><a href="#m-MOD-0055" aria-current="page">pstack (external)</a></li></ul>
@@ -244,11 +273,12 @@ table.index td:first-child { width: 46%; }
       
       
       
+      
       <h3>판독한 결합</h3>
       <ul class="plain"><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd read the code through pstack → pstack /how <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:24 &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd read the code through pstack → pstack /blast-radius <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/SKILL.md:24 &#34;or `&lt;pstack&gt;/skills/blast-radius/SKILL.md` for a change that spans several modules.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup preconditions and stance → pstack (external) <span class="muted">(depends_on, via config)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:8 &#34;If `&lt;pstack&gt;/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup find units with a reader swarm → pstack /how <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:15 &#34;reads its slice the way `&lt;pstack&gt;/skills/how/references/explorer-prompt.md` describes&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup find units with a reader swarm → pstack /swarm <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:15 &#34;Follow `&lt;pstack&gt;/skills/swarm/SKILL.md`, partitioned into slices of related candidates&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup build the deterministic extractor → pstack principle-build-the-lever <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:16 &#34;Build the lever, per `&lt;pstack&gt;/skills/principle-build-the-lever/SKILL.md`.&#34;</q></div></li><li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup store how&#39;s account per module → pstack /how <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md:33 &#34;For each top-level module, follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</q></div></li></ul>
     </div>
     <div class="text">
-      <p class="muted">이 모듈의 설명은 아직 없습니다. 지금은 그림과 안의 단위 목록이 아는 전부입니다. 채우는 법: <code>abbd understand MOD-0055 FILE</code></p>
+      <p class="muted">이 모듈의 설명은 아직 없습니다. <code>abbd understand MOD-0055 FILE</code>로 채웁니다.</p>
       
       
       <h3>안의 단위</h3>
