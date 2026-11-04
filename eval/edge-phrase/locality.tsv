@@ -1,14 +1,14 @@
 case	file	bytes	lines	causes
-phrase-overview	MOD-0001.html	456	4	{"content": 456}
-phrase-overview	MOD-0054.html	230	2	{"hue": 22, "content": 208}
-phrase-overview	graph.json	64	2	{"graph-data": 64}
-phrase-overview	index.html	456	4	{"content": 456}
-phrase-overview	TOTAL 4 files	1206	12	
-phrase-inside	MOD-0047.html	240	5	{"hue": 22, "content": 218}
-phrase-inside	graph.json	30	1	{"graph-data": 30}
-phrase-inside	TOTAL 2 files	270	6	
+phrase-overview	MOD-0001.html	852	4	{"content": 852}
+phrase-overview	MOD-0054.html	248	2	{"hue": 22, "content": 226}
+phrase-overview	graph.json	66	2	{"graph-data": 66}
+phrase-overview	index.html	852	4	{"content": 852}
+phrase-overview	TOTAL 4 files	2018	12	
+phrase-inside	MOD-0047.html	267	5	{"hue": 22, "content": 245}
+phrase-inside	graph.json	64	2	{"graph-data": 64}
+phrase-inside	TOTAL 2 files	331	7	
 
 cause	bytes
-content	1338
-graph-data	94
+content	2175
+graph-data	130
 hue	44

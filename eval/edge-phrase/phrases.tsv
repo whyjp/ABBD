@@ -7,14 +7,14 @@ MOD-0001.depends_on.MOD-0041	call	unit .md	cmd/abbd/diff.go	now, err := e.st.Loa
 MOD-0001.depends_on.MOD-0043	call	next ID	cmd/abbd/record.go	id, err := e.st.NextID(kind)
 MOD-0001.depends_on.MOD-0044	call	unit .md	cmd/abbd/diff.go	was, err := e.st.UnitsAt(base)
 MOD-0001.depends_on.MOD-0046	call	module digest	cmd/abbd/understand.go	digest, code := e.st.Stamp(units, id)
-MOD-0034.consumes.CFG-0002	config	render inputs	internal/screen/screen.go	if in.Project, err = st.LoadProject(); err != nil {
-MOD-0034.consumes.DATA-0004	data	render inputs	internal/screen/screen.go	if in.Units, err = st.LoadUnits(); err != nil {
-MOD-0034.consumes.DATA-0006	data	render inputs	internal/screen/screen.go	if in.Synced, err = st.LoadState(); err != nil {
+MOD-0034.consumes.CFG-0002	config	LoadProject	internal/screen/screen.go	if in.Project, err = st.LoadProject(); err != nil {
+MOD-0034.consumes.DATA-0004	data	LoadUnits	internal/screen/screen.go	if in.Units, err = st.LoadUnits(); err != nil {
+MOD-0034.consumes.DATA-0006	data	LoadState	internal/screen/screen.go	if in.Synced, err = st.LoadState(); err != nil {
 MOD-0039.consumes.DATA-0006	data	freshness check	internal/screen/screen.go	case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:
-MOD-0034.consumes.DATA-0008	data	render inputs	internal/screen/screen.go	if in.Understandings, err = st.LoadUnderstandings(); err != nil {
+MOD-0034.consumes.DATA-0008	data	LoadUnderstandings	internal/screen/screen.go	if in.Understandings, err = st.LoadUnderstandings(); err != nil {
 MOD-0040.consumes.DATA-0008	data	text digest	internal/screen/screen.go	return &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
-MOD-0034.consumes.DATA-0024	data	render inputs	internal/screen/screen.go	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
-MOD-0034.depends_on.MOD-0041	call	render inputs	internal/screen/screen.go	if in.Figures, err = st.LoadFigures(); err != nil {
+MOD-0034.consumes.DATA-0024	data	LoadNotes	internal/screen/screen.go	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
+MOD-0034.depends_on.MOD-0041	call	LoadFigures	internal/screen/screen.go	if in.Figures, err = st.LoadFigures(); err != nil {
 MOD-0034.depends_on.MOD-0042	call	inputs hash	internal/screen/screen.go	if in.Inputs, err = st.InputsHash(); err != nil {
 MOD-0034.depends_on.MOD-0046	call	module digest	internal/screen/screen.go	in.Digests[id] = st.ModuleDigest(in.Units, id)
 MOD-0039.depends_on.MOD-0041	convention	inputs hash	internal/screen/screen.go	if in.Inputs, err = st.InputsHash(); err != nil {
@@ -24,61 +24,53 @@ MOD-0004.consumes.DATA-0002	data	script stdout	cmd/abbd/main.go	ex, err := extra
 MOD-0008.consumes.DATA-0002	data	script stdout	cmd/abbd/setup.go	ex, err := extract.Parse(bytes.NewReader(out))
 MOD-0001.depends_on.MOD-0017	call	script stdout	cmd/abbd/migrate.go	ex, err := extract.Parse(bytes.NewReader(out))
 MOD-0026.consumes.DATA-0006	call	ID high-water	cmd/abbd/main.go	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)
-FEAT-0001.consumes.IF-0001	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd diff
+FEAT-0001.consumes.IF-0001	call	diff --check	plugins/abbd/skills/abbd/SKILL.md	abbd diff --check
 FEAT-0008.consumes.IF-0001	call	sync then diff	plugins/abbd/skills/abbd/SKILL.md	Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.
 FEAT-0009.consumes.IF-0001	call	diff --check	plugins/abbd/skills/abbd/SKILL.md	`abbd diff --check` exits 1 when a contract's signature changed
-FEAT-0001.consumes.IF-0002	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd evidence
 FEAT-0009.consumes.IF-0002	call	quote listing	plugins/abbd/skills/abbd/SKILL.md	`abbd evidence` lists each quote and whether it is live, drifted or dead.
-FEAT-0001.consumes.IF-0003	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd status
+FEAT-0001.consumes.IF-0003	call	status --check	plugins/abbd/skills/abbd/SKILL.md	abbd status --check
 FEAT-0004.consumes.IF-0003	call	state freshness	plugins/abbd/skills/abbd/SKILL.md	Run `abbd status` if you need to know whether the state matches the working tree.
-FEAT-0001.consumes.IF-0004	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd impact
+FEAT-0001.consumes.IF-0004	call	QUERIES --features	plugins/abbd/skills/abbd/SKILL.md	abbd impact <QUERIES> --features
 FEAT-0004.consumes.IF-0004	call	impact QUERIES	plugins/abbd/skills/abbd/SKILL.md	`abbd impact <QUERIES>`: what a change to those comma-separated units reaches.
-FEAT-0001.consumes.IF-0006	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd sync
 FEAT-0008.consumes.IF-0006	call	sync then diff	plugins/abbd/skills/abbd/SKILL.md	Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.
-FEAT-0001.consumes.IF-0007	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd explain
+FEAT-0001.consumes.IF-0007	call	<QUERY> or <ID>	plugins/abbd/skills/abbd/SKILL.md	abbd explain <QUERY>
 FEAT-0004.consumes.IF-0007	call	explain QUERY	plugins/abbd/skills/abbd/SKILL.md	`abbd explain <QUERY>`: one unit at a glance
-FEAT-0001.consumes.IF-0008	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd path
+FEAT-0001.consumes.IF-0008	call	<A> <B>	plugins/abbd/skills/abbd/SKILL.md	abbd path <A> <B>
 FEAT-0004.consumes.IF-0008	call	path A B	plugins/abbd/skills/abbd/SKILL.md	`abbd path <A> <B>`: how two units connect
-FEAT-0001.consumes.IF-0009	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd record fact
+FEAT-0001.consumes.IF-0009	call	ID.FIELD --value	plugins/abbd/skills/abbd/SKILL.md	abbd record fact <ID.FIELD> --value
 FEAT-0007.consumes.IF-0009	call	--value --source	plugins/abbd/skills/abbd/SKILL.md	`abbd record fact <ID.FIELD> --value "<text>" --source <REF>`
-FEAT-0001.consumes.IF-0010	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd record relation
+FEAT-0001.consumes.IF-0010	call	--via --phrase	plugins/abbd/skills/abbd/SKILL.md	--via <VIA> --phrase
 FEAT-0006.consumes.IF-0010	call	--via --phrase	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`
 FEAT-0007.consumes.IF-0010	call	--source REF	plugins/abbd/skills/abbd/SKILL.md	`abbd record relation <FROM> <KIND> <TO> --source <REF>`
-FEAT-0001.consumes.IF-0011	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd record unit
+FEAT-0001.consumes.IF-0011	call	KIND NAME --parent	plugins/abbd/skills/abbd/SKILL.md	abbd record unit <KIND> <NAME> --parent
 FEAT-0006.consumes.IF-0011	call	--parent --evidence	plugins/abbd/skills/abbd/SKILL.md	`abbd record unit <KIND> <NAME> --parent <MOD-ID> --evidence <PATH:LINES:QUOTE>`
-FEAT-0001.consumes.IF-0013	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd understand
+FEAT-0001.consumes.IF-0013	call	MOD-ID FILE	plugins/abbd/skills/abbd/SKILL.md	abbd understand <MOD-ID> <FILE>
 FEAT-0006.consumes.IF-0013	call	how's text	plugins/abbd/skills/abbd/SKILL.md	store the new Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`
 FEAT-0001.consumes.IF-0014	convention	exit code	plugins/abbd/skills/abbd/SKILL.md	`abbd status --check` exits 1 when the change left something an agent can still bring current in the same PR
 FEAT-0009.consumes.IF-0014	convention	exit code	plugins/abbd/skills/abbd/SKILL.md	`abbd diff --check` exits 1 when a contract's signature changed
-FEAT-0001.consumes.IF-0019	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd migrate
-FEAT-0001.consumes.IF-0020	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd record evidence
-FEAT-0001.consumes.IF-0021	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd retract
-FEAT-0001.consumes.IF-0022	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd flow
-FEAT-0001.consumes.IF-0023	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd forget
-FEAT-0001.consumes.IF-0024	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd stack
-FEAT-0001.consumes.IF-0025	call	shell command	plugins/abbd/skills/abbd/SKILL.md	abbd table
-FEAT-0002.consumes.IF-0001	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd diff
-FEAT-0002.consumes.IF-0003	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd status
-FEAT-0002.consumes.IF-0004	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd impact
-FEAT-0002.consumes.IF-0005	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd install
+FEAT-0001.consumes.IF-0020	call	TARGET --evidence	plugins/abbd/skills/abbd/SKILL.md	abbd record evidence <TARGET> --evidence
+FEAT-0001.consumes.IF-0021	call	TARGET --reason	plugins/abbd/skills/abbd/SKILL.md	abbd retract <TARGET> --reason
+FEAT-0001.consumes.IF-0022	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd flow <KEY> <FILE>
+FEAT-0001.consumes.IF-0023	call	ID.SLOT	plugins/abbd/skills/abbd/SKILL.md	abbd forget <ID>.<SLOT>
+FEAT-0001.consumes.IF-0024	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd stack <KEY> <FILE>
+FEAT-0001.consumes.IF-0025	call	KEY FILE	plugins/abbd/skills/abbd/SKILL.md	abbd table <KEY> <FILE>
+FEAT-0002.consumes.IF-0004	call	<QUERIES>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd impact <QUERIES>
 FEAT-0016.consumes.IF-0005	call	CLAUDE.md block	plugins/abbd/skills/abbd-setup/SKILL.md	Run `abbd install`.
-FEAT-0002.consumes.IF-0006	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd sync
-FEAT-0002.consumes.IF-0007	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd explain
-FEAT-0002.consumes.IF-0008	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd path
+FEAT-0002.consumes.IF-0007	call	<QUERY>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd explain <QUERY>
+FEAT-0002.consumes.IF-0008	call	<A> <B>	plugins/abbd/skills/abbd-setup/SKILL.md	abbd path <A> <B>
 FEAT-0017.consumes.IF-0009	convention	reader claims stay	plugins/abbd/skills/abbd-setup/SKILL.md	What a reader stored through abbd record and what the human stated stay.
-FEAT-0002.consumes.IF-0012	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup
+FEAT-0002.consumes.IF-0012	call	--supplement FILE	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement
 FEAT-0014.consumes.IF-0012	call	setup --supplement	plugins/abbd/skills/abbd-setup/SKILL.md	abbd setup --supplement .abbd/extractor/supplement.json -- <interpreter> .abbd/extractor/extract.<ext>
-FEAT-0002.consumes.IF-0013	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd understand
+FEAT-0002.consumes.IF-0013	call	MOD-ID FILE	plugins/abbd/skills/abbd-setup/SKILL.md	abbd understand <MOD-ID> <FILE>
 FEAT-0015.consumes.IF-0013	call	how's text	plugins/abbd/skills/abbd-setup/SKILL.md	store its Overview and Key Concepts with `abbd understand <MOD-ID> <FILE>`.
-FEAT-0002.consumes.IF-0018	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record parent
+FEAT-0002.consumes.IF-0018	call	ID PARENT --evidence	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record parent ID PARENT --evidence
 FEAT-0017.consumes.IF-0018	convention	--evidence placing	plugins/abbd/skills/abbd-setup/SKILL.md	`abbd record parent ID PARENT --evidence ...` places one unit later.
-FEAT-0002.consumes.IF-0019	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd migrate
-FEAT-0002.consumes.IF-0020	call	shell command	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record evidence
+FEAT-0002.consumes.IF-0020	call	TARGET --evidence	plugins/abbd/skills/abbd-setup/SKILL.md	abbd record evidence <TARGET> --evidence
 MOD-0034.consumes.IF-0015	data	edge key	internal/screen/tree.go	t.vias[key(u.ID, r.Kind, r.To)] = r.Via
-MOD-0034.depends_on.MOD-0030	import	model types	internal/screen/tree.go	func newTree(units []model.Unit) tree {
-MOD-0037.depends_on.MOD-0030	data	model types	internal/screen/overview.go	origins[key(s, r.Kind, r.To)] = r.Origin
+MOD-0034.depends_on.MOD-0030	import	Unit, ID, DependsOn	internal/screen/tree.go	func newTree(units []model.Unit) tree {
+MOD-0037.depends_on.MOD-0030	data	relation origins	internal/screen/overview.go	origins[key(s, r.Kind, r.To)] = r.Origin
 MOD-0047.consumes.IF-0015	data	edge key	internal/topology/impact.go	Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}
-MOD-0047.depends_on.MOD-0030	import	model types	internal/topology/impact.go	func Links(units []model.Unit) []Link {
+MOD-0047.depends_on.MOD-0030	import	Unit, ID, Origin	internal/topology/impact.go	func Links(units []model.Unit) []Link {
 MOD-0047.depends_on.MOD-0031	call	Relation.Counts	internal/topology/diff.go	if _, ok := units[r.To]; !ok || !r.Counts() {
 FEAT-0005.depends_on.FEAT-0018	call	skill steps	plugins/abbd/skills/abbd/SKILL.md	follow `<pstack>/skills/how/SKILL.md` unchanged
 FEAT-0005.depends_on.FEAT-0019	call	skill steps	plugins/abbd/skills/abbd/SKILL.md	or `<pstack>/skills/blast-radius/SKILL.md` for a change that spans several modules.
@@ -111,15 +103,15 @@ MOD-0004.depends_on.MOD-0026	call	ID reconcile	cmd/abbd/main.go	identity.Reconci
 MOD-0001.depends_on.MOD-0034	call	render pages	cmd/abbd/screen.go	files, err := screen.Files(screen.Build(in))
 MOD-0001.depends_on.MOD-0039	call	blueprint freshness	cmd/abbd/evidence.go	switch in.BlueprintFreshness() {
 MOD-0007.depends_on.MOD-0034	call	render pages	cmd/abbd/screen.go	files, err := screen.Files(screen.Build(in))
-MOD-0001.depends_on.MOD-0047	call	topology query	cmd/abbd/impact.go	im := topology.ImpactOf(units, seeds)
-MOD-0001.depends_on.MOD-0048	call	topology query	cmd/abbd/diff.go	if e.check && d.Boundary() {
-MOD-0002.depends_on.MOD-0047	call	topology query	cmd/abbd/diff.go	d := topology.Compare(was, now)
-MOD-0005.depends_on.MOD-0047	call	topology query	cmd/abbd/query.go	ex := topology.Explain(units, u.ID)
+MOD-0001.depends_on.MOD-0047	call	ImpactOf seeds	cmd/abbd/impact.go	im := topology.ImpactOf(units, seeds)
+MOD-0001.depends_on.MOD-0048	call	diff boundary check	cmd/abbd/diff.go	if e.check && d.Boundary() {
+MOD-0002.depends_on.MOD-0047	call	Compare revisions	cmd/abbd/diff.go	d := topology.Compare(was, now)
+MOD-0005.depends_on.MOD-0047	call	Explain unit	cmd/abbd/query.go	ex := topology.Explain(units, u.ID)
 MOD-0001.depends_on.MOD-0054	call	dir grouping	cmd/abbd/main.go	res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
 MOD-0001.depends_on.MOD-0056	call	long-section check	cmd/abbd/narrative.go	for _, s := range narrative.Long(text) {
 MOD-0009.depends_on.MOD-0017	data	extract.Unit	internal/bootstrap/overlay.go	func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 MOD-0011.depends_on.MOD-0021	data	extract.Unit	internal/bootstrap/overlay.go	n := overlap(u.Anchors, d.Anchors)
-MOD-0013.depends_on.MOD-0030	import	model types	internal/evidence/evidence.go	func (c *Checker) Check(e model.Evidence) Result {
+MOD-0013.depends_on.MOD-0030	import	Evidence, Status	internal/evidence/evidence.go	func (c *Checker) Check(e model.Evidence) Result {
 MOD-0014.depends_on.MOD-0031	call	Unit.Semantic	internal/evidence/evidence.go	if u.Semantic() {
 MOD-0026.depends_on.MOD-0017	data	extract.Unit	internal/identity/identity.go	input := append([]extract.Unit(nil), extraction.Units...)
 MOD-0027.depends_on.MOD-0024	data	git renames	internal/identity/identity.go	if to, ok := renames[a.Path]; ok {
@@ -129,16 +121,16 @@ MOD-0041.depends_on.MOD-0013	call	quote lookup	internal/store/understanding.go	r
 MOD-0041.depends_on.MOD-0022	call	files at rev	internal/store/store.go	files, err := gitx.Files(project, rev, dirs...)
 MOD-0041.depends_on.MOD-0026	data	merge candidates	internal/store/store.go	func (s Store) LoadCandidates() ([]identity.Candidate, error) {
 MOD-0043.depends_on.MOD-0027	convention	ID format	internal/store/store.go	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
-MOD-0041.depends_on.MOD-0030	import	model types	internal/store/store.go	func (s Store) LoadUnits() ([]model.Unit, error) {
-MOD-0054.depends_on.MOD-0030	import	model types	internal/group/group.go	func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[model.Kind]int) {
+MOD-0041.depends_on.MOD-0030	import	Unit, Evidence, Claim	internal/store/store.go	func (s Store) LoadUnits() ([]model.Unit, error) {
+MOD-0054.depends_on.MOD-0030	import	Unit, Kind, Module	internal/group/group.go	func Fallback(units []model.Unit, hw map[model.Kind]int) ([]model.Unit, map[model.Kind]int) {
 MOD-0001.consumes.IF-0015	data	edge key	cmd/abbd/record.go	edge, err := model.ParseEdge(strings.Join(pos, "."))
 MOD-0006.consumes.IF-0015	convention	edge key	cmd/abbd/record.go	edge, err := model.ParseEdge(strings.Join(pos, "."))
-MOD-0001.depends_on.MOD-0030	import	model types	cmd/abbd/record.go	func (e env) save(u model.Unit) error {
+MOD-0001.depends_on.MOD-0030	import	Unit, Writer, Evidence	cmd/abbd/record.go	func (e env) save(u model.Unit) error {
 MOD-0001.depends_on.MOD-0032	call	Edge.Joins	cmd/abbd/record.go	if err := edge.Joins(); err != nil {
-MOD-0009.depends_on.MOD-0030	import	model types	internal/bootstrap/overlay.go	u.Placed = append(u.Placed, extract.Placement{Key: out.Units[p].Key, Writer: model.Supplement, Evidence: es})
+MOD-0009.depends_on.MOD-0030	import	Supplement, Fact, Anchor	internal/bootstrap/overlay.go	u.Placed = append(u.Placed, extract.Placement{Key: out.Units[p].Key, Writer: model.Supplement, Evidence: es})
 MOD-0020.depends_on.MOD-0022	convention	slash paths	internal/extract/extract.go	the forward-slash, root-relative paths git reports
-MOD-0017.depends_on.MOD-0030	import	model types	internal/extract/extract.go	Evidence []model.Evidence
+MOD-0017.depends_on.MOD-0030	import	Evidence, Entry, Fact	internal/extract/extract.go	Evidence []model.Evidence
 MOD-0018.depends_on.MOD-0032	call	Kind.Joins	internal/extract/extract.go	if err := rr.Kind.Joins(from, to); err != nil {
-MOD-0026.depends_on.MOD-0030	import	model types	internal/identity/identity.go	units := make([]model.Unit, len(stored))
+MOD-0026.depends_on.MOD-0030	import	Unit, ID, Anchor	internal/identity/identity.go	units := make([]model.Unit, len(stored))
 MOD-0034.depends_on.MOD-0025	convention	tree fingerprint	internal/screen/screen.go	case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:
 MOD-0039.depends_on.MOD-0022	convention	tree fingerprint	cmd/abbd/screen.go	in.Tree, _ = gitx.Snapshot(e.root, store.Dir)

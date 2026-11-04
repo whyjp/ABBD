@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2509,6 +2509,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "/abbd pointer",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/install.go \"The /abbd skill says how to read, query and record the topology.\""
     },
     {
@@ -2518,6 +2519,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "query first",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/install.go \"A query is what you have in hand: a unit ID or name, a file path, a symbol, or a few words.\""
     },
     {
@@ -2527,6 +2529,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "sync then diff",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/install.go \"After changing code, run\""
     },
     {
@@ -2534,7 +2537,8 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "diff --check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd diff\""
     },
     {
@@ -2542,7 +2546,6 @@
       "To": "IF-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd evidence\""
     },
     {
@@ -2550,7 +2553,8 @@
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "status --check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd status\""
     },
     {
@@ -2558,7 +2562,8 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "QUERIES --features",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd impact\""
     },
     {
@@ -2566,7 +2571,6 @@
       "To": "IF-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd sync\""
     },
     {
@@ -2574,7 +2578,8 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "\u003cQUERY\u003e or \u003cID\u003e",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd explain\""
     },
     {
@@ -2582,7 +2587,8 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "\u003cA\u003e \u003cB\u003e",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd path\""
     },
     {
@@ -2590,7 +2596,8 @@
       "To": "IF-0009",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "ID.FIELD --value",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record fact\""
     },
     {
@@ -2598,7 +2605,8 @@
       "To": "IF-0010",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "--via --phrase",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record relation\""
     },
     {
@@ -2606,7 +2614,8 @@
       "To": "IF-0011",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "KIND NAME --parent",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record unit\""
     },
     {
@@ -2614,7 +2623,8 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "MOD-ID FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd understand\""
     },
     {
@@ -2622,14 +2632,14 @@
       "To": "IF-0014",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "exit code"
+      "Phrase": "exit code",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "FEAT-0001",
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd migrate\""
     },
     {
@@ -2637,7 +2647,8 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "TARGET --evidence",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record evidence\""
     },
     {
@@ -2645,7 +2656,8 @@
       "To": "IF-0021",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "TARGET --reason",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd retract\""
     },
     {
@@ -2653,7 +2665,8 @@
       "To": "IF-0022",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "KEY FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd flow\""
     },
     {
@@ -2661,7 +2674,8 @@
       "To": "IF-0023",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "ID.SLOT",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd forget\""
     },
     {
@@ -2669,7 +2683,8 @@
       "To": "IF-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "KEY FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd stack\""
     },
     {
@@ -2677,7 +2692,8 @@
       "To": "IF-0025",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "KEY FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd table\""
     },
     {
@@ -2685,7 +2701,6 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd diff\""
     },
     {
@@ -2693,7 +2708,6 @@
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd status\""
     },
     {
@@ -2701,7 +2715,8 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "\u003cQUERIES\u003e",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd impact\""
     },
     {
@@ -2709,7 +2724,6 @@
       "To": "IF-0005",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd install\""
     },
     {
@@ -2717,7 +2731,6 @@
       "To": "IF-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd sync\""
     },
     {
@@ -2725,7 +2738,8 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "\u003cQUERY\u003e",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd explain\""
     },
     {
@@ -2733,7 +2747,8 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "\u003cA\u003e \u003cB\u003e",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd path\""
     },
     {
@@ -2741,7 +2756,8 @@
       "To": "IF-0012",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "--supplement FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup\""
     },
     {
@@ -2749,7 +2765,8 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "MOD-ID FILE",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
     },
     {
@@ -2763,7 +2780,8 @@
       "To": "IF-0018",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "ID PARENT --evidence",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record parent\""
     },
     {
@@ -2771,7 +2789,6 @@
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd migrate\""
     },
     {
@@ -2779,7 +2796,8 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "shell command",
+      "Phrase": "TARGET --evidence",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
     },
     {
@@ -2789,6 +2807,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill handoff",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"If the repository has no `.abbd/`, run the abbd-setup skill first.\""
     },
     {
@@ -2798,6 +2817,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "state freshness",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Run `abbd status` if you need to know whether the state matches the working tree.\""
     },
     {
@@ -2807,6 +2827,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "impact QUERIES",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd impact \u003cQUERIES\u003e`: what a change to those comma-separated units reaches.\""
     },
     {
@@ -2816,6 +2837,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "explain QUERY",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd explain \u003cQUERY\u003e`: one unit at a glance\""
     },
     {
@@ -2825,6 +2847,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "path A B",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd path \u003cA\u003e \u003cB\u003e`: how two units connect\""
     },
     {
@@ -2842,6 +2865,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
     },
     {
@@ -2851,6 +2875,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
     },
     {
@@ -2868,6 +2893,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "--via --phrase",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --via \u003cVIA\u003e --phrase \\\"\u003cPHRASE\u003e\\\" --evidence \u003cPATH:LINES:QUOTE\u003e`\""
     },
     {
@@ -2877,6 +2903,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "--parent --evidence",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record unit \u003cKIND\u003e \u003cNAME\u003e --parent \u003cMOD-ID\u003e --evidence \u003cPATH:LINES:QUOTE\u003e`\""
     },
     {
@@ -2886,6 +2913,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "how's text",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"store the new Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`\""
     },
     {
@@ -2895,6 +2923,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "--value --source",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record fact \u003cID.FIELD\u003e --value \\\"\u003ctext\u003e\\\" --source \u003cREF\u003e`\""
     },
     {
@@ -2904,6 +2933,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "--source REF",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd record relation \u003cFROM\u003e \u003cKIND\u003e \u003cTO\u003e --source \u003cREF\u003e`\""
     },
     {
@@ -2913,6 +2943,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "sync then diff",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
@@ -2922,6 +2953,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "sync then diff",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.\""
     },
     {
@@ -2931,6 +2963,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "diff --check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
@@ -2940,6 +2973,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "quote listing",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd evidence` lists each quote and whether it is live, drifted or dead.\""
     },
     {
@@ -2949,6 +2983,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "exit code",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
@@ -2958,6 +2993,7 @@
       "Origin": "INFERRED",
       "Via": "config",
       "Phrase": "pstack 0.15.36",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\""
     },
     {
@@ -2975,6 +3011,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
     },
     {
@@ -2984,6 +3021,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
     },
     {
@@ -3009,6 +3047,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
     },
     {
@@ -3042,6 +3081,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "setup --supplement",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup --supplement .abbd/extractor/supplement.json -- \u003cinterpreter\u003e .abbd/extractor/extract.\u003cext\u003e\""
     },
     {
@@ -3051,6 +3091,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill steps",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
     },
     {
@@ -3060,6 +3101,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "how's text",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`.\""
     },
     {
@@ -3077,6 +3119,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "skill handoff",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"From here on the abbd skill reads and queries the blueprint.\""
     },
     {
@@ -3094,6 +3137,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "CLAUDE.md block",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Run `abbd install`.\""
     },
     {
@@ -3103,6 +3147,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "reader claims stay",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"What a reader stored through abbd record and what the human stated stay.\""
     },
     {
@@ -3112,6 +3157,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "--evidence placing",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
     },
     {
@@ -3119,21 +3165,24 @@
       "To": "CFG-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "extract argv"
+      "Phrase": "extract argv",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "script stdout"
+      "Phrase": "script stdout",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "unit .md"
+      "Phrase": "unit .md",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3298,7 +3347,8 @@
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "edge key"
+      "Phrase": "edge key",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3361,7 +3411,8 @@
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "supplement fold"
+      "Phrase": "supplement fold",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3370,6 +3421,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "supplement fold",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/setup.go \"if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {\""
     },
     {
@@ -3377,7 +3429,8 @@
       "To": "MOD-0013",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "quote check"
+      "Phrase": "quote check",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3386,6 +3439,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "quote check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
@@ -3393,14 +3447,16 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "script stdout"
+      "Phrase": "script stdout",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
       "To": "MOD-0022",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "git query"
+      "Phrase": "git query",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3409,6 +3465,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "git query",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"if base, err = gitx.MergeBase(e.root); err != nil {\""
     },
     {
@@ -3418,6 +3475,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "git query",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"tree, err := gitx.Snapshot(e.root, store.Dir)\""
     },
     {
@@ -3425,7 +3483,8 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "ID reconcile"
+      "Phrase": "ID reconcile",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3434,6 +3493,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "ID reconcile",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/setup.go \"res, err := e.syncActual(ex, identity.Setup)\""
     },
     {
@@ -3441,7 +3501,8 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, Writer, Evidence",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3450,6 +3511,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "Edge.Joins",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/record.go \"if err := edge.Joins(); err != nil {\""
     },
     {
@@ -3457,7 +3519,8 @@
       "To": "MOD-0034",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "render pages"
+      "Phrase": "render pages",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3466,6 +3529,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "blueprint freshness",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\""
     },
     {
@@ -3473,7 +3537,8 @@
       "To": "MOD-0041",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "unit .md"
+      "Phrase": "unit .md",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3482,6 +3547,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "next ID",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/record.go \"id, err := e.st.NextID(kind)\""
     },
     {
@@ -3491,6 +3557,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "unit .md",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
     },
     {
@@ -3500,6 +3567,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "module digest",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\""
     },
     {
@@ -3507,7 +3575,8 @@
       "To": "MOD-0047",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "topology query"
+      "Phrase": "ImpactOf seeds",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
@@ -3515,7 +3584,8 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "topology query",
+      "Phrase": "diff boundary check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"if e.check \u0026\u0026 d.Boundary() {\""
     },
     {
@@ -3523,14 +3593,16 @@
       "To": "MOD-0054",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "dir grouping"
+      "Phrase": "dir grouping",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0001",
       "To": "MOD-0056",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "long-section check"
+      "Phrase": "long-section check",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0002",
@@ -3539,6 +3611,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "unit .md",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
     },
     {
@@ -3556,6 +3629,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "quote check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/evidence.go \"c := evidence.New(e.root)\""
     },
     {
@@ -3565,6 +3639,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "git query",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"if base, err = gitx.MergeBase(e.root); err != nil {\""
     },
     {
@@ -3573,7 +3648,8 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "topology query",
+      "Phrase": "Compare revisions",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/diff.go \"d := topology.Compare(was, now)\""
     },
     {
@@ -3599,6 +3675,7 @@
       "Origin": "INFERRED",
       "Via": "config",
       "Phrase": "extract argv",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"if len(p.Extract) == 0 {\""
     },
     {
@@ -3608,6 +3685,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "script stdout",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
@@ -3633,6 +3711,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "quote check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"res.Units = evidence.New(e.root).Apply(res.Units, rev)\""
     },
     {
@@ -3642,6 +3721,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "git query",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)\""
     },
     {
@@ -3651,6 +3731,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "ID reconcile",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"identity.Reconcile(\""
     },
     {
@@ -3675,7 +3756,8 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Phrase": "topology query",
+      "Phrase": "Explain unit",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\""
     },
     {
@@ -3685,6 +3767,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "unit .md",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/record.go \"return e.st.SaveUnits([]model.Unit{u})\""
     },
     {
@@ -3702,6 +3785,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "edge key",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/record.go \"edge, err := model.ParseEdge(strings.Join(pos, \\\".\\\"))\""
     },
     {
@@ -3711,6 +3795,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "quote check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/record.go \"c := evidence.New(e.root)\""
     },
     {
@@ -3728,6 +3813,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "render pages",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/screen.go \"files, err := screen.Files(screen.Build(in))\""
     },
     {
@@ -3737,6 +3823,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "script stdout",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/setup.go \"ex, err := extract.Parse(bytes.NewReader(out))\""
     },
     {
@@ -3754,6 +3841,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "supplement fold",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/setup.go \"if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {\""
     },
     {
@@ -3769,14 +3857,16 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "extract.Unit"
+      "Phrase": "extract.Unit",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0009",
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Supplement, Fact, Anchor",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0010",
@@ -3793,6 +3883,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "extract.Unit",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/bootstrap/overlay.go \"n := overlap(u.Anchors, d.Anchors)\""
     },
     {
@@ -3816,7 +3907,8 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Evidence, Status",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0014",
@@ -3833,6 +3925,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "Unit.Semantic",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/evidence/evidence.go \"if u.Semantic() {\""
     },
     {
@@ -3862,7 +3955,8 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Evidence, Entry, Fact",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0018",
@@ -3871,6 +3965,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "Kind.Joins",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/extract/extract.go \"if err := rr.Kind.Joins(from, to); err != nil {\""
     },
     {
@@ -3880,6 +3975,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "slash paths",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/extract/extract.go \"the forward-slash, root-relative paths git reports\""
     },
     {
@@ -3945,6 +4041,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "ID high-water",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/main.go \"res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)\""
     },
     {
@@ -3976,14 +4073,16 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "extract.Unit"
+      "Phrase": "extract.Unit",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0026",
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, ID, Anchor",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0027",
@@ -3992,6 +4091,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "git renames",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/identity/identity.go \"if to, ok := renames[a.Path]; ok {\""
     },
     {
@@ -4053,14 +4153,16 @@
       "To": "CFG-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadProject",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
       "To": "DATA-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadUnits",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
@@ -4073,14 +4175,16 @@
       "To": "DATA-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadState",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
       "To": "DATA-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadUnderstandings",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
@@ -4135,14 +4239,16 @@
       "To": "DATA-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadNotes",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "edge key"
+      "Phrase": "edge key",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
@@ -4151,6 +4257,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "tree fingerprint",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\""
     },
     {
@@ -4158,14 +4265,16 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, ID, DependsOn",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
       "To": "MOD-0041",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "render inputs"
+      "Phrase": "LoadFigures",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
@@ -4174,6 +4283,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "inputs hash",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
     },
     {
@@ -4183,6 +4293,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "module digest",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"in.Digests[id] = st.ModuleDigest(in.Units, id)\""
     },
     {
@@ -4190,14 +4301,16 @@
       "To": "MOD-0047",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "entry uses"
+      "Phrase": "entry uses",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0034",
       "To": "MOD-0056",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "text lines"
+      "Phrase": "text lines",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0035",
@@ -4221,7 +4334,8 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Phrase": "model types",
+      "Phrase": "relation origins",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/overview.go \"origins[key(s, r.Kind, r.To)] = r.Origin\""
     },
     {
@@ -4279,6 +4393,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "freshness check",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\""
     },
     {
@@ -4288,6 +4403,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "tree fingerprint",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/screen.go \"in.Tree, _ = gitx.Snapshot(e.root, store.Dir)\""
     },
     {
@@ -4297,6 +4413,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "inputs hash",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\""
     },
     {
@@ -4306,6 +4423,7 @@
       "Origin": "INFERRED",
       "Via": "data",
       "Phrase": "text digest",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/screen/screen.go \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
@@ -4315,6 +4433,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "text digest",
+      "PhraseOrigin": "INFERRED",
       "Quote": "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\""
     },
     {
@@ -4376,28 +4495,32 @@
       "To": "MOD-0013",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "quote lookup"
+      "Phrase": "quote lookup",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0041",
       "To": "MOD-0022",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "files at rev"
+      "Phrase": "files at rev",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0041",
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "merge candidates"
+      "Phrase": "merge candidates",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0041",
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, Evidence, Claim",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0042",
@@ -4414,6 +4537,7 @@
       "Origin": "INFERRED",
       "Via": "convention",
       "Phrase": "ID format",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/store/store.go \"return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)\""
     },
     {
@@ -4454,7 +4578,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/topology/impact.go \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+      "Quote": "internal/topology/impact.go \"var origins = map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}\""
     },
     {
       "From": "MOD-0047",
@@ -4485,14 +4609,16 @@
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "edge key"
+      "Phrase": "edge key",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0047",
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, ID, Origin",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0047",
@@ -4501,6 +4627,7 @@
       "Origin": "INFERRED",
       "Via": "call",
       "Phrase": "Relation.Counts",
+      "PhraseOrigin": "INFERRED",
       "Quote": "internal/topology/diff.go \"if _, ok := units[r.To]; !ok || !r.Counts() {\""
     },
     {
@@ -4596,7 +4723,8 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Phrase": "model types"
+      "Phrase": "Unit, Kind, Module",
+      "PhraseOrigin": "INFERRED"
     }
   ],
   "modules": [
@@ -6041,7 +6169,7 @@
                 "Code": true
               },
               {
-                "Text": " refuses a reader's claim on an edge a human stated, and one on an edge the script already claims unless it carries a ",
+                "Text": " refuses a reader's claim on an edge a human stated, and one on an edge the script already claims, unless it carries a ",
                 "Code": false
               },
               {
@@ -6049,7 +6177,7 @@
                 "Code": true
               },
               {
-                "Text": ", which then only names what crosses the script's edge. ",
+                "Text": ". Then it stores only the writer's phrase note, which labels the line and is never a claim. It refuses a reader's claim or note that a human's mask hides, so a phrase never brings back a retracted coupling. It checks the phrase against the via of every claim on the edge, so a phrase on the script's edge cannot restate the script's via. ",
                 "Code": false
               },
               {
@@ -8511,7 +8639,7 @@
                       "Kind": "p",
                       "Parts": [
                         {
-                          "Text": "Exits 1 while anything status reports can still be brought current in the same PR: a STALE state, blueprint, text or note, or a drifted evidence item.",
+                          "Text": "Exits 1 while anything status reports can still be brought current in the same PR: a STALE state, blueprint, text or note, a drifted evidence item, or a dangling phrase note whose edge no longer shows.",
                           "Code": false
                         }
                       ]
@@ -10194,15 +10322,7 @@
                 "Code": true
               },
               {
-                "Text": " checks the kind against the two ends' kinds. One the script already extracted is skipped unless it carries a ",
-                "Code": false
-              },
-              {
-                "Text": "Phrase",
-                "Code": true
-              },
-              {
-                "Text": ", which then only names what crosses the script's edge. Any other must cite evidence and is appended with the writer ",
+                "Text": " checks the kind against the two ends' kinds. One the script already extracted is skipped. Any other must cite evidence and is appended with the writer ",
                 "Code": false
               },
               {
@@ -10210,7 +10330,7 @@
                 "Code": true
               },
               {
-                "Text": ", its ",
+                "Text": " and its ",
                 "Code": false
               },
               {
@@ -10218,15 +10338,23 @@
                 "Code": true
               },
               {
-                "Text": " and its ",
+                "Text": ". Each relation's phrase, on an extracted edge or not, is appended to ",
                 "Code": false
               },
               {
-                "Text": "Phrase",
+                "Text": "Phrases",
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": " with the writer ",
+                "Code": false
+              },
+              {
+                "Text": "supplement",
+                "Code": true
+              },
+              {
+                "Text": ", as a note and never a claim.",
                 "Code": false
               }
             ]
@@ -10497,7 +10625,7 @@
                 "Code": true
               },
               {
-                "Text": " checks every item of every present unit: a semantic unit's own evidence, and the evidence of every parent claim and every relation claim, shown or hidden. A present semantic unit whose evidence is all dead goes absent with the reason ",
+                "Text": " checks every item of every present unit: a semantic unit's own evidence, and the evidence of every parent claim, every relation claim, shown or hidden, and every phrase note. A present semantic unit whose evidence is all dead goes absent with the reason ",
                 "Code": false
               },
               {
@@ -12080,7 +12208,15 @@
                 "Code": true
               },
               {
-                "Text": " checks a phrase, which only a supplement may give, and the evidence is normalized. Every parsed relation's writer is ",
+                "Text": " checks a phrase, which only a supplement may give and only with evidence, and the evidence is normalized. A phrase goes to ",
+                "Code": false
+              },
+              {
+                "Text": "Result.Phrases",
+                "Code": true
+              },
+              {
+                "Text": ", apart from the relation. Every parsed relation's writer is ",
                 "Code": false
               },
               {
@@ -14526,14 +14662,6 @@
                 "Code": false
               },
               {
-                "Text": "Phrase",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
                 "Text": "Evidence",
                 "Code": true
               },
@@ -14546,7 +14674,15 @@
                 "Code": true
               },
               {
-                "Text": " onto the claim. A relation with no writer is the script's, and one that repeats a claim with the same end, kind and writer is skipped. Units it did not report keep their relations as they were.",
+                "Text": " onto the claim. ",
+                "Code": false
+              },
+              {
+                "Text": "setPhrases",
+                "Code": true
+              },
+              {
+                "Text": " does the same for the extraction's phrase notes, replacing those its writers hold. A relation with no writer is the script's, and one that repeats a claim with the same end, kind and writer is skipped. Units it did not report keep their relations as they were.",
                 "Code": false
               }
             ]
@@ -16482,14 +16618,6 @@
                 "Code": false
               },
               {
-                "Text": "Phrase",
-                "Code": true
-              },
-              {
-                "Text": ", ",
-                "Code": false
-              },
-              {
                 "Text": "Evidence",
                 "Code": true
               },
@@ -16510,15 +16638,55 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". A ",
                 "Code": false
               },
               {
-                "Text": "Phrase",
+                "Text": "PhraseNote",
                 "Code": true
               },
               {
-                "Text": " names what crosses the edge in at most ",
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "Unit.Phrases",
+                "Code": true
+              },
+              {
+                "Text": " names what crosses an edge, with its own ",
+                "Code": false
+              },
+              {
+                "Text": "Writer",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Source",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Text",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Evidence",
+                "Code": true
+              },
+              {
+                "Text": ", in at most ",
                 "Code": false
               },
               {
@@ -16534,7 +16702,7 @@
                 "Code": true
               },
               {
-                "Text": " words, and ",
+                "Text": " words. It is never a claim, so it cannot make or keep an edge. ",
                 "Code": false
               },
               {
@@ -16542,31 +16710,31 @@
                 "Code": true
               },
               {
-                "Text": " refuses one that only repeats the via. The script never writes one. ",
+                "Text": " refuses one that only restates the via. The script never writes one. ",
                 "Code": false
               },
               {
-                "Text": "PhraseClaim",
+                "Text": "Note",
                 "Code": true
               },
               {
-                "Text": " finds the claim whose phrase names an edge, the shown claim first and else a hidden one that is neither dead nor masked, so a reader names what crosses an edge the script read. ",
+                "Text": " finds the note that names an edge, the first by status and then by the ",
                 "Code": false
               },
               {
-                "Text": "Phrase",
+                "Text": "phrase",
                 "Code": true
               },
               {
-                "Text": " gives it while that claim's evidence is live. ",
+                "Text": " row of the table that is neither dead nor masked. ",
                 "Code": false
               },
               {
-                "Text": "Shown",
+                "Text": "Dangling",
                 "Code": true
               },
               {
-                "Text": " lists the shown claims and those phrase claims, whose evidence ",
+                "Text": " lists the notes whose edge no longer shows. ",
                 "Code": false
               },
               {
@@ -16574,7 +16742,7 @@
                 "Code": true
               },
               {
-                "Text": " visits too. ",
+                "Text": " visits the evidence of the shown claims and of the note that names each shown edge. ",
                 "Code": false
               },
               {
@@ -17258,7 +17426,15 @@
                 "Code": true
               },
               {
-                "Text": " hashes kind, end, via and any phrase, ",
+                "Text": " hashes kind, end and via, ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseDigest",
+                "Code": true
+              },
+              {
+                "Text": " a note's text, ",
                 "Code": false
               },
               {
@@ -19885,7 +20061,7 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase that names at least half of them with 등, else the ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else, when more than half carry a phrase, the phrase that names more than half of those, with 등, else the ",
                 "Code": false
               },
               {
@@ -19901,7 +20077,7 @@
                 "Code": true
               },
               {
-                "Text": " adds each phrase to the line's tooltip, and ",
+                "Text": " adds each phrase to the line's tooltip with whose words it is, and ",
                 "Code": false
               },
               {
@@ -19909,11 +20085,27 @@
                 "Code": true
               },
               {
-                "Text": " holds each relation's phrase from ",
+                "Text": " holds each relation's live phrase note from ",
                 "Code": false
               },
               {
-                "Text": "model.Unit.Phrase",
+                "Text": "model.Unit.Note",
+                "Code": true
+              },
+              {
+                "Text": " with its writer's origin. graph.json gives ",
+                "Code": false
+              },
+              {
+                "Text": "PhraseOrigin",
+                "Code": true
+              },
+              {
+                "Text": " beside each line's ",
+                "Code": false
+              },
+              {
+                "Text": "Origin",
                 "Code": true
               },
               {
@@ -21648,7 +21840,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+            "internal/topology/impact.go \"var origins = map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}\""
           ]
         }
       ],
@@ -24388,12 +24580,6 @@
                 "Need": "선택"
               },
               {
-                "Key": "relations-phrase",
-                "Name": "relations.phrase",
-                "Shape": "string",
-                "Need": "선택"
-              },
-              {
                 "Key": "relations-evidence",
                 "Name": "relations.evidence",
                 "Shape": "[]Evidence",
@@ -24490,12 +24676,6 @@
                 "Need": "선택"
               },
               {
-                "Key": "hidden-phrase",
-                "Name": "hidden.phrase",
-                "Shape": "string",
-                "Need": "선택"
-              },
-              {
                 "Key": "hidden-evidence",
                 "Name": "hidden.evidence",
                 "Shape": "[]Evidence",
@@ -24552,6 +24732,90 @@
               {
                 "Key": "hidden-digest",
                 "Name": "hidden.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases",
+                "Name": "phrases",
+                "Shape": "[]PhraseNote",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-to",
+                "Name": "phrases.to",
+                "Shape": "ID",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-kind",
+                "Name": "phrases.kind",
+                "Shape": "RelationKind",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-writer",
+                "Name": "phrases.writer",
+                "Shape": "Writer",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-source",
+                "Name": "phrases.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-text",
+                "Name": "phrases.text",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-evidence",
+                "Name": "phrases.evidence",
+                "Shape": "[]Evidence",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-evidence-path",
+                "Name": "phrases.evidence.path",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-evidence-lines",
+                "Name": "phrases.evidence.lines",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-evidence-symbol",
+                "Name": "phrases.evidence.symbol",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-evidence-quote",
+                "Name": "phrases.evidence.quote",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "phrases-evidence-status",
+                "Name": "phrases.evidence.status",
+                "Shape": "Status",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-evidence-since",
+                "Name": "phrases.evidence.since",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "phrases-evidence-reason",
+                "Name": "phrases.evidence.reason",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -25489,7 +25753,7 @@
                 "Code": true
               },
               {
-                "Text": ", ",
+                "Text": ", the ",
                 "Code": false
               },
               {
@@ -25497,15 +25761,7 @@
                 "Code": true
               },
               {
-                "Text": ", ",
-                "Code": false
-              },
-              {
-                "Text": "Evidence",
-                "Code": true
-              },
-              {
-                "Text": ", the ",
+                "Text": " note, the ",
                 "Code": false
               },
               {
@@ -25529,7 +25785,7 @@
                 "Code": true
               },
               {
-                "Text": " names its origin, its via, its phrase and a drift. ",
+                "Text": " names its origin, its via and a drift, then the phrase with its own origin and drift. ",
                 "Code": false
               },
               {
@@ -26260,7 +26516,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/topology/impact.go \"s := map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}[l.Origin]\""
+            "internal/topology/impact.go \"var origins = map[model.Origin]string{model.Extracted: \\\"extracted\\\", model.UserStated: \\\"stated\\\", model.Inferred: \\\"inferred\\\"}\""
           ]
         },
         {
@@ -27784,7 +28040,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "writes the one unit a record names, with its relation and phrase, fact or parent",
+              "Says": "writes the unit a record names, with its claim, phrase note, fact or parent",
               "Verb": "사용"
             },
             {
@@ -27810,6 +28066,7 @@
           ],
           "Quotes": [
             "cmd/abbd/record.go \"u.PutRelation(rel)\"",
+            "cmd/abbd/record.go \"u.PutNote(note)\"",
             "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest\""
           ]
         },

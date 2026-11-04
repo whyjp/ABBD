@@ -21,23 +21,23 @@ rows:
         unit files: rewrites every unit file from the reconciled extraction
       evidence:
         - path: cmd/abbd/main.go
-          lines: "460"
+          lines: "464"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "431"
+          lines: "435"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "477"
+          lines: "481"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "466"
+          lines: "470"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "350"
+          lines: "354"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
@@ -49,19 +49,24 @@ rows:
     - unit: MOD-0006
       cells:
         module texts: writes how's text with the module's digest and cited code
-        unit files: writes the one unit a record names, with its relation and phrase, fact or parent
+        unit files: writes the unit a record names, with its claim, phrase note, fact or parent
       evidence:
         - path: cmd/abbd/record.go
-          lines: "118"
+          lines: "134"
           symbol: recordRelation
           quote: u.PutRelation(rel)
+        - path: cmd/abbd/record.go
+          lines: "137"
+          symbol: recordRelation
+          quote: u.PutNote(note)
         - path: cmd/abbd/understand.go
           lines: "83"
           symbol: understand
           quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
       writer: reader
       code:
-        cmd/abbd/record.go#quote-96b34390: 5ffeca89905aa31f
+        cmd/abbd/record.go#quote-96b34390: 7592c997356842e8
+        cmd/abbd/record.go#quote-5614cda7: 06ebdcfaa1c5ed4e
         cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
     - unit: MOD-0005
       cells:
@@ -116,11 +121,11 @@ rows:
           symbol: diff
           quote: was, err := e.st.UnitsAt(base)
         - path: cmd/abbd/evidence.go
-          lines: "103"
+          lines: "109"
           symbol: status
           quote: 'case in.Synced.Fingerprint == "":'
         - path: cmd/abbd/evidence.go
-          lines: "106"
+          lines: "112"
           symbol: status
           quote: switch in.BlueprintFreshness() {
       writer: reader
@@ -144,6 +149,22 @@ retired:
           quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
       code:
         cmd/abbd/record.go#quote-96b34390: 77467f8b8d20a875
+        cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
+    - unit: MOD-0006
+      cells:
+        module texts: writes how's text with the module's digest and cited code
+        unit files: writes the one unit a record names, with its relation and phrase, fact or parent
+      evidence:
+        - path: cmd/abbd/record.go
+          lines: "118"
+          symbol: recordRelation
+          quote: u.PutRelation(rel)
+        - path: cmd/abbd/understand.go
+          lines: "83"
+          symbol: understand
+          quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
+      code:
+        cmd/abbd/record.go#quote-96b34390: 5ffeca89905aa31f
         cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
 ---
 

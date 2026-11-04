@@ -1,4 +1,4 @@
-"""Record each phrase in a TSV as a reader's claim, citing the line that holds its quote.
+"""Record each phrase in a TSV as a reader's phrase note, citing the line that holds its quote.
 
 usage: python record_phrases.py ABBD_BIN ROOT TSV
 
