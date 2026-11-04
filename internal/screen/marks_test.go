@@ -373,9 +373,9 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 					if w.Label != nil {
 						shown[rel] = true
 					}
-					if tr.phrases[rel] != "" {
+					if tr.phrases[rel].text != "" {
 						phrased[rel] = true
-						if w.Label != nil && strings.TrimSuffix(w.Label.S, most) == tr.phrases[rel] {
+						if w.Label != nil && strings.TrimSuffix(w.Label.S, most) == tr.phrases[rel].text {
 							named[rel] = true
 						}
 					}

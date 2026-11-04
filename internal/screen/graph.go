@@ -10,11 +10,13 @@ import (
 
 // Line is one live relation as graph.json lists it, with its origin and, for
 // a reader's coupling, how it arises and the code it rests on. Phrase is
-// what crosses it.
+// what crosses it while its note is live, and PhraseOrigin whose words they
+// are, which need not be the line's origin.
 type Line struct {
 	From, To, Kind, Origin string
 	Via                    string `json:",omitempty"`
 	Phrase                 string `json:",omitempty"`
+	PhraseOrigin           string `json:",omitempty"`
 	Quote                  string `json:",omitempty"`
 }
 
@@ -37,7 +39,10 @@ func lines(units []model.Unit) []Line {
 			if !present[r.To] || r.Dead {
 				continue
 			}
-			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via), Phrase: u.Phrase(r.Kind, r.To)}
+			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via)}
+			if n, ok := livePhrase(u, r.Kind, r.To); ok {
+				l.Phrase, l.PhraseOrigin = n.Text, string(n.Writer.Origin())
+			}
 			if len(r.Evidence) > 0 {
 				l.Quote = cite(r.Evidence[0])
 			}

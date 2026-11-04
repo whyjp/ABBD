@@ -252,6 +252,10 @@ func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
 				}
 			}
 		}
+		v.Phrases = slices.Clone(u.Phrases)
+		for j, n := range v.Phrases {
+			v.Phrases[j].Evidence, _ = c.all(n.Evidence, rev, true)
+		}
 	}
 	model.Resolve(out)
 	return out

@@ -5,61 +5,104 @@ import (
 	"testing"
 )
 
-// A reader's phrase names what crosses an edge the script read: the
-// script's claim still shows, and the reader's hidden claim gives the
-// phrase while its evidence is live.
+// A reader's phrase names what crosses an edge the script read. It is a
+// note beside the script's claim, never a claim, so the script's claim
+// still shows and the note's evidence is checked while it names the line.
 func TestAReadersPhraseNamesAnEdgeTheScriptRead(t *testing.T) {
 	u := mod("MOD-0001")
 	u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Script})
-	u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Via: "call", Phrase: "schema fetch", Evidence: cite})
-	if len(u.Relations) != 1 || u.Relations[0].Writer != Script {
-		t.Fatalf("the script's claim does not show: %+v", u.Relations)
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Text: "schema fetch", Evidence: cite})
+	if len(u.Claims()) != 1 || u.Relations[0].Writer != Script {
+		t.Fatalf("the phrase made a claim: %+v", u.Claims())
 	}
-	if got := u.Phrase(DependsOn, "MOD-0002"); got != "schema fetch" {
-		t.Errorf("phrase %q, want the reader's", got)
-	}
-	if n := len(u.Shown()); n != 2 {
-		t.Errorf("Shown lists %d claims, want the script's and the phrase's", n)
+	if n, ok := u.Note(DependsOn, "MOD-0002"); !ok || n.Text != "schema fetch" || n.Writer.Origin() != Inferred {
+		t.Errorf("note %+v, want the reader's INFERRED phrase", n)
 	}
 	var seen []Writer
 	u.EachShownEvidence(func(w Writer, _ *Evidence) { seen = append(seen, w) })
 	if len(seen) != 1 || seen[0] != Reader {
 		t.Errorf("the phrase's evidence is not checked: %v", seen)
 	}
+	if err := u.Validate(); err != nil {
+		t.Error(err)
+	}
 }
 
-// A phrase whose cited code changed is not drawn until a reader refreshes
-// it, a dead one names nothing, and a mask hides it.
-func TestAPhraseShowsOnlyWhileItsCodeHolds(t *testing.T) {
-	claim := func(es []Evidence) Unit {
-		u := mod("MOD-0001")
-		u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Script})
-		u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Via: "call", Phrase: "Cypher", Evidence: es})
-		return u
+// When nothing shows on the edge any more, its note does not take the
+// edge's place. It dangles, and its evidence is not checked.
+func TestAPhraseWithoutALineDangles(t *testing.T) {
+	u := mod("MOD-0001")
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Text: "schema fetch", Evidence: cite})
+	units := []Unit{u, mod("MOD-0002")}
+	Resolve(units)
+	if len(units[0].Relations) != 0 {
+		t.Errorf("the note became a claim: %+v", units[0].Relations)
 	}
-	drifted := claim([]Evidence{{Path: "a.go", Quote: "x", Status: Drifted, Since: "r1"}})
-	if p := drifted.Phrase(DependsOn, "MOD-0002"); p != "" {
-		t.Errorf("a drifted phrase is drawn: %q", p)
+	if d := Dangling(units); len(d) != 1 || d[0] != "MOD-0001.depends_on.MOD-0002" {
+		t.Errorf("dangling %v", d)
 	}
-	if _, ok := drifted.PhraseClaim(DependsOn, "MOD-0002"); !ok {
-		t.Error("a drifted phrase's claim is not found, so its evidence is not checked")
+	n := 0
+	units[0].EachShownEvidence(func(Writer, *Evidence) { n++ })
+	if n != 0 {
+		t.Errorf("a dangling phrase's evidence counts as shown")
 	}
-	dead := claim([]Evidence{{Path: "a.go", Quote: "x", Status: Dead, Reason: "gone"}})
-	if _, ok := dead.PhraseClaim(DependsOn, "MOD-0002"); ok {
-		t.Error("a dead phrase names the edge")
+	units[0].PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Script})
+	if d := Dangling(units); len(d) != 0 {
+		t.Errorf("a phrase on a shown line dangles: %v", d)
+	}
+}
+
+// A mask binds a relation by its kind, its far end and its via only, so a
+// mask stored before phrases existed still hides the claim.
+func TestARelationMaskIgnoresPhrases(t *testing.T) {
+	r := Relation{To: "MOD-0002", Kind: DependsOn, Writer: Supplement, Via: "call", Evidence: cite}
+	if RelationDigest(r) != Digest("depends_on", "MOD-0002", "call") {
+		t.Fatalf("the relation digest changed")
 	}
 	u := mod("MOD-0001")
-	r := Relation{To: "MOD-0002", Kind: DependsOn, Writer: Supplement, Via: "call", Phrase: "Cypher", Evidence: cite}
 	u.PutRelation(r)
-	u.PutMask(Mask{Target: RelationTarget(r.Kind, r.To), Writer: Reader, Digest: RelationDigest(r), Reason: "wrong"})
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Supplement, Text: "Cypher", Evidence: cite})
+	u.PutMask(Mask{Target: RelationTarget(r.Kind, r.To), Writer: Human, Digest: RelationDigest(r), Reason: "wrong", Source: "conversation"})
 	u.resolve()
-	if p := u.Phrase(DependsOn, "MOD-0002"); p != "" {
-		t.Errorf("a masked phrase is drawn: %q", p)
+	if len(u.Relations) != 0 {
+		t.Errorf("a phrase on the edge lifts the mask: %+v", u.Relations)
 	}
-	r.Phrase = "샘플 조회 SQL"
-	u.PutRelation(r)
-	if p := u.Phrase(DependsOn, "MOD-0002"); p != "샘플 조회 SQL" {
-		t.Errorf("a changed phrase stays masked: %q", p)
+}
+
+// The note that names an edge is the first by status and then the table. A
+// drifted one is still found, so explain can say it drifted. A dead or a
+// masked one names nothing, and a changed one shows again.
+func TestWhichPhraseNamesAnEdge(t *testing.T) {
+	u := mod("MOD-0001")
+	u.PutRelation(Relation{To: "MOD-0002", Kind: DependsOn, Writer: Script})
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Supplement, Text: "Cypher", Evidence: cite})
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Human, Text: "sample SQL", Source: "conversation"})
+	if n, _ := u.Note(DependsOn, "MOD-0002"); n.Writer != Human {
+		t.Errorf("the %s's phrase outranks the human's", n.Writer)
+	}
+	u.DropNotes(func(n PhraseNote) bool { return n.Writer == Human })
+	u.PutNote(PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Reader, Text: "graph query", Evidence: []Evidence{{Path: "a.go", Quote: "x", Status: Drifted, Since: "r1"}}})
+	if n, _ := u.Note(DependsOn, "MOD-0002"); n.Writer != Supplement {
+		t.Errorf("a drifted reader's phrase outranks a live supplement's")
+	}
+	u.DropNotes(func(n PhraseNote) bool { return n.Writer == Supplement })
+	if n, ok := u.Note(DependsOn, "MOD-0002"); !ok || n.Status() != Drifted {
+		t.Errorf("a drifted phrase is not found")
+	}
+	u.Phrases[0].Evidence[0].Status = Dead
+	if _, ok := u.Note(DependsOn, "MOD-0002"); ok {
+		t.Error("a dead phrase names the edge")
+	}
+	n := PhraseNote{To: "MOD-0002", Kind: DependsOn, Writer: Supplement, Text: "Cypher", Evidence: cite}
+	u.PutNote(n)
+	u.PutMask(Mask{Target: PhraseTarget(n.Kind, n.To), Writer: Reader, Digest: PhraseDigest(n), Reason: "wrong"})
+	if _, ok := u.Note(DependsOn, "MOD-0002"); ok {
+		t.Error("a masked phrase names the edge")
+	}
+	n.Text = "샘플 조회 SQL"
+	u.PutNote(n)
+	if got, _ := u.Note(DependsOn, "MOD-0002"); got.Text != "샘플 조회 SQL" {
+		t.Errorf("a changed phrase stays masked: %q", got.Text)
 	}
 }
 
@@ -73,6 +116,7 @@ func TestAPhraseIsShortAndNotTheScripts(t *testing.T) {
 	}{
 		{"NDJSON /ingest push", "data", ""},
 		{"IsReady 조회 (health)", "call", ""},
+		{"Unit, Relation", "import", ""},
 		{strings.Repeat("x", PhraseMax), "", ""},
 		{strings.Repeat("x", PhraseMax+1), "", "characters"},
 		{"a b c d e", "", "words"},
@@ -80,6 +124,9 @@ func TestAPhraseIsShortAndNotTheScripts(t *testing.T) {
 		{"two\nlines", "", "one line"},
 		{"call", "call", "repeats the via"},
 		{"호출", "call", "repeats the via"},
+		{"model types", "import", "repeats the via"},
+		{"Model Types", "import", "repeats the via"},
+		{"function call", "call", "repeats the via"},
 	} {
 		err := ValidatePhrase(tc.phrase, tc.via)
 		switch {
@@ -90,7 +137,7 @@ func TestAPhraseIsShortAndNotTheScripts(t *testing.T) {
 		}
 	}
 	u := mod("MOD-0001")
-	u.Relations = []Relation{{To: "MOD-0002", Kind: DependsOn, Writer: Script, Phrase: "HTTP /api/v1"}}
+	u.Phrases = []PhraseNote{{To: "MOD-0002", Kind: DependsOn, Writer: Script, Text: "HTTP /api/v1"}}
 	if err := u.Validate(); err == nil || !strings.Contains(err.Error(), "phrase") {
 		t.Errorf("the script's phrase is accepted: %v", err)
 	}

@@ -53,6 +53,18 @@ type rawResult struct {
 type Result struct {
 	Units     []Unit
 	Relations []Relation
+	// Phrases are the supplement's words for what crosses its edges.
+	Phrases []Phrase
+}
+
+// Phrase is a supplement's words for what crosses an edge, by key. It
+// becomes a phrase note, never a claim on the edge.
+type Phrase struct {
+	From, To string
+	Kind     model.RelationKind
+	Writer   model.Writer
+	Text     string
+	Evidence []model.Evidence
 }
 
 type Relation struct {
@@ -60,8 +72,6 @@ type Relation struct {
 	Kind     model.RelationKind
 	Writer   model.Writer
 	Via      model.Via
-	// Phrase is what a supplement says crosses the edge, in a few words.
-	Phrase   string
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the relation narrows to.
 	Entries []string
@@ -169,6 +179,12 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
+		if rr.Phrase != "" && len(evidence) == 0 {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) gives a phrase without evidence; a phrase rests on the code it quotes", i, rr.From, rr.To)
+		}
+		if rr.Phrase != "" && !slices.ContainsFunc(res.Phrases, func(o Phrase) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }) {
+			res.Phrases = append(res.Phrases, Phrase{From: rr.From, To: rr.To, Kind: rr.Kind, Text: rr.Phrase, Evidence: evidence})
+		}
 		// One claim holds an edge, so the entries of two lines of one edge add
 		// up, and a line that names none uses the whole contract.
 		if j := slices.IndexFunc(res.Relations, func(o Relation) bool { return o.From == rr.From && o.To == rr.To && o.Kind == rr.Kind }); j >= 0 {
@@ -179,7 +195,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 			}
 			continue
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Phrase: rr.Phrase, Evidence: evidence, Entries: keys})
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})
 	}
 	return res, nil
 }

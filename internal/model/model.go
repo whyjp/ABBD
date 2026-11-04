@@ -202,7 +202,10 @@ type Unit struct {
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
 	Hidden    []Relation `yaml:"hidden,omitempty"`
-	Masks     []Mask     `yaml:"masks,omitempty"`
+	// Phrases holds each writer's words for what crosses an edge from the
+	// unit. They label lines and never make, keep or bring back one.
+	Phrases []PhraseNote `yaml:"phrases,omitempty"`
+	Masks   []Mask       `yaml:"masks,omitempty"`
 	// Absent marks a unit that is no longer there, and AbsentReason says why.
 	Absent       bool         `yaml:"absent,omitempty"`
 	AbsentReason AbsentReason `yaml:"absent_reason,omitempty"`
@@ -243,12 +246,17 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 			}
 		}
 	}
+	for i := range u.Phrases {
+		for j := range u.Phrases[i].Evidence {
+			f(u.Phrases[i].Writer, &u.Phrases[i].Evidence[j])
+		}
+	}
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's, and each relation claim Shown lists. An
-// outranked claim's items cannot change what anyone sees, unless its phrase
-// names the edge.
+// own, its winning parent claim's, each shown relation's, and the note
+// that names each shown edge. An outranked claim's items cannot change what
+// anyone sees.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -258,52 +266,65 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 			f(c.Writer, &c.Evidence[j])
 		}
 	}
-	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
-		for i := range rs {
-			if !u.shows(rs[i]) {
+	for i := range u.Relations {
+		for j := range u.Relations[i].Evidence {
+			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+		}
+	}
+	for i := range u.Phrases {
+		n := &u.Phrases[i]
+		if s, ok := u.Note(n.Kind, n.To); ok && s.Writer == n.Writer && u.shown(n.Kind, n.To) {
+			for j := range n.Evidence {
+				f(n.Writer, &n.Evidence[j])
+			}
+		}
+	}
+}
+
+// shown reports whether a live or drifted claim shows on the edge.
+func (u Unit) shown(kind RelationKind, to ID) bool {
+	return slices.ContainsFunc(u.Relations, func(r Relation) bool { return r.To == to && r.Kind == kind && !r.Dead })
+}
+
+// Note is the phrase note that names what crosses an edge: the first, by
+// status and then the table, that is neither dead nor masked. It says
+// nothing about whether the edge still shows; Dangling does.
+func (u Unit) Note(kind RelationKind, to ID) (PhraseNote, bool) {
+	var best PhraseNote
+	ok := false
+	for _, n := range u.Phrases {
+		s := n.Status()
+		if n.To != to || n.Kind != kind || s == Dead || u.Masked(PhraseTarget(kind, to), n.Writer, PhraseDigest(n)) {
+			continue
+		}
+		if !ok || order(PhraseField, n.Writer, s) < order(PhraseField, best.Writer, best.Status()) {
+			best, ok = n, true
+		}
+	}
+	return best, ok
+}
+
+// Dangling lists, as FROM.KIND.TO, the edges of present units whose phrase
+// note names no line: the edge has no live or drifted claim, or its far end
+// is gone. A note never becomes the edge, so it waits for a reader to
+// retract it.
+func Dangling(units []Unit) []string {
+	present := map[ID]bool{}
+	for _, u := range units {
+		present[u.ID] = !u.Absent
+	}
+	var out []string
+	for _, u := range Present(units) {
+		for _, n := range u.Phrases {
+			if s, ok := u.Note(n.Kind, n.To); !ok || s.Writer != n.Writer {
 				continue
 			}
-			for j := range rs[i].Evidence {
-				f(rs[i].Writer, &rs[i].Evidence[j])
+			if !present[n.To] || !u.shown(n.Kind, n.To) {
+				out = append(out, Edge{From: u.ID, To: n.To, Kind: n.Kind}.String())
 			}
 		}
 	}
-}
-
-// Shown lists the relation claims a reader of the blueprint sees: each
-// edge's shown claim, and the other claim whose phrase names an edge.
-func (u Unit) Shown() []Relation {
-	return slices.DeleteFunc(u.Claims(), func(r Relation) bool { return !u.shows(r) })
-}
-
-func (u Unit) shows(r Relation) bool {
-	if slices.ContainsFunc(u.Relations, func(o Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer }) {
-		return true
-	}
-	c, ok := u.PhraseClaim(r.Kind, r.To)
-	return ok && c.Writer == r.Writer
-}
-
-// PhraseClaim is the claim whose phrase names what crosses an edge: the
-// shown claim when it has a phrase, else the first other claim on the edge,
-// by status and precedence, that has one and is neither dead nor masked. So
-// a reader names what crosses an edge the script read.
-func (u Unit) PhraseClaim(kind RelationKind, to ID) (Relation, bool) {
-	for _, r := range u.Claims() {
-		if r.To == to && r.Kind == kind && r.Phrase != "" && r.Status() != Dead && !u.Masked(RelationTarget(kind, to), r.Writer, RelationDigest(r)) {
-			return r, true
-		}
-	}
-	return Relation{}, false
-}
-
-// Phrase is what crosses the edge, while the code its claim cites is as
-// quoted. A phrase whose code changed waits for a reader to refresh it.
-func (u Unit) Phrase(kind RelationKind, to ID) string {
-	if c, ok := u.PhraseClaim(kind, to); ok && c.Status() == Live {
-		return c.Phrase
-	}
-	return ""
+	return out
 }
 
 // ShownParent is the parent claim Resolve picked, or nil.
@@ -381,6 +402,17 @@ func (u Unit) Validate() error {
 		}
 		claims[k] = true
 	}
+	notes := map[string]bool{}
+	for _, n := range u.Phrases {
+		if err := n.validate(); err != nil {
+			return fmt.Errorf("%s phrase on %s %s: %w", u.ID, n.Kind, n.To, err)
+		}
+		k := fmt.Sprintf("%s %s %s", n.Kind, n.To, n.Writer)
+		if notes[k] {
+			return fmt.Errorf("%s: two phrases by the %s on %s %s", u.ID, n.Writer, n.Kind, n.To)
+		}
+		notes[k] = true
+	}
 	for _, m := range u.Masks {
 		if err := m.validate(); err != nil {
 			return fmt.Errorf("%s mask on %s: %w", u.ID, m.Target, err)
@@ -411,10 +443,45 @@ func (r Relation) validate() error {
 	if r.Writer.Origin() == Inferred && len(r.Evidence) == 0 {
 		return fmt.Errorf("an INFERRED coupling needs evidence")
 	}
-	if r.Phrase != "" && r.Writer.Origin() == Extracted {
-		return fmt.Errorf("a phrase is a reader's or a human's words, not the %s's", r.Writer)
+	return nil
+}
+
+// PhraseNote is one writer's words for what crosses an edge from the unit
+// that holds it, such as a route, a message or a query. It is not a claim on
+// the edge: it labels the line while one shows, and names nothing once none
+// does.
+type PhraseNote struct {
+	To       ID           `yaml:"to"`
+	Kind     RelationKind `yaml:"kind"`
+	Writer   Writer       `yaml:"writer"`
+	Source   string       `yaml:"source,omitempty"`
+	Text     string       `yaml:"text"`
+	Evidence []Evidence   `yaml:"evidence,omitempty"`
+}
+
+// Status is the note's: live while any item is, else drifted while any is.
+func (n PhraseNote) Status() Status { return StatusOf(n.Evidence) }
+
+func (n PhraseNote) validate() error {
+	if err := n.Kind.Validate(); err != nil {
+		return err
 	}
-	return ValidatePhrase(r.Phrase, r.Via)
+	if !slices.Contains(Precedence[PhraseField], n.Writer) {
+		return fmt.Errorf("a phrase is a reader's or a human's words, not the %s's", n.Writer)
+	}
+	if err := sourced(n.Writer, n.Source); err != nil {
+		return err
+	}
+	if err := validateEvidence(n.Evidence); err != nil {
+		return err
+	}
+	switch {
+	case n.Writer.Origin() == Inferred && len(n.Evidence) == 0:
+		return fmt.Errorf("an INFERRED phrase needs evidence")
+	case n.Text == "":
+		return fmt.Errorf("a phrase needs its text")
+	}
+	return ValidatePhrase(n.Text, "")
 }
 
 const (
@@ -434,10 +501,29 @@ func ValidatePhrase(p string, via Via) error {
 		return fmt.Errorf("phrase %q: at most %d characters", p, PhraseMax)
 	case len(strings.Fields(p)) > PhraseWords:
 		return fmt.Errorf("phrase %q: at most %d words", p, PhraseWords)
-	case via != "" && (strings.EqualFold(p, string(via)) || p == via.Word()):
-		return fmt.Errorf("phrase %q only repeats the via; name what crosses, such as a route, a message or a query", p)
+	case via != "" && via.restates(p):
+		return fmt.Errorf("phrase %q only repeats the via %s; name what crosses, such as a route, a message or a query", p, via)
 	}
 	return nil
+}
+
+// viaSynonyms are phrases that say no more than their via, in lower case.
+var viaSynonyms = map[Via][]string{
+	"import":        {"imports", "types", "model types", "type import", "package import", "uses"},
+	"call":          {"calls", "function call", "method call", "invokes", "invocation"},
+	"data":          {"reads data", "writes data", "data flow"},
+	"config":        {"configuration", "settings", "options"},
+	"trait":         {"interface", "implements"},
+	"callback":      {"callbacks", "hook"},
+	"macro":         {"macros"},
+	"build-feature": {"build feature", "feature flag"},
+	"convention":    {"conventions", "naming"},
+}
+
+// restates reports whether a phrase only says the via in other words.
+func (v Via) restates(p string) bool {
+	l := strings.ToLower(p)
+	return l == string(v) || p == v.Word() || slices.Contains(viaSynonyms[v], l)
 }
 
 func validateEvidence(es []Evidence) error {
@@ -632,15 +718,12 @@ func ParseEvidence(s string) (Evidence, error) {
 
 // Relation is one writer's claim on an edge from the unit that holds it.
 type Relation struct {
-	To     ID           `yaml:"to"`
-	Kind   RelationKind `yaml:"kind"`
-	Writer Writer       `yaml:"writer"`
-	Source string       `yaml:"source,omitempty"`
-	Via    Via          `yaml:"via,omitempty"`
-	// Phrase names in a few words what crosses the edge, such as a route, a
-	// message or a query. A reader or a human writes it, never the script.
-	Phrase   string     `yaml:"phrase,omitempty"`
-	Evidence []Evidence `yaml:"evidence,omitempty"`
+	To       ID           `yaml:"to"`
+	Kind     RelationKind `yaml:"kind"`
+	Writer   Writer       `yaml:"writer"`
+	Source   string       `yaml:"source,omitempty"`
+	Via      Via          `yaml:"via,omitempty"`
+	Evidence []Evidence   `yaml:"evidence,omitempty"`
 	// Entries narrows the claim to these entries of the contract it points
 	// at, by key: the routes a page calls, the fields a module writes.
 	Entries []string `yaml:"entries,omitempty"`

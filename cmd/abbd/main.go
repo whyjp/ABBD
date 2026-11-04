@@ -33,8 +33,9 @@ abbd record relation FROM KIND TO --via VIA [--phrase TEXT] --evidence PATH:LINE
                                      a reader's coupling, INFERRED while its evidence is live;
                                      --phrase names in at most 4 words and 24 characters what
                                      crosses it, such as a route, a message or a query, and the
-                                     blueprint draws it beside the line; on an edge the script
-                                     reads, the claim only names what crosses it
+                                     blueprint draws it beside the line, as a note with its own
+                                     origin; on an edge the script reads, the note is all it
+                                     stores, and it never brings back a retracted coupling
 abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--evidence ...] [--root DIR]
                                      a coupling a human stated, USER_STATED
 abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
@@ -45,11 +46,13 @@ abbd record fact ID.decisions.KEY --value TEXT --source REF [--root DIR]
                                      a human's reason for a decision a reader stored, USER_STATED
 abbd record evidence TARGET --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
                                      refresh a reader's claim with live evidence; TARGET is an ID,
-                                     ID.parent or an edge FROM.KIND.TO; a supplement claim gets a
-                                     reader's claim above it
+                                     ID.parent, an edge FROM.KIND.TO or its phrase
+                                     FROM.KIND.TO.phrase; a supplement claim gets a reader's
+                                     claim above it
 abbd retract TARGET --reason TEXT [--source REF] [--root DIR]
                                      remove your own claim on TARGET (ID, ID.parent, ID.purpose,
-                                     ID.responsibility or an edge) and hide the lower INFERRED
+                                     ID.responsibility, an edge with its phrases, or an edge's
+                                     phrase FROM.KIND.TO.phrase) and hide the lower INFERRED
                                      claims on it until their content changes; a human's with --source
 abbd migrate [--supplement FILE] [--root DIR]
                                      convert an old-format state once, telling the supplement's
@@ -136,7 +139,8 @@ abbd status [--check] [--root DIR]   whether the state and the blueprint are CUR
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
                                      text, a note, a flow's step, a stack's layer or a table's row
-                                     is STALE or an evidence item drifted, for a hook or CI;
+                                     is STALE, an evidence item drifted or a phrase names no
+                                     line, for a hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
                                      error, or no graph.json), and says which; dead evidence, an

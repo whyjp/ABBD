@@ -312,26 +312,24 @@ func (l Label) area() box {
 }
 
 // word is what a wire's label says about the relations it stands for: the
-// phrase they all share; else the phrase that names at least half of them,
-// marked with 등 for the rest; else the via word they all share; else "".
+// phrase they all share; else, when more than half of them carry a phrase,
+// the phrase that names more than half of those, marked with 등 for the
+// rest; else the via word they all share; else "".
 func word(t tree, rels []string) string {
-	n := map[string]int{}
+	n, phrased := map[string]int{}, 0
 	for _, r := range rels {
-		if p := t.phrases[r]; p != "" {
+		if p := t.phrases[r].text; p != "" {
 			n[p]++
+			phrased++
 		}
 	}
-	best := ""
 	for p, c := range n {
-		if c > n[best] || c == n[best] && p < best {
-			best = p
+		switch {
+		case c == len(rels):
+			return p
+		case 2*c > phrased && 2*phrased > len(rels):
+			return p + most
 		}
-	}
-	switch {
-	case best != "" && n[best] == len(rels):
-		return best
-	case best != "" && 2*n[best] >= len(rels):
-		return best + most
 	}
 	via := ""
 	for i, r := range rels {
@@ -344,12 +342,15 @@ func word(t tree, rels []string) string {
 	return via
 }
 
-// said lists the phrases of a wire's relations, each once, for its tooltip.
+// said lists the phrases of a wire's relations, each once and with whose
+// words they are, for its tooltip.
 func said(t tree, rels []string) []string {
 	var out []string
 	for _, r := range rels {
-		if p := t.phrases[r]; p != "" && !slices.Contains(out, p) {
-			out = append(out, p)
+		if p := t.phrases[r]; p.text != "" {
+			if s := fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)]); !slices.Contains(out, s) {
+				out = append(out, s)
+			}
 		}
 	}
 	slices.Sort(out)
