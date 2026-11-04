@@ -5482,24 +5482,6 @@
         "Stale": false,
         "Blocks": [
           {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0001 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0001 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
             "Kind": "h",
             "Parts": [
               {
@@ -19092,24 +19074,6 @@
         "Stale": false,
         "Blocks": [
           {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0034 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0034 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
             "Kind": "h",
             "Parts": [
               {
@@ -22659,15 +22623,6 @@
       "Understanding": {
         "Stale": false,
         "Blocks": [
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0041 ---",
-                "Code": false
-              }
-            ]
-          },
           {
             "Kind": "h",
             "Parts": [
