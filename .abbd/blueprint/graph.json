@@ -19087,7 +19087,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20288,7 +20288,31 @@
                 "Code": true
               },
               {
-                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. Boxes that the same two or more places all reach may share one arrival bus instead, from ",
+                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. On such a layout ",
+                "Code": false
+              },
+              {
+                "Text": "spreadRuns",
+                "Code": true
+              },
+              {
+                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. Route and lint read hubs with one helper, ",
+                "Code": false
+              },
+              {
+                "Text": "hubsOf",
+                "Code": true
+              },
+              {
+                "Text": ": route over ",
+                "Code": false
+              },
+              {
+                "Text": "drawnRels",
+                "Code": true
+              },
+              {
+                "Text": ", the drawing's relations keyed by the box or folded chip that draws each end. Boxes that the same two or more places all reach may share one arrival bus instead, from ",
                 "Code": false
               },
               {
@@ -22234,7 +22258,23 @@
                 "Code": true
               },
               {
-                "Text": " takes a dot as a split only when its lines arrive from one side and leave on several. ",
+                "Text": " takes a dot as a split only when its lines arrive from one side and leave on several. Rule 4's split counts in ",
+                "Code": false
+              },
+              {
+                "Text": "measure",
+                "Code": true
+              },
+              {
+                "Text": " group the lines at a box edge by ",
+                "Code": false
+              },
+              {
+                "Text": "kindOf",
+                "Code": true
+              },
+              {
+                "Text": " their class, not by the hover classes each line carries, and leave out a line that drops straight from box to box. ",
                 "Code": false
               },
               {
