@@ -1,0 +1,334 @@
+diff --git a/cmd/abbd/figure.go b/cmd/abbd/figure.go
+index 4d84d07..88bab0f 100644
+--- a/cmd/abbd/figure.go
++++ b/cmd/abbd/figure.go
+@@ -54,7 +54,7 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
+ 	for i := range f.Parts {
+ 		f.Parts[i].Writer, f.Parts[i].Source = e.writer(), e.sourceRef()
+ 	}
+-	kept, replaced, err := mayReplace(prev, had, &f, units)
++	kept, replaced, columns, err := mayReplace(prev, had, &f, units)
+ 	if err != nil {
+ 		return err
+ 	}
+@@ -71,6 +71,9 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
+ 	if len(replaced) > 0 {
+ 		fmt.Fprintf(e.stdout, "replaced the human's %s %s of the stored %s, since they went STALE; ask again and store their word with abbd %s %s FILE --source REF\n", kind.Parts, replaced, kind.Noun, kind.Noun, k)
+ 	}
++	if len(columns) > 0 {
++		fmt.Fprintf(e.stdout, "changed the human's columns %s, since their units left the state; ask again and store their word with abbd %s %s FILE --source REF\n", strings.Join(columns, ", "), kind.Noun, k)
++	}
+ 	for i, p := range f.Parts {
+ 		for _, w := range p.Claim.Words() {
+ 			if n := len([]rune(w.Text)); (kind.Long == "" || w.Field == kind.Long) && n > 80 {
+@@ -206,12 +209,25 @@ func retire[C model.Claim[C]](e env, prev, f store.Figure[C], units []model.Unit
+ }
+ 
+ // said reports whether two claims say the same words in the same fields, in
+-// any case and spacing, whatever units they name.
++// any case and spacing, whatever units they name. For a kind whose fields
++// are the head's column names, the words compare by text alone, so renaming
++// a column does not make a retired claim's words new.
+ func said[C model.Claim[C]](x, y C) bool {
+ 	same := func(a, b model.Word) bool {
+ 		return a.Field == b.Field && strings.EqualFold(strings.Join(strings.Fields(a.Text), ""), strings.Join(strings.Fields(b.Text), ""))
+ 	}
+-	return slices.EqualFunc(x.Words(), y.Words(), same)
++	if !model.KindOf[C]().Renamed {
++		return slices.EqualFunc(x.Words(), y.Words(), same)
++	}
++	texts := func(c C) []model.Word {
++		var out []model.Word
++		for _, w := range c.Words() {
++			out = append(out, model.Word{Text: strings.ToLower(strings.Join(strings.Fields(w.Text), ""))})
++		}
++		slices.SortFunc(out, func(a, b model.Word) int { return strings.Compare(a.Text, b.Text) })
++		return out
++	}
++	return slices.EqualFunc(texts(x), texts(y), same)
+ }
+ 
+ // repeats reports whether part n says what the retired part r said and
+@@ -228,33 +244,48 @@ func repeats[C model.Claim[C]](n, r store.Part[C]) bool {
+ // and keeps the human's word, as do the question and caption, so CI never
+ // waits on the human for a figure the state moved under and a human's word
+ // on a part that still holds is never lost. An open part that comes back as
+-// written keeps the human's word too.
++// written keeps the human's word too. A column a gap names, such as one
++// whose unit left the state, is open as well: the reader may drop it or
++// point it at another unit, and keeps every other column as written.
+ // kept are the human's parts f keeps and replaced those the reader took
+-// over, each named by its place.
+-func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figure[C], units []model.Unit) (kept, replaced humanParts, err error) {
++// over, each named by its place, and columns the open columns the reader
++// changed, by name.
++func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figure[C], units []model.Unit) (kept, replaced humanParts, columns []string, err error) {
+ 	if !had {
+-		return nil, nil, nil
++		return nil, nil, nil, nil
+ 	}
+ 	kind := model.KindOf[C]()
+ 	human := func(p store.Part[C]) bool { return p.Writer == model.Human }
+ 	if slices.ContainsFunc(f.Parts, human) || !slices.ContainsFunc(prev.Parts, human) {
+-		return nil, nil, nil
++		return nil, nil, nil, nil
+ 	}
+ 	open := make([]bool, len(prev.Parts))
+ 	for i, p := range prev.Parts {
+ 		open[i] = len(p.Why(units)) > 0
+ 	}
++	openColumn := map[string]bool{}
+ 	for _, g := range prev.Gaps(units) {
+ 		for _, n := range g.Parts {
+ 			open[n-1] = true
+ 		}
++		for _, c := range g.Columns {
++			openColumn[c] = true
++		}
+ 	}
+ 	if !slices.Contains(open, true) {
+-		return nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
++		return nil, nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
++	}
++	closed := func(cols []model.Column) []model.Column {
++		return slices.DeleteFunc(slices.Clone(cols), func(c model.Column) bool { return openColumn[c.Name] })
+ 	}
+-	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(prev.Columns), head(f.Columns)}, {"caption", prev.Caption, f.Caption}} {
++	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(closed(prev.Columns)), head(closed(f.Columns))}, {"caption", prev.Caption, f.Caption}} {
+ 		if !sameWords(w.was, w.now) {
+-			return nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
++			return nil, nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
++		}
++	}
++	for _, c := range prev.Columns {
++		if openColumn[c.Name] && !slices.Contains(f.Columns, c) {
++			columns = append(columns, c.Name)
+ 		}
+ 	}
+ 	at := 0
+@@ -272,10 +303,10 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
+ 		case open[i]:
+ 			replaced = append(replaced, humanPart{i + 1, p.Source})
+ 		default:
+-			return nil, nil, fmt.Errorf("%s %d is a human's word (%s) and current; keep it as abbd %s %s prints it, in its order, since only a human changes it, with --source", kind.Part, i+1, p.Source, kind.Noun, f.Key)
++			return nil, nil, nil, fmt.Errorf("%s %d is a human's word (%s) and current; keep it as abbd %s %s prints it, in its order, since only a human changes it, with --source", kind.Part, i+1, p.Source, kind.Noun, f.Key)
+ 		}
+ 	}
+-	return kept, replaced, nil
++	return kept, replaced, columns, nil
+ }
+ 
+ // samePart reports whether two claims name the same units and say the same
+diff --git a/cmd/abbd/table_test.go b/cmd/abbd/table_test.go
+index 27597a6..0d0fd9c 100644
+--- a/cmd/abbd/table_test.go
++++ b/cmd/abbd/table_test.go
+@@ -81,6 +81,7 @@ func TestATableDraftIsCheckedBeforeItIsStored(t *testing.T) {
+ 			"MOD-0001 heads row 1 and row 2; a unit heads one row"},
+ 		{"unit: DATA-0001}", "unit: DATA-0009}", `DATA-0009, which column "charges" names, is no longer in the state`},
+ 		{"  - {name: retries}", "  - {name: charges}", `column "charges" is named twice`},
++		{"  - {name: retries}", "  - {name: ' retries'}", "has no spaces around it"},
+ 		{"  - {name: retries}", "  - {name: how many times a failed insert is tried again}", "is a short label of 32 characters at most"},
+ 		{"  - {name: retries}\n", "", "a table names 2 columns or more"},
+ 		{"cells: {charges: reads the amount of each charge}", "cells: {charges: ''}", `the cell under "charges" is empty`},
+@@ -150,23 +151,70 @@ func TestACellTheRelationsDoNotBearOutIsReportedNotChecked(t *testing.T) {
+ 	}
+ }
+ 
+-// A table whose column's unit left the state fails the check, since storing
+-// the table again brings it current.
+-func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
+-	p := notesProject(t)
+-	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
+-	p.extract(auditTopo)
+-	p.resync()
+-	draft := strings.NewReplacer(
++// auditTable asks the charge table's question of billing and audit, with a
++// column on the ledger, so removing the ledger leaves a column whose unit
++// is gone and no row that fills it.
++func auditTable() string {
++	return strings.NewReplacer(
+ 		"  - {name: charges, unit: DATA-0001}", "  - {name: books, unit: MOD-0002}",
+ 		"cells: {charges: inserts one row per charge,", "cells: {",
+ 		"  - unit: MOD-0002\n    cells: {charges: reads the amount of each charge}", "  - unit: MOD-0003\n    cells: {retries: logs each attempt}",
+ 		`{path: ledger/book.go, lines: "6", symbol: Post, quote: "func Post() {}"}`, `{path: audit/log.go, lines: "3", symbol: Log, quote: "func Log() {}"}`,
+ 	).Replace(chargeTable)
+-	p.table(0, "stored", draft)
++}
++
++func (p *project) dropLedger() {
++	p.t.Helper()
+ 	p.extract(strings.Replace(auditTopo, " {\"key\":\"ledger\",\"kind\":\"MOD\",\"name\":\"ledger\",\"anchors\":[{\"path\":\"ledger/book.go\",\"symbol\":\"Post\"}]},\n", "", 1))
+ 	p.resync()
++}
++
++// A table whose column's unit left the state fails the check until it is
++// stored again without that column's unit.
++func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
++	p := notesProject(t)
++	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
++	p.extract(auditTopo)
++	p.resync()
++	p.table(0, "stored", auditTable())
++	p.dropLedger()
+ 	p.want(1, `stale: table charge: MOD-0002, which column "books" names, is no longer in the state`, "status", "--check")
++	p.table(1, `MOD-0002, which column "books" names, is no longer in the state`, auditTable())
++	p.table(0, "stored", strings.Replace(auditTable(), "  - {name: books, unit: MOD-0002}", "  - {name: books}", 1))
++	p.want(0, "tables: 1 table(s), 2 row(s), 0 STALE", "status", "--check")
++}
++
++// A human's column whose unit left the state is open to a reader, so CI
++// never waits on the human: the reader may drop the column's unit or point
++// it elsewhere, keeps the human's other columns and rows as written, and is
++// told it changed the human's head.
++func TestAReaderMendsAHumansColumnWhoseUnitLeft(t *testing.T) {
++	p := notesProject(t)
++	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
++	p.extract(auditTopo)
++	p.resync()
++	p.table(0, "USER_STATED", auditTable(), "--source", "conversation 2026-11-04")
++	p.dropLedger()
++	p.want(1, "is no longer in the state", "status", "--check")
++	dropped := strings.Replace(auditTable(), "  - {name: books, unit: MOD-0002}", "  - {name: books}", 1)
++	p.table(1, "the column head of table charge is a human's word", strings.ReplaceAll(dropped, "retries", "tries"))
++	out := p.table(0, "stored table charge, 2 rows, USER_STATED", dropped)
++	if !strings.Contains(out, "kept the human's rows 1, 2 (conversation 2026-11-04)") || !strings.Contains(out, "changed the human's columns books, since their units left the state") {
++		t.Errorf("the reader keeps the human's rows and says it changed the head:\n%s", out)
++	}
++	p.want(0, "tables: 1 table(s), 2 row(s), 0 STALE", "status", "--check")
++}
++
++// Renaming a column does not make a STALE row's cells new words: the same
++// cells on the same changed code are refused under any column.
++func TestARenamedColumnDoesNotBringAStaleRowBack(t *testing.T) {
++	p := notesProject(t)
++	p.table(0, "stored", chargeTable)
++	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
++	p.resync()
++	requoted := strings.Replace(chargeTable, "const tries = 3", "const tries = 5", 1)
++	p.table(1, "row 1 says what a STALE row said", strings.ReplaceAll(requoted, "retries", "retry"))
++	p.table(1, "row 1 says what a STALE row said", strings.ReplaceAll(strings.ReplaceAll(requoted, "retries", "retry"), "charges", "rows"))
+ }
+ 
+ // A human's table stays until its code changes. A reader may not change a
+diff --git a/internal/model/figure.go b/internal/model/figure.go
+index a1d7f88..8aac292 100644
+--- a/internal/model/figure.go
++++ b/internal/model/figure.go
+@@ -28,19 +28,24 @@ func ParseFigureKey[C Claim[C]](s string) (FigureKey, error) {
+ // for every word. Whole says what keeps the claims, taken together with the
+ // head, from being true of the state: a draft with any gap is refused, and a
+ // stored figure with any reads STALE. It is nil when each claim stands
+-// alone.
++// alone. Renamed is true for a kind whose word fields are the column names
++// of the figure's own head, which a draft may rename, so a claim's words
++// compare by their text alone, whatever field holds them.
+ type FigureKind[C any] struct {
+ 	Noun, Dir, Part, Parts, Long string
+ 	Min, Max                     int
+ 	MinColumns, MaxColumns       int
+ 	Whole                        func(cols []Column, claims []C, units []Unit) []Gap
++	Renamed                      bool
+ }
+ 
+ // Gap is one thing that keeps a figure's claims, taken together, from being
+-// true of the state, with the places, from 1, of the claims it involves.
++// true of the state, with the places, from 1, of the claims it involves, and
++// the names of the columns of its head it involves.
+ type Gap struct {
+-	Text  string
+-	Parts []int
++	Text    string
++	Parts   []int
++	Columns []string
+ }
+ 
+ func (g Gap) String() string { return g.Text }
+diff --git a/internal/model/layer.go b/internal/model/layer.go
+index 017fd91..ef588b5 100644
+--- a/internal/model/layer.go
++++ b/internal/model/layer.go
+@@ -106,7 +106,7 @@ func holdOnce(_ []Column, layers []Layer, units []Unit) []Gap {
+ 		for i := range every {
+ 			every[i] = i + 1
+ 		}
+-		gaps = append(gaps, Gap{fmt.Sprintf("a stack's layers name at most %d units, and these name %d; split the question in two", StackUnits, len(all)), every})
++		gaps = append(gaps, Gap{Text: fmt.Sprintf("a stack's layers name at most %d units, and these name %d; split the question in two", StackUnits, len(all)), Parts: every})
+ 	}
+ 	for i, a := range all {
+ 		for _, b := range all[i+1:] {
+@@ -117,11 +117,11 @@ func holdOnce(_ []Column, layers []Layer, units []Unit) []Gap {
+ 			switch {
+ 			case !st.under(inner.id, outer.id):
+ 			case inner.id == outer.id:
+-				gaps = append(gaps, Gap{fmt.Sprintf("%s is named by layer %d and by layer %d; a unit sits in one layer", a.id, a.layer, b.layer), []int{a.layer, b.layer}})
++				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is named by layer %d and by layer %d; a unit sits in one layer", a.id, a.layer, b.layer), Parts: []int{a.layer, b.layer}})
+ 			case inner.layer == outer.layer:
+-				gaps = append(gaps, Gap{fmt.Sprintf("layer %d names %s and %s, which holds it; name the outer unit alone", inner.layer, inner.id, outer.id), []int{inner.layer}})
++				gaps = append(gaps, Gap{Text: fmt.Sprintf("layer %d names %s and %s, which holds it; name the outer unit alone", inner.layer, inner.id, outer.id), Parts: []int{inner.layer}})
+ 			default:
+-				gaps = append(gaps, Gap{fmt.Sprintf("%s is held by layer %d and, inside %s, by layer %d; a unit sits in one layer", inner.id, inner.layer, outer.id, outer.layer), []int{min(inner.layer, outer.layer), max(inner.layer, outer.layer)}})
++				gaps = append(gaps, Gap{Text: fmt.Sprintf("%s is held by layer %d and, inside %s, by layer %d; a unit sits in one layer", inner.id, inner.layer, outer.id, outer.layer), Parts: []int{min(inner.layer, outer.layer), max(inner.layer, outer.layer)}})
+ 			}
+ 		}
+ 	}
+diff --git a/internal/model/table.go b/internal/model/table.go
+index 566d015..1a727e3 100644
+--- a/internal/model/table.go
++++ b/internal/model/table.go
+@@ -37,7 +37,7 @@ type Row struct {
+ // Kind makes a table's rows a kind of figure, with two to eight columns
+ // named in its head.
+ func (Row) Kind() FigureKind[Row] {
+-	return FigureKind[Row]{Noun: "table", Dir: "tables", Part: "row", Parts: "rows", Min: 2, Max: TableRows, MinColumns: 2, MaxColumns: TableColumns, Whole: fillGrid}
++	return FigureKind[Row]{Noun: "table", Dir: "tables", Part: "row", Parts: "rows", Min: 2, Max: TableRows, MinColumns: 2, MaxColumns: TableColumns, Whole: fillGrid, Renamed: true}
+ }
+ 
+ // Validate checks the row on its own: a unit ID, one cell at least, each a
+@@ -94,12 +94,15 @@ func (r Row) Gaps(units []Unit) []string {
+ }
+ 
+ // ValidateColumns checks a table's head on its own: each column a short
+-// label on one line, named once, and a unit ID where it names a unit.
++// label on one line with no spaces around it, named once, and a unit ID
++// where it names a unit.
+ func ValidateColumns(cols []Column) error {
+ 	for i, c := range cols {
+ 		switch name := strings.TrimSpace(c.Name); {
+ 		case name == "" || strings.ContainsAny(c.Name, "\r\n"):
+ 			return fmt.Errorf("column %d has a name, on one line", i+1)
++		case name != c.Name:
++			return fmt.Errorf("column %d's name %q has no spaces around it", i+1, c.Name)
+ 		case len([]rune(name)) > ColumnName:
+ 			return fmt.Errorf("column %d's name %q is a short label of %d characters at most", i+1, c.Name, ColumnName)
+ 		case slices.ContainsFunc(cols[:i], func(o Column) bool { return o.Name == c.Name }):
+@@ -117,17 +120,17 @@ func ValidateColumns(cols []Column) error {
+ // fillGrid keeps a table a grid: each unit heads one row, each cell sits
+ // under a column the head names, and each unit a column names is present. A
+ // gap names the rows it involves: for a column whose unit is gone, the rows
+-// that fill it, or every row when none does.
++// that fill it, or every row when none does, and that column.
+ func fillGrid(cols []Column, rows []Row, units []Unit) []Gap {
+ 	st := stateOf(units)
+ 	var gaps []Gap
+ 	for i, r := range rows {
+ 		if j := slices.IndexFunc(rows[:i], func(o Row) bool { return o.Unit == r.Unit }); j >= 0 {
+-			gaps = append(gaps, Gap{fmt.Sprintf("%s heads row %d and row %d; a unit heads one row", r.Unit, j+1, i+1), []int{j + 1, i + 1}})
++			gaps = append(gaps, Gap{Text: fmt.Sprintf("%s heads row %d and row %d; a unit heads one row", r.Unit, j+1, i+1), Parts: []int{j + 1, i + 1}})
+ 		}
+ 		for _, col := range slices.Sorted(maps.Keys(r.Cells)) {
+ 			if !slices.ContainsFunc(cols, func(c Column) bool { return c.Name == col }) {
+-				gaps = append(gaps, Gap{fmt.Sprintf("row %d fills a cell under %q, which no column names", i+1, col), []int{i + 1}})
++				gaps = append(gaps, Gap{Text: fmt.Sprintf("row %d fills a cell under %q, which no column names", i+1, col), Parts: []int{i + 1}})
+ 			}
+ 		}
+ 	}
+@@ -148,7 +151,7 @@ func fillGrid(cols []Column, rows []Row, units []Unit) []Gap {
+ 		if len(under) == 0 {
+ 			under = every
+ 		}
+-		gaps = append(gaps, Gap{fmt.Sprintf("%s, which column %q names, is no longer in the state", c.Unit, c.Name), under})
++		gaps = append(gaps, Gap{Text: fmt.Sprintf("%s, which column %q names, is no longer in the state", c.Unit, c.Name), Parts: under, Columns: []string{c.Name}})
+ 	}
+ 	return gaps
+ }

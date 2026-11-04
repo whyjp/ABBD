@@ -1,0 +1,35 @@
+diff --git a/internal/narrative/narrative.go b/internal/narrative/narrative.go
+index 5c4bb32..8592ff3 100644
+--- a/internal/narrative/narrative.go
++++ b/internal/narrative/narrative.go
+@@ -52,20 +52,27 @@ type Line struct {
+ // Lines reads a text as the lint and the blueprint both do. A line
+ // starting with # is a heading. A line starting with three or more
+ // backticks or tildes opens a code block, which a line of only as many or
+-// more of the same closes, or the text's end.
++// more of the same closes, or the text's end. After backticks the rest of
++// the line holds no backtick, as CommonMark has it, so a line that starts
++// with an inline code span stays prose.
+ func Lines(text string) []Line {
+ 	var out []Line
+ 	fence := ""
+ 	for _, line := range strings.Split(text, "\n") {
+ 		t := strings.TrimSpace(line)
++		run := ""
++		if t != "" {
++			run = t[:len(t)-len(strings.TrimLeft(t, t[:1]))]
++		}
+ 		switch {
+ 		case fence != "" && strings.HasPrefix(t, fence) && strings.Trim(t, fence[:1]) == "":
+ 			out = append(out, Line{Fence, t})
+ 			fence = ""
+ 		case fence != "":
+ 			out = append(out, Line{Code, strings.TrimRight(line, " \t\r")})
+-		case strings.HasPrefix(t, "```"), strings.HasPrefix(t, "~~~"):
+-			fence = t[:len(t)-len(strings.TrimLeft(t, t[:1]))]
++		case strings.HasPrefix(t, "~~~"),
++			strings.HasPrefix(t, "```") && !strings.Contains(t[len(run):], "`"):
++			fence = run
+ 			out = append(out, Line{Fence, t})
+ 		case strings.HasPrefix(t, "#"):
+ 			out = append(out, Line{Heading, strings.TrimSpace(strings.TrimLeft(t, "#"))})

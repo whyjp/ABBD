@@ -1,0 +1,56 @@
+diff --git a/cmd/abbd/uncovered.go b/cmd/abbd/uncovered.go
+index fe16a78..f32176c 100644
+--- a/cmd/abbd/uncovered.go
++++ b/cmd/abbd/uncovered.go
+@@ -21,8 +21,9 @@ var manifests = map[string]bool{
+ // else's code, never a module of the project.
+ var notCode = map[string]bool{"testdata": true, "node_modules": true, "vendor": true}
+ 
+-// uncovered names each manifest in the working tree under which no present
+-// unit anchors anything: a module the extraction script does not know, which
++// uncovered names each manifest in the working tree that no present unit
++// anchors code under or holds by a directory anchor: a module the extraction
++// script does not know, which
+ // a hand-kept list in the script would hide without a word.
+ // The root's manifest is skipped, since every unit sits under the root.
+ func uncovered(root string, units []model.Unit) []string {
+@@ -39,7 +40,11 @@ func uncovered(root string, units []model.Unit) []string {
+ 		if !manifests[base] || dir == "" || slices.ContainsFunc(strings.Split(dir, "/"), func(s string) bool { return notCode[s] }) {
+ 			continue
+ 		}
+-		if !slices.ContainsFunc(anchors, func(a string) bool { return a == dir || strings.HasPrefix(a, dir+"/") }) {
++		// An anchor under the manifest's directory covers it, and so does a
++		// directory anchor that holds it, the module the manifest sits in.
++		if !slices.ContainsFunc(anchors, func(a string) bool {
++			return strings.HasPrefix(a+"/", dir+"/") || strings.HasPrefix(dir+"/", a+"/")
++		}) {
+ 			out = append(out, fmt.Sprintf("uncovered: %s: no unit anchors code under %s; teach the extraction script the module, or find modules from their manifests instead of a list", f, dir))
+ 		}
+ 	}
+diff --git a/cmd/abbd/uncovered_test.go b/cmd/abbd/uncovered_test.go
+index 15604ea..47bf768 100644
+--- a/cmd/abbd/uncovered_test.go
++++ b/cmd/abbd/uncovered_test.go
+@@ -30,3 +30,22 @@ func TestSyncNamesAManifestNoUnitCovers(t *testing.T) {
+ 		t.Errorf("an uncovered manifest is a warning and must not fail status --check")
+ 	}
+ }
++
++// A manifest nested inside a module a unit anchors by its directory, such
++// as an Android build under a mobile module, belongs to that module.
++func TestSyncKeepsQuietOnAManifestUnderADirectoryAnchor(t *testing.T) {
++	p, exe := bare(t)
++	p.code("mobile/codec/index.ts", "export const codec = 1\n")
++	p.code("mobile/codec/package.json", "{}\n")
++	p.code("mobile/codec/android/build.gradle", "apply plugin: 'java'\n")
++	p.code("mobile/other/android/build.gradle", "apply plugin: 'java'\n")
++	p.extract(`{"units":[{"ref":"codec","kind":"MOD","name":"codec","anchors":[{"path":"mobile/codec"}]}]}`)
++	out := p.setup(0, "synced", "--", exe)
++	out += p.want(0, "", "sync")
++	contains(t, out, "uncovered: mobile/other/android/build.gradle")
++	for _, quiet := range []string{"mobile/codec/package.json", "mobile/codec/android/build.gradle"} {
++		if strings.Contains(out, "uncovered: "+quiet) {
++			t.Errorf("sync must not name %s, which sits under the unit anchored on mobile/codec:\n%s", quiet, out)
++		}
++	}
++}

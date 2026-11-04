@@ -1,0 +1,87 @@
+diff --git a/internal/gitx/gitx.go b/internal/gitx/gitx.go
+index 601db99..92f11cf 100644
+--- a/internal/gitx/gitx.go
++++ b/internal/gitx/gitx.go
+@@ -182,7 +182,7 @@ func addFiles(dir, prefix string, env []string, repo string) error {
+ 		}
+ 		target, err := os.Readlink(filepath.Join(dir, filepath.FromSlash(p)))
+ 		if err != nil {
+-			return err
++			return fmt.Errorf("reading the link %s in %s: %w", p, repo, err)
+ 		}
+ 		out, err := runInput(dir, nil, filepath.ToSlash(target), "hash-object", "-w", "--stdin")
+ 		if err != nil {
+@@ -219,10 +219,24 @@ var cQuote = strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`, "\r", `\r`)
+ 
+ // addMode returns the mode git add records for p, relative to dir, or ""
+ // when git add skips it: p is neither a file nor a symlink, or sits below a
+-// symlink, which git add does not follow.
++// symlink, which git add does not follow. A Windows junction is not a
++// symlink to git, which walks into it as a directory, and Lstat reports it
++// as irregular, so a parent that is irregular and resolves to a directory
++// counts as one.
+ func addMode(dir, p string) string {
+ 	for d := path.Dir(p); d != "."; d = path.Dir(d) {
+-		if fi, err := os.Lstat(filepath.Join(dir, filepath.FromSlash(d))); err != nil || !fi.IsDir() {
++		at := filepath.Join(dir, filepath.FromSlash(d))
++		fi, err := os.Lstat(at)
++		if err != nil {
++			return ""
++		}
++		if fi.Mode()&os.ModeIrregular != 0 {
++			fi, err = os.Stat(at)
++			if err != nil {
++				return ""
++			}
++		}
++		if !fi.IsDir() {
+ 			return ""
+ 		}
+ 	}
+diff --git a/internal/gitx/gitx_test.go b/internal/gitx/gitx_test.go
+index e357c99..d4bca32 100644
+--- a/internal/gitx/gitx_test.go
++++ b/internal/gitx/gitx_test.go
+@@ -5,6 +5,7 @@ import (
+ 	"os"
+ 	"os/exec"
+ 	"path/filepath"
++	"runtime"
+ 	"slices"
+ 	"strings"
+ 	"testing"
+@@ -110,6 +111,34 @@ func TestANestedRepositorySnapshotKeepsSymlinksAsLinks(t *testing.T) {
+ 	}
+ }
+ 
++// A Windows junction in a nested repository is a directory to git, so the
++// files below it are snapshotted as git add would record them.
++func TestANestedRepositorySnapshotWalksAJunction(t *testing.T) {
++	if runtime.GOOS != "windows" {
++		t.Skip("junctions are Windows only")
++	}
++	root := t.TempDir()
++	git(t, root, "init", "-q")
++	n := filepath.Join(root, "n")
++	write(t, filepath.Join(n, "real", "f.go"), "package real\n")
++	if out, err := exec.Command("cmd", "/c", "mklink", "/J", filepath.Join(n, "junc"), filepath.Join(n, "real")).CombinedOutput(); err != nil {
++		t.Skipf("cannot make a junction here: %v %s", err, out)
++	}
++	git(t, n, "init", "-q")
++
++	tree, err := Snapshot(root, ".abbd")
++	if err != nil {
++		t.Fatal(err)
++	}
++	want := map[string]string{
++		"n/real/f.go": "100644 package real\n",
++		"n/junc/f.go": "100644 package real\n",
++	}
++	if got := snapshot(t, root, tree); !maps.Equal(got, want) {
++		t.Errorf("snapshot = %q, want %q", got, want)
++	}
++}
++
+ // A nested repository's file whose name holds a newline is snapshotted too.
+ func TestANestedRepositorySnapshotKeepsANewlineName(t *testing.T) {
+ 	root := t.TempDir()
