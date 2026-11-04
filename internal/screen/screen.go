@@ -157,16 +157,11 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
-	type planned struct {
-		o *overview
-		d Drawing
-	}
-	p := choose(func(t tactic, read *cost) planned {
-		o := planOverview(in.Units, "", nil, t)
-		return planned{o, o.draw(func(id model.ID) string { return viewOf(o.tree, id) }, read)}
-	})
-	o := p.o
-	m.Overview = p.d
+	// The overview is drawn in the plain order only. Every module's page
+	// holds a focus view seated by it, so an overview that took another
+	// order after a small change would redraw every page.
+	o := planOverview(in.Units, "", nil)
+	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
@@ -195,7 +190,7 @@ func Build(in Input) Model {
 		return nil
 	}
 	for _, id := range views {
-		ins := choose(func(t tactic, read *cost) Inside {
+		ins := choose(func(t tactic, read *cost) (Inside, bool) {
 			return o.inside(id, in.Units, "", nil, t, read)
 		})
 		ins.Focus = o.insideFocus(id, in.Units, ins)

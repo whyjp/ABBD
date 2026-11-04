@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 	"unicode/utf8"
@@ -63,6 +64,9 @@ type layout struct {
 	// chips are how tall the bands of chips on a frame's top and bottom
 	// edges are (chipBand), for an inside.
 	chips [2]int
+	// seats are the centre x of each frame chip the layout seated, by its
+	// node id (chipNode).
+	seats map[string]int
 }
 
 const (
@@ -90,6 +94,15 @@ const (
 	minWidth = 320
 )
 
+// chipNode names the node a frame chip is seated as: the frame edge it
+// stands on, frameTopNode or frameBottomNode, then a bar and its key.
+func chipNode(edge, key string) string { return edge + "|" + key }
+
+// isChip says id is a seated frame chip.
+func isChip(id string) bool {
+	return strings.HasPrefix(id, frameTopNode+"|") || strings.HasPrefix(id, frameBottomNode+"|")
+}
+
 // focusSeat is what a focus view keeps of its full view: the focus, set at
 // the centre, and the x of every box there, which orders the ring.
 type focusSeat struct {
@@ -98,17 +111,32 @@ type focusSeat struct {
 }
 
 // arrange lays the boxes out in rows, ordered by tactic t. A focus view
-// orders its rows by its seat instead.
+// orders its rows by its seat instead. Frame chips among the nodes
+// (chipNode) are seated. They take no part in the layering, which the
+// frame's edges still steer. They stand in a row above the first and a row
+// below the last, ordered and placed with the boxes, so a line to a chip
+// runs down a chain that starts under it.
 func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic) layout {
 	slices.SortFunc(nodes, func(a, b lnode) int { return strings.Compare(a.id, b.id) })
 	byID := map[string]lnode{}
+	var tops, bottoms []string
 	for _, n := range nodes {
 		byID[n.id] = n
+		switch {
+		case strings.HasPrefix(n.id, frameTopNode+"|"):
+			tops = append(tops, n.id)
+		case strings.HasPrefix(n.id, frameBottomNode+"|"):
+			bottoms = append(bottoms, n.id)
+		}
 	}
+	nodes = slices.DeleteFunc(nodes, func(n lnode) bool { return isChip(n.id) })
+	seated := len(tops)+len(bottoms) > 0
 	out := map[string][]string{}
 	touched := map[string]bool{}
 	// lines counts the edges between each pair of places, either way: each
-	// stands for a line the drawing will route between them.
+	// stands for a line the drawing will route between them. A line to a
+	// seated chip comes as two edges, one to the frame's edge for the
+	// layering and one to the chip, and runs to the chip.
 	lines := map[[2]string]int{}
 	for _, e := range edges {
 		if _, ok := byID[e.from]; !ok {
@@ -117,12 +145,21 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		if _, ok := byID[e.to]; ok && e.from != e.to {
 			lines[pairKey(e.from, e.to)]++
 		}
+		switch {
+		case isChip(e.from):
+			lines[pairKey(frameTopNode, e.to)]--
+			continue
+		case isChip(e.to):
+			lines[pairKey(e.from, frameBottomNode)]--
+			continue
+		}
 		if _, ok := byID[e.to]; !ok || e.from == e.to || slices.Contains(out[e.from], e.to) {
 			continue
 		}
 		out[e.from] = append(out[e.from], e.to)
 		touched[e.from], touched[e.to] = true, true
 	}
+	maps.DeleteFunc(lines, func(_ [2]string, n int) bool { return n <= 0 })
 	for k := range out {
 		slices.Sort(out[k])
 	}
@@ -335,12 +372,33 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows = func(g *layered) { g.seat(seat.at, seat.focus) }
 		split = brick
 	}
-	g := proper(ranks, w, pairs, lines)
+	// lead is how many rows of chips stand above the boxes' rows.
+	lead := 0
+	if len(tops) > 0 {
+		lead = 1
+	}
+	withChips := func(rows [][]string) [][]string {
+		if len(tops) > 0 {
+			rows = append([][]string{tops}, rows...)
+		}
+		if len(bottoms) > 0 {
+			rows = append(rows, bottoms)
+		}
+		return rows
+	}
+	for _, id := range append(slices.Clone(tops), bottoms...) {
+		w[id] = byID[id].w
+	}
+	g := proper(withChips(ranks), w, pairs, lines)
 	sortRows(&g)
 	room := budget - 2*padX
 	var rows [][]string
 	wrapped := false
 	for _, row := range g.rows {
+		if slices.ContainsFunc(row, isChip) {
+			rows = append(rows, row)
+			continue
+		}
 		ids := slices.DeleteFunc(slices.Clone(row), func(id string) bool { _, d := g.chainOf[id]; return d })
 		rs := split(ids, byID, room)
 		if seat == nil && len(rs) > 1 {
@@ -382,28 +440,34 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 			}
 		}
 	}
-	l.width, l.chains = width, g.chains
-	for r, row := range g.rows {
-		var ids []string
-		for _, id := range row {
-			if _, d := g.chainOf[id]; !d {
-				ids = append(ids, id)
-			}
-		}
-		l.rows = append(l.rows, ids)
-		for _, id := range ids {
-			l.row[id] = r
-			l.heights[id] = byID[id].h
-		}
+	// The chips leave the rows, each keeping where it was seated.
+	l.width = width
+	for _, ch := range g.chains {
+		ch.top, ch.bottom = ch.top-lead, ch.bottom-lead
+		l.chains = append(l.chains, ch)
+	}
+	if seated {
+		l.seats = map[string]int{}
 	}
 	for r, row := range g.rows {
+		if slices.ContainsFunc(row, isChip) {
+			for _, id := range row {
+				l.seats[id] = x[id] + w[id]/2
+			}
+			continue
+		}
+		var ids []string
 		for _, id := range row {
 			if c, d := g.chainOf[id]; d {
-				l.pass[[2]int{c, r}] = x[id]
+				l.pass[[2]int{c, r - lead}] = x[id]
 				continue
 			}
+			ids = append(ids, id)
+			l.row[id] = r - lead
+			l.heights[id] = byID[id].h
 			l.pos[id] = rect{X: x[id], W: byID[id].w, H: byID[id].h}
 		}
+		l.rows = append(l.rows, ids)
 	}
 	return l
 }

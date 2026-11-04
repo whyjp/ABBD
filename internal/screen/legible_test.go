@@ -30,8 +30,6 @@ const (
 	crossingsPerLine = 2
 	// 8: the widths past which a label may be cut, its full text in the tooltip.
 	hardBox, hardUnit, hardLoose = 280, 220, 236
-	// 13: back lines allowed: one, or this share of the arriving lines.
-	backShare = 0.2
 	// endZone is how close to a line's end two lines may meet or run
 	// together: lines that share a port converge there by design.
 	endZone = 26.0
@@ -41,9 +39,6 @@ const (
 	// 14: how far, per drawn line, lines of different bundles may run
 	// side by side in one channel.
 	braidPerLine = 200
-	// 15: how much longer than the shortest grid path between its ends any
-	// one line may run.
-	detourLimit = 240
 )
 
 type fpt struct{ x, y float64 }

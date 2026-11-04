@@ -120,8 +120,8 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 // in, and where a sweep pulls an item among the items it joins. Each finds
 // orders the others miss, and the count order minimizes is not the one a
 // reader sees: it leaves out the frame's chips, the buses and the lines
-// that climb. So a view is drawn with every tactic and keeps the drawing
-// that reads best (choose).
+// that climb. So a unit's view is drawn with every tactic and keeps the
+// drawing that reads best (choose). The overview takes the plain tactic.
 type tactic struct {
 	// reversed starts every row in reverse.
 	reversed bool
@@ -132,9 +132,17 @@ type tactic struct {
 	// unit's view within narrowBudget. Otherwise the items spread over the
 	// whole budget toward what they join, so more lines drop straight.
 	narrow bool
+	// seated sets a unit's frame chips in the layout as a row above the
+	// boxes and a row below them (arrange), so each chip stands over the
+	// chain its lines take and the chains order with the chips. Otherwise
+	// the chips are set after the layout, over where their lines leave
+	// their row. Only the whole budget seats chips: packed narrow, three
+	// more drawings per view cut 1 jog and 3 crossings over 274 views.
+	seated bool
 }
 
-var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true}}
+var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
+	{seated: true}, {seated: true, median: true}, {seated: true, reversed: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by
@@ -531,8 +539,11 @@ func (g *layered) shed(budget int) {
 func (g *layered) sep(a, b string) int {
 	_, da := g.chainOf[a]
 	_, db := g.chainOf[b]
-	if da || db {
+	switch {
+	case da || db:
 		return chainSep
+	case isChip(a) && isChip(b):
+		return 4
 	}
 	return gapX
 }
@@ -710,8 +721,11 @@ func (g *layered) place(budget, room int) (map[string]int, int) {
 	center := func(id string) int { return x(id) + g.w[id]/2 }
 	// span is where a chain may meet a box and drop straight from it.
 	span := func(id string) (int, int, bool) {
-		if id == frameTopNode || id == frameBottomNode {
+		switch {
+		case id == frameTopNode || id == frameBottomNode:
 			return 0, 0, false
+		case isChip(id):
+			return x(id) + 4, x(id) + g.w[id] - 4, true
 		}
 		return x(id) + 12, x(id) + g.w[id] - 12, true
 	}

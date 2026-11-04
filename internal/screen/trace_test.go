@@ -617,15 +617,25 @@ func TestTraceEveryRealDrawing(t *testing.T) {
 			}
 			t.Logf("%s %s: %s", name, v.name, got)
 			logJogs(t, got)
-			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside, ms.Crossings, ms.Bends, ms.Back, ms.BackLength, ms.Length, ms.MaxDetour, ms.Braid, over2(got.Bends), ms.Width))
+			rows = append(rows, fmt.Sprintf("%s\t%s\t%d\t%d\t%d\t%.1f\t%d\t%d\t%.1f\t%d\t%d\t%d\t%.2f\t%.3f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d", name, v.name, got.Relations, got.Lost, got.Phantom, median(got.Bends), maxOf(got.Bends), sum(got.Jogs), median(got.Crossings), maxOf(got.Crossings), got.UnmarkedT, got.CountAmbiguity, got.SizeSpread, got.Beside, ms.Crossings, ms.Bends, ms.Back, ms.BackLength, ms.Length, ms.MaxDetour, ms.Braid, over2(got.Bends), ms.Width, sum(got.Bends), steps(got)))
 		}
 	}
 	if f := os.Getenv("ABBD_METRICS"); f != "" {
-		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\tcrossings\tbends\tback\tback_ink\tink\tmax_detour\tbraid\tpaths_over2\twidth\n"
+		head := "fixture\tview\trelations\tlost\tphantom\tbends_med\tbends_max\tjogs\tcross_med\tcross_max\tunmarked_t\tcount_amb\tsize_spread\tbeside\tcrossings\tbends\tback\tback_ink\tink\tmax_detour\tbraid\tpaths_over2\twidth\ttraced_bends\tsteps\n"
 		if err := os.WriteFile(f, []byte(head+strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
 			t.Fatal(err)
 		}
 	}
+}
+
+// steps counts the staircase steps the chooser weighs (cost in weigh.go)
+// on the traced paths: each turn past a path's second, and each jog.
+func steps(got Trace) int {
+	n := sum(got.Jogs)
+	for _, b := range got.Bends {
+		n += max(0, b-2)
+	}
+	return n
 }
 
 // over2 counts the traced paths that turn more than twice.

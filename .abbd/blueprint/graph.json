@@ -2048,7 +2048,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/inside.go \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) Inside {\""
+        "internal/screen/inside.go \"func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {\""
       ]
     },
     {
@@ -2097,8 +2097,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, by tactic) *overview {\"",
-        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
+        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
       ]
     },
     {
@@ -4344,7 +4344,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
     },
     {
       "From": "MOD-0038",
@@ -18817,6 +18817,15 @@
         "Stale": false,
         "Blocks": [
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0034 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -19705,7 +19714,7 @@
                 "Code": true
               },
               {
-                "Text": " lays each full view out with every tactic, and ",
+                "Text": " lays each view of a unit out with every tactic, and ",
                 "Code": false
               },
               {
@@ -19721,7 +19730,63 @@
                 "Code": true
               },
               {
-                "Text": " on the routed ink beats the best so far, which starts as the first tactic's. Fewer touches beat outright. Each ordering is drawn twice: wide, where ",
+                "Text": " beats the best so far, which starts as the first tactic's. The overview is laid out with the plain tactic only and never weighed, since every module's page holds a focus view seated by it. ",
+                "Code": false
+              },
+              {
+                "Text": "cost.beats",
+                "Code": true
+              },
+              {
+                "Text": " compares touches, then breaks of rules 13 and 15, then ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " times the staircase steps plus the crossings, the steps counted once per pair of places along each line's way from the ",
+                "Code": false
+              },
+              {
+                "Text": "routing",
+                "Code": true
+              },
+              {
+                "Text": " that ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " returns, then the steps alone, paths that turn more than twice, braid and dashed ink, and the first measure that differs decides. A step is a turn past a line's second or a jog, and it weighs as much as 4 crossings. A ",
+                "Code": false
+              },
+              {
+                "Text": "seated",
+                "Code": true
+              },
+              {
+                "Text": " tactic also sets a unit's wired frame chips as ",
+                "Code": false
+              },
+              {
+                "Text": "chipNode",
+                "Code": true
+              },
+              {
+                "Text": " rows above and below the boxes, ordered and placed with them, so each chip stands over the chain its line takes and keeps that x as ",
+                "Code": false
+              },
+              {
+                "Text": "settle",
+                "Code": true
+              },
+              {
+                "Text": "'s target. A view whose chips do not fit their sides, a focus view and the overview are not drawn seated, and the draw closure says so. Each ordering is drawn twice: wide, where ",
                 "Code": false
               },
               {
@@ -21864,7 +21929,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), by)\""
+            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
           ]
         },
         {

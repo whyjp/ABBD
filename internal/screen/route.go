@@ -124,15 +124,20 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // the reader turns and cost nothing else, as weigh measures it. weigh
 // compares every pair of strands, so a view with more than shareMost
 // requests keeps the plain drawing rather than pay for that.
-func (l *layout) route(reqs []wireReq) []drawn {
+func (l *layout) route(reqs []wireReq) routing {
 	plain := l.lay(reqs, false)
 	if !plain.shares || len(reqs) > shareMost {
-		return plain.drawn
+		return plain
 	}
+	// lay sets the gaps and rows afresh, and the boxes' y in place, so the
+	// plain drawing's layout is kept to restore.
+	kept := *l
+	kept.pos = maps.Clone(l.pos)
 	if shared := l.lay(reqs, true); weigh(shared, reqs).beats(weigh(plain, reqs)) {
-		return shared.drawn
+		return shared
 	}
-	return l.lay(reqs, false).drawn
+	*l = kept
+	return plain
 }
 
 const shareMost = 200
@@ -214,14 +219,20 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		for c, ch := range l.chains {
 			byPair[pairKey(ch.upper, ch.lower)] = c
 		}
+		// A line to a seated chip runs down the chip's own chain.
 		id := func(e end) string {
+			edge := frameBottomNode
 			switch {
 			case e.node != "":
 				return e.node
 			case e.row < 0:
-				return frameTopNode
+				edge = frameTopNode
 			}
-			return frameBottomNode
+			c := chipNode(edge, strings.TrimPrefix(e.key, "port|"))
+			if _, ok := l.seats[c]; ok {
+				return c
+			}
+			return edge
 		}
 		for i, r := range reqs {
 			chainOf[i] = -1

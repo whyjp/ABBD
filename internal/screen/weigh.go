@@ -11,6 +11,13 @@ const (
 	// read as one braid, and jogUnder how short a run between two turns
 	// reads as a jog.
 	sideBy, jogUnder = 12, 24
+	// backShare is rule 13's bound: back lines allowed are one, or this
+	// share of the arriving lines. detourLimit is rule 15's: how much
+	// longer than the shortest grid path between its ends one line may run.
+	backShare   = 0.2
+	detourLimit = 240
+	// stepCrossings is how many crossings one staircase step is worth.
+	stepCrossings = 4
 )
 
 // weight is what one routing costs a reader. touches counts pairs of strokes
@@ -26,60 +33,107 @@ func (w weight) beats(o weight) bool {
 	return w.touches <= o.touches && w.crossings <= o.crossings && w.braid <= o.braid && w.turns < o.turns
 }
 
-// cost is what a whole drawn view costs a reader: weigh's measures over its
-// ink, with turns counted along each stroke, and climb, the length of the
-// dashed ink of the lines that climb (rule 13).
+// cost is what a whole drawn view costs a reader, in the order a reader
+// pays it: ink that joins places no relation joins (rule 18), then breaks
+// of rules 13 and 15, then the staircase steps along each line's way with
+// its crossings, then lines that turn more than twice, braid, and the
+// dashed ink of the lines that climb (rule 13). breaks counts the lines
+// that run more than detourLimit out of their way and the back lines past
+// rule 13's bound. steps counts, once per pair of places, each turn past
+// the second and each stretch between two turns shorter than jogUnder (a
+// jog), so a line that turns many times reads as a staircase however long
+// its steps.
 type cost struct {
-	weight
-	climb int
+	touches, breaks, steps, crossings, over2, braid, climb int
 }
 
-// beats says c joins fewer places a relation does not (rule 18), or else is
-// no worse than o anywhere, climbing ink included, and crosses or turns less.
+// beats says c reads better than o: the first measure in which they differ
+// is lower in c. A staircase step costs a reader stepCrossings crossings,
+// so a drawing with fewer steps wins unless it buys each step it saves with
+// more crossings than that.
 func (c cost) beats(o cost) bool {
-	if c.touches != o.touches {
-		return c.touches < o.touches
+	a := [...]int{c.touches, c.breaks, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	for i := range a {
+		if a[i] != b[i] {
+			return a[i] < b[i]
+		}
 	}
-	return c.crossings <= o.crossings && c.braid <= o.braid && c.turns <= o.turns && c.climb <= o.climb &&
-		(c.crossings < o.crossings || c.turns < o.turns)
+	return false
 }
 
-func costOf(ds []drawn, reqs []wireReq) cost {
-	c := cost{weight: weigh(routing{drawn: ds}, reqs)}
-	for _, d := range ds {
-		for _, p := range d.parts {
-			pts := straight(p)
-			c.turns += max(0, len(pts)-2)
-			for i := 1; i < len(pts); i++ {
-				if i >= 2 && i < len(pts)-1 && span(pts[i-1], pts[i]) < jogUnder {
-					c.turns++
-				}
-				if d.back {
-					c.climb += span(pts[i-1], pts[i])
-				}
+func costOf(r routing, reqs []wireReq) cost {
+	w := weigh(routing{drawn: r.drawn}, reqs)
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid}
+	// A reader traces each pair of places once, along its fewest turns.
+	type pair struct{ from, to string }
+	best := map[pair][]pt{}
+	var pairs []pair
+	for i, pts := range r.ways {
+		k := pair{place(reqs[i].from), place(reqs[i].to)}
+		if old, ok := best[k]; !ok {
+			pairs = append(pairs, k)
+			best[k] = pts
+		} else if len(pts) < len(old) {
+			best[k] = pts
+		}
+	}
+	for _, k := range pairs {
+		pts := best[k]
+		if len(pts) > 4 {
+			c.over2++
+			c.steps += len(pts) - 4
+		}
+		for i := 2; i < len(pts)-1; i++ {
+			if span(pts[i-1], pts[i]) < jogUnder {
+				c.steps++
 			}
 		}
 	}
+	arrive, back := 0, 0
+	for _, d := range r.drawn {
+		if !d.joins {
+			arrive++
+			if d.back {
+				back++
+			}
+		}
+		for _, p := range d.parts {
+			pts := straight(p)
+			run := 0
+			for i := 1; i < len(pts); i++ {
+				run += span(pts[i-1], pts[i])
+			}
+			if run-span(pts[0], pts[len(pts)-1]) > detourLimit {
+				c.breaks++
+			}
+			if d.back {
+				c.climb += run
+			}
+		}
+	}
+	c.breaks += max(0, back-max(1, int(backShare*float64(arrive))))
 	return c
 }
 
 // weighed keeps what routed ink costs a reader in read. A focus view has no
 // read, so it is never weighed.
-func weighed(read *cost, ds []drawn, reqs []wireReq) {
+func weighed(read *cost, r routing, reqs []wireReq) {
 	if read != nil {
-		*read = costOf(ds, reqs)
+		*read = costOf(r, reqs)
 	}
 }
 
 // choose draws a view with every tactic and keeps the first, the one the
 // plain tactic orders on the whole width, unless a later one beats the best
-// so far. draw leaves what each drawing costs in its read.
-func choose[T any](draw func(t tactic, read *cost) T) T {
+// so far. draw leaves what each drawing costs in its read, and says false
+// for a tactic that has nothing to draw differently in this view.
+func choose[T any](draw func(t tactic, read *cost) (T, bool)) T {
 	var best T
 	var bc cost
 	for i, t := range tactics {
 		var c cost
-		if v := draw(t, &c); i == 0 || c.beats(bc) {
+		if v, ok := draw(t, &c); ok && (i == 0 || c.beats(bc)) {
 			best, bc = v, c
 		}
 	}
@@ -91,6 +145,17 @@ type strand struct {
 	group int
 	kind  string
 	reqs  []int
+	// lo and hi bound the strand, so two strands too far apart to meet
+	// or run side by side are not compared point by point.
+	lo, hi pt
+}
+
+func bound(pts []pt) (pt, pt) {
+	lo, hi := pts[0], pts[0]
+	for _, p := range pts {
+		lo, hi = pt{min(lo.x, p.x), min(lo.y, p.y)}, pt{max(hi.x, p.x), max(hi.y, p.y)}
+	}
+	return lo, hi
 }
 
 func weigh(r routing, reqs []wireReq) weight {
@@ -102,7 +167,8 @@ func weigh(r routing, reqs []wireReq) weight {
 		}
 		for _, p := range d.parts {
 			if pts := straight(p); len(pts) > 1 {
-				ss = append(ss, strand{pts, g, d.kind, d.reqs})
+				lo, hi := bound(pts)
+				ss = append(ss, strand{pts, g, d.kind, d.reqs, lo, hi})
 			}
 		}
 	}
@@ -142,7 +208,7 @@ func weigh(r routing, reqs []wireReq) weight {
 	for a := range ss {
 		for b := a + 1; b < len(ss); b++ {
 			sa, sb := ss[a], ss[b]
-			if sa.group == sb.group {
+			if sa.group == sb.group || sa.lo.x > sb.hi.x+sideBy || sb.lo.x > sa.hi.x+sideBy || sa.lo.y > sb.hi.y+sideBy || sb.lo.y > sa.hi.y+sideBy {
 				continue
 			}
 			w.crossings += crossings(sa.pts, sb.pts)
