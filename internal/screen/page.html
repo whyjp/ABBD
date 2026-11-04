@@ -53,10 +53,10 @@
   <p class="muted" style="margin:6px 0 0">리더가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 확인하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 닿는 모듈의 안에 나열합니다.</p>
 </section>
 {{template "foot" .}}{{end}}
-{{define "around"}}{{template "head" .}}{{template "focus" .Around}}{{template "foot" .}}{{end}}
-{{define "flowpage"}}{{template "head" .}}{{template "flow" .Flow}}{{template "foot" .}}{{end}}
-{{define "stackpage"}}{{template "head" .}}{{template "stack" .Stack}}{{template "foot" .}}{{end}}
-{{define "tablepage"}}{{template "head" .}}{{template "table" .Table}}{{template "foot" .}}{{end}}
+{{define "around"}}{{template "head" .}}<div class="solo">{{template "focus" .Around}}</div>{{template "foot" .}}{{end}}
+{{define "flowpage"}}{{template "head" .}}<div class="solo">{{template "flow" .Flow}}</div>{{template "foot" .}}{{end}}
+{{define "stackpage"}}{{template "head" .}}<div class="solo">{{template "stack" .Stack}}</div>{{template "foot" .}}{{end}}
+{{define "tablepage"}}{{template "head" .}}<div class="solo">{{template "table" .Table}}</div>{{template "foot" .}}{{end}}
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
