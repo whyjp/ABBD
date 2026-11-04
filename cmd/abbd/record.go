@@ -62,14 +62,16 @@ func (e env) save(u model.Unit) error {
 
 // recordRelation writes a coupling. A reader's finding is INFERRED and rests
 // on live evidence; with --source it is what a human stated. Each writer
-// holds its own claim on an edge, and the precedence table picks the shown one.
+// holds its own claim on an edge, and the precedence table picks the shown
+// one. On an edge the script reads, a reader's claim only names what crosses
+// it, with --phrase.
 func (e env) recordRelation(pos []string) error {
 	edge, err := model.ParseEdge(strings.Join(pos, "."))
 	if err != nil {
 		return err
 	}
 	w := e.writer()
-	rel := model.Relation{To: edge.To, Kind: edge.Kind, Writer: w, Via: model.Via(e.via)}
+	rel := model.Relation{To: edge.To, Kind: edge.Kind, Writer: w, Via: model.Via(e.via), Phrase: e.phrase}
 	if w == model.Human {
 		rel.Source = e.sourceRef()
 	}
@@ -82,6 +84,9 @@ func (e env) recordRelation(pos []string) error {
 		return fmt.Errorf("cite at least one --evidence PATH:LINES:QUOTE, or give the --source where a human stated it")
 	}
 	if err := rel.Via.Validate(); err != nil {
+		return err
+	}
+	if err := model.ValidatePhrase(rel.Phrase, rel.Via); err != nil {
 		return err
 	}
 	if err := edge.Joins(); err != nil {
@@ -98,11 +103,14 @@ func (e env) recordRelation(pos []string) error {
 	if rel.Evidence, err = e.citations(); err != nil {
 		return err
 	}
+	named := false
 	for _, o := range u.Claims() {
 		switch {
 		case o.To != edge.To || o.Kind != edge.Kind:
+		case o.Writer == model.Script && rel.Phrase == "":
+			return fmt.Errorf("%s is already EXTRACTED from the code; name what crosses it with --phrase", edge)
 		case o.Writer == model.Script:
-			return fmt.Errorf("%s is already EXTRACTED from the code", edge)
+			named = true
 		case o.Writer == model.Human && w == model.Reader:
 			return fmt.Errorf("%s is USER_STATED (%s); a reader's finding does not replace it", edge, o.Source)
 		}
@@ -112,6 +120,9 @@ func (e env) recordRelation(pos []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "recorded %s, %s\n", edge, w.Origin())
+	if named {
+		fmt.Fprintf(e.stdout, "the script's claim still holds the edge; %q names what crosses it while the evidence is live\n", rel.Phrase)
+	}
 	return nil
 }
 

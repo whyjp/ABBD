@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 type Origin string
@@ -245,8 +246,9 @@ func (u *Unit) EachEvidence(f func(w Writer, e *Evidence)) {
 }
 
 // EachShownEvidence visits the items of the claims that show: the unit's
-// own, its winning parent claim's and each shown relation's. An outranked
-// claim's items cannot change what anyone sees.
+// own, its winning parent claim's, and each relation claim Shown lists. An
+// outranked claim's items cannot change what anyone sees, unless its phrase
+// names the edge.
 func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 	for i := range u.Evidence {
 		f(u.Name.Writer, &u.Evidence[i])
@@ -256,11 +258,52 @@ func (u *Unit) EachShownEvidence(f func(w Writer, e *Evidence)) {
 			f(c.Writer, &c.Evidence[j])
 		}
 	}
-	for i := range u.Relations {
-		for j := range u.Relations[i].Evidence {
-			f(u.Relations[i].Writer, &u.Relations[i].Evidence[j])
+	for _, rs := range [][]Relation{u.Relations, u.Hidden} {
+		for i := range rs {
+			if !u.shows(rs[i]) {
+				continue
+			}
+			for j := range rs[i].Evidence {
+				f(rs[i].Writer, &rs[i].Evidence[j])
+			}
 		}
 	}
+}
+
+// Shown lists the relation claims a reader of the blueprint sees: each
+// edge's shown claim, and the other claim whose phrase names an edge.
+func (u Unit) Shown() []Relation {
+	return slices.DeleteFunc(u.Claims(), func(r Relation) bool { return !u.shows(r) })
+}
+
+func (u Unit) shows(r Relation) bool {
+	if slices.ContainsFunc(u.Relations, func(o Relation) bool { return o.To == r.To && o.Kind == r.Kind && o.Writer == r.Writer }) {
+		return true
+	}
+	c, ok := u.PhraseClaim(r.Kind, r.To)
+	return ok && c.Writer == r.Writer
+}
+
+// PhraseClaim is the claim whose phrase names what crosses an edge: the
+// shown claim when it has a phrase, else the first other claim on the edge,
+// by status and precedence, that has one and is neither dead nor masked. So
+// a reader names what crosses an edge the script read.
+func (u Unit) PhraseClaim(kind RelationKind, to ID) (Relation, bool) {
+	for _, r := range u.Claims() {
+		if r.To == to && r.Kind == kind && r.Phrase != "" && r.Status() != Dead && !u.Masked(RelationTarget(kind, to), r.Writer, RelationDigest(r)) {
+			return r, true
+		}
+	}
+	return Relation{}, false
+}
+
+// Phrase is what crosses the edge, while the code its claim cites is as
+// quoted. A phrase whose code changed waits for a reader to refresh it.
+func (u Unit) Phrase(kind RelationKind, to ID) string {
+	if c, ok := u.PhraseClaim(kind, to); ok && c.Status() == Live {
+		return c.Phrase
+	}
+	return ""
 }
 
 // ShownParent is the parent claim Resolve picked, or nil.
@@ -368,6 +411,32 @@ func (r Relation) validate() error {
 	if r.Writer.Origin() == Inferred && len(r.Evidence) == 0 {
 		return fmt.Errorf("an INFERRED coupling needs evidence")
 	}
+	if r.Phrase != "" && r.Writer.Origin() == Extracted {
+		return fmt.Errorf("a phrase is a reader's or a human's words, not the %s's", r.Writer)
+	}
+	return ValidatePhrase(r.Phrase, r.Via)
+}
+
+const (
+	// PhraseMax and PhraseWords bound a phrase, so it fits beside a line.
+	PhraseMax, PhraseWords = 24, 4
+)
+
+// ValidatePhrase checks that a phrase is a few words on one line that say
+// more than its via does.
+func ValidatePhrase(p string, via Via) error {
+	switch {
+	case p == "":
+		return nil
+	case strings.TrimSpace(p) != p || strings.ContainsAny(p, "\n\r\t"):
+		return fmt.Errorf("phrase %q: one line, with no space at either end", p)
+	case utf8.RuneCountInString(p) > PhraseMax:
+		return fmt.Errorf("phrase %q: at most %d characters", p, PhraseMax)
+	case len(strings.Fields(p)) > PhraseWords:
+		return fmt.Errorf("phrase %q: at most %d words", p, PhraseWords)
+	case via != "" && (strings.EqualFold(p, string(via)) || p == via.Word()):
+		return fmt.Errorf("phrase %q only repeats the via; name what crosses, such as a route, a message or a query", p)
+	}
 	return nil
 }
 
@@ -464,6 +533,15 @@ var vias = map[Via]bool{
 	"build-feature": true, "data": true, "convention": true, "call": true,
 }
 
+var viaWords = map[Via]string{
+	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
+	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
+	"build-feature": "빌드 기능",
+}
+
+// Word is the via in the blueprint's words, or "" for none.
+func (v Via) Word() string { return viaWords[v] }
+
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
 		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention or call", v)
@@ -554,12 +632,15 @@ func ParseEvidence(s string) (Evidence, error) {
 
 // Relation is one writer's claim on an edge from the unit that holds it.
 type Relation struct {
-	To       ID           `yaml:"to"`
-	Kind     RelationKind `yaml:"kind"`
-	Writer   Writer       `yaml:"writer"`
-	Source   string       `yaml:"source,omitempty"`
-	Via      Via          `yaml:"via,omitempty"`
-	Evidence []Evidence   `yaml:"evidence,omitempty"`
+	To     ID           `yaml:"to"`
+	Kind   RelationKind `yaml:"kind"`
+	Writer Writer       `yaml:"writer"`
+	Source string       `yaml:"source,omitempty"`
+	Via    Via          `yaml:"via,omitempty"`
+	// Phrase names in a few words what crosses the edge, such as a route, a
+	// message or a query. A reader or a human writes it, never the script.
+	Phrase   string     `yaml:"phrase,omitempty"`
+	Evidence []Evidence `yaml:"evidence,omitempty"`
 	// Entries narrows the claim to these entries of the contract it points
 	// at, by key: the routes a page calls, the fields a module writes.
 	Entries []string `yaml:"entries,omitempty"`

@@ -195,7 +195,13 @@ func Digest(parts ...string) string {
 func RelationTarget(kind RelationKind, to ID) string { return string(kind) + "." + string(to) }
 
 // MaskDigest is the content a mask on target binds to for each kind of claim.
-func RelationDigest(r Relation) string  { return Digest(string(r.Kind), string(r.To), string(r.Via)) }
+func RelationDigest(r Relation) string {
+	if r.Phrase != "" {
+		return Digest(string(r.Kind), string(r.To), string(r.Via), r.Phrase)
+	}
+	return Digest(string(r.Kind), string(r.To), string(r.Via))
+}
+
 func ParentDigest(c ParentClaim) string { return Digest(string(c.To)) }
 func FactDigest(f Fact) string          { return Digest(f.Value) }
 

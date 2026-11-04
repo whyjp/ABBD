@@ -179,6 +179,9 @@ func (e env) explain(s string) error {
 		if l.Via != "" {
 			line += " via " + string(l.Via)
 		}
+		if l.Phrase != "" {
+			line += fmt.Sprintf(" %q", l.Phrase)
+		}
 		if l.Drifted {
 			line += " (drifted: refresh or retract it)"
 		}

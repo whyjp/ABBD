@@ -14,16 +14,21 @@ import (
 type tree struct {
 	units    map[model.ID]model.Unit
 	children map[model.ID][]model.ID
-	// vias say how each stored relation arises, by its key.
-	vias map[string]model.Via
+	// vias say how each stored relation arises, and phrases what crosses
+	// it, by its key.
+	vias    map[string]model.Via
+	phrases map[string]string
 }
 
 func newTree(units []model.Unit) tree {
-	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}}
+	t := tree{units: map[model.ID]model.Unit{}, children: map[model.ID][]model.ID{}, vias: map[string]model.Via{}, phrases: map[string]string{}}
 	for _, u := range model.Present(units) {
 		t.units[u.ID] = u
 		for _, r := range u.Relations {
 			t.vias[key(u.ID, r.Kind, r.To)] = r.Via
+			if p := u.Phrase(r.Kind, r.To); p != "" {
+				t.phrases[key(u.ID, r.Kind, r.To)] = p
+			}
 		}
 	}
 	// A unit whose parent is not present sits at the top level, so nothing

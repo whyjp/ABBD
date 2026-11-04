@@ -146,13 +146,15 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s: %w", r.From, r.Kind, r.To, err)
 		}
 		e := edge{out.Units[fi].Key, out.Units[ti].Key, r.Kind}
-		if extracted[e] {
+		// On an edge the script reads, the supplement's claim only names what
+		// crosses it.
+		if extracted[e] && r.Phrase == "" {
 			continue
 		}
 		if len(r.Evidence) == 0 {
 			return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
 		}
-		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
+		out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Phrase: r.Phrase, Evidence: r.Evidence})
 	}
 	sort.Strings(f.Conflicts)
 	return out, f, nil

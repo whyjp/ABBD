@@ -29,9 +29,13 @@ abbd install [--root DIR]            write or replace the abbd block in the proj
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
                                      IDs, write the state and render the blueprint; prints
                                      counts and what needs attention, --verbose every unit
-abbd record relation FROM KIND TO --via VIA --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
-                                     a reader's coupling, INFERRED while its evidence is live
-abbd record relation FROM KIND TO --source REF [--via VIA] [--evidence ...] [--root DIR]
+abbd record relation FROM KIND TO --via VIA [--phrase TEXT] --evidence PATH:LINES:QUOTE [--evidence ...] [--root DIR]
+                                     a reader's coupling, INFERRED while its evidence is live;
+                                     --phrase names in at most 4 words and 24 characters what
+                                     crosses it, such as a route, a message or a query, and the
+                                     blueprint draws it beside the line; on an edge the script
+                                     reads, the claim only names what crosses it
+abbd record relation FROM KIND TO --source REF [--via VIA] [--phrase TEXT] [--evidence ...] [--root DIR]
                                      a coupling a human stated, USER_STATED
 abbd record unit KIND NAME --evidence PATH:LINES:QUOTE [--evidence ...] [--parent ID] [--responsibility TEXT] [--root DIR]
                                      a unit the script cannot see, INFERRED
@@ -161,6 +165,7 @@ type env struct {
 type opts struct {
 	root, supplement string
 	via, parent      string
+	phrase           string
 	responsibility   string
 	value, src       string
 	reason           string
@@ -180,6 +185,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"via": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call")
+	},
+	"phrase": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
 	},
 	"evidence": func(fs *flag.FlagSet, o *opts) {
 		fs.Var(&o.evidence, "evidence", "PATH:LINES:QUOTE, a verbatim excerpt of the code; repeat for more")
@@ -231,7 +239,7 @@ type command struct {
 var commands = map[string]command{
 	"setup":           {flags: []string{"root", "supplement"}, pos: []int{0}, dashArgv: true, writes: true, run: func(e env, _ []string) error { return e.setup() }},
 	"sync":            {flags: []string{"root", "verbose"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.sync() }},
-	"record relation": {flags: []string{"root", "via", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
+	"record relation": {flags: []string{"root", "via", "phrase", "evidence", "source"}, pos: []int{3}, writes: true, run: func(e env, pos []string) error { return e.recordRelation(pos) }},
 	"record unit":     {flags: []string{"root", "evidence", "parent", "responsibility"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordUnit(pos) }},
 	"record parent":   {flags: []string{"root", "evidence", "source"}, pos: []int{2}, writes: true, run: func(e env, pos []string) error { return e.recordParent(pos) }},
 	"record fact":     {flags: []string{"root", "value", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.recordFact(pos[0]) }},

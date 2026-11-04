@@ -16,8 +16,10 @@ import (
 // a reader's coupling, the code it rests on.
 type Link struct {
 	model.Edge
-	Origin   model.Origin
-	Via      model.Via
+	Origin model.Origin
+	Via    model.Via
+	// Phrase is what crosses the link, in a reader's or a human's words.
+	Phrase   string
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the link narrows to.
 	Entries []string
@@ -31,6 +33,9 @@ func (l Link) Label() string {
 	s := map[model.Origin]string{model.Extracted: "extracted", model.UserStated: "stated", model.Inferred: "inferred"}[l.Origin]
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
+	}
+	if l.Phrase != "" {
+		s += fmt.Sprintf(", %q", l.Phrase)
 	}
 	if l.Drifted {
 		s += ", drifted"
@@ -49,7 +54,7 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()})
+				out = append(out, Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Phrase: u.Phrase(r.Kind, r.To), Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()})
 			}
 		}
 	}

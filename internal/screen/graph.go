@@ -9,10 +9,12 @@ import (
 )
 
 // Line is one live relation as graph.json lists it, with its origin and, for
-// a reader's coupling, how it arises and the code it rests on.
+// a reader's coupling, how it arises and the code it rests on. Phrase is
+// what crosses it.
 type Line struct {
 	From, To, Kind, Origin string
 	Via                    string `json:",omitempty"`
+	Phrase                 string `json:",omitempty"`
 	Quote                  string `json:",omitempty"`
 }
 
@@ -35,7 +37,7 @@ func lines(units []model.Unit) []Line {
 			if !present[r.To] || r.Dead {
 				continue
 			}
-			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via)}
+			l := Line{From: string(u.ID), To: string(r.To), Kind: string(r.Kind), Origin: string(r.Origin), Via: string(r.Via), Phrase: u.Phrase(r.Kind, r.To)}
 			if len(r.Evidence) > 0 {
 				l.Quote = cite(r.Evidence[0])
 			}

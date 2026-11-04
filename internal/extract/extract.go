@@ -39,6 +39,7 @@ type rawRelation struct {
 	To       string             `json:"to"`
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
+	Phrase   string             `json:"phrase,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
 }
@@ -59,6 +60,8 @@ type Relation struct {
 	Kind     model.RelationKind
 	Writer   model.Writer
 	Via      model.Via
+	// Phrase is what a supplement says crosses the edge, in a few words.
+	Phrase   string
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the relation narrows to.
 	Entries []string
@@ -152,6 +155,12 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if err := rr.Via.Validate(); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
+		if rr.Phrase != "" && !foreignParents {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s) carries a phrase; a phrase is a reader's words, so the supplement gives it and the script does not", i, rr.From, rr.To)
+		}
+		if err := model.ValidatePhrase(rr.Phrase, rr.Via); err != nil {
+			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
+		}
 		evidence, err := NormalizeEvidence(rr.Evidence)
 		if err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
@@ -170,7 +179,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 			}
 			continue
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Phrase: rr.Phrase, Evidence: evidence, Entries: keys})
 	}
 	return res, nil
 }

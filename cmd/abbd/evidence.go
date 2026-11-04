@@ -57,7 +57,7 @@ func (e env) checkEvidence() error {
 				line(string(u.ID)+".parent "+string(p.To), p.Writer, "", ev)
 			}
 		}
-		for _, r := range u.Relations {
+		for _, r := range u.Shown() {
 			for _, ev := range r.Evidence {
 				line(model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String(), r.Writer, r.Via, ev)
 			}
