@@ -77,7 +77,7 @@ func sampleModules(us []model.Unit) [][3]model.ID {
 }
 
 // A change confined to one module rewrites that module's page and the data
-// file, and no other page. An edit that only moves the lines a quote sits on
+// file, and no other page, and a unit added there the unit index too. An edit that only moves the lines a quote sits on
 // rewrites nothing. So a pull request's blueprint diff stays where its code
 // diff is.
 func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
@@ -108,9 +108,15 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				joined := clone(base)
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
-				for _, f := range rewritten(t, base, joined) {
+				got := rewritten(t, base, joined)
+				for _, f := range got {
 					if !slices.Contains(own, f) {
 						t.Errorf("a relation between two units of %s rewrote %s", mod, f)
+					}
+				}
+				for _, f := range own {
+					if !slices.Contains(got, f) {
+						t.Errorf("a relation between two units of %s left %s as it was", mod, f)
 					}
 				}
 			})
@@ -118,9 +124,16 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				grown := clone(base)
 				u := inside("MOD-9999", mod, model.Relation{To: a, Kind: model.DependsOn, Origin: model.Extracted})
 				grown = append(grown, u)
-				for _, f := range rewritten(t, base, grown) {
-					if !slices.Contains(append(own, UnitsFile), f) {
+				got := rewritten(t, base, grown)
+				want := append(slices.Clone(own), UnitsFile)
+				for _, f := range got {
+					if !slices.Contains(want, f) {
 						t.Errorf("a unit added inside %s rewrote %s", mod, f)
+					}
+				}
+				for _, f := range want {
+					if !slices.Contains(got, f) {
+						t.Errorf("a unit added inside %s left %s as it was", mod, f)
 					}
 				}
 			})
