@@ -15,13 +15,16 @@
   <a class="home" href="#overview">ABBD 청사진</a>
   <ul class="plain top">
     <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
-    <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a> <span class="muted">{{len .Contracts}}</span></li>
-    <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a> <span class="muted">{{len .Units}}</span></li>
+    <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a></li>
+    <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a></li>
   </ul>
-  <h3>모듈</h3>
-  <ul class="plain tree">{{range .Nav}}{{if not .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}{{end}}</ul>
+  {{if .Nav}}<h3>모듈</h3>
+  <ul class="plain tree">{{range .Nav}}{{if not .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>
   <h3>기능</h3>
-  <ul class="plain tree">{{range .Nav}}{{if .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}{{end}}</ul>
+  <ul class="plain tree">{{range .Nav}}{{if .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>
+  {{else if .Trail}}<h3>이 모듈이 놓인 곳</h3>
+  <ul class="plain tree">{{range $i, $t := .Trail}}<li class="d{{$i}}"><a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a></li>{{end}}</ul>
+  <p class="muted">모듈의 전체 목록은 <a href="#overview">모듈과 계약</a>에 있습니다.</p>{{end}}
 </nav>
 <main>
 <header>
@@ -40,7 +43,7 @@
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
   </div>
-  {{if or .Flows .Stacks .Tables}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span>{{if .Stale}} <span class="pill STALE">STALE {{.Stale}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Breaches}} <span class="pill breach">거꾸로 {{.Breaches}}</span>{{end}}</li>{{end}}</ul>{{end}}{{if .Tables}}<h3>표로 읽는 대응</h3><ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Rows}}행 × {{len .Columns}}열</span>{{if or .Stale .Reasons}} <span class="pill STALE">STALE{{if .Stale}} {{.Stale}}{{end}}</span>{{end}}{{if .Unbacked}} <span class="pill breach">관계 없는 칸 {{.Unbacked}}</span>{{end}}{{if .Unsaid}} <span class="pill breach">빈 칸 {{.Unsaid}}</span>{{end}}</li>{{end}}</ul>{{end}}</div>{{end}}
+  {{if or .Flows .Stacks .Tables}}<div class="questions">{{if .Flows}}<h3>순서로 읽는 흐름</h3><ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Steps}}단계</span></li>{{end}}</ul>{{end}}{{if .Stacks}}<h3>층으로 읽는 구조</h3><ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Layers}}층</span></li>{{end}}</ul>{{end}}{{if .Tables}}<h3>표로 읽는 대응</h3><ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">{{.Rows}}행 × {{len .Columns}}열</span></li>{{end}}</ul>{{end}}<p class="muted">STALE과 거꾸로 닿는 관계는 각 그림의 쪽에 표시합니다.</p></div>{{end}}
   <p class="narrow muted">그림이 화면보다 넓습니다. 그림 안에서 옆으로 밀어 보세요.</p>
   <div class="mapbox">{{template "drawing" .Overview}}</div>
   {{template "legend" "overview"}}
@@ -49,11 +52,11 @@
   <ul class="plain">{{range .Links}}<li>{{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span></li>{{end}}</ul>{{end}}
   <p class="muted" style="margin:6px 0 0">리더가 판독한 결합도 그립니다. sync마다 인용한 코드가 아직 있는지 확인하고, 인용이 사라진 결합은 그리지 않습니다. 각 결합의 근거는 그 결합이 닿는 모듈의 안에 나열합니다.</p>
 </section>
-{{range .Flows}}{{template "flow" .}}{{end}}
-{{range .Stacks}}{{template "stack" .}}{{end}}
-{{range .Tables}}{{template "table" .}}{{end}}
-{{range .Focus}}{{template "focus" .}}{{end}}
 {{template "foot" .}}{{end}}
+{{define "around"}}{{template "head" .}}{{template "focus" .Around}}{{template "foot" .}}{{end}}
+{{define "flowpage"}}{{template "head" .}}{{template "flow" .Flow}}{{template "foot" .}}{{end}}
+{{define "stackpage"}}{{template "head" .}}{{template "stack" .Stack}}{{template "foot" .}}{{end}}
+{{define "tablepage"}}{{template "head" .}}{{template "table" .Table}}{{template "foot" .}}{{end}}
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
@@ -87,6 +90,7 @@
   </div>
   {{range .Contracts}}{{$c := .}}{{with .Entries}}<div class="entries" id="t-{{$c.ID}}"><h3>{{$c.Name}} <span class="muted key">{{$c.ID}}</span></h3>{{template "entries" .}}</div>{{end}}{{end}}
 </section>
+{{with $p.Around}}{{template "focus" .}}{{end}}
 {{range .Focus}}{{template "focus" .}}{{end}}{{end}}
 {{template "foot" .}}{{end}}
 {{define "contracts"}}{{template "head" .}}

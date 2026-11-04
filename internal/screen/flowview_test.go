@@ -66,7 +66,7 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	}
 	b := renderAll(t, m)
 	page := b.String()
-	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="#flow-search">How does a search run?</a>`} {
+	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="flow-search.html">How does a search run?</a>`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must hold %q", want)
 		}

@@ -53,7 +53,7 @@ func TestAFlowIsStoredAndDrawnInOrder(t *testing.T) {
 	}
 	p.want(0, "flows: 1 flow(s), 3 step(s), 0 STALE", "status", "--check")
 	page := p.blueprint()
-	for _, want := range []string{`id="flow-charge"`, `id="flow-charge.3"`, "Post() reads the charge into the book", "gives up after three tries", "→ charges table", `href="#m-MOD-0002"`, `<a href="#flow-charge">How does a charge reach the ledger?</a>`} {
+	for _, want := range []string{`id="flow-charge"`, `id="flow-charge.3"`, "Post() reads the charge into the book", "gives up after three tries", "→ charges table", `href="#m-MOD-0002"`, `<a href="flow-charge.html">How does a charge reach the ledger?</a>`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must draw %q", want)
 		}

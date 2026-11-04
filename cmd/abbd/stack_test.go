@@ -62,7 +62,7 @@ func TestAStackIsStoredAndDrawnInBands(t *testing.T) {
 		t.Errorf("status reports the stack's breaches:\n%s", status)
 	}
 	page := p.blueprint()
-	for _, want := range []string{`id="stack-charge"`, `id="stack-charge.2"`, "posts each charge into the ledger", `href="MOD-0002.html" title="MOD-0002"`, `<a href="#stack-charge">What are the layers of the charge path?</a>`, "이 모듈이 놓인 층", `index.html#stack-charge`} {
+	for _, want := range []string{`id="stack-charge"`, `id="stack-charge.2"`, "posts each charge into the ledger", `href="MOD-0002.html" title="MOD-0002"`, `<a href="stack-charge.html">What are the layers of the charge path?</a>`, "이 모듈이 놓인 층", `href="stack-charge.html"`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must draw %q", want)
 		}

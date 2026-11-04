@@ -55,7 +55,7 @@ func TestATableIsStoredAndDrawnAsAGrid(t *testing.T) {
 		t.Errorf("status reports the table's cells:\n%s", status)
 	}
 	page := p.blueprint()
-	for _, want := range []string{`id="table-charge"`, `id="table-charge.2"`, `<table class="dg-matrix">`, `data-col="charges"`, "inserts one row per charge", `title="저장된 관계 사용"`, `href="MOD-0002.html" title="MOD-0002"`, `<a href="#table-charge">Which part of the charge path touches the charges table?</a>`, "2행 × 2열", "이 모듈이 행으로 놓인 표", `index.html#table-charge`} {
+	for _, want := range []string{`id="table-charge"`, `id="table-charge.2"`, `<table class="dg-matrix">`, `data-col="charges"`, "inserts one row per charge", `title="저장된 관계 사용"`, `href="MOD-0002.html" title="MOD-0002"`, `<a href="table-charge.html">Which part of the charge path touches the charges table?</a>`, "2행 × 2열", "이 모듈이 행으로 놓인 표", `href="table-charge.html"`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must draw %q", want)
 		}
