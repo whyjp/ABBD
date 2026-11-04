@@ -3,8 +3,8 @@
 # past its ceiling, and on a placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now.
 ceilings:
-    placement: 50
-    weighed: 2092
+    placement: 51
+    weighed: 1878
 debt:
     MOD-0030 internal/model:
         R: 1

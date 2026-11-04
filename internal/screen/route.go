@@ -519,6 +519,9 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	// chips and the box itself spread their lines apart, and a line of one
 	// must not stand on a line of the other.
 	used := map[[2]string][]int{}
+	// set is where each line's end already stands on its edge, by line and
+	// whether it is the line's start.
+	set := map[int]map[bool]int{}
 	for _, k := range sortedKeys(edges) {
 		var slots []slot
 		seen := map[[2]int]int{}
@@ -553,7 +556,13 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			if i >= len(reqs) {
 				return 0, false
 			}
-			return near(i, sl.leave)
+			if x, ok := near(i, sl.leave); ok {
+				return x, true
+			}
+			// A line alone in its slot between rows next to each other
+			// drops straight where its other end already stands.
+			x, ok := set[i][!sl.leave]
+			return x, ok && len(sl.is) == 1 && len(plans[i].gaps) == 1
 		}
 		other := func(sl slot) int {
 			if x, ok := pin(sl); ok {
@@ -650,6 +659,10 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				} else {
 					plans[i].tx = x
 				}
+				if set[i] == nil {
+					set[i] = map[bool]int{}
+				}
+				set[i][sl.leave] = x
 			}
 		}
 	}

@@ -20248,7 +20248,7 @@
                 "Code": true
               },
               {
-                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. Boxes that the same two or more places all reach may share one arrival bus instead, from ",
+                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. A line alone in its slot between rows next to each other, down no chain, takes the x its other end already stands at when that edge has it clear, so it drops straight. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. Boxes that the same two or more places all reach may share one arrival bus instead, from ",
                 "Code": false
               },
               {
