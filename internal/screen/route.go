@@ -643,6 +643,19 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				}
 			}
 		}
+		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
+		// On a ring, where straight drops pin the slots at an edge's ends,
+		// the slots between pins move so that keeping the order never
+		// pushes a pinned line off the x it drops straight at. Elsewhere
+		// the even share stands: spreading there trades steps for crossings.
+		if l.ring {
+			counts := make([]int, len(slots))
+			for s, sl := range slots {
+				counts[s] = len(sl.is)
+			}
+			order := spreadRuns(xs, pinned, counts, r.lo, r.hi, gap)
+			slots, pinned, xs = permute(slots, order), permute(pinned, order), permute(xs, order)
+		}
 		clear := func(s, x int) bool {
 			if r.node != "" && !apart(x) {
 				return false
@@ -669,7 +682,6 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				}
 			}
 		}
-		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
 		edge := r.lo - gap
 		for s := range xs {
 			xs[s] = max(xs[s], edge+gap)
@@ -1636,6 +1648,115 @@ const detourOffer = 160
 
 // slotGap is the least room between two lines on one edge of a box.
 const slotGap = 12
+
+// spreadRuns moves the slots of one edge, in order and spread over lo..hi
+// at xs, that no pin holds. A run of them between two pins, or between a
+// pin and an end, keeps its share of the edge unless that share comes
+// within gap of a pin. Then it spreads evenly over the room between, and
+// if that room leaves a bus no side for its ×N count, it moves into the
+// empty room past the next pin. It sets each slot's x in xs and returns
+// the slots' order by x.
+func spreadRuns(xs []int, pinned []bool, counts []int, lo, hi, gap int) []int {
+	n := len(xs)
+	lay := func(k, l, h int, lp, hp bool) []int {
+		a, b := 0.5, 0.5
+		if lp {
+			a = 1
+		}
+		if hp {
+			b = 1
+		}
+		step := float64(h-l) / (float64(k-1) + a + b)
+		out := make([]int, k)
+		for j := range out {
+			out[j] = l + int((float64(j)+a)*step)
+		}
+		return out
+	}
+	fits := func(ps, cs []int, l, h int, lp, hp bool) bool {
+		for j, x := range ps {
+			left, right := 1<<30, 1<<30
+			if j > 0 {
+				left = x - ps[j-1]
+			} else if lp {
+				left = x - l
+			}
+			if j < len(ps)-1 {
+				right = ps[j+1] - x
+			} else if hp {
+				right = h - x
+			}
+			if min(left, right) < gap {
+				return false
+			}
+			if w := textWidth(fmt.Sprintf("×%d", cs[j]), 11) + 9; cs[j] >= 2 && left < w && right < w {
+				return false
+			}
+		}
+		return true
+	}
+	// room is the open stretch between the pins at a and b, or an end
+	// where a is -1 or b is n.
+	room := func(a, b int) (int, int, bool, bool) {
+		l, h := lo, hi
+		if a >= 0 {
+			l = xs[a]
+		}
+		if b < n {
+			h = xs[b]
+		}
+		return l, h, a >= 0, b < n
+	}
+	for s := 0; s < n; {
+		if pinned[s] {
+			s++
+			continue
+		}
+		e := s
+		for e < n && !pinned[e] {
+			e++
+		}
+		if !(s > 0 && xs[s] < xs[s-1]+gap || e < n && xs[e-1] > xs[e]-gap) {
+			s = e
+			continue
+		}
+		cs := counts[s:e]
+		l, h, lp, hp := room(s-1, e)
+		ps := lay(e-s, l, h, lp, hp)
+		var past [][2]int
+		if e < n && (e+1 == n || pinned[e+1]) {
+			past = append(past, [2]int{e, e + 1})
+		}
+		if s > 0 && (s == 1 || pinned[s-2]) {
+			past = append(past, [2]int{s - 2, s - 1})
+		}
+		for _, p := range past {
+			if fits(ps, cs, l, h, lp, hp) {
+				break
+			}
+			l, h, lp, hp = room(p[0], p[1])
+			if q := lay(e-s, l, h, lp, hp); fits(q, cs, l, h, lp, hp) {
+				ps = q
+			}
+		}
+		copy(xs[s:e], ps)
+		s = e
+	}
+	order := make([]int, n)
+	for i := range order {
+		order[i] = i
+	}
+	sort.SliceStable(order, func(a, b int) bool { return xs[order[a]] < xs[order[b]] })
+	return order
+}
+
+func permute[T any](v []T, order []int) []T {
+	out := make([]T, len(v))
+	for i, j := range order {
+		out[i] = v[j]
+	}
+	return out
+}
 
 // countRoom is how far a bus's track keeps from the box whose stub or drop
 // carries the bus's count: the count's height and a clear margin.
