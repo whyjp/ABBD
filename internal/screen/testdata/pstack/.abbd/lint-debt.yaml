@@ -1,0 +1,12 @@
+# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
+# abbd lint fails on a hard breach past its view's debt, on a weighed sum
+# past its ceiling, and on a placement debt more than 2% past its ceiling.
+# abbd lint --record writes this file from what the drawings measure now.
+ceilings:
+    placement: 176
+    weighed: 5094
+debt:
+    MOD-0001 focus FEAT-0008 docs/harness/claude-code.md:
+        R: 1
+    overview:
+        J3: 52

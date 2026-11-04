@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "482"
+          lines: "514"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "363"
+          lines: "382"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "367"
+          lines: "386"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "370"
+          lines: "389"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "495"
+          lines: "514"
           symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "110"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "374"
+          lines: "393"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "308"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "436"
+          lines: "455"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "448"
+          lines: "467"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "294"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "457"
+          lines: "476"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "467"
+          lines: "486"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "461"
+          lines: "480"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -145,7 +145,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "471"
+          lines: "490"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -158,7 +158,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "472"
+          lines: "491"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -180,7 +180,7 @@ steps:
         internal/store/store.go#quote-bace279f: 7b2259bf39672043
         internal/store/store.go#quote-d57cbb81: 85dc2f778cc996e7
     - unit: MOD-0041
-      does: UpgradeUnderstandings(), SaveState() → state.yaml with revision and fingerprint
+      does: UpgradeUnderstandings(), then SaveState() writes revision and fingerprint
       calls:
         - DATA-0006
       evidence:
@@ -192,7 +192,7 @@ steps:
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
-        internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
+        internal/store/store.go#quote-7d54ae9a: b356d62f32e8f6d1
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
     - unit: MOD-0007
       does: publish() → every page and graph.json, after a command writes, or saves part of what it then refuses
@@ -201,7 +201,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "334"
+          lines: "353"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
@@ -240,6 +240,18 @@ retired:
         cmd/abbd/screen.go#quote-18c7c622: 8d8ed08440cabc5e
         cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
         cmd/abbd/screen.go#quote-f313962c: 4a93f263f38fbe1b
+    - unit: MOD-0041
+      does: UpgradeUnderstandings(), SaveState() → state.yaml with revision and fingerprint
+      evidence:
+        - path: internal/store/understanding.go
+          lines: "524"
+          quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
+        - path: internal/store/store.go
+          lines: "383"
+          quote: func (s Store) SaveState(st State) error {
+      code:
+        internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
+        internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.

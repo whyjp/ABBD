@@ -16,7 +16,7 @@ import (
 // room for it. Lines run on a grid: down out of a box, across in the gap
 // between two rows on a track of their own, down through a row on their
 // chain or in the space between boxes, and into the box they reach. docs/blueprint-svg.md states the rules this
-// layout keeps; legible_test.go measures them. Everything is sorted before it
+// layout keeps; legible.go measures them. Everything is sorted before it
 // is placed, so the same graph always gives the same picture.
 
 type lnode struct {

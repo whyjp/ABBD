@@ -137,6 +137,17 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
+abbd lint [VIEW] [--json] [--list] [--record] [--root DIR]
+                                     hold every drawing of the blueprint, or the views whose name
+                                     starts with VIEW or holds it as a word, such as a unit ID, to
+                                     the drawing criteria of docs/blueprint-svg.md; prints each
+                                     breach with the boxes, lines or chips it involves, what it
+                                     measures against what is allowed and why, then the totals per
+                                     view and in all; exits 1 on a hard breach past the debt
+                                     .abbd/lint-debt.yaml records for its view, or, over every
+                                     view, on a total past its ceiling there; --list names the
+                                     views; --record writes what the drawings measure now as
+                                     their debt and ceilings
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
@@ -177,6 +188,7 @@ type opts struct {
 	reason           string
 	base             string
 	asJSON, check    bool
+	list, record     bool
 	features         bool
 	verbose, restamp bool
 	rereadBy         string
@@ -213,6 +225,12 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"verbose": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.verbose, "verbose", false, "list every unit, not only what needs attention")
+	},
+	"list": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.list, "list", false, "list the names of the views and check nothing")
+	},
+	"record": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.record, "record", false, "write what the drawings measure now as their debt and ceilings")
 	},
 	"check": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.check, "check", false, "exit 1 on what the command's usage line names")
@@ -264,6 +282,7 @@ var commands = map[string]command{
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"lint":            {flags: []string{"root", "json", "list", "record"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
 type invocation struct {

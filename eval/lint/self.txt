@@ -1,0 +1,385 @@
+overview
+  P1 target  box "internal/identity" (MOD-0026) stands 1 row below box "abbd CLI" (MOD-0001), which it uses, 2 rows short of standing above it, allowed 0
+  P1 target  box "internal/screen" (MOD-0034) stands 1 row below box "abbd CLI" (MOD-0001), which it uses, 2 rows short of standing above it, allowed 0
+  P1 target  box "/abbd" (FEAT-0001) stands 1 row below box "abbd CLI" (MOD-0001), which it uses, 2 rows short of standing above it, allowed 0
+  P1 target  box "/abbd" (FEAT-0001) stands 2 rows below box "/abbd-setup" (FEAT-0002), which it uses, 3 rows short of standing above it, allowed 0
+  P1 target  box "internal/store" (MOD-0041) stands 1 row below box "internal/identity" (MOD-0026), which it uses, 2 rows short of standing above it, allowed 0
+  P2 target  box "internal/evidence" (MOD-0013), box "internal/identity" (MOD-0026) are used by exactly the same places and stand in 2 rows, allowed 1
+  B1 target  the line from box "/abbd" (FEAT-0001) to box "pstack (external)" (MOD-0055) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup" (FEAT-0002) to box "pstack (external)" (MOD-0055) turns 4 times, allowed 2, 2 turns in excess (same column, around box "/abbd" (FEAT-0001), chip "계약 20개")
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/evidence" (MOD-0013) turns 6 times, allowed 2, 4 turns in excess (same column, around box "internal/screen" (MOD-0034), box "internal/topology" (MOD-0047), chip "계약 5개", chip "계약 3개", chip "relation key", chip "relation key")
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/gitx" (MOD-0022) turns 8 times, allowed 2, 6 turns in excess (same column, around box "internal/identity" (MOD-0026), box "internal/store" (MOD-0041), chip "sync state", chip "계약 2개", chip "계약 5개", chip "sync state")
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/identity" (MOD-0026) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/model" (MOD-0030) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/screen" (MOD-0034) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/store" (MOD-0041) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/topology" (MOD-0047) turns 6 times, allowed 2, 4 turns in excess (same column, around box "internal/screen" (MOD-0034), chip "계약 5개", chip "계약 3개", chip "relation key")
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/narrative" (MOD-0056) turns 6 times, allowed 2, 4 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "internal/bootstrap" (MOD-0009) to box "internal/extract" (MOD-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/bootstrap" (MOD-0009) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "internal/evidence" (MOD-0013) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "abbd CLI" (MOD-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/gitx" (MOD-0022) turns 4 times, allowed 2, 2 turns in excess (same column, around box "internal/store" (MOD-0041), chip "계약 2개", chip "계약 5개", chip "sync state")
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (same column, around box "internal/gitx" (MOD-0022), box "internal/store" (MOD-0041), chip "계약 5개")
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/store" (MOD-0041) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "abbd CLI" (MOD-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/gitx" (MOD-0022) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/model" (MOD-0030) turns 6 times, allowed 0, 6 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/topology" (MOD-0047) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/narrative" (MOD-0056) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/gitx" (MOD-0022) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/identity" (MOD-0026) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/model" (MOD-0030) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/topology" (MOD-0047) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (same column, around box "internal/evidence" (MOD-0013))
+  B1 target  the line from box "internal/group" (MOD-0054) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B2 target  the line from box "/abbd" (FEAT-0001) to box "pstack (external)" (MOD-0055) has 1 stretch under 24px between turns, allowed 0, at 102,308 102,332 106,332 106,424
+  B2 target  the line from box "abbd CLI" (MOD-0001) to box "internal/gitx" (MOD-0022) has 1 stretch under 24px between turns, allowed 0, at 657,188 657,220 953,220 953,380 1106,380 1106,508 1098,508 1098,556 537,556 537,584
+  B2 target  the line from box "abbd CLI" (MOD-0001) to box "internal/topology" (MOD-0047) has 2 stretches under 24px between turns, allowed 0, at 657,188 657,220 953,220 953,380 780,380 780,388 788,388 788,424
+  B2 target  the line from box "abbd CLI" (MOD-0001) to box "internal/narrative" (MOD-0056) has 1 stretch under 24px between turns, allowed 0, at 657,188 657,220 953,220 953,380 780,380 780,388 1010,388 1010,424
+  B2 target  the line from box "internal/bootstrap" (MOD-0009) to box "internal/extract" (MOD-0017) has 1 stretch under 24px between turns, allowed 0, at 327,308 327,348 310,348 310,424
+  B2 target  the line from box "internal/screen" (MOD-0034) to box "internal/model" (MOD-0030) has 2 stretches under 24px between turns, allowed 0, at 869,308 869,332 870,332 870,372 886,372 886,668 705,668 705,696
+  B2 target  the line from box "internal/screen" (MOD-0034) to box "internal/topology" (MOD-0047) has 1 stretch under 24px between turns, allowed 0, at 801,308 801,388 788,388 788,424
+  B2 target  the line from box "internal/store" (MOD-0041) to box "internal/gitx" (MOD-0022) has 2 stretches under 24px between turns, allowed 0, at 561,484 561,516 553,516 553,548 537,548 537,584
+  B2 target  the line from box "internal/store" (MOD-0041) to box "internal/identity" (MOD-0026) has 1 stretch under 24px between turns, allowed 0, at 561,424 561,332 559,332 559,308
+  B2 target  the line from box "internal/store" (MOD-0041) to box "internal/model" (MOD-0030) has 1 stretch under 24px between turns, allowed 0, at 561,484 561,516 553,516 553,548 628,548 628,696
+  H1 target  hub box "internal/extract" (MOD-0017), used by 3 places, stands 21px outside the span of their centres, allowed 0
+  O2 target  box "pstack (external)" (MOD-0055) is only used, but box "internal/evidence" (MOD-0013) stands below it, allowed 0
+  O2 target  box "internal/narrative" (MOD-0056) is only used, but box "internal/evidence" (MOD-0013) stands below it, allowed 0
+  totals: hard 0, target 46 (P1 5, P2 1, B1 27, B2 10, H1 1, O2 2); excess turns 87, placement 9, crossings 11, weighed 359; steps 55, jogs 13, phantoms 0, paths over 2 bends 15, traced bends 118, back 4
+overview focus FEAT-0001 /abbd
+  B1 target  the line from box "/abbd-setup" (FEAT-0002) to box "/abbd" (FEAT-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "/abbd" (FEAT-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+overview focus MOD-0001 abbd CLI
+  P2 target  box "internal/bootstrap" (MOD-0009), box "internal/evidence" (MOD-0013), box "internal/extract" (MOD-0017), box "internal/gitx" (MOD-0022), box "internal/model" (MOD-0030), box "internal/store" (MOD-0041), box "internal/topology" (MOD-0047), box "internal/group" (MOD-0054), box "internal/narrative" (MOD-0056) are used by exactly the same places and stand in 2 rows, allowed 1
+  B1 target  the line from box "/abbd-setup" (FEAT-0002) to box "abbd CLI" (MOD-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/evidence" (MOD-0013) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/gitx" (MOD-0022) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/identity" (MOD-0026↓) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/screen" (MOD-0034↓) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/group" (MOD-0054) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "abbd CLI" (MOD-0001) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup" (FEAT-0002) to box "abbd CLI" (MOD-0001) has 1 stretch under 24px between turns, allowed 0, at 553,92 553,100 551,100 551,128
+  totals: hard 0, target 10 (P2 1, B1 8, B2 1); excess turns 19, placement 1, crossings 0, weighed 76; steps 9, jogs 1, phantoms 0, paths over 2 bends 4, traced bends 38, back 0
+overview focus MOD-0009 internal/bootstrap
+  B1 target  the line from box "internal/bootstrap" (MOD-0009) to box "internal/extract" (MOD-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/bootstrap" (MOD-0009) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+overview focus MOD-0013 internal/evidence
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/evidence" (MOD-0013) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/evidence" (MOD-0013) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+overview focus MOD-0017 internal/extract
+  B1 target  the line from box "internal/extract" (MOD-0017) to box "internal/gitx" (MOD-0022) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/extract" (MOD-0017) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/extract" (MOD-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "internal/identity" (MOD-0026) to box "internal/extract" (MOD-0017) has 1 stretch under 24px between turns, allowed 0, at 318,92 318,108 305,108 305,136
+  totals: hard 0, target 4 (B1 3, B2 1); excess turns 7, placement 0, crossings 0, weighed 28; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 10, back 0
+overview focus MOD-0022 internal/gitx
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/gitx" (MOD-0022) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "internal/store" (MOD-0041) to box "internal/gitx" (MOD-0022) has 1 stretch under 24px between turns, allowed 0, at 499,92 499,100 489,100 489,128
+  totals: hard 0, target 2 (B1 1, B2 1); excess turns 3, placement 0, crossings 0, weighed 12; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 10, back 0
+overview focus MOD-0026 internal/identity
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/identity" (MOD-0026) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/store" (MOD-0041↓) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/identity" (MOD-0026) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 3 (B1 3); excess turns 6, placement 0, crossings 0, weighed 24; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 14, back 0
+overview focus MOD-0030 internal/model
+  B1 target  the line from box "internal/evidence" (MOD-0013) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/extract" (MOD-0017) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/group" (MOD-0054) to box "internal/model" (MOD-0030) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  totals: hard 0, target 4 (B1 4); excess turns 8, placement 0, crossings 0, weighed 32; steps 4, jogs 0, phantoms 0, paths over 2 bends 2, traced bends 20, back 0
+overview focus MOD-0034 internal/screen
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "abbd CLI" (MOD-0001↓) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "internal/screen" (MOD-0034) to box "abbd CLI" (MOD-0001↓) has 1 stretch under 24px between turns, allowed 0, at 511,188 511,220 519,220 519,232
+  totals: hard 0, target 3 (B1 2, B2 1); excess turns 5, placement 0, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 12, back 0
+overview focus MOD-0041 internal/store
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/store" (MOD-0041) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/identity" (MOD-0026) to box "internal/store" (MOD-0041) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/gitx" (MOD-0022) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/store" (MOD-0041) to box "internal/model" (MOD-0030) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 4 (B1 4); excess turns 8, placement 0, crossings 0, weighed 32; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 14, back 0
+overview focus MOD-0047 internal/topology
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/topology" (MOD-0047) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/topology" (MOD-0047) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+overview focus MOD-0055 pstack (external)
+  B1 target  the line from box "/abbd" (FEAT-0001) to box "pstack (external)" (MOD-0055) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup" (FEAT-0002) to box "pstack (external)" (MOD-0055) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+overview focus MOD-0056 internal/narrative
+  B1 target  the line from box "abbd CLI" (MOD-0001) to box "internal/narrative" (MOD-0056) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "internal/screen" (MOD-0034) to box "internal/narrative" (MOD-0056) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+FEAT-0001 /abbd
+  B1 target  the line from box "/abbd ask the blueprint before the code" (FEAT-0004) to chip "abbd status" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd ask the blueprint before the code" (FEAT-0004) to chip "abbd impact" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd ask the blueprint before the code" (FEAT-0004) to chip "abbd explain" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to box "/abbd ask the blueprint before the code" (FEAT-0004) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to chip "→ pstack (external)" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "/abbd record what a reader found" (FEAT-0006) to box "/abbd read the code through pstack" (FEAT-0005) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd record what a reader found" (FEAT-0006) to chip "abbd record unit" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd record what a reader found" (FEAT-0006) to chip "abbd understand" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd what the human states" (FEAT-0007) to chip "abbd record relation" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd after work" (FEAT-0008) to chip "abbd diff" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "← abbd CLI" to box "/abbd ask the blueprint before the code" (FEAT-0004) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to box "/abbd ask the blueprint before the code" (FEAT-0004) has 3 stretches under 24px between turns, allowed 0, at 459,242 459,266 475,266 475,282 491,282 491,310
+  B2 target  the line from box "/abbd record what a reader found" (FEAT-0006) to chip "abbd record unit" has 1 stretch under 24px between turns, allowed 0, at 341,90 341,62 325,62 325,38
+  B2 target  the line from chip "← abbd CLI" to box "/abbd ask the blueprint before the code" (FEAT-0004) has 2 stretches under 24px between turns, allowed 0, at 561,38 561,274 553,274 553,282 491,282 491,310
+  F1 target  chip "abbd evidence" stands 76px right of box "/abbd evidence and CI gate" (FEAT-0009), which its lines reach, allowed 0
+  F1 target  chip "abbd sync" stands 70px left of box "/abbd after work" (FEAT-0008), which its lines reach, allowed 0
+  F1 target  chip "abbd path" stands 21px right of box "/abbd ask the blueprint before the code" (FEAT-0004), which its lines reach, allowed 0
+  F1 target  chip "abbd record fact" stands 124px right of box "/abbd what the human states" (FEAT-0007), which its lines reach, allowed 0
+  F1 target  chip "abbd exit codes" stands 183px right of box "/abbd evidence and CI gate" (FEAT-0009), which its lines reach, allowed 0
+  F1 target  chip "→ abbd-setup" stands 48px right of box "/abbd ground rules" (FEAT-0003), which its lines reach, allowed 0
+  F1 target  chip "→ pstack (external)" stands 130px left of box "/abbd read the code through pstack" (FEAT-0005), which its lines reach, allowed 0
+  totals: hard 0, target 21 (B1 11, B2 3, F1 7); excess turns 32, placement 7, crossings 0, weighed 128; steps 12, jogs 6, phantoms 0, paths over 2 bends 3, traced bends 46, back 2
+FEAT-0001 focus FEAT-0004 /abbd ask the blueprint before the code
+  B1 target  the line from box "/abbd ask the blueprint before the code" (FEAT-0004) to chip "impact" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd ask the blueprint before the code" (FEAT-0004) to chip "explain" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to box "/abbd ask the blueprint before the code" (FEAT-0004) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  F1 target  chip "path" stands 54px right of box "/abbd ask the blueprint before the code" (FEAT-0004), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 3, F1 1); excess turns 6, placement 1, crossings 0, weighed 24; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+FEAT-0001 focus FEAT-0005 /abbd read the code through pstack
+  B1 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to box "/abbd ask the blueprint before the code" (FEAT-0004) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to chip "→ pstack (external)" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd read the code through pstack" (FEAT-0005) to chip "→ pstack (external)" has 1 stretch under 24px between turns, allowed 0, at 252,214 252,238 244,238 244,334
+  totals: hard 0, target 3 (B1 2, B2 1); excess turns 5, placement 0, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+FEAT-0001 focus FEAT-0006 /abbd record what a reader found
+  B1 target  the line from box "/abbd record what a reader found" (FEAT-0006) to box "/abbd read the code through pstack" (FEAT-0005) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd record what a reader found" (FEAT-0006) to chip "record unit" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  F1 target  chip "understand" stands 57px right of box "/abbd record what a reader found" (FEAT-0006), which its lines reach, allowed 0
+  totals: hard 0, target 3 (B1 2, F1 1); excess turns 4, placement 1, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+FEAT-0001 focus FEAT-0007 /abbd what the human states
+  B1 target  the line from box "/abbd what the human states" (FEAT-0007) to chip "record relation" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 1 (B1 1); excess turns 2, placement 0, crossings 0, weighed 8; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 2, back 0
+FEAT-0001 focus FEAT-0008 /abbd after work
+  B1 target  the line from box "/abbd after work" (FEAT-0008) to chip "sync" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 1 (B1 1); excess turns 2, placement 0, crossings 0, weighed 8; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 2, back 0
+FEAT-0001 focus FEAT-0009 /abbd evidence and CI gate
+  B1 target  the line from box "/abbd evidence and CI gate" (FEAT-0009) to chip "diff" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd evidence and CI gate" (FEAT-0009) to chip "evidence" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd evidence and CI gate" (FEAT-0009) to chip "diff" has 1 stretch under 24px between turns, allowed 0, at 180,122 180,146 172,146 172,158
+  F1 target  chip "exit codes" stands 18px right of box "/abbd evidence and CI gate" (FEAT-0009), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 2, B2 1, F1 1); excess turns 5, placement 1, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+FEAT-0002 /abbd-setup
+  B1 target  the line from box "/abbd-setup preconditions and stance" (FEAT-0010) to chip "→ pstack (external)" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to chip "→ pstack (external)" turns 4 times, allowed 2, 2 turns in excess (same column, around box "/abbd-setup preconditions and stance" (FEAT-0010))
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup extraction format" (FEAT-0017) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to chip "→ pstack (external)" turns 8 times, allowed 2, 6 turns in excess (same column, around box "/abbd-setup preconditions and stance" (FEAT-0010), box "/abbd-setup find units with a reader swarm" (FEAT-0011))
+  B1 target  the line from box "/abbd-setup run setup and resolve refusals" (FEAT-0014) to box "/abbd-setup write the reader supplement" (FEAT-0013) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup store how's account per module" (FEAT-0015) to chip "abbd understand" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup verify, install and hand over" (FEAT-0016) to chip "→ abbd" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup extraction format" (FEAT-0017) to chip "abbd record fact" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup extraction format" (FEAT-0017) to chip "abbd record parent" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup preconditions and stance" (FEAT-0010) to chip "→ pstack (external)" has 1 stretch under 24px between turns, allowed 0, at 432,474 432,498 455,498 455,542
+  B2 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) has 2 stretches under 24px between turns, allowed 0, at 451,218 451,242 416,242 416,258 408,258 408,286
+  B2 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to chip "→ pstack (external)" has 2 stretches under 24px between turns, allowed 0, at 451,218 451,242 278,242 278,378 542,378 542,386 558,386 558,498 455,498 455,542
+  B2 target  the line from box "/abbd-setup run setup and resolve refusals" (FEAT-0014) to box "/abbd-setup write the reader supplement" (FEAT-0013) has 1 stretch under 24px between turns, allowed 0, at 200,122 200,146 213,146 213,158
+  B2 target  the line from box "/abbd-setup extraction format" (FEAT-0017) to chip "abbd record parent" has 1 stretch under 24px between turns, allowed 0, at 199,474 199,498 179,498 179,542
+  H1 target  hub box "/abbd-setup extraction format" (FEAT-0017), used by 3 places, stands 14px outside the span of their centres, allowed 0
+  totals: hard 0, target 16 (B1 10, B2 5, H1 1); excess turns 33, placement 1, crossings 0, weighed 132; steps 19, jogs 7, phantoms 0, paths over 2 bends 4, traced bends 42, back 0
+FEAT-0002 focus FEAT-0011 /abbd-setup find units with a reader swarm
+  B1 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to box "/abbd-setup extraction format" (FEAT-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to chip "→ pstack (external)" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup verify, install and hand over" (FEAT-0016) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to chip "→ pstack (external)" has 1 stretch under 24px between turns, allowed 0, at 249,218 249,242 241,242 241,338
+  totals: hard 0, target 5 (B1 4, B2 1); excess turns 9, placement 0, crossings 0, weighed 36; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+FEAT-0002 focus FEAT-0012 /abbd-setup build the deterministic extractor
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to box "/abbd-setup extraction format" (FEAT-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to chip "→ pstack (external)" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup build the deterministic extractor" (FEAT-0012) to chip "→ pstack (external)" has 1 stretch under 24px between turns, allowed 0, at 244,214 244,238 236,238 236,334
+  totals: hard 0, target 4 (B1 3, B2 1); excess turns 7, placement 0, crossings 0, weighed 28; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+FEAT-0002 focus FEAT-0014 /abbd-setup run setup and resolve refusals
+  B1 target  the line from box "/abbd-setup run setup and resolve refusals" (FEAT-0014) to box "/abbd-setup build the deterministic extractor" (FEAT-0012) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup run setup and resolve refusals" (FEAT-0014) to box "/abbd-setup write the reader supplement" (FEAT-0013) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+FEAT-0002 focus FEAT-0015 /abbd-setup store how's account per module
+  B1 target  the line from box "/abbd-setup store how's account per module" (FEAT-0015) to chip "abbd understand" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup store how's account per module" (FEAT-0015) to chip "→ pstack (external)" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup store how's account per module" (FEAT-0015) to chip "abbd understand" has 1 stretch under 24px between turns, allowed 0, at 132,122 132,130 137,130 137,146
+  totals: hard 0, target 3 (B1 2, B2 1); excess turns 5, placement 0, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+FEAT-0002 focus FEAT-0016 /abbd-setup verify, install and hand over
+  B1 target  the line from box "/abbd-setup verify, install and hand over" (FEAT-0016) to box "/abbd-setup find units with a reader swarm" (FEAT-0011) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup verify, install and hand over" (FEAT-0016) to chip "abbd install" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup verify, install and hand over" (FEAT-0016) to chip "→ abbd" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  F1 target  chip "→ abbd CLI" stands 24px right of box "/abbd-setup verify, install and hand over" (FEAT-0016), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 3, F1 1); excess turns 6, placement 1, crossings 0, weighed 24; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+FEAT-0002 focus FEAT-0017 /abbd-setup extraction format
+  B1 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to box "/abbd-setup extraction format" (FEAT-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "/abbd-setup extraction format" (FEAT-0017) to chip "record parent" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "/abbd-setup find units with a reader swarm" (FEAT-0011) to box "/abbd-setup extraction format" (FEAT-0017) has 1 stretch under 24px between turns, allowed 0, at 352,122 352,130 360,130 360,158
+  totals: hard 0, target 3 (B1 2, B2 1); excess turns 5, placement 0, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0001 abbd CLI
+  P1 target  box "setup determinism proof and supplement fold" (MOD-0008) stands 1 row below box "sync pipeline" (MOD-0004), which it uses, 2 rows short of standing above it, allowed 0
+  B1 target  the line from box "review commands" (MOD-0002) to box "blueprint publish" (MOD-0007) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "review commands" (MOD-0002) to chip "→ evidence" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "review commands" (MOD-0002) to chip "→ gitx" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "review commands" (MOD-0002) to chip "→ topology" turns 4 times, allowed 2, 2 turns in excess (same column, around box "setup determinism proof and supplement fold" (MOD-0008))
+  B1 target  the line from box "argv parsing and dispatch" (MOD-0003) to box "blueprint publish" (MOD-0007) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "sync pipeline" (MOD-0004) to box "setup determinism proof and supplement fold" (MOD-0008) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "sync pipeline" (MOD-0004) to chip "sync state" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "sync pipeline" (MOD-0004) to chip "→ gitx" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "query commands" (MOD-0005) to box "record writers" (MOD-0006) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "query commands" (MOD-0005) to chip "module understanding" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "query commands" (MOD-0005) to chip "→ topology" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "record writers" (MOD-0006) to chip "relation key" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "record writers" (MOD-0006) to chip "module understanding" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from box "setup determinism proof and supplement fold" (MOD-0008) to box "sync pipeline" (MOD-0004) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "review commands" (MOD-0002) to chip "→ gitx" has 2 stretches under 24px between turns, allowed 0, at 547,106 547,274 539,274 539,290 183,290 183,366
+  B2 target  the line from box "review commands" (MOD-0002) to chip "→ topology" has 1 stretch under 24px between turns, allowed 0, at 547,106 547,274 555,274 555,338 664,338 664,366
+  B2 target  the line from box "sync pipeline" (MOD-0004) to chip "→ gitx" has 1 stretch under 24px between turns, allowed 0, at 851,106 851,250 843,250 843,290 183,290 183,366
+  B2 target  the line from box "record writers" (MOD-0006) to chip "module understanding" has 2 stretches under 24px between turns, allowed 0, at 1000,218 1000,250 1008,250 1008,258 1168,258 1168,366
+  F1 target  chip "extraction JSON" stands 85px left of box "setup determinism proof and supplement fold" (MOD-0008), box "sync pipeline" (MOD-0004), which its lines reach, allowed 0
+  F1 target  chip "unit files" stands 101px left of box "record writers" (MOD-0006), box "review commands" (MOD-0002), which its lines reach, allowed 0
+  F1 target  chip "→ abbd" stands 49px left of box "CLAUDE.md abbd block" (DATA-0001), which its lines reach, allowed 0
+  F1 target  chip "→ gitx" stands 285px left of box "review commands" (MOD-0002), box "sync pipeline" (MOD-0004), which its lines reach, allowed 0
+  F1 target  chip "→ screen" stands 225px left of box "blueprint publish" (MOD-0007), which its lines reach, allowed 0
+  F1 target  chip "→ bootstrap" stands 300px left of box "setup determinism proof and supplement fold" (MOD-0008), which its lines reach, allowed 0
+  totals: hard 0, target 25 (P1 1, B1 14, B2 4, F1 6); excess turns 34, placement 7, crossings 12, weighed 148; steps 16, jogs 6, phantoms 0, paths over 2 bends 5, traced bends 60, back 1
+MOD-0001 focus MOD-0002 review commands
+  B1 target  the line from box "review commands" (MOD-0002) to box "blueprint publish" (MOD-0007) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "review commands" (MOD-0002) to chip "unit files" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "review commands" (MOD-0002) to chip "→ gitx" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  F1 target  chip "→ topology" stands 50px right of box "review commands" (MOD-0002), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 3, F1 1); excess turns 6, placement 1, crossings 0, weighed 24; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0001 focus MOD-0004 sync pipeline
+  B1 target  the line from box "sync pipeline" (MOD-0004) to box "setup determinism proof and supplement fold" (MOD-0008↓) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "sync pipeline" (MOD-0004) to chip "sync state" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "sync pipeline" (MOD-0004) to chip "→ evidence" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "sync pipeline" (MOD-0004) to chip "sync state" has 1 stretch under 24px between turns, allowed 0, at 267,198 267,310 258,310 258,326
+  F1 target  chip "project.yaml" stands 109px left of box "sync pipeline" (MOD-0004), which its lines reach, allowed 0
+  F1 target  chip "→ gitx" stands 61px right of box "sync pipeline" (MOD-0004), which its lines reach, allowed 0
+  F1 target  chip "→ identity" stands 124px right of box "sync pipeline" (MOD-0004), which its lines reach, allowed 0
+  totals: hard 0, target 7 (B1 3, B2 1, F1 3); excess turns 7, placement 3, crossings 0, weighed 28; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 14, back 0
+MOD-0001 focus MOD-0005 query commands
+  B1 target  the line from box "query commands" (MOD-0005) to box "record writers" (MOD-0006) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "query commands" (MOD-0005) to chip "→ topology" turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B2 target  the line from box "query commands" (MOD-0005) to chip "→ topology" has 1 stretch under 24px between turns, allowed 0, at 219,106 219,130 196,130 196,194 304,194 304,210
+  F1 target  chip "→ topology" stands 3px right of box "query commands" (MOD-0005), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 2, B2 1, F1 1); excess turns 5, placement 1, crossings 0, weighed 20; steps 3, jogs 1, phantoms 0, paths over 2 bends 1, traced bends 6, back 0
+MOD-0001 focus MOD-0006 record writers
+  B1 target  the line from box "record writers" (MOD-0006) to chip "relation key" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "record writers" (MOD-0006) to chip "module understanding" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "record writers" (MOD-0006) to chip "module understanding" has 1 stretch under 24px between turns, allowed 0, at 196,182 196,214 177,214 177,226
+  F1 target  chip "unit files" stands 61px left of box "record writers" (MOD-0006), which its lines reach, allowed 0
+  F1 target  chip "→ evidence" stands 61px right of box "record writers" (MOD-0006), which its lines reach, allowed 0
+  totals: hard 0, target 5 (B1 2, B2 1, F1 2); excess turns 5, placement 2, crossings 0, weighed 20; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0001 focus MOD-0007 blueprint publish
+  B1 target  the line from box "review commands" (MOD-0002) to box "blueprint publish" (MOD-0007) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "argv parsing and dispatch" (MOD-0003) to box "blueprint publish" (MOD-0007) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 1, weighed 17; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+MOD-0001 focus MOD-0008 setup determinism proof and supplement fold
+  B1 target  the line from box "setup determinism proof and supplement fold" (MOD-0008) to box "sync pipeline" (MOD-0004↓) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "setup determinism proof and supplement fold" (MOD-0008) to chip "→ bootstrap" turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 6, placement 0, crossings 0, weighed 24; steps 2, jogs 0, phantoms 0, paths over 2 bends 1, traced bends 6, back 0
+MOD-0013 internal/evidence
+  B1 target  the line from box "liveness and line moves" (MOD-0014) to chip "→ model" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "quote matching" (MOD-0015) to box "whitespace- free file index" (MOD-0016) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "quote matching" (MOD-0015) to chip "→ model" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "quote matching" (MOD-0015) to box "whitespace- free file index" (MOD-0016) has 1 stretch under 24px between turns, allowed 0, at 149,186 149,194 164,194 164,218
+  totals: hard 0, target 4 (B1 3, B2 1); excess turns 7, placement 0, crossings 0, weighed 28; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+MOD-0017 internal/extract
+  B1 target  the line from box "key and parent checks" (MOD-0018) to chip "model" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 1 (B1 1); excess turns 2, placement 0, crossings 0, weighed 8; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+MOD-0022 internal/gitx
+  B1 target  the line from box "rename detection" (MOD-0024) to box "working-tree snapshot" (MOD-0025) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "abbd CLI" to box "default-branch base search" (MOD-0023) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "screen" to box "working-tree snapshot" (MOD-0025) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from chip "screen" to box "working-tree snapshot" (MOD-0025) has 1 stretch under 24px between turns, allowed 0, at 198,38 198,70 190,70 190,178
+  totals: hard 0, target 4 (B1 3, B2 1); excess turns 7, placement 0, crossings 0, weighed 28; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0030 internal/model
+  B1 target  the line from chip "abbd CLI" to box "evidence citation" (IF-0017) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "evidence" to box "unit absent flag" (DATA-0015) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "evidence" to box "evidence line range text" (DATA-0019) turns 6 times, allowed 0, 6 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "evidence" to box "guess versus topology rule" (MOD-0031) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "extract" to box "evidence citation" (IF-0017) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "extract" to box "relation grammar" (MOD-0032) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "gitx" to box "citable evidence paths" (DATA-0020) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "store" to box "unit kind directories" (DATA-0012) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "store" to box "unit absent flag" (DATA-0015) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "topology" to box "drawn versus listed relation rule" (DATA-0010) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "topology" to box "evidence line range text" (DATA-0019) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "group" to box "unit absent flag" (DATA-0015) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from chip "abbd CLI" to box "evidence citation" (IF-0017) has 2 stretches under 24px between turns, allowed 0, at 691,38 691,130 699,130 699,138 756,138 756,182
+  B2 target  the line from chip "evidence" to box "unit absent flag" (DATA-0015) has 1 stretch under 24px between turns, allowed 0, at 481,38 481,102 496,102 496,154 532,154 532,182
+  B2 target  the line from chip "evidence" to box "evidence line range text" (DATA-0019) has 1 stretch under 24px between turns, allowed 0, at 481,38 481,102 496,102 496,130 423,130 423,242 393,242 393,310
+  B2 target  the line from chip "topology" to box "drawn versus listed relation rule" (DATA-0010) has 1 stretch under 24px between turns, allowed 0, at 153,38 153,62 135,62 135,274 103,274 103,302
+  B2 target  the line from chip "topology" to box "evidence line range text" (DATA-0019) has 1 stretch under 24px between turns, allowed 0, at 153,38 153,62 135,62 135,258 295,258 295,310
+  F1 target  chip "gitx" stands 244px left of box "citable evidence paths" (DATA-0020), which its lines reach, allowed 0
+  totals: hard 0, target 18 (B1 12, B2 5, F1 1); excess turns 42, placement 1, crossings 4, weighed 172; steps 26, jogs 6, phantoms 0, paths over 2 bends 9, traced bends 54, back 2
+MOD-0034 internal/screen
+  P2 target  box "module inside" (MOD-0035), box "understanding text" (MOD-0040) are used by exactly the same places and stand in 2 rows, allowed 1
+  B1 target  the line from box "module inside" (MOD-0035) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "module inside" (MOD-0035) to box "overview plan" (MOD-0037) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "overview plan" (MOD-0037) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "overview plan" (MOD-0037) to chip "→ model" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "page template" (MOD-0038) to box "module inside" (MOD-0035) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "page template" (MOD-0038) to box "overview plan" (MOD-0037) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "freshness verdicts" (MOD-0039) to chip "→ store" turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "freshness verdicts" (MOD-0039) to chip "→ store" has 2 stretches under 24px between turns, allowed 0, at 535,298 535,426 527,426 527,434 408,434 408,462
+  F1 target  chip "blueprint files" stands 42px left of box "freshness verdicts" (MOD-0039), which its lines reach, allowed 0
+  totals: hard 0, target 10 (P2 1, B1 7, B2 1, F1 1); excess turns 18, placement 2, crossings 0, weighed 72; steps 4, jogs 2, phantoms 0, paths over 2 bends 1, traced bends 24, back 0
+MOD-0034 focus MOD-0035 module inside
+  B1 target  the line from box "module inside" (MOD-0035) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "module inside" (MOD-0035) to box "overview plan" (MOD-0037) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+MOD-0034 focus MOD-0036 layered layout and routing
+  B1 target  the line from box "module inside" (MOD-0035) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "overview plan" (MOD-0037) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+MOD-0034 focus MOD-0037 overview plan
+  B1 target  the line from box "module inside" (MOD-0035) to box "overview plan" (MOD-0037) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "overview plan" (MOD-0037) to box "layered layout and routing" (MOD-0036) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "overview plan" (MOD-0037) to chip "→ model" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "page template" (MOD-0038) to box "overview plan" (MOD-0037) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "overview plan" (MOD-0037) to chip "→ model" has 1 stretch under 24px between turns, allowed 0, at 192,186 192,210 184,210 184,306
+  totals: hard 0, target 5 (B1 4, B2 1); excess turns 9, placement 0, crossings 0, weighed 36; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0034 focus MOD-0038 page template
+  B1 target  the line from box "page template" (MOD-0038) to box "module inside" (MOD-0035) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B2 target  the line from box "page template" (MOD-0038) to box "module inside" (MOD-0035) has 1 stretch under 24px between turns, allowed 0, at 286,106 286,130 274,130 274,142
+  totals: hard 0, target 2 (B1 1, B2 1); excess turns 3, placement 0, crossings 0, weighed 12; steps 1, jogs 1, phantoms 0, paths over 2 bends 0, traced bends 6, back 0
+MOD-0034 focus MOD-0039 freshness verdicts
+  B1 target  the line from box "freshness verdicts" (MOD-0039) to chip "sync state" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "freshness verdicts" (MOD-0039) to chip "blueprint files" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "freshness verdicts" (MOD-0039) to chip "→ gitx" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  F1 target  chip "→ store" stands 22px right of box "freshness verdicts" (MOD-0039), which its lines reach, allowed 0
+  totals: hard 0, target 4 (B1 3, F1 1); excess turns 6, placement 1, crossings 0, weighed 24; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 8, back 0
+MOD-0034 focus MOD-0040 understanding text
+  B1 target  the line from box "understanding text" (MOD-0040) to chip "module understanding" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "understanding text" (MOD-0040) to chip "→ store" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 4, back 0
+MOD-0041 internal/store
+  B1 target  the line from box "store staleness hashes" (MOD-0042) to chip "sync state" turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "← abbd CLI" to box "ID high-water minting" (MOD-0043) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "← abbd CLI" to box "units at a revision" (MOD-0044) turns 4 times, allowed 2, 2 turns in excess (same column, around box "store staleness hashes" (MOD-0042))
+  B1 target  the line from chip "← abbd CLI" to box "module code digest" (MOD-0046) turns 4 times, allowed 0, 4 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "← identity" to box "merge candidates file" (DATA-0003) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "← identity" to box "ID high-water mark" (DATA-0018) turns 6 times, allowed 2, 4 turns in excess (different columns, a corner fits)
+  B2 target  the line from chip "← identity" to box "ID high-water mark" (DATA-0018) has 2 stretches under 24px between turns, allowed 0, at 164,38 164,62 111,62 111,90 119,90 119,98 332,98 332,126
+  totals: hard 0, target 7 (B1 6, B2 1); excess turns 18, placement 0, crossings 0, weighed 72; steps 12, jogs 2, phantoms 0, paths over 2 bends 4, traced bends 26, back 2
+MOD-0047 internal/topology
+  B1 target  the line from box "topology diff" (MOD-0049) to box "diff report fields" (DATA-0009) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from box "unit explanation" (MOD-0052) to box "topology diff" (MOD-0049) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "bootstrap" to box "contract code digest" (DATA-0021) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "screen" to box "top-level unit rule" (DATA-0011) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B1 target  the line from chip "group" to box "top-level unit rule" (DATA-0011) turns 4 times, allowed 2, 2 turns in excess (different columns, a corner fits)
+  B2 target  the line from chip "screen" to box "top-level unit rule" (DATA-0011) has 1 stretch under 24px between turns, allowed 0, at 548,38 548,150 556,150 556,190 794,190 794,218
+  H1 target  hub box "top-level unit rule" (DATA-0011), used by 3 places, stands 150px outside the span of their centres, allowed 0
+  O2 target  box "live links" (MOD-0051) is only used, but box "topology diff" (MOD-0049) stands below it, allowed 0
+  F1 target  chip "abbd CLI" stands 27px left of box "boundary rule" (MOD-0048), box "diff report fields" (DATA-0009), box "top-level unit rule" (DATA-0011), which its lines reach, allowed 0
+  F1 target  chip "group" stands 105px left of box "top-level unit rule" (DATA-0011), which its lines reach, allowed 0
+  R hard debt  rule 13: 2 of 9 arriving lines run up or left, limit 1
+  totals: hard 1, target 10 (B1 5, B2 1, H1 1, O2 1, F1 2, R 1); excess turns 11, placement 4, crossings 1, weighed 45; steps 7, jogs 1, phantoms 0, paths over 2 bends 3, traced bends 30, back 2
+MOD-0055 pstack (external)
+  B1 target  the line from chip "abbd" to box "pstack /blast-radius" (FEAT-0019) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  B1 target  the line from chip "abbd-setup" to box "pstack /swarm" (FEAT-0020) turns 2 times, allowed 0, 2 turns in excess (same column, the straight drop is clear)
+  totals: hard 0, target 2 (B1 2); excess turns 4, placement 0, crossings 0, weighed 16; steps 0, jogs 0, phantoms 0, paths over 2 bends 0, traced bends 10, back 0
+lint: 61 views, hard 1, target 284 (P1 6, P2 3, B1 193, B2 47, H1 3, O2 3, F1 29, R 1); excess turns 498, placement 44, crossings 29, weighed 2021; steps 184, jogs 60, phantoms 0, paths over 2 bends 52, traced bends 726, back 14
+lint: ceilings weighed 2021, placement 44
