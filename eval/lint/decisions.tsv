@@ -1,2 +1,3 @@
 id	hypothesis	change	before	after	delta	tests	verdict	note
 0	baseline	none, the criteria and abbd lint added	steps 1438, weighed 6017, hard 61 (all debt)	same	0	go test ./... passes	kept	eval/lint/baseline.tsv, routing identical to eval/render-r6/jogs-first.tsv
+1	re-measure	B1 allowance from the two ends alone, excess turns as the target, H2 without climbing lines, J1 on true splits next to their destinations, the gate in lint-debt.yaml	weighed 6017 (crossings + 4 x steps), H2 36	excess turns 3172, weighed 12953 (crossings + 4 x excess turns), placement 366, H2 6, hard 61 (all debt)	new measure	go test ./... passes	kept	routing identical to eval/render-r6/jogs-first.tsv, J1 holds all 789 true splits

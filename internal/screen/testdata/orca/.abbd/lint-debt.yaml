@@ -1,0 +1,18 @@
+# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
+# abbd lint fails on a hard breach past its view's debt, on a weighed sum
+# past its ceiling, and on a placement debt more than 2% past its ceiling.
+# abbd lint --record writes this file from what the drawings measure now.
+ceilings:
+    placement: 131
+    weighed: 5119
+debt:
+    MOD-0007 mobile app (Expo):
+        R: 1
+    MOD-0042 desktop main process:
+        R: 1
+    MOD-0056 Orca runtime (RPC host):
+        R: 1
+    MOD-0072 desktop renderer UI:
+        R: 1
+    MOD-0081 shared types and schemas:
+        R: 2

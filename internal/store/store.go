@@ -382,9 +382,41 @@ func pairs(n *yaml.Node) func(yield func(k, v *yaml.Node) bool) {
 
 func (s Store) SaveState(st State) error { return writeYAML(s.path("state.yaml"), st) }
 
+// LintDebt is what a repository's drawings owe the drawing criteria, kept
+// in .abbd/lint-debt.yaml for abbd lint. Ceilings bound the totals over
+// every view, by the names abbd lint gives them, and Views records each
+// view's hard breaches by criterion, which may fall and may not rise.
+type LintDebt struct {
+	Ceilings map[string]int            `yaml:"ceilings,omitempty"`
+	Views    map[string]map[string]int `yaml:"debt,omitempty"`
+}
+
+// LoadLintDebt reads what the drawings owe. With no file they owe nothing
+// and no total has a ceiling.
+func (s Store) LoadLintDebt() (LintDebt, error) {
+	var d LintDebt
+	return d, readYAML(s.path("lint-debt.yaml"), &d)
+}
+
+// lintDebtHead opens the lint debt file, which abbd lint --record writes.
+const lintDebtHead = `# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
+# abbd lint fails on a hard breach past its view's debt, on a weighed sum
+# past its ceiling, and on a placement debt more than 2% past its ceiling.
+# abbd lint --record writes this file from what the drawings measure now.
+`
+
+func (s Store) SaveLintDebt(d LintDebt) error {
+	b, err := yaml.Marshal(d)
+	if err != nil {
+		return err
+	}
+	return writeFile(s.path("lint-debt.yaml"), append([]byte(lintDebtHead), b...))
+}
+
 // InputsHash fingerprints every file under .abbd that a page can render, so
 // the blueprint is STALE whenever any of them changed. Neither the blueprint
-// nor the state, which records this hash, is an input.
+// nor the state, which records this hash, is an input, and nor is the lint
+// debt, which no page draws.
 func (s Store) InputsHash() (string, error) {
 	var files []string
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
@@ -393,7 +425,7 @@ func (s Store) InputsHash() (string, error) {
 			return err
 		case d.IsDir() && p == s.path("blueprint"):
 			return filepath.SkipDir
-		case p == s.path("state.yaml"):
+		case p == s.path("state.yaml"), p == s.path("lint-debt.yaml"):
 			return nil
 		case !d.IsDir():
 			files = append(files, p)

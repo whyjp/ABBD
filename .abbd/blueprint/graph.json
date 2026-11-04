@@ -2020,6 +2020,7 @@
         "internal/screen/figure.go",
         "internal/screen/flow.go",
         "internal/screen/focus.go",
+        "internal/screen/gate.go",
         "internal/screen/graph.go",
         "internal/screen/hover.go",
         "internal/screen/hues.go",
@@ -5490,6 +5491,15 @@
             ]
           },
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0001 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -7706,7 +7716,31 @@
                 "Code": true
               },
               {
-                "Text": " on every view or on those VIEW names. It prints each breach and the totals per view and in all, or with ",
+                "Text": " on every view or on those VIEW names. It loads ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/lint-debt.yaml",
+                "Code": true
+              },
+              {
+                "Text": " with ",
+                "Code": false
+              },
+              {
+                "Text": "LoadLintDebt",
+                "Code": true
+              },
+              {
+                "Text": " and holds the views to it with ",
+                "Code": false
+              },
+              {
+                "Text": "screen.Gate",
+                "Code": true
+              },
+              {
+                "Text": ", which marks each hard breach a view owes as debt. It prints each breach and the totals per view and in all, or with ",
                 "Code": false
               },
               {
@@ -7722,7 +7756,55 @@
                 "Code": true
               },
               {
-                "Text": " of the criteria, the views and the totals. It writes nothing, and it returns an error, so the command exits 1, only when a hard breach is found.",
+                "Text": " with its ",
+                "Code": false
+              },
+              {
+                "Text": "lintSchema",
+                "Code": true
+              },
+              {
+                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
+                "Code": false
+              },
+              {
+                "Text": "--list",
+                "Code": true
+              },
+              {
+                "Text": " prints the view names from ",
+                "Code": false
+              },
+              {
+                "Text": "screen.ViewNames",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "--record",
+                "Code": true
+              },
+              {
+                "Text": " writes ",
+                "Code": false
+              },
+              {
+                "Text": "screen.Record",
+                "Code": true
+              },
+              {
+                "Text": " of every view with ",
+                "Code": false
+              },
+              {
+                "Text": "SaveLintDebt",
+                "Code": true
+              },
+              {
+                "Text": ", the one write lint makes.",
                 "Code": false
               }
             ]
@@ -8241,7 +8323,23 @@
                           "Code": true
                         },
                         {
-                          "Text": " out, so writing this value does not change the hash it records.",
+                          "Text": " out, so writing this value does not change the hash it records. It leaves ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "lint-debt.yaml",
+                          "Code": true
+                        },
+                        {
+                          "Text": " out too, since no page draws it, so ",
+                          "Code": false
+                        },
+                        {
+                          "Text": "abbd lint --record",
+                          "Code": true
+                        },
+                        {
+                          "Text": " leaves the blueprint current.",
                           "Code": false
                         }
                       ]
@@ -8250,7 +8348,7 @@
                   "Quotes": [
                     "cmd/abbd/screen.go \"in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)\"",
                     "internal/screen/screen.go \"case in.Rendered == \\\"\\\" || in.Synced.Blueprint == \\\"\\\" || in.Synced.Rendered == \\\"\\\":\"",
-                    "internal/store/store.go \"case p == s.path(\\\"state.yaml\\\"):\""
+                    "internal/store/store.go \"case p == s.path(\\\"state.yaml\\\"), p == s.path(\\\"lint-debt.yaml\\\"):\""
                   ]
                 }
               },
@@ -9497,6 +9595,32 @@
               {
                 "Key": "json",
                 "Name": "--json",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "list",
+                "Name": "--list",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "record",
+                "Name": "--record",
                 "Shape": "bool",
                 "Need": "",
                 "Users": [
@@ -18977,6 +19101,15 @@
             ]
           },
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0034 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -21961,7 +22094,7 @@
                 "Code": true
               },
               {
-                "Text": ", each an ID, whether it is hard, and a check. ",
+                "Text": ", each an ID, whether it is hard, whether it counts toward the placement debt, and a check. ",
                 "Code": false
               },
               {
@@ -21993,15 +22126,31 @@
                 "Code": true
               },
               {
-                "Text": " visits the places each start reaches in order, so the breaches come out in the same order on every run. A check names the boxes, lines and chips of each breach, with what it measures against what is allowed, and for a line that turns too often the obstacle it turns around or the reason. ",
+                "Text": " visits the places each start reaches in order, so the breaches come out in the same order on every run. A check names the boxes, lines and chips of each breach as ",
                 "Code": false
               },
               {
-                "Text": "Sum",
+                "Text": "Item",
                 "Code": true
               },
               {
-                "Text": " adds the per-view ",
+                "Text": "s, by id and name, with what it measures against what is allowed, and for a line that turns too often the obstacle it turns around or the reason. ",
+                "Code": false
+              },
+              {
+                "Text": "allowance",
+                "Code": true
+              },
+              {
+                "Text": " reads a line's allowed turns from where its two ends stand and the shapes around them, never from the route. ",
+                "Code": false
+              },
+              {
+                "Text": "lines",
+                "Code": true
+              },
+              {
+                "Text": " pairs each traced line with its turns and allowance, and the per-view ",
                 "Code": false
               },
               {
@@ -22009,7 +22158,71 @@
                 "Code": true
               },
               {
-                "Text": ", whose steps are the measure a change to the renderer lowers. ",
+                "Text": " add its turns past the allowance and every jog as the excess turns, the measure a change to the renderer lowers. The weighed sum is the crossings plus ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " for each excess turn, and the placement debt counts the breaches of the placement criteria. ",
+                "Code": false
+              },
+              {
+                "Text": "splitAt",
+                "Code": true
+              },
+              {
+                "Text": " takes a dot as a split only when its lines arrive from one side and leave on several. ",
+                "Code": false
+              },
+              {
+                "Text": "Sum",
+                "Code": true
+              },
+              {
+                "Text": " adds the per-view totals. ",
+                "Code": false
+              },
+              {
+                "Text": "gate.go",
+                "Code": true
+              },
+              {
+                "Text": " holds views to a ",
+                "Code": false
+              },
+              {
+                "Text": "store.LintDebt",
+                "Code": true
+              },
+              {
+                "Text": ": ",
+                "Code": false
+              },
+              {
+                "Text": "Gate",
+                "Code": true
+              },
+              {
+                "Text": " marks the debt and lists the failures, ",
+                "Code": false
+              },
+              {
+                "Text": "Lowerable",
+                "Code": true
+              },
+              {
+                "Text": " what the debt records above what is measured, and ",
+                "Code": false
+              },
+              {
+                "Text": "Record",
+                "Code": true
+              },
+              {
+                "Text": " the debt of what is measured now. ",
                 "Code": false
               },
               {
@@ -22017,19 +22230,27 @@
                 "Code": true
               },
               {
-                "Text": " holds the fixtures' hard breaches to ",
+                "Text": " holds each fixture to its own ",
                 "Code": false
               },
               {
-                "Text": "lintDebt",
+                "Text": ".abbd/lint-debt.yaml",
                 "Code": true
               },
               {
-                "Text": " and their totals to ",
+                "Text": " with ",
                 "Code": false
               },
               {
-                "Text": "lintCeilings",
+                "Text": "Gate",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Lowerable",
                 "Code": true
               },
               {
@@ -22438,6 +22659,15 @@
       "Understanding": {
         "Stale": false,
         "Blocks": [
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0041 ---",
+                "Code": false
+              }
+            ]
+          },
           {
             "Kind": "h",
             "Parts": [
@@ -23449,11 +23679,19 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", ",
                 "Code": false
               },
               {
                 "Text": "state.yaml",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "lint-debt.yaml",
                 "Code": true
               },
               {
@@ -24370,6 +24608,52 @@
               },
               {
                 "Text": " runs.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "LintDebt",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "store.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "lint-debt.yaml",
+                "Code": true
+              },
+              {
+                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion and the ceilings of the gated totals. ",
+                "Code": false
+              },
+              {
+                "Text": "LoadLintDebt",
+                "Code": true
+              },
+              {
+                "Text": " reads none when the file is missing. ",
+                "Code": false
+              },
+              {
+                "Text": "SaveLintDebt",
+                "Code": true
+              },
+              {
+                "Text": " writes it under a comment that says what the file is. No page draws it, so it is no input of the blueprint.",
                 "Code": false
               }
             ]
@@ -28151,7 +28435,7 @@
             {
               "N": 12,
               "ID": "flow-sync.12",
-              "Does": "UpgradeUnderstandings(), SaveState() → state.yaml with revision and fingerprint",
+              "Does": "UpgradeUnderstandings(), then SaveState() writes revision and fingerprint",
               "Note": "",
               "Fails": "",
               "Badge": "",

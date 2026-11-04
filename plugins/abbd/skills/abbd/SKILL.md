@@ -155,27 +155,30 @@ pre-push:
 
 ## Hold the drawings to the criteria
 
-`docs/blueprint-svg.md` sets out the drawing criteria under "Drawing criteria". Each has an ID. A hard one must hold. A target one is minimized, and its total over the fixtures has a ceiling. Read that section before you change how a drawing is laid out or drawn, and lint before and after.
+`docs/blueprint-svg.md` sets out the drawing criteria under "Drawing criteria". Each has an ID. A hard one must hold. A target one is minimized. Read that section before you change how a drawing is laid out or drawn, and lint before and after.
 
-- `abbd lint` checks every drawing of the blueprint. It prints each breach with its view, its criterion, the boxes, lines or chips it involves, what it measures against what is allowed, and for a line that bends too often the obstacle or the reason. It ends with the totals per view and in all, and exits 1 only on a hard breach.
-- `abbd lint <VIEW>` checks the views whose name starts with VIEW or holds it as a word, so `abbd lint MOD-0098` checks that unit's inside and its focus views.
-- `abbd lint --json` prints the criteria, every breach and the totals as JSON.
+- `abbd lint` checks every drawing of the blueprint. It prints each breach with its view, its criterion, the boxes, lines or chips it involves, what it measures against what is allowed, and for a line that turns too often the obstacle or the reason. It ends with the totals per view and in all.
+- It exits 1 on a hard breach past the debt `.abbd/lint-debt.yaml` records for its view, or, over every view, on a total past its ceiling there. A breach the view owes prints as `hard debt`.
+- `abbd lint <VIEW>` checks the views whose name starts with VIEW or holds it as a word, so `abbd lint MOD-0098` checks that unit's inside and its focus views. `abbd lint --list` names every view.
+- `abbd lint --json` prints the report with a `schema` version. Each breach carries `debt` and its boxes and chips by `id` and `name`. The report ends with the gate's `failures`.
+- `abbd lint --record` writes what the drawings measure now to `.abbd/lint-debt.yaml`, as their debt and ceilings.
 - `abbd lint --root internal/screen/testdata/orca MOD-0098` lints a view of a fixture.
 
-The measure to lower is the steps. A step is every bend past a line's second, and every jog, a stretch under 24px between two bends ("Staircases first"). B1 and B2 list the steps line by line. A change may not raise these, the regression-forbidden measures:
+The target is the excess turns. They are each line's turns past what its two ends allow under B1, plus every jog under B2. A line in a clear column is allowed 0 turns, so a line that turns twice there has 2 excess turns though it has no step. The weighed sum is the crossings plus 4 times the excess turns. The placement debt is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. A change to the renderer is kept only through this gate:
 
-- the hard breaches of any view, J1, J2, J3, O3 and R, past the debt `internal/screen/lint_test.go` records
-- the totals of P1, P2, H1, H2, O1, O2 and F1
-- the phantom pairs, the paths that bend more than twice, the traced bends and the climbing lines
-- the weighed sum, the crossings plus 4 for each step, so a step saved may cost at most 4 crossings
+1. No view has more hard breaches of a criterion than its debt records.
+2. The weighed sum stays at or under its ceiling.
+3. The placement debt rises by at most 2% of its ceiling.
+4. The traced bends and the paths with more than two bends break ties. They have no ceiling.
+5. Any view whose weighed sum rises by more than 8 gets a look by eye.
 
-`TestLintFixtures` fails when one of them passes its ceiling or its debt. Change the renderer one thing at a time:
+The phantom pairs and the climbing lines are held by J3 and rule 13, not by a ceiling. `TestLintFixtures` holds each fixture under `internal/screen/testdata` to its own `.abbd/lint-debt.yaml` with the same gate. It also fails when a debt or a ceiling stands above what the fixture measures. Change the renderer one thing at a time:
 
 1. Write the fixtures' table with `ABBD_LINT_FIXTURES=<before.tsv> go test ./internal/screen -run TestLintFixtures -count=1`, and lint the views you mean to change.
-2. Read their breaches. Pick one cause, such as a chip that stands past its box or a step where a bus changes track. Write down the one change you expect to remove it, and what you expect it to cost.
-3. Make that one change, write `<after.tsv>` the same way, and run `python eval/lint/compare.py before <before.tsv> after <after.tsv>`. It totals both tables and lists every view that got worse.
-4. Keep the change only when the steps fall, no hard breach is new and no regression-forbidden total rises. Otherwise revert it, whatever else it improved.
+2. Read their breaches. Pick one cause, such as a chip that stands past its box or a bus that turns twice in a clear column. Write down the one change you expect to remove it, and what you expect it to cost.
+3. Make that one change, write `<after.tsv>` the same way, and run `python eval/lint/compare.py before <before.tsv> after <after.tsv>`. It totals both tables, says whether the after table keeps gates 2 and 3 against the before table, and lists every view whose hard breaches rose and every view that needs a look.
+4. Keep the change only when the weighed sum falls, or holds while the tie-breakers fall, and gates 1 to 3 hold. Otherwise revert it, whatever else it improved. Look at every view `compare.py` lists as needing a look before you keep it.
 5. Record the attempt, kept or reverted, as one row of `eval/lint/decisions.tsv`, with the hypothesis, the change, the totals before and after and the verdict.
-6. Commit each kept change on its own. Lower the ceilings in `lint_test.go` to the new totals, write the new table to `eval/lint/baseline.tsv`, and say in `docs/blueprint-svg.md` what moved.
+6. Commit each kept change on its own. Lower the debts and ceilings with `abbd lint --record --root internal/screen/testdata/<fixture>` for each fixture, write the new table to `eval/lint/baseline.tsv`, and say in `docs/blueprint-svg.md` what moved.
 
-Never raise a ceiling or a debt, or loosen a criterion, to keep a change. Run `go test ./internal/screen -count=1` before each commit, since the rule checks of `fixtures_test.go` still hold. Look at the changed views too. `ABBD_BLUEPRINTS=<dir> go test ./internal/screen -run TestEveryRealDrawingIsLegible -count=1` writes the fixtures' pages there. A number that falls on a drawing that reads worse means the measure counts the wrong thing, so say so instead of keeping the change.
+Never raise a fixture's debt or ceiling, or loosen a criterion, to keep a change. A repository's own `.abbd/lint-debt.yaml` follows its code instead. When a change to the code adds units and lines, `abbd lint --record` there and commit the file with the change, so the review sees what the drawings owe. Run `go test ./internal/screen -count=1` before each commit, since the rule checks of `fixtures_test.go` still hold. Look at the changed views too. `ABBD_BLUEPRINTS=<dir> go test ./internal/screen -run TestEveryRealDrawingIsLegible -count=1` writes the fixtures' pages there. A number that falls on a drawing that reads worse means the measure counts the wrong thing, so say so instead of keeping the change.

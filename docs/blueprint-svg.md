@@ -94,38 +94,47 @@ A reader answers "what does X use" by following X's lines. Rules 16 to 23 measur
 
 The user set out how a drawing should stand and turn, in six areas: where modules stand, how often a line may turn, how turns and bundles go with relations, where a module that many use stands, where a module that only uses or is only used stands, and where a frame's chip stands. The criteria below make that draft precise. Each one is numbered, measured on the rendered SVG, and named in `abbd lint`'s report (`internal/screen/lint.go`). Where a criterion restates a rule above, it names the rule and adds only what the rule leaves out.
 
-A hard criterion must hold. `abbd lint` exits 1 on a hard breach. Where the fixtures already break one, `lint_test.go` records the view's breaches as debt, which may fall and may not rise, as `fixtures_test.go` does for the rules. A target criterion is minimized. Each breach is listed, and the fixtures' total of the criterion has a ceiling, its total when the criteria were set, kept in `eval/lint/baseline.tsv`. A change to the renderer may lower a ceiling and may not pass it.
+A hard criterion must hold. A repository records the hard breaches its drawings already have in `.abbd/lint-debt.yaml`, by view and criterion, as debt. `abbd lint` exits 1 on a hard breach past its view's debt, and marks each breach in its JSON with `debt` true or false. A target criterion is minimized. Each breach is listed. B1 and B2 add up to the excess turns, the measure to lower, and the placement criteria to the placement debt. The same file sets the ceilings of these totals (What a change is weighed by). Each fixture under `internal/screen/testdata` keeps such a file too, and `TestLintFixtures` holds each fixture to it with the same gate `abbd lint` uses.
 
 The terms are these.
 
 - **Row.** A band of boxes whose heights overlap, counted from 0 at the top. The layout's layer is not in the SVG, so the checker reads rows. A layer that wraps (rule 3) is several rows. A frame's top chips stand above row 0 and its bottom chips below the last row.
 - **Column.** Two shapes stand in one column when their x spans overlap.
 - **Line.** A traced relation (Tracing), from the shape it leaves to the shape it reaches, along the way with the fewest turns. Its turns are rule 16's bends.
-- **Obstacle.** A box or chip, other than the line's two ends and what stands on them, that blocks every way with the line's base turns. Within a column the base way is one straight drop between the two facing edges. Between columns it is a corner of two turns: down from anywhere along the start's edge, across at some height, and down onto anywhere along the end's edge. The checker tries every height between the edges on a 4px step and keeps 1px clear of every shape. When no base way fits, the shapes that stand in the band between the facing edges, across the span the base way may use, are the obstacles. When no shape stands there, the reason is that the rows leave no room.
+- **Obstacle.** A box or chip, other than the line's two ends and what stands on them, that blocks every way with the line's base turns. Within a column the base way is one straight drop between the two facing edges, anywhere across the span the two ends share. Between columns it is a corner of two turns. It runs down from anywhere along the upper end's edge, across at some height, and down onto anywhere along the lower end's edge. The checker tries every height between the edges on a 4px step and keeps 1px clear of every shape. When no base way fits, the shapes that stand in the band between the facing edges, across the span the base way may use, are the obstacles. When no shape stands there, the reason is that the rows leave no room.
 - **Hub.** A box that 3 or more places in its view use, boxes and chips together. Across the 274 views of the fixtures, 604 used boxes have 1 user, 114 have 2 and 189 have 3 or more, and in 228 views the median box has fewer than 3 users. A fixed count keeps a box a hub whatever else its view holds. Of the 303 boxes with 2 users or more, 51 break H1. Of the 189 with 3 or more, 15 do.
 - **Source and sink.** A source is a box that uses another box and that no box uses. A sink is a box that boxes use and that uses no box. Lines to the frame's chips do not count, since rule 10 places those.
 
 ### Placement
 
-- **P1. A user stands above what it uses.** Target. For each relation between two boxes, the user's row is lower in number than the used box's. A relation whose user stands in the same row or below is a breach, with both boxes and the rows between. Rule 13 bounds how many lines may climb, and O3 says which may. P1 lists every one.
+- **P1. A user stands above what it uses.** Target. For each relation between two boxes, the user's row is lower in number than the used box's. A relation whose user stands in the same row or below is a breach, with both boxes. It measures how many rows the user stands short of standing above, 1 in the same row and 2 one row below, allowed 0. Rule 13 bounds how many lines may climb, and O3 says which may. P1 lists every one.
 - **P2. Boxes used by exactly the same places stand in one row.** Target. Boxes whose sets of users are equal and not empty form a group. A group that stands in more than one row is a breach, allowed 1 row. This is the placement rule 4 counts on when it gives such boxes one arrival bus that splits in the gap above them. The draft said boxes joined to the same partner. In a dense view nearly every box shares a partner with another, so the criterion takes rule 4's reading. A focus view's twins are left out.
 - **F1. A frame chip stands over or under the boxes its lines reach.** Target. The chip's x span meets the span from the left edge of the leftmost of those boxes to the right edge of the rightmost. A breach gives the gap in pixels, allowed 0. The draft said the box its line reaches. A chip whose lines reach several boxes cannot stand over each, so it stands over the span they cover. Rule 10 still chooses the edge. A chip on a module's edge on the overview stands on its box and is not held.
 
 ### Bends
 
-- **B1. A line turns no more than its ends allow.** Target. A line within one column may turn 0 times, and a line between columns 2. Each way an obstacle blocks allows 2 more turns, and the breach names the obstacle. So a line whose drop is blocked within its column may turn 2 times, and 4 when every corner is blocked too. A line between columns whose every corner is blocked may turn 4 times. A line that leaves and reaches edges that face the same way, such as two bottom edges, may turn 2. A line that leaves on a side and reaches a top or a bottom may turn once. A line that runs back past its start, against the way it left, may turn 4 times. Each line that turns more is a breach, with its turns, its allowance, and the obstacle or the reason. The draft allowed 1 turn between columns. A line leaves its box's bottom edge and reaches the top edge of what it uses (rules 4 and 10), so between columns it cannot turn fewer than twice. Staircases first reads those two as a corner and no step, so the allowance is 2.
-- **B2. No jogs.** Target. A jog is a stretch shorter than 24px between two turns (rule 16). Each line with one is a breach, allowed 0, with its turning points. B1 and B2 are the steps of Staircases first line by line. The steps are what a change lowers, so B1 and B2 have no ceiling of their own.
+- **B1. A line turns no more than its ends allow.** Target. The allowance follows from where the line's two ends stand and from the shapes around them, never from the drawn route. A route that leaves on a side, or comes back past its start, buys no turns by it. The checker judges the line from the upper end down.
+  - Within one column, when the straight drop between the two ends is clear, the line may turn 0 times.
+  - Within one column, when every straight drop is blocked, it may turn 2 times. That is how rule 4's exit bundle runs, out of the box, aside past the obstacle and down. The breach names the obstacle.
+  - Between columns, when a corner fits, it may turn 2 times. A line leaves its box's bottom edge and reaches the top edge of what it uses (rules 4 and 10), so between columns it cannot turn fewer than twice. The draft allowed 1, and Staircases first reads those two as a corner and no step.
+  - Between columns, when every corner is blocked, it may turn 4 times, and the breach names the obstacle.
+  - Between two ends that share a row, it may turn 4 times. No line in the fixtures has such ends.
+
+  Each line that turns more is a breach, with its turns, its allowance, the turns in excess, and the obstacle or the reason. Measured over the fixtures, 1145 lines break B1. 728 of them have no step, since they turn twice where their ends allow 0. Orca's `src/` has such a spot at the `native/` chip, whose line to desktop main turns twice in a clear column. Only 3 lines stand in a column whose drop and corners are all blocked, so allowing them 2 where 4 is the fewest they can turn adds 6 excess turns.
+- **B2. No jogs.** Target. A jog is a stretch shorter than 24px between two turns (rule 16). Each line with one is a breach, allowed 0, with its turning points.
+
+The **excess turns** of a drawing are each line's turns past its B1 allowance, summed over the lines, plus every jog. They are the measure a change to the renderer lowers. They are not the steps of Staircases first. A step is a turn past a line's second, whatever its ends allow, so a line that turns twice in a clear column has no step and 2 excess turns, and a line between columns that turns 4 times around an obstacle has 2 steps and no excess turn. `abbd lint` still reports the steps, beside the excess turns.
 
 ### Bends and relations
 
-- **J1. A bundle splits only at its ends.** Hard. A split is a dot where the lines through it go on to two or more places. It stands in a row, or in the gap above or below a row, where one of those lines starts or ends. A frame's chips count as a row. Merges are not held, since rule 4 merges lines from different places midway on purpose. The draft said a bundle parts only at its ends, which would hold merges too, so the existing rule wins there. Measured, all 847 splits in the fixtures hold.
+- **J1. A bundle splits only next to where it goes.** Hard. A split is a dot where the lines of its kind arrive as one strand, from one side, and leave it on two sides or more, toward two places or more. It stands in a row, or in the gap above or below a row, where one of those places stands. A frame's chips count as a row. Merges are not held, since rule 4 merges lines from different places midway on purpose. A dot where lines arrive from two sides is a merge, or a merge and a split at once, and is not held either. The draft said a bundle parts only at its ends, which would hold merges too, so the existing rule wins there. Measured, the fixtures have 847 dots whose lines go to two places or more. 49 of them carry lines from two places or more. 789 are splits by the strand reading, and all 789 stand next to a row they split toward, so the tighter reading adds no breach.
 - **J2. Every split and merge carries a dot.** Hard. This is rule 17. A breach gives the point.
 - **J3. The ink joins no two places that no relation joins.** Hard. This is rule 18 held at zero, as the user's draft asks, where rule 18 only measured. A breach gives the two places and the way between them. pstack's overview carries its 52 phantom pairs as debt.
 
 ### Hubs
 
 - **H1. A hub stands below the middle of its users.** Target. The hub's centre x lies between the leftmost and the rightmost centre x of the places that use it, within 1px. A breach gives how far outside it stands. That it stands below them is P1's.
-- **H2. The lines into a hub gather into one trunk.** Target. The strokes of one kind that end on a hub belong to one bundle, one drawn net. A breach gives the number of bundles, allowed 1. Rule 4 bundles a kind's lines per edge. H2 holds the hub to one bundle across its edges, so a line that climbs into its bottom edge beside a bundle on top is a breach.
+- **H2. The lines into a hub gather into one trunk.** Target. The forward strokes of one kind that end on a hub belong to one bundle, one drawn net. A breach gives the number of bundles, allowed 1. Rule 4 bundles a kind's lines per edge. H2 holds the hub to one bundle across its edges. The dashed lines that climb to a hub are left out, since rule 13 bounds them and O3 says which may climb. Counted with them, 30 of H2's 36 breaches in the fixtures came from cycles. Without them it has 6.
 
 ### One-way boxes
 
@@ -135,30 +144,40 @@ The terms are these.
 
 ### The rules
 
-- **R. The rules hold.** Hard. Rules 1 to 15 as `legible.go` checks them, rule 2 as the trace checks it (no relation without ink), and rule 21. Each broken rule is one breach. The debt is the views `fixtures_test.go` lists.
+- **R. The rules hold.** Hard. Rules 1 to 15 as `legible.go` checks them, rule 2 as the trace checks it (no relation without ink), and rule 21. Each broken rule is one breach. The fixtures' debt is the views `fixtures_test.go` lists.
 
 ### What a change is weighed by
 
-`abbd lint` gives each view, and all of them, these totals: the hard and target breaches, the breaches of each criterion, and the path measures of the trace. The steps are the measure to lower, since the user judges a drawing by the turns a reader sees. A step is each turn past a line's second and each jog (Staircases first). A change keeps no new hard breach and passes no ceiling. Crossings have no ceiling of their own, since a step may buy up to 4 of them (`stepCrossings`). They are held in the weighed sum, the crossings plus 4 for each step. When the criteria were set, the fixtures' 274 views measured as follows.
+`abbd lint` gives each view, and all of them, these totals. They are the hard and target breaches, the breaches of each criterion, the excess turns, the placement debt, the crossings, the weighed sum, and the path measures of the trace. The **placement debt** is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. The **weighed sum** is the crossings plus 4 for each excess turn (`stepCrossings`), so a turn saved may cost at most 4 crossings. A change to the renderer is held by this gate, and `abbd lint` holds a repository to it.
 
-| Total | Fixtures | Ceiling |
+1. No view has more hard breaches of a criterion than its debt records.
+2. The weighed sum stays at or under its ceiling.
+3. The placement debt stays at or under its ceiling plus 2% of it, rounded down. A change that saves turns may move a few boxes, and the next kept change starts from the new total.
+4. The traced bends and the paths that turn more than twice are tie-breakers. Between two changes that weigh the same, the one with fewer wins. Neither has a ceiling.
+5. The phantom pairs and the climbing lines have no ceiling of their own. J3 holds the phantoms at their debt, and rule 13 bounds the climbing lines.
+6. Any view whose weighed sum rises by more than 8 needs a look by eye, even when the totals fall. `eval/lint/compare.py` lists those views.
+7. After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure.
+
+`abbd lint` checks the first three over every view and fails when one breaks. With a VIEW it checks only the first. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. When the criteria were set, the fixtures' 274 views measured as follows.
+
+| Total | Fixtures | Gate |
 | --- | --- | --- |
 | hard breaches | 61, all debt (J3 52, R 9) | the debt |
-| P1, P2 | 117, 21 | 117, 21 |
-| B1, B2 | 1143, 302 | none |
 | J1, J2, O3 | 0, 0, 0 | hard |
-| H1, H2 | 15, 36 | 15, 36 |
-| O1, O2 | 1, 8 | 1, 8 |
-| F1 | 198 | 198 |
-| steps | 1438 | 1438, to lower |
-| phantom pairs | 52 | 52 |
-| paths that turn more than twice | 417 | 417 |
-| traced bends | 4960 | 4960 |
-| climbing lines | 74 | 74 |
+| B1, B2 | 1145, 302 | through the excess turns |
+| excess turns | 3172 | through the weighed sum, the target |
 | crossings | 265 | through the weighed sum |
-| weighed sum | 6017 | 6017 |
+| weighed sum | 12953 | per fixture, self 2128, ripgrep 612, Orca 5119, pstack 5094 |
+| P1, P2, H1, H2, O1, O2, F1 | 117, 21, 15, 6, 1, 8, 198 | through the placement debt |
+| placement debt | 366 | per fixture, self 50, ripgrep 9, Orca 131, pstack 176, each plus 2% |
+| steps | 1438 | reported |
+| jogs | 408 | in the excess turns |
+| traced bends | 4960 | tie-breaker |
+| paths that turn more than twice | 417 | tie-breaker |
+| phantom pairs | 52 | J3 |
+| climbing lines | 74 | rule 13 |
 
-`ABBD_LINT_FIXTURES=<file> go test ./internal/screen -run TestLintFixtures` writes the per-view totals of the fixtures as a table, and `ABBD_LINT_BREACHES=<file>` every breach. `eval/lint/compare.py` totals two such tables and lists the views that get worse. This repository's own blueprint (`eval/lint/self.txt`) breaks one hard criterion. `internal/topology` breaks rule 13, as Known gaps says.
+`ABBD_LINT_FIXTURES=<file> go test ./internal/screen -run TestLintFixtures` writes the per-view totals of the fixtures as a table, and `ABBD_LINT_BREACHES=<file>` every breach. `eval/lint/compare.py` totals two such tables, checks the second against the gate's totals, and lists the views that get worse and those that need a look. `abbd lint --list` names the views, and `abbd lint --json` prints the report with a `schema` version, each breach's boxes and chips by unit ID and name, and the gate's failures. This repository's own blueprint (`eval/lint/self.txt`) owes one hard breach. `internal/topology` breaks rule 13, as Known gaps says, and `.abbd/lint-debt.yaml` records it, so `abbd lint` passes here.
 
 ## Flows
 
