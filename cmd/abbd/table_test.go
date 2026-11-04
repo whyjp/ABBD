@@ -81,6 +81,7 @@ func TestATableDraftIsCheckedBeforeItIsStored(t *testing.T) {
 			"MOD-0001 heads row 1 and row 2; a unit heads one row"},
 		{"unit: DATA-0001}", "unit: DATA-0009}", `DATA-0009, which column "charges" names, is no longer in the state`},
 		{"  - {name: retries}", "  - {name: charges}", `column "charges" is named twice`},
+		{"  - {name: retries}", "  - {name: ' retries'}", "has no spaces around it"},
 		{"  - {name: retries}", "  - {name: how many times a failed insert is tried again}", "is a short label of 32 characters at most"},
 		{"  - {name: retries}\n", "", "a table names 2 columns or more"},
 		{"cells: {charges: reads the amount of each charge}", "cells: {charges: ''}", `the cell under "charges" is empty`},
@@ -150,23 +151,70 @@ func TestACellTheRelationsDoNotBearOutIsReportedNotChecked(t *testing.T) {
 	}
 }
 
-// A table whose column's unit left the state fails the check, since storing
-// the table again brings it current.
-func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
-	p := notesProject(t)
-	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
-	p.extract(auditTopo)
-	p.resync()
-	draft := strings.NewReplacer(
+// auditTable asks the charge table's question of billing and audit, with a
+// column on the ledger, so removing the ledger leaves a column whose unit
+// is gone and no row that fills it.
+func auditTable() string {
+	return strings.NewReplacer(
 		"  - {name: charges, unit: DATA-0001}", "  - {name: books, unit: MOD-0002}",
 		"cells: {charges: inserts one row per charge,", "cells: {",
 		"  - unit: MOD-0002\n    cells: {charges: reads the amount of each charge}", "  - unit: MOD-0003\n    cells: {retries: logs each attempt}",
 		`{path: ledger/book.go, lines: "6", symbol: Post, quote: "func Post() {}"}`, `{path: audit/log.go, lines: "3", symbol: Log, quote: "func Log() {}"}`,
 	).Replace(chargeTable)
-	p.table(0, "stored", draft)
+}
+
+func (p *project) dropLedger() {
+	p.t.Helper()
 	p.extract(strings.Replace(auditTopo, " {\"key\":\"ledger\",\"kind\":\"MOD\",\"name\":\"ledger\",\"anchors\":[{\"path\":\"ledger/book.go\",\"symbol\":\"Post\"}]},\n", "", 1))
 	p.resync()
+}
+
+// A table whose column's unit left the state fails the check until it is
+// stored again without that column's unit.
+func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
+	p := notesProject(t)
+	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
+	p.extract(auditTopo)
+	p.resync()
+	p.table(0, "stored", auditTable())
+	p.dropLedger()
 	p.want(1, `stale: table charge: MOD-0002, which column "books" names, is no longer in the state`, "status", "--check")
+	p.table(1, `MOD-0002, which column "books" names, is no longer in the state`, auditTable())
+	p.table(0, "stored", strings.Replace(auditTable(), "  - {name: books, unit: MOD-0002}", "  - {name: books}", 1))
+	p.want(0, "tables: 1 table(s), 2 row(s), 0 STALE", "status", "--check")
+}
+
+// A human's column whose unit left the state is open to a reader, so CI
+// never waits on the human: the reader may drop the column's unit or point
+// it elsewhere, keeps the human's other columns and rows as written, and is
+// told it changed the human's head.
+func TestAReaderMendsAHumansColumnWhoseUnitLeft(t *testing.T) {
+	p := notesProject(t)
+	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
+	p.extract(auditTopo)
+	p.resync()
+	p.table(0, "USER_STATED", auditTable(), "--source", "conversation 2026-11-04")
+	p.dropLedger()
+	p.want(1, "is no longer in the state", "status", "--check")
+	dropped := strings.Replace(auditTable(), "  - {name: books, unit: MOD-0002}", "  - {name: books}", 1)
+	p.table(1, "the column head of table charge is a human's word", strings.ReplaceAll(dropped, "retries", "tries"))
+	out := p.table(0, "stored table charge, 2 rows, USER_STATED", dropped)
+	if !strings.Contains(out, "kept the human's rows 1, 2 (conversation 2026-11-04)") || !strings.Contains(out, "changed the human's columns books, since their units left the state") {
+		t.Errorf("the reader keeps the human's rows and says it changed the head:\n%s", out)
+	}
+	p.want(0, "tables: 1 table(s), 2 row(s), 0 STALE", "status", "--check")
+}
+
+// Renaming a column does not make a STALE row's cells new words: the same
+// cells on the same changed code are refused under any column.
+func TestARenamedColumnDoesNotBringAStaleRowBack(t *testing.T) {
+	p := notesProject(t)
+	p.table(0, "stored", chargeTable)
+	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
+	p.resync()
+	requoted := strings.Replace(chargeTable, "const tries = 3", "const tries = 5", 1)
+	p.table(1, "row 1 says what a STALE row said", strings.ReplaceAll(requoted, "retries", "retry"))
+	p.table(1, "row 1 says what a STALE row said", strings.ReplaceAll(strings.ReplaceAll(requoted, "retries", "retry"), "charges", "rows"))
 }
 
 // A human's table stays until its code changes. A reader may not change a

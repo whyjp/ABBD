@@ -54,7 +54,7 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 	for i := range f.Parts {
 		f.Parts[i].Writer, f.Parts[i].Source = e.writer(), e.sourceRef()
 	}
-	kept, replaced, err := mayReplace(prev, had, &f, units)
+	kept, replaced, columns, err := mayReplace(prev, had, &f, units)
 	if err != nil {
 		return err
 	}
@@ -70,6 +70,9 @@ func figure[C model.Claim[C]](e env, key string, args []string) error {
 	}
 	if len(replaced) > 0 {
 		fmt.Fprintf(e.stdout, "replaced the human's %s %s of the stored %s, since they went STALE; ask again and store their word with abbd %s %s FILE --source REF\n", kind.Parts, replaced, kind.Noun, kind.Noun, k)
+	}
+	if len(columns) > 0 {
+		fmt.Fprintf(e.stdout, "changed the human's columns %s, since their units left the state; ask again and store their word with abbd %s %s FILE --source REF\n", strings.Join(columns, ", "), kind.Noun, k)
 	}
 	for i, p := range f.Parts {
 		for _, w := range p.Claim.Words() {
@@ -206,12 +209,25 @@ func retire[C model.Claim[C]](e env, prev, f store.Figure[C], units []model.Unit
 }
 
 // said reports whether two claims say the same words in the same fields, in
-// any case and spacing, whatever units they name.
+// any case and spacing, whatever units they name. For a kind whose fields
+// are the head's column names, the words compare by text alone, so renaming
+// a column does not make a retired claim's words new.
 func said[C model.Claim[C]](x, y C) bool {
 	same := func(a, b model.Word) bool {
 		return a.Field == b.Field && strings.EqualFold(strings.Join(strings.Fields(a.Text), ""), strings.Join(strings.Fields(b.Text), ""))
 	}
-	return slices.EqualFunc(x.Words(), y.Words(), same)
+	if !model.KindOf[C]().Renamed {
+		return slices.EqualFunc(x.Words(), y.Words(), same)
+	}
+	texts := func(c C) []model.Word {
+		var out []model.Word
+		for _, w := range c.Words() {
+			out = append(out, model.Word{Text: strings.ToLower(strings.Join(strings.Fields(w.Text), ""))})
+		}
+		slices.SortFunc(out, func(a, b model.Word) int { return strings.Compare(a.Text, b.Text) })
+		return out
+	}
+	return slices.EqualFunc(texts(x), texts(y), same)
 }
 
 // repeats reports whether part n says what the retired part r said and
@@ -228,33 +244,48 @@ func repeats[C model.Claim[C]](n, r store.Part[C]) bool {
 // and keeps the human's word, as do the question and caption, so CI never
 // waits on the human for a figure the state moved under and a human's word
 // on a part that still holds is never lost. An open part that comes back as
-// written keeps the human's word too.
+// written keeps the human's word too. A column a gap names, such as one
+// whose unit left the state, is open as well: the reader may drop it or
+// point it at another unit, and keeps every other column as written.
 // kept are the human's parts f keeps and replaced those the reader took
-// over, each named by its place.
-func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figure[C], units []model.Unit) (kept, replaced humanParts, err error) {
+// over, each named by its place, and columns the open columns the reader
+// changed, by name.
+func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figure[C], units []model.Unit) (kept, replaced humanParts, columns []string, err error) {
 	if !had {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
 	kind := model.KindOf[C]()
 	human := func(p store.Part[C]) bool { return p.Writer == model.Human }
 	if slices.ContainsFunc(f.Parts, human) || !slices.ContainsFunc(prev.Parts, human) {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
 	open := make([]bool, len(prev.Parts))
 	for i, p := range prev.Parts {
 		open[i] = len(p.Why(units)) > 0
 	}
+	openColumn := map[string]bool{}
 	for _, g := range prev.Gaps(units) {
 		for _, n := range g.Parts {
 			open[n-1] = true
 		}
+		for _, c := range g.Columns {
+			openColumn[c] = true
+		}
 	}
 	if !slices.Contains(open, true) {
-		return nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
+		return nil, nil, nil, fmt.Errorf("a human stated %s of %s %s and every %s is current; only a human changes it, with --source", kind.Parts, kind.Noun, f.Key, kind.Part)
 	}
-	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(prev.Columns), head(f.Columns)}, {"caption", prev.Caption, f.Caption}} {
+	closed := func(cols []model.Column) []model.Column {
+		return slices.DeleteFunc(slices.Clone(cols), func(c model.Column) bool { return openColumn[c.Name] })
+	}
+	for _, w := range []struct{ field, was, now string }{{"question", prev.Question, f.Question}, {"column head", head(closed(prev.Columns)), head(closed(f.Columns))}, {"caption", prev.Caption, f.Caption}} {
 		if !sameWords(w.was, w.now) {
-			return nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
+			return nil, nil, nil, fmt.Errorf("the %s of %s %s is a human's word; keep it as abbd %s %s prints it, since only a human changes it, with --source", w.field, kind.Noun, f.Key, kind.Noun, f.Key)
+		}
+	}
+	for _, c := range prev.Columns {
+		if openColumn[c.Name] && !slices.Contains(f.Columns, c) {
+			columns = append(columns, c.Name)
 		}
 	}
 	at := 0
@@ -272,10 +303,10 @@ func mayReplace[C model.Claim[C]](prev store.Figure[C], had bool, f *store.Figur
 		case open[i]:
 			replaced = append(replaced, humanPart{i + 1, p.Source})
 		default:
-			return nil, nil, fmt.Errorf("%s %d is a human's word (%s) and current; keep it as abbd %s %s prints it, in its order, since only a human changes it, with --source", kind.Part, i+1, p.Source, kind.Noun, f.Key)
+			return nil, nil, nil, fmt.Errorf("%s %d is a human's word (%s) and current; keep it as abbd %s %s prints it, in its order, since only a human changes it, with --source", kind.Part, i+1, p.Source, kind.Noun, f.Key)
 		}
 	}
-	return kept, replaced, nil
+	return kept, replaced, columns, nil
 }
 
 // samePart reports whether two claims name the same units and say the same

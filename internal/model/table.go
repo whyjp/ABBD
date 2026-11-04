@@ -37,7 +37,7 @@ type Row struct {
 // Kind makes a table's rows a kind of figure, with two to eight columns
 // named in its head.
 func (Row) Kind() FigureKind[Row] {
-	return FigureKind[Row]{Noun: "table", Dir: "tables", Part: "row", Parts: "rows", Min: 2, Max: TableRows, MinColumns: 2, MaxColumns: TableColumns, Whole: fillGrid}
+	return FigureKind[Row]{Noun: "table", Dir: "tables", Part: "row", Parts: "rows", Min: 2, Max: TableRows, MinColumns: 2, MaxColumns: TableColumns, Whole: fillGrid, Renamed: true}
 }
 
 // Validate checks the row on its own: a unit ID, one cell at least, each a
@@ -94,12 +94,15 @@ func (r Row) Gaps(units []Unit) []string {
 }
 
 // ValidateColumns checks a table's head on its own: each column a short
-// label on one line, named once, and a unit ID where it names a unit.
+// label on one line with no spaces around it, named once, and a unit ID
+// where it names a unit.
 func ValidateColumns(cols []Column) error {
 	for i, c := range cols {
 		switch name := strings.TrimSpace(c.Name); {
 		case name == "" || strings.ContainsAny(c.Name, "\r\n"):
 			return fmt.Errorf("column %d has a name, on one line", i+1)
+		case name != c.Name:
+			return fmt.Errorf("column %d's name %q has no spaces around it", i+1, c.Name)
 		case len([]rune(name)) > ColumnName:
 			return fmt.Errorf("column %d's name %q is a short label of %d characters at most", i+1, c.Name, ColumnName)
 		case slices.ContainsFunc(cols[:i], func(o Column) bool { return o.Name == c.Name }):
@@ -117,17 +120,17 @@ func ValidateColumns(cols []Column) error {
 // fillGrid keeps a table a grid: each unit heads one row, each cell sits
 // under a column the head names, and each unit a column names is present. A
 // gap names the rows it involves: for a column whose unit is gone, the rows
-// that fill it, or every row when none does.
+// that fill it, or every row when none does, and that column.
 func fillGrid(cols []Column, rows []Row, units []Unit) []Gap {
 	st := stateOf(units)
 	var gaps []Gap
 	for i, r := range rows {
 		if j := slices.IndexFunc(rows[:i], func(o Row) bool { return o.Unit == r.Unit }); j >= 0 {
-			gaps = append(gaps, Gap{fmt.Sprintf("%s heads row %d and row %d; a unit heads one row", r.Unit, j+1, i+1), []int{j + 1, i + 1}})
+			gaps = append(gaps, Gap{Text: fmt.Sprintf("%s heads row %d and row %d; a unit heads one row", r.Unit, j+1, i+1), Parts: []int{j + 1, i + 1}})
 		}
 		for _, col := range slices.Sorted(maps.Keys(r.Cells)) {
 			if !slices.ContainsFunc(cols, func(c Column) bool { return c.Name == col }) {
-				gaps = append(gaps, Gap{fmt.Sprintf("row %d fills a cell under %q, which no column names", i+1, col), []int{i + 1}})
+				gaps = append(gaps, Gap{Text: fmt.Sprintf("row %d fills a cell under %q, which no column names", i+1, col), Parts: []int{i + 1}})
 			}
 		}
 	}
@@ -148,7 +151,7 @@ func fillGrid(cols []Column, rows []Row, units []Unit) []Gap {
 		if len(under) == 0 {
 			under = every
 		}
-		gaps = append(gaps, Gap{fmt.Sprintf("%s, which column %q names, is no longer in the state", c.Unit, c.Name), under})
+		gaps = append(gaps, Gap{Text: fmt.Sprintf("%s, which column %q names, is no longer in the state", c.Unit, c.Name), Parts: under, Columns: []string{c.Name}})
 	}
 	return gaps
 }

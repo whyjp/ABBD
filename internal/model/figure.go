@@ -28,19 +28,24 @@ func ParseFigureKey[C Claim[C]](s string) (FigureKey, error) {
 // for every word. Whole says what keeps the claims, taken together with the
 // head, from being true of the state: a draft with any gap is refused, and a
 // stored figure with any reads STALE. It is nil when each claim stands
-// alone.
+// alone. Renamed is true for a kind whose word fields are the column names
+// of the figure's own head, which a draft may rename, so a claim's words
+// compare by their text alone, whatever field holds them.
 type FigureKind[C any] struct {
 	Noun, Dir, Part, Parts, Long string
 	Min, Max                     int
 	MinColumns, MaxColumns       int
 	Whole                        func(cols []Column, claims []C, units []Unit) []Gap
+	Renamed                      bool
 }
 
 // Gap is one thing that keeps a figure's claims, taken together, from being
-// true of the state, with the places, from 1, of the claims it involves.
+// true of the state, with the places, from 1, of the claims it involves, and
+// the names of the columns of its head it involves.
 type Gap struct {
-	Text  string
-	Parts []int
+	Text    string
+	Parts   []int
+	Columns []string
 }
 
 func (g Gap) String() string { return g.Text }
