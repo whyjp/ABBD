@@ -352,17 +352,9 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
 	// one trunk (H2).
-	users := map[string]map[string]bool{}
-	for _, r := range reqs {
-		if r.to.node != "" {
-			if users[r.to.node] == nil {
-				users[r.to.node] = map[string]bool{}
-			}
-			users[r.to.node][place(r.from)] = true
-		}
-	}
+	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
 	free := func(is []int) []int {
-		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { return drops(i) && len(users[reqs[i].to.node]) < hubUsers })
+		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { _, hub := hubs[reqs[i].to.node]; return drops(i) && !hub })
 	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
@@ -1601,9 +1593,32 @@ func gather(reqs []wireReq, arrive map[slotKey][]int, shared bool) [][]int {
 // chip it shares with the ports folded into it.
 func place(e end) string {
 	if e.node == "" {
-		return fmt.Sprint("chip|", e.row, "|", e.lo, "|", e.hi)
+		return fmt.Sprint(chipPlace, e.row, "|", e.lo, "|", e.hi)
 	}
 	return e.key
+}
+
+// chipPlace starts the place of a frame chip.
+const chipPlace = "chip|"
+
+// drawnRels are the relations the drawing records, as wanted lists them,
+// between the shapes that draw their ends: a box, or the frame chip its
+// ports fold into. Lint reads the same relations off those shapes.
+func drawnRels(reqs []wireReq) [][2]string {
+	shape := func(e end) string {
+		if e.node != "" {
+			return e.node
+		}
+		return place(e)
+	}
+	var out [][2]string
+	for _, r := range reqs {
+		out = append(out, [2]string{shape(r.from), shape(r.to)})
+		if r.kind == "mutual" {
+			out = append(out, [2]string{shape(r.to), shape(r.from)})
+		}
+	}
+	return out
 }
 
 // endID names an end as the drawing names its shape: the box's id, or the
