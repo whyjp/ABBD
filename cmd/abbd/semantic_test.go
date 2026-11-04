@@ -133,9 +133,6 @@ type graphFile struct {
 	Edges []struct {
 		From, To, Origin, Via, Quote string
 	} `json:"edges"`
-	Overview struct {
-		Wires []struct{ Kind, Title string }
-	} `json:"overview"`
 	Modules []struct {
 		ID       string
 		Inferred []struct {
@@ -161,8 +158,8 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 	html := p.blueprint()
 	for _, want := range []string{
 		`ledger → charges table <span class="muted">(consumes, via data)</span>`,
-		`<q>ledger/book.go:3-4 &#34;SELECT amount FROM charges&#34;</q>`,
-		`근거 <q>billing/charge.go:3 &#34;INSERT INTO charges&#34;</q>`,
+		`<q>ledger/book.go &#34;SELECT amount FROM charges&#34;</q>`,
+		`근거 <q>billing/charge.go &#34;INSERT INTO charges&#34;</q>`,
 		`<a href="MOD-0001.html" title="MOD-0001">`,
 	} {
 		if !strings.Contains(html, want) {
@@ -170,10 +167,8 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 		}
 	}
 	g := p.graph()
-	for _, w := range g.Overview.Wires {
-		if strings.Contains(w.Title, "charges table") || w.Kind != "contract" && w.Kind != "bypass" && w.Kind != "mutual" {
-			t.Fatalf("the overview draws only extracted and stated relations, got %+v", w)
-		}
+	if raw := p.read("blueprint/graph.json"); strings.Contains(raw, `"overview"`) || strings.Contains(raw, `"Wires"`) {
+		t.Fatal("graph.json holds the data and leaves every drawing to the pages")
 	}
 	listed := map[string]int{}
 	for _, m := range g.Modules {

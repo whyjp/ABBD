@@ -13,7 +13,7 @@ import (
 // implements or uses each one out to it.
 type Inside struct {
 	ID, Name string
-	Drawing  Drawing
+	Drawing  Drawing `json:",omitzero"`
 	// Units lists the inside units with the one sentence each is responsible for.
 	Units []InsideUnit
 	// Understanding is what pstack's how wrote about the module.
@@ -190,7 +190,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				}
 				ln := line{from: x.ID, to: r.To, kind: r.Kind, origin: Badge(r.Origin), via: r.Via}
 				if len(r.Evidence) > 0 {
-					ln.quote = r.Evidence[0].String()
+					ln.quote = cite(r.Evidence[0])
 				}
 				if to, ok := t.within(r.To, m); ok {
 					if to == x.ID {
@@ -609,7 +609,7 @@ func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {
 			}
 			c := Coupling{From: o.name(u.ID), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
 			for _, e := range r.Evidence {
-				c.Quotes = append(c.Quotes, e.String())
+				c.Quotes = append(c.Quotes, cite(e))
 			}
 			out = append(out, c)
 		}

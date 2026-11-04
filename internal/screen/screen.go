@@ -152,7 +152,7 @@ func Build(in Input) Model {
 			Parent: string(u.Parent),
 		}
 		for _, e := range u.Evidence {
-			row.Evidence = append(row.Evidence, e.String())
+			row.Evidence = append(row.Evidence, cite(e))
 		}
 		m.Units = append(m.Units, row)
 	}
@@ -173,7 +173,7 @@ func Build(in Input) Model {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
 				l := Coupling{From: o.name(c), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
 				for _, e := range r.Evidence {
-					l.Quotes = append(l.Quotes, e.String())
+					l.Quotes = append(l.Quotes, cite(e))
 				}
 				m.Links = append(m.Links, l)
 			}

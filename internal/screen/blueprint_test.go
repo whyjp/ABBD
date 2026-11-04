@@ -41,7 +41,7 @@ func TestTheBlueprintIsFinalStateOnly(t *testing.T) {
 	for _, want := range []string{
 		`ripgrep → grep-printer <span class="muted">(depends_on, via import)</span>`,
 		`grep-searcher → DATA-0001 <span class="muted">(consumes, via convention)</span>`,
-		`<q>src/a.rs:1 &#34;use b;&#34;</q>`,
+		`<q>src/a.rs &#34;use b;&#34;</q>`,
 	} {
 		if !strings.Contains(insides, want) {
 			t.Errorf("an inside should list the guess %s", want)

@@ -106,7 +106,7 @@ func (o *overview) tables(in Input) []TableView {
 				rv.Cells = append(rv.Cells, cell)
 			}
 			for _, e := range r.Evidence {
-				rv.Quotes = append(rv.Quotes, e.String())
+				rv.Quotes = append(rv.Quotes, cite(e))
 			}
 			if rv.Stale {
 				v.Stale++

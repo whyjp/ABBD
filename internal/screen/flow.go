@@ -71,7 +71,7 @@ func (o *overview) flows(in Input) []FlowView {
 			sv.Reasons = p.Why(in.Units)
 			sv.Stale = len(sv.Reasons) > 0
 			for _, e := range s.Evidence {
-				sv.Quotes = append(sv.Quotes, e.String())
+				sv.Quotes = append(sv.Quotes, cite(e))
 			}
 			for _, c := range s.Calls {
 				if kind, ok := reach.Calls[c]; ok {
