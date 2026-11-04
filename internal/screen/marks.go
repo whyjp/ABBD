@@ -308,10 +308,11 @@ type Label struct {
 	Said bool `json:",omitempty"`
 }
 
-// area is where a label's glyphs stand.
+// area is where a label's glyphs stand. They are centred on X, so a word of
+// odd width reaches half a pixel past X - tw/2, and the box takes that pixel.
 func (l Label) area() box {
-	tw := textWidth(l.S, labelPx)
-	return box{l.X - tw/2, l.Y - labelH + 1, tw, labelH}
+	half := (textWidth(l.S, labelPx) + 1) / 2
+	return box{l.X - half, l.Y - labelH + 1, 2 * half, labelH}
 }
 
 // word is what a wire's label says about the relations it stands for: the

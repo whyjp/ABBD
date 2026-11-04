@@ -20235,7 +20235,7 @@
                 "Code": true
               },
               {
-                "Text": ". A phrase is set in italic, so it reads apart from a via word. A label keeps more than twice its offset from any other line parallel to its stretch, so it never stands between two lines. A bus whose lines all say one word is labelled once. ",
+                "Text": ". A phrase is set in italic, so it reads apart from a via word. A label keeps more than twice its offset from any other line parallel to its stretch, so it never stands between two lines, and the area it keeps clear covers its glyphs to the half pixel. A bus whose lines all say one word is labelled once. ",
                 "Code": false
               },
               {
