@@ -720,12 +720,20 @@ func (l *look) noPhantoms() []Breach {
 }
 
 // hubs are the boxes hubUsers or more places use, each with its users.
-func (l *look) hubs() map[int][]int {
-	users := map[int][]int{}
-	for _, r := range l.rels {
-		if l.isBox(r[1]) {
-			users[r[1]] = append(users[r[1]], r[0])
+func (l *look) hubs() map[int][]int { return hubsOf(l.rels, l.isBox) }
+
+// hubsOf reads the hubs off a view's relations between drawn places: the
+// boxes hubUsers or more other places use, each with its users in the
+// order they first appear. Lint and route both call it, so a line route
+// drops straight never ends on a box lint holds to H2.
+func hubsOf[K comparable](rels [][2]K, isBox func(K) bool) map[K][]K {
+	users, seen := map[K][]K{}, map[[2]K]bool{}
+	for _, r := range rels {
+		if r[0] == r[1] || seen[r] || !isBox(r[1]) {
+			continue
 		}
+		seen[r] = true
+		users[r[1]] = append(users[r[1]], r[0])
 	}
 	for b, us := range users {
 		if len(us) < hubUsers {

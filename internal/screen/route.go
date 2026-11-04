@@ -23,6 +23,9 @@ import (
 //     merge midway and split only at the end. Boxes side by side in one
 //     row that are reached mostly from the same places share one arrival
 //     bus, which splits only in the gap above them.
+//   - In a focus view (ring), a line between rows next to each other
+//     whose two boxes' spans meet drops straight and joins no bus, except
+//     into a hub, which takes its lines as one trunk (H2).
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
@@ -340,9 +343,22 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		shares = nil
 	}
+	// drops says line i can drop straight from box to box: they stand in
+	// rows next to each other and their spans meet, so it needs no bus.
+	drops := func(i int) bool {
+		f, t := reqs[i].from, reqs[i].to
+		return l.ring && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+	}
+	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
+	// A hub, a box hubUsers or more places use, still takes its lines as
+	// one trunk (H2).
+	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
+	free := func(is []int) []int {
+		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { _, hub := hubs[reqs[i].to.node]; return drops(i) && !hub })
+	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
-		if is := leave[k]; len(is) >= 2 {
+		if is := alone(leave[k]); len(is) >= 2 {
 			for _, i := range is {
 				plans[i].dep = len(buses)
 			}
@@ -403,7 +419,7 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 	}
 	for _, is := range gather(reqs, arrive, shared) {
 		fed := -1
-		is = slices.DeleteFunc(is, func(i int) bool { return shareOf[i] >= 0 })
+		is = slices.DeleteFunc(free(is), func(i int) bool { return shareOf[i] >= 0 })
 		for _, i := range is {
 			if b, ok := fedBy[place(reqs[i].to)+"|"+reqs[i].kind]; ok && !plans[i].up {
 				fed = b
@@ -610,7 +626,27 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
 			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
+			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
+				// A line that drops straight stands as near its share of
+				// the edge as the span both its ends meet in lets it.
+				f, t := reqs[i].from, reqs[i].to
+				if x := clamp(xs[s], max(f.lo, t.lo), min(f.hi, t.hi)); r.node == "" || apart(x) {
+					xs[s], pinned[s] = x, true
+				}
 			}
+		}
+		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
+		// On a ring, where straight drops pin the slots at an edge's ends,
+		// the slots between pins move so that keeping the order never
+		// pushes a pinned line off the x it drops straight at. Elsewhere
+		// the even share stands: spreading there trades steps for crossings.
+		if l.ring {
+			counts := make([]int, len(slots))
+			for s, sl := range slots {
+				counts[s] = len(sl.is)
+			}
+			order := spreadRuns(xs, pinned, counts, r.lo, r.hi, gap)
+			slots, pinned, xs = permute(slots, order), permute(pinned, order), permute(xs, order)
 		}
 		clear := func(s, x int) bool {
 			if r.node != "" && !apart(x) {
@@ -638,7 +674,6 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 				}
 			}
 		}
-		gap := min(slotGap, (r.hi-r.lo)/max(1, len(xs)))
 		edge := r.lo - gap
 		for s := range xs {
 			xs[s] = max(xs[s], edge+gap)
@@ -1558,9 +1593,32 @@ func gather(reqs []wireReq, arrive map[slotKey][]int, shared bool) [][]int {
 // chip it shares with the ports folded into it.
 func place(e end) string {
 	if e.node == "" {
-		return fmt.Sprint("chip|", e.row, "|", e.lo, "|", e.hi)
+		return fmt.Sprint(chipPlace, e.row, "|", e.lo, "|", e.hi)
 	}
 	return e.key
+}
+
+// chipPlace starts the place of a frame chip.
+const chipPlace = "chip|"
+
+// drawnRels are the relations the drawing records, as wanted lists them,
+// between the shapes that draw their ends: a box, or the frame chip its
+// ports fold into. Lint reads the same relations off those shapes.
+func drawnRels(reqs []wireReq) [][2]string {
+	shape := func(e end) string {
+		if e.node != "" {
+			return e.node
+		}
+		return place(e)
+	}
+	var out [][2]string
+	for _, r := range reqs {
+		out = append(out, [2]string{shape(r.from), shape(r.to)})
+		if r.kind == "mutual" {
+			out = append(out, [2]string{shape(r.to), shape(r.from)})
+		}
+	}
+	return out
 }
 
 // endID names an end as the drawing names its shape: the box's id, or the
@@ -1605,6 +1663,115 @@ const detourOffer = 160
 
 // slotGap is the least room between two lines on one edge of a box.
 const slotGap = 12
+
+// spreadRuns moves the slots of one edge, in order and spread over lo..hi
+// at xs, that no pin holds. A run of them between two pins, or between a
+// pin and an end, keeps its share of the edge unless that share comes
+// within gap of a pin. Then it spreads evenly over the room between, and
+// if that room leaves a bus no side for its ×N count, it moves into the
+// empty room past the next pin. It sets each slot's x in xs and returns
+// the slots' order by x.
+func spreadRuns(xs []int, pinned []bool, counts []int, lo, hi, gap int) []int {
+	n := len(xs)
+	lay := func(k, l, h int, lp, hp bool) []int {
+		a, b := 0.5, 0.5
+		if lp {
+			a = 1
+		}
+		if hp {
+			b = 1
+		}
+		step := float64(h-l) / (float64(k-1) + a + b)
+		out := make([]int, k)
+		for j := range out {
+			out[j] = l + int((float64(j)+a)*step)
+		}
+		return out
+	}
+	fits := func(ps, cs []int, l, h int, lp, hp bool) bool {
+		for j, x := range ps {
+			left, right := 1<<30, 1<<30
+			if j > 0 {
+				left = x - ps[j-1]
+			} else if lp {
+				left = x - l
+			}
+			if j < len(ps)-1 {
+				right = ps[j+1] - x
+			} else if hp {
+				right = h - x
+			}
+			if min(left, right) < gap {
+				return false
+			}
+			if w := textWidth(fmt.Sprintf("×%d", cs[j]), 11) + 9; cs[j] >= 2 && left < w && right < w {
+				return false
+			}
+		}
+		return true
+	}
+	// room is the open stretch between the pins at a and b, or an end
+	// where a is -1 or b is n.
+	room := func(a, b int) (int, int, bool, bool) {
+		l, h := lo, hi
+		if a >= 0 {
+			l = xs[a]
+		}
+		if b < n {
+			h = xs[b]
+		}
+		return l, h, a >= 0, b < n
+	}
+	for s := 0; s < n; {
+		if pinned[s] {
+			s++
+			continue
+		}
+		e := s
+		for e < n && !pinned[e] {
+			e++
+		}
+		if !(s > 0 && xs[s] < xs[s-1]+gap || e < n && xs[e-1] > xs[e]-gap) {
+			s = e
+			continue
+		}
+		cs := counts[s:e]
+		l, h, lp, hp := room(s-1, e)
+		ps := lay(e-s, l, h, lp, hp)
+		var past [][2]int
+		if e < n && (e+1 == n || pinned[e+1]) {
+			past = append(past, [2]int{e, e + 1})
+		}
+		if s > 0 && (s == 1 || pinned[s-2]) {
+			past = append(past, [2]int{s - 2, s - 1})
+		}
+		for _, p := range past {
+			if fits(ps, cs, l, h, lp, hp) {
+				break
+			}
+			l, h, lp, hp = room(p[0], p[1])
+			if q := lay(e-s, l, h, lp, hp); fits(q, cs, l, h, lp, hp) {
+				ps = q
+			}
+		}
+		copy(xs[s:e], ps)
+		s = e
+	}
+	order := make([]int, n)
+	for i := range order {
+		order[i] = i
+	}
+	sort.SliceStable(order, func(a, b int) bool { return xs[order[a]] < xs[order[b]] })
+	return order
+}
+
+func permute[T any](v []T, order []int) []T {
+	out := make([]T, len(v))
+	for i, j := range order {
+		out[i] = v[j]
+	}
+	return out
+}
 
 // countRoom is how far a bus's track keeps from the box whose stub or drop
 // carries the bus's count: the count's height and a clear margin.

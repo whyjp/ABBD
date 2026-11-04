@@ -67,6 +67,9 @@ type layout struct {
 	// seats are the centre x of each frame chip the layout seated, by its
 	// node id (chipNode).
 	seats map[string]int
+	// ring says the rows stand about a focus (ring), so every line has the
+	// focus at one end and a bus would only gather what drops straight.
+	ring bool
 }
 
 const (
@@ -419,6 +422,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	var x map[string]int
 	var width int
 	if seat != nil {
+		l.ring = true
 		x, width = g.ring(seat.focus, budget)
 	} else {
 		room := budget

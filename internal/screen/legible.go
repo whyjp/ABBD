@@ -576,9 +576,25 @@ func measure(s sheet) Metrics {
 			}
 		}
 	}
-	// 4: lines of one kind that leave one edge of a box are one bundle.
+	// 4: lines of one kind that leave one edge of a box are one bundle,
+	// but for a line that drops straight from one box into the next, which
+	// needs no bundle.
+	onBox := func(p fpt) bool {
+		for _, b := range s.shapes {
+			if b.kind == "box" && p.x > b.r.x && p.x < b.r.x+b.r.w && (math.Abs(p.y-b.r.y) < 6 || math.Abs(p.y-b.r.y-b.r.h) < 6) {
+				return true
+			}
+		}
+		return false
+	}
+	straight := func(w stroke) bool {
+		return len(w.pts) == 2 && w.pts[0].x == w.pts[1].x && onBox(w.pts[0]) && onBox(w.pts[1])
+	}
 	leaving := map[string]map[int]bool{}
 	for _, w := range ws {
+		if straight(w) {
+			continue
+		}
 		st := w.pts[0]
 		for k, b := range s.shapes {
 			if b.kind != "box" || st.x <= b.r.x || st.x >= b.r.x+b.r.w {
@@ -593,7 +609,7 @@ func measure(s sheet) Metrics {
 			default:
 				continue
 			}
-			kk := fmt.Sprint(k, edge, w.class)
+			kk := fmt.Sprint(k, edge, kindOf(w.class))
 			if leaving[kk] == nil {
 				leaving[kk] = map[int]bool{}
 			}
@@ -641,7 +657,10 @@ func measure(s sheet) Metrics {
 		if math.Abs(b.y-r.y-r.h) < math.Abs(b.y-r.y) {
 			edge = "bottom"
 		}
-		k := fmt.Sprint(r, edge, strings.ReplaceAll(w.class, " back", ""))
+		k := fmt.Sprint(r, edge, kindOf(w.class))
+		if straight(w) {
+			k = fmt.Sprint(k, "straight", w.group)
+		}
 		if arrivals[k] == nil {
 			arrivals[k] = map[int]bool{}
 		}

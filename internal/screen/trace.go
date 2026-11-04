@@ -39,11 +39,18 @@ func keyOf(colour string, p fpt) inkKey {
 // colour is the kind a stroke's colour shows; a line between two modules
 // that use each other is drawn in the direct-dependency colour.
 func colour(class string) string {
+	if k := kindOf(class); k != "mutual" {
+		return k
+	}
+	return "bypass"
+}
+
+// kindOf is the kind of line a stroke's class names, without the marks
+// that say how it is drawn or the classes that light it on hover.
+func kindOf(class string) string {
 	for _, c := range strings.Fields(class) {
 		switch c {
 		case "w", "joins", "back", "both":
-		case "mutual":
-			return "bypass"
 		default:
 			return c
 		}
