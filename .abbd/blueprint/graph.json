@@ -5479,7 +5479,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7802,7 +7802,7 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, by its box's unit ID, that the native/ and preload bridge lines, now straight, break nothing, and the excess turns and steps that view measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures.",
                 "Code": false
               }
             ]

@@ -5,11 +5,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/screen"
 )
 
 func lintAt(t *testing.T, root string, args ...string) (int, string) {
@@ -56,10 +53,16 @@ func copyFixture(t *testing.T, name, debt string) string {
 }
 
 // Orca's src/ keeps every hard criterion, so lint passes, and it names the
-// one spot the user circled that still turns: the mobile/ line into the
-// Orca runtime, down from a staircase of 8 turns to 2. The native/ line and
-// the preload bridge line now drop straight between chip and box and break
-// nothing. Each breach names its boxes by unit ID too.
+// one spot the user circled on the top edge that still turns: the mobile/
+// line into the Orca runtime, down from a staircase of 8 turns to 2. The
+// top native/ line and the preload bridge line now drop straight between
+// chip and box and break nothing, and so does orca CLI's line down to the
+// bottom chip of the Orca runtime RPC methods. On the bottom edge main drops
+// desktop main's lines to the connector contract and to native/ straight;
+// here each turns 4 times round WSL guest agent, and native/ stands off
+// desktop main, so a change to either shows. Each breach names the box at
+// its line's box end by unit ID: the last item of a line into a box, the
+// first of a line out of one.
 func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 	code, out := lintAt(t, fixtureRoot("orca"), "MOD-0098 src/", "--json")
 	if code != exitOK {
@@ -69,30 +72,46 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &r); err != nil {
 		t.Fatal(err)
 	}
-	want := map[string]bool{
-		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 2 times`: false,
+	// box is the item that names the box end: -1 the last item, 0 the first.
+	type spot struct {
+		box  int
+		seen bool
+	}
+	want := map[string]*spot{
+		`B1 the line from chip "← mobile/" to box "Orca runtime (RPC host)" (MOD-0056) turns 2 times`:                               {box: -1},
+		`B1 the line from box "desktop main process" (MOD-0042) to chip "@orca-cloud/connector- contract" turns 4 times, allowed 0`: {box: 0},
+		`B1 the line from box "desktop main process" (MOD-0042) to chip "→ native/" turns 4 times, allowed 2`:                       {box: 0},
+		`F1 chip "→ native/" stands 79px left of box "desktop main process" (MOD-0042)`:                                             {box: 1},
+	}
+	straight := []string{
+		`"desktop preload bridge" (MOD-0071) to chip "preload bridge"`,
+		`chip "← native/" to box "desktop main process" (MOD-0042)`,
+		`box "orca CLI" (MOD-0038) to chip "Orca runtime RPC methods"`,
 	}
 	for _, v := range r.Views {
 		for _, b := range v.Breaches {
-			for _, straight := range []string{`"desktop preload bridge" (MOD-0071) to chip "preload bridge"`, `chip "← native/" to box "desktop main process" (MOD-0042)`} {
-				if strings.Contains(b.Text, straight) {
+			for _, s := range straight {
+				if strings.Contains(b.Text, s) {
 					t.Errorf("a line that drops straight breaks %s: %s", b.Criterion, b.Text)
 				}
 			}
-			for w := range want {
-				if strings.HasPrefix(b.Criterion+" "+b.Text, w) {
-					want[w] = true
-					if !slices.ContainsFunc(b.Items, func(it screen.Item) bool {
-						return it.Kind == "box" && it.ID != "" && strings.Contains(b.Text, "("+it.ID+")")
-					}) {
-						t.Errorf("%s: no box among %+v names its unit ID", w, b.Items)
-					}
+			for w, sp := range want {
+				if !strings.HasPrefix(b.Criterion+" "+b.Text, w) {
+					continue
+				}
+				sp.seen = true
+				i := sp.box
+				if i < 0 {
+					i += len(b.Items)
+				}
+				if it := b.Items[i]; it.Kind != "box" || it.ID == "" || !strings.Contains(b.Text, "("+it.ID+")") {
+					t.Errorf("%s: item %d %+v names no unit ID", w, i, it)
 				}
 			}
 		}
 	}
-	for w, seen := range want {
-		if !seen {
+	for w, sp := range want {
+		if !sp.seen {
 			t.Errorf("lint does not report %q", w)
 		}
 	}
