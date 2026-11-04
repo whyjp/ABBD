@@ -158,7 +158,7 @@ The terms are these.
 | crossings | 265 | through the weighed sum |
 | weighed sum | 6017 | 6017 |
 
-`ABBD_LINT_FIXTURES=<file> go test ./internal/screen -run TestLintFixtures` writes the per-view totals of the fixtures as a table, and `ABBD_LINT_BREACHES=<file>` every breach. `eval/lint/compare.py` totals two such tables and lists the views that get worse.
+`ABBD_LINT_FIXTURES=<file> go test ./internal/screen -run TestLintFixtures` writes the per-view totals of the fixtures as a table, and `ABBD_LINT_BREACHES=<file>` every breach. `eval/lint/compare.py` totals two such tables and lists the views that get worse. This repository's own blueprint (`eval/lint/self.txt`) breaks one hard criterion. `internal/topology` breaks rule 13, as Known gaps says.
 
 ## Flows
 

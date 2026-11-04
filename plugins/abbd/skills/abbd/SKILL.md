@@ -1,6 +1,6 @@
 ---
 name: abbd
-description: Read, query and keep current the repository's ABBD blueprint, the architecture topology of the merged code in .abbd/. Use for /abbd, for a question about the architecture, topology, modules, contracts or couplings of a repository that has .abbd/, before changing code there, and after the change to put the topology difference in the PR.
+description: Read, query and keep current the repository's ABBD blueprint, the architecture topology of the merged code in .abbd/. Use for /abbd, for a question about the architecture, topology, modules, contracts or couplings of a repository that has .abbd/, before changing code there, after the change to put the topology difference in the PR, and with abbd lint before and after a change to how the blueprint is drawn.
 argument-hint: "[unit or question]"
 ---
 
@@ -152,3 +152,30 @@ pre-push:
 - run: go install github.com/whyjp/abbd/cmd/abbd@main
 - run: abbd status --check
 ```
+
+## Hold the drawings to the criteria
+
+`docs/blueprint-svg.md` sets out the drawing criteria under "Drawing criteria". Each has an ID. A hard one must hold. A target one is minimized, and its total over the fixtures has a ceiling. Read that section before you change how a drawing is laid out or drawn, and lint before and after.
+
+- `abbd lint` checks every drawing of the blueprint. It prints each breach with its view, its criterion, the boxes, lines or chips it involves, what it measures against what is allowed, and for a line that bends too often the obstacle or the reason. It ends with the totals per view and in all, and exits 1 only on a hard breach.
+- `abbd lint <VIEW>` checks the views whose name starts with VIEW or holds it as a word, so `abbd lint MOD-0098` checks that unit's inside and its focus views.
+- `abbd lint --json` prints the criteria, every breach and the totals as JSON.
+- `abbd lint --root internal/screen/testdata/orca MOD-0098` lints a view of a fixture.
+
+The measure to lower is the steps. A step is every bend past a line's second, and every jog, a stretch under 24px between two bends ("Staircases first"). B1 and B2 list the steps line by line. A change may not raise these, the regression-forbidden measures:
+
+- the hard breaches of any view, J1, J2, J3, O3 and R, past the debt `internal/screen/lint_test.go` records
+- the totals of P1, P2, H1, H2, O1, O2 and F1
+- the phantom pairs, the paths that bend more than twice, the traced bends and the climbing lines
+- the weighed sum, the crossings plus 4 for each step, so a step saved may cost at most 4 crossings
+
+`TestLintFixtures` fails when one of them passes its ceiling or its debt. Change the renderer one thing at a time:
+
+1. Write the fixtures' table with `ABBD_LINT_FIXTURES=<before.tsv> go test ./internal/screen -run TestLintFixtures -count=1`, and lint the views you mean to change.
+2. Read their breaches. Pick one cause, such as a chip that stands past its box or a step where a bus changes track. Write down the one change you expect to remove it, and what you expect it to cost.
+3. Make that one change, write `<after.tsv>` the same way, and run `python eval/lint/compare.py before <before.tsv> after <after.tsv>`. It totals both tables and lists every view that got worse.
+4. Keep the change only when the steps fall, no hard breach is new and no regression-forbidden total rises. Otherwise revert it, whatever else it improved.
+5. Record the attempt, kept or reverted, as one row of `eval/lint/decisions.tsv`, with the hypothesis, the change, the totals before and after and the verdict.
+6. Commit each kept change on its own. Lower the ceilings in `lint_test.go` to the new totals, write the new table to `eval/lint/baseline.tsv`, and say in `docs/blueprint-svg.md` what moved.
+
+Never raise a ceiling or a debt, or loosen a criterion, to keep a change. Run `go test ./internal/screen -count=1` before each commit, since the rule checks of `fixtures_test.go` still hold. Look at the changed views too. `ABBD_BLUEPRINTS=<dir> go test ./internal/screen -run TestEveryRealDrawingIsLegible -count=1` writes the fixtures' pages there. A number that falls on a drawing that reads worse means the measure counts the wrong thing, so say so instead of keeping the change.
