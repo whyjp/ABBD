@@ -116,11 +116,26 @@ func proper(rows [][]string, w map[string]int, pairs [][2]string, lines map[[2]s
 	return g
 }
 
+// A tactic is one way order searches the rows: the order each row starts
+// in, and where a sweep pulls an item among the items it joins. Each finds
+// orders the others miss, and the count order minimizes is not the one a
+// reader sees: it leaves out the frame's chips, the buses and the lines
+// that climb. So a view is drawn with every tactic and keeps the drawing
+// that reads best (choose).
+type tactic struct {
+	// reversed starts every row in reverse.
+	reversed bool
+	// median pulls an item to the weighted median of what it joins, not to
+	// the weighted mean.
+	median bool
+}
+
+var tactics = []tactic{{}, {median: true}, {reversed: true}}
+
 // order sorts each row to cut the crossings between adjacent rows: sweeps
-// by the weighted mean position of each item's neighbours, down and up,
-// each followed by swapping neighbours while that crosses less, keeping the
-// best order seen.
-func (g *layered) order() {
+// by where each item's neighbours stand, down and up, each followed by
+// swapping neighbours while that crosses less, keeping the best order seen.
+func (g *layered) order(t tactic) {
 	// The sweeps work on item numbers, not names: they look up every
 	// item's neighbours many times over.
 	var ids []string
@@ -196,7 +211,17 @@ func (g *layered) order() {
 				k += l.n
 			}
 			key[v] = pos[v]
-			if k > 0 {
+			switch {
+			case k > 0 && t.median:
+				var at []float64
+				for _, l := range near {
+					for range l.n {
+						at = append(at, pos[l.o])
+					}
+				}
+				slices.Sort(at)
+				key[v] = (at[(k-1)/2] + at[k/2]) / 2
+			case k > 0:
 				key[v] = sum / float64(k)
 			}
 		}
@@ -241,6 +266,11 @@ func (g *layered) order() {
 			out[i] = slices.Clone(r)
 		}
 		return out
+	}
+	if t.reversed {
+		for _, row := range rows {
+			slices.Reverse(row)
+		}
 	}
 	index()
 	transpose()

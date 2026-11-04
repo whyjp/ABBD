@@ -93,9 +93,10 @@ func (ln line) String() string {
 	return fmt.Sprintf("%s %s %s", ln.from, ln.kind, ln.to)
 }
 
-// inside draws m's view. With a focus, it draws the focus view of that
-// child instead: the child, the children it meets, and only its own lines.
-func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int) Inside {
+// inside draws m's view, its rows ordered by tactic by, and weighs it into
+// read. With a focus, it draws the focus view of that child instead: the
+// child, the children it meets, and only its own lines.
+func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) Inside {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
@@ -291,7 +292,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if focus != "" {
 		budget = overviewBudget
 	}
-	l := arrange(nodes, edges, budget-12, seatOf(focus, seat))
+	l := arrange(nodes, edges, budget-12, seatOf(focus, seat), by)
 
 	// A wired port sits on the side its lines flow from, rule 10: a contract
 	// the module provides and a caller from outside on top, what the module
@@ -426,6 +427,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		reqs = append(reqs, r)
 	}
 	paths := l.route(reqs)
+	weighed(read, paths, reqs)
 
 	frame.H = l.gapTop[len(l.rows)] + l.gapH[len(l.rows)] - frame.Y
 	if len(bottoms) > 0 {
