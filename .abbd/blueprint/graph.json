@@ -1269,6 +1269,18 @@
       ]
     },
     {
+      "ID": "IF-0026",
+      "Kind": "IF",
+      "Name": "abbd lint",
+      "Signature": "abbd lint pos{0,1}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/lint.go lint",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1289,6 +1301,7 @@
         "cmd/abbd/flow.go",
         "cmd/abbd/impact.go",
         "cmd/abbd/install.go",
+        "cmd/abbd/lint.go",
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
@@ -2014,6 +2027,8 @@
         "internal/screen/inside.go",
         "internal/screen/layered.go",
         "internal/screen/layout.go",
+        "internal/screen/legible.go",
+        "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/notes.go",
         "internal/screen/overview.go",
@@ -2023,6 +2038,7 @@
         "internal/screen/site.go",
         "internal/screen/stack.go",
         "internal/screen/table.go",
+        "internal/screen/trace.go",
         "internal/screen/tree.go",
         "internal/screen/weigh.go",
         "internal/screen/words.go"
@@ -2695,6 +2711,13 @@
       "Phrase": "file grid",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd table\""
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0026",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd lint\""
     },
     {
       "From": "FEAT-0002",
@@ -3403,6 +3426,12 @@
     {
       "From": "MOD-0001",
       "To": "IF-0025",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0026",
       "Kind": "provides",
       "Origin": "EXTRACTED"
     },
@@ -4821,7 +4850,8 @@
             "flow",
             "forget",
             "stack",
-            "table"
+            "table",
+            "lint"
           ]
         }
       ],
@@ -5450,6 +5480,15 @@
       "Understanding": {
         "Stale": false,
         "Blocks": [
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0001 ---",
+                "Code": false
+              }
+            ]
+          },
           {
             "Kind": "h",
             "Parts": [
@@ -7617,6 +7656,76 @@
                 "Code": false
               }
             ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Lint",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "lint.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd lint [VIEW]",
+                "Code": true
+              },
+              {
+                "Text": " builds the blueprint's model from ",
+                "Code": false
+              },
+              {
+                "Text": "screenInput",
+                "Code": true
+              },
+              {
+                "Text": ", as ",
+                "Code": false
+              },
+              {
+                "Text": "publish",
+                "Code": true
+              },
+              {
+                "Text": " does, and runs ",
+                "Code": false
+              },
+              {
+                "Text": "screen.Lint",
+                "Code": true
+              },
+              {
+                "Text": " on every view or on those VIEW names. It prints each breach and the totals per view and in all, or with ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " a ",
+                "Code": false
+              },
+              {
+                "Text": "lintReport",
+                "Code": true
+              },
+              {
+                "Text": " of the criteria, the views and the totals. It writes nothing, and it returns an error, so the command exits 1, only when a hard breach is found.",
+                "Code": false
+              }
+            ]
           }
         ]
       },
@@ -9363,6 +9472,47 @@
             "Users": false,
             "Data": false
           }
+        },
+        {
+          "ID": "IF-0026",
+          "Name": "abbd lint",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0026",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "json",
+                "Name": "--json",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
         }
       ],
       "Unwired": [
@@ -9389,7 +9539,8 @@
             "flow",
             "forget",
             "stack",
-            "table"
+            "table",
+            "lint"
           ]
         },
         {
@@ -19207,19 +19358,27 @@
                 "Code": false
               },
               {
-                "Text": "legible_test.go",
+                "Text": "legible.go",
                 "Code": true
               },
               {
-                "Text": " measures them per line and channel, and ",
+                "Text": " measures them per line and channel, ",
                 "Code": false
               },
               {
-                "Text": "trace_test.go",
+                "Text": "trace.go",
                 "Code": true
               },
               {
-                "Text": " traces every relation along the drawn ink and counts the bends and the short jogs on its path.",
+                "Text": " traces every relation along the drawn ink and counts the bends and the short jogs on its path, and ",
+                "Code": false
+              },
+              {
+                "Text": "lint.go",
+                "Code": true
+              },
+              {
+                "Text": " holds every drawing to the Drawing criteria on top of both.",
                 "Code": false
               }
             ]
@@ -21765,6 +21924,132 @@
               },
               {
                 "Text": " measures a small hand-written drawing whose chips leave their box and the canvas, so the escaped-chip count cannot read 0 unnoticed.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Lint",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "lint.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "criteria",
+                "Code": true
+              },
+              {
+                "Text": " is a registry of the Drawing criteria of ",
+                "Code": false
+              },
+              {
+                "Text": "docs/blueprint-svg.md",
+                "Code": true
+              },
+              {
+                "Text": ", each an ID, whether it is hard, and a check. ",
+                "Code": false
+              },
+              {
+                "Text": "Lint",
+                "Code": true
+              },
+              {
+                "Text": " reads each view's SVG back with ",
+                "Code": false
+              },
+              {
+                "Text": "sheetOf",
+                "Code": true
+              },
+              {
+                "Text": ", traces and measures it into a ",
+                "Code": false
+              },
+              {
+                "Text": "look",
+                "Code": true
+              },
+              {
+                "Text": ", and runs every check. ",
+                "Code": false
+              },
+              {
+                "Text": "trace",
+                "Code": true
+              },
+              {
+                "Text": " visits the places each start reaches in order, so the breaches come out in the same order on every run. A check names the boxes, lines and chips of each breach, with what it measures against what is allowed, and for a line that turns too often the obstacle it turns around or the reason. ",
+                "Code": false
+              },
+              {
+                "Text": "Sum",
+                "Code": true
+              },
+              {
+                "Text": " adds the per-view ",
+                "Code": false
+              },
+              {
+                "Text": "Totals",
+                "Code": true
+              },
+              {
+                "Text": ", whose steps are the measure a change to the renderer lowers. ",
+                "Code": false
+              },
+              {
+                "Text": "lint_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the fixtures' hard breaches to ",
+                "Code": false
+              },
+              {
+                "Text": "lintDebt",
+                "Code": true
+              },
+              {
+                "Text": " and their totals to ",
+                "Code": false
+              },
+              {
+                "Text": "lintCeilings",
+                "Code": true
+              },
+              {
+                "Text": ", and with ",
+                "Code": false
+              },
+              {
+                "Text": "ABBD_LINT_FIXTURES",
+                "Code": true
+              },
+              {
+                "Text": " set writes the per-view table that ",
+                "Code": false
+              },
+              {
+                "Text": "eval/lint/compare.py",
+                "Code": true
+              },
+              {
+                "Text": " reads.",
                 "Code": false
               }
             ]
