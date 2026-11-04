@@ -102,6 +102,10 @@ type Wire struct {
 	// that light it while a reader points at one of them (hover.go).
 	ends []string
 	Lit  string `json:"-"`
+	// Gaps are where the line is cut because another passes over it, and
+	// Mask names the mask that cuts them (rule 24).
+	Gaps []Gap  `json:"-"`
+	Mask string `json:"-"`
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -887,6 +891,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.mark(paths)
 	d.hover()
 	return d
 }
