@@ -28045,7 +28045,15 @@
                 "Code": true
               },
               {
-                "Text": " template the notes use too. It escapes the text and never trusts its markup.",
+                "Text": " template the notes use too. It escapes the text and never trusts its markup. A module with no text gets one line that says so and names the ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand",
+                "Code": true
+              },
+              {
+                "Text": " command that stores one, and a unit with no responsibility line shows none.",
                 "Code": false
               }
             ]
