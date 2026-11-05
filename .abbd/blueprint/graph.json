@@ -20827,7 +20827,7 @@
                 "Code": true
               },
               {
-                "Text": " finds that every place on that bus already reaches every place the trunk leads to below. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
+                "Text": " finds that every place on that bus already reaches every place the trunk leads to below. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Where a pair steps down on the trunk, a line whose end lies under the trunk in the same gap keeps the trunk's x and runs straight on down. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
                 "Code": false
               },
               {
@@ -22845,7 +22845,23 @@
                 "Code": true
               },
               {
-                "Text": " (B3) finds a line whose stretch runs against the stretch two before it, and ",
+                "Text": " (B3) finds a line whose stretch runs against the stretch two before it (",
+                "Code": false
+              },
+              {
+                "Text": "turnsBack",
+                "Code": true
+              },
+              {
+                "Text": "), counts a turn-back that several lines share once, and leaves out a back line (",
+                "Code": false
+              },
+              {
+                "Text": "backWay",
+                "Code": true
+              },
+              {
+                "Text": "), which rule 13 counts. ",
                 "Code": false
               },
               {
@@ -22853,7 +22869,7 @@
                 "Code": true
               },
               {
-                "Text": " (B4) two stretches of one traced line, or of two subpaths of one bundle, that run side by side within ",
+                "Text": " (B4) finds two stretches of one traced line, or of two subpaths of one bundle, that run the same way side by side within ",
                 "Code": false
               },
               {
@@ -22861,7 +22877,23 @@
                 "Code": true
               },
               {
-                "Text": ". Their sum is the detours, a total ",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "sideBySide",
+                "Code": true
+              },
+              {
+                "Text": "), and skips a bundle's pair along a pair a traced line already counts (",
+                "Code": false
+              },
+              {
+                "Text": "onStretch",
+                "Code": true
+              },
+              {
+                "Text": "). Their sum is the detours, a total ",
                 "Code": false
               },
               {

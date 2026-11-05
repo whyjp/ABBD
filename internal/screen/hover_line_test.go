@@ -512,7 +512,7 @@ func TestEveryRealDrawingTakesPart(t *testing.T) {
 // page CFG-0006's line runs right along y=62 to x=385 and back left along
 // y=82 to x=181. It is a routing defect that hover shows rather than
 // hides, a known count that may only fall.
-const hairpins = 17
+const hairpins = 15
 
 func TestFewLinesDoubleBack(t *testing.T) {
 	n := 0

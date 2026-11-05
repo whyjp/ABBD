@@ -927,6 +927,12 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 					}
 				}
 				for o, y := range at {
+					// A pair of the same trunk that steps down on the trunk
+					// in this gap leaves the trunk's x to a line whose end
+					// lies under it, which runs straight on down.
+					if o.dep == st.dep && o.gap == st.gap && y == p.xs[k-1] && x == y && x == p.tx {
+						continue
+					}
 					if o != st && abs(x-y) < lane {
 						return false
 					}
