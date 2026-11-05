@@ -20927,7 +20927,15 @@
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...). ",
+                "Text": " word they all share (호출, 데이터, ...), which also stands in when the phrase, with 등, is wider than ",
+                "Code": false
+              },
+              {
+                "Text": "labelMax",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -20935,7 +20943,15 @@
                 "Code": true
               },
               {
-                "Text": " adds each phrase to the line's tooltip with whose words it is, and ",
+                "Text": " adds each phrase to the line's tooltip with whose words it is and how many of the line's relations carry it, as in ",
+                "Code": false
+              },
+              {
+                "Text": "Cypher (판독) 2/10",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
                 "Code": false
               },
               {

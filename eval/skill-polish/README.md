@@ -3,21 +3,22 @@
 An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, storefront) once per skill variant. Base is the skill at a0a792f, it2 is c43960f and it3 is a2611d7. Each it3 run used a binary built from a2611d7, which also holds it2's changes.
 
 - `rubric.md` is what the judge scored against.
-- `judge-scores.tsv` holds one blind judge pass (Opus) over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
+- `judge-scores.tsv` holds every blind judge pass (Opus), one for the first round and two or three for each later iteration, each over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
 - `lint-levels.tsv` is `abbd lint --json` for every run, measured with the a2611d7 binary.
 - `decisions.tsv` joins both and records the verdicts. Judge scores are averaged over all judge passes, and a variant is kept by one of two rules, chosen by what it changes:
   - A skill or CLI change can change topology, so it is judged on fresh held-out runs against base and the current kept iteration. It is kept if it beats both in at least 2 of 3 repositories, on judge means, and in the third loses to neither by more than the passes' disagreement there.
-  - A renderer-only change cannot change topology, so it is judged paired, on re-renders of the current kept runs, against the drawing it changes. It is kept if the criteria it targets rise, and no criterion falls by more than the passes' disagreement in any repository.
+  - A renderer-only change cannot change topology, so it is judged paired, against the drawing it changes, on the current kept runs re-rendered with the change's binary. The current kept runs are the held-out runs of the latest iteration kept as the working base, it3's for it5. The criteria the change targets are written in this README before the judges run. It is kept if those criteria rise, and no criterion falls by more than the passes' disagreement in any repository.
+  - The paired rule was adopted after it5 failed the fresh-run rule, and it5 is the first change judged under it (see Iteration 5). The rule did not exist when it5's judges ran, so no criterion was named in advance. Labels (c5) is what its change targets, but its keep rests on a rule written with its scores in view.
 - `shots/` holds the base, it3, it4 and it5 overviews.
 
 ## Verdict
 
-Neither variant meets the stated rule. it2 beats base in 1 of 3 repositories and is rejected.
+Neither variant meets the fresh-run rule, the only rule at the time. it2 beats base in 1 of 3 repositories and is rejected.
 
 it3 also beats base in 1 of 3 on the judge mean:
 
 - gin is a win, 3.06 against 2.56 (+0.50).
-- storefront is a tie, 3.22 against 3.22. The judge ranks it3 first there only on set of views, 4 against 2, and the stated rule has no such tie-break.
+- storefront is a tie, 3.22 against 3.22. The judge ranks it3 first there only on set of views, 4 against 2, and the fresh-run rule has no such tie-break.
 - httpie is a loss, 2.33 against 2.67 (-0.34), with lines down from 2.67 to 1.67.
 
 The evidence is thin. It is one blind judge pass over 3 images a repository, and the margins are about the size of the noise between two runs of one skill. Lint regressed too. gin's hard breaches rose from 1 to 12, and httpie's crossings from 4 to 43. The first `abbd lint --record` refusal that it3 added never fired in these runs.
@@ -68,7 +69,7 @@ Three fresh Opus judges scored base, it3 and it5 in one pass each, under blind s
 | httpie | 2.55 (2.44, 2.61, 2.61) | 2.24 (2.22, 2.33, 2.17) | 2.30 (2.28, 2.39, 2.22) |
 | storefront | 3.13 (3.11, 3.17, 3.11) | 3.24 (3.28, 3.06, 3.39) | 3.46 (3.50, 3.33, 3.56) |
 
-All three passes rank the sets the same way: it5, it3, base on gin and storefront, and base, it5, it3 on httpie. Two passes differ by 0.11 to 0.15 on a set mean on average, and by 0.33 at most.
+By set mean, all three passes rank it5, it3, base on gin and base, it5, it3 on httpie. On storefront all three rank it5 first, and passes @5a and @5c rank it3 above base, but pass @5b ranks base (3.17) above it3 (3.06). Two passes differ by 0.11 to 0.15 on a set mean on average, and by 0.33 at most.
 
 it5 is kept under the paired rule. It changes only the renderer, and it draws it3's runs, so it is judged against it3. It raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged. Lines (c4) and every other criterion except overall (c6) score the same as it3's, and c6 rises by 0.11 on gin and storefront. Its mean gain over it3 is 0.09, 0.06 and 0.22.
 
