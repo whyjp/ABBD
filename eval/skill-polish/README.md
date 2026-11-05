@@ -5,7 +5,7 @@ An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, s
 - `rubric.md` is what the judge scored against.
 - `judge-scores.tsv` holds one blind judge pass (Opus) over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
 - `lint-levels.tsv` is `abbd lint --json` for every run, measured with the a2611d7 binary.
-- `decisions.tsv` joins both and records the verdicts. The stated rule keeps a variant that beats base on the judge mean in at least two of three repositories and does not lose badly on the third.
+- `decisions.tsv` joins both and records the verdicts. A variant is kept only if, on judge means averaged over all judge passes, it beats both base and the current kept iteration in at least 2 of 3 repositories, and in the third loses to neither by more than the passes' disagreement there.
 - `shots/` holds the base, it3 and it4 overviews.
 
 ## Verdict
@@ -43,3 +43,7 @@ The passes differ by 0.22 on a set mean on average and by 0.34 at most. Both pas
 it4 is rejected and reverted in f89ca26. It beats base and it3 on storefront only (+0.72 and +0.39). On httpie it ties base (-0.06, inside the pass disagreement). On gin it loses to base by 0.28 and to it3 by 0.55, more than either pass disagreement on gin. There the part rule merged gin's root package so 6 of 7 module pages hold fewer than 2 boxes, and the Context page draws nothing.
 
 The same base and it3 screenshots scored lower this round than in the single pass above (storefront base 3.22 to 2.86, gin it3 3.06 to 2.77). A gap of about 0.3 to 0.4 between rounds is judge noise, which makes the earlier one-pass verdicts weaker still.
+
+## Iteration 5
+
+it5 (fa9a75c) tests iteration 4's phrase rule alone. A line whose relations carry different phrases says the phrase the most of them carry, with 등, and falls back to the via word only when none carries a phrase. The skill text, the part rule and the overview bound are as on main. The fixtures hold no phrase, so their lint table is unchanged. It is unjudged.
