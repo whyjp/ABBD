@@ -193,6 +193,24 @@ def tracks(frm, kind):
     return m
 
 
+def tees(t, view):
+    """Points where a line's straight drop crosses, at no turn of the other
+    line, a flat stretch of another line leaving the same place."""
+    got = [w for w in t.ways if w["view"] == t.view(view)]
+    seen = set()
+    for a in got:
+        if len(a["pts"]) != 2 or a["pts"][0][0] != a["pts"][1][0]:
+            continue
+        x, (y0, y1) = a["pts"][0][0], sorted(p[1] for p in a["pts"])
+        for b in got:
+            if b is a or b["from"] != a["from"]:
+                continue
+            for p, q in zip(b["pts"], b["pts"][1:]):
+                if p[1] == q[1] and y0 < p[1] < y1 and min(p[0], q[0]) < x < max(p[0], q[0]):
+                    seen.add((x, p[1]))
+    return len(seen)
+
+
 def hover(key):
     """Findings of this kind shoot.py records over every fixture page it hovers."""
     def m(t, view):
@@ -244,6 +262,9 @@ CASES = [
          "guard: the exit ran left under process-footprint-macos, reading as its line"),
     Case("self-gitx", "user-05", "self overview", "excess turns, jogs and turn-backs of lines at internal/gitx",
          on(knots, GITX), 0, "the knot of steps between internal/extract, internal/store and internal/gitx"),
+    Case("p01-tee", "today", "pstack MOD-0001 setup and help",
+         "points where a line's straight drop crosses the track of another line leaving its box",
+         tees, 0, "/poteto-help -> 10-recipes drops 420,106 to 420,142 across its box's own bus to 01-setup at 420,130"),
     Case("hover-cut", "today", "every shot page", "shoot.py cut", hover("cut"), 0, "guard: a lit route stops partway"),
     Case("hover-stray", "today", "every shot page", "shoot.py stray", hover("stray"), 0, "guard: a lit box no lit line reaches"),
     Case("hover-mixed", "today", "every shot page", "shoot.py mixed", hover("mixed"), 0, "guard: one lit route of two colours"),
