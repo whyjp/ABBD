@@ -20835,7 +20835,15 @@
                 "Code": true
               },
               {
-                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. On such a layout ",
+                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. Where the box's other lines of that kind fork into that same row and all leave one place, such lines join that fork instead: one stem over the straight drop nearest its share of the edge, one track and a drop into each box, so a hub over a row of children forks once, and ",
+                "Code": false
+              },
+              {
+                "Text": "fork_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds app-shell and lib to one stem. On such a layout ",
                 "Code": false
               },
               {
@@ -22910,6 +22918,14 @@
               },
               {
                 "Text": " for each excess turn, and the placement debt counts the breaches of the placement criteria. ",
+                "Code": false
+              },
+              {
+                "Text": "forks",
+                "Code": true
+              },
+              {
+                "Text": " lets a branch of a fork turn twice: a line between boxes in rows next to each other that leaves its box's bottom down a stem another of the box's lines leaves by, every line on it ending in that row, and turns onto one flat track into its box. ",
                 "Code": false
               },
               {
