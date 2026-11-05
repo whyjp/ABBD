@@ -135,27 +135,68 @@ var criteria = []Criterion{
 	{ID: "O3", Hard: true, Says: "a line climbs only to close a cycle", check: (*look).climbsCloseCycles},
 	{ID: "F1", Placement: true, Says: "a frame chip stands over or under the boxes its lines reach", check: (*look).chipsOverTheirBoxes},
 	{ID: "R", Hard: true, Says: "rules 1 to 15 and 21 hold, and every relation is traced", check: (*look).rules},
+	{ID: "S", Says: fmt.Sprintf("the drawing fits one screen, %dpx wide and %dpx tall less what its page sets above it", screenW, screenH), check: (*look).fitsOneScreen},
+}
+
+// screenW and screenH are the room a drawing has on one screen: a browser
+// viewport of 1600x1000 CSS pixels at 100% zoom, the drawing box's width
+// there, and the height below the page's header and the drawing's heading,
+// 22px left below. What a page sets between the heading and the drawing
+// takes from that height (room): the overview's list of questions,
+// questionGroup for each kind of question and questionLine for each, and
+// the note over a module's page and a focus view's page, one line and two
+// at that width. These are measured on the page at that size; a longer
+// question that wraps, a smaller window or a larger zoom or display
+// scaling leaves less.
+const (
+	screenW, screenH            = 1320, 860
+	questionGroup, questionLine = 37, 29
+	insideNote, focusNote       = 22, 45
+)
+
+// overviewRoom is the height the overview has under a list of flows,
+// stacks and tables of those counts.
+func overviewRoom(counts ...int) int {
+	h := 0
+	for _, n := range counts {
+		if n > 0 {
+			h += questionGroup + n*questionLine
+		}
+	}
+	if h > 0 {
+		h += 4
+	}
+	return screenH - h
+}
+
+// pastScreen is how far, in pixels, d runs past one screen whose drawing
+// has room px of height.
+func pastScreen(d Drawing, room int) int {
+	return max(0, d.Width-screenW, d.Height-room)
 }
 
 // Criteria lists the drawing criteria in the order lint checks them.
 func Criteria() []Criterion { return slices.Clone(criteria) }
 
 // view is one drawing of a model, by the name the checks give it.
+// room is the height its drawing has on one screen (screenH).
 type view struct {
 	name   string
 	d      Drawing
 	budget int
+	room   int
 }
 
 func views(m Model) []view {
-	out := []view{{"overview", m.Overview, overviewWidth}}
+	out := []view{{"overview", m.Overview, overviewWidth, overviewRoom(len(m.Flows), len(m.Stacks), len(m.Tables))}}
+	focus := screenH - focusNote
 	for _, f := range m.Focus {
-		out = append(out, view{"overview focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
+		out = append(out, view{"overview focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth, focus})
 	}
 	for _, ins := range m.Insides {
-		out = append(out, view{ins.ID + " " + ins.Name, ins.Drawing, insideWidth})
+		out = append(out, view{ins.ID + " " + ins.Name, ins.Drawing, insideWidth, screenH - insideNote})
 		for _, f := range ins.Focus {
-			out = append(out, view{ins.ID + " focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth})
+			out = append(out, view{ins.ID + " focus " + f.Unit + " " + f.Name, f.Drawing, overviewWidth, focus})
 		}
 	}
 	return out
@@ -388,11 +429,34 @@ func plural(n int, noun string) string {
 // P1. Rule 13 bounds how many lines may climb. This lists each relation
 // between two boxes whose user does not stand in a row above what it uses,
 // with how many rows short of that it stands: 1 in the same row, 2 one row
-// below.
+// below. Two boxes joined by one line with a head at each end stand
+// well in one row or in rows next to each other: that line reads both
+// ways, so no row order holds both of their relations. Standing further
+// apart, they are one breach, with how many rows they stand past the next.
 func (l *look) usersAbove() []Breach {
 	var out []Breach
+	both, far := map[[2]int]bool{}, map[[2]int]bool{}
+	for _, w := range l.v.d.Wires {
+		if w.Kind != "mutual" || len(w.ends) != 2 {
+			continue
+		}
+		a, okA := l.at[w.ends[0]]
+		b, okB := l.at[w.ends[1]]
+		if okA && okB {
+			both[[2]int{a, b}], both[[2]int{b, a}] = true, true
+		}
+	}
 	for _, r := range l.boxRels {
 		ru, rv := l.row[r[0]], l.row[r[1]]
+		if both[r] {
+			apart, pair := abs(ru-rv), [2]int{min(r[0], r[1]), max(r[0], r[1])}
+			if apart > 1 && !far[pair] {
+				far[pair] = true
+				out = append(out, Breach{Items: l.items(r[0], r[1]), Got: apart - 1, Allowed: 0,
+					Text: fmt.Sprintf("%s and %s use each other and stand %s apart, %s past rows next to each other, allowed 0", l.name(r[0]), l.name(r[1]), plural(apart, "row"), plural(apart-1, "row"))})
+			}
+			continue
+		}
 		if ru < rv {
 			continue
 		}
@@ -1092,6 +1156,17 @@ func (l *look) chipsOverTheirBoxes() []Breach {
 		}
 	}
 	return out
+}
+
+// S. A drawing past the screen makes the reader scroll to see it whole, so
+// what it shows can no longer be read at a glance.
+func (l *look) fitsOneScreen() []Breach {
+	over := pastScreen(l.v.d, l.v.room)
+	if over == 0 {
+		return nil
+	}
+	return []Breach{{Got: over, Allowed: 0,
+		Text: fmt.Sprintf("the drawing is %dx%d px, %dpx past one screen's %dx%d", l.v.d.Width, l.v.d.Height, over, screenW, l.v.room)}}
 }
 
 // R. The numbered rules the checker already holds, one breach per rule a

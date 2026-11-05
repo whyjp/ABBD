@@ -6,5 +6,6 @@
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
     detours: 5
-    placement: 9
+    overflow: 0
+    placement: 8
     weighed: 199

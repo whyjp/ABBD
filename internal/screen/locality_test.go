@@ -140,3 +140,47 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 		}
 	}
 }
+
+// A relation between two modules changes the overview, but it keeps the
+// plain ranking unless that one runs past the screen or has more hard
+// breaches than the drawing taken. Another ranking moves every box's
+// centre, and every module page's focus view seated by them, so a small
+// change that left plain fitting must not flip the overview to it.
+func TestARelationBetweenModulesKeepsThePlainRanking(t *testing.T) {
+	for _, name := range fixtures {
+		base, err := store.Open("testdata/" + name).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var mods []model.ID
+		for _, u := range model.Present(base) {
+			if u.Parent == "" && !u.Kind.IsContract() {
+				mods = append(mods, u.ID)
+			}
+		}
+		for _, p := range [][2]int{{0, len(mods) - 1}, {len(mods) - 1, 0}} {
+			a, b := mods[p[0]], mods[p[1]]
+			t.Run(fmt.Sprintf("%s %s to %s", name, a, b), func(t *testing.T) {
+				joined := clone(base)
+				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
+				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
+				m := Build(Input{Units: joined})
+				plain := planOverview(joined, "", nil, tactic{}).draw(func(model.ID) string { return "" })
+				room := views(m)[0].room
+				hard := func(d Drawing) int {
+					vl, err := lintView(view{d: d, budget: overviewWidth, room: room})
+					if err != nil {
+						t.Fatal(err)
+					}
+					return vl.Totals.Hard
+				}
+				if pastScreen(plain, room) > 0 || hard(plain) > hard(m.Overview) {
+					return
+				}
+				if got, want := centres(m.Overview), centres(plain); !maps.Equal(got, want) || m.Overview.Height != plain.Height {
+					t.Errorf("the overview took another ranking, %dx%d, where the plain one fits at %dx%d with as few hard breaches", m.Overview.Width, m.Overview.Height, plain.Width, plain.Height)
+				}
+			})
+		}
+	}
+}

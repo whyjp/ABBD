@@ -6,6 +6,7 @@
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
     detours: 26
+    overflow: 0
     placement: 47
     weighed: 1340
 debt:

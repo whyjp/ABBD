@@ -94,7 +94,7 @@ func TestOutsideUsersGatherOntoOneChipPerBox(t *testing.T) {
 		t.Errorf("the view shows the internal key %q", gatherPort)
 	}
 
-	vl, err := lintView(view{d: d, budget: insideWidth})
+	vl, err := lintView(view{d: d, budget: insideWidth, room: screenH})
 	if err != nil {
 		t.Fatal(err)
 	}
