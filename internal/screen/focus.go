@@ -167,7 +167,12 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 	var out []Focus
 	for _, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
-		ins, _ := o.inside(scope, units, id, centres(full.Drawing), tactic{gather: full.gathered}, nil)
+		t := tactic{gather: full.gathered}
+		ins, _ := o.inside(scope, units, id, centres(full.Drawing), t, nil)
+		t.counted = true
+		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok && !readsBetter(ins.Drawing, alt.Drawing) {
+			ins = alt
+		}
 		d := ins.Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
 	}

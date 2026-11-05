@@ -766,14 +766,36 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				}
 			}
 		}
+		// A slot of several lines carries a ×N beside its stub or drop, so
+		// between two other slots it keeps the count's width from the
+		// nearer of them, rule 22, where the edge has room for it.
+		apartBy := make([]int, len(xs)+1)
+		for s := range apartBy {
+			apartBy[s] = gap
+		}
+		for s := 1; s < len(xs)-1 && l.counted; s++ {
+			if n := len(slots[s].is); n >= 2 {
+				w := textWidth(fmt.Sprintf("×%d", n), 11) + 9
+				if xs[s+1]-xs[s] >= xs[s]-xs[s-1] {
+					apartBy[s+1] = max(apartBy[s+1], w)
+				} else {
+					apartBy[s] = max(apartBy[s], w)
+				}
+			}
+		}
+		if sum(apartBy[1:len(xs)]) > r.hi-r.lo {
+			for s := range apartBy {
+				apartBy[s] = gap
+			}
+		}
 		edge := r.lo - gap
 		for s := range xs {
-			xs[s] = max(xs[s], edge+gap)
+			xs[s] = max(xs[s], edge+apartBy[s])
 			edge = xs[s]
 		}
 		edge = r.hi + gap
 		for s := len(xs) - 1; s >= 0; s-- {
-			xs[s] = min(xs[s], edge-gap)
+			xs[s] = min(xs[s], edge-apartBy[s+1])
 			edge = xs[s]
 		}
 		if r.node != "" {
@@ -1199,19 +1221,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			order = append(order, spans[g][left[best]])
 			left = slices.Delete(left, best, best+1)
 		}
-		// Each crossing takes the highest track below every crossing ordered
-		// before it that it overlaps.
-		var placed []*span
-		for _, s := range order {
-			t := 0
-			for _, q := range placed {
-				if q.lo <= s.hi+lane && s.lo <= q.hi+lane {
-					t = max(t, track[[2]int{g, q.owner}]+1)
-				}
-			}
-			track[[2]int{g, s.owner}] = t
+		meet := func(a, b int) bool { return order[a].lo <= order[b].hi+lane && order[b].lo <= order[a].hi+lane }
+		held := func(a, b int) bool { return cost(order[a], order[b]) > 0 || cost(order[b], order[a]) > 0 }
+		for k, t := range shelve(len(order), meet, held) {
+			track[[2]int{g, order[k].owner}] = t
 			tracks[g] = max(tracks[g], t+1)
-			placed = append(placed, s)
 		}
 	}
 	// A bus's count stands beside its stub or its drop, rule 22, so the gap
@@ -1931,6 +1945,35 @@ func (l *layout) place(tracks []int, room [][2]int) {
 		y += rh
 	}
 	l.height = y
+}
+
+// shelve gives each of m crossings of one gap, in the order they were
+// ranked, a track, 0 the highest. Each takes the highest track below every
+// crossing ranked before it that it meets and is held by, as when their
+// order crosses something either way, and clear of every other crossing it
+// meets. Two that cross nothing whichever lies above may stand in either
+// order, so a gap holds no more tracks than its crossings need.
+func shelve(m int, meet, held func(a, b int) bool) []int {
+	t := make([]int, m)
+	for s := range m {
+		for q := range s {
+			if meet(q, s) && held(q, s) {
+				t[s] = max(t[s], t[q]+1)
+			}
+		}
+		taken := func() bool {
+			for q := range s {
+				if meet(q, s) && t[q] == t[s] {
+					return true
+				}
+			}
+			return false
+		}
+		for taken() {
+			t[s]++
+		}
+	}
+	return t
 }
 
 // walk is the first x that free says is clear, going a lane at a time in

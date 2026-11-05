@@ -171,6 +171,14 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 	}
 }
 
+// readsBetter says lint reads drawing a better than drawing b.
+func readsBetter(a, b Drawing) bool {
+	var ca, cb cost
+	ca.judge(a)
+	cb.judge(b)
+	return ca.beats(cb)
+}
+
 // laneMoves is how many more placement breaches and folded chips a laned
 // drawing may have than the unlaned drawings of its view: its lanes save
 // steps by standing chips away from their boxes, and seen weighs each
@@ -203,6 +211,8 @@ const laneMoves = 1
 func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
+	var bt tactic
+	found := false
 	least, plain, crossed, ranked := 1<<20, 1<<20, 1<<20, 1<<20
 	hard, past := 1<<20, 1
 	for i, t := range ts {
@@ -231,7 +241,19 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			continue
 		}
 		if i == 0 || c.beats(bc) {
-			best, bc = v, c
+			best, bc, bt, found = v, c, t, true
+		}
+	}
+	// The kept drawing is drawn again with room for its counts, and that
+	// is kept unless it reads worse.
+	if found {
+		bt.counted = true
+		var c cost
+		if v, ok := draw(bt, &c); ok {
+			judge(v, &c)
+			if !bc.beats(c) {
+				best = v
+			}
 		}
 	}
 	return best

@@ -20939,7 +20939,15 @@
                 "Code": true
               },
               {
-                "Text": " finds a step onto an arrival track at the nearest clear x. Each bus is drawn once with its line count, and ",
+                "Text": " finds a step onto an arrival track at the nearest clear x. In each gap the crossings are ranked by the crossings their order makes, and ",
+                "Code": false
+              },
+              {
+                "Text": "shelve",
+                "Code": true
+              },
+              {
+                "Text": " gives each a track below every earlier crossing it overlaps whose order costs something either way, else the highest track clear of those it overlaps, so two that cross nothing whichever lies above can share one. Each bus is drawn once with its line count, and ",
                 "Code": false
               },
               {
@@ -20947,7 +20955,47 @@
                 "Code": true
               },
               {
-                "Text": " sizes each gap with room for the counts.",
+                "Text": " sizes each gap with room for the counts. A ",
+                "Code": false
+              },
+              {
+                "Text": "counted",
+                "Code": true
+              },
+              {
+                "Text": " tactic spreads the slots beside a slot of several lines to its ×N's width where the edge has room; ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "insideFocus",
+                "Code": true
+              },
+              {
+                "Text": " draw the drawing they keep once more with it and keep that unless ",
+                "Code": false
+              },
+              {
+                "Text": "readsBetter",
+                "Code": true
+              },
+              {
+                "Text": " finds it reads worse, and ",
+                "Code": false
+              },
+              {
+                "Text": "count_room_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the fixtures' counts clear of the next line.",
                 "Code": false
               }
             ]
