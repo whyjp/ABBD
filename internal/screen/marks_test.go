@@ -449,6 +449,10 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 						t.Errorf("%s %s: label %q on a line", name, v.name, w.s)
 					}
 					if !r.lineOf(w, s.line) {
+						if s.flat() && d.Wires[s.line].Hue == d.Wires[w.wire].Hue && lb.x < max(s.a.x, s.b.x) && min(s.a.x, s.b.x) < lb.x+lb.w &&
+							(math.Abs(lb.y+lb.h-s.a.y) <= labelOff+2 || math.Abs(lb.y-s.a.y) <= labelOff+2) {
+							t.Errorf("%s %s: label %q stands over a track of another line of its colour, and reads as that line's", name, v.name, w.s)
+						}
 						continue
 					}
 					if s.flat() && amid(lb.x, s.a.x, s.b.x, 0) && amid(lb.x+lb.w, s.a.x, s.b.x, 0) && (math.Abs(lb.y+lb.h-s.a.y) <= labelOff+1 || math.Abs(lb.y-s.a.y) <= labelOff+1) ||

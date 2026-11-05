@@ -77,6 +77,9 @@ type Totals struct {
 	// Detours are the times lines turn back (B3) plus the pairs of
 	// stretches that run beside their own line or bundle (B4).
 	Detours int `json:"detours"`
+	// Height is the drawing's height in px, so a change that runs a view
+	// taller or shorter shows in the sum.
+	Height int `json:"height"`
 }
 
 // Sum adds up the totals of several views.
@@ -88,6 +91,7 @@ func Sum(views []ViewLint) Totals {
 		t.Steps, t.Jogs, t.Crossings = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
+		t.Height += o.Height
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -121,7 +125,7 @@ const (
 var criteria = []Criterion{
 	{ID: "P1", Placement: true, Says: "a user stands in a row above what it uses", check: (*look).usersAbove},
 	{ID: "P2", Placement: true, Says: "boxes used by exactly the same places stand in one row", check: (*look).siblingsInARow},
-	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row", check: (*look).bendsAllowed},
+	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row, 2 for a branch of a fork into the row below", check: (*look).bendsAllowed},
 	{ID: "B2", Says: "no stretch between two turns of a line is shorter than 24px", check: (*look).noJogs},
 	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
@@ -273,6 +277,7 @@ func lintView(v view) (ViewLint, error) {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + stepCrossings*vl.Totals.ExcessTurns
+	vl.Totals.Height = v.d.Height
 	return vl, nil
 }
 
@@ -528,9 +533,75 @@ func (l *look) lines() []turnsOf {
 			continue
 		}
 		allowed, why := l.allowance(a, b)
+		if allowed < cornerBends && l.forks(w, a, b) {
+			allowed, why = cornerBends, "it forks off a stem its box shares, onto one track into the row below"
+		}
 		out = append(out, turnsOf{a, b, l.trace.Bends[i], allowed, why})
 	}
 	return out
+}
+
+// forks says line w, from box a to box b in the row right below, leaves a
+// down a stem that another of a's lines of its kind drops straight down,
+// turns onto one flat track in the gap between the rows that every branch
+// off the stem turns onto and no other place's line runs along, and drops
+// into b. A reader sees one line splitting into a row, not a line that
+// bends, so it may turn twice.
+func (l *look) forks(w tracedWay, a, b int) bool {
+	p := w.pts
+	sa, sb := l.s.shapes[a], l.s.shapes[b]
+	if len(p) != 4 || sa.kind != "box" || sb.kind != "box" {
+		return false
+	}
+	ra, rb := sa.r, sb.r
+	near := func(u, v float64) bool { return math.Abs(u-v) <= 2 }
+	if !near(p[0].x, p[1].x) || !near(p[1].y, p[2].y) || !near(p[2].x, p[3].x) ||
+		!near(p[0].y, ra.y+ra.h) || !near(p[3].y, rb.y) || p[1].y <= p[0].y || p[3].y <= p[1].y {
+		return false
+	}
+	// nextRow says a line from a's bottom down to top passes no row.
+	nextRow := func(top float64) bool {
+		for _, sh := range l.s.shapes {
+			if sh.r.y >= ra.y+ra.h && sh.r.y+sh.r.h <= top {
+				return false
+			}
+		}
+		return top > p[1].y
+	}
+	if !nextRow(rb.y) {
+		return false
+	}
+	// Every line down the stem ends in that row, so the stem is no trunk
+	// that runs on past it, and every branch turns onto w's track.
+	over := false
+	for _, o := range l.trace.Ways {
+		if o.from != w.from || o.to == w.to || len(o.pts) < 2 || o.pts[0] != p[0] {
+			continue
+		}
+		if o.kind != w.kind || len(o.pts) > 4 || len(o.pts) == 3 || !nextRow(o.pts[len(o.pts)-1].y) {
+			return false
+		}
+		if len(o.pts) == 4 && !near(o.pts[1].y, p[1].y) {
+			return false
+		}
+		over = over || len(o.pts) == 2 && near(o.pts[1].x, p[0].x)
+	}
+	if !over {
+		return false
+	}
+	lo, hi := min(p[1].x, p[2].x), max(p[1].x, p[2].x)
+	for _, o := range l.trace.Ways {
+		if o.from == w.from {
+			continue
+		}
+		for i := 1; i < len(o.pts); i++ {
+			u, v := o.pts[i-1], o.pts[i]
+			if near(u.y, p[1].y) && near(v.y, p[1].y) && min(max(u.x, v.x), hi)-max(min(u.x, v.x), lo) > 2 {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // B1. A line's allowed turns follow from where its ends stand: none within

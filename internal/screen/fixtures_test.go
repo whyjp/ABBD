@@ -100,7 +100,6 @@ func TestEveryRealDrawingIsLegible(t *testing.T) {
 // gaps"). The rest are near misses listed there one by one.
 var debt = map[string]Metrics{
 	"self MOD-0030 internal/model":           {Back: 3},
-	"self MOD-0047 internal/topology":        {Back: 2},
 	"orca MOD-0007 mobile app (Expo)":        {Back: 11},
 	"orca MOD-0042 desktop main process":     {Crossings: 58, Back: 9},
 	"orca MOD-0056 Orca runtime (RPC host)":  {Back: 7},

@@ -530,6 +530,23 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
+	// ink is the colour paint will give a wire, as far as labels need it:
+	// the warning colour, its one source's, or neutral for several.
+	ink := func(w Wire) string {
+		if warns(w.Kind) {
+			return "warn"
+		}
+		var one model.ID
+		for _, n := range w.srcs {
+			if b := base(model.ID(n)); one == "" {
+				one = b
+			} else if b != one {
+				return ""
+			}
+		}
+		return string(one)
+	}
+	kin := func(i, j int) bool { return ink(d.Wires[i]) == ink(d.Wires[j]) }
 	done := map[int]bool{}
 	for i := range d.Wires {
 		s, n := words[i], d.Wires[i].Net
@@ -574,9 +591,11 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				}
 				// A line's stroke reaches 1.3px off its centre at most. Another
 				// line parallel to g keeps more than twice the label's offset
-				// from it, so the label reads as g's and not the other's.
+				// from it, so the label reads as g's and not the other's. So
+				// does a flat line of g's colour: a word beside a drop right
+				// over such a track reads as the track's.
 				room := labelRoom + 1
-				if o.flat() == g.flat() && !mate(i, o.wire) {
+				if (o.flat() == g.flat() || o.flat() && kin(i, o.wire)) && !mate(i, o.wire) {
 					room = 2*labelOff + 2
 				}
 				if hit(lb, grow(o.bounds(), room)) {

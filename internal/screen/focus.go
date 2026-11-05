@@ -167,7 +167,24 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 	var out []Focus
 	for _, b := range full.Drawing.Boxes {
 		id := model.ID(b.ID)
-		ins, _ := o.inside(scope, units, id, centres(full.Drawing), tactic{gather: full.gathered}, nil)
+		t := tactic{gather: full.gathered}
+		ins, _ := o.inside(scope, units, id, centres(full.Drawing), t, nil)
+		// Drawn again with room for its counts, where some count would get
+		// it, the view keeps that if choose's checks pass it against the
+		// first drawing and lint reads it no worse.
+		if ins.roomy {
+			t.counted = true
+			if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
+				var c, ac cost
+				c.judge(ins.Drawing)
+				ac.judge(alt.Drawing)
+				b := newGates()
+				b.admit(tactic{}, c)
+				if b.admit(t, ac) && !c.beats(ac) {
+					ins = alt
+				}
+			}
+		}
 		d := ins.Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
 	}

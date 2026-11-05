@@ -214,6 +214,11 @@ type tactic struct {
 	// ranking (arrange), and entry breaks each cycle where the places
 	// ranked before it come in.
 	fold, entry bool
+	// counted widens the room on the wider side of a slot that shows a
+	// ×N to the count's width (lay), the side anchor stands the count on,
+	// so the count stands clear of the next line. choose and insideFocus
+	// try it on the drawing they keep.
+	counted bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
