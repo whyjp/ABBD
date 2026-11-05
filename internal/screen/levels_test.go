@@ -30,7 +30,7 @@ func TestLevelsAskForOtherUnits(t *testing.T) {
 			d.Boxes = append(d.Boxes, Box{Class: "loose design"})
 			return d
 		}(), atOverview, "fewer than 4"},
-		{"fine overview", withBoxes(13, "design"), atOverview, "more than 12"},
+		{"fine overview", withBoxes(8, "design"), atOverview, "more than 7"},
 		{"empty nested page", withBoxes(0, "inner"), atNested, "fewer than 2"},
 		{"one box under a top-level module", withBoxes(1, "inner"), atTop, "repeats the module"},
 		{"dense page", func() Drawing {
@@ -49,7 +49,7 @@ func TestLevelsAskForOtherUnits(t *testing.T) {
 			t.Errorf("%s: advice %q, want %q", c.name, got, c.want)
 		}
 	}
-	d := withBoxes(6, "design")
+	d := withBoxes(7, "design")
 	d.Relations = [][2]string{{"b0", "b1"}, {"b1", "b2"}}
 	if a := level("overview", d, atOverview).Advice; len(a) > 0 {
 		t.Errorf("a readable overview asks for %q", a)
