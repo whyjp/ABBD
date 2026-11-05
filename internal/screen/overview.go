@@ -28,6 +28,21 @@ type Drawing struct {
 	Relations [][2]string `json:"-"`
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
+	// Routes are each line's whole way, one per line the view requests.
+	Routes []Route `json:"-"`
+}
+
+// Route is one line's whole way from the shape it leaves to the shape it
+// reaches, over every bus it rides, drawn unseen above the ink. A reader
+// pointing at a line rests on its route, which shows alone in the line's
+// colour, so the line lights whole however many paths draw its ink.
+type Route struct {
+	D, Kind, Title string
+	Back, Both     bool
+	Hue, Head, Lit string
+	// src is the place whose colour the line wears, ends where it joins.
+	src  string
+	ends []string
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -975,6 +990,13 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.route(routed, reqs, func(i int) string {
+		title := merged[i].title
+		if og := o.origin(merged[i].rels); og != Badge(model.Extracted) {
+			title += ", " + labels[og]
+		}
+		return title
+	})
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d

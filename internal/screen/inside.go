@@ -684,29 +684,35 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		ins.Units = append(ins.Units, iu)
 	}
+	tell := func(i int) (titles, quotes []string) {
+		ln := lines[i]
+		told, quotes := ln.told, ln.quotes
+		if told == nil {
+			told = []string{say(ln)}
+			if !ln.incoming && ln.quote != "" {
+				quotes = []string{ln.quote}
+			}
+		}
+		for _, title := range told {
+			if ln.origin != "extracted" {
+				title += ", " + labels[ln.origin]
+			}
+			titles = append(titles, title)
+		}
+		return titles, quotes
+	}
 	for _, p := range paths {
 		var w Wire
 		var titles []string
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			ln := lines[i]
-			told, quotes := ln.told, ln.quotes
-			if told == nil {
-				told = []string{say(ln)}
-				if !ln.incoming && ln.quote != "" {
-					quotes = []string{ln.quote}
-				}
-			}
+			told, quotes := tell(i)
 			w.Quotes = append(w.Quotes, quotes...)
 			if ln.via != "" {
 				w.Via = string(ln.via)
 			}
-			for _, title := range told {
-				if ln.origin != "extracted" {
-					title += ", " + labels[ln.origin]
-				}
-				titles = append(titles, title)
-			}
+			titles = append(titles, told...)
 			if s := p.starts[j]; s != noStart {
 				if ln.origin != "extracted" {
 					w.Marks = append(w.Marks, Mark{X: s.x, Y: s.y, Origin: ln.origin})
@@ -731,6 +737,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.route(routed, reqs, func(i int) string {
+		titles, quotes := tell(i)
+		return strings.Join(append(titles, quotes...), "\n")
+	})
 	d.mark(paths, reqs, t)
 	d.hover()
 	ins.Drawing = d

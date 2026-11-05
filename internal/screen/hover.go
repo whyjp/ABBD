@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -86,6 +87,9 @@ func (d *Drawing) hover() {
 	for i := range d.Wires {
 		d.Wires[i].Lit = strings.Join(classes(d.Wires[i].ends), " ")
 	}
+	for i := range d.Routes {
+		d.Routes[i].Lit = strings.Join(classes(d.Routes[i].ends), " ")
+	}
 	for i := range d.Dots {
 		dot := pt{d.Dots[i].X, d.Dots[i].Y}
 		var ends []string
@@ -120,6 +124,18 @@ func (d *Drawing) hover() {
 	}
 }
 
+// route adds each request's route along its way. title says what the
+// request's line stands for.
+func (d *Drawing) route(r routing, reqs []wireReq, title func(int) string) {
+	for i, way := range r.ways {
+		src := reqs[i].from.node
+		if src == "" {
+			src = reqs[i].to.node
+		}
+		d.Routes = append(d.Routes, Route{D: polyline(way), Kind: reqs[i].kind, Title: title(i), Back: r.back[i], Both: reqs[i].kind == "mutual", src: src, ends: endsOf(reqs, []int{i})})
+	}
+}
+
 // through says the path d, written as polyline writes it, passes p.
 func through(d string, p pt) bool {
 	fs := strings.Fields(d)
@@ -136,22 +152,39 @@ func through(d string, p pt) bool {
 	return false
 }
 
-// hoverCSS are the rules that fade what a pointed-at shape does not join.
-// Hover takes part only where a pointer can rest, so a tap on a phone does
-// not leave a view faded, and focus only when it came from the keyboard, so
-// a click that opens a focus view does not leave V faded on the way back.
+// hoverCSS are the rules that light what a pointed-at shape or line joins.
+// A lit line shows as its route, whole and above the ink, and all the ink
+// fades, so no piece of another line's colour shows through. A pointed-at
+// box colours every line it lights its own colour, except a line that skips
+// the contract boundary, which keeps the warning colour; a pointed-at line
+// or chip keeps the line's own. Hover takes part only where a pointer can
+// rest, so a tap on a phone does not leave a view faded, and focus only
+// when it came from the keyboard, so a click that opens a focus view does
+// not leave V faded on the way back.
 var hoverCSS = func() string {
 	var b strings.Builder
+	keys := slices.Sorted(maps.Keys(inks()))
 	rules := func(on string) {
 		for j := range hoverMax {
-			a := fmt.Sprintf(on, j)
-			fmt.Fprintf(&b, "svg:has(%s) :is(.w,.count,.lab,.origin,.junction):not(.e%d){opacity:.1}\n", a, j)
+			a := fmt.Sprintf(on, j, "")
+			fmt.Fprintf(&b, "svg:has(%s) :is(.w,.junction){opacity:.1}\n", a)
+			fmt.Fprintf(&b, "svg:has(%s) :is(.count,.lab,.origin):not(.e%d){opacity:.1}\n", a, j)
 			fmt.Fprintf(&b, "svg:has(%s) :is(.box,.port[class*=\" n\"]):not(.n%d){opacity:.3}\n", a, j)
+			fmt.Fprintf(&b, "svg:has(%s) .route.e%d{opacity:1}\n", a, j)
+			for _, k := range keys {
+				box := fmt.Sprintf(on, j, fmt.Sprintf("[data-h=%q]", k))
+				fmt.Fprintf(&b, "svg:has(%s) .route.e%d:not(.bypass,.mutual){--c:var(--h%s)}\n", box, j, k)
+			}
 		}
 	}
 	b.WriteString("@media (hover:hover){\n")
-	rules(".p%d:hover")
+	rules(".p%d%s:hover")
+	b.WriteString("svg:has(.route:hover) :is(.w,.count,.lab,.origin,.junction){opacity:.1}\n")
+	b.WriteString("svg:has(.route:hover) :is(.box,.port[class*=\" n\"]){opacity:.3}\n")
+	for j := range hoverMax {
+		fmt.Fprintf(&b, "svg:has(.route.e%d:hover) .p%d{opacity:1}\n", j, j)
+	}
 	b.WriteString("}\n")
-	rules(":focus-visible>.p%d")
+	rules(":focus-visible>.p%d%s")
 	return b.String()
 }()

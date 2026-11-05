@@ -164,6 +164,14 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 			used[w.Head] = true
 		}
 	}
+	for i := range d.Routes {
+		r := &d.Routes[i]
+		r.Hue = colour(r.src)
+		if warns(r.Kind) {
+			r.Hue = warnKey
+		}
+		r.Head = shapes[r.Kind]
+	}
 	d.Heads = slices.Sorted(maps.Keys(used))
 	for i, dot := range d.Dots {
 		p, got := pt{dot.X, dot.Y}, ""
