@@ -135,8 +135,16 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // bundled, read both ways and join every pair of their far ends (rule 18),
 // so they are drawn apart, on buses of their own pair, unless that runs a
 // line out of its way past rule 15 or back past rule 13, which bundling
-// spares.
+// spares. Only the kept drawing's counts are anchored: route may lay a
+// view many times to keep one, and no measure it compares them by reads
+// where a count stands, while placing the counts was most of a lay.
 func (l *layout) route(reqs []wireReq) routing {
+	r := l.routeApart(reqs)
+	anchor(r.drawn, pieces(r.drawn), r.boxes)
+	return r
+}
+
+func (l *layout) routeApart(reqs []wireReq) routing {
 	if !bundlesPairs(reqs) {
 		return l.routeOnce(reqs, false)
 	}
@@ -269,6 +277,9 @@ type routing struct {
 	// dropped says some line of a view other than a focus view drops
 	// straight off its buses.
 	dropped bool
+	// boxes are what a ×N must not stand on: the boxes and the frame's
+	// chips.
+	boxes []box
 	// tweaked says lay set some line straight onto its arrival trunk:
 	// a stub over the trunk's lead, or a line joining on the track.
 	tweaked bool
@@ -1849,7 +1860,6 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	sort.Slice(boxes, func(i, j int) bool {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
-	anchor(out, pieces(out), boxes)
 	backs := make([]bool, len(reqs))
 	for i := range reqs {
 		backs[i] = back(i)
@@ -1862,7 +1872,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, tweaked: tweaked}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more
