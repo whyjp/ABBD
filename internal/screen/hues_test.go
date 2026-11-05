@@ -239,6 +239,9 @@ func TestOnlyABypassWearsTheWarning(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
+			if d.Lead != nil {
+				continue
+			}
 			for _, w := range d.Wires {
 				if warns(w.Kind) != (w.Hue == warnKey) {
 					t.Errorf("%s: a %s line wears %q", name, w.Kind, w.Hue)
@@ -259,6 +262,9 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
+			if d.Lead != nil {
+				continue
+			}
 			hue := map[string]string{}
 			for _, b := range d.Boxes {
 				hue[b.ID] = b.Hue
@@ -284,5 +290,33 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+// A view that draws a lead draws every other line grey, its dots too, so
+// the lead is its one coloured way (lead.go).
+func TestALeadQuietsEveryOtherLine(t *testing.T) {
+	leads := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			if d.Lead == nil {
+				continue
+			}
+			leads++
+			for _, w := range d.Wires {
+				if w.Hue != hueKey(-1) {
+					t.Errorf("%s: a %s line beside a lead wears %q", name, w.Kind, w.Hue)
+				}
+			}
+			for _, j := range d.Dots {
+				if j.Hue != hueKey(-1) {
+					t.Errorf("%s: a dot beside a lead wears %q", name, j.Hue)
+				}
+			}
+		}
+	}
+	if leads == 0 {
+		t.Error("no fixture view draws a lead")
 	}
 }

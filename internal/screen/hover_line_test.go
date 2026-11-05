@@ -145,6 +145,9 @@ func readDrawn(t *testing.T, d Drawing) drawnPage {
 					way.pts = parts[0]
 				}
 			case "use":
+				if route == nil {
+					break
+				}
 				m := tipAt.FindStringSubmatch(attr(e, "transform"))
 				if m == nil {
 					t.Fatalf("an arrowhead stands at %q", attr(e, "transform"))

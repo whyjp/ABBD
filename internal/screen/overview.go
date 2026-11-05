@@ -33,6 +33,13 @@ type Drawing struct {
 	Routes []Route `json:"-"`
 	// numbers are the shapes' numbers by place, as hover gave them.
 	numbers map[string]int
+	// ways are every line's route, kept when hover leaves Routes empty,
+	// and Lead the way the view draws bold over them (lead.go).
+	ways []Route
+	Lead *Lead `json:",omitempty"`
+	// Zones are the bands behind the boxes of the groupings the project
+	// shows (zone.go).
+	Zones []Zone `json:",omitempty"`
 }
 
 // Route is one line's whole way from the shape it leaves to the shape it
@@ -56,6 +63,8 @@ type Route struct {
 	ends []string
 	at   []int
 	runs [][2]pt
+	// rels are the stored relations the line stands for.
+	rels []string
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -149,6 +158,9 @@ type Wire struct {
 	// its end, its shape for its kind and its colour (rule 11).
 	Hue  string `json:"-"`
 	Head string `json:"-"`
+	// Plan says every relation the line stands for arises only in design,
+	// with no call or data at run time, so it is drawn dotted (dress.go).
+	Plan bool `json:"-"`
 	// srcs are the places each of the line's relations leaves, which give
 	// it its colour.
 	srcs []string
@@ -1038,7 +1050,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
-	d.route(routed, reqs)
+	d.route(routed, reqs, func(i int) []string { return merged[i].rels })
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d
