@@ -23,6 +23,9 @@ type lintReport struct {
 	Totals   screen.Totals      `json:"totals"`
 	Ceilings map[string]int     `json:"ceilings,omitempty"`
 	Failures []string           `json:"failures"`
+	// Levels says how each full view stands as a level of abstraction,
+	// and what to change in the units when it is off.
+	Levels []screen.Level `json:"levels"`
 	// Lowerable is what the debt file records above what lint measures.
 	Lowerable []string `json:"lowerable,omitempty"`
 }
@@ -72,6 +75,7 @@ func (e env) lint(pos []string) error {
 	every := only == ""
 	r := lintReport{Schema: lintSchema, Criteria: screen.Criteria(), Views: views, Failures: screen.Gate(views, debt, every), Lowerable: screen.Lowerable(views, debt, every)}
 	r.Totals = screen.Sum(views)
+	r.Levels = levelsOf(m, views)
 	if every {
 		r.Ceilings = debt.Ceilings
 	}
@@ -129,12 +133,33 @@ func printLint(e env, r lintReport) {
 	if len(r.Ceilings) > 0 {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, placement %d\n", r.Ceilings["weighed"], r.Ceilings["placement"])
 	}
+	// The levels come last, where a reader of the report's tail sees them.
+	for _, l := range r.Levels {
+		for _, a := range l.Advice {
+			fmt.Fprintf(e.stdout, "level %s: %s\n", l.View, a)
+		}
+	}
 	for _, f := range r.Failures {
 		fmt.Fprintf(e.stdout, "lint: breaks the gate: %s\n", f)
 	}
 	for _, f := range r.Lowerable {
 		fmt.Fprintf(e.stdout, "lint: may be lowered: %s\n", f)
 	}
+}
+
+// levelsOf is the levels of the full views lint checked.
+func levelsOf(m screen.Model, views []screen.ViewLint) []screen.Level {
+	checked := map[string]bool{}
+	for _, v := range views {
+		checked[v.View] = true
+	}
+	out := []screen.Level{}
+	for _, l := range screen.Levels(m) {
+		if checked[l.View] {
+			out = append(out, l)
+		}
+	}
+	return out
 }
 
 func totalsLine(t screen.Totals) string {

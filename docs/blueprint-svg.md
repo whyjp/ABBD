@@ -149,6 +149,10 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 
 - **R. The rules hold.** Hard. Rules 1 to 15 as `legible.go` checks them, rule 2 as the trace checks it (no relation without ink), and rule 21. Each broken rule is one breach. The fixtures' debt is the views `fixtures_test.go` lists.
 
+### Levels
+
+- **L. Each full view stands at one level.** Report only. The overview draws 4 to 12 modules, the parts an engineer names when explaining the system, and a contract no drawn module provides does not count. A module's page draws at least 2 boxes and at most 16 (rule 1). Most of a view's line labels say what crosses, not the via. `abbd lint` prints a `level` line for each view that misses, with what to change in the units, and `--json` lists every full view under `levels`. It never fails lint and is never debt, since the renderer cannot fix it: the reader's choice of units does (abbd-setup, step 1). On three repositories set up by agents from the skill alone, every view the eye found wrong at its level carried such a line (`eval/skill-polish`).
+
 ### What a change is weighed by
 
 `abbd lint` gives each view, and all of them, these totals. They are the hard and target breaches, the breaches of each criterion, the excess turns, the placement debt, the crossings, the weighed sum, and the path measures of the trace. The **placement debt** is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. The **weighed sum** is the crossings plus 4 for each excess turn (`stepCrossings`), so a turn saved may cost at most 4 crossings. A change to the renderer is held by this gate, and `abbd lint` holds a repository to it.
