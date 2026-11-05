@@ -26,6 +26,8 @@ import (
 //   - In a focus view (ring), a line between rows next to each other
 //     whose two boxes' spans meet drops straight and joins no bus, except
 //     into a hub, which takes its lines as one trunk (H2).
+//     Where its box's other lines fork into that row anyway, one such
+//     line joins the fork under its stem instead.
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
@@ -434,7 +436,30 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
-		if is := alone(leave[k]); len(is) >= 2 {
+		// Where a place's other lines fork into the row below it anyway,
+		// the straight drop nearest the middle of their boxes joins the
+		// fork, and the stem stands over it (stemOver), so no stub runs
+		// beside the stem through its track. A second straight drop keeps
+		// its own stub: no one stem stands over two boxes.
+		is := alone(leave[k])
+		oneRow := !slices.ContainsFunc(leave[k], func(i int) bool {
+			return len(plans[i].gaps) != 1 || place(reqs[i].from) != place(reqs[leave[k][0]].from)
+		})
+		if len(is) >= 2 && oneRow && len(is) < len(leave[k]) {
+			mid := 0
+			for _, i := range is {
+				mid += reqs[i].to.lo + reqs[i].to.hi
+			}
+			off := func(i int) int { return abs(reqs[i].to.lo + reqs[i].to.hi - mid/len(is)) }
+			pick := -1
+			for _, i := range leave[k] {
+				if drops(i) && (pick < 0 || off(i) < off(pick)) {
+					pick = i
+				}
+			}
+			is = slices.DeleteFunc(slices.Clone(leave[k]), func(i int) bool { return drops(i) && i != pick })
+		}
+		if len(is) >= 2 {
 			for _, i := range is {
 				plans[i].dep = len(buses)
 			}
@@ -658,6 +683,21 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			x, ok := set[i][!sl.leave]
 			return x, ok && len(sl.is) == 1 && len(plans[i].gaps) == 1
 		}
+		// A departure bus that carries a line which could drop straight
+		// stands its stem over that line, so the line still drops straight
+		// and the others fork off the stem.
+		stemOver := func(sl slot, want int) (int, bool) {
+			d := slices.IndexFunc(sl.is, drops)
+			if !sl.leave || len(sl.is) < 2 || d < 0 {
+				return 0, false
+			}
+			f, t := reqs[sl.is[d]].from, reqs[sl.is[d]].to
+			lo, hi := max(f.lo, t.lo), min(f.hi, t.hi)
+			if at, ok := set[sl.is[d]][false]; ok {
+				return at, at >= lo && at <= hi
+			}
+			return clamp(want, lo, hi), true
+		}
 		other := func(sl slot) int {
 			if x, ok := pin(sl); ok {
 				return x
@@ -700,7 +740,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		pinned := make([]bool, len(slots))
 		for s, sl := range slots {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
-			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
+			x, ok := pin(sl)
+			if ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
+				xs[s], pinned[s] = x, true
+			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
 			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
 				// A line that drops straight stands as near its share of
