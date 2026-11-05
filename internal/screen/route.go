@@ -28,6 +28,8 @@ import (
 //     into a hub, which takes its lines as one trunk (H2).
 //     Where its box's other lines fork into that row anyway, such lines
 //     join the fork instead, the stem standing over one of them.
+//     Elsewhere such a line drops straight too, unless it reaches a hub
+//     or rides a shared bus, where the view reads better for it (layDrops).
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
@@ -180,12 +182,12 @@ func (l *layout) keep() layout {
 // compares every pair of strands, so a view with more than shareMost
 // requests keeps the plain drawing rather than pay for that.
 func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
-	plain := l.lay(reqs, false, apart)
+	plain := l.layDrops(reqs, false, apart)
 	if !plain.shares || len(reqs) > shareMost {
 		return plain
 	}
 	kept := l.keep()
-	if shared := l.lay(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
+	if shared := l.layDrops(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
 		return shared
 	}
 	*l = kept
@@ -193,6 +195,39 @@ func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
 }
 
 const shareMost = 200
+
+// layDrops lays the view, then lays it again with every line that drops()
+// took off its buses but could not stand straight kept on them, since such
+// a line leaves or reaches its box beside its bundle (rule 4).
+func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
+	before := l.keep()
+	bent := map[int]bool{}
+	var r routing
+	for {
+		kept := l.keep()
+		r = l.lay(reqs, shared, apart, bent)
+		grew := false
+		for _, i := range r.bent {
+			grew = grew || !bent[i]
+			bent[i] = true
+		}
+		if !grew {
+			break
+		}
+		*l = kept
+	}
+	if !r.dropped {
+		return r
+	}
+	after := l.keep()
+	*l = before
+	bundled := l.lay(reqs, shared, apart, nil)
+	if weigh(r, reqs).beats(weigh(bundled, reqs)) {
+		*l = after
+		return r
+	}
+	return bundled
+}
 
 // routing is one way to draw a view's lines.
 type routing struct {
@@ -206,12 +241,18 @@ type routing struct {
 	shares bool
 	// roomy says the counted tactic would give some ×N room (lay).
 	roomy bool
+	// bent are the lines lay took off their buses to drop straight that
+	// do not stand straight.
+	bent []int
+	// dropped says some line of a view other than a focus view drops
+	// straight off its buses.
+	dropped bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
 // them, and with each line between modules that use each other on buses of
 // its own pair where apart says so.
-func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
+func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) routing {
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -224,6 +265,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	members, ends := map[slotKey][]int{}, map[slotKey][]int{}
 	leave, arrive := map[slotKey][]int{}, map[slotKey][]int{}
+	keys := make([][2]slotKey, len(reqs))
 	for i, r := range reqs {
 		p := &plans[i]
 		p.dep, p.arr, p.via = -1, -1, -1
@@ -271,6 +313,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}
+		keys[i] = [2]slotKey{dk, ak}
 		leave[dk] = append(leave[dk], i)
 		arrive[ak] = append(arrive[ak], i)
 	}
@@ -390,6 +433,25 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	// by -1-b. Two of them at one x in one row, or in rows next to each
 	// other, would meet and read as one.
 	held := map[[2]int]int{}
+	// runsOn says line i, off its departure trunk, may pass a row at the x
+	// where its trunk o passed the row next to it: the trunk ended there
+	// and the line goes straight on, so the two read as the one line they
+	// are, where stepping aside would turn it twice for nothing. Not where
+	// another line leaves the trunk in the same gap for an arrival bus: it
+	// steps down onto that bus's track at the trunk's x, and the track
+	// would end on this line.
+	runsOn := func(i, o int) bool {
+		p := &plans[i]
+		if p.dep < 0 || o != -1-p.dep {
+			return false
+		}
+		for m := range plans {
+			if q := &plans[m]; m != i && q.dep == p.dep && q.ride == p.ride && q.arr >= 0 {
+				return false
+			}
+		}
+		return true
+	}
 	// runs is where line i, or the bus owner draws it for, runs down i's
 	// chain in row r, if it has room there.
 	runs := func(i, r, owner int) (int, bool) {
@@ -407,7 +469,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		}
 		x += k * chainLane
 		for _, q := range []int{r - 1, r, r + 1} {
-			if o, ok := held[[2]int{q, x}]; ok && o != owner {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i || !runsOn(i, o)) {
 				return 0, false
 			}
 		}
@@ -425,14 +487,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	// drops says line i can drop straight from box to box: they stand in
 	// rows next to each other and their spans meet, so it needs no bus.
+	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
 	drops := func(i int) bool {
 		f, t := reqs[i].from, reqs[i].to
-		return l.ring && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+		_, hub := hubs[t.node]
+		return (l.ring || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
 	}
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
 	// one trunk (H2).
-	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
 	free := func(is []int) []int {
 		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { _, hub := hubs[reqs[i].to.node]; return drops(i) && !hub })
 	}
@@ -607,6 +670,36 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				claim(i)
 			}
 		}
+		// Lines of more than one kind from one frame chip, down a chain past
+		// rows, would run its whole length chainLane apart and read as one
+		// doubled line. Where the chain has lanes to spare, they spread
+		// over its width.
+		on := map[int][]int{}
+		for i, c := range chainOf {
+			if _, ok := laneOf[i]; ok {
+				on[c] = append(on[c], i)
+			}
+		}
+		for c, is := range on {
+			ch := l.chains[c]
+			top := strings.HasPrefix(ch.upper, frameTopNode)
+			if n := len(is); n < 2 || n >= ch.lanes || ch.bottom <= ch.top || !top && !strings.HasPrefix(ch.lower, frameBottomNode) {
+				continue
+			}
+			chip := func(i int) string {
+				if top != plans[i].up {
+					return place(reqs[i].from)
+				}
+				return place(reqs[i].to)
+			}
+			if slices.ContainsFunc(is, func(i int) bool { return chip(i) != chip(is[0]) }) ||
+				!slices.ContainsFunc(is, func(i int) bool { return reqs[i].kind != reqs[is[0]].kind }) {
+				continue
+			}
+			for _, i := range is {
+				laneOf[i] = (2*laneOf[i]*(ch.lanes-1) + len(is) - 1) / (2 * (len(is) - 1))
+			}
+		}
 	}
 	// place spreads the lines over each end's range: one slot per bus, one
 	// per other line, ordered by where they lead. Lines that leave an edge
@@ -767,7 +860,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				xs[s], pinned[s] = x, true
 			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
-			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
+			} else if i := sl.is[0]; (!ok || !l.ring) && len(sl.is) == 1 && drops(i) {
 				// A line that drops straight stands as near its share of
 				// the edge as the span both its ends meet in lets it.
 				f, t := reqs[i].from, reqs[i].to
@@ -976,7 +1069,13 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				p.xs = append(p.xs, x)
 				continue
 			}
-			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx)
+			own := -1
+			if c := chainOf[i]; c >= 0 {
+				if cx, ok := l.pass[[2]int{c, r}]; ok {
+					own = cx + laneOf[i]*chainLane
+				}
+			}
+			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}
@@ -1673,7 +1772,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	for i := range reqs {
 		backs[i] = back(i)
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy}
+	var crooked []int
+	dropped := false
+	for i := range reqs {
+		dropped = dropped || !l.ring && drops(i) && plans[i].dep < 0
+		if !l.ring && drops(i) && plans[i].dep < 0 && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) {
+			crooked = append(crooked, i)
+		}
+	}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more

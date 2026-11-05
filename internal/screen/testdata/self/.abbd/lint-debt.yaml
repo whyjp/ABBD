@@ -7,10 +7,8 @@
 ceilings:
     detours: 21
     overflow: 0
-    placement: 47
-    weighed: 1340
+    placement: 38
+    weighed: 1191
 debt:
     MOD-0030 internal/model:
-        R: 1
-    MOD-0047 internal/topology:
         R: 1
