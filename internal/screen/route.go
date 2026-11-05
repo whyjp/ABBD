@@ -1143,7 +1143,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 					own = cx + laneOf[i]*chainLane
 				}
 			}
-			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own)
+			mine := func(q, y int) bool {
+				o, ok := held[[2]int{q, y}]
+				return ok && (o == i || p.dep >= 0 && o == -1-p.dep || p.arr >= 0 && o == -1-p.arr)
+			}
+			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own, mine)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}
