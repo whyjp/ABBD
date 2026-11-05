@@ -77,6 +77,9 @@ type Totals struct {
 	// Detours are the times lines turn back (B3) plus the pairs of
 	// stretches that run beside their own line or bundle (B4).
 	Detours int `json:"detours"`
+	// Height is the drawing's height in px, so a change that runs a view
+	// taller or shorter shows in the sum.
+	Height int `json:"height"`
 }
 
 // Sum adds up the totals of several views.
@@ -88,6 +91,7 @@ func Sum(views []ViewLint) Totals {
 		t.Steps, t.Jogs, t.Crossings = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
+		t.Height += o.Height
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -273,6 +277,7 @@ func lintView(v view) (ViewLint, error) {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + stepCrossings*vl.Totals.ExcessTurns
+	vl.Totals.Height = v.d.Height
 	return vl, nil
 }
 
