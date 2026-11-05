@@ -5534,7 +5534,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -8010,6 +8010,124 @@
               },
               {
                 "Text": " leaves features' pages out.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Parts",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "parts.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd parts DIR",
+                "Code": true
+              },
+              {
+                "Text": " walks the directory under ",
+                "Code": false
+              },
+              {
+                "Text": "--root",
+                "Code": true
+              },
+              {
+                "Text": ", skips hidden, test, vendor and ",
+                "Code": false
+              },
+              {
+                "Text": "node_modules",
+                "Code": true
+              },
+              {
+                "Text": " directories and test files by name, and makes each file directly inside DIR a node and every deeper file part of its subdirectory's node. It hands them to ",
+                "Code": false
+              },
+              {
+                "Text": "parts.Propose",
+                "Code": true
+              },
+              {
+                "Text": " and prints each part with its nodes and the lines that tie them, or with ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " the parts as ",
+                "Code": false
+              },
+              {
+                "Text": "name",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "symbol",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "family",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "shared",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "nodes",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "evidence",
+                "Code": true
+              },
+              {
+                "Text": ", and the files no part holds as ",
+                "Code": false
+              },
+              {
+                "Text": "loose",
+                "Code": true
+              },
+              {
+                "Text": ". It writes nothing, so it runs from an extraction script without touching the state.",
                 "Code": false
               }
             ]
