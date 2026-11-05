@@ -20963,7 +20963,31 @@
                 "Code": true
               },
               {
-                "Text": " tactic spreads the slots beside a slot of several lines to its ×N's width where the edge has room; ",
+                "Text": " tactic widens the wider side of a slot between two others that shows a ×N, the side ",
+                "Code": false
+              },
+              {
+                "Text": "anchor",
+                "Code": true
+              },
+              {
+                "Text": " stands the count on, to the count's width, count by count where the edge still has room and no slot it moves stands on a line of the box's chips, and ",
+                "Code": false
+              },
+              {
+                "Text": "lay",
+                "Code": true
+              },
+              {
+                "Text": " says in ",
+                "Code": false
+              },
+              {
+                "Text": "routing.roomy",
+                "Code": true
+              },
+              {
+                "Text": " whether some count got room. Only then do ",
                 "Code": false
               },
               {
@@ -20979,15 +21003,15 @@
                 "Code": true
               },
               {
-                "Text": " draw the drawing they keep once more with it and keep that unless ",
+                "Text": " draw the drawing they keep once more with it, and they keep that when the ",
                 "Code": false
               },
               {
-                "Text": "readsBetter",
+                "Text": "gates",
                 "Code": true
               },
               {
-                "Text": " finds it reads worse, and ",
+                "Text": " that pass over laned, gathered and re-ranked drawings pass it and it reads no worse. ",
                 "Code": false
               },
               {
@@ -20995,7 +21019,7 @@
                 "Code": true
               },
               {
-                "Text": " holds the fixtures' counts clear of the next line.",
+                "Text": " holds each fixture to its exact list of crowded counts.",
                 "Code": false
               }
             ]

@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -119,15 +120,18 @@ func fixtureCountsCrowded(t *testing.T) map[string][]string {
 }
 
 // Every ×N stands clear of the lines beside its stub or drop, rule 22,
-// save in the three views whose slots have no room to spare without
-// costing the drawing more than lint weighs a crowded count.
+// save these, whose slots have no room to spare without costing the
+// drawing more than lint weighs a crowded count. A count that comes clear
+// fails too, so its entry goes.
 func TestCountsStandClearOfTheNextLine(t *testing.T) {
-	left := map[string]bool{"self MOD-0001 abbd CLI": true, "self MOD-0030 internal/model": true, "orca MOD-0056 Orca runtime (RPC host)": true}
-	for name, cs := range fixtureCountsCrowded(t) {
-		for _, c := range cs {
-			if v, _, _ := strings.Cut(c, ": "); !left[name+" "+v] {
-				t.Errorf("%s %s: a line runs into the count", name, c)
-			}
+	left := map[string][]string{
+		"self": {"MOD-0001 abbd CLI: ×3 at {840 118}", "MOD-0030 internal/model: ×2 at {716 50}"},
+		"orca": {"MOD-0056 Orca runtime (RPC host): ×2 at {1069 348}"},
+	}
+	got := fixtureCountsCrowded(t)
+	for _, name := range fixtures {
+		if !slices.Equal(got[name], left[name]) {
+			t.Errorf("%s: crowded counts %q, want %q", name, got[name], left[name])
 		}
 	}
 }
