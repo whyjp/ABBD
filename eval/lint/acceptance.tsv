@@ -1,23 +1,25 @@
-case	source	view	measure	main	target	note
-rg-regex-drop	today; user-16, user-17	ripgrep overview	B1 breaches naming grep and grep-regex	1	<= 0	rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice
-rg-regex-hairpin	today; user-16, user-17	ripgrep overview	B3 and B4 breaches naming grep and grep-regex	0	<= 0	guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back
-rg-doubled	user-18	ripgrep overview	B4 breaches	0	<= 0	guard: two lanes of one line read as one doubled line
-rg-matcher-out	today	ripgrep overview	px grep -> grep-matcher runs past its ends' x span	341	<= 0	row 71: it passes at x=769 to reach 337 from 428
-rg-matcher-out-ripgrep	today	ripgrep overview	px ripgrep -> grep-matcher runs past its ends' x span	191	<= 0	the same bus as grep's line, from 578
-rg-matcher-back	today	ripgrep overview	B3 breaches naming grep-matcher	3	<= 0	grep-matcher's arrivals ride around a row and back
-r72-straight	today	orca MOD-0072 desktop renderer UI	B1 breaches, same column with a clear straight drop	13	<= 0	a line that could drop straight turns
-r72-back	today	orca MOD-0072 desktop renderer UI	B3 breaches	3	<= 0	app-shell's lines ride 90px past their turn
-r72-jogs	today	orca MOD-0072 desktop renderer UI	jogs	19	<= 0	stretches under 24px between turns
-r72-steps	today	orca MOD-0072 desktop renderer UI	steps	59	<= 0	jogs plus turns past 2 per line
-f73-one-stem	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct x's app-shell's depends_on lines leave it at	3	<= 1	5 children in one row: x3/1/1 stubs at 493, 516, 586; one stem that forks
-s98-mobile	user-11, user-12, user-15	orca MOD-0098 src/	B1, B2 and B3 breaches naming chip ← mobile/	5	<= 0	the mobile/ entry's lines stair down through the middle
-s98-mobile-beside	user-13, user-14	orca MOD-0098 src/	px two stems from chip ← mobile/ run beside each other within 16px	376	<= 0	the x2 and x5 stems run as two parallel verticals; one stem, or apart
-s98-native	user-11, user-12	orca MOD-0098 src/	B1, B2 and B3 breaches naming chip ← native/	0	<= 0	guard: the native/ entry now drops straight into desktop main process
-s98-host-jogs	user-15	orca MOD-0098 src/	B2 breaches naming @orca/process-host	4	<= 0	process-host's arrivals step in small jogs above it
-s98-connector	user-02, user-03 (MOD-0100, not a fixture)	orca MOD-0098 src/	B1, B2 and B3 breaches naming chip @orca-cloud/connector- contract	2	<= 0	MOD-0100's stairs down to the frame's bottom chips; MOD-0098 has the same chips
-n97-exit	user-04	orca MOD-0097 native/	px windows-agent-hook -> chip → src/ runs sideways	0	<= 0	guard: the exit ran left under process-footprint-macos, reading as its line
-self-gitx	user-05	self overview	B1, B2 and B3 breaches naming internal/gitx	6	<= 0	the knot of steps between internal/extract, internal/store and internal/gitx
-hover-cut	today	every shot page	shoot.py cut	0	<= 0	guard: a lit route stops partway
-hover-stray	today	every shot page	shoot.py stray	0	<= 0	guard: a lit box no lit line reaches
-hover-mixed	today	every shot page	shoot.py mixed	0	<= 0	guard: one lit route of two colours
-hover-overlap	today	every shot page	shoot.py overlap	20	<= 0	two colours along one track, one painting over the other
+case	source	view	measure	recorded	commit	target	note
+rg-regex-drop	today; user-16, user-17	ripgrep overview	turns past 0 in one column, 2 in two, of grep -> grep-regex	2	31b09a6	<= 0	rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice
+rg-regex-hairpin	today; user-16, user-17	ripgrep overview	turn-backs and doubled stretches of grep -> grep-regex	0	31b09a6	<= 0	guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back
+rg-doubled	user-18	ripgrep overview	stretches of one line side by side within 12px for 24px	0	31b09a6	<= 0	guard: two lanes of one line read as one doubled line
+rg-matcher-out	today	ripgrep overview	px grep -> grep-matcher runs past its ends' x span	341	31b09a6	<= 0	row 71: it passes at x=769 to reach 337 from 428
+rg-matcher-out-ripgrep	today	ripgrep overview	px ripgrep -> grep-matcher runs past its ends' x span	191	31b09a6	<= 0	the same bus as grep's line, from 578
+rg-matcher-back	today	ripgrep overview	turn-backs of lines at grep-matcher	5	31b09a6	<= 0	grep-matcher's arrivals ride around a row and back
+r72-straight	today	orca MOD-0072 desktop renderer UI	lines between boxes in one column that turn	14	31b09a6	<= 0	a line that could drop straight turns
+r72-back	today	orca MOD-0072 desktop renderer UI	turn-backs	5	31b09a6	<= 0	app-shell's lines ride 90px past their turn
+r72-jogs	today	orca MOD-0072 desktop renderer UI	jogs	19	31b09a6	<= 0	stretches under 24px between turns
+r72-steps	today	orca MOD-0072 desktop renderer UI	steps	59	31b09a6	<= 0	jogs plus turns past 2 per line
+f73-one-stem	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct x's app-shell's depends_on lines leave it at	1	31b09a6	<= 1	5 children in one row: x3/1/1 stubs at 493, 516, 586; one stem that forks
+f73-one-track	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct y's app-shell's depends_on lines turn onto	1	31b09a6	<= 1	the fork's branches leave its stem onto one track
+f73-beside	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	px two stems from app-shell run beside each other within 16px	0	31b09a6	<= 0	guard: no stub runs beside the stem through its track
+s98-mobile	user-11, user-12, user-15	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← mobile/	11	31b09a6	<= 0	the mobile/ entry's lines stair down through the middle
+s98-mobile-beside	user-13, user-14	orca MOD-0098 src/	px two stems from chip ← mobile/ run beside each other within 16px	376	31b09a6	<= 0	the x2 and x5 stems run as two parallel verticals; one stem, or apart
+s98-native	user-11, user-12	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← native/	0	31b09a6	<= 0	guard: the native/ entry now drops straight into desktop main process
+s98-host-jogs	user-15	orca MOD-0098 src/	jogs of lines at @orca/process-host	6	31b09a6	<= 0	process-host's arrivals step in small jogs above it
+s98-connector	user-02, user-03 (MOD-0100, not a fixture)	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip @orca-cloud/connector- contract	5	31b09a6	<= 0	MOD-0100's stairs down to the frame's bottom chips; MOD-0098 has the same chips
+n97-exit	user-04	orca MOD-0097 native/	px windows-agent-hook -> chip → src/ runs sideways	0	31b09a6	<= 0	guard: the exit ran left under process-footprint-macos, reading as its line
+self-gitx	user-05	self overview	excess turns, jogs and turn-backs of lines at internal/gitx	22	31b09a6	<= 0	the knot of steps between internal/extract, internal/store and internal/gitx
+hover-cut	today	every shot page	shoot.py cut	0	31b09a6	<= 0	guard: a lit route stops partway
+hover-stray	today	every shot page	shoot.py stray	0	31b09a6	<= 0	guard: a lit box no lit line reaches
+hover-mixed	today	every shot page	shoot.py mixed	0	31b09a6	<= 0	guard: one lit route of two colours
+hover-overlap	today	every shot page	shoot.py overlap	20	31b09a6	<= 0	two colours along one track, one painting over the other
