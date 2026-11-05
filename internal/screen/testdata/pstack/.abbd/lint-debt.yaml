@@ -5,7 +5,7 @@
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
     overflow: 1
-    placement: 69
+    placement: 55
     weighed: 2504
 debt:
     overview:

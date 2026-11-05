@@ -385,12 +385,25 @@ func plural(n int, noun string) string {
 // P1. Rule 13 bounds how many lines may climb. This lists each relation
 // between two boxes whose user does not stand in a row above what it uses,
 // with how many rows short of that it stands: 1 in the same row, 2 one row
-// below.
+// below. Two boxes joined by one line with a head at each end are left
+// out: that line reads both ways, so no row order holds both of their
+// relations, and standing them a row apart would only spend a row.
 func (l *look) usersAbove() []Breach {
 	var out []Breach
+	both := map[[2]int]bool{}
+	for _, w := range l.v.d.Wires {
+		if w.Kind != "mutual" || len(w.ends) != 2 {
+			continue
+		}
+		a, okA := l.at[w.ends[0]]
+		b, okB := l.at[w.ends[1]]
+		if okA && okB {
+			both[[2]int{a, b}], both[[2]int{b, a}] = true, true
+		}
+	}
 	for _, r := range l.boxRels {
 		ru, rv := l.row[r[0]], l.row[r[1]]
-		if ru < rv {
+		if ru < rv || both[r] {
 			continue
 		}
 		where := "in the same row as"
