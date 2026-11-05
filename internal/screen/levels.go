@@ -11,7 +11,7 @@ import (
 // and either draws few enough lines that each can be followed.
 const (
 	overviewFewest = 4
-	overviewMost   = 7
+	overviewMost   = 12
 	insideFewest   = 2
 	// linesPerBox is the density past which a view gets focus views
 	// (focus.go), and past which its parts are too fine.
@@ -131,7 +131,7 @@ func level(name string, d Drawing, at where) Level {
 	case at == atOverview && l.Boxes < overviewFewest:
 		l.Advice = append(l.Advice, fmt.Sprintf("the overview draws %s, fewer than %d, so its modules are folders rather than parts. Make the parts an engineer names the top-level modules, such as the modules under a framework's app/, src/ or lib/, or the responsibilities of one root package", n, overviewFewest))
 	case at == atOverview && l.Boxes > overviewMost:
-		l.Advice = append(l.Advice, fmt.Sprintf("the overview draws %s, more than %d. Make what most of them use one shared module, place each helper inside the module it serves, and group the rest under a module of the responsibility they share, whose own page draws them", n, overviewMost))
+		l.Advice = append(l.Advice, fmt.Sprintf("the overview draws %s, more than %d. Place each helper inside the module it serves, and group the rest by the responsibility they share", n, overviewMost))
 	case at == atTop && l.Boxes == 1:
 		l.Advice = append(l.Advice, "the page draws 1 box inside, which repeats the module. Fold that unit into the module, so the module stands as a leaf of the overview, or give it a second part")
 	case at == atNested && l.Boxes < insideFewest:
