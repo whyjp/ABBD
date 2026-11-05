@@ -20381,7 +20381,63 @@
                 "Code": true
               },
               {
-                "Text": " holds src/'s bottom edge to it. ",
+                "Text": " holds src/'s bottom edge to it. A ",
+                "Code": false
+              },
+              {
+                "Text": "gather",
+                "Code": true
+              },
+              {
+                "Text": " tactic, plain and median, draws one chip per box and edge for the modules outside that meet that box with no contract (port ",
+                "Code": false
+              },
+              {
+                "Text": "gather|\u003cbox\u003e",
+                "Code": true
+              },
+              {
+                "Text": "), named while the names fit ",
+                "Code": false
+              },
+              {
+                "Text": "gatheredRunes",
+                "Code": true
+              },
+              {
+                "Text": " and counted as ",
+                "Code": false
+              },
+              {
+                "Text": "+N",
+                "Code": true
+              },
+              {
+                "Text": " past that, so each box takes one line from the frame. It is drawn only where some outside module meets two or more boxes, ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " passes over it where it crosses more than the least of the ungathered drawings, and a gathered view's focus views gather the same way (",
+                "Code": false
+              },
+              {
+                "Text": "Inside.gathered",
+                "Code": true
+              },
+              {
+                "Text": "); ",
+                "Code": false
+              },
+              {
+                "Text": "gather_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds it. ",
                 "Code": false
               },
               {
