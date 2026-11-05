@@ -453,7 +453,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 		return true
 	}
 	// runs is where line i, or the bus owner draws it for, runs down i's
-	// chain in row r, if it has room there.
+	// chain in row r, if it has room there. The arrival trunk i leads goes
+	// straight on where i's departure trunk ended, as i would (runsOn):
+	// refused there, it passed that row in the middle of the widest space
+	// and came back to the chain in the next.
 	runs := func(i, r, owner int) (int, bool) {
 		if i >= len(reqs) || chainOf[i] < 0 {
 			return 0, false
@@ -469,7 +472,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 		}
 		x += k * chainLane
 		for _, q := range []int{r - 1, r, r + 1} {
-			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i || !runsOn(i, o)) {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i && owner != -1-plans[i].arr || !runsOn(i, o)) {
 				return 0, false
 			}
 		}
