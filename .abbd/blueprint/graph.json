@@ -20023,7 +20023,39 @@
                 "Code": true
               },
               {
-                "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to. ",
+                "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to. A line's ink is drawn in pieces, its stub, the buses it rides and their drops, so ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " also gives each request a ",
+                "Code": false
+              },
+              {
+                "Text": "Route",
+                "Code": true
+              },
+              {
+                "Text": " along its whole way (",
+                "Code": false
+              },
+              {
+                "Text": "routing.ways",
+                "Code": true
+              },
+              {
+                "Text": "), drawn unseen above the ink in its source's colour, with an arrowhead that takes the route's colour (",
+                "Code": false
+              },
+              {
+                "Text": "context-stroke",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -20031,7 +20063,7 @@
                 "Code": true
               },
               {
-                "Text": " numbers a drawing's boxes and chips, a twin with its unit, and classes each line and dot by the shapes at its ends and each shape by the shapes its relations join it to. The fixed ",
+                "Text": " numbers a drawing's boxes and chips, a twin with its unit, and classes each line, route and dot by the shapes at its ends and each shape by the shapes its relations join it to. The fixed ",
                 "Code": false
               },
               {
@@ -20039,7 +20071,7 @@
                 "Code": true
               },
               {
-                "Text": " rules then fade the rest while a reader points at one shape, with no script on the page. A drawing with more than ",
+                "Text": " rules, with no script on the page, fade all the ink while a reader points at a line or a shape and show the lines lit as their routes, whole: a pointed-at line shows its own route alone, and a pointed-at box shows every route with an end there in the box's colour, a warning line aside, so no lit piece wears another line's colour. A drawing with more than ",
                 "Code": false
               },
               {

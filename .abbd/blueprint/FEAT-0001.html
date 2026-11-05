@@ -100,7 +100,9 @@ svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
-svg path.w:hover { stroke-width: 3.5; }
+svg path.route { fill: none; stroke: var(--c); stroke-width: 3; opacity: 0; pointer-events: stroke; transition: opacity .12s; }
+svg path.route.back { stroke-dasharray: 6 4; }
+svg path.route:hover { opacity: 1; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }
@@ -228,199 +230,1209 @@ svg [data-h="5"] { --c: var(--h5); }
 svg [data-h="b"] { --c: var(--hb); }
 svg [data-h="n"] { --c: var(--hn); }
 @media (hover:hover){
-svg:has(.p0:hover) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
+svg:has(.p0:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p0:hover) :is(.count,.lab,.origin):not(.e0){opacity:.1}
 svg:has(.p0:hover) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(.p1:hover) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
+svg:has(.p0:hover) .route.e0{opacity:1}
+svg:has(.p0[data-h="0"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p0[data-h="1"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p0[data-h="2"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p0[data-h="3"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p0[data-h="4"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p0[data-h="5"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p0[data-h="b"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p0[data-h="n"]:hover) .route.e0:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p1:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p1:hover) :is(.count,.lab,.origin):not(.e1){opacity:.1}
 svg:has(.p1:hover) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(.p2:hover) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
+svg:has(.p1:hover) .route.e1{opacity:1}
+svg:has(.p1[data-h="0"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p1[data-h="1"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p1[data-h="2"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p1[data-h="3"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p1[data-h="4"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p1[data-h="5"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p1[data-h="b"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p1[data-h="n"]:hover) .route.e1:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p2:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p2:hover) :is(.count,.lab,.origin):not(.e2){opacity:.1}
 svg:has(.p2:hover) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(.p3:hover) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
+svg:has(.p2:hover) .route.e2{opacity:1}
+svg:has(.p2[data-h="0"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p2[data-h="1"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p2[data-h="2"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p2[data-h="3"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p2[data-h="4"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p2[data-h="5"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p2[data-h="b"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p2[data-h="n"]:hover) .route.e2:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p3:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p3:hover) :is(.count,.lab,.origin):not(.e3){opacity:.1}
 svg:has(.p3:hover) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(.p4:hover) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
+svg:has(.p3:hover) .route.e3{opacity:1}
+svg:has(.p3[data-h="0"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p3[data-h="1"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p3[data-h="2"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p3[data-h="3"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p3[data-h="4"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p3[data-h="5"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p3[data-h="b"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p3[data-h="n"]:hover) .route.e3:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p4:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p4:hover) :is(.count,.lab,.origin):not(.e4){opacity:.1}
 svg:has(.p4:hover) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(.p5:hover) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
+svg:has(.p4:hover) .route.e4{opacity:1}
+svg:has(.p4[data-h="0"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p4[data-h="1"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p4[data-h="2"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p4[data-h="3"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p4[data-h="4"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p4[data-h="5"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p4[data-h="b"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p4[data-h="n"]:hover) .route.e4:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p5:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p5:hover) :is(.count,.lab,.origin):not(.e5){opacity:.1}
 svg:has(.p5:hover) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(.p6:hover) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
+svg:has(.p5:hover) .route.e5{opacity:1}
+svg:has(.p5[data-h="0"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p5[data-h="1"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p5[data-h="2"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p5[data-h="3"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p5[data-h="4"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p5[data-h="5"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p5[data-h="b"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p5[data-h="n"]:hover) .route.e5:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p6:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p6:hover) :is(.count,.lab,.origin):not(.e6){opacity:.1}
 svg:has(.p6:hover) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(.p7:hover) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
+svg:has(.p6:hover) .route.e6{opacity:1}
+svg:has(.p6[data-h="0"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p6[data-h="1"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p6[data-h="2"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p6[data-h="3"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p6[data-h="4"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p6[data-h="5"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p6[data-h="b"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p6[data-h="n"]:hover) .route.e6:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p7:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p7:hover) :is(.count,.lab,.origin):not(.e7){opacity:.1}
 svg:has(.p7:hover) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(.p8:hover) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
+svg:has(.p7:hover) .route.e7{opacity:1}
+svg:has(.p7[data-h="0"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p7[data-h="1"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p7[data-h="2"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p7[data-h="3"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p7[data-h="4"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p7[data-h="5"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p7[data-h="b"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p7[data-h="n"]:hover) .route.e7:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p8:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p8:hover) :is(.count,.lab,.origin):not(.e8){opacity:.1}
 svg:has(.p8:hover) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(.p9:hover) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
+svg:has(.p8:hover) .route.e8{opacity:1}
+svg:has(.p8[data-h="0"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p8[data-h="1"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p8[data-h="2"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p8[data-h="3"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p8[data-h="4"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p8[data-h="5"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p8[data-h="b"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p8[data-h="n"]:hover) .route.e8:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p9:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p9:hover) :is(.count,.lab,.origin):not(.e9){opacity:.1}
 svg:has(.p9:hover) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(.p10:hover) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
+svg:has(.p9:hover) .route.e9{opacity:1}
+svg:has(.p9[data-h="0"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p9[data-h="1"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p9[data-h="2"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p9[data-h="3"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p9[data-h="4"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p9[data-h="5"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p9[data-h="b"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p9[data-h="n"]:hover) .route.e9:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p10:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p10:hover) :is(.count,.lab,.origin):not(.e10){opacity:.1}
 svg:has(.p10:hover) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(.p11:hover) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
+svg:has(.p10:hover) .route.e10{opacity:1}
+svg:has(.p10[data-h="0"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p10[data-h="1"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p10[data-h="2"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p10[data-h="3"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p10[data-h="4"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p10[data-h="5"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p10[data-h="b"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p10[data-h="n"]:hover) .route.e10:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p11:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p11:hover) :is(.count,.lab,.origin):not(.e11){opacity:.1}
 svg:has(.p11:hover) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(.p12:hover) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
+svg:has(.p11:hover) .route.e11{opacity:1}
+svg:has(.p11[data-h="0"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p11[data-h="1"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p11[data-h="2"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p11[data-h="3"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p11[data-h="4"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p11[data-h="5"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p11[data-h="b"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p11[data-h="n"]:hover) .route.e11:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p12:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p12:hover) :is(.count,.lab,.origin):not(.e12){opacity:.1}
 svg:has(.p12:hover) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(.p13:hover) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
+svg:has(.p12:hover) .route.e12{opacity:1}
+svg:has(.p12[data-h="0"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p12[data-h="1"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p12[data-h="2"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p12[data-h="3"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p12[data-h="4"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p12[data-h="5"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p12[data-h="b"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p12[data-h="n"]:hover) .route.e12:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p13:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p13:hover) :is(.count,.lab,.origin):not(.e13){opacity:.1}
 svg:has(.p13:hover) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(.p14:hover) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
+svg:has(.p13:hover) .route.e13{opacity:1}
+svg:has(.p13[data-h="0"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p13[data-h="1"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p13[data-h="2"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p13[data-h="3"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p13[data-h="4"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p13[data-h="5"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p13[data-h="b"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p13[data-h="n"]:hover) .route.e13:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p14:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p14:hover) :is(.count,.lab,.origin):not(.e14){opacity:.1}
 svg:has(.p14:hover) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(.p15:hover) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
+svg:has(.p14:hover) .route.e14{opacity:1}
+svg:has(.p14[data-h="0"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p14[data-h="1"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p14[data-h="2"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p14[data-h="3"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p14[data-h="4"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p14[data-h="5"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p14[data-h="b"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p14[data-h="n"]:hover) .route.e14:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p15:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p15:hover) :is(.count,.lab,.origin):not(.e15){opacity:.1}
 svg:has(.p15:hover) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(.p16:hover) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
+svg:has(.p15:hover) .route.e15{opacity:1}
+svg:has(.p15[data-h="0"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p15[data-h="1"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p15[data-h="2"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p15[data-h="3"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p15[data-h="4"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p15[data-h="5"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p15[data-h="b"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p15[data-h="n"]:hover) .route.e15:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p16:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p16:hover) :is(.count,.lab,.origin):not(.e16){opacity:.1}
 svg:has(.p16:hover) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(.p17:hover) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
+svg:has(.p16:hover) .route.e16{opacity:1}
+svg:has(.p16[data-h="0"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p16[data-h="1"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p16[data-h="2"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p16[data-h="3"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p16[data-h="4"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p16[data-h="5"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p16[data-h="b"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p16[data-h="n"]:hover) .route.e16:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p17:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p17:hover) :is(.count,.lab,.origin):not(.e17){opacity:.1}
 svg:has(.p17:hover) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(.p18:hover) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
+svg:has(.p17:hover) .route.e17{opacity:1}
+svg:has(.p17[data-h="0"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p17[data-h="1"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p17[data-h="2"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p17[data-h="3"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p17[data-h="4"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p17[data-h="5"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p17[data-h="b"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p17[data-h="n"]:hover) .route.e17:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p18:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p18:hover) :is(.count,.lab,.origin):not(.e18){opacity:.1}
 svg:has(.p18:hover) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(.p19:hover) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
+svg:has(.p18:hover) .route.e18{opacity:1}
+svg:has(.p18[data-h="0"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p18[data-h="1"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p18[data-h="2"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p18[data-h="3"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p18[data-h="4"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p18[data-h="5"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p18[data-h="b"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p18[data-h="n"]:hover) .route.e18:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p19:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p19:hover) :is(.count,.lab,.origin):not(.e19){opacity:.1}
 svg:has(.p19:hover) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(.p20:hover) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
+svg:has(.p19:hover) .route.e19{opacity:1}
+svg:has(.p19[data-h="0"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p19[data-h="1"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p19[data-h="2"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p19[data-h="3"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p19[data-h="4"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p19[data-h="5"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p19[data-h="b"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p19[data-h="n"]:hover) .route.e19:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p20:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p20:hover) :is(.count,.lab,.origin):not(.e20){opacity:.1}
 svg:has(.p20:hover) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(.p21:hover) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
+svg:has(.p20:hover) .route.e20{opacity:1}
+svg:has(.p20[data-h="0"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p20[data-h="1"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p20[data-h="2"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p20[data-h="3"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p20[data-h="4"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p20[data-h="5"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p20[data-h="b"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p20[data-h="n"]:hover) .route.e20:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p21:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p21:hover) :is(.count,.lab,.origin):not(.e21){opacity:.1}
 svg:has(.p21:hover) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(.p22:hover) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
+svg:has(.p21:hover) .route.e21{opacity:1}
+svg:has(.p21[data-h="0"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p21[data-h="1"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p21[data-h="2"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p21[data-h="3"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p21[data-h="4"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p21[data-h="5"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p21[data-h="b"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p21[data-h="n"]:hover) .route.e21:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p22:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p22:hover) :is(.count,.lab,.origin):not(.e22){opacity:.1}
 svg:has(.p22:hover) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(.p23:hover) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
+svg:has(.p22:hover) .route.e22{opacity:1}
+svg:has(.p22[data-h="0"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p22[data-h="1"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p22[data-h="2"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p22[data-h="3"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p22[data-h="4"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p22[data-h="5"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p22[data-h="b"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p22[data-h="n"]:hover) .route.e22:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p23:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p23:hover) :is(.count,.lab,.origin):not(.e23){opacity:.1}
 svg:has(.p23:hover) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(.p24:hover) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
+svg:has(.p23:hover) .route.e23{opacity:1}
+svg:has(.p23[data-h="0"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p23[data-h="1"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p23[data-h="2"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p23[data-h="3"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p23[data-h="4"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p23[data-h="5"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p23[data-h="b"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p23[data-h="n"]:hover) .route.e23:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p24:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p24:hover) :is(.count,.lab,.origin):not(.e24){opacity:.1}
 svg:has(.p24:hover) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(.p25:hover) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
+svg:has(.p24:hover) .route.e24{opacity:1}
+svg:has(.p24[data-h="0"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p24[data-h="1"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p24[data-h="2"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p24[data-h="3"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p24[data-h="4"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p24[data-h="5"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p24[data-h="b"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p24[data-h="n"]:hover) .route.e24:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p25:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p25:hover) :is(.count,.lab,.origin):not(.e25){opacity:.1}
 svg:has(.p25:hover) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(.p26:hover) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
+svg:has(.p25:hover) .route.e25{opacity:1}
+svg:has(.p25[data-h="0"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p25[data-h="1"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p25[data-h="2"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p25[data-h="3"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p25[data-h="4"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p25[data-h="5"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p25[data-h="b"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p25[data-h="n"]:hover) .route.e25:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p26:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p26:hover) :is(.count,.lab,.origin):not(.e26){opacity:.1}
 svg:has(.p26:hover) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(.p27:hover) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
+svg:has(.p26:hover) .route.e26{opacity:1}
+svg:has(.p26[data-h="0"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p26[data-h="1"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p26[data-h="2"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p26[data-h="3"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p26[data-h="4"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p26[data-h="5"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p26[data-h="b"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p26[data-h="n"]:hover) .route.e26:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p27:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p27:hover) :is(.count,.lab,.origin):not(.e27){opacity:.1}
 svg:has(.p27:hover) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(.p28:hover) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
+svg:has(.p27:hover) .route.e27{opacity:1}
+svg:has(.p27[data-h="0"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p27[data-h="1"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p27[data-h="2"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p27[data-h="3"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p27[data-h="4"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p27[data-h="5"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p27[data-h="b"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p27[data-h="n"]:hover) .route.e27:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p28:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p28:hover) :is(.count,.lab,.origin):not(.e28){opacity:.1}
 svg:has(.p28:hover) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(.p29:hover) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
+svg:has(.p28:hover) .route.e28{opacity:1}
+svg:has(.p28[data-h="0"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p28[data-h="1"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p28[data-h="2"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p28[data-h="3"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p28[data-h="4"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p28[data-h="5"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p28[data-h="b"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p28[data-h="n"]:hover) .route.e28:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p29:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p29:hover) :is(.count,.lab,.origin):not(.e29){opacity:.1}
 svg:has(.p29:hover) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(.p30:hover) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
+svg:has(.p29:hover) .route.e29{opacity:1}
+svg:has(.p29[data-h="0"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p29[data-h="1"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p29[data-h="2"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p29[data-h="3"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p29[data-h="4"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p29[data-h="5"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p29[data-h="b"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p29[data-h="n"]:hover) .route.e29:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p30:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p30:hover) :is(.count,.lab,.origin):not(.e30){opacity:.1}
 svg:has(.p30:hover) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(.p31:hover) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
+svg:has(.p30:hover) .route.e30{opacity:1}
+svg:has(.p30[data-h="0"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p30[data-h="1"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p30[data-h="2"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p30[data-h="3"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p30[data-h="4"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p30[data-h="5"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p30[data-h="b"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p30[data-h="n"]:hover) .route.e30:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p31:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p31:hover) :is(.count,.lab,.origin):not(.e31){opacity:.1}
 svg:has(.p31:hover) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(.p32:hover) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
+svg:has(.p31:hover) .route.e31{opacity:1}
+svg:has(.p31[data-h="0"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p31[data-h="1"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p31[data-h="2"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p31[data-h="3"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p31[data-h="4"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p31[data-h="5"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p31[data-h="b"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p31[data-h="n"]:hover) .route.e31:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p32:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p32:hover) :is(.count,.lab,.origin):not(.e32){opacity:.1}
 svg:has(.p32:hover) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(.p33:hover) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
+svg:has(.p32:hover) .route.e32{opacity:1}
+svg:has(.p32[data-h="0"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p32[data-h="1"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p32[data-h="2"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p32[data-h="3"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p32[data-h="4"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p32[data-h="5"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p32[data-h="b"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p32[data-h="n"]:hover) .route.e32:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p33:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p33:hover) :is(.count,.lab,.origin):not(.e33){opacity:.1}
 svg:has(.p33:hover) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(.p34:hover) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
+svg:has(.p33:hover) .route.e33{opacity:1}
+svg:has(.p33[data-h="0"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p33[data-h="1"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p33[data-h="2"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p33[data-h="3"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p33[data-h="4"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p33[data-h="5"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p33[data-h="b"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p33[data-h="n"]:hover) .route.e33:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p34:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p34:hover) :is(.count,.lab,.origin):not(.e34){opacity:.1}
 svg:has(.p34:hover) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(.p35:hover) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
+svg:has(.p34:hover) .route.e34{opacity:1}
+svg:has(.p34[data-h="0"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p34[data-h="1"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p34[data-h="2"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p34[data-h="3"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p34[data-h="4"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p34[data-h="5"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p34[data-h="b"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p34[data-h="n"]:hover) .route.e34:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p35:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p35:hover) :is(.count,.lab,.origin):not(.e35){opacity:.1}
 svg:has(.p35:hover) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(.p36:hover) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
+svg:has(.p35:hover) .route.e35{opacity:1}
+svg:has(.p35[data-h="0"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p35[data-h="1"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p35[data-h="2"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p35[data-h="3"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p35[data-h="4"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p35[data-h="5"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p35[data-h="b"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p35[data-h="n"]:hover) .route.e35:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p36:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p36:hover) :is(.count,.lab,.origin):not(.e36){opacity:.1}
 svg:has(.p36:hover) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(.p37:hover) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
+svg:has(.p36:hover) .route.e36{opacity:1}
+svg:has(.p36[data-h="0"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p36[data-h="1"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p36[data-h="2"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p36[data-h="3"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p36[data-h="4"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p36[data-h="5"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p36[data-h="b"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p36[data-h="n"]:hover) .route.e36:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p37:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p37:hover) :is(.count,.lab,.origin):not(.e37){opacity:.1}
 svg:has(.p37:hover) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(.p38:hover) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
+svg:has(.p37:hover) .route.e37{opacity:1}
+svg:has(.p37[data-h="0"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p37[data-h="1"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p37[data-h="2"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p37[data-h="3"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p37[data-h="4"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p37[data-h="5"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p37[data-h="b"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p37[data-h="n"]:hover) .route.e37:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p38:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p38:hover) :is(.count,.lab,.origin):not(.e38){opacity:.1}
 svg:has(.p38:hover) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(.p39:hover) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
+svg:has(.p38:hover) .route.e38{opacity:1}
+svg:has(.p38[data-h="0"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p38[data-h="1"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p38[data-h="2"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p38[data-h="3"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p38[data-h="4"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p38[data-h="5"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p38[data-h="b"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p38[data-h="n"]:hover) .route.e38:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p39:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p39:hover) :is(.count,.lab,.origin):not(.e39){opacity:.1}
 svg:has(.p39:hover) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(.p40:hover) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
+svg:has(.p39:hover) .route.e39{opacity:1}
+svg:has(.p39[data-h="0"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p39[data-h="1"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p39[data-h="2"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p39[data-h="3"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p39[data-h="4"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p39[data-h="5"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p39[data-h="b"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p39[data-h="n"]:hover) .route.e39:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p40:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p40:hover) :is(.count,.lab,.origin):not(.e40){opacity:.1}
 svg:has(.p40:hover) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(.p41:hover) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
+svg:has(.p40:hover) .route.e40{opacity:1}
+svg:has(.p40[data-h="0"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p40[data-h="1"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p40[data-h="2"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p40[data-h="3"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p40[data-h="4"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p40[data-h="5"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p40[data-h="b"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p40[data-h="n"]:hover) .route.e40:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p41:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p41:hover) :is(.count,.lab,.origin):not(.e41){opacity:.1}
 svg:has(.p41:hover) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(.p42:hover) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
+svg:has(.p41:hover) .route.e41{opacity:1}
+svg:has(.p41[data-h="0"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p41[data-h="1"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p41[data-h="2"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p41[data-h="3"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p41[data-h="4"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p41[data-h="5"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p41[data-h="b"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p41[data-h="n"]:hover) .route.e41:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p42:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p42:hover) :is(.count,.lab,.origin):not(.e42){opacity:.1}
 svg:has(.p42:hover) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(.p43:hover) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
+svg:has(.p42:hover) .route.e42{opacity:1}
+svg:has(.p42[data-h="0"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p42[data-h="1"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p42[data-h="2"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p42[data-h="3"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p42[data-h="4"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p42[data-h="5"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p42[data-h="b"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p42[data-h="n"]:hover) .route.e42:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p43:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p43:hover) :is(.count,.lab,.origin):not(.e43){opacity:.1}
 svg:has(.p43:hover) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(.p44:hover) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
+svg:has(.p43:hover) .route.e43{opacity:1}
+svg:has(.p43[data-h="0"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p43[data-h="1"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p43[data-h="2"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p43[data-h="3"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p43[data-h="4"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p43[data-h="5"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p43[data-h="b"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p43[data-h="n"]:hover) .route.e43:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p44:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p44:hover) :is(.count,.lab,.origin):not(.e44){opacity:.1}
 svg:has(.p44:hover) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(.p45:hover) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
+svg:has(.p44:hover) .route.e44{opacity:1}
+svg:has(.p44[data-h="0"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p44[data-h="1"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p44[data-h="2"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p44[data-h="3"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p44[data-h="4"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p44[data-h="5"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p44[data-h="b"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p44[data-h="n"]:hover) .route.e44:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p45:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p45:hover) :is(.count,.lab,.origin):not(.e45){opacity:.1}
 svg:has(.p45:hover) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(.p46:hover) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
+svg:has(.p45:hover) .route.e45{opacity:1}
+svg:has(.p45[data-h="0"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p45[data-h="1"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p45[data-h="2"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p45[data-h="3"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p45[data-h="4"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p45[data-h="5"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p45[data-h="b"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p45[data-h="n"]:hover) .route.e45:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p46:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p46:hover) :is(.count,.lab,.origin):not(.e46){opacity:.1}
 svg:has(.p46:hover) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(.p47:hover) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
+svg:has(.p46:hover) .route.e46{opacity:1}
+svg:has(.p46[data-h="0"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p46[data-h="1"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p46[data-h="2"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p46[data-h="3"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p46[data-h="4"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p46[data-h="5"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p46[data-h="b"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p46[data-h="n"]:hover) .route.e46:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.p47:hover) :is(.w,.junction){opacity:.1}
+svg:has(.p47:hover) :is(.count,.lab,.origin):not(.e47){opacity:.1}
 svg:has(.p47:hover) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
+svg:has(.p47:hover) .route.e47{opacity:1}
+svg:has(.p47[data-h="0"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(.p47[data-h="1"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(.p47[data-h="2"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(.p47[data-h="3"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(.p47[data-h="4"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(.p47[data-h="5"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(.p47[data-h="b"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(.p47[data-h="n"]:hover) .route.e47:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(.route:hover) :is(.w,.count,.lab,.origin,.junction){opacity:.1}
+svg:has(.route:hover) :is(.box,.port[class*=" n"]){opacity:.3}
+svg:has(.route.e0:hover) .p0{opacity:1}
+svg:has(.route.e1:hover) .p1{opacity:1}
+svg:has(.route.e2:hover) .p2{opacity:1}
+svg:has(.route.e3:hover) .p3{opacity:1}
+svg:has(.route.e4:hover) .p4{opacity:1}
+svg:has(.route.e5:hover) .p5{opacity:1}
+svg:has(.route.e6:hover) .p6{opacity:1}
+svg:has(.route.e7:hover) .p7{opacity:1}
+svg:has(.route.e8:hover) .p8{opacity:1}
+svg:has(.route.e9:hover) .p9{opacity:1}
+svg:has(.route.e10:hover) .p10{opacity:1}
+svg:has(.route.e11:hover) .p11{opacity:1}
+svg:has(.route.e12:hover) .p12{opacity:1}
+svg:has(.route.e13:hover) .p13{opacity:1}
+svg:has(.route.e14:hover) .p14{opacity:1}
+svg:has(.route.e15:hover) .p15{opacity:1}
+svg:has(.route.e16:hover) .p16{opacity:1}
+svg:has(.route.e17:hover) .p17{opacity:1}
+svg:has(.route.e18:hover) .p18{opacity:1}
+svg:has(.route.e19:hover) .p19{opacity:1}
+svg:has(.route.e20:hover) .p20{opacity:1}
+svg:has(.route.e21:hover) .p21{opacity:1}
+svg:has(.route.e22:hover) .p22{opacity:1}
+svg:has(.route.e23:hover) .p23{opacity:1}
+svg:has(.route.e24:hover) .p24{opacity:1}
+svg:has(.route.e25:hover) .p25{opacity:1}
+svg:has(.route.e26:hover) .p26{opacity:1}
+svg:has(.route.e27:hover) .p27{opacity:1}
+svg:has(.route.e28:hover) .p28{opacity:1}
+svg:has(.route.e29:hover) .p29{opacity:1}
+svg:has(.route.e30:hover) .p30{opacity:1}
+svg:has(.route.e31:hover) .p31{opacity:1}
+svg:has(.route.e32:hover) .p32{opacity:1}
+svg:has(.route.e33:hover) .p33{opacity:1}
+svg:has(.route.e34:hover) .p34{opacity:1}
+svg:has(.route.e35:hover) .p35{opacity:1}
+svg:has(.route.e36:hover) .p36{opacity:1}
+svg:has(.route.e37:hover) .p37{opacity:1}
+svg:has(.route.e38:hover) .p38{opacity:1}
+svg:has(.route.e39:hover) .p39{opacity:1}
+svg:has(.route.e40:hover) .p40{opacity:1}
+svg:has(.route.e41:hover) .p41{opacity:1}
+svg:has(.route.e42:hover) .p42{opacity:1}
+svg:has(.route.e43:hover) .p43{opacity:1}
+svg:has(.route.e44:hover) .p44{opacity:1}
+svg:has(.route.e45:hover) .p45{opacity:1}
+svg:has(.route.e46:hover) .p46{opacity:1}
+svg:has(.route.e47:hover) .p47{opacity:1}
 }
-svg:has(:focus-visible>.p0) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
+svg:has(:focus-visible>.p0) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p0) :is(.count,.lab,.origin):not(.e0){opacity:.1}
 svg:has(:focus-visible>.p0) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(:focus-visible>.p1) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
+svg:has(:focus-visible>.p0) .route.e0{opacity:1}
+svg:has(:focus-visible>.p0[data-h="0"]) .route.e0:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p0[data-h="1"]) .route.e0:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p0[data-h="2"]) .route.e0:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p0[data-h="3"]) .route.e0:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p0[data-h="4"]) .route.e0:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p0[data-h="5"]) .route.e0:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p0[data-h="b"]) .route.e0:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p0[data-h="n"]) .route.e0:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p1) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p1) :is(.count,.lab,.origin):not(.e1){opacity:.1}
 svg:has(:focus-visible>.p1) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(:focus-visible>.p2) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
+svg:has(:focus-visible>.p1) .route.e1{opacity:1}
+svg:has(:focus-visible>.p1[data-h="0"]) .route.e1:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p1[data-h="1"]) .route.e1:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p1[data-h="2"]) .route.e1:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p1[data-h="3"]) .route.e1:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p1[data-h="4"]) .route.e1:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p1[data-h="5"]) .route.e1:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p1[data-h="b"]) .route.e1:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p1[data-h="n"]) .route.e1:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p2) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p2) :is(.count,.lab,.origin):not(.e2){opacity:.1}
 svg:has(:focus-visible>.p2) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(:focus-visible>.p3) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
+svg:has(:focus-visible>.p2) .route.e2{opacity:1}
+svg:has(:focus-visible>.p2[data-h="0"]) .route.e2:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p2[data-h="1"]) .route.e2:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p2[data-h="2"]) .route.e2:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p2[data-h="3"]) .route.e2:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p2[data-h="4"]) .route.e2:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p2[data-h="5"]) .route.e2:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p2[data-h="b"]) .route.e2:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p2[data-h="n"]) .route.e2:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p3) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p3) :is(.count,.lab,.origin):not(.e3){opacity:.1}
 svg:has(:focus-visible>.p3) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(:focus-visible>.p4) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
+svg:has(:focus-visible>.p3) .route.e3{opacity:1}
+svg:has(:focus-visible>.p3[data-h="0"]) .route.e3:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p3[data-h="1"]) .route.e3:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p3[data-h="2"]) .route.e3:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p3[data-h="3"]) .route.e3:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p3[data-h="4"]) .route.e3:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p3[data-h="5"]) .route.e3:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p3[data-h="b"]) .route.e3:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p3[data-h="n"]) .route.e3:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p4) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p4) :is(.count,.lab,.origin):not(.e4){opacity:.1}
 svg:has(:focus-visible>.p4) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(:focus-visible>.p5) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
+svg:has(:focus-visible>.p4) .route.e4{opacity:1}
+svg:has(:focus-visible>.p4[data-h="0"]) .route.e4:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p4[data-h="1"]) .route.e4:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p4[data-h="2"]) .route.e4:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p4[data-h="3"]) .route.e4:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p4[data-h="4"]) .route.e4:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p4[data-h="5"]) .route.e4:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p4[data-h="b"]) .route.e4:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p4[data-h="n"]) .route.e4:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p5) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p5) :is(.count,.lab,.origin):not(.e5){opacity:.1}
 svg:has(:focus-visible>.p5) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(:focus-visible>.p6) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
+svg:has(:focus-visible>.p5) .route.e5{opacity:1}
+svg:has(:focus-visible>.p5[data-h="0"]) .route.e5:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p5[data-h="1"]) .route.e5:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p5[data-h="2"]) .route.e5:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p5[data-h="3"]) .route.e5:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p5[data-h="4"]) .route.e5:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p5[data-h="5"]) .route.e5:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p5[data-h="b"]) .route.e5:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p5[data-h="n"]) .route.e5:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p6) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p6) :is(.count,.lab,.origin):not(.e6){opacity:.1}
 svg:has(:focus-visible>.p6) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(:focus-visible>.p7) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
+svg:has(:focus-visible>.p6) .route.e6{opacity:1}
+svg:has(:focus-visible>.p6[data-h="0"]) .route.e6:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p6[data-h="1"]) .route.e6:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p6[data-h="2"]) .route.e6:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p6[data-h="3"]) .route.e6:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p6[data-h="4"]) .route.e6:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p6[data-h="5"]) .route.e6:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p6[data-h="b"]) .route.e6:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p6[data-h="n"]) .route.e6:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p7) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p7) :is(.count,.lab,.origin):not(.e7){opacity:.1}
 svg:has(:focus-visible>.p7) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(:focus-visible>.p8) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
+svg:has(:focus-visible>.p7) .route.e7{opacity:1}
+svg:has(:focus-visible>.p7[data-h="0"]) .route.e7:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p7[data-h="1"]) .route.e7:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p7[data-h="2"]) .route.e7:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p7[data-h="3"]) .route.e7:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p7[data-h="4"]) .route.e7:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p7[data-h="5"]) .route.e7:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p7[data-h="b"]) .route.e7:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p7[data-h="n"]) .route.e7:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p8) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p8) :is(.count,.lab,.origin):not(.e8){opacity:.1}
 svg:has(:focus-visible>.p8) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(:focus-visible>.p9) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
+svg:has(:focus-visible>.p8) .route.e8{opacity:1}
+svg:has(:focus-visible>.p8[data-h="0"]) .route.e8:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p8[data-h="1"]) .route.e8:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p8[data-h="2"]) .route.e8:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p8[data-h="3"]) .route.e8:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p8[data-h="4"]) .route.e8:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p8[data-h="5"]) .route.e8:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p8[data-h="b"]) .route.e8:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p8[data-h="n"]) .route.e8:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p9) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p9) :is(.count,.lab,.origin):not(.e9){opacity:.1}
 svg:has(:focus-visible>.p9) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(:focus-visible>.p10) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
+svg:has(:focus-visible>.p9) .route.e9{opacity:1}
+svg:has(:focus-visible>.p9[data-h="0"]) .route.e9:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p9[data-h="1"]) .route.e9:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p9[data-h="2"]) .route.e9:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p9[data-h="3"]) .route.e9:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p9[data-h="4"]) .route.e9:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p9[data-h="5"]) .route.e9:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p9[data-h="b"]) .route.e9:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p9[data-h="n"]) .route.e9:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p10) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p10) :is(.count,.lab,.origin):not(.e10){opacity:.1}
 svg:has(:focus-visible>.p10) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(:focus-visible>.p11) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
+svg:has(:focus-visible>.p10) .route.e10{opacity:1}
+svg:has(:focus-visible>.p10[data-h="0"]) .route.e10:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p10[data-h="1"]) .route.e10:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p10[data-h="2"]) .route.e10:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p10[data-h="3"]) .route.e10:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p10[data-h="4"]) .route.e10:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p10[data-h="5"]) .route.e10:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p10[data-h="b"]) .route.e10:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p10[data-h="n"]) .route.e10:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p11) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p11) :is(.count,.lab,.origin):not(.e11){opacity:.1}
 svg:has(:focus-visible>.p11) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(:focus-visible>.p12) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
+svg:has(:focus-visible>.p11) .route.e11{opacity:1}
+svg:has(:focus-visible>.p11[data-h="0"]) .route.e11:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p11[data-h="1"]) .route.e11:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p11[data-h="2"]) .route.e11:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p11[data-h="3"]) .route.e11:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p11[data-h="4"]) .route.e11:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p11[data-h="5"]) .route.e11:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p11[data-h="b"]) .route.e11:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p11[data-h="n"]) .route.e11:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p12) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p12) :is(.count,.lab,.origin):not(.e12){opacity:.1}
 svg:has(:focus-visible>.p12) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(:focus-visible>.p13) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
+svg:has(:focus-visible>.p12) .route.e12{opacity:1}
+svg:has(:focus-visible>.p12[data-h="0"]) .route.e12:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p12[data-h="1"]) .route.e12:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p12[data-h="2"]) .route.e12:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p12[data-h="3"]) .route.e12:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p12[data-h="4"]) .route.e12:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p12[data-h="5"]) .route.e12:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p12[data-h="b"]) .route.e12:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p12[data-h="n"]) .route.e12:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p13) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p13) :is(.count,.lab,.origin):not(.e13){opacity:.1}
 svg:has(:focus-visible>.p13) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(:focus-visible>.p14) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
+svg:has(:focus-visible>.p13) .route.e13{opacity:1}
+svg:has(:focus-visible>.p13[data-h="0"]) .route.e13:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p13[data-h="1"]) .route.e13:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p13[data-h="2"]) .route.e13:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p13[data-h="3"]) .route.e13:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p13[data-h="4"]) .route.e13:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p13[data-h="5"]) .route.e13:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p13[data-h="b"]) .route.e13:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p13[data-h="n"]) .route.e13:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p14) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p14) :is(.count,.lab,.origin):not(.e14){opacity:.1}
 svg:has(:focus-visible>.p14) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(:focus-visible>.p15) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
+svg:has(:focus-visible>.p14) .route.e14{opacity:1}
+svg:has(:focus-visible>.p14[data-h="0"]) .route.e14:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p14[data-h="1"]) .route.e14:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p14[data-h="2"]) .route.e14:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p14[data-h="3"]) .route.e14:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p14[data-h="4"]) .route.e14:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p14[data-h="5"]) .route.e14:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p14[data-h="b"]) .route.e14:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p14[data-h="n"]) .route.e14:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p15) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p15) :is(.count,.lab,.origin):not(.e15){opacity:.1}
 svg:has(:focus-visible>.p15) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(:focus-visible>.p16) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
+svg:has(:focus-visible>.p15) .route.e15{opacity:1}
+svg:has(:focus-visible>.p15[data-h="0"]) .route.e15:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p15[data-h="1"]) .route.e15:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p15[data-h="2"]) .route.e15:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p15[data-h="3"]) .route.e15:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p15[data-h="4"]) .route.e15:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p15[data-h="5"]) .route.e15:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p15[data-h="b"]) .route.e15:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p15[data-h="n"]) .route.e15:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p16) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p16) :is(.count,.lab,.origin):not(.e16){opacity:.1}
 svg:has(:focus-visible>.p16) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(:focus-visible>.p17) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
+svg:has(:focus-visible>.p16) .route.e16{opacity:1}
+svg:has(:focus-visible>.p16[data-h="0"]) .route.e16:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p16[data-h="1"]) .route.e16:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p16[data-h="2"]) .route.e16:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p16[data-h="3"]) .route.e16:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p16[data-h="4"]) .route.e16:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p16[data-h="5"]) .route.e16:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p16[data-h="b"]) .route.e16:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p16[data-h="n"]) .route.e16:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p17) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p17) :is(.count,.lab,.origin):not(.e17){opacity:.1}
 svg:has(:focus-visible>.p17) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(:focus-visible>.p18) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
+svg:has(:focus-visible>.p17) .route.e17{opacity:1}
+svg:has(:focus-visible>.p17[data-h="0"]) .route.e17:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p17[data-h="1"]) .route.e17:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p17[data-h="2"]) .route.e17:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p17[data-h="3"]) .route.e17:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p17[data-h="4"]) .route.e17:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p17[data-h="5"]) .route.e17:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p17[data-h="b"]) .route.e17:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p17[data-h="n"]) .route.e17:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p18) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p18) :is(.count,.lab,.origin):not(.e18){opacity:.1}
 svg:has(:focus-visible>.p18) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(:focus-visible>.p19) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
+svg:has(:focus-visible>.p18) .route.e18{opacity:1}
+svg:has(:focus-visible>.p18[data-h="0"]) .route.e18:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p18[data-h="1"]) .route.e18:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p18[data-h="2"]) .route.e18:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p18[data-h="3"]) .route.e18:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p18[data-h="4"]) .route.e18:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p18[data-h="5"]) .route.e18:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p18[data-h="b"]) .route.e18:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p18[data-h="n"]) .route.e18:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p19) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p19) :is(.count,.lab,.origin):not(.e19){opacity:.1}
 svg:has(:focus-visible>.p19) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(:focus-visible>.p20) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
+svg:has(:focus-visible>.p19) .route.e19{opacity:1}
+svg:has(:focus-visible>.p19[data-h="0"]) .route.e19:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p19[data-h="1"]) .route.e19:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p19[data-h="2"]) .route.e19:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p19[data-h="3"]) .route.e19:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p19[data-h="4"]) .route.e19:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p19[data-h="5"]) .route.e19:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p19[data-h="b"]) .route.e19:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p19[data-h="n"]) .route.e19:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p20) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p20) :is(.count,.lab,.origin):not(.e20){opacity:.1}
 svg:has(:focus-visible>.p20) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(:focus-visible>.p21) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
+svg:has(:focus-visible>.p20) .route.e20{opacity:1}
+svg:has(:focus-visible>.p20[data-h="0"]) .route.e20:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p20[data-h="1"]) .route.e20:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p20[data-h="2"]) .route.e20:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p20[data-h="3"]) .route.e20:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p20[data-h="4"]) .route.e20:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p20[data-h="5"]) .route.e20:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p20[data-h="b"]) .route.e20:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p20[data-h="n"]) .route.e20:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p21) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p21) :is(.count,.lab,.origin):not(.e21){opacity:.1}
 svg:has(:focus-visible>.p21) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(:focus-visible>.p22) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
+svg:has(:focus-visible>.p21) .route.e21{opacity:1}
+svg:has(:focus-visible>.p21[data-h="0"]) .route.e21:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p21[data-h="1"]) .route.e21:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p21[data-h="2"]) .route.e21:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p21[data-h="3"]) .route.e21:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p21[data-h="4"]) .route.e21:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p21[data-h="5"]) .route.e21:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p21[data-h="b"]) .route.e21:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p21[data-h="n"]) .route.e21:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p22) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p22) :is(.count,.lab,.origin):not(.e22){opacity:.1}
 svg:has(:focus-visible>.p22) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(:focus-visible>.p23) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
+svg:has(:focus-visible>.p22) .route.e22{opacity:1}
+svg:has(:focus-visible>.p22[data-h="0"]) .route.e22:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p22[data-h="1"]) .route.e22:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p22[data-h="2"]) .route.e22:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p22[data-h="3"]) .route.e22:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p22[data-h="4"]) .route.e22:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p22[data-h="5"]) .route.e22:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p22[data-h="b"]) .route.e22:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p22[data-h="n"]) .route.e22:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p23) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p23) :is(.count,.lab,.origin):not(.e23){opacity:.1}
 svg:has(:focus-visible>.p23) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(:focus-visible>.p24) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
+svg:has(:focus-visible>.p23) .route.e23{opacity:1}
+svg:has(:focus-visible>.p23[data-h="0"]) .route.e23:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p23[data-h="1"]) .route.e23:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p23[data-h="2"]) .route.e23:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p23[data-h="3"]) .route.e23:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p23[data-h="4"]) .route.e23:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p23[data-h="5"]) .route.e23:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p23[data-h="b"]) .route.e23:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p23[data-h="n"]) .route.e23:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p24) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p24) :is(.count,.lab,.origin):not(.e24){opacity:.1}
 svg:has(:focus-visible>.p24) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(:focus-visible>.p25) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
+svg:has(:focus-visible>.p24) .route.e24{opacity:1}
+svg:has(:focus-visible>.p24[data-h="0"]) .route.e24:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p24[data-h="1"]) .route.e24:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p24[data-h="2"]) .route.e24:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p24[data-h="3"]) .route.e24:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p24[data-h="4"]) .route.e24:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p24[data-h="5"]) .route.e24:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p24[data-h="b"]) .route.e24:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p24[data-h="n"]) .route.e24:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p25) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p25) :is(.count,.lab,.origin):not(.e25){opacity:.1}
 svg:has(:focus-visible>.p25) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(:focus-visible>.p26) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
+svg:has(:focus-visible>.p25) .route.e25{opacity:1}
+svg:has(:focus-visible>.p25[data-h="0"]) .route.e25:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p25[data-h="1"]) .route.e25:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p25[data-h="2"]) .route.e25:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p25[data-h="3"]) .route.e25:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p25[data-h="4"]) .route.e25:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p25[data-h="5"]) .route.e25:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p25[data-h="b"]) .route.e25:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p25[data-h="n"]) .route.e25:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p26) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p26) :is(.count,.lab,.origin):not(.e26){opacity:.1}
 svg:has(:focus-visible>.p26) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(:focus-visible>.p27) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
+svg:has(:focus-visible>.p26) .route.e26{opacity:1}
+svg:has(:focus-visible>.p26[data-h="0"]) .route.e26:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p26[data-h="1"]) .route.e26:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p26[data-h="2"]) .route.e26:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p26[data-h="3"]) .route.e26:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p26[data-h="4"]) .route.e26:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p26[data-h="5"]) .route.e26:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p26[data-h="b"]) .route.e26:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p26[data-h="n"]) .route.e26:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p27) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p27) :is(.count,.lab,.origin):not(.e27){opacity:.1}
 svg:has(:focus-visible>.p27) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(:focus-visible>.p28) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
+svg:has(:focus-visible>.p27) .route.e27{opacity:1}
+svg:has(:focus-visible>.p27[data-h="0"]) .route.e27:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p27[data-h="1"]) .route.e27:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p27[data-h="2"]) .route.e27:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p27[data-h="3"]) .route.e27:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p27[data-h="4"]) .route.e27:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p27[data-h="5"]) .route.e27:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p27[data-h="b"]) .route.e27:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p27[data-h="n"]) .route.e27:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p28) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p28) :is(.count,.lab,.origin):not(.e28){opacity:.1}
 svg:has(:focus-visible>.p28) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(:focus-visible>.p29) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
+svg:has(:focus-visible>.p28) .route.e28{opacity:1}
+svg:has(:focus-visible>.p28[data-h="0"]) .route.e28:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p28[data-h="1"]) .route.e28:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p28[data-h="2"]) .route.e28:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p28[data-h="3"]) .route.e28:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p28[data-h="4"]) .route.e28:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p28[data-h="5"]) .route.e28:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p28[data-h="b"]) .route.e28:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p28[data-h="n"]) .route.e28:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p29) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p29) :is(.count,.lab,.origin):not(.e29){opacity:.1}
 svg:has(:focus-visible>.p29) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(:focus-visible>.p30) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
+svg:has(:focus-visible>.p29) .route.e29{opacity:1}
+svg:has(:focus-visible>.p29[data-h="0"]) .route.e29:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p29[data-h="1"]) .route.e29:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p29[data-h="2"]) .route.e29:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p29[data-h="3"]) .route.e29:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p29[data-h="4"]) .route.e29:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p29[data-h="5"]) .route.e29:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p29[data-h="b"]) .route.e29:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p29[data-h="n"]) .route.e29:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p30) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p30) :is(.count,.lab,.origin):not(.e30){opacity:.1}
 svg:has(:focus-visible>.p30) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(:focus-visible>.p31) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
+svg:has(:focus-visible>.p30) .route.e30{opacity:1}
+svg:has(:focus-visible>.p30[data-h="0"]) .route.e30:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p30[data-h="1"]) .route.e30:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p30[data-h="2"]) .route.e30:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p30[data-h="3"]) .route.e30:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p30[data-h="4"]) .route.e30:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p30[data-h="5"]) .route.e30:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p30[data-h="b"]) .route.e30:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p30[data-h="n"]) .route.e30:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p31) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p31) :is(.count,.lab,.origin):not(.e31){opacity:.1}
 svg:has(:focus-visible>.p31) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(:focus-visible>.p32) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
+svg:has(:focus-visible>.p31) .route.e31{opacity:1}
+svg:has(:focus-visible>.p31[data-h="0"]) .route.e31:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p31[data-h="1"]) .route.e31:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p31[data-h="2"]) .route.e31:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p31[data-h="3"]) .route.e31:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p31[data-h="4"]) .route.e31:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p31[data-h="5"]) .route.e31:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p31[data-h="b"]) .route.e31:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p31[data-h="n"]) .route.e31:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p32) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p32) :is(.count,.lab,.origin):not(.e32){opacity:.1}
 svg:has(:focus-visible>.p32) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(:focus-visible>.p33) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
+svg:has(:focus-visible>.p32) .route.e32{opacity:1}
+svg:has(:focus-visible>.p32[data-h="0"]) .route.e32:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p32[data-h="1"]) .route.e32:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p32[data-h="2"]) .route.e32:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p32[data-h="3"]) .route.e32:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p32[data-h="4"]) .route.e32:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p32[data-h="5"]) .route.e32:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p32[data-h="b"]) .route.e32:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p32[data-h="n"]) .route.e32:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p33) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p33) :is(.count,.lab,.origin):not(.e33){opacity:.1}
 svg:has(:focus-visible>.p33) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(:focus-visible>.p34) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
+svg:has(:focus-visible>.p33) .route.e33{opacity:1}
+svg:has(:focus-visible>.p33[data-h="0"]) .route.e33:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p33[data-h="1"]) .route.e33:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p33[data-h="2"]) .route.e33:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p33[data-h="3"]) .route.e33:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p33[data-h="4"]) .route.e33:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p33[data-h="5"]) .route.e33:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p33[data-h="b"]) .route.e33:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p33[data-h="n"]) .route.e33:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p34) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p34) :is(.count,.lab,.origin):not(.e34){opacity:.1}
 svg:has(:focus-visible>.p34) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(:focus-visible>.p35) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
+svg:has(:focus-visible>.p34) .route.e34{opacity:1}
+svg:has(:focus-visible>.p34[data-h="0"]) .route.e34:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p34[data-h="1"]) .route.e34:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p34[data-h="2"]) .route.e34:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p34[data-h="3"]) .route.e34:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p34[data-h="4"]) .route.e34:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p34[data-h="5"]) .route.e34:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p34[data-h="b"]) .route.e34:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p34[data-h="n"]) .route.e34:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p35) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p35) :is(.count,.lab,.origin):not(.e35){opacity:.1}
 svg:has(:focus-visible>.p35) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(:focus-visible>.p36) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
+svg:has(:focus-visible>.p35) .route.e35{opacity:1}
+svg:has(:focus-visible>.p35[data-h="0"]) .route.e35:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p35[data-h="1"]) .route.e35:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p35[data-h="2"]) .route.e35:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p35[data-h="3"]) .route.e35:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p35[data-h="4"]) .route.e35:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p35[data-h="5"]) .route.e35:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p35[data-h="b"]) .route.e35:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p35[data-h="n"]) .route.e35:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p36) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p36) :is(.count,.lab,.origin):not(.e36){opacity:.1}
 svg:has(:focus-visible>.p36) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(:focus-visible>.p37) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
+svg:has(:focus-visible>.p36) .route.e36{opacity:1}
+svg:has(:focus-visible>.p36[data-h="0"]) .route.e36:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p36[data-h="1"]) .route.e36:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p36[data-h="2"]) .route.e36:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p36[data-h="3"]) .route.e36:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p36[data-h="4"]) .route.e36:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p36[data-h="5"]) .route.e36:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p36[data-h="b"]) .route.e36:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p36[data-h="n"]) .route.e36:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p37) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p37) :is(.count,.lab,.origin):not(.e37){opacity:.1}
 svg:has(:focus-visible>.p37) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(:focus-visible>.p38) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
+svg:has(:focus-visible>.p37) .route.e37{opacity:1}
+svg:has(:focus-visible>.p37[data-h="0"]) .route.e37:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p37[data-h="1"]) .route.e37:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p37[data-h="2"]) .route.e37:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p37[data-h="3"]) .route.e37:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p37[data-h="4"]) .route.e37:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p37[data-h="5"]) .route.e37:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p37[data-h="b"]) .route.e37:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p37[data-h="n"]) .route.e37:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p38) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p38) :is(.count,.lab,.origin):not(.e38){opacity:.1}
 svg:has(:focus-visible>.p38) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(:focus-visible>.p39) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
+svg:has(:focus-visible>.p38) .route.e38{opacity:1}
+svg:has(:focus-visible>.p38[data-h="0"]) .route.e38:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p38[data-h="1"]) .route.e38:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p38[data-h="2"]) .route.e38:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p38[data-h="3"]) .route.e38:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p38[data-h="4"]) .route.e38:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p38[data-h="5"]) .route.e38:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p38[data-h="b"]) .route.e38:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p38[data-h="n"]) .route.e38:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p39) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p39) :is(.count,.lab,.origin):not(.e39){opacity:.1}
 svg:has(:focus-visible>.p39) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(:focus-visible>.p40) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
+svg:has(:focus-visible>.p39) .route.e39{opacity:1}
+svg:has(:focus-visible>.p39[data-h="0"]) .route.e39:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p39[data-h="1"]) .route.e39:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p39[data-h="2"]) .route.e39:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p39[data-h="3"]) .route.e39:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p39[data-h="4"]) .route.e39:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p39[data-h="5"]) .route.e39:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p39[data-h="b"]) .route.e39:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p39[data-h="n"]) .route.e39:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p40) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p40) :is(.count,.lab,.origin):not(.e40){opacity:.1}
 svg:has(:focus-visible>.p40) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(:focus-visible>.p41) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
+svg:has(:focus-visible>.p40) .route.e40{opacity:1}
+svg:has(:focus-visible>.p40[data-h="0"]) .route.e40:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p40[data-h="1"]) .route.e40:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p40[data-h="2"]) .route.e40:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p40[data-h="3"]) .route.e40:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p40[data-h="4"]) .route.e40:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p40[data-h="5"]) .route.e40:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p40[data-h="b"]) .route.e40:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p40[data-h="n"]) .route.e40:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p41) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p41) :is(.count,.lab,.origin):not(.e41){opacity:.1}
 svg:has(:focus-visible>.p41) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(:focus-visible>.p42) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
+svg:has(:focus-visible>.p41) .route.e41{opacity:1}
+svg:has(:focus-visible>.p41[data-h="0"]) .route.e41:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p41[data-h="1"]) .route.e41:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p41[data-h="2"]) .route.e41:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p41[data-h="3"]) .route.e41:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p41[data-h="4"]) .route.e41:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p41[data-h="5"]) .route.e41:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p41[data-h="b"]) .route.e41:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p41[data-h="n"]) .route.e41:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p42) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p42) :is(.count,.lab,.origin):not(.e42){opacity:.1}
 svg:has(:focus-visible>.p42) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(:focus-visible>.p43) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
+svg:has(:focus-visible>.p42) .route.e42{opacity:1}
+svg:has(:focus-visible>.p42[data-h="0"]) .route.e42:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p42[data-h="1"]) .route.e42:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p42[data-h="2"]) .route.e42:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p42[data-h="3"]) .route.e42:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p42[data-h="4"]) .route.e42:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p42[data-h="5"]) .route.e42:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p42[data-h="b"]) .route.e42:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p42[data-h="n"]) .route.e42:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p43) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p43) :is(.count,.lab,.origin):not(.e43){opacity:.1}
 svg:has(:focus-visible>.p43) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(:focus-visible>.p44) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
+svg:has(:focus-visible>.p43) .route.e43{opacity:1}
+svg:has(:focus-visible>.p43[data-h="0"]) .route.e43:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p43[data-h="1"]) .route.e43:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p43[data-h="2"]) .route.e43:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p43[data-h="3"]) .route.e43:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p43[data-h="4"]) .route.e43:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p43[data-h="5"]) .route.e43:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p43[data-h="b"]) .route.e43:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p43[data-h="n"]) .route.e43:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p44) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p44) :is(.count,.lab,.origin):not(.e44){opacity:.1}
 svg:has(:focus-visible>.p44) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(:focus-visible>.p45) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
+svg:has(:focus-visible>.p44) .route.e44{opacity:1}
+svg:has(:focus-visible>.p44[data-h="0"]) .route.e44:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p44[data-h="1"]) .route.e44:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p44[data-h="2"]) .route.e44:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p44[data-h="3"]) .route.e44:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p44[data-h="4"]) .route.e44:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p44[data-h="5"]) .route.e44:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p44[data-h="b"]) .route.e44:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p44[data-h="n"]) .route.e44:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p45) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p45) :is(.count,.lab,.origin):not(.e45){opacity:.1}
 svg:has(:focus-visible>.p45) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(:focus-visible>.p46) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
+svg:has(:focus-visible>.p45) .route.e45{opacity:1}
+svg:has(:focus-visible>.p45[data-h="0"]) .route.e45:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p45[data-h="1"]) .route.e45:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p45[data-h="2"]) .route.e45:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p45[data-h="3"]) .route.e45:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p45[data-h="4"]) .route.e45:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p45[data-h="5"]) .route.e45:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p45[data-h="b"]) .route.e45:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p45[data-h="n"]) .route.e45:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p46) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p46) :is(.count,.lab,.origin):not(.e46){opacity:.1}
 svg:has(:focus-visible>.p46) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(:focus-visible>.p47) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
+svg:has(:focus-visible>.p46) .route.e46{opacity:1}
+svg:has(:focus-visible>.p46[data-h="0"]) .route.e46:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p46[data-h="1"]) .route.e46:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p46[data-h="2"]) .route.e46:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p46[data-h="3"]) .route.e46:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p46[data-h="4"]) .route.e46:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p46[data-h="5"]) .route.e46:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p46[data-h="b"]) .route.e46:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p46[data-h="n"]) .route.e46:not(.bypass,.mutual){--c:var(--hn)}
+svg:has(:focus-visible>.p47) :is(.w,.junction){opacity:.1}
+svg:has(:focus-visible>.p47) :is(.count,.lab,.origin):not(.e47){opacity:.1}
 svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
+svg:has(:focus-visible>.p47) .route.e47{opacity:1}
+svg:has(:focus-visible>.p47[data-h="0"]) .route.e47:not(.bypass,.mutual){--c:var(--h0)}
+svg:has(:focus-visible>.p47[data-h="1"]) .route.e47:not(.bypass,.mutual){--c:var(--h1)}
+svg:has(:focus-visible>.p47[data-h="2"]) .route.e47:not(.bypass,.mutual){--c:var(--h2)}
+svg:has(:focus-visible>.p47[data-h="3"]) .route.e47:not(.bypass,.mutual){--c:var(--h3)}
+svg:has(:focus-visible>.p47[data-h="4"]) .route.e47:not(.bypass,.mutual){--c:var(--h4)}
+svg:has(:focus-visible>.p47[data-h="5"]) .route.e47:not(.bypass,.mutual){--c:var(--h5)}
+svg:has(:focus-visible>.p47[data-h="b"]) .route.e47:not(.bypass,.mutual){--c:var(--hb)}
+svg:has(:focus-visible>.p47[data-h="n"]) .route.e47:not(.bypass,.mutual){--c:var(--hn)}
 
 </style>
 </head>
@@ -447,7 +1459,7 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
   <div class="drawhead"><h2>/abbd의 안 <span class="muted key">FEAT-0001</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="1316" height="508" viewBox="0 0 1316 508" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker><marker id="m-dep-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h5); stroke-width: 1.6"/></marker><marker id="m-dep-n" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hn); stroke-width: 1.6"/></marker><marker id="m-use-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h0)"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><marker id="m-use-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h2)"/></marker><marker id="m-use-4" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h4)"/></marker><marker id="m-use-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h5)"/></marker><marker id="m-use-n" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--hn)"/></marker><mask id="xd79a649a0b236619" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="230" y="399" width="8" height="6"/><rect x="321" y="399" width="8" height="6"/></mask><mask id="x7ebe66dfa752498a" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="321" y="271" width="8" height="6"/><rect x="369" y="271" width="8" height="6"/><rect x="455" y="271" width="8" height="6"/></mask><mask id="xcc578c8025bcb239" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="879" y="407" width="8" height="6"/></mask><mask id="x2980e3085ad2b1af" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="378" y="439" width="8" height="6"/><rect x="487" y="439" width="8" height="6"/><rect x="558" y="439" width="8" height="6"/><rect x="647" y="439" width="8" height="6"/></mask><mask id="x2a04c1ce5bdb3556" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="487" y="415" width="8" height="6"/><rect x="699" y="415" width="8" height="6"/></mask></defs>
+<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker><marker id="m-dep-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h5); stroke-width: 1.6"/></marker><marker id="m-dep-n" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hn); stroke-width: 1.6"/></marker><marker id="m-use-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h0)"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><marker id="m-use-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h2)"/></marker><marker id="m-use-4" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h4)"/></marker><marker id="m-use-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h5)"/></marker><marker id="m-use-n" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--hn)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker><mask id="xd79a649a0b236619" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="230" y="399" width="8" height="6"/><rect x="321" y="399" width="8" height="6"/></mask><mask id="x7ebe66dfa752498a" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="321" y="271" width="8" height="6"/><rect x="369" y="271" width="8" height="6"/><rect x="455" y="271" width="8" height="6"/></mask><mask id="xcc578c8025bcb239" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="879" y="407" width="8" height="6"/></mask><mask id="x2980e3085ad2b1af" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="378" y="439" width="8" height="6"/><rect x="487" y="439" width="8" height="6"/><rect x="558" y="439" width="8" height="6"/><rect x="647" y="439" width="8" height="6"/></mask><mask id="x2a04c1ce5bdb3556" maskUnits="userSpaceOnUse" x="0" y="0" width="1316" height="508"><rect width="1316" height="508" fill="#fff"/><rect x="487" y="415" width="8" height="6"/><rect x="699" y="415" width="8" height="6"/></mask></defs>
 <rect class="frame" x="6" y="18" width="1304" height="472" rx="8"/>
 <path class="w depends_on e0 e19" d="M1075 362 L1075 394 L1255 394 L1255 470" data-origin="inferred" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
 건너는 것: skill handoff (판독) 1/1
@@ -541,6 +1553,25 @@ CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via con
 건너는 것: query first (판독) 1/2
 plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries named.&#34;</title></path><text class="count e1 e2 e21" x="496" y="306">×2</text>
 <circle class="junction consumes back e3 e16 e17" data-h="2" cx="341" cy="62" r="3"/><circle class="junction depends_on e1 e2 e20" data-h="0" cx="459" cy="266" r="3"/><circle class="junction depends_on e1 e5 e21" data-h="n" cx="553" cy="274" r="3"/><circle class="junction depends_on e1 e2 e21" data-h="n" cx="491" cy="282" r="3"/><circle class="junction consumes e5 e7 e11" data-h="5" cx="234" cy="394" r="3"/><circle class="junction consumes e4 e14 e15" data-h="4" cx="883" cy="402" r="3"/><circle class="junction consumes e6 e7 e8 e18" data-h="0" cx="703" cy="410" r="3"/><circle class="junction consumes e6 e7 e8 e18" data-h="0" cx="900" cy="410" r="3"/><circle class="junction consumes e3 e4 e15" data-h="n" cx="769" cy="418" r="3"/><circle class="junction consumes e1 e9 e10 e12 e13" data-h="1" cx="491" cy="434" r="3"/><circle class="junction consumes e1 e9 e10 e12 e13" data-h="1" cx="562" cy="434" r="3"/><circle class="junction consumes e5 e6 e7" data-h="n" cx="284" cy="442" r="3"/>
+<path class="route depends_on e0 e19" d="M1075 362 L1075 394 L1255 394 L1255 470" data-h="3" marker-end="url(#r-dep)"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</title></path><path class="route consumes e1 e9" d="M491 370 L491 434 L382 434 L382 470" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;</title></path><path class="route consumes e1 e10" d="M491 370 L491 470" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;</title></path><path class="route consumes e1 e12" d="M491 370 L491 434 L562 434 L562 470" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;</title></path><path class="route consumes e1 e13" d="M491 370 L491 434 L651 434 L651 470" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><path class="route depends_on e1 e2" d="M459 242 L459 282 L491 282 L491 310" data-h="0" marker-end="url(#r-dep)"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries named.&#34;</title></path><path class="route depends_on e2 e20" d="M459 242 L459 266 L373 266 L373 402 L168 402 L168 470" data-h="0" marker-end="url(#r-dep)"><title>/abbd read the code through pstack depends_on pstack (external) (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><path class="route depends_on e2 e3" d="M376 150 L376 158 L459 158 L459 182" data-h="2" marker-end="url(#r-dep)"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><path class="route consumes e3 e15" d="M325 150 L325 418 L769 418 L769 470" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --phrase \&#34;&lt;PHRASE&gt;\&#34; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="route consumes back e3 e16" d="M341 90 L341 38" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd record unit (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="route consumes back e3 e17" d="M341 90 L341 62 L449 62 L449 38" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><path class="route consumes e4 e14" d="M883 370 L883 402 L1139 402 L1139 470" data-h="4" marker-end="url(#r-use)"><title>/abbd what the human states consumes abbd record fact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;</title></path><path class="route consumes e4 e15" d="M883 370 L883 418 L769 418 L769 470" data-h="4" marker-end="url(#r-use)"><title>/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><path class="route consumes e5 e7" d="M234 362 L234 442 L284 442 L284 470" data-h="5" marker-end="url(#r-use)"><title>/abbd after work consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="route consumes e5 e11" d="M234 362 L234 394 L51 394 L51 470" data-h="5" marker-end="url(#r-use)"><title>/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="route consumes e6 e7" d="M703 370 L703 442 L284 442 L284 470" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="route consumes e6 e8" d="M703 370 L703 410 L900 410 L900 470" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;</title></path><path class="route consumes e6 e18" d="M703 370 L703 410 L1014 410 L1014 470" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="route depends_on e1 e21" d="M561 38 L561 274 L553 274 L553 282 L491 282 L491 310" data-h="1" marker-end="url(#r-dep)"><title>CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독</title></path><path class="route depends_on e5 e21" d="M561 38 L561 274 L242 274 L242 318" data-h="5" marker-end="url(#r-dep)"><title>CLAUDE.md abbd block depends_on /abbd after work (via convention), 판독</title></path>
 <a href="#f-FEAT-0001--FEAT-0003"><g class="box inner p0 n0 n19" data-id="FEAT-0003" data-h="3"><title>FEAT-0003 /abbd ground rules: Sets what the blueprint is, that the abbd lever never judges, that the skill sits under any mode, that setup must run first, and how to weigh a fact by its origin.</title><rect x="993" y="318" width="164" height="44" rx="6"/><path class="bar" d="M994 323 V357"/><text class="name" x="1001" y="337">/abbd ground rules</text><text class="sub" x="1001" y="354">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0004"><g class="box inner p1 n1 n2 n9 n10 n12 n13 n21" data-id="FEAT-0004" data-h="1"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="389" y="310" width="204" height="60" rx="6"/><path class="bar" d="M390 315 V365"/><text class="name" x="397" y="329">/abbd ask the blueprint</text><text class="name" x="397" y="345">before the code</text><text class="sub" x="397" y="362">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0005"><g class="box inner p2 n1 n2 n3 n20" data-id="FEAT-0005" data-h="0"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="373" y="182" width="172" height="60" rx="6"/><path class="bar" d="M374 187 V237"/><text class="name" x="381" y="201">/abbd read the</text><text class="name" x="381" y="217">code through pstack</text><text class="sub" x="381" y="234">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0006"><g class="box inner p3 n2 n3 n15 n16 n17" data-id="FEAT-0006" data-h="2"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="262" y="90" width="158" height="60" rx="6"/><path class="bar" d="M263 95 V145"/><text class="name" x="270" y="109">/abbd record what</text><text class="name" x="270" y="125">a reader found</text><text class="sub" x="270" y="142">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0007"><g class="box inner p4 n4 n14 n15" data-id="FEAT-0007" data-h="4"><title>FEAT-0007 /abbd what the human states: Records a purpose, responsibility or coupling the human states, with a source reference.</title><rect x="813" y="310" width="140" height="60" rx="6"/><path class="bar" d="M814 315 V365"/><text class="name" x="821" y="329">/abbd what the</text><text class="name" x="821" y="345">human states</text><text class="sub" x="821" y="362">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0008"><g class="box inner p5 n5 n7 n11 n21" data-id="FEAT-0008" data-h="5"><title>FEAT-0008 /abbd after work: Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.</title><rect x="159" y="318" width="150" height="44" rx="6"/><path class="bar" d="M160 323 V357"/><text class="name" x="167" y="337">/abbd after work</text><text class="sub" x="167" y="354">기능</text></g></a><a href="#f-FEAT-0001--FEAT-0009"><g class="box inner p6 n6 n7 n8 n18" data-id="FEAT-0009" data-h="0"><title>FEAT-0009 /abbd evidence and CI gate: Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.</title><rect x="633" y="310" width="140" height="60" rx="6"/><path class="bar" d="M634 315 V365"/><text class="name" x="641" y="329">/abbd evidence</text><text class="name" x="641" y="345">and CI gate</text><text class="sub" x="641" y="362">기능</text></g></a>
 <g class="port design entry p7 n5 n6 n7" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="247" y="470" width="75" height="17" rx="3"/><text class="chip" x="247" dx="4" y="470" dy="12.5">abbd diff</text></g><g class="port design entry p8 n6 n8" data-id="port|IF-0002false"><title>이 모듈이 쓰는 계약: abbd evidence</title><rect x="849" y="470" width="103" height="17" rx="3"/><text class="chip" x="849" dx="4" y="470" dy="12.5">abbd evidence</text></g><g class="port design entry p9 n1 n9" data-id="port|IF-0003false"><title>이 모듈이 쓰는 계약: abbd status</title><rect x="326" y="470" width="89" height="17" rx="3"/><text class="chip" x="326" dx="4" y="470" dy="12.5">abbd status</text></g><g class="port design entry p10 n1 n10" data-id="port|IF-0004false"><title>이 모듈이 쓰는 계약: abbd impact</title><rect x="419" y="470" width="91" height="17" rx="3"/><text class="chip" x="419" dx="4" y="470" dy="12.5">abbd impact</text></g><g class="port design entry p11 n5 n11" data-id="port|IF-0006false"><title>이 모듈이 쓰는 계약: abbd sync</title><rect x="14" y="470" width="75" height="17" rx="3"/><text class="chip" x="14" dx="4" y="470" dy="12.5">abbd sync</text></g><g class="port design entry p12 n1 n12" data-id="port|IF-0007false"><title>이 모듈이 쓰는 계약: abbd explain</title><rect x="514" y="470" width="96" height="17" rx="3"/><text class="chip" x="514" dx="4" y="470" dy="12.5">abbd explain</text></g><g class="port design entry p13 n1 n13" data-id="port|IF-0008false"><title>이 모듈이 쓰는 계약: abbd path</title><rect x="614" y="470" width="75" height="17" rx="3"/><text class="chip" x="614" dx="4" y="470" dy="12.5">abbd path</text></g><g class="port design entry p14 n4 n14" data-id="port|IF-0009false"><title>이 모듈이 쓰는 계약: abbd record fact</title><rect x="1077" y="470" width="124" height="17" rx="3"/><text class="chip" x="1077" dx="4" y="470" dy="12.5">abbd record fact</text></g><g class="port design entry p15 n3 n4 n15" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="693" y="470" width="152" height="17" rx="3"/><text class="chip" x="693" dx="4" y="470" dy="12.5">abbd record relation</text></g><g class="port design entry p16 n3 n16" data-id="port|IF-0011false"><title>이 모듈이 쓰는 계약: abbd record unit</title><rect x="263" y="21" width="124" height="17" rx="3"/><text class="chip" x="263" dx="4" y="21" dy="12.5">abbd record unit</text></g><g class="port design entry p17 n3 n17" data-id="port|IF-0013false"><title>이 모듈이 쓰는 계약: abbd understand</title><rect x="391" y="21" width="117" height="17" rx="3"/><text class="chip" x="391" dx="4" y="21" dy="12.5">abbd understand</text></g><g class="port design entry p18 n6 n18" data-id="port|IF-0014false"><title>이 모듈이 쓰는 계약: abbd exit codes</title><rect x="956" y="470" width="117" height="17" rx="3"/><text class="chip" x="956" dx="4" y="470" dy="12.5">abbd exit codes</text></g><a href="FEAT-0002.html"><g class="port other entry p19 n0 n19" data-id="port|FEAT-0002false"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="1205" y="470" width="101" height="17" rx="3"/><text class="chip" x="1205" dx="4" y="470" dy="12.5">→ abbd-setup</text></g></a><a href="MOD-0055.html"><g class="port other entry p20 n2 n20" data-id="port|MOD-0055false"><title>계약 없이 pstack (external)와 닿는 곳</title><rect x="93" y="470" width="150" height="17" rx="3"/><text class="chip" x="93" dx="4" y="470" dy="12.5">→ pstack (external)</text></g></a><a href="MOD-0001.html"><g class="port other exit p21 n1 n5 n21" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="512" y="21" width="93" height="17" rx="3"/><text class="chip" x="512" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
 </svg></div>
@@ -582,7 +1613,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries nam
   <div class="drawhead"><h2>/abbd 둘레 <span class="muted key">FEAT-0001</span></h2><div class="views"><span class="muted">모듈과 계약에서 고른 상자</span> <a href="index.html">전체 그림으로</a> <a href="#m-FEAT-0001">/abbd의 안으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="592" height="300" viewBox="0 0 592 300" role="img" aria-label="모듈과 계약">
-<defs><marker id="m-dep-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hb); stroke-width: 1.6"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker></defs>
+<defs><marker id="m-dep-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hb); stroke-width: 1.6"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 
 <path class="w contract e0 e2" d="M332 188 L332 196 L460 196 L460 224" data-origin="extracted" data-h="1" marker-end="url(#m-use-1)"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd lint 계약을 거쳐 씁니다
 건너는 것: blast radius (판독) 1/34, coupling and phrase (판독) 1/34, coupling chain (판독) 1/34, diff --check (판독) 2/34, exit code (판독) 2/34, file grid (판독) 1/34, flow steps (판독) 1/34, found coupling (판독) 1/34, fresh quotes (판독) 1/34, how&#39;s text (판독) 1/34, human&#39;s own words (판독) 1/34, module text (판독) 1/34, quote listing (판독) 1/34, route between units (판독) 1/34, stack layers (판독) 1/34, stale note (판독) 1/34, state freshness (판독) 1/34, stated coupling (판독) 1/34, stated purpose (판독) 1/34, status --check (판독) 1/34, sync then diff (판독) 2/34, unit account (판독) 1/34, unit the script misses (판독) 1/34, unit&#39;s couplings (판독) 1/34, units a change hits (판독) 1/34, unseen unit (판독) 1/34, wrong claim (판독) 1/34</title></path><text class="lab said e0 e2" data-h="1" x="396" y="208" text-anchor="middle">diff --check 등</text><path class="w bypass e0 e1" d="M263 188 L263 196 L99 196 L99 224" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독
@@ -591,6 +1622,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries nam
 건너는 것: skill handoff (판독) 1/1</title></path><circle class="origin inferred e0 e1" cx="263" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e1" data-h="b" x="214" y="114" text-anchor="middle">skill handoff</text><path class="w bypass e0 e2" d="M328 92 L328 128" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 건너는 것: /abbd pointer (판독) 1/3, query first (판독) 1/3, sync then diff (판독) 1/3</title></path><circle class="origin inferred e0 e2" cx="328" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e2" data-h="b" x="387" y="114" text-anchor="middle">/abbd pointer 등</text>
 
+<path class="route contract e0 e2" d="M332 188 L332 196 L460 196 L460 224" data-h="1" marker-end="url(#r-use)"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd lint 계약을 거쳐 씁니다</title></path><path class="route bypass e0 e1" d="M263 188 L263 196 L99 196 L99 224" data-h="b" marker-end="url(#r-dep)"><title>/abbd → /abbd-setup: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="route bypass e0 e3" d="M320 188 L320 224" data-h="b" marker-end="url(#r-dep)"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독</title></path><path class="route bypass e0 e1" d="M263 92 L263 128" data-h="b" marker-end="url(#r-dep)"><title>/abbd-setup → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path><path class="route bypass e0 e2" d="M328 92 L328 128" data-h="b" marker-end="url(#r-dep)"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독</title></path>
 <a href="#m-FEAT-0001"><g class="box design focus p0 n0 n1 n2 n3" data-id="FEAT-0001" data-h="1"><title>FEAT-0001 /abbd. 누르면 이 모듈의 안을 봅니다</title><rect x="221" y="128" width="150" height="60" rx="6"/><path class="bar" d="M222 133 V183"/><text class="name" x="296" y="163" text-anchor="middle">/abbd</text></g></a><a href="FEAT-0002.html#f-overview--FEAT-0002"><g class="box design p1 n0 n1" data-id="FEAT-0002" data-h="3"><title>FEAT-0002 /abbd-setup. 누르면 이 모듈을 중심으로 봅니다</title><rect x="126" y="32" width="150" height="60" rx="6"/><path class="bar" d="M127 37 V87"/><text class="name" x="201" y="67" text-anchor="middle">/abbd-setup</text></g></a><a href="FEAT-0002.html#f-overview--FEAT-0002"><g class="box design twin p1 n0 n1" data-id="FEAT-0002↓" data-h="3"><title>FEAT-0002 /abbd-setup
 서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="224" width="150" height="60" rx="6"/><path class="bar" d="M25 229 V279"/><text class="name" x="99" y="259" text-anchor="middle">/abbd-setup</text></g></a><a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p2 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="316" y="32" width="150" height="60" rx="6"/><path class="bar" d="M317 37 V87"/><text class="name" x="391" y="67" text-anchor="middle">abbd CLI</text></g></a><a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design twin p2 n0 n2" data-id="MOD-0001↓" data-h="0"><title>MOD-0001 abbd CLI
 서로 쓰는 상자라 위와 아래에 한 번씩 그렸습니다. 누르면 이 모듈을 중심으로 봅니다</title><rect x="418" y="224" width="150" height="60" rx="6"/><path class="bar" d="M419 229 V279"/><text class="name" x="493" y="259" text-anchor="middle">abbd CLI</text></g></a><a href="MOD-0055.html#f-overview--MOD-0055"><g class="box design p3 n0 n3" data-id="MOD-0055" data-h="0"><title>MOD-0055 pstack (external). 누르면 이 모듈을 중심으로 봅니다</title><rect x="214" y="224" width="164" height="60" rx="6"/><path class="bar" d="M215 229 V279"/><text class="name" x="296" y="259" text-anchor="middle">pstack (external)</text></g></a>
@@ -617,12 +1649,14 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries nam
   <div class="drawhead"><h2>/abbd ground rules 둘레 <span class="muted key">FEAT-0003</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="168" viewBox="0 0 360 168" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker></defs>
+<defs><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="348" height="132" rx="8"/>
 <path class="w depends_on e0 e1" d="M180 106 L180 130" data-origin="inferred" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
 건너는 것: skill handoff (판독) 1/1
 plugins/abbd/skills/abbd/SKILL.md &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</title></path><circle class="origin inferred e0 e1" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
 
+<path class="route depends_on e0 e1" d="M180 106 L180 130" data-h="3" marker-end="url(#r-dep)"><title>/abbd ground rules depends_on /abbd-setup (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;If the repository has no `.abbd/`, run the abbd-setup skill first.&#34;</title></path>
 <g class="box inner focus p0 n0 n1" data-id="FEAT-0003" data-h="3"><title>FEAT-0003 /abbd ground rules: Sets what the blueprint is, that the abbd lever never judges, that the skill sits under any mode, that setup must run first, and how to weigh a fact by its origin.</title><rect x="98" y="62" width="164" height="44" rx="4"/><path class="bar" d="M99 67 V101"/><text class="name" x="106" y="81">/abbd ground rules</text><text class="sub" x="106" y="98">기능</text></g>
 <a href="FEAT-0002.html"><g class="port other entry p1 n0 n1" data-id="port|FEAT-0002false"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="130" y="130" width="101" height="17" rx="3"/><text class="chip" x="130" dx="4" y="130" dy="12.5">→ abbd-setup</text></g></a>
 </svg></div>
@@ -644,7 +1678,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;If the repository has no `.abbd/`, run th
   <div class="drawhead"><h2>/abbd ask the blueprint before the code 둘레 <span class="muted key">FEAT-0004</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="424" height="288" viewBox="0 0 424 288" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker></defs>
+<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="412" height="252" rx="8"/>
 <path class="w consumes e0 e2" d="M212 238 L212 250" data-h="1" marker-end="url(#m-use-1)"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
 건너는 것: state freshness (판독) 1/1
@@ -666,6 +1700,12 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd impact &lt;QUERIES&gt;`: what a cha
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><circle class="origin inferred e0 e2 e3 e4 e5" cx="212" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e2 e3 e4 e5" cx="212" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e2 e3 e4 e5" cx="212" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e2 e3 e4 e5" cx="212" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e2 e3 e4 e5" x="191" y="226">×4</text>
 <circle class="junction consumes e0 e2 e3 e4 e5" data-h="1" cx="212" cy="238" r="3"/><circle class="junction consumes e0 e2 e3 e4 e5" data-h="1" cx="271" cy="238" r="3"/><circle class="junction consumes e0 e2 e3 e4 e5" data-h="1" cx="333" cy="238" r="3"/>
+<path class="route consumes e0 e2" d="M212 214 L212 250" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd status (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd status` if you need to know whether the state matches the working tree.&#34;</title></path><path class="route consumes e0 e3" d="M212 214 L212 238 L271 238 L271 250" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd impact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd impact &lt;QUERIES&gt;`: what a change to those comma-separated units reaches.&#34;</title></path><path class="route consumes e0 e4" d="M212 214 L212 238 L333 238 L333 250" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd explain (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd explain &lt;QUERY&gt;`: one unit at a glance&#34;</title></path><path class="route consumes e0 e5" d="M212 214 L212 238 L388 238 L388 250" data-h="1" marker-end="url(#r-use)"><title>/abbd ask the blueprint before the code consumes abbd path (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two units connect&#34;</title></path><path class="route depends_on e0 e1" d="M165 122 L165 154" data-h="0" marker-end="url(#r-dep)"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries named.&#34;</title></path><path class="route depends_on e0 e6" d="M212 38 L212 154" data-h="1" marker-end="url(#r-dep)"><title>CLAUDE.md abbd block depends_on /abbd ask the blueprint before the code (via convention), 판독</title></path>
 <g class="box inner focus p0 n0 n1 n2 n3 n4 n5 n6" data-id="FEAT-0004" data-h="1"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="110" y="154" width="204" height="60" rx="4"/><path class="bar" d="M111 159 V209"/><text class="name" x="118" y="173">/abbd ask the blueprint</text><text class="name" x="118" y="189">before the code</text><text class="sub" x="118" y="206">기능</text></g><a href="#f-FEAT-0001--FEAT-0005"><g class="box inner p1 n0 n1" data-id="FEAT-0005" data-h="0"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="24" y="62" width="172" height="60" rx="6"/><path class="bar" d="M25 67 V117"/><text class="name" x="32" y="81">/abbd read the</text><text class="name" x="32" y="97">code through pstack</text><text class="sub" x="32" y="114">기능</text></g></a>
 <g class="port design entry p2 n0 n2" data-id="port|IF-0003false"><title>이 모듈이 쓰는 계약: abbd status</title><rect x="185" y="250" width="54" height="17" rx="3"/><text class="chip" x="185" dx="4" y="250" dy="12.5">status</text></g><g class="port design entry p3 n0 n3" data-id="port|IF-0004false"><title>이 모듈이 쓰는 계약: abbd impact</title><rect x="243" y="250" width="56" height="17" rx="3"/><text class="chip" x="243" dx="4" y="250" dy="12.5">impact</text></g><g class="port design entry p4 n0 n4" data-id="port|IF-0007false"><title>이 모듈이 쓰는 계약: abbd explain</title><rect x="303" y="250" width="61" height="17" rx="3"/><text class="chip" x="303" dx="4" y="250" dy="12.5">explain</text></g><g class="port design entry p5 n0 n5" data-id="port|IF-0008false"><title>이 모듈이 쓰는 계약: abbd path</title><rect x="368" y="250" width="40" height="17" rx="3"/><text class="chip" x="368" dx="4" y="250" dy="12.5">path</text></g><a href="MOD-0001.html"><g class="port other exit p6 n0 n6" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="166" y="21" width="93" height="17" rx="3"/><text class="chip" x="166" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
 </svg></div>
@@ -687,7 +1727,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd path &lt;A&gt; &lt;B&gt;`: how two 
   <div class="drawhead"><h2>/abbd read the code through pstack 둘레 <span class="muted key">FEAT-0005</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="488" height="368" viewBox="0 0 488 368" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker></defs>
+<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="476" height="332" rx="8"/>
 <path class="w depends_on e0 e1" d="M166 214 L166 246" data-origin="inferred" data-h="0" marker-end="url(#m-dep-0)"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
 plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries named.&#34;</title></path><circle class="origin inferred e0 e1" cx="166" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab e0 e1" data-h="0" x="188" y="234" text-anchor="middle">데이터</text><path class="w depends_on e1 e3" d="M244 214 L244 330" data-origin="inferred" data-h="0" marker-end="url(#m-dep-0)"><title>/abbd read the code through pstack depends_on pstack (external) (via call), 판독
@@ -695,6 +1735,10 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries nam
 plugins/abbd/skills/abbd/SKILL.md &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><circle class="origin inferred e1 e3" cx="244" cy="214" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e3" data-h="0" x="299" y="276" text-anchor="middle">blast radius 등</text><path class="w depends_on e1 e2" d="M244 122 L244 154" data-origin="inferred" data-h="2" marker-end="url(#m-dep-2)"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
 plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><circle class="origin inferred e1 e2" cx="244" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab e1 e2" data-h="2" x="266" y="142" text-anchor="middle">데이터</text>
 
+<path class="route depends_on e0 e1" d="M166 214 L166 246" data-h="0" marker-end="url(#r-dep)"><title>/abbd read the code through pstack depends_on /abbd ask the blueprint before the code (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Start them from the units the queries named.&#34;</title></path><path class="route depends_on e1 e3" d="M244 214 L244 330" data-h="0" marker-end="url(#r-dep)"><title>/abbd read the code through pstack depends_on pstack (external) (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;follow `&lt;pstack&gt;/skills/how/SKILL.md` unchanged&#34;</title></path><path class="route depends_on e1 e2" d="M244 122 L244 154" data-h="2" marker-end="url(#r-dep)"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path>
 <a href="#f-FEAT-0001--FEAT-0004"><g class="box inner p0 n0 n1" data-id="FEAT-0004" data-h="1"><title>FEAT-0004 /abbd ask the blueprint before the code: Before work, opens the blueprint for the modules involved and answers the question through status, explain, path and impact queries.</title><rect x="24" y="246" width="204" height="60" rx="6"/><path class="bar" d="M25 251 V301"/><text class="name" x="32" y="265">/abbd ask the blueprint</text><text class="name" x="32" y="281">before the code</text><text class="sub" x="32" y="298">기능</text></g></a><g class="box inner focus p1 n0 n1 n2 n3" data-id="FEAT-0005" data-h="0"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="158" y="154" width="172" height="60" rx="4"/><path class="bar" d="M159 159 V209"/><text class="name" x="166" y="173">/abbd read the</text><text class="name" x="166" y="189">code through pstack</text><text class="sub" x="166" y="206">기능</text></g><a href="#f-FEAT-0001--FEAT-0006"><g class="box inner p2 n1 n2" data-id="FEAT-0006" data-h="2"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="165" y="62" width="158" height="60" rx="6"/><path class="bar" d="M166 67 V117"/><text class="name" x="173" y="81">/abbd record what</text><text class="name" x="173" y="97">a reader found</text><text class="sub" x="173" y="114">기능</text></g></a>
 <a href="MOD-0055.html"><g class="port other entry p3 n1 n3" data-id="port|MOD-0055false"><title>계약 없이 pstack (external)와 닿는 곳</title><rect x="169" y="330" width="150" height="17" rx="3"/><text class="chip" x="169" dx="4" y="330" dy="12.5">→ pstack (external)</text></g></a>
 </svg></div>
@@ -716,7 +1760,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader fou
   <div class="drawhead"><h2>/abbd record what a reader found 둘레 <span class="muted key">FEAT-0006</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="456" height="280" viewBox="0 0 456 280" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-use-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h2)"/></marker></defs>
+<defs><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-use-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h2)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="444" height="244" rx="8"/>
 <path class="w depends_on e0 e1" d="M157 122 L157 158" data-origin="inferred" data-h="2" marker-end="url(#m-dep-2)"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
 plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><circle class="origin inferred e0 e1" cx="157" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab e0 e1" data-h="2" x="179" y="144" text-anchor="middle">데이터</text><path class="w consumes e1 e2" d="M212 226 L212 242" data-h="2" marker-end="url(#m-use-2)"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
@@ -733,6 +1777,11 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KI
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;
 plugins/abbd/skills/abbd/SKILL.md &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path><circle class="origin inferred e1 e2 e3 e4" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e1 e2 e3 e4" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e1 e2 e3 e4" cx="212" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e1 e2 e3 e4" x="217" y="134">×3</text><text class="lab said e1 e2 e3 e4" data-h="2" x="292" y="190" text-anchor="middle">coupling and phrase 등</text>
 <circle class="junction consumes e1 e2 e3 e4" data-h="2" cx="212" cy="226" r="3"/><circle class="junction consumes e1 e2 e3 e4" data-h="2" cx="315" cy="226" r="3"/>
+<path class="route depends_on e0 e1" d="M157 122 L157 158" data-h="2" marker-end="url(#r-dep)"><title>/abbd record what a reader found depends_on /abbd read the code through pstack (via data), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Record each coupling or unit a reader found that the state lacks&#34;</title></path><path class="route consumes e1 e2" d="M212 122 L212 242" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --via &lt;VIA&gt; --phrase \&#34;&lt;PHRASE&gt;\&#34; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="route consumes e1 e3" d="M212 122 L212 226 L315 226 L315 242" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd record unit (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record unit &lt;KIND&gt; &lt;NAME&gt; --parent &lt;MOD-ID&gt; --evidence &lt;PATH:LINES:QUOTE&gt;`&#34;</title></path><path class="route consumes e1 e4" d="M212 122 L212 226 L405 226 L405 242" data-h="2" marker-end="url(#r-use)"><title>/abbd record what a reader found consumes abbd understand (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;store the new Overview and Key Concepts with `abbd understand &lt;MOD-ID&gt; &lt;FILE&gt;`&#34;</title></path>
 <a href="#f-FEAT-0001--FEAT-0005"><g class="box inner p0 n0 n1" data-id="FEAT-0005" data-h="0"><title>FEAT-0005 /abbd read the code through pstack: When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.</title><rect x="24" y="158" width="172" height="60" rx="6"/><path class="bar" d="M25 163 V213"/><text class="name" x="32" y="177">/abbd read the</text><text class="name" x="32" y="193">code through pstack</text><text class="sub" x="32" y="210">기능</text></g></a><g class="box inner focus p1 n0 n1 n2 n3 n4" data-id="FEAT-0006" data-h="2"><title>FEAT-0006 /abbd record what a reader found: Writes back couplings and units a reader found, with verbatim quotes, and refreshes a STALE module&#39;s how text.</title><rect x="149" y="62" width="158" height="60" rx="4"/><path class="bar" d="M150 67 V117"/><text class="name" x="157" y="81">/abbd record what</text><text class="name" x="157" y="97">a reader found</text><text class="sub" x="157" y="114">기능</text></g>
 <g class="port design entry p2 n1 n2" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="150" y="242" width="117" height="17" rx="3"/><text class="chip" x="150" dx="4" y="242" dy="12.5">record relation</text></g><g class="port design entry p3 n1 n3" data-id="port|IF-0011false"><title>이 모듈이 쓰는 계약: abbd record unit</title><rect x="271" y="242" width="89" height="17" rx="3"/><text class="chip" x="271" dx="4" y="242" dy="12.5">record unit</text></g><g class="port design entry p4 n1 n4" data-id="port|IF-0013false"><title>이 모듈이 쓰는 계약: abbd understand</title><rect x="364" y="242" width="82" height="17" rx="3"/><text class="chip" x="364" dx="4" y="242" dy="12.5">understand</text></g>
 </svg></div>
@@ -754,7 +1803,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;store the new Overview and Key Concepts w
   <div class="drawhead"><h2>/abbd what the human states 둘레 <span class="muted key">FEAT-0007</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="196" viewBox="0 0 360 196" role="img" aria-label="모듈의 안">
-<defs><marker id="m-use-4" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h4)"/></marker></defs>
+<defs><marker id="m-use-4" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h4)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="348" height="160" rx="8"/>
 <path class="w consumes e0 e1" d="M180 146 L180 158" data-h="4" marker-end="url(#m-use-4)"><title>/abbd what the human states consumes abbd record fact (via call), 판독
 건너는 것: human&#39;s own words (판독) 1/1
@@ -766,6 +1815,9 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KI
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path><circle class="origin inferred e0 e1 e2" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e2" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e2" x="159" y="134">×2</text>
 <circle class="junction consumes e0 e1 e2" data-h="4" cx="180" cy="146" r="3"/>
+<path class="route consumes e0 e1" d="M180 122 L180 158" data-h="4" marker-end="url(#r-use)"><title>/abbd what the human states consumes abbd record fact (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record fact &lt;ID.FIELD&gt; --value \&#34;&lt;text&gt;\&#34; --source &lt;REF&gt;`&#34;</title></path><path class="route consumes e0 e2" d="M180 122 L180 146 L287 146 L287 158" data-h="4" marker-end="url(#r-use)"><title>/abbd what the human states consumes abbd record relation (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KIND&gt; &lt;TO&gt; --source &lt;REF&gt;`&#34;</title></path>
 <g class="box inner focus p0 n0 n1 n2" data-id="FEAT-0007" data-h="4"><title>FEAT-0007 /abbd what the human states: Records a purpose, responsibility or coupling the human states, with a source reference.</title><rect x="110" y="62" width="140" height="60" rx="4"/><path class="bar" d="M111 67 V117"/><text class="name" x="118" y="81">/abbd what the</text><text class="name" x="118" y="97">human states</text><text class="sub" x="118" y="114">기능</text></g>
 <g class="port design entry p1 n0 n1" data-id="port|IF-0009false"><title>이 모듈이 쓰는 계약: abbd record fact</title><rect x="136" y="158" width="89" height="17" rx="3"/><text class="chip" x="136" dx="4" y="158" dy="12.5">record fact</text></g><g class="port design entry p2 n0 n2" data-id="port|IF-0010false"><title>이 모듈이 쓰는 계약: abbd record relation</title><rect x="229" y="158" width="117" height="17" rx="3"/><text class="chip" x="229" dx="4" y="158" dy="12.5">record relation</text></g>
 </svg></div>
@@ -787,7 +1839,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd record relation &lt;FROM&gt; &lt;KI
   <div class="drawhead"><h2>/abbd after work 둘레 <span class="muted key">FEAT-0008</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="180" viewBox="0 0 360 180" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h5); stroke-width: 1.6"/></marker><marker id="m-use-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h5)"/></marker></defs>
+<defs><marker id="m-dep-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h5); stroke-width: 1.6"/></marker><marker id="m-use-5" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h5)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="348" height="144" rx="8"/>
 <path class="w consumes e0 e1" d="M180 130 L180 142" data-h="5" marker-end="url(#m-use-5)"><title>/abbd after work consumes abbd diff (via call), 판독
 건너는 것: sync then diff (판독) 1/1
@@ -800,6 +1852,9 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blue
 plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;
 plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><circle class="origin inferred e0 e1 e2" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e2" cx="180" cy="106" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e2" x="159" y="118">×2</text>
 <circle class="junction consumes e0 e1 e2" data-h="5" cx="180" cy="130" r="3"/>
+<path class="route consumes e0 e1" d="M180 106 L180 142" data-h="5" marker-end="url(#r-use)"><title>/abbd after work consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="route consumes e0 e2" d="M180 106 L180 130 L224 130 L224 142" data-h="5" marker-end="url(#r-use)"><title>/abbd after work consumes abbd sync (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`.&#34;</title></path><path class="route depends_on e0 e3" d="M180 38 L180 62" data-h="5" marker-end="url(#r-dep)"><title>CLAUDE.md abbd block depends_on /abbd after work (via convention), 판독</title></path>
 <g class="box inner focus p0 n0 n1 n2 n3" data-id="FEAT-0008" data-h="5"><title>FEAT-0008 /abbd after work: Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.</title><rect x="105" y="62" width="150" height="44" rx="4"/><path class="bar" d="M106 67 V101"/><text class="name" x="113" y="81">/abbd after work</text><text class="sub" x="113" y="98">기능</text></g>
 <g class="port design entry p1 n0 n1" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="160" y="142" width="40" height="17" rx="3"/><text class="chip" x="160" dx="4" y="142" dy="12.5">diff</text></g><g class="port design entry p2 n0 n2" data-id="port|IF-0006false"><title>이 모듈이 쓰는 계약: abbd sync</title><rect x="204" y="142" width="40" height="17" rx="3"/><text class="chip" x="204" dx="4" y="142" dy="12.5">sync</text></g><a href="MOD-0001.html"><g class="port other exit p3 n0 n3" data-id="port|MOD-0001true"><title>계약 없이 abbd CLI와 닿는 곳</title><rect x="134" y="21" width="93" height="17" rx="3"/><text class="chip" x="134" dx="4" y="21" dy="12.5">← abbd CLI</text></g></a>
 </svg></div>
@@ -821,7 +1876,7 @@ plugins/abbd/skills/abbd/SKILL.md &#34;Run `abbd sync` so the state and the blue
   <div class="drawhead"><h2>/abbd evidence and CI gate 둘레 <span class="muted key">FEAT-0009</span></h2><div class="views"><span class="muted">/abbd의 안에서 고른 상자</span> <a href="#m-FEAT-0001">전체 그림으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="196" viewBox="0 0 360 196" role="img" aria-label="모듈의 안">
-<defs><marker id="m-use-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h0)"/></marker></defs>
+<defs><marker id="m-use-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h0)"/></marker><marker id="r-dep" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: context-stroke; stroke-width: 1.6"/></marker><marker id="r-impl" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: context-stroke; stroke-width: 1.4"/></marker><marker id="r-use" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: context-stroke"/></marker></defs>
 <rect class="frame" x="6" y="18" width="348" height="160" rx="8"/>
 <path class="w consumes e0 e1" d="M180 146 L180 158" data-h="0" marker-end="url(#m-use-0)"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
 건너는 것: diff --check (판독) 1/1
@@ -837,6 +1892,10 @@ plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contra
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;
 plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><circle class="origin inferred e0 e1 e2 e3" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e2 e3" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><circle class="origin inferred e0 e1 e2 e3" cx="180" cy="122" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="count e0 e1 e2 e3" x="159" y="134">×3</text>
 <circle class="junction consumes e0 e1 e2 e3" data-h="0" cx="180" cy="146" r="3"/><circle class="junction consumes e0 e1 e2 e3" data-h="0" cx="230" cy="146" r="3"/>
+<path class="route consumes e0 e1" d="M180 122 L180 158" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd diff (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path><path class="route consumes e0 e2" d="M180 122 L180 146 L230 146 L230 158" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd evidence (via call), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd evidence` lists each quote and whether it is live, drifted or dead.&#34;</title></path><path class="route consumes e0 e3" d="M180 122 L180 146 L309 146 L309 158" data-h="0" marker-end="url(#r-use)"><title>/abbd evidence and CI gate consumes abbd exit codes (via convention), 판독
+plugins/abbd/skills/abbd/SKILL.md &#34;`abbd diff --check` exits 1 when a contract&#39;s signature changed&#34;</title></path>
 <g class="box inner focus p0 n0 n1 n2 n3" data-id="FEAT-0009" data-h="0"><title>FEAT-0009 /abbd evidence and CI gate: Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.</title><rect x="110" y="62" width="140" height="60" rx="4"/><path class="bar" d="M111 67 V117"/><text class="name" x="118" y="81">/abbd evidence</text><text class="name" x="118" y="97">and CI gate</text><text class="sub" x="118" y="114">기능</text></g>
 <g class="port design entry p1 n0 n1" data-id="port|IF-0001false"><title>이 모듈이 쓰는 계약: abbd diff</title><rect x="152" y="158" width="40" height="17" rx="3"/><text class="chip" x="152" dx="4" y="158" dy="12.5">diff</text></g><g class="port design entry p2 n0 n2" data-id="port|IF-0002false"><title>이 모듈이 쓰는 계약: abbd evidence</title><rect x="196" y="158" width="68" height="17" rx="3"/><text class="chip" x="196" dx="4" y="158" dy="12.5">evidence</text></g><g class="port design entry p3 n0 n3" data-id="port|IF-0014false"><title>이 모듈이 쓰는 계약: abbd exit codes</title><rect x="268" y="158" width="82" height="17" rx="3"/><text class="chip" x="268" dx="4" y="158" dy="12.5">exit codes</text></g>
 </svg></div>
