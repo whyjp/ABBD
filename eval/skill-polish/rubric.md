@@ -2,7 +2,7 @@
 
 The judge compares two drawings of the same view of one repository, shown as A and B, and says for each criterion below which reads better: `A`, `B`, or `=` when it cannot tell them apart on that criterion. It gives one short reason per comparison, naming what decided it. It sees drawings by sanitized file names only, and never learns which version drew which.
 
-A `=` is an answer, not a dodge. Two drawings that differ only in ways a criterion does not cover are `=` on it. Two identical drawings are `=` on every criterion.
+A `=` is an answer, not a dodge. Two drawings that differ only in ways a criterion does not cover are `=` on it.
 
 The criteria come from `docs/blueprint-svg.md` (Decomposition, Focus views, Drawing criteria, Grouping levels) and from the user's direction: ABBD draws every relation, so a view that would be crowded is split by abstraction level into the overview, part views and single views, and each relation that matters is drawn one at a time, with clear rules for placement, bends, hubs and one-way boxes. The bar is a diagram an engineer polished by hand in draw.io.
 
@@ -29,5 +29,5 @@ The criteria come from `docs/blueprint-svg.md` (Decomposition, Focus views, Draw
 
 - `abbd lint` totals: hard breaches, target breaches, excess turns, crossings, weighed sum, placement debt, phantom pairs, climbing lines.
 - Per view: boxes, chips, drawn relations, relations per box (dense when above 2), rows, drawn width and height.
-- `shoot.py` hover findings per view: cut routes (a lit line end that touches no lit box and no lit line), stray lights (a lit box no lit line reaches), mixed routes (lines of two colours joined into one lit route), and cut line hovers (hovering one line lights a segment whose ends do not both reach a box).
+- `shoot.py` hover findings per view: cut routes (a lit line end that touches no lit box and no lit line), stray lights (a lit box or chip no lit line reaches, or a chip that stays lit on a dimmed box), mixed routes (lines of two colours joined into one lit route), and cut line hovers (hovering one line lights a segment whose ends do not both reach a box).
 - Whether `abbd lint` and `abbd status --check` exit 0 without a debt file the agent recorded to silence them.

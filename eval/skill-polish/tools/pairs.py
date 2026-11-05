@@ -12,22 +12,33 @@ meets the page of the same ID instead; IDs mean nothing across runs.
 where most views do not change. Every (set, view) is copied once into OUT under
 a random name; a view whose bytes another set shares still gets its own name,
 so a natural null stays hidden. --null NAME adds, per repo, that set's
-overview against a second copy of itself.
+overview against a near copy of itself: the drawing and its hover shots moved
+down one pixel (the bottom row drops) and encoded again, under fresh names,
+so neither the bytes nor the names give it away.
 
 OUT/pairs.tsv lists, per comparison, its id, repo, view kind and the files
 shown as A and B, with A and B drawn at random, and, when the sets hold
-hover shots from shoot.py, each side's hover shots under random names. OUT/sets.tsv lists the
-set-level comparisons by the same letters. KEY (keep it outside OUT) maps
-every file and comparison back to its set and view.
+hover shots from shoot.py, each side's hover shots under random names.
+OUT/sets.tsv lists the set-level comparisons by the same letters, and
+OUT/rubric.md is a copy of the rubric. KEY maps every file and comparison
+back to its set and view, and <KEY stem>-prompt.txt is the judge prompt.
+
+The pack is what a judge may open, so OUT must be new and the only entry of
+its parent, and KEY and every DIR must lie outside that parent.
 """
 import json
 import os
 import random
 import shutil
+import struct
 import sys
+import zlib
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+CRIT = ["c1", "c2", "c3", "c4", "c5", "c6"]
 
 args = sys.argv[1:]
-out, keyf, seed = args[0], args[1], int(args[2])
+out, keyf, seed = os.path.abspath(args[0]), os.path.abspath(args[1]), int(args[2])
 sets, pairs, nulls, changed_only, same_runs = {}, [], [], False, False
 i = 3
 while i < len(args):
@@ -45,10 +56,18 @@ while i < len(args):
         i += 2
     else:
         k, v = args[i].split("=", 1)
-        sets[k] = v
+        sets[k] = os.path.abspath(v)
         i += 1
+
+root = os.path.dirname(out)
+under = lambda p: os.path.normcase(p).startswith(os.path.normcase(root) + os.sep)
+if os.path.exists(out) or (os.path.isdir(root) and os.listdir(root)):
+    sys.exit(f"{out} must be new, in a parent that holds nothing else")
+for p in [keyf] + list(sets.values()):
+    if under(p):
+        sys.exit(f"{p} lies beside the pack; keep keys and source shots under another root")
+os.makedirs(out)
 rng = random.Random(seed)
-os.makedirs(out, exist_ok=True)
 used = set()
 
 
@@ -64,9 +83,46 @@ def same(a, b):
     return open(a, "rb").read() == open(b, "rb").read()
 
 
+def chunk(kind, data):
+    return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+
+def shifted(src, dst):
+    """Write src moved down one pixel row, the top row repeated, re-encoded."""
+    b = open(src, "rb").read()
+    pos, chunks, idat = 8, [], b""
+    while pos < len(b):
+        n, kind = struct.unpack(">I4s", b[pos:pos + 8])
+        data = b[pos + 8:pos + 8 + n]
+        pos += 12 + n
+        if kind == b"IDAT":
+            if not idat:
+                chunks.append((b"IDAT", None))
+            idat += data
+        else:
+            chunks.append((kind, data))
+    w, h, depth, ctype, _, _, lace = struct.unpack(">IIBBBBB", dict(chunks)[b"IHDR"])
+    assert depth == 8 and ctype in (2, 6) and lace == 0, src
+    bpp = 3 if ctype == 2 else 4
+    stride = 1 + w * bpp
+    raw = zlib.decompress(idat)
+    ftype, row = raw[0], bytearray(raw[1:stride])
+    if ftype in (1, 3, 4):
+        for x in range(bpp, len(row)):
+            row[x] = (row[x] + (row[x - bpp] >> 1 if ftype == 3 else row[x - bpp])) & 0xFF
+    top = b"\0" + bytes(row)
+    body = zlib.compress(top + top + raw[stride:len(raw) - stride], 9)
+    with open(dst, "wb") as fh:
+        fh.write(b[:8] + b"".join(chunk(k, body if k == b"IDAT" else d) for k, d in chunks))
+
+
 def views(d, repo):
     pages = sorted(f[len(repo) + 1:-4] for f in os.listdir(d) if f.startswith(repo + "-") and f.endswith(".png") and "-hover-" not in f and f != f"{repo}-overview.png")
     return ["overview"] + pages
+
+
+def hover_files(d, repo, view):
+    return sorted(f for f in os.listdir(d) if f.startswith(f"{repo}-{view}-hover-") and f.endswith(".png"))
 
 
 repos = sorted({f.split("-", 1)[0] for d in sets.values() for f in os.listdir(d) if f.endswith(".png")})
@@ -78,7 +134,7 @@ for repo in repos:
             shutil.copy(os.path.join(d, f"{repo}-{view}.png"), os.path.join(out, to))
             files[(name, repo, slot)] = to
             key["files"][to] = [name, repo, view, slot]
-            for h in sorted(f for f in os.listdir(d) if f.startswith(f"{repo}-{view}-hover-") and f.endswith(".png")):
+            for h in hover_files(d, repo, view):
                 th = fresh(repo)
                 shutil.copy(os.path.join(d, h), os.path.join(out, th))
                 hovers.setdefault(to, []).append(th)
@@ -97,14 +153,19 @@ for repo in repos:
         setrows.append((repo, x, y))
     for name in nulls:
         to = fresh(repo)
-        shutil.copy(os.path.join(sets[name], f"{repo}-overview.png"), os.path.join(out, to))
-        key["files"][to] = [name, repo, "overview", 0]
-        hovers[to] = hovers.get(files[(name, repo, 0)], [])
+        shifted(os.path.join(sets[name], f"{repo}-overview.png"), os.path.join(out, to))
+        key["files"][to] = [name, repo, "overview-near-null", 0]
+        for h in hover_files(sets[name], repo, "overview"):
+            th = fresh(repo)
+            shifted(os.path.join(sets[name], h), os.path.join(out, th))
+            hovers.setdefault(to, []).append(th)
+            key["files"][th] = [name, repo, h[len(repo) + 1:-4] + "-near-null", 0]
         cmp.append((name, name, 0, files[(name, repo, 0)], to))
     rng.shuffle(cmp)
     rows += [(repo,) + c for c in cmp]
-hcol = (lambda f: "\t" + (" ".join(hovers.get(f, [])) or "-")) if any(hovers.values()) else (lambda f: "")
-lines = ["id\trepo\tview\tA\tB" + ("\tA hovers\tB hovers" if any(hovers.values()) else "")]
+has_hovers = any(hovers.values())
+hcol = (lambda f: "\t" + (" ".join(hovers.get(f, [])) or "-")) if has_hovers else (lambda f: "")
+lines = ["id\trepo\tview\tA\tB" + ("\tA hovers\tB hovers" if has_hovers else "")]
 for n, (repo, x, y, s, fx, fy) in enumerate(rows, 1):
     flip = rng.random() < 0.5
     a, b, sa, sb = (fy, fx, y, x) if flip else (fx, fy, x, y)
@@ -124,6 +185,14 @@ for n, (repo, x, y) in enumerate(setrows, 1):
     key["sets"][sid] = {"repo": repo, "A": x, "B": y}
 with open(os.path.join(out, "sets.tsv"), "w", encoding="utf8") as fh:
     fh.write("\n".join(lines) + "\n")
+shutil.copy(os.path.join(HERE, "..", "rubric.md"), os.path.join(out, "rubric.md"))
 with open(keyf, "w", encoding="utf8") as fh:
     json.dump(key, fh, indent=1)
+crit = CRIT + (["c7"] if has_hovers else [])
+prompt = open(os.path.join(HERE, "judge-prompt.txt"), encoding="utf8").read().format(
+    pack=out.replace("\\", "/") + "/", n_files=len(key["files"]), repos=", ".join(repos), n_pairs=len(key["pairs"]), n_sets=len(key["sets"]),
+    hover_note=", each side with its hover shots listed beside it" if has_hovers else "", last_crit=len(crit),
+    crit_cols="\t".join(crit), crit_example="\t".join(rng.choice("AB=") for _ in crit))
+with open(os.path.splitext(keyf)[0] + "-prompt.txt", "w", encoding="utf8") as fh:
+    fh.write(prompt)
 print(len(key["files"]), "files,", len(key["pairs"]), "comparisons,", len(key["sets"]), "set comparisons")

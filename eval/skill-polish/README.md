@@ -3,8 +3,8 @@
 This folder holds how ABBD's setup skill, CLI and renderer are judged on repositories they were never tuned on, and every round judged so far. The goal is a blueprint that reads like a diagram an engineer polished by hand in draw.io, on any repository.
 
 - `rubric.md` is what a judge reads: the criteria and the pairwise format.
-- `tools/` holds the levers. Each script's docstring says how to run it.
-- `judge-scores.tsv` holds every absolute judge pass of rounds 3 to 7, `pairwise/` every pairwise pass, with its key.
+- `tools/` holds the levers. Each script's docstring says how to run it. `tools/verdict.py` applies the keep rules below to a round's passes.
+- `judge-scores.tsv` holds every absolute judge pass of rounds 3 to 7, `pairwise/` every pairwise pass of the method study, with its key and the prompt its judges read.
 - `lint-levels.tsv` is `abbd lint --json` for every run, and `decisions.tsv` joins both with the verdicts of rounds 3 to 7.
 - `ref-parts/` holds the reference parts of the six pool repositories, for the parts proxy.
 - `shots/` holds the judged pages that iterations 5 to 7 name.
@@ -13,90 +13,114 @@ This folder holds how ABBD's setup skill, CLI and renderer are judged on reposit
 
 From iteration 8 on, a change goes through three tiers, cheapest first. It moves to the next tier only if it passes the one before. The tiers exist because a fresh-run round costs hours, and through iteration 7 every skill change waited for one before anyone learned it had failed.
 
+These rules were written after the method study below, with its data in view, and before any iteration 8 data. That includes the headline criterion (c6), the 0.10 flip threshold and the unanimity rule of Tier 2. Iteration 8 is the first round judged under them. `tools/verdict.py ROUND_DIR KEPT CAND --tier renderer|proxy|fresh` computes every statistic and rule named here, so a verdict is a command, not a reading.
+
+What a change touches decides where it is decided:
+
+- A renderer-only change decides at Tier 1, on the current runs re-rendered with its binary. It never goes to Tier 2.
+- A skill or CLI change never decides at Tier 1. Tier 1 only screens it on proxy drawings, and only Tier 2's fresh runs can keep it.
+
 ### Tier 0. Automated, minutes, no judge
 
 Every change, renderer or skill, runs these first.
 
 - **Renderer change.** `tools/rerender.sh BIN OUT NAME=RUN...` copies every finished run in the pool and syncs it with the change's binary. Six runs take 16 seconds. `tools/shoot.py OUT --pages all REPO=OUT/NAME/.abbd/blueprint...` draws every view whole and runs the hover pass, about 5 seconds a run. Compare its findings table and `abbd lint` totals with the same table for the current binary. `tools/pairs.py ... --same-runs --changed-only` then lists only the views whose drawing changed. A change whose hover findings or hard breaches rise with no reason written in advance stops here.
-- **Skill change.** Check the decomposition before any drawing is judged. A rule the skill states as a script (a part rule, a grouping step) is run as that script on all six pool repositories. A rule only an agent can apply is run through setup steps 1 to 5, which skip step 6's understanding texts and step 7's look; its cost is not yet measured. `abbd lint` level lines and `tools/parts.py ref-parts/REPO.tsv RUN...` then screen for collapse: a run with fewer than half the reference's top-level parts, or a top-level F1 under 0.5, stops here. The F1 does not rank two healthy runs (see the method study), so it never decides a keep.
+- **Skill change.** Check the decomposition before any drawing is judged. A rule the skill states as a script (a part rule, a grouping step) is run as that script on all six pool repositories. A rule only an agent can apply is run through setup steps 1 to 5, which skip step 6's understanding texts and step 7's look; its cost is not yet measured. These are the change's proxy runs. `abbd lint` level lines and `tools/parts.py ref-parts/REPO.tsv RUN...` then screen for collapse: a run with fewer than half the reference's top-level parts, or a top-level F1 under 0.5, stops here. The F1 does not rank two healthy runs (see the method study), so it never decides a keep.
 
-The pool is every finished run of the current kept iteration, plus the zero-base runs of the rotation repositories. A renderer change is drawn on all of them at once, never on three.
+The pool is every finished run of the current kept iteration on triple A, plus the zero-base runs of triple B (see Rotation). A renderer change is drawn on all of them at once, never on three.
+
+The baseline a change is compared with is the current kept iteration's run of the same repository. No kept iteration has runs on triple B yet, so until one does, triple B's baseline is its `zM` runs (main's skill when they were made), re-rendered with the current binary.
 
 ### Tier 1. Pairwise judges, about 15 minutes
 
-Three fresh Opus judges, blind, each in one pass, compare the changed views in pairs (`rubric.md`). `tools/pairs.py OUT KEY SEED NAME=DIR... --pair X,Y` builds one pack per judge with its own seed. Keys go outside the judges' folder. Each pack also holds one view against a copy of itself per repository (`--null`), and a judge that prefers either side of a null pair is rerun.
+Three fresh Opus judges, blind, each in one pass, compare views in pairs (`rubric.md`). `tools/pairs.py OUT KEY SEED NAME=DIR... --pair KEPT,CAND --null KEPT` builds one pack per judge with its own seed, and writes that judge's prompt next to KEY. OUT must be a new folder whose parent holds nothing else. The pack carries its own copy of the rubric, and keys and source shots stay under another root; `pairs.py` refuses to build a pack otherwise. The prompt asks for the tables as the judge's final answer, which the launching agent collects, and tells the judge to send no messages.
 
-- A view's verdict on a criterion is the side at least two of three passes pick; otherwise it is a tie.
-- The headline is criterion 6 (overall). The criteria the change targets are written in this README before the judges run.
-- A renderer change, judged on the same runs, is kept if its targeted criteria win more views than they lose, criterion 6 wins at least as many views as it loses, and it loses no overview on criterion 6.
-- `tools/agree.py SCORES PAIRWISE_DIR` reports the passes' agreement. If the passes flip on more than 1 answer in 10, the round is rerun with three new judges before anyone acts on it.
+**Near-nulls.** Each pack holds, per repository, the baseline's overview against a near copy of itself (`--null`). The copy is moved down one pixel and encoded again, and it and its hover shots get fresh names, so neither bytes nor names give it away. Neither the prompt nor the rubric says such pairs exist. A pass that answers a near-null with A or B on any criterion is rerun with a new judge. A re-render's unchanged views are near-nulls too, but `--changed-only` drops them.
+
+**Rules.**
+
+- A view's verdict on a criterion is the side more than half the passes pick (2 of 3). Otherwise it is a tie.
+- **Flip rate.** Over every comparison except the near-nulls, every criterion the pack asks (c1 to c6, and c7 when it holds hover shots), and every pair of passes: the share of pass pairs that give opposite strict answers (one A, the other B). If it is above 0.10, the round is rerun with three new judges before anyone acts on it.
+- **Renderer change.** The criteria the change targets are written in this README before the judges run. It is kept if each targeted criterion, counted on its own, wins more views than it loses, criterion 6 wins at least as many views as it loses, and no overview loses criterion 6.
+- **Skill or CLI change, the proxy screen.** The drawings are the overviews of Tier 0's proxy runs, one per pool repository (six), synced with the current binary, each against the baseline's overview of the same repository. The change goes to Tier 2 if its overview loses criterion 6 in no more repositories than it wins. Nothing is kept at this step.
 
 ### Tier 2. Fresh runs, hours
 
-Only a skill or CLI change that passed tiers 0 and 1 on proxies gets fresh setup runs, one per repository, on the triple whose turn it is.
+Only a skill or CLI change that passed Tier 0 and the proxy screen gets fresh setup runs, one per repository, on the triple whose turn it is.
 
-- **Rotation.** The pool is gin, httpie and storefront (triple A) and express, click and hyperfine (triple B). Rounds alternate triples, so no repository decides two rounds in a row. A change kept on one triple is checked on the other at tier 0 before the next round starts. When a repository has decided four rounds, it is replaced by a new one of the same language family, and its runs stay in the tier 0 pool.
-- **Judging.** The judges compare the candidate's views with the current kept iteration's, overview against overview and the densest pages by rank, plus the hover shots `shoot.py` picks (criterion 7). Rank-matched pages show two different modules, so the overview verdicts carry the decision: the change is kept if it wins criterion 6 on the overview in 2 of 3 repositories and loses none, and wins at least as many page verdicts as it loses.
-- **Set of views** is recorded but gates nothing; its pairwise answers flipped between passes on 22 in 100 pass pairs.
+- **Rotation.** The pool is gin, httpie and storefront (triple A) and express, click and hyperfine (triple B). Rounds alternate triples, so no repository decides two rounds in a row. A change kept on one triple is checked on the other at Tier 0 before the next round starts. When a repository has decided four rounds, it is replaced by a new one of the same language family, and its runs stay in the Tier 0 pool.
+- **Judging.** The judges compare the candidate's views with the baseline's, overview against overview and the densest pages by rank, plus the hover shots `shoot.py` picks (criterion 7). Rank-matched pages show two different modules, so the overview verdicts carry the decision.
+- **Keep rule.** The change is kept if its overview wins criterion 6 unanimously (all three passes) in at least 2 of 3 repositories, loses it in none, and the pages win criterion 6 at least as often as they lose it. A majority win is not enough: on overviews, c6 flipped between passes on 6 of 45 pass pairs (0.13) in the study, as often as absolute c6 (9 of 63, 0.14). A change that wins 2 of 3 overviews by majority but not unanimously gets a fourth repository or three more judges before it is decided.
+- **No base comparison.** Through iteration 7 a fresh-run change had to beat both base and the kept iteration. Tier 2 drops the base comparison on purpose. The question a round answers is whether the change should replace the working base, and a third set in every pack spends judge time on a question no keep rule asks. The cost is that no tier checks drift from base.
+- **Set of views** is recorded but gates nothing. Its pairwise answers flipped between passes on 22 in 100 pass pairs.
 
 ### What the judge sees
 
 - Every view whole, captured by `shoot.py` at its drawn size. Through iteration 7 the shots were a 1600x1100 viewport taken at the top of the page.
 - Hover shots of each view: the hub box's hover and each hover the checks flag, up to six.
-- The judge never sees lint numbers, findings or which version drew which.
+- The judge never sees lint numbers, findings or which version drew which, and is not told that near-nulls exist.
 
 ## Method study (before iteration 8)
 
-Through iteration 7 the round loop was slow. Each skill round cost hours of fresh runs before its first verdict, and three of the four skill rounds (it2, it4, it7) were rejected. Four parts of the method were examined on the data that already existed, and the protocol above is what the evidence supports.
+Through iteration 7 the round loop was slow. Each skill round cost hours of fresh runs before its first verdict, and three of the four skill rounds (it2, it4, it7) were rejected. Four parts of the method were examined on the data that already existed. The protocol above is what the evidence supports, and where it goes further than the evidence, this section says so.
 
 ### Judge noise: absolute scores against pairwise verdicts
 
 The question was whether a judge's 1 to 5 scores drift so much between passes that they swamp real gains, and whether asking a judge which of two drawings of one view reads better is steadier.
 
-The same screenshots were judged many times. `shots0` (base) was scored in 11 absolute passes from rounds 4 to 7, and `shots5` and `shots6` in 6 each, byte for byte the same images (checked by hash against every review folder). Three new blind Opus judges then compared the four judged sets `shots0`, `shots5`, `shots6` and `shots7` in pairs, in packs built by `tools/pairs.py` with seeds 81, 82 and 83 (`pairwise/`). Each pack holds 48 comparisons: 5 variant pairs (base and it5, it5 and it6, base and it6, it6 and it7, base and it7) times 3 repositories times 3 views, plus one overview against a copy of itself per repository, and 15 set comparisons. A and B were drawn at random per comparison.
+The same screenshots were judged many times. `shots0` (base) was scored in 11 absolute passes from rounds 4 to 7, and `shots5` and `shots6` in 6 each, byte for byte the same images (checked by hash against every review folder). Three new blind Opus judges then compared the four judged sets `shots0`, `shots5`, `shots6` and `shots7` in pairs, in packs built by `tools/pairs.py` with seeds 81, 82 and 83 (`pairwise/`). Each pack holds 48 comparisons: 5 variant pairs (base and it5, it5 and it6, base and it6, it6 and it7, base and it7) times 3 repositories times 3 views, plus one overview against a copy of itself per repository, and 15 set comparisons. A and B were drawn at random per comparison. These images were 1600x1100 viewport crops with no hover shots.
 
-`tools/agree.py judge-scores.tsv pairwise` measures both on the same 15 decision cells (variant pair and repository) per criterion. A pass answers a cell with X, Y or a tie. For absolute scores that is the sign of the difference of the two sets' scores in one pass; for pairwise, the sign of the wins over the set's three views. Over every pair of passes that answer a cell, measured:
+`tools/agree.py judge-scores.tsv pairwise` measures both methods on the 15 decision cells (variant pair and repository) per criterion. A pass answers a cell with X, Y or a tie. For absolute scores that is the sign of the difference of the two sets' scores in one pass. For pairwise it is the sign of the wins over the set's three views. Over every pair of passes that answer a cell, it counts strict same (both give the same strict answer) and flips (opposite strict answers). Plain agreement would count two ties as agreeing, and pairwise ties far more often than absolute, so strict same is the figure that compares like with like.
 
-| criterion | absolute, same round: same answer, flip | pairwise: same answer, flip |
-|---|---|---|
-| c1 level | 0.90, 0.03 | 0.82, 0.13 |
-| c2 density | 0.78, 0.06 | 0.76, 0.11 |
-| c3 placement | 0.48, 0.08 | 0.71, 0.02 |
-| c4 lines | 0.54, 0.11 | 0.62, 0.02 |
-| c5 labels | 0.84, 0.03 | 0.82, 0.13 |
-| c6 overall | 0.73, 0.14 | 0.91, 0.04 |
-| all criteria together | 0.83, 0.08 | 0.64, 0.18 |
-| set of views | 0.62, 0.00 | 0.73, 0.22 |
+Pairwise has 3 passes on each cell, 45 pass pairs. Absolute pass pairs are taken inside one round, and 6 of the 15 cells were scored in two rounds, so absolute has 21 cell-rounds and 63 pass pairs. Keeping only each cell's last round gives absolute the same 15 cells and 45 pass pairs. Measured:
 
-A flip is two passes giving opposite strict answers. Absolute pass pairs are taken inside one round (63 per criterion); pairwise has 45. With 15 cells a criterion, a difference under about 0.1 is not a difference.
+| criterion | pairwise: strict same, flips | absolute, every round: strict same, flips, p | absolute, last round per cell: strict same, flips, p |
+|---|---|---|---|
+| c1 level | 0.56, 6/45 | 0.76, 2/63, 0.065 | 0.67, 2/45, 0.27 |
+| c2 density | 0.67, 5/45 | 0.73, 4/63, 0.49 | 0.69, 3/45, 0.71 |
+| c3 placement | 0.62, 1/45 | 0.24, 5/63, 0.40 | 0.24, 4/45, 0.36 |
+| c4 lines | 0.40, 1/45 | 0.35, 7/63, 0.14 | 0.36, 5/45, 0.20 |
+| c5 labels | 0.80, 6/45 | 0.79, 2/63, 0.065 | 0.78, 2/45, 0.27 |
+| c6 overall | 0.82, 2/45 | 0.65, 9/63, 0.12 | 0.67, 4/45, 0.68 |
+| all criteria together | 0.60, 8/45 | 0.81, 5/63, 0.14 | 0.78, 3/45, 0.20 |
+
+p is a two-sided Fisher exact test of the absolute flip count against pairwise's. `agree.py` also prints the first round per cell, which gives the same picture.
 
 What it shows:
 
-- Pairwise is steadier where the drawing is the question. On overall (c6) passes flip on 4 in 100 pass pairs against 14, on lines (c4) 2 against 11, and on placement (c3) 2 against 8. These are the criteria a renderer change targets.
-- Absolute is steadier on level (c1) and labels (c5), and on the mean of all criteria, which averages six scores. The pairwise sum of wins over all criteria is the least steady pairwise answer.
-- Pairwise can say "no difference", which a 1 to 5 score cannot. Every pairwise answer on an image against its own copy was `=` (54 of 54), and so was every answer on the three views byte-identical between it5 and it6 (54 of 54). A side was picked 50% of the time among 574 strict answers, so no position bias showed.
-- Rank-matched module pages compare two different modules when the topologies differ (gin's routing page against its shared runtime page, for one). The overview is the only view that is the same view in every pair. On overview comparisons alone passes agree on 0.78 of answers and flip on 0.09.
+- The study shows no measurable difference in stability between the two methods. No criterion's flip counts differ at p < 0.05. Pairwise flips less on c6, c4 and c3 (p 0.12, 0.14 and 0.40 against every round). Absolute flips less on c1 and c5 (p 0.065 each) and on the all-criteria sum. Counted like with like, one round per cell, no p is below 0.19. With 15 cells and 3 passes, a difference of a few flips in 45 cannot be told from chance.
+- An earlier draft of this section made c6 the headline because pairwise looked steadier there. That was chosen after seeing the data, and the data do not support it. c6 stays the headline for iteration 8 because it is the question closest to the goal (which drawing an engineer would put in a design doc), not because it was measured steadiest. The 0.10 flip threshold was set the same way, after this study.
+- Pairwise is kept for two reasons that do not rest on stability. It can say "no difference", which a 1 to 5 score cannot. And on a re-render it compares one view's two drawings side by side, where absolute scores compare two scorings made apart.
+- Every answer on an image against its own copy was `=` (54 of 54), and so was every answer on the three views byte-identical between it5 and it6 (54 of 54). But this study announced its nulls: the prompt told the judges some pairs may be identical, and the rubric said identical drawings are `=` on every criterion. So 54 of 54 shows the judges read that instruction, not that they catch an unmarked null. From iteration 8 on, near-nulls go unannounced. A side was picked 50% of the time among 574 strict answers, so no position bias showed.
+- Rank-matched module pages compare two different modules when the topologies differ (gin's routing page against its shared runtime page, for one). The overview is the only view that is the same view in every pair. On overview comparisons alone, passes agree on 0.78 of answers and flip on 0.09 over all criteria. On c6 alone they flip on 6 of 45 pass pairs (0.13), as noisy as absolute c6. That is why Tier 2 asks for unanimous overview wins.
+- The judges saw viewport crops and no hover shots. How noisy they are on whole drawings, and on hover shots under criterion 7, is not measured.
 
-Judge noise was not what made the loop slow. The same image set's mean moves between passes by a standard deviation of 0.14 (median over 15 sets, range 0.03 to 0.22), while the median gap between the two variants of a decision cell is 0.31. The 0.3 to 0.4 swings named in iteration 4 are the range over 11 passes, not one pass's error. What cost the hours was that each skill change waited for fresh runs before its first verdict, that 3 judged views a repository showed little of each run, and that the judges never saw hover.
+Absolute scores are noisy enough to turn a one-pass verdict. The same image set's mean moves between passes by a standard deviation of 0.14 (median over 15 sets, range 0.03 to 0.22). A cell's gap is the difference of two such means, so one pass's gap carries noise of about 0.14 × √2 ≈ 0.2. The median gap between the two variants of a decision cell is 0.31, about 1.5 of those standard deviations. Under a normal approximation (inferred, not measured), one pass gets the sign of a 0.31 gap wrong about one time in sixteen, and of a 0.1 gap about one time in three. The one-pass and two-pass verdicts of rounds 3 and 4 were not safe from that. The 0.3 to 0.4 swings named in iteration 4 are the range over 11 passes, not one pass's error. Noise does not explain all of the slowness, though. Each skill change waited for fresh runs before its first verdict, 3 judged views a repository showed little of each run, and the judges never saw hover.
 
-So the protocol keeps pairwise verdicts with criterion 6 as the headline, and drops set of views and the all-criteria sum as gates.
+So the protocol keeps pairwise verdicts for the `=` answer and the side-by-side comparison, takes c6 as the headline by choice, and drops set of views and the all-criteria sum as gates, since their pairwise answers flip most (22 and 18 in 100 pass pairs).
 
 ### Whole drawings
 
 Through iteration 7 each judged image was a 1600x1100 viewport at the top of the page. `tools/shoot.py` captures each view's drawing at its drawn size instead, from file URLs in headless Chrome, and reports what the old crop would have cut. On the overview and the two densest pages of each base, it5, it6 and it7 run (36 views; on the base runs `shoot.py`'s box count picks other pages than `shots0` holds) the crop cut only the httpie overview, 11% to 15% of its drawing in it5, it6 and it7. On the 63 views of the z0 rotation runs it cut 2, and on zM none. The crop explains one recurring judge complaint (httpie's overview "cut off at the fold"), not the scores.
 
-Capture is deterministic. Re-rendering the it6 runs with this branch's binary and capturing every view again gave byte-identical images for all 31 views, so `pairs.py --changed-only` dropped every comparison. Aside's clipped screenshot timed out after 31 seconds on the first view tried, where headless Chrome took 1.2 seconds, so the tool uses Playwright with the installed Chrome.
+To shoot a drawing whole, `shoot.py` widens the viewport to the page's scroll width and grows it to the page's height, capped at 12000px. A drawing past the cap would be cut there, and a page whose layout follows the viewport width may reflow when widened, so the shot shows the widened layout. The tallest measured drawing is 1504px (z0 click, one module page), far from the cap.
+
+Capture is deterministic. Re-rendering the it6 runs with this branch's binary and capturing every view again gave byte-identical images for all 31 views, so `pairs.py --changed-only` dropped every comparison.
+
+`shoot.py` drives the installed Chrome (`--headless=new`) over the DevTools protocol with a small websocket client, and needs nothing installed beyond Python. Its first version used Playwright. Before that path was deleted, both versions shot every page of six runs, the it6 runs of gin, httpie and storefront and the z0 runs of express, click and hyperfine. All 287 drawings and hover shots and all three findings files came out byte for byte the same, and the new path took 30 seconds against Playwright's 41. Aside's clipped screenshot timed out after 31 seconds on the first view tried, where headless Chrome took 1.2 seconds.
 
 ### Hover
 
-The user found by hand that hovering a line lights it only partway, so its two end modules cannot be told, and that hovering a module mixes colours along a route. No judge could see that. `shoot.py` hovers every box, chip and line with the real mouse, lets the page's own CSS decide what lights, and checks the lit set geometrically. Measured on the judged runs:
+The user found by hand that hovering a line lights it only partway, so its two end modules cannot be told, and that hovering a module mixes colours along a route. No judge could see that. `shoot.py` hovers every box, chip and line with the real mouse, lets the page's own CSS decide what lights, and checks the lit set geometrically. Measured on the judged runs, as views with at least one finding (the first version's count in brackets where it differs):
 
-| run set | views | views with a cut route | with a mixed route | with a cut line hover | with a hidden line |
-|---|---|---|---|---|---|
-| base (`w0`) | 9 | 7 | 7 | 7 | 2 |
-| it6 (`w9`, every page) | 31 | 17 | 15 | 17 | 2 |
-| z0 (every page) | 63 | 17 | 9 | 17 | 6 |
-| zM (every page) | 30 | 14 | 13 | 15 | 3 |
+| run set | views | with a cut route | with a stray light | with a mixed route | with a cut line hover | with a hidden line |
+|---|---|---|---|---|---|---|
+| base (`w0`) | 9 | 7 | 2 (0) | 7 | 7 | 2 |
+| it6 (`w9`, every page) | 31 | 16 (17) | 3 (0) | 14 (15) | 17 | 2 |
+| z0 (every page) | 63 | 15 (17) | 0 | 9 | 17 | 6 |
+| zM (every page) | 30 | 14 | 3 (0) | 12 (13) | 15 | 3 |
+
+The review of the first version found four checks weaker than their docstring. The 12px stub radius was searched only one 4px grid cell around a line end; it now searches every cell the radius covers. Overlap counted every point of one line near another, scattered or not; it now takes the longest unbroken run, which removes the base runs' 2 overlaps and zM's 1. Mixed joined two lines that only end at the same box anchor; a join within 8px of a box no longer counts. Stray covered only boxes and chips with lines; it now covers every chip, and a chip that sits on a box is stray when it stays lit while its box dims. That is new on 8 of the 12 overviews measured (none of z0's): the contract chips drawn on a box never dim, so a box hover leaves them bright on dimmed boxes, as the hover shots show. Box hovers that light every line were skipped without a word; they are now checked and listed as `all_lit` (5 views of it6, 12 of z0 and 2 of zM).
 
 On the it6 httpie overview, 44 of the 54 line hovers light a set that leaves an end loose or reaches fewer than two boxes, because a line hover lights the one path segment under the mouse and a route drawn as a shared bus is several segments. A box hover lights a shared bus whole, so a lit route runs on to a dimmed box, and a box's coloured stub joins a grey bus, which the mixed check counts. Each flagged hover is saved as a hover shot for the judges' criterion 7, and the counts sit beside the verdicts. The checks are geometric heuristics with 8 and 12 pixel tolerances; a judge's look at the hover shot decides, the count only says where to look.
 

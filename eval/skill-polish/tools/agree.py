@@ -16,9 +16,14 @@ views). A pass answers a cell with +1 (X), -1 (Y) or 0 (tie).
             the set comparison for set
 
 For each method it prints, over every pair of passes that answer a cell:
-how often they give the same answer, how often they give opposite strict
-answers (a flip), and the Pearson correlation of the effect sizes. Then how
-many cells all passes answer the same strict way. Pairwise also reports its
+how often they give the same answer, how often both give the same strict
+answer (strict same, which a method that ties often cannot inflate), how
+often they give opposite strict answers (a flip), and the Pearson correlation
+of the effect sizes. Then how many cells all passes answer the same strict
+way. Absolute pass pairs come from one round, since rounds judged different
+packs; "one round per cell" keeps only each cell's first or last round, so
+both methods count 3 passes on the same 15 cells. Each flip rate is set
+against pairwise's by a two-sided Fisher exact test. Pairwise also reports its
 null comparisons (one image against a copy of itself, or two byte-identical
 images) and its A-side rate; absolute reports how far one image set's scores
 move between passes.
@@ -98,8 +103,16 @@ def pearson(xs, ys):
     return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / math.sqrt(sum((x - mx) ** 2 for x in xs) * sum((y - my) ** 2 for y in ys))
 
 
+def fisher(a, n1, b, n2):
+    """Two-sided Fisher exact p for a of n1 against b of n2."""
+    k, n = a + b, n1 + n2
+    pr = lambda x: math.comb(n1, x) * math.comb(n2, k - x) / math.comb(n, k)
+    obs = pr(a)
+    return min(1.0, sum(pr(x) for x in range(max(0, k - n2), min(k, n1) + 1) if pr(x) <= obs * (1 + 1e-9)))
+
+
 def report(name, eff, crits):
-    same = flip = n = 0
+    same = strict = flip = n = 0
     by_pp = defaultdict(lambda: ([], []))
     unanimous = cells = 0
     for cell, by in eff.items():
@@ -114,12 +127,14 @@ def report(name, eff, crits):
         for p, q in itertools.combinations(ps, 2):
             n += 1
             same += sign(by[p]) == sign(by[q])
+            strict += sign(by[p]) == sign(by[q]) != 0
             flip += sign(by[p]) * sign(by[q]) == -1
             by_pp[(p, q)][0].append(by[p])
             by_pp[(p, q)][1].append(by[q])
     rs = [r for xs, ys in by_pp.values() if (r := pearson(xs, ys)) is not None]
     r = f"{statistics.mean(rs):.2f}" if rs else "-"
-    print(f"{name}\tcells {cells}\tpass pairs {n}\tsame {same / n:.2f}\tflip {flip / n:.2f}\tr {r}\tunanimous strict {unanimous}/{cells} ({unanimous / cells:.2f})")
+    print(f"{name}\tcells {cells}\tpass pairs {n}\tsame {same / n:.2f}\tstrict same {strict / n:.2f}\tflip {flip}/{n} ({flip / n:.2f})\tr {r}\tunanimous strict {unanimous}/{cells} ({unanimous / cells:.2f})")
+    return flip, n
 
 
 def main():
@@ -143,10 +158,17 @@ def main():
     same_round = {(c[0], c[1], c[2] + "/" + c[4], c[3]): v for c, v in within.items()}
     for label, crits in [("c1..c6", CRIT), ("all", ["all"]), ("set", ["set"])]:
         report(f"absolute {label}", same_round, crits)
-    print("\n== per criterion, absolute (same round) against pairwise")
-    for crit in CRIT:
-        report(f"absolute {crit}", same_round, [crit])
-        report(f"pairwise {crit}", pw_c, [crit])
+    rounds = defaultdict(list)
+    for c in within:
+        rounds[c[:4]].append(c[4])
+    one = {label: {(c[0], c[1], c[2] + "/" + c[4], c[3]): v for c, v in within.items() if c[4] == pick(rounds[c[:4]])}
+           for label, pick in [("first round per cell", min), ("last round per cell", max)]}
+    print("\n== per criterion: absolute against pairwise, two-sided Fisher exact p on the flip counts")
+    for crit in CRIT + ["all"]:
+        fp, n_p = report(f"pairwise {crit}", pw_c, [crit])
+        for label, sub in [("every round", same_round)] + list(one.items()):
+            fa, n_a = report(f"absolute {crit}, {label}", sub, [crit])
+            print(f"\tFisher p, flips: {fisher(fa, n_a, fp, n_p):.3f}")
     print("\n== absolute, the same images scored in different passes (set means)")
     by_set = defaultdict(list)
     for (p, r, v), m in scores.items():
@@ -170,6 +192,15 @@ def main():
                 same += by[p] == by[q]
                 flip += by[p] * by[q] == -1
         print(f"{kind}\tpass pairs {n}\tsame {same / n:.2f}\tflip {flip / n:.2f}")
+    for crit in CRIT:
+        n = same = flip = 0
+        for (pair, r, s, c), by in page.items():
+            if s == 0 and c == crit:
+                for p, q in itertools.combinations(sorted(by), 2):
+                    n += 1
+                    same += by[p] == by[q]
+                    flip += by[p] * by[q] == -1
+        print(f"overview {crit}\tpass pairs {n}\tsame {same / n:.2f}\tflip {flip}/{n} ({flip / n:.2f})")
     print("\n== pairwise null comparisons")
     zero = sum(1 for _, a in nulls for x in a if x == 0)
     print(f"image against its own copy: {zero}/{sum(len(a) for _, a in nulls)} answers =")
