@@ -766,14 +766,36 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				}
 			}
 		}
+		// A slot of several lines carries a ×N beside its stub or drop, so
+		// between two other slots it keeps the count's width from the
+		// nearer of them, rule 22, where the edge has room for it.
+		apartBy := make([]int, len(xs)+1)
+		for s := range apartBy {
+			apartBy[s] = gap
+		}
+		for s := 1; s < len(xs)-1 && l.counted; s++ {
+			if n := len(slots[s].is); n >= 2 {
+				w := textWidth(fmt.Sprintf("×%d", n), 11) + 9
+				if xs[s+1]-xs[s] >= xs[s]-xs[s-1] {
+					apartBy[s+1] = max(apartBy[s+1], w)
+				} else {
+					apartBy[s] = max(apartBy[s], w)
+				}
+			}
+		}
+		if sum(apartBy[1:len(xs)]) > r.hi-r.lo {
+			for s := range apartBy {
+				apartBy[s] = gap
+			}
+		}
 		edge := r.lo - gap
 		for s := range xs {
-			xs[s] = max(xs[s], edge+gap)
+			xs[s] = max(xs[s], edge+apartBy[s])
 			edge = xs[s]
 		}
 		edge = r.hi + gap
 		for s := len(xs) - 1; s >= 0; s-- {
-			xs[s] = min(xs[s], edge-gap)
+			xs[s] = min(xs[s], edge-apartBy[s+1])
 			edge = xs[s]
 		}
 		if r.node != "" {
