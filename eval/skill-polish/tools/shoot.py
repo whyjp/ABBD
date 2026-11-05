@@ -114,11 +114,19 @@ class Page:
         self.proc = subprocess.Popen([chrome()] + self.FLAGS + [f"--user-data-dir={self.dir}", "about:blank"],
                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         port_file = os.path.join(self.dir, "DevToolsActivePort")
+        words = []
         for _ in range(300):
-            if os.path.exists(port_file) and len(open(port_file).read().split()) >= 2:
+            # Chrome holds the file open while it writes it, and on Windows a
+            # read then fails with PermissionError, so the read is retried.
+            try:
+                with open(port_file) as f:
+                    words = f.read().split()
+            except (FileNotFoundError, PermissionError):
+                words = []
+            if len(words) >= 2:
                 break
             time.sleep(0.05)
-        port = int(open(port_file).read().split()[0])
+        port = int(words[0])
         tabs = json.load(urllib.request.urlopen(f"http://127.0.0.1:{port}/json/list"))
         path = next(t["webSocketDebuggerUrl"] for t in tabs if t["type"] == "page").split(str(port), 1)[1]
         self.sock = socket.create_connection(("127.0.0.1", port))

@@ -211,3 +211,25 @@ func TestAForkIntoTheRowBelowIsNoBend(t *testing.T) {
 		t.Fatalf("%+v; want the lone bent line to break B1, 2 turns allowed 0", got)
 	}
 }
+
+// A stem that stands over no box of its own, whose two lines both bend onto
+// a track another box's line arrives along, is a knot, not a fork: both
+// bent lines still break B1. So does a fork whose track another place's
+// line runs along.
+func TestAKnotOnAnotherBoxsTrackStillBends(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "E 300 0 120 20", "B 60 80 80 20", "C 200 80 80 20"}
+	knot := `<path class="w contract" d="M340 20 V50 H110 V80"/>` +
+		`<path class="w contract" d="M180 20 V50 H110 V80"/><path class="w contract" d="M180 20 V50 H240 V80"/>`
+	got := lookAt(t, boxes, knot, [][2]string{{"E", "B"}, {"A", "B"}, {"A", "C"}}).bendsAllowed()
+	if len(got) != 2 {
+		t.Fatalf("%+v; want both of A's bent lines to break B1", got)
+	}
+
+	boxes = []string{"A 100 0 160 20", "E 420 0 60 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	fork := `<path class="w contract" d="M230 20 V50 H100 V80"/><path class="w contract" d="M230 20 V80"/>` +
+		`<path class="w contract" d="M230 20 V50 H360 V80"/><path class="w depends_on" d="M450 20 V50 H90 V80"/>`
+	got = lookAt(t, boxes, fork, [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}, {"E", "B"}}).bendsAllowed()
+	if len(got) != 1 || got[0].Items[1].ID != "B" || got[0].Allowed != 0 {
+		t.Fatalf("%+v; want the branch into B, on E's track, to break B1", got)
+	}
+}

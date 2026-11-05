@@ -542,9 +542,11 @@ func (l *look) lines() []turnsOf {
 }
 
 // forks says line w, from box a to box b in the row right below, leaves a
-// down a stem another of a's lines also leaves by, turns onto one flat track
-// in the gap between the rows, and drops into b. A reader sees one line
-// splitting into a row, not a line that bends, so it may turn twice.
+// down a stem that another of a's lines of its kind drops straight down,
+// turns onto one flat track in the gap between the rows that every branch
+// off the stem turns onto and no other place's line runs along, and drops
+// into b. A reader sees one line splitting into a row, not a line that
+// bends, so it may turn twice.
 func (l *look) forks(w tracedWay, a, b int) bool {
 	p := w.pts
 	sa, sb := l.s.shapes[a], l.s.shapes[b]
@@ -570,18 +572,36 @@ func (l *look) forks(w tracedWay, a, b int) bool {
 		return false
 	}
 	// Every line down the stem ends in that row, so the stem is no trunk
-	// that runs on past it.
-	shared := false
+	// that runs on past it, and every branch turns onto w's track.
+	over := false
 	for _, o := range l.trace.Ways {
 		if o.from != w.from || o.to == w.to || len(o.pts) < 2 || o.pts[0] != p[0] {
 			continue
 		}
-		if len(o.pts) > 4 || !nextRow(o.pts[len(o.pts)-1].y) {
+		if o.kind != w.kind || len(o.pts) > 4 || len(o.pts) == 3 || !nextRow(o.pts[len(o.pts)-1].y) {
 			return false
 		}
-		shared = shared || near(o.pts[1].x, p[0].x) && o.pts[1].y >= p[1].y-2
+		if len(o.pts) == 4 && !near(o.pts[1].y, p[1].y) {
+			return false
+		}
+		over = over || len(o.pts) == 2 && near(o.pts[1].x, p[0].x)
 	}
-	return shared
+	if !over {
+		return false
+	}
+	lo, hi := min(p[1].x, p[2].x), max(p[1].x, p[2].x)
+	for _, o := range l.trace.Ways {
+		if o.from == w.from {
+			continue
+		}
+		for i := 1; i < len(o.pts); i++ {
+			u, v := o.pts[i-1], o.pts[i]
+			if near(u.y, p[1].y) && near(v.y, p[1].y) && min(max(u.x, v.x), hi)-max(min(u.x, v.x), lo) > 2 {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // B1. A line's allowed turns follow from where its ends stand: none within

@@ -530,6 +530,9 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
+	kin := func(i, j int) bool {
+		return slices.ContainsFunc(d.Wires[i].srcs, func(s string) bool { return slices.Contains(d.Wires[j].srcs, s) })
+	}
 	done := map[int]bool{}
 	for i := range d.Wires {
 		s, n := words[i], d.Wires[i].Net
@@ -574,9 +577,12 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 				}
 				// A line's stroke reaches 1.3px off its centre at most. Another
 				// line parallel to g keeps more than twice the label's offset
-				// from it, so the label reads as g's and not the other's.
+				// from it, so the label reads as g's and not the other's. So
+				// does a flat line that leaves one of g's boxes: it wears g's
+				// colour, and a word beside a drop right over such a track
+				// reads as the track's.
 				room := labelRoom + 1
-				if o.flat() == g.flat() && !mate(i, o.wire) {
+				if (o.flat() == g.flat() || o.flat() && kin(i, o.wire)) && !mate(i, o.wire) {
 					room = 2*labelOff + 2
 				}
 				if hit(lb, grow(o.bounds(), room)) {
