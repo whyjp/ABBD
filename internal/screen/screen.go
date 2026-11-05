@@ -161,9 +161,12 @@ func Build(in Input) Model {
 	// module's page holds a focus view seated by it, so an overview that took
 	// another order after a small change would redraw every page. It may
 	// still take another ranking, the way a person lays out a cycle, where
-	// that fits the screen better or reads better and moves no box off what
-	// it joins.
+	// that fits the screen or has fewer hard breaches and moves no box off
+	// what it joins (choose). The screen it fits is what the page leaves
+	// under the list of questions drawn above it.
 	o := planOverview(in.Units, "", nil, tactic{})
+	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
+	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 		p := planOverview(in.Units, "", nil, t)
@@ -175,7 +178,7 @@ func Build(in Input) Model {
 		return d, true
 	}, func(d Drawing, read *cost) {
 		read.judge(d)
-		read.over = max(0, d.Width-screenW, d.Height-screenH)
+		read.over = pastScreen(d, room)
 	})
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
@@ -222,7 +225,7 @@ func Build(in Input) Model {
 		d.paint(hues)
 	}
 	o.placeNotes(in, &m)
-	m.Flows, m.Stacks, m.Tables = o.flows(in), o.stacks(in), o.tables(in)
+	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
 	return m
 }
