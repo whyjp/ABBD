@@ -193,3 +193,21 @@ func TestASharedTurnBackCountsOnce(t *testing.T) {
 		t.Fatalf("%d turn-backs; want the shared one counted once", n)
 	}
 }
+
+// Lines from one box that leave by one stem and fork off one flat track
+// into the row below read as one line splitting, so a branch into a box in
+// the box's own column may turn twice. The same bent line alone, on no
+// fork, still breaks B1.
+func TestAForkIntoTheRowBelowIsNoBend(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	toB := `<path class="w contract" d="M230 20 V50 H100 V80"/>`
+	fork := toB + `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V50 H360 V80"/>`
+	rels := [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}}
+	if got := lookAt(t, boxes, fork, rels).bendsAllowed(); len(got) != 0 {
+		t.Fatalf("%+v; want the fork's branch into B allowed its 2 turns", got)
+	}
+	got := lookAt(t, boxes, toB, [][2]string{{"A", "B"}}).bendsAllowed()
+	if len(got) != 1 || got[0].Got != 2 || got[0].Allowed != 0 {
+		t.Fatalf("%+v; want the lone bent line to break B1, 2 turns allowed 0", got)
+	}
+}

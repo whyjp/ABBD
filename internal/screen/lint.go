@@ -125,7 +125,7 @@ const (
 var criteria = []Criterion{
 	{ID: "P1", Placement: true, Says: "a user stands in a row above what it uses", check: (*look).usersAbove},
 	{ID: "P2", Placement: true, Says: "boxes used by exactly the same places stand in one row", check: (*look).siblingsInARow},
-	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row", check: (*look).bendsAllowed},
+	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row, 2 for a branch of a fork into the row below", check: (*look).bendsAllowed},
 	{ID: "B2", Says: "no stretch between two turns of a line is shorter than 24px", check: (*look).noJogs},
 	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
@@ -533,9 +533,55 @@ func (l *look) lines() []turnsOf {
 			continue
 		}
 		allowed, why := l.allowance(a, b)
+		if allowed < cornerBends && l.forks(w, a, b) {
+			allowed, why = cornerBends, "it forks off a stem its box shares, onto one track into the row below"
+		}
 		out = append(out, turnsOf{a, b, l.trace.Bends[i], allowed, why})
 	}
 	return out
+}
+
+// forks says line w, from box a to box b in the row right below, leaves a
+// down a stem another of a's lines also leaves by, turns onto one flat track
+// in the gap between the rows, and drops into b. A reader sees one line
+// splitting into a row, not a line that bends, so it may turn twice.
+func (l *look) forks(w tracedWay, a, b int) bool {
+	p := w.pts
+	sa, sb := l.s.shapes[a], l.s.shapes[b]
+	if len(p) != 4 || sa.kind != "box" || sb.kind != "box" {
+		return false
+	}
+	ra, rb := sa.r, sb.r
+	near := func(u, v float64) bool { return math.Abs(u-v) <= 2 }
+	if !near(p[0].x, p[1].x) || !near(p[1].y, p[2].y) || !near(p[2].x, p[3].x) ||
+		!near(p[0].y, ra.y+ra.h) || !near(p[3].y, rb.y) || p[1].y <= p[0].y || p[3].y <= p[1].y {
+		return false
+	}
+	// nextRow says a line from a's bottom down to top passes no row.
+	nextRow := func(top float64) bool {
+		for _, sh := range l.s.shapes {
+			if sh.r.y >= ra.y+ra.h && sh.r.y+sh.r.h <= top {
+				return false
+			}
+		}
+		return top > p[1].y
+	}
+	if !nextRow(rb.y) {
+		return false
+	}
+	// Every line down the stem ends in that row, so the stem is no trunk
+	// that runs on past it.
+	shared := false
+	for _, o := range l.trace.Ways {
+		if o.from != w.from || o.to == w.to || len(o.pts) < 2 || o.pts[0] != p[0] {
+			continue
+		}
+		if len(o.pts) > 4 || !nextRow(o.pts[len(o.pts)-1].y) {
+			return false
+		}
+		shared = shared || near(o.pts[1].x, p[0].x) && o.pts[1].y >= p[1].y-2
+	}
+	return shared
 }
 
 // B1. A line's allowed turns follow from where its ends stand: none within
