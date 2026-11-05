@@ -103,3 +103,31 @@ Two hypotheses were kept (rows 55 and 56 of `eval/lint/decisions.tsv`). The befo
 | storefront, all views | 0, 4, 61, 248 | the same, byte for byte |
 
 The overviews cross more: each two-headed line now crosses the rows on its own track. gin's routing page is no longer dense, so its 3 focus views are gone. On the fixtures, hard breaches stay at 61 and no view gains one. Over the 244 views both drawings hold, the weighed sum falls from 9812 to 8116 and placement from 326 to 252. Five views are no longer dense, so their 30 focus views are gone. Every fixture ceiling went down, none up. `shots/it6-*.png` are the after pages, and `shots/it5-gin-MOD-0027.png` and `shots/it5-httpie-MOD-0003.png` the part pages before.
+
+Three fresh Opus judges scored base, it5 and it6 in one pass each, from the prompts and blind keys `judge-prompt-6a` to `6c` and `review6a-key.json` to `review6c-key.json`; the keys' seeds were not recorded. Rows `@6a`, `@6b` and `@6c` in `judge-scores.tsv` are the passes and `@6` their average. Averaged means, with the passes in brackets:
+
+| repo | base | it5 | it6 |
+|---|---|---|---|
+| gin | 2.55 (2.33, 2.61, 2.72) | 3.17 (3.33, 3.11, 3.06) | 3.44 (3.72, 3.28, 3.33) |
+| httpie | 2.68 (2.61, 2.61, 2.83) | 2.33 (2.50, 2.11, 2.39) | 2.80 (3.11, 2.50, 2.78) |
+| storefront | 3.11 (3.22, 3.11, 3.00) | 3.46 (3.61, 3.22, 3.56) | 3.45 (3.56, 3.22, 3.56) |
+
+The named criteria, averaged over the passes:
+
+| repo | c2 density, it5 to it6 | c4 lines, it5 to it6 |
+|---|---|---|
+| gin | 3.00 to 3.56 | 2.67 to 3.11 |
+| httpie | 2.00 to 2.67 | 1.67 to 2.44 |
+| storefront | 4.00 to 4.00 | 3.33 to 3.33 |
+
+it6 is kept under the paired rule. c2 and c4 rise on gin and httpie in every pass, and hold on storefront, whose drawings it6 leaves byte for byte as they were. All three passes rank it6 first on gin. On httpie every pass puts it6 above it5, and two of them put base first, so it6's mean gain over base there (+0.12) is inside the passes' disagreement. Every other criterion holds or rises on gin and httpie.
+
+The one criterion that falls is labels (c5) on storefront, from 3.11 to 3.00, inside the cell's pass disagreement (0 to -0.33). It does not come from it6. `shots5` were drawn by the kit5 binary, which predates PR #100's fix round, and that round's label fallback put more generic 임포트 labels on storefront's overview, which two judges named. it5's and it6's storefront drawings differ only by that fallback.
+
+Defects the passes still name:
+
+- httpie's overview is a hairball that runs past the 1600px viewport.
+- storefront's part pages draw no outside chips, so the ui kit and the shopify client pages show nothing of what meets them, and its overview runs one orange bus through unrelated pages.
+- gin's overview lines climb into request context, and generic 임포트 labels remain on httpie and storefront.
+
+A review of PR #101 then found the gathered wires' tooltips named only the first module they gather, the gathered chips lost their links, and the chip's 24-rune name cap let Hangul names wrap. 7111bdd fixes all three. On the held-out runs that changes tooltips and links only, so the judged pages are unchanged.

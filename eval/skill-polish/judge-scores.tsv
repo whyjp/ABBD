@@ -47,6 +47,18 @@ gin	it5@5a	3.67	3.00	3.33	2.67	3.00	2.67	3.06	3	1	-
 gin	it5@5b	4.00	3.33	3.67	2.33	3.33	3.00	3.28	4	1	-
 gin	it5@5c	4.00	3.33	3.33	2.67	3.33	2.67	3.22	3	1	-
 gin	it5@5	3.89	3.22	3.44	2.56	3.22	2.78	3.19	3.33	1	shared runtime page tangled by chip lines
+gin	base@6a	2.00	2.33	2.67	2.67	2.33	2.00	2.33	2	3	-
+gin	base@6b	2.33	2.67	3.00	2.67	2.33	2.67	2.61	2	3	-
+gin	base@6c	2.67	2.67	3.00	2.67	2.67	2.67	2.72	2	3	-
+gin	it5@6a	4.00	3.33	3.67	2.67	3.33	3.00	3.33	3	2	-
+gin	it5@6b	4.00	2.67	3.33	2.67	3.33	2.67	3.11	3	2	-
+gin	it5@6c	4.00	3.00	3.00	2.67	3.00	2.67	3.06	3	2	-
+gin	it6@6a	4.00	4.00	3.67	3.33	4.00	3.33	3.72	4	1	-
+gin	it6@6b	4.00	3.00	3.33	3.00	3.33	3.00	3.28	3	1	-
+gin	it6@6c	4.00	3.67	3.00	3.00	3.33	3.00	3.33	4	1	-
+gin	base@6	2.33	2.56	2.89	2.67	2.44	2.45	2.55	2.00	3	render module page draws nothing
+gin	it5@6	4.00	3.00	3.33	2.67	3.22	2.78	3.17	3.00	2	shared runtime page tangled by chip lines
+gin	it6@6	4.00	3.56	3.33	3.11	3.55	3.11	3.44	3.67	1	overview lines climb into request context
 httpie	base@5a	2.67	3.00	2.67	2.33	2.00	2.00	2.44	2	1	-
 httpie	base@5b	3.33	3.00	2.67	2.00	2.33	2.33	2.61	3	1	-
 httpie	base@5c	3.00	3.33	3.00	2.33	2.00	2.00	2.61	2	1	-
@@ -59,6 +71,18 @@ httpie	it5@5a	3.67	2.00	2.67	1.67	2.00	1.67	2.28	2	2	-
 httpie	it5@5b	3.67	2.00	3.00	1.67	2.33	1.67	2.39	3	2	-
 httpie	it5@5c	3.67	2.00	3.00	1.67	1.33	1.67	2.22	2	2	-
 httpie	it5@5	3.67	2.00	2.89	1.67	1.89	1.67	2.30	2.33	2	overview hairball runs past the frame
+httpie	base@6a	3.00	3.33	3.00	2.33	2.00	2.00	2.61	3	2	-
+httpie	base@6b	3.00	3.00	3.00	2.33	2.00	2.33	2.61	3	1	-
+httpie	base@6c	3.33	3.67	3.00	2.67	2.00	2.33	2.83	3	1	-
+httpie	it5@6a	4.00	2.00	3.33	1.67	2.33	1.67	2.50	2	3	-
+httpie	it5@6b	3.33	1.67	2.33	1.67	2.00	1.67	2.11	2	3	-
+httpie	it5@6c	4.00	2.33	2.67	1.67	2.00	1.67	2.39	2	3	-
+httpie	it6@6a	4.00	3.00	3.33	2.67	3.00	2.67	3.11	3	1	-
+httpie	it6@6b	3.33	2.33	3.00	2.00	2.33	2.00	2.50	2	2	-
+httpie	it6@6c	4.00	2.67	2.67	2.67	2.33	2.33	2.78	3	2	-
+httpie	base@6	3.11	3.33	3.00	2.44	2.00	2.22	2.68	3.00	2	overview is a package list with generic labels
+httpie	it5@6	3.78	2.00	2.78	1.67	2.11	1.67	2.33	2.00	3	overview and runtime page hairballs
+httpie	it6@6	3.78	2.67	3.00	2.45	2.55	2.33	2.80	2.67	1	overview hairball overflows the viewport
 storefront	base@5a	3.00	4.33	3.33	3.33	2.00	2.67	3.11	3	3	-
 storefront	base@5b	3.33	4.33	3.33	3.00	2.00	3.00	3.17	2	3	-
 storefront	base@5c	3.00	4.67	3.33	3.33	1.67	2.67	3.11	2	3	-
@@ -71,3 +95,15 @@ storefront	it5@5a	4.00	4.00	3.33	3.33	3.33	3.00	3.50	3	1	-
 storefront	it5@5b	4.00	3.33	3.33	3.33	3.33	2.67	3.33	4	1	-
 storefront	it5@5c	4.00	4.33	3.33	3.33	3.33	3.00	3.56	4	1	-
 storefront	it5@5	4.00	3.89	3.33	3.33	3.33	2.89	3.46	3.67	1	overview lines run as a stepped bus
+storefront	base@6a	3.00	4.33	3.67	3.67	2.00	2.67	3.22	2	3	-
+storefront	base@6b	3.33	3.67	3.33	3.33	2.00	3.00	3.11	3	3	-
+storefront	base@6c	3.00	3.67	3.33	3.33	2.33	2.33	3.00	3	3	-
+storefront	it5@6a	4.00	4.33	3.67	3.33	3.33	3.00	3.61	4	1	-
+storefront	it5@6b	3.67	3.33	3.67	3.33	3.00	2.33	3.22	3	1	-
+storefront	it5@6c	4.33	4.33	3.33	3.33	3.00	3.00	3.56	4	1	-
+storefront	it6@6a	4.00	4.33	3.67	3.33	3.00	3.00	3.56	4	2	-
+storefront	it6@6b	3.67	3.33	3.67	3.33	3.00	2.33	3.22	3	2	-
+storefront	it6@6c	4.33	4.33	3.33	3.33	3.00	3.00	3.56	4	1	-
+storefront	base@6	3.11	3.89	3.44	3.44	2.11	2.67	3.11	2.67	3	overview is three folder boxes
+storefront	it5@6	4.00	4.00	3.56	3.33	3.11	2.78	3.46	3.67	1	overview orange bus joins unrelated pages
+storefront	it6@6	4.00	4.00	3.56	3.33	3.00	2.78	3.45	3.67	2	overview orange bus, generic 임포트 labels, part pages draw no outside chips
