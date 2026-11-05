@@ -100,6 +100,9 @@ svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
+svg g.route { opacity: 0; pointer-events: none; transition: opacity .12s; }
+svg g.route path.way { fill: none; stroke: var(--c); stroke-width: 3; }
+svg g.route.back path.way { stroke-dasharray: 6 4; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
@@ -228,199 +231,201 @@ svg [data-h="5"] { --c: var(--h5); }
 svg [data-h="b"] { --c: var(--hb); }
 svg [data-h="n"] { --c: var(--hn); }
 @media (hover:hover){
-svg:has(.p0:hover) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
-svg:has(.p0:hover) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(.p1:hover) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
-svg:has(.p1:hover) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(.p2:hover) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
-svg:has(.p2:hover) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(.p3:hover) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
-svg:has(.p3:hover) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(.p4:hover) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
-svg:has(.p4:hover) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(.p5:hover) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
-svg:has(.p5:hover) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(.p6:hover) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
-svg:has(.p6:hover) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(.p7:hover) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
-svg:has(.p7:hover) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(.p8:hover) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
-svg:has(.p8:hover) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(.p9:hover) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
-svg:has(.p9:hover) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(.p10:hover) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
-svg:has(.p10:hover) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(.p11:hover) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
-svg:has(.p11:hover) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(.p12:hover) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
-svg:has(.p12:hover) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(.p13:hover) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
-svg:has(.p13:hover) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(.p14:hover) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
-svg:has(.p14:hover) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(.p15:hover) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
-svg:has(.p15:hover) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(.p16:hover) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
-svg:has(.p16:hover) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(.p17:hover) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
-svg:has(.p17:hover) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(.p18:hover) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
-svg:has(.p18:hover) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(.p19:hover) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
-svg:has(.p19:hover) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(.p20:hover) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
-svg:has(.p20:hover) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(.p21:hover) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
-svg:has(.p21:hover) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(.p22:hover) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
-svg:has(.p22:hover) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(.p23:hover) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
-svg:has(.p23:hover) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(.p24:hover) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
-svg:has(.p24:hover) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(.p25:hover) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
-svg:has(.p25:hover) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(.p26:hover) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
-svg:has(.p26:hover) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(.p27:hover) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
-svg:has(.p27:hover) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(.p28:hover) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
-svg:has(.p28:hover) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(.p29:hover) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
-svg:has(.p29:hover) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(.p30:hover) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
-svg:has(.p30:hover) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(.p31:hover) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
-svg:has(.p31:hover) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(.p32:hover) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
-svg:has(.p32:hover) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(.p33:hover) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
-svg:has(.p33:hover) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(.p34:hover) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
-svg:has(.p34:hover) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(.p35:hover) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
-svg:has(.p35:hover) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(.p36:hover) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
-svg:has(.p36:hover) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(.p37:hover) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
-svg:has(.p37:hover) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(.p38:hover) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
-svg:has(.p38:hover) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(.p39:hover) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
-svg:has(.p39:hover) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(.p40:hover) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
-svg:has(.p40:hover) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(.p41:hover) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
-svg:has(.p41:hover) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(.p42:hover) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
-svg:has(.p42:hover) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(.p43:hover) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
-svg:has(.p43:hover) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(.p44:hover) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
-svg:has(.p44:hover) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(.p45:hover) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
-svg:has(.p45:hover) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(.p46:hover) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
-svg:has(.p46:hover) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(.p47:hover) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
-svg:has(.p47:hover) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
+svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.w,.junction,.count,.lab,.origin){opacity:.1}
+svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.box,.port[class*=" n"]){opacity:.3}
+svg:has(.p0:hover,:focus-visible>.p0) :is(.box,.port).n0,svg:has(.p0:hover,:focus-visible>.p0) :is(.count,.lab,.origin).e0,svg:has(.w.e0:hover) .p0{opacity:1}
+svg:has(.p0:hover,:focus-visible>.p0) .route.e0{opacity:1;--c:var(--k0)}
+svg:has(.p1:hover,:focus-visible>.p1) :is(.box,.port).n1,svg:has(.p1:hover,:focus-visible>.p1) :is(.count,.lab,.origin).e1,svg:has(.w.e1:hover) .p1{opacity:1}
+svg:has(.p1:hover,:focus-visible>.p1) .route.e1{opacity:1;--c:var(--k1)}
+svg:has(.p2:hover,:focus-visible>.p2) :is(.box,.port).n2,svg:has(.p2:hover,:focus-visible>.p2) :is(.count,.lab,.origin).e2,svg:has(.w.e2:hover) .p2{opacity:1}
+svg:has(.p2:hover,:focus-visible>.p2) .route.e2{opacity:1;--c:var(--k2)}
+svg:has(.p3:hover,:focus-visible>.p3) :is(.box,.port).n3,svg:has(.p3:hover,:focus-visible>.p3) :is(.count,.lab,.origin).e3,svg:has(.w.e3:hover) .p3{opacity:1}
+svg:has(.p3:hover,:focus-visible>.p3) .route.e3{opacity:1;--c:var(--k3)}
+svg:has(.p4:hover,:focus-visible>.p4) :is(.box,.port).n4,svg:has(.p4:hover,:focus-visible>.p4) :is(.count,.lab,.origin).e4,svg:has(.w.e4:hover) .p4{opacity:1}
+svg:has(.p4:hover,:focus-visible>.p4) .route.e4{opacity:1;--c:var(--k4)}
+svg:has(.p5:hover,:focus-visible>.p5) :is(.box,.port).n5,svg:has(.p5:hover,:focus-visible>.p5) :is(.count,.lab,.origin).e5,svg:has(.w.e5:hover) .p5{opacity:1}
+svg:has(.p5:hover,:focus-visible>.p5) .route.e5{opacity:1;--c:var(--k5)}
+svg:has(.p6:hover,:focus-visible>.p6) :is(.box,.port).n6,svg:has(.p6:hover,:focus-visible>.p6) :is(.count,.lab,.origin).e6,svg:has(.w.e6:hover) .p6{opacity:1}
+svg:has(.p6:hover,:focus-visible>.p6) .route.e6{opacity:1;--c:var(--k6)}
+svg:has(.p7:hover,:focus-visible>.p7) :is(.box,.port).n7,svg:has(.p7:hover,:focus-visible>.p7) :is(.count,.lab,.origin).e7,svg:has(.w.e7:hover) .p7{opacity:1}
+svg:has(.p7:hover,:focus-visible>.p7) .route.e7{opacity:1;--c:var(--k7)}
+svg:has(.p8:hover,:focus-visible>.p8) :is(.box,.port).n8,svg:has(.p8:hover,:focus-visible>.p8) :is(.count,.lab,.origin).e8,svg:has(.w.e8:hover) .p8{opacity:1}
+svg:has(.p8:hover,:focus-visible>.p8) .route.e8{opacity:1;--c:var(--k8)}
+svg:has(.p9:hover,:focus-visible>.p9) :is(.box,.port).n9,svg:has(.p9:hover,:focus-visible>.p9) :is(.count,.lab,.origin).e9,svg:has(.w.e9:hover) .p9{opacity:1}
+svg:has(.p9:hover,:focus-visible>.p9) .route.e9{opacity:1;--c:var(--k9)}
+svg:has(.p10:hover,:focus-visible>.p10) :is(.box,.port).n10,svg:has(.p10:hover,:focus-visible>.p10) :is(.count,.lab,.origin).e10,svg:has(.w.e10:hover) .p10{opacity:1}
+svg:has(.p10:hover,:focus-visible>.p10) .route.e10{opacity:1;--c:var(--k10)}
+svg:has(.p11:hover,:focus-visible>.p11) :is(.box,.port).n11,svg:has(.p11:hover,:focus-visible>.p11) :is(.count,.lab,.origin).e11,svg:has(.w.e11:hover) .p11{opacity:1}
+svg:has(.p11:hover,:focus-visible>.p11) .route.e11{opacity:1;--c:var(--k11)}
+svg:has(.p12:hover,:focus-visible>.p12) :is(.box,.port).n12,svg:has(.p12:hover,:focus-visible>.p12) :is(.count,.lab,.origin).e12,svg:has(.w.e12:hover) .p12{opacity:1}
+svg:has(.p12:hover,:focus-visible>.p12) .route.e12{opacity:1;--c:var(--k12)}
+svg:has(.p13:hover,:focus-visible>.p13) :is(.box,.port).n13,svg:has(.p13:hover,:focus-visible>.p13) :is(.count,.lab,.origin).e13,svg:has(.w.e13:hover) .p13{opacity:1}
+svg:has(.p13:hover,:focus-visible>.p13) .route.e13{opacity:1;--c:var(--k13)}
+svg:has(.p14:hover,:focus-visible>.p14) :is(.box,.port).n14,svg:has(.p14:hover,:focus-visible>.p14) :is(.count,.lab,.origin).e14,svg:has(.w.e14:hover) .p14{opacity:1}
+svg:has(.p14:hover,:focus-visible>.p14) .route.e14{opacity:1;--c:var(--k14)}
+svg:has(.p15:hover,:focus-visible>.p15) :is(.box,.port).n15,svg:has(.p15:hover,:focus-visible>.p15) :is(.count,.lab,.origin).e15,svg:has(.w.e15:hover) .p15{opacity:1}
+svg:has(.p15:hover,:focus-visible>.p15) .route.e15{opacity:1;--c:var(--k15)}
+svg:has(.p16:hover,:focus-visible>.p16) :is(.box,.port).n16,svg:has(.p16:hover,:focus-visible>.p16) :is(.count,.lab,.origin).e16,svg:has(.w.e16:hover) .p16{opacity:1}
+svg:has(.p16:hover,:focus-visible>.p16) .route.e16{opacity:1;--c:var(--k16)}
+svg:has(.p17:hover,:focus-visible>.p17) :is(.box,.port).n17,svg:has(.p17:hover,:focus-visible>.p17) :is(.count,.lab,.origin).e17,svg:has(.w.e17:hover) .p17{opacity:1}
+svg:has(.p17:hover,:focus-visible>.p17) .route.e17{opacity:1;--c:var(--k17)}
+svg:has(.p18:hover,:focus-visible>.p18) :is(.box,.port).n18,svg:has(.p18:hover,:focus-visible>.p18) :is(.count,.lab,.origin).e18,svg:has(.w.e18:hover) .p18{opacity:1}
+svg:has(.p18:hover,:focus-visible>.p18) .route.e18{opacity:1;--c:var(--k18)}
+svg:has(.p19:hover,:focus-visible>.p19) :is(.box,.port).n19,svg:has(.p19:hover,:focus-visible>.p19) :is(.count,.lab,.origin).e19,svg:has(.w.e19:hover) .p19{opacity:1}
+svg:has(.p19:hover,:focus-visible>.p19) .route.e19{opacity:1;--c:var(--k19)}
+svg:has(.p20:hover,:focus-visible>.p20) :is(.box,.port).n20,svg:has(.p20:hover,:focus-visible>.p20) :is(.count,.lab,.origin).e20,svg:has(.w.e20:hover) .p20{opacity:1}
+svg:has(.p20:hover,:focus-visible>.p20) .route.e20{opacity:1;--c:var(--k20)}
+svg:has(.p21:hover,:focus-visible>.p21) :is(.box,.port).n21,svg:has(.p21:hover,:focus-visible>.p21) :is(.count,.lab,.origin).e21,svg:has(.w.e21:hover) .p21{opacity:1}
+svg:has(.p21:hover,:focus-visible>.p21) .route.e21{opacity:1;--c:var(--k21)}
+svg:has(.p22:hover,:focus-visible>.p22) :is(.box,.port).n22,svg:has(.p22:hover,:focus-visible>.p22) :is(.count,.lab,.origin).e22,svg:has(.w.e22:hover) .p22{opacity:1}
+svg:has(.p22:hover,:focus-visible>.p22) .route.e22{opacity:1;--c:var(--k22)}
+svg:has(.p23:hover,:focus-visible>.p23) :is(.box,.port).n23,svg:has(.p23:hover,:focus-visible>.p23) :is(.count,.lab,.origin).e23,svg:has(.w.e23:hover) .p23{opacity:1}
+svg:has(.p23:hover,:focus-visible>.p23) .route.e23{opacity:1;--c:var(--k23)}
+svg:has(.p24:hover,:focus-visible>.p24) :is(.box,.port).n24,svg:has(.p24:hover,:focus-visible>.p24) :is(.count,.lab,.origin).e24,svg:has(.w.e24:hover) .p24{opacity:1}
+svg:has(.p24:hover,:focus-visible>.p24) .route.e24{opacity:1;--c:var(--k24)}
+svg:has(.p25:hover,:focus-visible>.p25) :is(.box,.port).n25,svg:has(.p25:hover,:focus-visible>.p25) :is(.count,.lab,.origin).e25,svg:has(.w.e25:hover) .p25{opacity:1}
+svg:has(.p25:hover,:focus-visible>.p25) .route.e25{opacity:1;--c:var(--k25)}
+svg:has(.p26:hover,:focus-visible>.p26) :is(.box,.port).n26,svg:has(.p26:hover,:focus-visible>.p26) :is(.count,.lab,.origin).e26,svg:has(.w.e26:hover) .p26{opacity:1}
+svg:has(.p26:hover,:focus-visible>.p26) .route.e26{opacity:1;--c:var(--k26)}
+svg:has(.p27:hover,:focus-visible>.p27) :is(.box,.port).n27,svg:has(.p27:hover,:focus-visible>.p27) :is(.count,.lab,.origin).e27,svg:has(.w.e27:hover) .p27{opacity:1}
+svg:has(.p27:hover,:focus-visible>.p27) .route.e27{opacity:1;--c:var(--k27)}
+svg:has(.p28:hover,:focus-visible>.p28) :is(.box,.port).n28,svg:has(.p28:hover,:focus-visible>.p28) :is(.count,.lab,.origin).e28,svg:has(.w.e28:hover) .p28{opacity:1}
+svg:has(.p28:hover,:focus-visible>.p28) .route.e28{opacity:1;--c:var(--k28)}
+svg:has(.p29:hover,:focus-visible>.p29) :is(.box,.port).n29,svg:has(.p29:hover,:focus-visible>.p29) :is(.count,.lab,.origin).e29,svg:has(.w.e29:hover) .p29{opacity:1}
+svg:has(.p29:hover,:focus-visible>.p29) .route.e29{opacity:1;--c:var(--k29)}
+svg:has(.p30:hover,:focus-visible>.p30) :is(.box,.port).n30,svg:has(.p30:hover,:focus-visible>.p30) :is(.count,.lab,.origin).e30,svg:has(.w.e30:hover) .p30{opacity:1}
+svg:has(.p30:hover,:focus-visible>.p30) .route.e30{opacity:1;--c:var(--k30)}
+svg:has(.p31:hover,:focus-visible>.p31) :is(.box,.port).n31,svg:has(.p31:hover,:focus-visible>.p31) :is(.count,.lab,.origin).e31,svg:has(.w.e31:hover) .p31{opacity:1}
+svg:has(.p31:hover,:focus-visible>.p31) .route.e31{opacity:1;--c:var(--k31)}
+svg:has(.p32:hover,:focus-visible>.p32) :is(.box,.port).n32,svg:has(.p32:hover,:focus-visible>.p32) :is(.count,.lab,.origin).e32,svg:has(.w.e32:hover) .p32{opacity:1}
+svg:has(.p32:hover,:focus-visible>.p32) .route.e32{opacity:1;--c:var(--k32)}
+svg:has(.p33:hover,:focus-visible>.p33) :is(.box,.port).n33,svg:has(.p33:hover,:focus-visible>.p33) :is(.count,.lab,.origin).e33,svg:has(.w.e33:hover) .p33{opacity:1}
+svg:has(.p33:hover,:focus-visible>.p33) .route.e33{opacity:1;--c:var(--k33)}
+svg:has(.p34:hover,:focus-visible>.p34) :is(.box,.port).n34,svg:has(.p34:hover,:focus-visible>.p34) :is(.count,.lab,.origin).e34,svg:has(.w.e34:hover) .p34{opacity:1}
+svg:has(.p34:hover,:focus-visible>.p34) .route.e34{opacity:1;--c:var(--k34)}
+svg:has(.p35:hover,:focus-visible>.p35) :is(.box,.port).n35,svg:has(.p35:hover,:focus-visible>.p35) :is(.count,.lab,.origin).e35,svg:has(.w.e35:hover) .p35{opacity:1}
+svg:has(.p35:hover,:focus-visible>.p35) .route.e35{opacity:1;--c:var(--k35)}
+svg:has(.p36:hover,:focus-visible>.p36) :is(.box,.port).n36,svg:has(.p36:hover,:focus-visible>.p36) :is(.count,.lab,.origin).e36,svg:has(.w.e36:hover) .p36{opacity:1}
+svg:has(.p36:hover,:focus-visible>.p36) .route.e36{opacity:1;--c:var(--k36)}
+svg:has(.p37:hover,:focus-visible>.p37) :is(.box,.port).n37,svg:has(.p37:hover,:focus-visible>.p37) :is(.count,.lab,.origin).e37,svg:has(.w.e37:hover) .p37{opacity:1}
+svg:has(.p37:hover,:focus-visible>.p37) .route.e37{opacity:1;--c:var(--k37)}
+svg:has(.p38:hover,:focus-visible>.p38) :is(.box,.port).n38,svg:has(.p38:hover,:focus-visible>.p38) :is(.count,.lab,.origin).e38,svg:has(.w.e38:hover) .p38{opacity:1}
+svg:has(.p38:hover,:focus-visible>.p38) .route.e38{opacity:1;--c:var(--k38)}
+svg:has(.p39:hover,:focus-visible>.p39) :is(.box,.port).n39,svg:has(.p39:hover,:focus-visible>.p39) :is(.count,.lab,.origin).e39,svg:has(.w.e39:hover) .p39{opacity:1}
+svg:has(.p39:hover,:focus-visible>.p39) .route.e39{opacity:1;--c:var(--k39)}
+svg:has(.p40:hover,:focus-visible>.p40) :is(.box,.port).n40,svg:has(.p40:hover,:focus-visible>.p40) :is(.count,.lab,.origin).e40,svg:has(.w.e40:hover) .p40{opacity:1}
+svg:has(.p40:hover,:focus-visible>.p40) .route.e40{opacity:1;--c:var(--k40)}
+svg:has(.p41:hover,:focus-visible>.p41) :is(.box,.port).n41,svg:has(.p41:hover,:focus-visible>.p41) :is(.count,.lab,.origin).e41,svg:has(.w.e41:hover) .p41{opacity:1}
+svg:has(.p41:hover,:focus-visible>.p41) .route.e41{opacity:1;--c:var(--k41)}
+svg:has(.p42:hover,:focus-visible>.p42) :is(.box,.port).n42,svg:has(.p42:hover,:focus-visible>.p42) :is(.count,.lab,.origin).e42,svg:has(.w.e42:hover) .p42{opacity:1}
+svg:has(.p42:hover,:focus-visible>.p42) .route.e42{opacity:1;--c:var(--k42)}
+svg:has(.p43:hover,:focus-visible>.p43) :is(.box,.port).n43,svg:has(.p43:hover,:focus-visible>.p43) :is(.count,.lab,.origin).e43,svg:has(.w.e43:hover) .p43{opacity:1}
+svg:has(.p43:hover,:focus-visible>.p43) .route.e43{opacity:1;--c:var(--k43)}
+svg:has(.p44:hover,:focus-visible>.p44) :is(.box,.port).n44,svg:has(.p44:hover,:focus-visible>.p44) :is(.count,.lab,.origin).e44,svg:has(.w.e44:hover) .p44{opacity:1}
+svg:has(.p44:hover,:focus-visible>.p44) .route.e44{opacity:1;--c:var(--k44)}
+svg:has(.p45:hover,:focus-visible>.p45) :is(.box,.port).n45,svg:has(.p45:hover,:focus-visible>.p45) :is(.count,.lab,.origin).e45,svg:has(.w.e45:hover) .p45{opacity:1}
+svg:has(.p45:hover,:focus-visible>.p45) .route.e45{opacity:1;--c:var(--k45)}
+svg:has(.p46:hover,:focus-visible>.p46) :is(.box,.port).n46,svg:has(.p46:hover,:focus-visible>.p46) :is(.count,.lab,.origin).e46,svg:has(.w.e46:hover) .p46{opacity:1}
+svg:has(.p46:hover,:focus-visible>.p46) .route.e46{opacity:1;--c:var(--k46)}
+svg:has(.p47:hover,:focus-visible>.p47) :is(.box,.port).n47,svg:has(.p47:hover,:focus-visible>.p47) :is(.count,.lab,.origin).e47,svg:has(.w.e47:hover) .p47{opacity:1}
+svg:has(.p47:hover,:focus-visible>.p47) .route.e47{opacity:1;--c:var(--k47)}
+svg:has(.w.r0:hover) .r0:not(.w){opacity:1}
+svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
+svg:has(.w.r2:hover) .r2:not(.w){opacity:1}
+svg:has(.w.r3:hover) .r3:not(.w){opacity:1}
+svg:has(.w.r4:hover) .r4:not(.w){opacity:1}
+svg:has(.w.r5:hover) .r5:not(.w){opacity:1}
+svg:has(.w.r6:hover) .r6:not(.w){opacity:1}
+svg:has(.w.r7:hover) .r7:not(.w){opacity:1}
+svg:has(.w.r8:hover) .r8:not(.w){opacity:1}
+svg:has(.w.r9:hover) .r9:not(.w){opacity:1}
+svg:has(.w.r10:hover) .r10:not(.w){opacity:1}
+svg:has(.w.r11:hover) .r11:not(.w){opacity:1}
+svg:has(.w.r12:hover) .r12:not(.w){opacity:1}
+svg:has(.w.r13:hover) .r13:not(.w){opacity:1}
+svg:has(.w.r14:hover) .r14:not(.w){opacity:1}
+svg:has(.w.r15:hover) .r15:not(.w){opacity:1}
+svg:has(.w.r16:hover) .r16:not(.w){opacity:1}
+svg:has(.w.r17:hover) .r17:not(.w){opacity:1}
+svg:has(.w.r18:hover) .r18:not(.w){opacity:1}
+svg:has(.w.r19:hover) .r19:not(.w){opacity:1}
+svg:has(.w.r20:hover) .r20:not(.w){opacity:1}
+svg:has(.w.r21:hover) .r21:not(.w){opacity:1}
+svg:has(.w.r22:hover) .r22:not(.w){opacity:1}
+svg:has(.w.r23:hover) .r23:not(.w){opacity:1}
+svg:has(.w.r24:hover) .r24:not(.w){opacity:1}
+svg:has(.w.r25:hover) .r25:not(.w){opacity:1}
+svg:has(.w.r26:hover) .r26:not(.w){opacity:1}
+svg:has(.w.r27:hover) .r27:not(.w){opacity:1}
+svg:has(.w.r28:hover) .r28:not(.w){opacity:1}
+svg:has(.w.r29:hover) .r29:not(.w){opacity:1}
+svg:has(.w.r30:hover) .r30:not(.w){opacity:1}
+svg:has(.w.r31:hover) .r31:not(.w){opacity:1}
+svg:has(.w.r32:hover) .r32:not(.w){opacity:1}
+svg:has(.w.r33:hover) .r33:not(.w){opacity:1}
+svg:has(.w.r34:hover) .r34:not(.w){opacity:1}
+svg:has(.w.r35:hover) .r35:not(.w){opacity:1}
+svg:has(.w.r36:hover) .r36:not(.w){opacity:1}
+svg:has(.w.r37:hover) .r37:not(.w){opacity:1}
+svg:has(.w.r38:hover) .r38:not(.w){opacity:1}
+svg:has(.w.r39:hover) .r39:not(.w){opacity:1}
+svg:has(.w.r40:hover) .r40:not(.w){opacity:1}
+svg:has(.w.r41:hover) .r41:not(.w){opacity:1}
+svg:has(.w.r42:hover) .r42:not(.w){opacity:1}
+svg:has(.w.r43:hover) .r43:not(.w){opacity:1}
+svg:has(.w.r44:hover) .r44:not(.w){opacity:1}
+svg:has(.w.r45:hover) .r45:not(.w){opacity:1}
+svg:has(.w.r46:hover) .r46:not(.w){opacity:1}
+svg:has(.w.r47:hover) .r47:not(.w){opacity:1}
+svg:has(.w.r48:hover) .r48:not(.w){opacity:1}
+svg:has(.w.r49:hover) .r49:not(.w){opacity:1}
+svg:has(.w.r50:hover) .r50:not(.w){opacity:1}
+svg:has(.w.r51:hover) .r51:not(.w){opacity:1}
+svg:has(.w.r52:hover) .r52:not(.w){opacity:1}
+svg:has(.w.r53:hover) .r53:not(.w){opacity:1}
+svg:has(.w.r54:hover) .r54:not(.w){opacity:1}
+svg:has(.w.r55:hover) .r55:not(.w){opacity:1}
+svg:has(.w.r56:hover) .r56:not(.w){opacity:1}
+svg:has(.w.r57:hover) .r57:not(.w){opacity:1}
+svg:has(.w.r58:hover) .r58:not(.w){opacity:1}
+svg:has(.w.r59:hover) .r59:not(.w){opacity:1}
+svg:has(.w.r60:hover) .r60:not(.w){opacity:1}
+svg:has(.w.r61:hover) .r61:not(.w){opacity:1}
+svg:has(.w.r62:hover) .r62:not(.w){opacity:1}
+svg:has(.w.r63:hover) .r63:not(.w){opacity:1}
+svg:has(.w.r64:hover) .r64:not(.w){opacity:1}
+svg:has(.w.r65:hover) .r65:not(.w){opacity:1}
+svg:has(.w.r66:hover) .r66:not(.w){opacity:1}
+svg:has(.w.r67:hover) .r67:not(.w){opacity:1}
+svg:has(.w.r68:hover) .r68:not(.w){opacity:1}
+svg:has(.w.r69:hover) .r69:not(.w){opacity:1}
+svg:has(.w.r70:hover) .r70:not(.w){opacity:1}
+svg:has(.w.r71:hover) .r71:not(.w){opacity:1}
+svg:has(.w.r72:hover) .r72:not(.w){opacity:1}
+svg:has(.w.r73:hover) .r73:not(.w){opacity:1}
+svg:has(.w.r74:hover) .r74:not(.w){opacity:1}
+svg:has(.w.r75:hover) .r75:not(.w){opacity:1}
+svg:has(.w.r76:hover) .r76:not(.w){opacity:1}
+svg:has(.w.r77:hover) .r77:not(.w){opacity:1}
+svg:has(.w.r78:hover) .r78:not(.w){opacity:1}
+svg:has(.w.r79:hover) .r79:not(.w){opacity:1}
+svg:has(.w.r80:hover) .r80:not(.w){opacity:1}
+svg:has(.w.r81:hover) .r81:not(.w){opacity:1}
+svg:has(.w.r82:hover) .r82:not(.w){opacity:1}
+svg:has(.w.r83:hover) .r83:not(.w){opacity:1}
+svg:has(.w.r84:hover) .r84:not(.w){opacity:1}
+svg:has(.w.r85:hover) .r85:not(.w){opacity:1}
+svg:has(.w.r86:hover) .r86:not(.w){opacity:1}
+svg:has(.w.r87:hover) .r87:not(.w){opacity:1}
+svg:has(.w.r88:hover) .r88:not(.w){opacity:1}
+svg:has(.w.r89:hover) .r89:not(.w){opacity:1}
+svg:has(.w.r90:hover) .r90:not(.w){opacity:1}
+svg:has(.w.r91:hover) .r91:not(.w){opacity:1}
+svg:has(.w.r92:hover) .r92:not(.w){opacity:1}
+svg:has(.w.r93:hover) .r93:not(.w){opacity:1}
+svg:has(.w.r94:hover) .r94:not(.w){opacity:1}
+svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 }
-svg:has(:focus-visible>.p0) :is(.w,.count,.lab,.origin,.junction):not(.e0){opacity:.1}
-svg:has(:focus-visible>.p0) :is(.box,.port[class*=" n"]):not(.n0){opacity:.3}
-svg:has(:focus-visible>.p1) :is(.w,.count,.lab,.origin,.junction):not(.e1){opacity:.1}
-svg:has(:focus-visible>.p1) :is(.box,.port[class*=" n"]):not(.n1){opacity:.3}
-svg:has(:focus-visible>.p2) :is(.w,.count,.lab,.origin,.junction):not(.e2){opacity:.1}
-svg:has(:focus-visible>.p2) :is(.box,.port[class*=" n"]):not(.n2){opacity:.3}
-svg:has(:focus-visible>.p3) :is(.w,.count,.lab,.origin,.junction):not(.e3){opacity:.1}
-svg:has(:focus-visible>.p3) :is(.box,.port[class*=" n"]):not(.n3){opacity:.3}
-svg:has(:focus-visible>.p4) :is(.w,.count,.lab,.origin,.junction):not(.e4){opacity:.1}
-svg:has(:focus-visible>.p4) :is(.box,.port[class*=" n"]):not(.n4){opacity:.3}
-svg:has(:focus-visible>.p5) :is(.w,.count,.lab,.origin,.junction):not(.e5){opacity:.1}
-svg:has(:focus-visible>.p5) :is(.box,.port[class*=" n"]):not(.n5){opacity:.3}
-svg:has(:focus-visible>.p6) :is(.w,.count,.lab,.origin,.junction):not(.e6){opacity:.1}
-svg:has(:focus-visible>.p6) :is(.box,.port[class*=" n"]):not(.n6){opacity:.3}
-svg:has(:focus-visible>.p7) :is(.w,.count,.lab,.origin,.junction):not(.e7){opacity:.1}
-svg:has(:focus-visible>.p7) :is(.box,.port[class*=" n"]):not(.n7){opacity:.3}
-svg:has(:focus-visible>.p8) :is(.w,.count,.lab,.origin,.junction):not(.e8){opacity:.1}
-svg:has(:focus-visible>.p8) :is(.box,.port[class*=" n"]):not(.n8){opacity:.3}
-svg:has(:focus-visible>.p9) :is(.w,.count,.lab,.origin,.junction):not(.e9){opacity:.1}
-svg:has(:focus-visible>.p9) :is(.box,.port[class*=" n"]):not(.n9){opacity:.3}
-svg:has(:focus-visible>.p10) :is(.w,.count,.lab,.origin,.junction):not(.e10){opacity:.1}
-svg:has(:focus-visible>.p10) :is(.box,.port[class*=" n"]):not(.n10){opacity:.3}
-svg:has(:focus-visible>.p11) :is(.w,.count,.lab,.origin,.junction):not(.e11){opacity:.1}
-svg:has(:focus-visible>.p11) :is(.box,.port[class*=" n"]):not(.n11){opacity:.3}
-svg:has(:focus-visible>.p12) :is(.w,.count,.lab,.origin,.junction):not(.e12){opacity:.1}
-svg:has(:focus-visible>.p12) :is(.box,.port[class*=" n"]):not(.n12){opacity:.3}
-svg:has(:focus-visible>.p13) :is(.w,.count,.lab,.origin,.junction):not(.e13){opacity:.1}
-svg:has(:focus-visible>.p13) :is(.box,.port[class*=" n"]):not(.n13){opacity:.3}
-svg:has(:focus-visible>.p14) :is(.w,.count,.lab,.origin,.junction):not(.e14){opacity:.1}
-svg:has(:focus-visible>.p14) :is(.box,.port[class*=" n"]):not(.n14){opacity:.3}
-svg:has(:focus-visible>.p15) :is(.w,.count,.lab,.origin,.junction):not(.e15){opacity:.1}
-svg:has(:focus-visible>.p15) :is(.box,.port[class*=" n"]):not(.n15){opacity:.3}
-svg:has(:focus-visible>.p16) :is(.w,.count,.lab,.origin,.junction):not(.e16){opacity:.1}
-svg:has(:focus-visible>.p16) :is(.box,.port[class*=" n"]):not(.n16){opacity:.3}
-svg:has(:focus-visible>.p17) :is(.w,.count,.lab,.origin,.junction):not(.e17){opacity:.1}
-svg:has(:focus-visible>.p17) :is(.box,.port[class*=" n"]):not(.n17){opacity:.3}
-svg:has(:focus-visible>.p18) :is(.w,.count,.lab,.origin,.junction):not(.e18){opacity:.1}
-svg:has(:focus-visible>.p18) :is(.box,.port[class*=" n"]):not(.n18){opacity:.3}
-svg:has(:focus-visible>.p19) :is(.w,.count,.lab,.origin,.junction):not(.e19){opacity:.1}
-svg:has(:focus-visible>.p19) :is(.box,.port[class*=" n"]):not(.n19){opacity:.3}
-svg:has(:focus-visible>.p20) :is(.w,.count,.lab,.origin,.junction):not(.e20){opacity:.1}
-svg:has(:focus-visible>.p20) :is(.box,.port[class*=" n"]):not(.n20){opacity:.3}
-svg:has(:focus-visible>.p21) :is(.w,.count,.lab,.origin,.junction):not(.e21){opacity:.1}
-svg:has(:focus-visible>.p21) :is(.box,.port[class*=" n"]):not(.n21){opacity:.3}
-svg:has(:focus-visible>.p22) :is(.w,.count,.lab,.origin,.junction):not(.e22){opacity:.1}
-svg:has(:focus-visible>.p22) :is(.box,.port[class*=" n"]):not(.n22){opacity:.3}
-svg:has(:focus-visible>.p23) :is(.w,.count,.lab,.origin,.junction):not(.e23){opacity:.1}
-svg:has(:focus-visible>.p23) :is(.box,.port[class*=" n"]):not(.n23){opacity:.3}
-svg:has(:focus-visible>.p24) :is(.w,.count,.lab,.origin,.junction):not(.e24){opacity:.1}
-svg:has(:focus-visible>.p24) :is(.box,.port[class*=" n"]):not(.n24){opacity:.3}
-svg:has(:focus-visible>.p25) :is(.w,.count,.lab,.origin,.junction):not(.e25){opacity:.1}
-svg:has(:focus-visible>.p25) :is(.box,.port[class*=" n"]):not(.n25){opacity:.3}
-svg:has(:focus-visible>.p26) :is(.w,.count,.lab,.origin,.junction):not(.e26){opacity:.1}
-svg:has(:focus-visible>.p26) :is(.box,.port[class*=" n"]):not(.n26){opacity:.3}
-svg:has(:focus-visible>.p27) :is(.w,.count,.lab,.origin,.junction):not(.e27){opacity:.1}
-svg:has(:focus-visible>.p27) :is(.box,.port[class*=" n"]):not(.n27){opacity:.3}
-svg:has(:focus-visible>.p28) :is(.w,.count,.lab,.origin,.junction):not(.e28){opacity:.1}
-svg:has(:focus-visible>.p28) :is(.box,.port[class*=" n"]):not(.n28){opacity:.3}
-svg:has(:focus-visible>.p29) :is(.w,.count,.lab,.origin,.junction):not(.e29){opacity:.1}
-svg:has(:focus-visible>.p29) :is(.box,.port[class*=" n"]):not(.n29){opacity:.3}
-svg:has(:focus-visible>.p30) :is(.w,.count,.lab,.origin,.junction):not(.e30){opacity:.1}
-svg:has(:focus-visible>.p30) :is(.box,.port[class*=" n"]):not(.n30){opacity:.3}
-svg:has(:focus-visible>.p31) :is(.w,.count,.lab,.origin,.junction):not(.e31){opacity:.1}
-svg:has(:focus-visible>.p31) :is(.box,.port[class*=" n"]):not(.n31){opacity:.3}
-svg:has(:focus-visible>.p32) :is(.w,.count,.lab,.origin,.junction):not(.e32){opacity:.1}
-svg:has(:focus-visible>.p32) :is(.box,.port[class*=" n"]):not(.n32){opacity:.3}
-svg:has(:focus-visible>.p33) :is(.w,.count,.lab,.origin,.junction):not(.e33){opacity:.1}
-svg:has(:focus-visible>.p33) :is(.box,.port[class*=" n"]):not(.n33){opacity:.3}
-svg:has(:focus-visible>.p34) :is(.w,.count,.lab,.origin,.junction):not(.e34){opacity:.1}
-svg:has(:focus-visible>.p34) :is(.box,.port[class*=" n"]):not(.n34){opacity:.3}
-svg:has(:focus-visible>.p35) :is(.w,.count,.lab,.origin,.junction):not(.e35){opacity:.1}
-svg:has(:focus-visible>.p35) :is(.box,.port[class*=" n"]):not(.n35){opacity:.3}
-svg:has(:focus-visible>.p36) :is(.w,.count,.lab,.origin,.junction):not(.e36){opacity:.1}
-svg:has(:focus-visible>.p36) :is(.box,.port[class*=" n"]):not(.n36){opacity:.3}
-svg:has(:focus-visible>.p37) :is(.w,.count,.lab,.origin,.junction):not(.e37){opacity:.1}
-svg:has(:focus-visible>.p37) :is(.box,.port[class*=" n"]):not(.n37){opacity:.3}
-svg:has(:focus-visible>.p38) :is(.w,.count,.lab,.origin,.junction):not(.e38){opacity:.1}
-svg:has(:focus-visible>.p38) :is(.box,.port[class*=" n"]):not(.n38){opacity:.3}
-svg:has(:focus-visible>.p39) :is(.w,.count,.lab,.origin,.junction):not(.e39){opacity:.1}
-svg:has(:focus-visible>.p39) :is(.box,.port[class*=" n"]):not(.n39){opacity:.3}
-svg:has(:focus-visible>.p40) :is(.w,.count,.lab,.origin,.junction):not(.e40){opacity:.1}
-svg:has(:focus-visible>.p40) :is(.box,.port[class*=" n"]):not(.n40){opacity:.3}
-svg:has(:focus-visible>.p41) :is(.w,.count,.lab,.origin,.junction):not(.e41){opacity:.1}
-svg:has(:focus-visible>.p41) :is(.box,.port[class*=" n"]):not(.n41){opacity:.3}
-svg:has(:focus-visible>.p42) :is(.w,.count,.lab,.origin,.junction):not(.e42){opacity:.1}
-svg:has(:focus-visible>.p42) :is(.box,.port[class*=" n"]):not(.n42){opacity:.3}
-svg:has(:focus-visible>.p43) :is(.w,.count,.lab,.origin,.junction):not(.e43){opacity:.1}
-svg:has(:focus-visible>.p43) :is(.box,.port[class*=" n"]):not(.n43){opacity:.3}
-svg:has(:focus-visible>.p44) :is(.w,.count,.lab,.origin,.junction):not(.e44){opacity:.1}
-svg:has(:focus-visible>.p44) :is(.box,.port[class*=" n"]):not(.n44){opacity:.3}
-svg:has(:focus-visible>.p45) :is(.w,.count,.lab,.origin,.junction):not(.e45){opacity:.1}
-svg:has(:focus-visible>.p45) :is(.box,.port[class*=" n"]):not(.n45){opacity:.3}
-svg:has(:focus-visible>.p46) :is(.w,.count,.lab,.origin,.junction):not(.e46){opacity:.1}
-svg:has(:focus-visible>.p46) :is(.box,.port[class*=" n"]):not(.n46){opacity:.3}
-svg:has(:focus-visible>.p47) :is(.w,.count,.lab,.origin,.junction):not(.e47){opacity:.1}
-svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
 
 </style>
 </head>
@@ -447,15 +452,16 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
   <div class="drawhead"><h2>pstack (external)의 안 <span class="muted key">MOD-0055</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="784" height="164" viewBox="0 0 784 164" role="img" aria-label="모듈의 안">
-<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker></defs>
+<defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><marker id="m-dep-3" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h3); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 <rect class="frame" x="6" y="18" width="772" height="128" rx="8"/>
-<path class="w depends_on e0 e4" d="M94 38 L94 70" data-origin="inferred" data-h="0" marker-end="url(#m-dep-0)"><title>/abbd read the code through pstack depends_on pstack /how (via call), 판독
+<path class="w depends_on e0 e4 r0" d="M94 38 L94 70" data-origin="inferred" data-h="0" marker-end="url(#m-dep-0)"><title>/abbd read the code through pstack depends_on pstack /how (via call), 판독
 /abbd-setup find units with a reader swarm depends_on pstack /how (via call), 판독
-건너는 것: Overview, Key Concepts (판독) 1/3, explorer prompt (판독) 1/3, how&#39;s account (판독) 1/3</title></path><circle class="origin inferred e0 e4" cx="94" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e4" data-h="0" x="144" y="58" text-anchor="middle">Overview 외 2</text><path class="w depends_on e1 e5" d="M294 38 L294 70" data-origin="inferred" data-h="1" marker-end="url(#m-dep-1)"><title>/abbd read the code through pstack depends_on pstack /blast-radius (via call), 판독
-건너는 것: blast radius (판독) 1/1</title></path><circle class="origin inferred e1 e5" cx="294" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e5" data-h="1" x="340" y="58" text-anchor="middle">blast radius</text><path class="w depends_on e2 e6" d="M494 38 L494 70" data-origin="inferred" data-h="2" marker-end="url(#m-dep-2)"><title>/abbd-setup find units with a reader swarm depends_on pstack /swarm (via call), 판독
-건너는 것: reader slices (판독) 1/1</title></path><circle class="origin inferred e2 e6" cx="494" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e2 e6" data-h="2" x="543" y="58" text-anchor="middle">reader slices</text><path class="w depends_on e3 e7" d="M682 38 L682 62" data-origin="inferred" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd-setup build the deterministic extractor depends_on pstack principle-build-the-lever (via call), 판독
-건너는 것: extractor script (판독) 1/1</title></path><circle class="origin inferred e3 e7" cx="682" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
+건너는 것: Overview, Key Concepts (판독) 1/3, explorer prompt (판독) 1/3, how&#39;s account (판독) 1/3</title></path><circle class="origin inferred e0 e4 r0" cx="94" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e4 r0" data-h="0" x="144" y="58" text-anchor="middle">Overview 외 2</text><path class="w depends_on e1 e5 r1" d="M294 38 L294 70" data-origin="inferred" data-h="1" marker-end="url(#m-dep-1)"><title>/abbd read the code through pstack depends_on pstack /blast-radius (via call), 판독
+건너는 것: blast radius (판독) 1/1</title></path><circle class="origin inferred e1 e5 r1" cx="294" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e5 r1" data-h="1" x="340" y="58" text-anchor="middle">blast radius</text><path class="w depends_on e2 e6 r2" d="M494 38 L494 70" data-origin="inferred" data-h="2" marker-end="url(#m-dep-2)"><title>/abbd-setup find units with a reader swarm depends_on pstack /swarm (via call), 판독
+건너는 것: reader slices (판독) 1/1</title></path><circle class="origin inferred e2 e6 r2" cx="494" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e2 e6 r2" data-h="2" x="543" y="58" text-anchor="middle">reader slices</text><path class="w depends_on e3 e7 r3" d="M682 38 L682 62" data-origin="inferred" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd-setup build the deterministic extractor depends_on pstack principle-build-the-lever (via call), 판독
+건너는 것: extractor script (판독) 1/1</title></path><circle class="origin inferred e3 e7 r3" cx="682" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
 
+<g class="route depends_on e0 e4 r0" data-h="0" style="--k0:var(--h0);--k4:var(--h0)"><path class="way" d="M94 38 L94 70"/><use href="#t-dep" transform="translate(94 70) rotate(90)"/></g><g class="route depends_on e1 e5 r1" data-h="1" style="--k1:var(--h1);--k5:var(--h1)"><path class="way" d="M294 38 L294 70"/><use href="#t-dep" transform="translate(294 70) rotate(90)"/></g><g class="route depends_on e2 e6 r2" data-h="2" style="--k2:var(--h2);--k6:var(--h2)"><path class="way" d="M494 38 L494 70"/><use href="#t-dep" transform="translate(494 70) rotate(90)"/></g><g class="route depends_on e3 e7 r3" data-h="3" style="--k3:var(--h3);--k7:var(--h3)"><path class="way" d="M682 38 L682 62"/><use href="#t-dep" transform="translate(682 62) rotate(90)"/></g>
 <g class="box inner p0 n0 n4" data-id="FEAT-0018" data-h="0"><title>FEAT-0018 pstack /how: pstack&#39;s subsystem walkthrough; ABBD uses it to read code and to write each module&#39;s text.</title><rect x="24" y="70" width="140" height="44" rx="4"/><path class="bar" d="M25 75 V109"/><text class="name" x="32" y="89">pstack /how</text><text class="sub" x="32" y="106">기능</text></g><g class="box inner p1 n1 n5" data-id="FEAT-0019" data-h="1"><title>FEAT-0019 pstack /blast-radius: pstack&#39;s change-reach analysis; ABBD uses it for a change across several modules.</title><rect x="204" y="70" width="180" height="44" rx="4"/><path class="bar" d="M205 75 V109"/><text class="name" x="212" y="89">pstack /blast-radius</text><text class="sub" x="212" y="106">기능</text></g><g class="box inner p2 n2 n6" data-id="FEAT-0020" data-h="2"><title>FEAT-0020 pstack /swarm: pstack&#39;s parallel fan-out; ABBD setup reads the code and asks for the grouping through it.</title><rect x="424" y="70" width="140" height="44" rx="4"/><path class="bar" d="M425 75 V109"/><text class="name" x="432" y="89">pstack /swarm</text><text class="sub" x="432" y="106">기능</text></g><g class="box inner p3 n3 n7" data-id="FEAT-0021" data-h="3"><title>FEAT-0021 pstack principle-build-the-lever: pstack&#39;s principle of building the tool that does the work; it grounds the extractor script.</title><rect x="604" y="62" width="156" height="60" rx="4"/><path class="bar" d="M605 67 V117"/><text class="name" x="612" y="81">pstack principle-</text><text class="name" x="612" y="97">build-the-lever</text><text class="sub" x="612" y="114">기능</text></g>
 <g class="port other exit p4 n0 n4" data-id="port|gather|FEAT-0018true"><title>계약 없이 /abbd, /abbd-setup와 닿는 곳</title><rect x="32" y="21" width="124" height="17" rx="3"/><text class="chip" x="32" dx="4" y="21" dy="12.5">abbd, abbd-setup</text></g><a href="FEAT-0001.html"><g class="port other exit p5 n1 n5" data-id="port|gather|FEAT-0019true"><title>계약 없이 /abbd와 닿는 곳</title><rect x="274" y="21" width="40" height="17" rx="3"/><text class="chip" x="274" dx="4" y="21" dy="12.5">abbd</text></g></a><a href="FEAT-0002.html"><g class="port other exit p6 n2 n6" data-id="port|gather|FEAT-0020true"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="453" y="21" width="82" height="17" rx="3"/><text class="chip" x="453" dx="4" y="21" dy="12.5">abbd-setup</text></g></a><a href="FEAT-0002.html"><g class="port other exit p7 n3 n7" data-id="port|gather|FEAT-0021true"><title>계약 없이 /abbd-setup와 닿는 곳</title><rect x="641" y="21" width="82" height="17" rx="3"/><text class="chip" x="641" dx="4" y="21" dy="12.5">abbd-setup</text></g></a>
 </svg></div>
@@ -497,12 +503,13 @@ svg:has(:focus-visible>.p47) :is(.box,.port[class*=" n"]):not(.n47){opacity:.3}
   <div class="drawhead"><h2>pstack (external) 둘레 <span class="muted key">MOD-0055</span></h2><div class="views"><span class="muted">모듈과 계약에서 고른 상자</span> <a href="index.html">전체 그림으로</a> <a href="#m-MOD-0055">pstack (external)의 안으로</a></div></div>
   <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="388" height="204" viewBox="0 0 388 204" role="img" aria-label="모듈과 계약">
-<defs><marker id="m-dep-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hb); stroke-width: 1.6"/></marker></defs>
+<defs><marker id="m-dep-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hb); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 
-<path class="w bypass e0 e2" d="M122 92 L122 128" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독
-건너는 것: blast radius (판독) 1/2, how&#39;s account (판독) 1/2</title></path><circle class="origin inferred e0 e2" cx="122" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e2" data-h="b" x="177" y="114" text-anchor="middle">blast radius 등</text><path class="w bypass e1 e2" d="M266 92 L266 128" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독
-건너는 것: Overview, Key Concepts (판독) 1/5, explorer prompt (판독) 1/5, extractor script (판독) 1/5, pstack 0.15.36 (판독) 1/5, reader slices (판독) 1/5</title></path><circle class="origin inferred e1 e2" cx="266" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e2" data-h="b" x="316" y="114" text-anchor="middle">Overview 외 4</text>
+<path class="w bypass e0 e2 r0" d="M122 92 L122 128" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독
+건너는 것: blast radius (판독) 1/2, how&#39;s account (판독) 1/2</title></path><circle class="origin inferred e0 e2 r0" cx="122" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e2 r0" data-h="b" x="177" y="114" text-anchor="middle">blast radius 등</text><path class="w bypass e1 e2 r1" d="M266 92 L266 128" data-origin="inferred" data-h="b" marker-end="url(#m-dep-b)"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독
+건너는 것: Overview, Key Concepts (판독) 1/5, explorer prompt (판독) 1/5, extractor script (판독) 1/5, pstack 0.15.36 (판독) 1/5, reader slices (판독) 1/5</title></path><circle class="origin inferred e1 e2 r1" cx="266" cy="92" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e2 r1" data-h="b" x="316" y="114" text-anchor="middle">Overview 외 4</text>
 
+<g class="route bypass e0 e2 r0" data-h="b" style="--k0:var(--h1);--k2:var(--h0)"><path class="way" d="M122 92 L122 128"/><use href="#t-dep" transform="translate(122 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="b" style="--k1:var(--h3);--k2:var(--h0)"><path class="way" d="M266 92 L266 128"/><use href="#t-dep" transform="translate(266 128) rotate(90)"/></g>
 <a href="FEAT-0001.html#f-overview--FEAT-0001"><g class="box design p0 n0 n2" data-id="FEAT-0001" data-h="1"><title>FEAT-0001 /abbd. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="32" width="150" height="60" rx="6"/><path class="bar" d="M25 37 V87"/><text class="name" x="99" y="67" text-anchor="middle">/abbd</text></g></a><a href="FEAT-0002.html#f-overview--FEAT-0002"><g class="box design p1 n1 n2" data-id="FEAT-0002" data-h="3"><title>FEAT-0002 /abbd-setup. 누르면 이 모듈을 중심으로 봅니다</title><rect x="214" y="32" width="150" height="60" rx="6"/><path class="bar" d="M215 37 V87"/><text class="name" x="289" y="67" text-anchor="middle">/abbd-setup</text></g></a><a href="#m-MOD-0055"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0055" data-h="0"><title>MOD-0055 pstack (external). 누르면 이 모듈의 안을 봅니다</title><rect x="112" y="128" width="164" height="60" rx="6"/><path class="bar" d="M113 133 V183"/><text class="name" x="194" y="163" text-anchor="middle">pstack (external)</text></g></a>
 
 </svg></div>

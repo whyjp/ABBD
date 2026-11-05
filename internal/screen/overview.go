@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"html/template"
 	"maps"
 	"slices"
 	"sort"
@@ -28,6 +29,33 @@ type Drawing struct {
 	Relations [][2]string `json:"-"`
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
+	// Routes are each line's whole way, one per line the view requests.
+	Routes []Route `json:"-"`
+	// numbers are the shapes' numbers by place, as hover gave them.
+	numbers map[string]int
+}
+
+// Route is one line's whole way from the shape it leaves to the shape it
+// reaches, over every bus it rides, drawn unseen above the ink. While a
+// reader points at a piece of ink, each route that runs along it shows in
+// its line's colour, so every line there lights whole however many paths
+// draw its ink. A route takes no pointer itself, so the ink keeps its title.
+type Route struct {
+	D, Kind    string
+	Back, Both bool
+	Hue, Lit   string
+	// Vars name, for each box at an end, the colour the route takes while
+	// that box is pointed at: --kN for the box numbered N (hover.go).
+	Vars template.CSS
+	// Tips place the arrowheads, of shape Head, at the route's ends.
+	Head string
+	Tips []string
+	// src is the place whose colour the line wears, ends where it joins,
+	// at the numbers of the shapes there, and runs its straight pieces.
+	src  string
+	ends []string
+	at   []int
+	runs [][2]pt
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -1007,6 +1035,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.route(routed, reqs)
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d

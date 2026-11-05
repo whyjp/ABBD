@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"hash/fnv"
+	"html/template"
 	"maps"
 	"slices"
 	"strings"
@@ -164,6 +165,30 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
 		}
+	}
+	boxHue := map[int]string{}
+	for _, b := range d.Boxes {
+		if j, ok := d.numbers[string(base(model.ID(b.ID)))]; ok && b.Hue != "" {
+			boxHue[j] = b.Hue
+		}
+	}
+	for i := range d.Routes {
+		r := &d.Routes[i]
+		r.Hue = colour(r.src)
+		if warns(r.Kind) {
+			r.Hue = warnKey
+		}
+		// A pointed-at box lights the line in the box's colour, whatever
+		// its kind; a chip or a box of no colour leaves it its own.
+		var vars []string
+		for _, j := range r.at {
+			h, ok := boxHue[j]
+			if !ok {
+				h = r.Hue
+			}
+			vars = append(vars, fmt.Sprintf("--k%d:var(--h%s)", j, h))
+		}
+		r.Vars = template.CSS(strings.Join(vars, ";"))
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
 	for i, dot := range d.Dots {
