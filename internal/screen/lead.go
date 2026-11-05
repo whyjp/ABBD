@@ -338,6 +338,7 @@ func (d *Drawing) boxName(id string) string {
 // shape still lights its lines in its own colour, since each route keeps
 // the colour paint gave it.
 func (d *Drawing) quiet() {
+	d.Quiet = true
 	n := hueKey(-1)
 	used := map[string]bool{}
 	for i := range d.Wires {

@@ -1,7 +1,9 @@
 package screen
 
 import (
+	"maps"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -46,8 +48,8 @@ func (d *Drawing) dress(t tree) {
 		w := &d.Wires[i]
 		w.Plan = len(w.Rels) > 0 && runLength(w.D) >= planMin && !slices.ContainsFunc(w.Rels, func(r string) bool { return !planned[t.vias[r]] })
 	}
-	if d.Lead == nil {
-		d.hub()
+	if d.Lead == nil && d.hub() {
+		d.hubLines()
 	}
 	for i := range d.Boxes {
 		d.subtitle(&d.Boxes[i])
@@ -55,10 +57,11 @@ func (d *Drawing) dress(t tree) {
 }
 
 // hub fills the box at least hubOver times as many lines touch as any
-// other, when at least hubLines do. A focus view centres one box already.
-func (d *Drawing) hub() {
+// other, when at least hubLines do, and says whether it found one. A focus
+// view centres one box already.
+func (d *Drawing) hub() bool {
 	if slices.ContainsFunc(d.Boxes, func(b Box) bool { return strings.Contains(" "+b.Class+" ", " focus ") }) {
-		return
+		return false
 	}
 	n := map[string]int{}
 	for _, r := range d.Relations {
@@ -81,9 +84,50 @@ func (d *Drawing) hub() {
 		}
 	}
 	if top < 0 || n[d.Boxes[top].ID] < hubLines || float64(n[d.Boxes[top].ID]) < hubOver*float64(next) {
-		return
+		return false
 	}
 	d.Boxes[top].Role = "hub"
+	return true
+}
+
+// hubLines rests a hub's view the way a lead's does, except the hub's own
+// lines: ink every route along which has the hub at one end keeps the
+// hub's colour.
+func (d *Drawing) hubLines() {
+	f := d.Filled()
+	if f == nil || f.Hue == "" || len(d.Routes) == 0 {
+		return
+	}
+	hub, hue := f.ID, f.Hue
+	d.quiet()
+	used := map[string]bool{}
+	for _, h := range d.Heads {
+		used[h] = true
+	}
+	for i := range d.Wires {
+		w := &d.Wires[i]
+		ks := classNumbers(w.Lit, "r")
+		if len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
+			continue
+		}
+		w.Hue = hue
+		if !w.Joins {
+			w.Head = shapes[w.Kind] + "-" + hue
+			used[w.Head] = true
+		}
+	}
+	d.Heads = slices.Sorted(maps.Keys(used))
+}
+
+// classNumbers are the numbers of the classes in cls that are p and digits.
+func classNumbers(cls, p string) []int {
+	var out []int
+	for _, c := range strings.Fields(cls) {
+		if n, err := strconv.Atoi(strings.TrimPrefix(c, p)); err == nil && strings.HasPrefix(c, p) {
+			out = append(out, n)
+		}
+	}
+	return out
 }
 
 // role is what a box is in its view beyond its kind.

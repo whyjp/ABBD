@@ -239,7 +239,7 @@ func TestOnlyABypassWearsTheWarning(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Lead != nil {
+			if d.Quiet {
 				continue
 			}
 			for _, w := range d.Wires {
@@ -262,7 +262,7 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Lead != nil {
+			if d.Quiet {
 				continue
 			}
 			hue := map[string]string{}
@@ -309,6 +309,9 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 					t.Errorf("%s: a %s line beside a lead wears %q", name, w.Kind, w.Hue)
 				}
 			}
+			if !d.Quiet {
+				t.Errorf("%s: a view with a lead is not drawn quiet", name)
+			}
 			for _, j := range d.Dots {
 				if j.Hue != hueKey(-1) {
 					t.Errorf("%s: a dot beside a lead wears %q", name, j.Hue)
@@ -318,5 +321,34 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 	}
 	if leads == 0 {
 		t.Error("no fixture view draws a lead")
+	}
+}
+
+// A view with a hub and no lead rests every line grey but the hub's own,
+// which wear the hub's colour (dress.go).
+func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
+	hubs := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			f := d.Filled()
+			if d.Lead != nil || f == nil || f.Role != "hub" || !d.Quiet {
+				continue
+			}
+			hubs++
+			for _, w := range d.Wires {
+				own := true
+				for _, k := range classNumbers(w.Lit, "r") {
+					own = own && slices.Contains(d.Routes[k].ends, f.ID)
+				}
+				own = own && len(classNumbers(w.Lit, "r")) > 0
+				if want := map[bool]string{true: f.Hue, false: hueKey(-1)}[own]; w.Hue != want {
+					t.Errorf("%s: a %s line wears %q, want %q", name, w.Kind, w.Hue, want)
+				}
+			}
+		}
+	}
+	if hubs == 0 {
+		t.Error("no fixture view draws a hub")
 	}
 }
