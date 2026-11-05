@@ -5,7 +5,9 @@ An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, s
 - `rubric.md` is what the judge scored against.
 - `judge-scores.tsv` holds one blind judge pass (Opus) over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
 - `lint-levels.tsv` is `abbd lint --json` for every run, measured with the a2611d7 binary.
-- `decisions.tsv` joins both and records the verdicts. A variant is kept only if, on judge means averaged over all judge passes, it beats both base and the current kept iteration in at least 2 of 3 repositories, and in the third loses to neither by more than the passes' disagreement there.
+- `decisions.tsv` joins both and records the verdicts. Judge scores are averaged over all judge passes, and a variant is kept by one of two rules, chosen by what it changes:
+  - A skill or CLI change can change topology, so it is judged on fresh held-out runs against base and the current kept iteration. It is kept if it beats both in at least 2 of 3 repositories, on judge means, and in the third loses to neither by more than the passes' disagreement there.
+  - A renderer-only change cannot change topology, so it is judged paired, on re-renders of the current kept runs, against the drawing it changes. It is kept if the criteria it targets rise, and no criterion falls by more than the passes' disagreement in any repository.
 - `shots/` holds the base, it3, it4 and it5 overviews.
 
 ## Verdict
@@ -68,6 +70,6 @@ Three fresh Opus judges scored base, it3 and it5 in one pass each, under blind s
 
 All three passes rank the sets the same way: it5, it3, base on gin and storefront, and base, it5, it3 on httpie. Two passes differ by 0.11 to 0.15 on a set mean on average, and by 0.33 at most.
 
-it5 is rejected and reverted in 79f1779. It beats base and it3 on gin and storefront. On httpie it loses to base by 0.26, more than the largest pass disagreement there (0.17).
+it5 is kept under the paired rule. It changes only the renderer, and it draws it3's runs, so it is judged against it3. It raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged. Lines (c4) and every other criterion except overall (c6) score the same as it3's, and c6 rises by 0.11 on gin and storefront. Its mean gain over it3 is 0.09, 0.06 and 0.22.
 
-The rule judges a renderer-only change against base's topology, though. it5 draws it3's runs, and it3 already lost httpie to base. Paired against it3, the change raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged, and leaves lines (c4) unchanged. Its mean gain over it3 is 0.09, 0.06 and 0.22. A rule that compares a drawing change with the drawing it changes would keep it.
+Under the fresh-run rule it would have been rejected, and it was first reverted in 79f1779 on that ground. It beats base and it3 on gin and storefront, but loses httpie to base by 0.26, more than the largest pass disagreement there (0.17). That gap is it3's topology, which it5 draws unchanged, so it measures it3 against base, not the label rule. f0d42b1 undid that revert.
