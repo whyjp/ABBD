@@ -433,6 +433,25 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 	// by -1-b. Two of them at one x in one row, or in rows next to each
 	// other, would meet and read as one.
 	held := map[[2]int]int{}
+	// runsOn says line i, off its departure trunk, may pass a row at the x
+	// where its trunk o passed the row next to it: the trunk ended there
+	// and the line goes straight on, so the two read as the one line they
+	// are, where stepping aside would turn it twice for nothing. Not where
+	// another line leaves the trunk in the same gap for an arrival bus: it
+	// steps down onto that bus's track at the trunk's x, and the track
+	// would end on this line.
+	runsOn := func(i, o int) bool {
+		p := &plans[i]
+		if p.dep < 0 || o != -1-p.dep {
+			return false
+		}
+		for m := range plans {
+			if q := &plans[m]; m != i && q.dep == p.dep && q.ride == p.ride && q.arr >= 0 {
+				return false
+			}
+		}
+		return true
+	}
 	// runs is where line i, or the bus owner draws it for, runs down i's
 	// chain in row r, if it has room there.
 	runs := func(i, r, owner int) (int, bool) {
@@ -450,7 +469,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 		}
 		x += k * chainLane
 		for _, q := range []int{r - 1, r, r + 1} {
-			if o, ok := held[[2]int{q, x}]; ok && o != owner {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i || !runsOn(i, o)) {
 				return 0, false
 			}
 		}
@@ -649,6 +668,36 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 		for i := range reqs {
 			if p := &plans[i]; p.arr < 0 && (p.dep < 0 || p.ride < len(p.gaps)-1) {
 				claim(i)
+			}
+		}
+		// Lines of more than one kind from one frame chip, down a chain past
+		// rows, would run its whole length chainLane apart and read as one
+		// doubled line. Where the chain has lanes to spare, they spread
+		// over its width.
+		on := map[int][]int{}
+		for i, c := range chainOf {
+			if _, ok := laneOf[i]; ok {
+				on[c] = append(on[c], i)
+			}
+		}
+		for c, is := range on {
+			ch := l.chains[c]
+			top := strings.HasPrefix(ch.upper, frameTopNode)
+			if n := len(is); n < 2 || n >= ch.lanes || ch.bottom <= ch.top || !top && !strings.HasPrefix(ch.lower, frameBottomNode) {
+				continue
+			}
+			chip := func(i int) string {
+				if top != plans[i].up {
+					return place(reqs[i].from)
+				}
+				return place(reqs[i].to)
+			}
+			if slices.ContainsFunc(is, func(i int) bool { return chip(i) != chip(is[0]) }) ||
+				!slices.ContainsFunc(is, func(i int) bool { return reqs[i].kind != reqs[is[0]].kind }) {
+				continue
+			}
+			for _, i := range is {
+				laneOf[i] = (2*laneOf[i]*(ch.lanes-1) + len(is) - 1) / (2 * (len(is) - 1))
 			}
 		}
 	}
