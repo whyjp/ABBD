@@ -1,0 +1,65 @@
+id	c1	c2	c3	c4	c5	c6	reason
+c01	=	=	=	=	=	=	identical images
+c02	B	A	A	A	B	A	B names the real parts (middleware, engine, routing, context) but is an orange hairball with a chip mid-drawing; A is a clean 7-box package layer with one lumped "gin" box and generic 임포트 labels
+c03	=	=	=	=	=	=	identical images
+c04	A	A	A	A	A	A	binding inside is 6 clean boxes with phrase labels; server engine inside mixes test/version/utils, with tangled dashed climbs and crossings
+c05	A	B	A	B	A	A	A draws engineer-named parts with chips on the frame and specific phrases; B is cleaner but a package dump with a lumped "gin" box and generic labels
+c06	=	=	B	B	=	B	same parts; B's request context sends lines down, where A has several lines climbing into request context
+c07	B	A	B	A	B	B	B names the real parts and carries specific phrases; A is cleaner but a package dump with one lumped box
+c08	A	A	A	A	A	A	B (render) draws an empty frame; A shows routing's 4 parts cleanly
+c09	=	A	=	A	A	A	same 5 boxes; A has far fewer lines and fewer repeated 호출/임포트 labels, where B is a hairball along the top
+c10	=	A	=	A	A	A	routing's 4 boxes with few straight lines beat shared runtime's busier routing and generic labels
+c11	A	A	=	=	=	A	binding has 6 boxes at one level; gin inside has 14 boxes mixing data, features and interfaces, though its lines are tidy
+c12	B	B	=	=	=	B	mirror of c11: B's 6 binding boxes read in one look; A's 14 mix kinds
+c13	B	B	B	B	B	B	A (render) is an empty frame
+c14	B	=	B	B	B	B	gin inside reads as a tidy tree with call phrases; server engine has tangled dashed climbs and implementation boxes (test, version, utils)
+c15	A	A	A	A	A	A	B is an empty frame
+c16	B	B	B	=	B	B	B leaves bytesconv/fs out of the top level, puts chips on the frame and uses specific phrases; A has 10 boxes with an env chip mid-drawing and repeated 임포트
+c17	=	A	=	A	=	A	output has 5 boxes and fewer crossings; runtime types has 9 boxes and more crossings; neither has good line labels (generic 임포트 vs almost none)
+c18	A	A	=	=	A	A	manager inside is 2 boxes and a comb to chips, barely a view; output shows 5 parts with plugin and type phrases
+c19	=	A	=	=	=	A	persistent sessions is 4 boxes, compact and clean; output's longer routes cross more
+c20	B	A	A	A	B	A	B names the real parts but is a tall hairball cut at the bottom; A is a 7-box package view that is clean enough for a doc, despite its lumped boxes and generic 임포트
+c21	=	A	=	A	=	A	same view; B's top half is a dense hairball, A's lines can be followed
+c22	B	B	=	B	B	B	A is a 2-box comb; B shows sessions' 4 parts with type phrases
+c23	=	A	=	A	=	A	output's 5 boxes beat runtime types drawn as a dense hairball
+c24	A	A	=	A	=	A	B goes on to ~15 boxes that split output into formatters/lexers/ui at the top level; a bigger hairball
+c25	=	A	A	A	B	A	A is a coarse package view but legible; B is a 15-box hairball with good phrases
+c26	A	B	B	B	A	B	mirror of c20: B's 7-box view is legible, A is a tall hairball
+c27	=	B	=	B	A	B	output's 5 boxes with few crossings read in one look; shared foundation has better phrases but many crossings
+c28	=	=	A	A	=	A	same parts and density; A sends lines down where B climbs into persistent sessions, cli and runtime types
+c29	=	=	=	=	=	=	identical images
+c30	B	B	=	B	B	B	A is a 2-box comb to chips; B shows the sessions parts
+c31	=	B	=	B	B	B	same view; B has fewer lines and carries the HTTPieCookiePolicy/HTTPHeadersDict phrases
+c32	B	=	=	B	A	B	B's boxes are file names a reader knows (context, models, config) with cleaner routing; A has function-like names but better line phrases
+c33	=	B	=	=	A	B	B shows the API seam (types, api, graphql contract) in 6 clean boxes; A is 3 boxes with no surroundings
+c34	A	=	A	=	A	A	same 3 parts; A puts callers and contracts on the frame and labels lines with revalidateTag and the search path
+c35	A	B	=	B	A	A	B is 3 directory boxes (app/components/lib), too coarse; A names pages, cart and client, with specific phrases despite the dense lines
+c36	B	A	B	B	B	B	B shows real parts with the ui kit hub below its users and contracts on the frame; A is too coarse to tell anything, and is cleaner only because it holds 3 boxes
+c37	=	=	=	=	=	=	identical images
+c38	=	B	=	=	A	B	same as c33 (A is the same image as c33's A)
+c39	=	=	=	=	B	=	same drawing; A adds generic 임포트 labels on a few lines
+c40	B	B	B	=	=	B	B names its parts (storefront shell, catalog search, ui kit), puts pages on top and the hub below with no climbs; A climbs and tangles
+c41	=	B	A	B	=	A	A shows components' parts with chips on the frame; B (ui kit) has one line, an orphan box and no surroundings
+c42	B	A	B	B	B	B	same as c36: A is too coarse
+c43	=	=	B	=	B	B	B puts its surroundings on the frame and labels the path; A has an orphan box and no chips
+c44	=	=	B	=	B	B	B puts the contracts and callers on the frame, with phrase labels; A draws the external API as an inner box and leaves lines unlabelled
+c45	=	=	=	=	=	=	identical images
+c46	=	A	=	A	=	A	search page is 3 boxes and few lines; components has more crossings
+c47	=	A	B	A	=	B	mirror of c41: ui kit is sparse with an orphan box and no surroundings
+c48	=	=	=	=	=	=	identical images
+id	set	reason
+s01	B	A's render page is empty and its overview is a package dump; B has a named-parts overview and readable binding and runtime pages
+s02	A	overviews nearly equal (B's has fewer climbs); A's shared runtime page is much cleaner than B's hairball
+s03	A	B has an empty render page and a lumped package overview
+s04	B	A's overview is an orange hairball and its server engine page is tangled
+s05	A	A's gin page tells the framework's insides well and its overview is clean; B's overview and engine page are both tangled
+s06	A	A's overview names the real parts (request client, sessions, transport); B lumps a "httpie" core and its manager page is a 2-box comb
+s07	A	same overview parts; A's overview climbs less and its sessions and runtime pages are cleaner
+s08	A	B's overview is a package dump and its manager page is trivial
+s09	B	A's overview is a ~15-box hairball that splits output's pieces to the top level
+s10	A	B's overview is the worst hairball; A is coarse but legible, though its pages are weak
+s11	A	B's overview is 3 directory boxes that tell nothing about the architecture
+s12	A	same drawings; B's overview adds generic 임포트 labels
+s13	B	A's overview is 3 directory boxes
+s14	B	A's overview is cleaner, but B's pages show their surroundings (shopify client's callers and contracts on the frame), and A's ui kit page has an orphan box
+s15	B	A's overview is too coarse; B names pages, cart and client
