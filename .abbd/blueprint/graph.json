@@ -20389,23 +20389,23 @@
                 "Code": true
               },
               {
-                "Text": " tactic, plain and median, draws one chip per box and edge for the modules outside that meet that box with no contract (port ",
+                "Text": " tactic, plain and median, draws one chip per box and edge for the modules outside that meet that box with no contract (a port keyed by ",
                 "Code": false
               },
               {
-                "Text": "gather|\u003cbox\u003e",
+                "Text": "gatherPort",
                 "Code": true
               },
               {
-                "Text": "), named while the names fit ",
+                "Text": " and the box, a key no title, label or link shows), named while the names fit ",
                 "Code": false
               },
               {
-                "Text": "gatheredRunes",
+                "Text": "gatheredPx",
                 "Code": true
               },
               {
-                "Text": " and counted as ",
+                "Text": " and the label fits one line, cut only between names and counted as ",
                 "Code": false
               },
               {
@@ -20413,7 +20413,7 @@
                 "Code": true
               },
               {
-                "Text": " past that, so each box takes one line from the frame. It is drawn only where some outside module meets two or more boxes, ",
+                "Text": " past that, so each box takes one line from the frame. Each gathered line keeps the tooltip line and evidence of every line it gathers, said with its real far end, and a chip that gathers one module links to that module's view. It is drawn only where some outside module meets two or more boxes, ",
                 "Code": false
               },
               {

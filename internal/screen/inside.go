@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -94,6 +93,9 @@ type line struct {
 	incoming bool
 	// rels are the stored relations the line stands for.
 	rels []string
+	// told and quotes are a gathered line's tooltip lines and evidence, one
+	// for each line it gathers, said with that line's real far end.
+	told, quotes []string
 }
 
 func (ln line) String() string {
@@ -127,6 +129,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		label string
 		title string
 		cls   string
+		// unit is the unit the chip stands for, which its link opens; a
+		// chip that gathers several modules stands for none.
+		unit model.ID
 	}
 	var ports []port
 	seen := map[string]bool{}
@@ -139,9 +144,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	}
 	contract := func(c model.ID, exit bool) {
 		if exit {
-			addPort(port{id: c, exit: true, label: portLabel(o.name(c)), title: "이 모듈이 제공하는 계약: " + o.name(c), cls: "design"})
+			addPort(port{id: c, exit: true, label: portLabel(o.name(c)), title: "이 모듈이 제공하는 계약: " + o.name(c), cls: "design", unit: c})
 		} else {
-			addPort(port{id: c, label: portLabel(o.name(c)), title: "이 모듈이 쓰는 계약: " + o.name(c), cls: "design"})
+			addPort(port{id: c, label: portLabel(o.name(c)), title: "이 모듈이 쓰는 계약: " + o.name(c), cls: "design", unit: c})
 		}
 	}
 	for _, c := range o.contracts {
@@ -174,8 +179,19 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			contract(o2, exit)
 			return o2, exit
 		}
-		addPort(port{id: o2, exit: exit, label: map[bool]string{true: "← ", false: "→ "}[exit] + lastPart(o.name(o2)), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", o.name(o2)), cls: "other"})
+		addPort(port{id: o2, exit: exit, label: map[bool]string{true: "← ", false: "→ "}[exit] + lastPart(o.name(o2)), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", o.name(o2)), cls: "other", unit: o2})
 		return o2, exit
+	}
+	// say is the tooltip line of one line, its via included.
+	say := func(ln line) string {
+		s := fmt.Sprintf("%s %s %s", o.name(ln.from), ln.kind, o.name(ln.to))
+		if ln.incoming {
+			s = ln.quote
+		}
+		if ln.via != "" {
+			s += " (via " + string(ln.via) + ")"
+		}
+		return s
 	}
 	var lines []line
 	index := map[string]int{}
@@ -183,6 +199,12 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		k := fmt.Sprint(ln.from, ln.to, ln.kind, ln.exit, ln.inner, ln.incoming, ln.origin)
 		if i, ok := index[k]; ok {
 			lines[i].rels = append(lines[i].rels, rel)
+			for _, s := range ln.told {
+				if !slices.Contains(lines[i].told, s) {
+					lines[i].told = append(lines[i].told, s)
+				}
+			}
+			lines[i].quotes = append(lines[i].quotes, ln.quotes...)
 			return
 		}
 		index[k] = len(lines)
@@ -309,6 +331,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				if !slices.Contains(who[c], ln.to) {
 					who[c] = append(who[c], ln.to)
 				}
+				ln.told = []string{say(ln)}
+				if !ln.incoming && ln.quote != "" {
+					ln.quotes = []string{ln.quote}
+				}
 				ln.to = c.id
 			}
 			for _, rel := range ln.rels {
@@ -320,7 +346,11 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			for _, id := range who[c] {
 				full = append(full, o.name(id))
 			}
-			addPort(port{id: c.id, exit: c.exit, label: map[bool]string{true: "← ", false: "→ "}[c.exit] + gatheredLabel(who[c], o.name), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", strings.Join(full, ", ")), cls: "other"})
+			p := port{id: c.id, exit: c.exit, label: gatheredLabel(map[bool]string{true: "← ", false: "→ "}[c.exit], who[c], o.name), title: fmt.Sprintf("계약 없이 %s와 닿는 곳", strings.Join(full, ", ")), cls: "other"}
+			if len(who[c]) == 1 {
+				p.unit = who[c][0]
+			}
+			addPort(p)
 		}
 	}
 	var nodes []lnode
@@ -603,8 +633,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if below[k] {
 			pt.Y = frame.Y + frame.H
 		}
-		pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Keys = string(p.id), p.exit, p.cls, p.title, []string{"port|" + k}
-		pt.Href = viewOf(t, p.id)
+		pt.Contract, pt.Exit, pt.Class, pt.Title, pt.Keys = string(p.unit), p.exit, p.cls, p.title, []string{"port|" + k}
+		if p.unit != "" {
+			pt.Href = viewOf(t, p.unit)
+		}
 		if j := slices.IndexFunc(d.Ports, func(q Port) bool { return q.X == pt.X && q.Y == pt.Y }); j >= 0 {
 			q := &d.Ports[j]
 			q.Title += "; " + pt.Title
@@ -658,18 +690,22 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			ln := lines[i]
-			title := fmt.Sprintf("%s %s %s", o.name(ln.from), ln.kind, o.name(ln.to))
-			if ln.incoming {
-				title = ln.quote
-			} else if ln.quote != "" {
-				w.Quotes = append(w.Quotes, ln.quote)
+			told, quotes := ln.told, ln.quotes
+			if told == nil {
+				told = []string{say(ln)}
+				if !ln.incoming && ln.quote != "" {
+					quotes = []string{ln.quote}
+				}
 			}
+			w.Quotes = append(w.Quotes, quotes...)
 			if ln.via != "" {
-				title += " (via " + string(ln.via) + ")"
 				w.Via = string(ln.via)
 			}
-			if ln.origin != "extracted" {
-				title += ", " + labels[ln.origin]
+			for _, title := range told {
+				if ln.origin != "extracted" {
+					title += ", " + labels[ln.origin]
+				}
+				titles = append(titles, title)
 			}
 			if s := p.starts[j]; s != noStart {
 				if ln.origin != "extracted" {
@@ -678,7 +714,6 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				origins[ln.origin] = true
 				w.Origin = ln.origin
 			}
-			titles = append(titles, title)
 			w.Rels = append(w.Rels, ln.rels...)
 		}
 		ln := lines[p.reqs[0]]
@@ -707,29 +742,38 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 
 // lastPart drops the leading path segments of a module's name, such as
 // "internal/" or a package scope; the port's tooltip keeps the full name.
-// gatheredLabel names the modules a gathered chip stands for while they
-// fit gatheredRunes, and counts the rest as "+N", so the chip stays narrow
-// enough for its edge and its line comes straight down from it.
-func gatheredLabel(ids []model.ID, name func(model.ID) string) string {
-	label := lastPart(name(ids[0]))
-	for i := 1; i < len(ids); i++ {
-		next := label + ", " + lastPart(name(ids[i]))
-		if utf8.RuneCountInString(next) > gatheredRunes {
-			return fmt.Sprintf("%s +%d", label, len(ids)-i)
-		}
-		label = next
-	}
-	return label
-}
-
-const gatheredRunes = 24
-
 func lastPart(name string) string {
 	if i := strings.LastIndex(name, "/"); i >= 0 && i < len(name)-1 && !strings.Contains(name, " ") {
 		return name[i+1:]
 	}
 	return name
 }
+
+// gatheredLabel is a gathered chip's label: arrow, then the names of the
+// modules it stands for while they fit gatheredPx and the whole label fits
+// one line of a chip, and the rest counted as "+N", so the chip stays one
+// line, narrow enough for its edge, and is cut only between names.
+func gatheredLabel(arrow string, ids []model.ID, name func(model.ID) string) string {
+	names := lastPart(name(ids[0]))
+	label := func(names string, k int) string {
+		if k < len(ids) {
+			return fmt.Sprintf("%s%s +%d", arrow, names, len(ids)-k)
+		}
+		return arrow + names
+	}
+	for k := 1; k < len(ids); k++ {
+		next := names + ", " + lastPart(name(ids[k]))
+		if textWidth(next, chipPx) > gatheredPx || len(chipLines(label(next, k+1))) > 1 {
+			return label(names, k)
+		}
+		names = next
+	}
+	return label(names, len(ids))
+}
+
+// gatheredPx is how wide a gathered chip's names may run: 24 lower-case
+// letters, which leaves room on one line for the arrow and a "+N".
+var gatheredPx = textWidth(strings.Repeat("a", 24), chipPx)
 
 // lines2 sets an inside unit's name.
 func lines2(name string) ([]string, int) { return setName(name, 13, 20, unitMinW, unitMaxW) }
