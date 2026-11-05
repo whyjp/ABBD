@@ -248,7 +248,7 @@ svg [data-h="n"] { --c: var(--hn); }
 </header>
 
 <section id="units">
-  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">127개, ID 순</span></h2>
+  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">129개, ID 순</span></h2>
   <p class="muted" style="margin:0 0 6px">모든 단위와 그 코드의 앵커입니다. 페이지 안 찾기(Ctrl+F)로 ID, 이름, 파일 경로, 심볼을 찾습니다.</p>
   <table><tr id="u-CFG-0001"><td class="id key">CFG-0001</td><td><strong>plugin and marketplace manifest</strong> <span class="muted">설정</span>
     <div>Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin&#39;s version and its requirements (pstack 0.15.36 and the abbd CLI on PATH). <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
@@ -466,9 +466,12 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd table pos{1,2}</div></details></td></tr><tr id="u-IF-0026"><td class="id key">IF-0026</td><td><strong>abbd lint</strong> <span class="muted">인터페이스</span>
     
     <div class="key muted anchors">cmd/abbd/lint.go lint · cmd/abbd/main.go commands</div>
-    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd lint pos{0,1}</div></details></td></tr><tr id="u-MOD-0001"><td class="id key">MOD-0001</td><td><a href="MOD-0001.html"><strong>abbd CLI</strong></a> <span class="muted">모듈</span>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd lint pos{0,1}</div></details></td></tr><tr id="u-IF-0027"><td class="id key">IF-0027</td><td><strong>abbd parts</strong> <span class="muted">인터페이스</span>
+    
+    <div class="key muted anchors">cmd/abbd/main.go commands · cmd/abbd/parts.go parts</div>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="key muted">abbd parts pos{1}</div></details></td></tr><tr id="u-MOD-0001"><td class="id key">MOD-0001</td><td><a href="MOD-0001.html"><strong>abbd CLI</strong></a> <span class="muted">모듈</span>
     <div>Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
-    <div class="key muted anchors">cmd/abbd · cmd/abbd/diff.go · cmd/abbd/evidence.go · cmd/abbd/figure.go · cmd/abbd/flow.go · cmd/abbd/impact.go · cmd/abbd/install.go · cmd/abbd/lint.go · cmd/abbd/main.go · cmd/abbd/migrate.go · cmd/abbd/narrative.go · cmd/abbd/query.go · cmd/abbd/record.go · cmd/abbd/screen.go · cmd/abbd/setup.go · cmd/abbd/stack.go · cmd/abbd/table.go · cmd/abbd/uncovered.go · cmd/abbd/understand.go</div>
+    <div class="key muted anchors">cmd/abbd · cmd/abbd/diff.go · cmd/abbd/evidence.go · cmd/abbd/figure.go · cmd/abbd/flow.go · cmd/abbd/impact.go · cmd/abbd/install.go · cmd/abbd/lint.go · cmd/abbd/main.go · cmd/abbd/migrate.go · cmd/abbd/narrative.go · cmd/abbd/parts.go · cmd/abbd/query.go · cmd/abbd/record.go · cmd/abbd/screen.go · cmd/abbd/setup.go · cmd/abbd/stack.go · cmd/abbd/table.go · cmd/abbd/uncovered.go · cmd/abbd/understand.go</div>
     </td></tr><tr id="u-MOD-0002"><td class="id key">MOD-0002</td><td><strong>review commands</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
     <div>Owns diff against the units committed at a base revision with the --check boundary failure, the evidence live/dead report, and the status freshness and counts. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">cmd/abbd/diff.go · cmd/abbd/diff.go diff · cmd/abbd/evidence.go · cmd/abbd/evidence.go checkEvidence · cmd/abbd/evidence.go status</div>
@@ -478,7 +481,7 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>cmd/abbd/main.go &#34;if _, ok := commands[inv.name&#43;\&#34; \&#34;&#43;args[0]]; ok {&#34;</q></div><div class="quote">근거 <q>cmd/abbd/main.go &#34;func parseInterspersed(fs *flag.FlagSet, args []string) ([]string, error) {&#34;</q></div><div class="quote">근거 <q>cmd/abbd/main.go &#34;if c.writes {&#34;</q></div></details></td></tr><tr id="u-MOD-0004"><td class="id key">MOD-0004</td><td><strong>sync pipeline</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
     <div>Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">cmd/abbd/main.go runScript · cmd/abbd/main.go syncActual</div>
-    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>cmd/abbd/main.go &#34;res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)&#34;</q></div></details></td></tr><tr id="u-MOD-0005"><td class="id key">MOD-0005</td><td><strong>query commands</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>cmd/abbd/main.go &#34;res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)&#34;</q></div></details></td></tr><tr id="u-MOD-0005"><td class="id key">MOD-0005</td><td><a href="MOD-0005.html"><strong>query commands</strong></a> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
     <div>Owns resolving a unit by ID, exact name or near name, and printing topology&#39;s explain, path and impact results with names, origins and how&#39;s CURRENT or STALE text. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">cmd/abbd/query.go explainHow · cmd/abbd/query.go path · cmd/abbd/query.go resolve</div>
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>cmd/abbd/query.go &#34;func resolve(units []model.Unit, s string) (model.Unit, error) {&#34;</q></div><div class="quote">근거 <q>cmd/abbd/query.go &#34;if t.Digest != e.st.ModuleDigest(units, u.ID) {&#34;</q></div><div class="quote">근거 <q>cmd/abbd/query.go &#34;fmt.Fprintf(e.stdout, \&#34;%d hop(s), weakest origin %s\\n\&#34;, len(hops), topology.Weakest(hops))&#34;</q></div></details></td></tr><tr id="u-MOD-0006"><td class="id key">MOD-0006</td><td><strong>record writers</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0001.html" title="MOD-0001">abbd CLI</a> 안</span>
@@ -631,6 +634,9 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/SKILL.md &#34;`&lt;pstack&gt;` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`.&#34;</q></div><div class="quote">근거 <q>plugins/abbd/skills/abbd-setup/SKILL.md &#34;If `&lt;pstack&gt;/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.&#34;</q></div></details></td></tr><tr id="u-MOD-0056"><td class="id key">MOD-0056</td><td><a href="MOD-0056.html"><strong>internal/narrative</strong></a> <span class="muted">모듈</span>
     
     <div class="key muted anchors">internal/narrative · internal/narrative/narrative.go</div>
+    </td></tr><tr id="u-MOD-0057"><td class="id key">MOD-0057</td><td><strong>internal/parts</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0005.html" title="MOD-0005">query commands</a> 안</span>
+    
+    <div class="key muted anchors">internal/parts · internal/parts/propose.go · internal/parts/text.go</div>
     </td></tr></table>
 </section>
 <p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>

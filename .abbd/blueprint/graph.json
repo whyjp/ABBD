@@ -1280,6 +1280,18 @@
       ]
     },
     {
+      "ID": "IF-0027",
+      "Kind": "IF",
+      "Name": "abbd parts",
+      "Signature": "abbd parts pos{1}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/parts.go parts"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1304,6 +1316,7 @@
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
+        "cmd/abbd/parts.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
         "cmd/abbd/screen.go",
@@ -2516,6 +2529,20 @@
         "internal/narrative",
         "internal/narrative/narrative.go"
       ]
+    },
+    {
+      "ID": "MOD-0057",
+      "Kind": "MOD",
+      "Name": "internal/parts",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/parts",
+        "internal/parts/propose.go",
+        "internal/parts/text.go"
+      ],
+      "Parent": "MOD-0005"
     }
   ],
   "edges": [
@@ -2830,6 +2857,13 @@
       "Kind": "consumes",
       "Origin": "EXTRACTED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0027",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd parts\""
     },
     {
       "From": "FEAT-0003",
@@ -3445,6 +3479,12 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0027",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
@@ -3640,6 +3680,12 @@
       "Origin": "EXTRACTED",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0057",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED"
     },
     {
       "From": "MOD-0002",
@@ -5184,7 +5230,8 @@
             "exit codes",
             "migrate",
             "record evidence",
-            "lint"
+            "lint",
+            "parts"
           ]
         }
       ],
@@ -5487,7 +5534,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -5570,7 +5617,23 @@
                 "Code": true
               },
               {
-                "Text": " queries. It never judges, blocks, asks or records a decision. Even ",
+                "Text": " queries. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd parts DIR",
+                "Code": true
+              },
+              {
+                "Text": " prints the parts it proposes for one directory, as text or ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": ", and writes nothing. It never judges, blocks, asks or records a decision. Even ",
                 "Code": false
               },
               {
@@ -5675,7 +5738,7 @@
                 "Code": true
               },
               {
-                "Text": " folds in the supplement, and ",
+                "Text": " folds in the supplement, ",
                 "Code": false
               },
               {
@@ -5683,7 +5746,23 @@
                 "Code": true
               },
               {
-                "Text": " places a crowded level's units in the directories their code lives in. ",
+                "Text": " places a crowded level's units in the directories their code lives in, and ",
+                "Code": false
+              },
+              {
+                "Text": "parts",
+                "Code": true
+              },
+              {
+                "Text": " proposes the parts of one directory from its code for ",
+                "Code": false
+              },
+              {
+                "Text": "abbd parts",
+                "Code": true
+              },
+              {
+                "Text": ", which an extraction script calls. ",
                 "Code": false
               },
               {
@@ -9774,6 +9853,40 @@
             "Users": true,
             "Data": false
           }
+        },
+        {
+          "ID": "IF-0027",
+          "Name": "abbd parts",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0027",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "json",
+                "Name": "--json",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false
+          }
         }
       ],
       "Unwired": [
@@ -9801,7 +9914,8 @@
             "forget",
             "stack",
             "table",
-            "lint"
+            "lint",
+            "parts"
           ]
         },
         {
@@ -10277,6 +10391,268 @@
             3,
             4,
             5
+          ]
+        }
+      ]
+    },
+    {
+      "ID": "MOD-0005",
+      "Name": "query commands",
+      "Units": [
+        {
+          "ID": "MOD-0057",
+          "Name": "internal/parts",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/parts",
+            "internal/parts/propose.go",
+            "internal/parts/text.go"
+          ],
+          "Understanding": {
+            "Stale": false,
+            "Blocks": [
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Overview",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "p",
+                "Parts": [
+                  {
+                    "Text": "internal/parts",
+                    "Code": true
+                  },
+                  {
+                    "Text": " proposes the responsibilities of one directory of code, so an extraction script can split a module whose own files hold most of its code into parts without a list kept by hand. ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "abbd parts DIR",
+                    "Code": true
+                  },
+                  {
+                    "Text": " lists the source files under the directory, test files left out, and hands them to ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "Propose",
+                    "Code": true
+                  },
+                  {
+                    "Text": ". A file directly inside the directory is a node of its own, and every file deeper down belongs to the node of the subdirectory that holds it. The package reads source text only, with no parser per language: a few regular expressions find top-level declarations, methods by their receiver type, import lines and the types a file constructs, implements or extends. The same input gives the same parts in any order, so a script that calls it stays deterministic.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Key Concepts",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "Links",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": " (",
+                    "Code": false
+                  },
+                  {
+                    "Text": "text.go",
+                    "Code": true
+                  },
+                  {
+                    "Text": "): ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "linksOf",
+                    "Code": true
+                  },
+                  {
+                    "Text": " finds, for each ordered pair of files, the names one takes from the other. A name counts when exactly one file declares it at its top level, the user does not declare it too, and it is not a member after a dot. A Go method or a Rust ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "impl",
+                    "Code": true
+                  },
+                  {
+                    "Text": " ties its file to the file that declares the type. An import line ties a file to another whose stem it names as a path or module segment. Comments and string literals are blanked first, keeping line numbers, so each link carries the first line that shows it.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "Grouping",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": " (",
+                    "Code": false
+                  },
+                  {
+                    "Text": "propose.go",
+                    "Code": true
+                  },
+                  {
+                    "Text": "): ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "Propose",
+                    "Code": true
+                  },
+                  {
+                    "Text": " joins nodes in a fixed order. Files whose stems share a first word are one family. A file only one group uses joins that group unless it is the larger of the two. Files that each construct, implement or extend one type another file declares are one family, named after that type. A small file no other file uses joins the group it takes the most names from. The single files three or more groups use, no larger than the median file, are the shared layer. A small file still alone joins the group that uses most of it. A subdirectory node is never folded into another group.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "Names",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": " (",
+                    "Code": false
+                  },
+                  {
+                    "Text": "describe",
+                    "Code": true
+                  },
+                  {
+                    "Text": ", ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "words",
+                    "Code": true
+                  },
+                  {
+                    "Text": ", ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "stripBrand",
+                    "Code": true
+                  },
+                  {
+                    "Text": "): a part is named by the type of its files that the rest of the directory uses most, or by its family's type, or by its largest node's stem. ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "words",
+                    "Code": true
+                  },
+                  {
+                    "Text": " splits a code name into lower-case words, so ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "HTTPSAdapter",
+                    "Code": true
+                  },
+                  {
+                    "Text": " is ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "https adapter",
+                    "Code": true
+                  },
+                  {
+                    "Text": ". A mixed-case first word that three or more types share, such as a project name, is left out.",
+                    "Code": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "Understanding": null,
+      "Unwired": [
+        {
+          "Names": [
+            "module understanding"
+          ]
+        }
+      ],
+      "Up": "#m-MOD-0001",
+      "Trail": [
+        "abbd CLI",
+        "query commands"
+      ],
+      "Inferred": [
+        {
+          "From": "query commands",
+          "To": "module understanding",
+          "Kind": "consumes",
+          "Via": "data",
+          "Quotes": [
+            "cmd/abbd/query.go \"texts, err := e.st.LoadUnderstandings()\""
+          ]
+        },
+        {
+          "From": "query commands",
+          "To": "record writers",
+          "Kind": "depends_on",
+          "Via": "convention",
+          "Quotes": [
+            "cmd/abbd/understand.go \"digest, code := e.st.Stamp(units, id)\"",
+            "cmd/abbd/query.go \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
+          ]
+        },
+        {
+          "From": "query commands",
+          "To": "internal/topology",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "cmd/abbd/query.go \"ex := topology.Explain(units, u.ID)\"",
+            "cmd/abbd/impact.go \"im := topology.ImpactOf(units, seeds)\""
+          ]
+        }
+      ],
+      "Stacks": [
+        {
+          "ID": "stack-cli",
+          "Question": "What are the layers of the abbd CLI?",
+          "Layers": [
+            1
+          ]
+        }
+      ],
+      "Tables": [
+        {
+          "ID": "table-cli-files",
+          "Question": "Which part of the abbd CLI reads and writes which .abbd file?",
+          "Rows": [
+            3
           ]
         }
       ]
@@ -29536,7 +29912,7 @@
             "ID": "MOD-0005",
             "Name": "query commands",
             "Kind": "모듈",
-            "Href": "#m-MOD-0001"
+            "Href": "#m-MOD-0005"
           },
           "Cells": [
             {

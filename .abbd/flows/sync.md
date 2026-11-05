@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "514"
+          lines: "518"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "382"
+          lines: "396"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "386"
+          lines: "400"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "389"
+          lines: "403"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "514"
+          lines: "528"
           symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "110"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "393"
+          lines: "407"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "308"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "455"
+          lines: "469"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "467"
+          lines: "481"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "294"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "476"
+          lines: "490"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "486"
+          lines: "500"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "480"
+          lines: "494"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -145,7 +145,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "490"
+          lines: "504"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -158,7 +158,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "491"
+          lines: "505"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -201,7 +201,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "353"
+          lines: "367"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
