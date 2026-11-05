@@ -9,7 +9,7 @@ An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, s
   - A skill or CLI change can change topology, so it is judged on fresh held-out runs against base and the current kept iteration. It is kept if it beats both in at least 2 of 3 repositories, on judge means, and in the third loses to neither by more than the passes' disagreement there.
   - A renderer-only change cannot change topology, so it is judged paired, against the drawing it changes, on the current kept runs re-rendered with the change's binary. The current kept runs are the held-out runs of the latest iteration kept as the working base, it3's for it5. The criteria the change targets are written in this README before the judges run. It is kept if those criteria rise, and no criterion falls by more than the passes' disagreement in any repository.
   - The paired rule was adopted after it5 failed the fresh-run rule, and it5 is the first change judged under it (see Iteration 5). The rule did not exist when it5's judges ran, so no criterion was named in advance. Labels (c5) is what its change targets, but its keep rests on a rule written with its scores in view.
-- `shots/` holds the base, it3, it4 and it5 overviews.
+- `shots/` holds the base, it3, it4 and it5 overviews, and the pages iterations 5 to 7 name.
 
 ## Verdict
 
@@ -131,3 +131,60 @@ Defects the passes still name:
 - gin's overview lines climb into request context, and generic 임포트 labels remain on httpie and storefront.
 
 A review of PR #101 then found the gathered wires' tooltips named only the first module they gather, the gathered chips lost their links, and the chip's 24-rune name cap let Hangul names wrap. 7111bdd fixes all three. On the held-out runs that changes tooltips and links only, so the judged pages are unchanged.
+
+## Iteration 7
+
+it7 changes the skill and the CLI, so it is judged under the fresh-run rule, on new candidate runs against base and it6. The renderer is as on main.
+
+Two defects the judges named share one cause in the units. A module's page draws its parts and what meets them, so a relation that meets the module itself has no box there. On the it6 runs storefront's shopify client page draws no chip, though 8 modules use it: they all import its own `index.ts`, which sits in no part. gin it4's Context page was an empty frame: the module held 7 files and no parts. A probe over the kept runs found the same in every repository: 1 to 6 module pages with parts per run whose own code carries relations (6 on gin, 1 on httpie, 4 on storefront), and 1 to 4 top-level modules of 4 files or more with no parts, such as gin's engine and httpie's cli and manager.
+
+- Hypothesis 1. A check that names both, which the first `abbd lint --record` waits for, makes the candidate end each coupling at a part and cut each module of 4 files or more into parts. `abbd lint` now lists them under `unseen` in its level lines: the relations that meet a module with parts itself, with the files that sit in no part, and a top-level module of 4 files or more with no parts.
+- Hypothesis 2. The setup skill gets a part rule a script can run on any language, with the key, the merge order and the count defined: subdirectories first, then a file's receiver type or class, or in component code its default or first export with `use`, `Provider`, `Context` and `Props` taken off, then its name stem. A module's import file is its API part. One-file parts merge, first by name, into the part that uses the most of their names, and merging stops at two parts. Step 3 says to end each coupling at the part whose file holds its code at each end.
+- Hypothesis 3. A view of 4 drawn relations or more of which fewer than half carry a phrase is listed under `unseen` too. On the it6 runs that names httpie's overview (45 of 83 without one) and its runtime page (53 of 56), and 5 gin pages.
+- The skill also says how to find the shared module, by the count `abbd lint` uses for hubs, and which top-level modules a web app has.
+
+The criteria these target, named before any judge runs, are set of views, density (c2) and labels (c5) on the module pages, and labels on the overview. Lint on the fresh runs should list no `unseen` line, or name each one kept with `--keep-level`.
+
+Each it7 candidate ran the setup skill of b5ab71e with a binary built from it, on a fresh clone of each repository (`w10/*`). All three ended with `abbd lint` and `abbd status --check` at 0 and no `unseen` line, and none kept a level with `--keep-level`. The it7 rows of `lint-levels.tsv` are `abbd lint --json` on those runs with the b5ab71e binary.
+
+Three fresh Opus judges scored base (`shots0`), it6 (`shots6`) and it7 (`shots7`) in one pass each, from the prompts and blind keys `judge-prompt-7a` to `7c` and `review7a-key.json` to `review7c-key.json`, under blind seeds 71, 72 and 73. The it7 pages are each run's overview and its two module pages with the most boxes. Rows `@7a`, `@7b` and `@7c` in `judge-scores.tsv` are the passes and `@7` their average. Averaged means, with the passes in brackets:
+
+| repo | base | it6 | it7 |
+|---|---|---|---|
+| gin | 2.59 (2.61, 2.56, 2.61) | 3.44 (3.50, 3.44, 3.39) | 3.04 (3.00, 3.11, 3.00) |
+| httpie | 2.65 (2.89, 2.61, 2.44) | 2.85 (2.89, 2.83, 2.83) | 2.57 (2.56, 2.72, 2.44) |
+| storefront | 3.21 (3.28, 3.17, 3.17) | 3.55 (3.61, 3.44, 3.61) | 3.52 (3.50, 3.50, 3.56) |
+
+The named criteria, averaged over the passes, as set means over all three pages (the judges scored c2 and c5 per set, so module pages and the overview are not split):
+
+| repo | set of views, it6 to it7 | c2 density | c5 labels |
+|---|---|---|---|
+| gin | 4.00 to 3.00 | 3.78 to 3.33 | 3.67 to 3.22 |
+| httpie | 3.00 to 2.33 | 2.89 to 2.45 | 2.89 to 2.78 |
+| storefront | 3.67 to 4.00 | 4.22 to 3.78 | 3.00 to 3.44 |
+
+it7 is rejected under the fresh-run rule and reverted on PR #102. It beats it6 in none of the three repositories. Every pass puts it6 above it7 on gin (by 0.33 to 0.50) and on httpie (by 0.11 to 0.39). On storefront two passes put it6 ahead and one puts it7 ahead, a tie inside the passes' disagreement (-0.03 averaged). It beats base on gin (+0.45) and storefront (+0.31) and loses httpie to base (-0.08). Of the named criteria only storefront's set of views and labels rose.
+
+What the judges named on it7:
+
+- gin promotes bytesconv, fs and json codec to the top level beside the subsystems, and its server engine page is a knot of lines, with test, version and utils drawn as parts. 3 of its 10 module pages hold fewer than 2 boxes.
+- httpie's overview is a hairball cut off at the fold, with lines labelled `Environment 등`, and its shared foundation page is a grab bag of 8 parts with odd names.
+- storefront promotes its product grid to a top-level module beside the route areas, and has the best phrases of the three sets. Its part pages now draw their chips. The shopify client page draws its 8 users, which it6's drew none of.
+
+What the runs taught. The check stands as a finding; the part rule it was paired with does not.
+
+- The `unseen` check found every defect the judges named of its kind on the old runs: storefront's chipless shopify client page, gin it4's empty Context page, and the modules with no parts. On the fresh runs each candidate cleared it, and storefront's pages gained their chips.
+- Clearing it cost more elsewhere. The part rule stops merging at two parts and has no rule for a root package that holds most of the code, as gin's and httpie's do. Both candidates fell back to supplement groups, and the groups promoted helpers to the top level and drew test and version files as parts.
+
+Open items for the next iteration, from the candidates' reports (`notes/it7-candidates.md`):
+
+- A rule for cutting a root package that holds most of a repository's code.
+- `abbd record` refuses a group's evidence quote when every file it quotes is already anchored, so gin's and httpie's candidates quoted docs instead.
+- The merge rule's names. Merged parts keep the target part's name, so storefront's root files (layout, sitemap, robots, error) land in a part named navbar and `lib/constants` and `lib/utils` in one named footer.
+- The name split of CamelCase identifiers breaks `HTTPie` into `htt pie`, as in httpie's `htt pie cookie policy`, and rule 2's key picks private names such as `json dict preserving duplicate keys`.
+- Step 11 does not say that the setup takes a second commit, after the first sync, so httpie's status read STALE until its candidate made one.
+- Smaller gaps: rule 2's component key reads as JavaScript only, "the receiver most files use" is undefined, an API part swallows what merges into it, a directory part with no entry file has no name fallback, and the route-area rule collides with grouping by directory.
+
+Every candidate's subagent handbacks failed: no worker's report came back to the candidate through the handback. Each worked around it. The storefront candidate had its workers write their results to files in the scratchpad, gin's had them write `.scratch-abbd` files in its clone and deleted them before committing, and httpie's read the workers' results from their transcripts.
+
+`shots/it7-gin-overview.png`, `shots/it7-gin-MOD-0033.png` (server engine), `shots/it7-httpie-overview.png` and `shots/it7-storefront-MOD-0022.png` (shopify client) are judged it7 pages.
