@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/screen"
@@ -75,7 +74,7 @@ func (e env) lint(pos []string) error {
 			return err
 		}
 		if off := offLevel(views, levels, kept); len(debt.Views) == 0 && len(debt.Ceilings) == 0 && len(off) > 0 {
-			return fmt.Errorf("will not take the first debt while a view leaves something unseen, or a view with hard breaches stands at the wrong level, since both come from the units: %s. Change the units as each level line of abbd lint says (abbd-setup step 1), rerun setup, and record only the routing debt that stays. A level you can justify stays with --keep-level VIEW=REASON", strings.Join(off, "; "))
+			return fmt.Errorf("will not take the first debt while a view with hard breaches stands at the wrong level, since its breaches come from its units: %s. Change the units as each level line of abbd lint says (abbd-setup step 1), rerun setup, and record only the routing debt that stays. A level you can justify stays with --keep-level VIEW=REASON", strings.Join(off, "; "))
 		}
 		d := screen.Record(views, debt)
 		d.Levels = kept
@@ -95,7 +94,7 @@ func (e env) lint(pos []string) error {
 	r.Totals = screen.Sum(views)
 	r.Levels = levels
 	for i, l := range r.Levels {
-		if l.Off() {
+		if len(l.Advice) > 0 {
 			r.Levels[i].Kept = debt.Levels[l.View]
 		}
 	}
@@ -158,7 +157,7 @@ func printLint(e env, r lintReport) {
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
-		for _, a := range append(slices.Clone(l.Advice), l.Unseen...) {
+		for _, a := range l.Advice {
 			fmt.Fprintf(e.stdout, "level %s: %s\n", l.View, a)
 		}
 		if l.Kept != "" {
@@ -180,7 +179,7 @@ func printLint(e env, r lintReport) {
 func keptLevels(levels []screen.Level, prior map[string]string, flags []string) (map[string]string, error) {
 	off := map[string]bool{}
 	for _, l := range levels {
-		off[l.View] = l.Off()
+		off[l.View] = len(l.Advice) > 0
 	}
 	kept := map[string]string{}
 	for v, r := range prior {
@@ -212,9 +211,8 @@ func keptLevels(levels []screen.Level, prior map[string]string, flags []string) 
 }
 
 // offLevel names each view with a hard breach that a level line says is
-// drawn at the wrong level, since its breaches are the cost of the units,
-// not routing debt, and each view that leaves something unseen, hard
-// breaches or not, unless the repository keeps it there.
+// drawn at the wrong level, unless the repository keeps it there. Its
+// breaches are the cost of the units, not routing debt.
 func offLevel(views []screen.ViewLint, levels []screen.Level, kept map[string]string) []string {
 	hard := map[string]bool{}
 	for _, v := range views {
@@ -224,14 +222,8 @@ func offLevel(views []screen.ViewLint, levels []screen.Level, kept map[string]st
 	}
 	var out []string
 	for _, l := range levels {
-		if _, ok := kept[l.View]; ok {
-			continue
-		}
-		switch {
-		case hard[l.View] && len(l.Advice) > 0:
+		if _, ok := kept[l.View]; hard[l.View] && len(l.Advice) > 0 && !ok {
 			out = append(out, l.View+" ("+l.Advice[0]+")")
-		case len(l.Unseen) > 0:
-			out = append(out, l.View+" ("+l.Unseen[0]+")")
 		}
 	}
 	return out

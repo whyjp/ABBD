@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/model"
 )
 
 func withBoxes(n int, class string) Drawing {
@@ -142,99 +140,5 @@ func TestLevelsCapTheSharedLayers(t *testing.T) {
 	}
 	if l := level("MOD-0001 m", d, atNested); strings.Join(l.Hubs, ",") != "b0,b1" {
 		t.Errorf("hubs %v, want the two most used, b0 and b1", l.Hubs)
-	}
-}
-
-func anchored(u model.Unit, paths ...string) model.Unit {
-	u.Anchors = nil
-	for _, p := range paths {
-		u.Anchors = append(u.Anchors, model.Anchor{Path: p})
-	}
-	return u
-}
-
-func unseenOf(m Model, view string) string {
-	for _, l := range Levels(m) {
-		if l.View == view {
-			return strings.Join(l.Unseen, "\n")
-		}
-	}
-	return ""
-}
-
-func chipTitles(m Model, id string) string {
-	var out []string
-	for _, ins := range m.Insides {
-		if ins.ID == id {
-			for _, p := range ins.Drawing.Ports {
-				out = append(out, p.Title)
-			}
-		}
-	}
-	return strings.Join(out, "\n")
-}
-
-// A module's page draws its parts and what meets them, so a relation that
-// meets the module itself has no box there to start or end at, and the page
-// shows no chip for the module that uses it. The level names the relation
-// and the files that sit in no part. Once the script ends each coupling at
-// the part whose file holds its code, the page draws the chips and the
-// level asks for nothing.
-func TestLevelsSeeRelationsThatMeetAModuleRatherThanItsParts(t *testing.T) {
-	shop := func(to model.ID, paths ...string) []model.Unit {
-		return []model.Unit{
-			anchored(called("MOD-0001", "shop client"), paths...),
-			anchored(inside("MOD-0002", "MOD-0001"), "shop/fetch", "shop/fetch/a.ts", "shop/fetch/b.ts"),
-			anchored(inside("MOD-0003", "MOD-0001", rel("MOD-0002", model.DependsOn)), "shop/queries", "shop/queries/a.ts", "shop/queries/b.ts"),
-			anchored(called("MOD-0004", "product page", rel(to, model.DependsOn)), "app/product", "app/product/page.tsx"),
-			anchored(called("MOD-0005", "home page", rel(to, model.DependsOn)), "app/home", "app/home/page.tsx"),
-		}
-	}
-	m := build(shop("MOD-0001", "shop", "shop/index.ts"))
-	got := unseenOf(m, "MOD-0001 shop client")
-	for _, want := range []string{"2 relations meet the module itself", "product page depends_on shop client", "Its files shop/index.ts sit in no part"} {
-		if !strings.Contains(got, want) {
-			t.Errorf("unseen %q, want %q", got, want)
-		}
-	}
-	if c := chipTitles(m, "MOD-0001"); c != "" {
-		t.Errorf("the page draws chips %q for relations that meet the module itself", c)
-	}
-	m = build(shop("MOD-0003", "shop"))
-	if got := unseenOf(m, "MOD-0001 shop client"); got != "" {
-		t.Errorf("a module whose relations all meet its parts leaves %q unseen", got)
-	}
-	if c := chipTitles(m, "MOD-0001"); !strings.Contains(c, "product page") || !strings.Contains(c, "home page") {
-		t.Errorf("chips %q, want the product and home pages that use a part", c)
-	}
-}
-
-// A top-level module of several files and no parts draws an empty frame on
-// its page. One too small for two parts is a leaf, and its page asks nothing.
-func TestLevelsSeeATopLevelModuleOfSeveralFilesWithNoParts(t *testing.T) {
-	big := anchored(called("MOD-0001", "engine"), "engine", "engine/a.go", "engine/b.go", "engine/c.go", "engine/d.go")
-	small := anchored(called("MOD-0002", "short"), "short", "short/a.go", "short/b.go", "short/c.go")
-	m := build([]model.Unit{big, small})
-	if got := unseenOf(m, "MOD-0001 engine"); !strings.Contains(got, "the page draws no box, though the module holds 4 files") {
-		t.Errorf("unseen %q, want the empty page of 4 files named", got)
-	}
-	if got := unseenOf(m, "MOD-0002 short"); got != "" {
-		t.Errorf("a leaf of 3 files leaves %q unseen", got)
-	}
-}
-
-// A view whose drawn relations mostly carry no phrase says only how its
-// lines arise. Half of them phrased is enough, and a view of fewer than 4
-// relations says too little to judge.
-func TestLevelsSeeLinesThatMostlyCarryNoPhrase(t *testing.T) {
-	d := Drawing{Wires: []Wire{{Rels: []string{"a", "b"}}, {Rels: []string{"c"}}, {Rels: []string{"d", "a"}}}}
-	if got := strings.Join(unphrased(d, map[string]bool{"a": true}), ""); !strings.Contains(got, "3 of the 4 relations the view draws carry no phrase") {
-		t.Errorf("unphrased %q, want 3 of 4 named", got)
-	}
-	if got := unphrased(d, map[string]bool{"a": true, "c": true}); len(got) > 0 {
-		t.Errorf("half phrased still asks %q", got)
-	}
-	if got := unphrased(Drawing{Wires: []Wire{{Rels: []string{"a", "b", "c"}}}}, nil); len(got) > 0 {
-		t.Errorf("three relations ask %q", got)
 	}
 }

@@ -240,8 +240,6 @@ func TestAbbdSetupLintsRecordsThenInstallsAtTheBoundsLintHolds(t *testing.T) {
 		fmt.Sprintf("%d to %d top-level modules", b.OverviewFewest, b.OverviewMost),
 		fmt.Sprintf("draws %d to %d parts", b.PageFewest, b.PageMost),
 		fmt.Sprintf("about %d a box at most", b.LinesPerBox),
-		fmt.Sprintf("every module of %d files or more into parts", b.LeafFiles),
-		fmt.Sprintf("A top-level module of %d files or more with no parts", b.LeafFiles),
 	} {
 		if !strings.Contains(steps, want) {
 			t.Errorf("abbd-setup must state the bound lint holds, %q", want)
