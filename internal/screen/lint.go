@@ -129,7 +129,13 @@ var criteria = []Criterion{
 	{ID: "O3", Hard: true, Says: "a line climbs only to close a cycle", check: (*look).climbsCloseCycles},
 	{ID: "F1", Placement: true, Says: "a frame chip stands over or under the boxes its lines reach", check: (*look).chipsOverTheirBoxes},
 	{ID: "R", Hard: true, Says: "rules 1 to 15 and 21 hold, and every relation is traced", check: (*look).rules},
+	{ID: "S", Says: fmt.Sprintf("the drawing fits one screen, %dx%d px at the page's scale", screenW, screenH), check: (*look).fitsOneScreen},
 }
+
+// screenW and screenH are the room a drawing has on one screen of a
+// 1600x1000 window at the page's scale: the drawing box's width there, and
+// the height below the page's header and the drawing's heading.
+const screenW, screenH = 1320, 860
 
 // Criteria lists the drawing criteria in the order lint checks them.
 func Criteria() []Criterion { return slices.Clone(criteria) }
@@ -964,6 +970,18 @@ func (l *look) chipsOverTheirBoxes() []Breach {
 		}
 	}
 	return out
+}
+
+// S. A drawing past the screen makes the reader scroll to see it whole, so
+// what it shows can no longer be read at a glance.
+func (l *look) fitsOneScreen() []Breach {
+	w, h := l.v.d.Width, l.v.d.Height
+	if w <= screenW && h <= screenH {
+		return nil
+	}
+	over := max(w-screenW, h-screenH)
+	return []Breach{{Got: over, Allowed: 0,
+		Text: fmt.Sprintf("the drawing is %dx%d px, %dpx past one screen's %dx%d", w, h, over, screenW, screenH)}}
 }
 
 // R. The numbered rules the checker already holds, one breach per rule a
