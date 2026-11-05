@@ -85,3 +85,21 @@ The criteria it targets, named before any judge runs, are lines (c4) and density
 - On part pages, the lines to the frame's chips tangle the page while the boxes inside are few: gin's shared runtime draws about 25 lines from 6 chips into 5 boxes, httpie's runtime 13 chips, and httpie's program entry 18 arriving lines.
 
 Each hypothesis is measured on the fixture lint gate and on the held-out re-renders, and logged in `eval/lint/decisions.tsv`. It is kept only if it lowers crossings, phantoms or excess turns on the re-renders without raising hard breaches on the fixtures.
+
+Two hypotheses were kept (rows 55 and 56 of `eval/lint/decisions.tsv`). The before numbers are the it5 runs re-rendered with main's binary (a4390c5), the after numbers the `w9/*-it6` runs, drawn by 2b922df.
+
+- Two-headed lines apart (6c2e890). Every J3 phantom on the gin and httpie overviews ran along two lines between modules that use each other, bundled at one box. Each such line is a start and a head at both ends, so the bundle joined their far ends. Each now runs on buses of its own pair, unless that breaks more of rules 13 and 15, as on pstack's overview, which stays bundled.
+- Gathered chips (2b922df). A part view may draw one chip per box and edge for the modules outside that meet that box with no contract, instead of one chip per module, so each box takes one line from the frame. choose keeps that drawing only where it crosses no more than the others.
+
+| view | before: phantoms, crossings, excess turns, weighed | after |
+|---|---|---|
+| gin overview | 12, 6, 48, 198 | 0, 14, 42, 182 |
+| httpie overview | 7, 15, 95, 395 | 0, 26, 90, 386 |
+| gin shared runtime | 0, 3, 59, 239 | 0, 1, 26, 105 |
+| httpie runtime and shared types | 0, 26, 124, 522 | 0, 0, 57, 228 |
+| httpie program entry | 0, 0, 19, 76 | 0, 0, 11, 44 |
+| gin, every view | 12, 11, 267, 1079 (hard 12) | 0, 17, 129, 533 (hard 0) |
+| httpie, all views | 7, 43, 412, 1691 (hard 10) | 0, 26, 243, 998 (hard 2) |
+| storefront, all views | 0, 4, 61, 248 | the same, byte for byte |
+
+The overviews cross more: each two-headed line now crosses the rows on its own track. gin's routing page is no longer dense, so its 3 focus views are gone. On the fixtures, hard breaches stay at 61 and no view gains one. Over the 244 views both drawings hold, the weighed sum falls from 9812 to 8116 and placement from 326 to 252. Five views are no longer dense, so their 30 focus views are gone. Every fixture ceiling went down, none up. `shots/it6-*.png` are the after pages, and `shots/it5-gin-MOD-0027.png` and `shots/it5-httpie-MOD-0003.png` the part pages before.
