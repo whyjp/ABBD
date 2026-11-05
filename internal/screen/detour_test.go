@@ -21,3 +21,37 @@ func TestALineToTheBoxBelowDoesNotRidePastIt(t *testing.T) {
 		}
 	}
 }
+
+// grep and ripgrep reach grep-matcher on a trunk down grep's column,
+// beside grep-searcher, the box above grep-matcher. The lines pass
+// grep-searcher's row straight down that column and turn under it; they
+// do not cross the wide space beside it at its middle, far right of both
+// their ends, and come back.
+func TestALineKeepsToItsColumnPastAWideSpace(t *testing.T) {
+	for _, v := range views(fixture(t, "ripgrep")) {
+		if v.name != "overview" {
+			continue
+		}
+		s, err := sheetOf(v.d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		l := newLook(v, s)
+		seen := 0
+		for _, w := range l.trace.Ways {
+			if l.shapeName(w.to) != `box "grep-matcher" (MOD-0008)` || w.kind != "bypass" {
+				continue
+			}
+			seen++
+			a, b := w.pts[0].x, w.pts[len(w.pts)-1].x
+			for _, p := range w.pts {
+				if p.x > max(a, b) || p.x < min(a, b) {
+					t.Errorf("%s to grep-matcher passes x=%g, outside its ends' %g to %g", l.shapeName(w.from), p.x, a, b)
+				}
+			}
+		}
+		if seen != 2 {
+			t.Fatalf("want grep's and ripgrep's lines to grep-matcher, got %d", seen)
+		}
+	}
+}

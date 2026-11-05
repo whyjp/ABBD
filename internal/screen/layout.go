@@ -691,12 +691,12 @@ func straight(pts []pt) []pt {
 
 // gutter picks the space in row r nearest to x for a line passing through
 // it, and the lane in that space the line takes.
-func (l *layout) gutter(r, x int) int { return l.gutterTo(r, x, x) }
+func (l *layout) gutter(r, x int) int { return l.gutterTo(r, x, x, -1) }
 
 // gutterTo is gutter for a line headed for to: of two spaces as far from x,
 // it takes the one nearer to, so a line that must step aside steps the way
-// it is going.
-func (l *layout) gutterTo(r, x, to int) int {
+// it is going. own is the lane the line's own chain holds in row r, or -1.
+func (l *layout) gutterTo(r, x, to, own int) int {
 	ids := l.rows[r]
 	type gap struct{ from, to int }
 	var gaps []gap
@@ -735,6 +735,15 @@ func (l *layout) gutterTo(r, x, to int) int {
 	k := l.lanes[[2]int{r, best}]
 	l.lanes[[2]int{r, best}]++
 	if best > 0 && best < len(gaps)-1 {
+		// A line already running down its own chain's lane keeps straight
+		// on it. runs refuses the chain where the line's own trunk passed
+		// the row before at that x, the one line meets may count; set in
+		// the space's middle, the line would ride past its turn and back.
+		if x == own && x >= g.from+12 && x <= g.to-12 && l.meets(r, x) <= 1 && !l.takenBut(r, x, own) && !l.onStub(r, x) &&
+			!slices.ContainsFunc(l.passes[r], func(y int) bool { return abs(y-x) < lane }) {
+			l.passes[r] = append(l.passes[r], x)
+			return x
+		}
 		at := func(k int) int { return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane }
 		for k+1 < slots(best) && (l.nextTo(r, at(k)) || l.taken(r, at(k)) || l.onStub(r, at(k))) {
 			k++
@@ -771,27 +780,34 @@ func (l *layout) onStub(r, x int) bool {
 }
 
 // taken says x in row r lies on a chain's lane, or in its channel.
-func (l *layout) taken(r, x int) bool {
+func (l *layout) taken(r, x int) bool { return l.takenBut(r, x, -1) }
+
+// takenBut is taken leaving out the chain lane at own.
+func (l *layout) takenBut(r, x, own int) bool {
 	for _, y := range l.reserved[r] {
-		if abs(x-y) <= channel {
+		if y != own && abs(x-y) <= channel {
 			return true
 		}
 	}
 	return false
 }
 
-// nextTo says a line passing row r at x would meet one that passes a row
-// next to it at the same x.
-func (l *layout) nextTo(r, x int) bool {
+// meets counts the lines passing a row next to r at x.
+func (l *layout) meets(r, x int) int {
+	n := 0
 	for _, q := range []int{r - 1, r + 1} {
 		for _, y := range l.passes[q] {
 			if abs(x-y) < 3 {
-				return true
+				n++
 			}
 		}
 	}
-	return false
+	return n
 }
+
+// nextTo says a line passing row r at x would meet one that passes a row
+// next to it at the same x.
+func (l *layout) nextTo(r, x int) bool { return l.meets(r, x) > 0 }
 
 // free says a line may pass beside row r at x: no line passes within a
 // lane of it, and the channel it would join holds fewer than bundle lines.

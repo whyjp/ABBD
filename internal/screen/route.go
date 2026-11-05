@@ -976,7 +976,13 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				p.xs = append(p.xs, x)
 				continue
 			}
-			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx)
+			own := -1
+			if c := chainOf[i]; c >= 0 {
+				if cx, ok := l.pass[[2]int{c, r}]; ok {
+					own = cx + laneOf[i]*chainLane
+				}
+			}
+			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}
