@@ -180,12 +180,12 @@ func (l *layout) keep() layout {
 // compares every pair of strands, so a view with more than shareMost
 // requests keeps the plain drawing rather than pay for that.
 func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
-	plain := l.lay(reqs, false, apart)
+	plain := l.layDrops(reqs, false, apart)
 	if !plain.shares || len(reqs) > shareMost {
 		return plain
 	}
 	kept := l.keep()
-	if shared := l.lay(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
+	if shared := l.layDrops(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
 		return shared
 	}
 	*l = kept
@@ -193,6 +193,39 @@ func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
 }
 
 const shareMost = 200
+
+// layDrops lays the view, then lays it again with every line that drops()
+// took off its buses but could not stand straight kept on them, since such
+// a line leaves or reaches its box beside its bundle (rule 4).
+func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
+	before := l.keep()
+	bent := map[int]bool{}
+	var r routing
+	for {
+		kept := l.keep()
+		r = l.lay(reqs, shared, apart, bent)
+		grew := false
+		for _, i := range r.bent {
+			grew = grew || !bent[i]
+			bent[i] = true
+		}
+		if !grew {
+			break
+		}
+		*l = kept
+	}
+	if !r.dropped {
+		return r
+	}
+	after := l.keep()
+	*l = before
+	bundled := l.lay(reqs, shared, apart, nil)
+	if weigh(r, reqs).beats(weigh(bundled, reqs)) {
+		*l = after
+		return r
+	}
+	return bundled
+}
 
 // routing is one way to draw a view's lines.
 type routing struct {
@@ -206,12 +239,18 @@ type routing struct {
 	shares bool
 	// roomy says the counted tactic would give some ×N room (lay).
 	roomy bool
+	// bent are the lines lay took off their buses to drop straight that
+	// do not stand straight.
+	bent []int
+	// dropped says some line of a view other than a focus view drops
+	// straight off its buses.
+	dropped bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
 // them, and with each line between modules that use each other on buses of
 // its own pair where apart says so.
-func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
+func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) routing {
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -224,6 +263,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	members, ends := map[slotKey][]int{}, map[slotKey][]int{}
 	leave, arrive := map[slotKey][]int{}, map[slotKey][]int{}
+	keys := make([][2]slotKey, len(reqs))
 	for i, r := range reqs {
 		p := &plans[i]
 		p.dep, p.arr, p.via = -1, -1, -1
@@ -271,6 +311,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			dk.key += "|" + place(r.to)
 			ak.key += "|" + place(r.from)
 		}
+		keys[i] = [2]slotKey{dk, ak}
 		leave[dk] = append(leave[dk], i)
 		arrive[ak] = append(arrive[ak], i)
 	}
@@ -425,14 +466,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	// drops says line i can drop straight from box to box: they stand in
 	// rows next to each other and their spans meet, so it needs no bus.
+	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
 	drops := func(i int) bool {
 		f, t := reqs[i].from, reqs[i].to
-		return l.ring && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+		_, hub := hubs[t.node]
+		return (l.ring || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
 	}
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
 	// one trunk (H2).
-	hubs := hubsOf(drawnRels(reqs), func(k string) bool { return !strings.HasPrefix(k, chipPlace) })
 	free := func(is []int) []int {
 		return slices.DeleteFunc(slices.Clone(is), func(i int) bool { _, hub := hubs[reqs[i].to.node]; return drops(i) && !hub })
 	}
@@ -767,7 +809,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				xs[s], pinned[s] = x, true
 			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
-			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
+			} else if i := sl.is[0]; (!ok || !l.ring) && len(sl.is) == 1 && drops(i) {
 				// A line that drops straight stands as near its share of
 				// the edge as the span both its ends meet in lets it.
 				f, t := reqs[i].from, reqs[i].to
@@ -1679,7 +1721,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	for i := range reqs {
 		backs[i] = back(i)
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy}
+	var crooked []int
+	dropped := false
+	for i := range reqs {
+		dropped = dropped || !l.ring && drops(i) && plans[i].dep < 0
+		if !l.ring && drops(i) && plans[i].dep < 0 && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) {
+			crooked = append(crooked, i)
+		}
+	}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more
