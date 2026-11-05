@@ -117,14 +117,14 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 			t.Errorf("lint does not report %q", w)
 		}
 	}
-	if r.Schema != lintSchema || r.Totals.ExcessTurns != 64 || r.Totals.Steps != 42 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
-		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 64, 42, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
+	if r.Schema != lintSchema || r.Totals.ExcessTurns != 58 || r.Totals.Steps != 38 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
+		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 58, 38, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
 	}
 }
 
 // A hard breach the view has recorded as debt passes, and is marked so.
 func TestLintPassesARecordedDebt(t *testing.T) {
-	code, out := lintAt(t, fixtureRoot("self"), "MOD-0047", "--json")
+	code, out := lintAt(t, fixtureRoot("self"), "MOD-0030", "--json")
 	if code != exitOK {
 		t.Fatalf("exit %d, want 0:\n%s", code, out)
 	}
@@ -135,7 +135,7 @@ func TestLintPassesARecordedDebt(t *testing.T) {
 	debts := 0
 	for _, v := range r.Views {
 		for _, b := range v.Breaches {
-			if b.Debt != (b.Hard && v.View == "MOD-0047 internal/topology") {
+			if b.Debt != (b.Hard && v.View == "MOD-0030 internal/model") {
 				t.Errorf("%s: %s: debt %v", v.View, b.Text, b.Debt)
 			}
 			if b.Debt {
@@ -151,8 +151,8 @@ func TestLintPassesARecordedDebt(t *testing.T) {
 // A hard breach the view has not recorded fails lint, and the report says
 // why.
 func TestLintFailsOnAHardBreachPastItsDebt(t *testing.T) {
-	code, out := lintAt(t, copyFixture(t, "self", ""), "MOD-0047")
-	if code != exitError || !strings.Contains(out, "R hard  rule 13:") || !strings.Contains(out, "MOD-0047 internal/topology: 1 hard breach of R, 0 recorded as debt") {
+	code, out := lintAt(t, copyFixture(t, "self", ""), "MOD-0030")
+	if code != exitError || !strings.Contains(out, "R hard  rule 13:") || !strings.Contains(out, "MOD-0030 internal/model: 1 hard breach of R, 0 recorded as debt") {
 		t.Fatalf("exit %d, want 1 with rule 13 named:\n%s", code, out)
 	}
 }
