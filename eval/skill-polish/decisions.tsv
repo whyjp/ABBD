@@ -3,10 +3,10 @@ it2	c43960f	gin	2.33	2.56	-0.23	3	3	3	1	195	1176	16	0	41	7	26	0	5	0	loss
 it2	c43960f	httpie	3.00	2.67	+0.33	3	2	1	5	152	1043	15	5	30	9	41	0	3	0	win
 it2	c43960f	storefront	2.56	3.22	-0.66	3	2	3	2	106	716	16	0	36	10	28	5	2	0	loss
 it2	c43960f	all	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	reject as a variant: beats base in 1 of 3; its commit stays because it3 is built on it
-it3	a2611d7	gin	3.06	2.56	+0.50	4	3	1	12	163	1079	11	12	32	8	29	2	2	0	win
-it3	a2611d7	httpie	2.33	2.67	-0.34	3	2	3	10	243	1691	43	7	40	10	45	4	3	0	loss, not bad: per-view mean down 0.34, set of views up 1
-it3	a2611d7	storefront	3.22	3.22	0.00	4	2	1	0	37	248	4	0	19	9	27	5	1	0	win on tie-break: equal per-view mean, set of views 4 against 2, judge ranks it first
-it3	a2611d7	all	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	keep: beats base in 2 of 3 and does not lose badly on httpie
+it3	a2611d7	gin	3.06	2.56	+0.50	4	3	1	12	163	1079	11	12	32	8	29	2	2	0	win: judge mean +0.50; lint hard 1 to 12, phantoms 0 to 12
+it3	a2611d7	httpie	2.33	2.67	-0.34	3	2	3	10	243	1691	43	7	40	10	45	4	3	0	loss: judge mean -0.34, lines 2.67 to 1.67; lint crossings 4 to 43, hard 7 to 10
+it3	a2611d7	storefront	3.22	3.22	0.00	4	2	1	0	37	248	4	0	19	9	27	5	1	0	tie: judge mean 0.00; ranked first only by set of views 4 against 2, a tie-break the stated rule did not include
+it3	a2611d7	all	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	kept as the working base, not a proven improvement: 1 win, 1 tie, 1 loss on judge mean, from one blind pass over 3 images a repository, with margins about the size of run-to-run noise; lint regressed on gin and httpie, and the first-record refusal never fired
 base	a0a792f	gin	2.56	-	-	3	-	2	1	17	124	0	0	8	7	11	5	0	0	reference
 base	a0a792f	httpie	2.67	-	-	2	-	2	7	65	348	4	7	22	7	25	3	2	0	reference
 base	a0a792f	storefront	3.22	-	-	2	-	2	1	57	399	7	0	28	3	8	6	2	0	reference
