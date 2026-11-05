@@ -228,7 +228,8 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	}
 	// The kept drawing is drawn again with room for its counts, where some
 	// count would get it, and that is kept if the checks above pass it and
-	// it reads no worse.
+	// it reads no worse. Only the kept drawing's roomy is read, and it was
+	// drawn without counted.
 	if found && bc.roomy {
 		bt.counted = true
 		var c cost

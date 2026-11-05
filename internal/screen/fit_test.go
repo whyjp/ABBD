@@ -84,6 +84,24 @@ func TestTheOverviewKeepsThePlainRankingUnlessAnotherFixesIt(t *testing.T) {
 	if got := pick(cost{hard: 2, seen: 40}, cost{seen: 80}); got != 1 {
 		t.Errorf("a fold with fewer hard breaches: picked %d, want the fold", got)
 	}
+	// The fold drawn again with room for its counts reads better but moves
+	// a box, so the gate passes it over and the fold stands uncounted.
+	ts := overviewTactics[:2]
+	got := choose(ts, func(t tactic, read *cost) (int, bool) {
+		switch {
+		case t.counted:
+			*read = cost{seen: 4, moved: 1}
+			return -1, true
+		case t.fold:
+			*read = cost{seen: 80, roomy: true}
+			return 1, true
+		}
+		*read = plain
+		return 0, true
+	}, func(int, *cost) {})
+	if got != 1 {
+		t.Errorf("a counted fold that moves a box: picked %d, want the uncounted fold", got)
+	}
 }
 
 // A chain of modules that use each other ranks a row each when drawn
