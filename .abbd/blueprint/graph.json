@@ -20244,7 +20244,15 @@
                 "Code": true
               },
               {
-                "Text": ", which the level check reads. ",
+                "Text": ", which the level check reads. A hub's view is quiet too, but ",
+                "Code": false
+              },
+              {
+                "Text": "hubLines",
+                "Code": true
+              },
+              {
+                "Text": " keeps in the hub's colour the ink whose every route has the hub at one end. ",
                 "Code": false
               },
               {
