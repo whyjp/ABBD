@@ -758,8 +758,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"check that the overview and each module's page read the way the swarm described the code.\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Run `abbd install`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
       ]
     },
     {
@@ -2790,6 +2789,8 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Phrase": "module text",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
     },
     {
@@ -3158,7 +3159,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"check that the overview and each module's page read the way the swarm described the code.\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
     },
     {
       "From": "FEAT-0016",
@@ -5342,7 +5343,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"check that the overview and each module's page read the way the swarm described the code.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
           ]
         },
         {
