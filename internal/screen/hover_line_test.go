@@ -2,128 +2,206 @@ package screen
 
 import (
 	"encoding/xml"
+	"fmt"
+	"math"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
 )
 
 // A pointed-at line is what a reader follows from one shape to the other,
-// so the stroke the pointer lights is the whole line: one unbroken path
-// whose two ends touch the boxes or chips it joins, painted over every
-// other line so no other ink cuts it. A pointed-at box lights each of its
-// lines whole the same way, all in the box's colour, so no lit piece wears
-// another line's colour. These tests read the drawing as the page draws
-// it, in paint order, and point at every piece of ink and every shape.
+// so what the pointer lights is each line whole: one unbroken stroke whose
+// two ends touch the boxes or chips it joins, above every other line. These
+// tests read the drawing as the page draws it and point at every piece of
+// ink and every shape.
 
-// pointable is a stroke the pointer can rest on, in paint order.
-type pointable struct {
+// drawnRoute is a route as the page draws it: its classes and colours, its
+// way on the ink.
+type drawnRoute struct {
 	class, hue string
-	parts      [][]fpt
-	// half is how far from its centre line the pointer still lands on it.
-	half float64
-	// painted is its place in paint order.
-	painted int
+	vars       map[string]string
+	way        drawnWay
 }
 
-func (s pointable) is(c string) bool { return strings.Contains(" "+s.class+" ", " "+c+" ") }
+// drawnWay is a polyline and where its arrowheads stand.
+type drawnWay struct {
+	pts  []fpt
+	tips []drawnTip
+}
 
-type pointed struct {
+type drawnTip struct {
+	shape string
+	at    fpt
+	deg   float64
+}
+
+type drawnInk struct {
+	class string
+	parts [][]fpt
+}
+
+type drawnPage struct {
 	shapes []shape
 	hues   map[string]string
-	// strokes are the lines and routes, ink the visible lines.
-	strokes, ink []pointable
-	// lastInk is the paint order of the last visible line.
-	lastInk int
+	ink    []drawnInk
+	routes []drawnRoute
+	// heads are the colours each arrowhead shape paints in.
+	heads map[string]string
 }
 
-// lineLights says pointing at a visible line lights that path itself, as
-// the page's rules did before every line had a route.
-var lineLights = strings.Contains(pageCSS, "path.w:hover")
+func classIs(class, c string) bool { return strings.Contains(" "+class+" ", " "+c+" ") }
 
-// pointables reads the strokes and the shapes. A line wears its stroke
-// width as page.css sets it; a route is as wide as the line it lights.
-func pointables(t *testing.T, d Drawing) pointed {
+// numbered are the numbers of a class list's classes that start with p.
+func numbered(class, p string) []string {
+	var out []string
+	for _, c := range strings.Fields(class) {
+		if len(c) > len(p) && strings.HasPrefix(c, p) && c[len(p)] >= '0' && c[len(p)] <= '9' {
+			out = append(out, c[len(p):])
+		}
+	}
+	return out
+}
+
+var tipAt = regexp.MustCompile(`^translate\(([-\d.]+) ([-\d.]+)\) rotate\(([-\d.]+)\)$`)
+
+func readDrawn(t *testing.T, d Drawing) drawnPage {
 	t.Helper()
 	var b strings.Builder
 	if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
 		t.Fatal(err)
 	}
 	dec := xml.NewDecoder(strings.NewReader(b.String()))
-	out := pointed{hues: map[string]string{}}
+	out := drawnPage{hues: map[string]string{}, heads: map[string]string{}}
 	var group *shape
-	n := 0
+	var route *drawnRoute
+	var way *drawnWay
+	head := ""
+	var stack []string
 	for {
 		tok, err := dec.Token()
 		if err != nil {
 			break
 		}
-		e, ok := tok.(xml.StartElement)
-		if !ok {
-			if end, ok := tok.(xml.EndElement); ok && end.Name.Local == "g" && group != nil {
-				out.shapes = append(out.shapes, *group)
-				group = nil
-			}
-			continue
-		}
-		n++
-		switch e.Name.Local {
-		case "g":
-			for _, k := range []string{"box", "port"} {
-				if hasClass(e, k) {
-					group = &shape{kind: k, class: attr(e, "class"), id: attr(e, "data-id")}
-					out.hues[group.class] = attr(e, "data-h")
-				}
-			}
-		case "rect":
-			if group != nil && group.r.w == 0 {
-				group.r = frect{num(attr(e, "x")), num(attr(e, "y")), num(attr(e, "width")), num(attr(e, "height"))}
-			}
-		case "path":
-			if !hasClass(e, "w") && !hasClass(e, "route") {
+		switch e := tok.(type) {
+		case xml.EndElement:
+			top := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			if e.Name.Local != "g" {
 				continue
 			}
-			parts, err := flatten(attr(e, "d"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			s := pointable{class: attr(e, "class"), hue: attr(e, "data-h"), parts: parts, painted: n}
 			switch {
-			case hasClass(e, "w"):
-				out.lastInk = n
-				out.ink = append(out.ink, s)
-				if !lineLights {
-					continue
-				}
-				s.half = 0.75
-			default:
-				s.half = 1.5
+			case top == "shape":
+				out.shapes = append(out.shapes, *group)
+				group = nil
+			case top == "route":
+				out.routes = append(out.routes, *route)
+				route = nil
+			case top == "head":
+				head = ""
 			}
-			out.strokes = append(out.strokes, s)
+		case xml.StartElement:
+			kind := e.Name.Local
+			class := attr(e, "class")
+			switch e.Name.Local {
+			case "g":
+				switch {
+				case classIs(class, "box") || classIs(class, "port"):
+					kind = "shape"
+					group = &shape{kind: strings.Fields(class)[0], class: class, id: attr(e, "data-id")}
+					out.hues[class] = attr(e, "data-h")
+				case classIs(class, "route"):
+					kind = "route"
+					route = &drawnRoute{class: class, hue: attr(e, "data-h"), vars: map[string]string{}}
+					for _, v := range strings.Split(attr(e, "style"), ";") {
+						if k, val, ok := strings.Cut(v, ":"); ok {
+							route.vars[k] = val
+						}
+					}
+					way = &route.way
+				case strings.HasPrefix(attr(e, "id"), "t-"):
+					kind = "head"
+					head = strings.TrimPrefix(attr(e, "id"), "t-")
+				}
+			case "rect":
+				if group != nil && group.r.w == 0 {
+					group.r = frect{num(attr(e, "x")), num(attr(e, "y")), num(attr(e, "width")), num(attr(e, "height"))}
+				}
+			case "path":
+				switch {
+				case head != "":
+					out.heads[head] = attr(e, "style")
+				case classIs(class, "w"):
+					parts, err := flatten(attr(e, "d"))
+					if err != nil {
+						t.Fatal(err)
+					}
+					out.ink = append(out.ink, drawnInk{class: class, parts: parts})
+				case classIs(class, "way"):
+					parts, err := flatten(attr(e, "d"))
+					if err != nil || len(parts) != 1 {
+						t.Fatalf("a route draws %q", attr(e, "d"))
+					}
+					way.pts = parts[0]
+				}
+			case "use":
+				m := tipAt.FindStringSubmatch(attr(e, "transform"))
+				if m == nil {
+					t.Fatalf("an arrowhead stands at %q", attr(e, "transform"))
+				}
+				way.tips = append(way.tips, drawnTip{strings.TrimPrefix(attr(e, "href"), "#t-"), fpt{num(m[1]), num(m[2])}, num(m[3])})
+			}
+			stack = append(stack, kind)
 		}
 	}
 	return out
 }
 
-// under is the stroke painted last of those the pointer lands on at p.
-func (pd pointed) under(p fpt) *pointable {
-	var top *pointable
-	for i := range pd.strokes {
-		s := &pd.strokes[i]
-		for _, part := range s.parts {
-			for k := 1; k < len(part); k++ {
-				if segDist(p, part[k-1], part[k]) <= s.half {
-					top = s
-				}
+func fpieces(pts []fpt) [][2]fpt {
+	var out [][2]fpt
+	for i := 1; i < len(pts); i++ {
+		out = append(out, [2]fpt{pts[i-1], pts[i]})
+	}
+	return out
+}
+
+// along says some piece of a runs along some piece of b on one track for
+// a length.
+func along(a, b [][2]fpt) bool {
+	for _, p := range a {
+		for _, q := range b {
+			if stretch(p, q, 0) > 0.5 {
+				return true
 			}
 		}
 	}
-	return top
+	return false
+}
+
+// stretch is how far two pieces run along each other on tracks at most tol
+// apart.
+func stretch(p, q [2]fpt, tol float64) float64 {
+	switch {
+	case p[0].y == p[1].y && q[0].y == q[1].y && math.Abs(p[0].y-q[0].y) <= tol:
+		return math.Min(math.Max(p[0].x, p[1].x), math.Max(q[0].x, q[1].x)) - math.Max(math.Min(p[0].x, p[1].x), math.Min(q[0].x, q[1].x))
+	case p[0].x == p[1].x && q[0].x == q[1].x && math.Abs(p[0].x-q[0].x) <= tol:
+		return math.Min(math.Max(p[0].y, p[1].y), math.Max(q[0].y, q[1].y)) - math.Max(math.Min(p[0].y, p[1].y), math.Min(q[0].y, q[1].y))
+	}
+	return 0
+}
+
+func inkPieces(ink drawnInk) [][2]fpt {
+	var out [][2]fpt
+	for _, part := range ink.parts {
+		out = append(out, fpieces(part)...)
+	}
+	return out
 }
 
 // touches says p lies on the edge of a shape whose classes include one of
 // cls, or just outside it where an arrowhead's tip stops.
-func (pd pointed) touches(p fpt, cls []string) bool {
-	for _, s := range pd.shapes {
+func (pg drawnPage) touches(p fpt, cls []string) bool {
+	for _, s := range pg.shapes {
 		if s.r.grow(2).contains(p, 0) && !s.r.contains(p, 2) && slices.ContainsFunc(cls, s.is) {
 			return true
 		}
@@ -131,123 +209,339 @@ func (pd pointed) touches(p fpt, cls []string) bool {
 	return false
 }
 
-// joined are the classes of the shapes a stroke's lines join: pN for each
-// eN it carries.
-func joined(class string) []string {
-	var out []string
-	for _, c := range strings.Fields(class) {
-		if len(c) > 1 && c[0] == 'e' && c[1] >= '0' && c[1] <= '9' {
-			out = append(out, "p"+c[1:])
-		}
+// broken says what is wrong with a way the pointer lights, or "".
+func (pg drawnPage) broken(r drawnRoute, w drawnWay) string {
+	ends := []string{}
+	for _, j := range numbered(r.class, "e") {
+		ends = append(ends, "p"+j)
 	}
-	return out
-}
-
-// broken says what is wrong with a stroke the pointer lights, or "".
-func (pd pointed) broken(s *pointable) string {
+	n := len(w.pts)
 	switch {
-	case s == nil:
-		return "lights nothing"
-	case len(s.parts) != 1:
-		return "lights a stroke in pieces"
-	case !pd.touches(s.parts[0][0], joined(s.class)) || !pd.touches(s.parts[0][len(s.parts[0])-1], joined(s.class)):
+	case n < 2:
+		return "lights no stroke"
+	case !pg.touches(w.pts[0], ends) || !pg.touches(w.pts[n-1], ends):
 		return "lights a stroke that stops short of the boxes or chips it joins"
-	case s.painted < pd.lastInk:
-		return "lights a stroke other lines are painted over"
+	case len(w.tips) == 0:
+		return "lights a line with no arrowhead"
+	}
+	for i, tp := range w.tips {
+		at, from := w.pts[n-1], w.pts[n-2]
+		if i == 1 {
+			at, from = w.pts[0], w.pts[1]
+		}
+		if dist(tp.at, at) > 0.01 || math.Abs(math.Remainder(tp.deg-math.Atan2(at.y-from.y, at.x-from.x)*180/math.Pi, 360)) > 0.01 {
+			return "lights an arrowhead away from its line's end"
+		}
 	}
 	return ""
 }
 
-// overhang is how many pieces of bus ink no line's way runs along, so
-// pointing there lights nothing: a track drawn past the last line that
-// leaves it. Shortening those tracks moves the layout's weight past its
-// ceilings, so it stays a known count that may only fall.
-const overhang = 7
+// phantoms is how many stretches of bus ink no line's way runs along, a
+// shared track drawn on between two lines' drops (self overview, y=468 from
+// x=594 to 628). Drawing those tracks
+// as their lines' spans moves the layout's weight past its ceilings
+// (eval/lint/decisions.tsv rows 58 and 59), so it stays a known count that
+// may only fall. Pointing at one lights the lines its whole bus carries.
+const phantoms = 14
 
-// Pointing at any piece of ink lights one unbroken stroke between the two
-// boxes or chips its line joins, painted over every line.
-func TestPointingAtALineLightsItWholeBetweenItsEnds(t *testing.T) {
-	total := 0
+// Pointing at a piece of ink lights exactly the lines whose ways run along
+// it, each on top and whole between the shapes it joins, and keeps lit the
+// shapes at their ends.
+func TestPointingAtInkLightsTheLinesThatRunAlongIt(t *testing.T) {
+	inks, lines, phantom := 0, 0, 0
 	why := map[string]int{}
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
-			pd := pointables(t, v.d)
-			for _, s := range pd.ink {
-				for _, part := range s.parts {
-					for k := 1; k < len(part); k++ {
-						a, b := part[k-1], part[k]
-						if dist(a, b) < 2 {
-							continue
+			pg := readDrawn(t, v.d)
+			if len(pg.routes) == 0 {
+				continue
+			}
+			ways := make([][][2]fpt, len(pg.routes))
+			for k, r := range pg.routes {
+				ways[k] = fpieces(r.way.pts)
+				if got := numbered(r.class, "r"); !slices.Equal(got, []string{fmt.Sprint(k)}) {
+					t.Fatalf("%s %s: route %d is numbered %v", name, v.name, k, got)
+				}
+			}
+			for _, ink := range pg.ink {
+				inks++
+				ps := inkPieces(ink)
+				var want []string
+				for k := range pg.routes {
+					if along(ps, ways[k]) {
+						want = append(want, fmt.Sprint(k))
+					}
+				}
+				got := numbered(ink.class, "r")
+				slices.Sort(got)
+				slices.Sort(want)
+				if !slices.Equal(got, want) {
+					why["lights other lines than those that run along it"]++
+					t.Logf("%s %s: ink %q lights %v, along it run %v", name, v.name, ink.class, got, want)
+				}
+				if len(got) == 0 {
+					why["lights nothing"]++
+				}
+				for _, p := range ps {
+					if dist(p[0], p[1]) >= 2 {
+						phantom += bare(p, slices.Concat(ways...))
+					}
+				}
+				for _, k := range got {
+					var i int
+					fmt.Sscan(k, &i)
+					r := pg.routes[i]
+					lines++
+					for _, e := range numbered(r.class, "e") {
+						if !classIs(ink.class, "e"+e) {
+							why["leaves a lit line's end box faded"]++
 						}
-						total++
-						if w := pd.broken(pd.under(fpt{(a.x + b.x) / 2, (a.y + b.y) / 2})); w != "" {
-							why[w]++
-						}
+					}
+					if w := pg.broken(r, r.way); w != "" {
+						why[w]++
+					}
+				}
+			}
+			// Each route lies on the ink of its own line all the way.
+			for k := range pg.routes {
+				var own [][2]fpt
+				for _, ink := range pg.ink {
+					if classIs(ink.class, fmt.Sprint("r", k)) {
+						own = append(own, inkPieces(ink)...)
+					}
+				}
+				for _, p := range ways[k] {
+					if bare(p, own) > 0 {
+						why["has a stretch off its own ink"]++
+						break
 					}
 				}
 			}
 		}
 	}
-	t.Logf("pointed at %d pieces of ink: %v", total, why)
-	if why["lights nothing"] > overhang {
-		t.Errorf("%d pieces of ink light nothing, more than the %d known", why["lights nothing"], overhang)
+	t.Logf("pointed at %d pieces of ink, which light %d lines; %d stretches of bus ink carry no line: %v", inks, lines, phantom, why)
+	if phantom > phantoms {
+		t.Errorf("%d stretches of ink carry no line, more than the %d known", phantom, phantoms)
 	}
-	delete(why, "lights nothing")
 	if len(why) > 0 {
-		t.Errorf("pieces of ink light a stroke that is not one whole line between its ends: %v", why)
+		t.Errorf("pointing at ink lights what it should not: %v", why)
 	}
 }
 
-// Pointing at a box or chip lights every line it has an end on whole,
-// between that shape and the line's other end, over every line, and in
-// one colour: a box's own, or the warning colour for a line that skips the
-// contract boundary; a chip, which wears no unit's colour, leaves each
-// line its own. No other ink stays lit to show another colour.
+// bare is how many stretches of p, longer than a pixel, no piece of own
+// runs along.
+func bare(p [2]fpt, own [][2]fpt) int {
+	lo, hi, across := p[0].x, p[1].x, p[0].y == p[1].y
+	if !across {
+		lo, hi = p[0].y, p[1].y
+	}
+	lo, hi = math.Min(lo, hi), math.Max(lo, hi)
+	var runs [][2]float64
+	for _, q := range own {
+		if stretch(p, q, 1) > 0 {
+			a, b := q[0].x, q[1].x
+			if !across {
+				a, b = q[0].y, q[1].y
+			}
+			runs = append(runs, [2]float64{math.Min(a, b), math.Max(a, b)})
+		}
+	}
+	slices.SortFunc(runs, func(a, b [2]float64) int { return int(a[0] - b[0]) })
+	n, at := 0, lo
+	for _, r := range runs {
+		if r[0] > at+1 {
+			n++
+		}
+		at = math.Max(at, r[1])
+	}
+	if at < hi-1 {
+		n++
+	}
+	return n
+}
+
+// Pointing at a box or chip lights every line with an end there whole, on
+// top, and in one colour: a box's own, whatever the line's kind; a chip,
+// which wears no unit's colour, leaves each line its own.
 func TestPointingAtAShapeLightsItsLinesWholeInOneColour(t *testing.T) {
 	shapes, lines := 0, 0
 	why := map[string]int{}
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
-			pd := pointables(t, v.d)
-			for _, sh := range pd.shapes {
-				own := ""
-				for _, c := range strings.Fields(sh.class) {
-					if len(c) > 1 && c[0] == 'p' && c[1] >= '0' && c[1] <= '9' {
-						own = c
-					}
-				}
-				if own == "" {
+			pg := readDrawn(t, v.d)
+			for _, sh := range pg.shapes {
+				js := numbered(sh.class, "p")
+				if len(js) == 0 {
 					continue
 				}
+				j := js[0]
 				shapes++
-				want := pd.hues[sh.class]
-				lit := func(s pointable) bool { return slices.Contains(joined(s.class), own) }
-				for _, s := range pd.strokes {
-					if !lit(s) {
+				box := pg.hues[sh.class]
+				for _, o := range pg.shapes {
+					if o.kind == "box" && classIs(o.class, "p"+j) {
+						box = pg.hues[o.class]
+					}
+				}
+				for _, r := range pg.routes {
+					if !classIs(r.class, "e"+j) {
 						continue
 					}
 					lines++
-					if w := pd.broken(&s); w != "" {
-						why[w]++
+					if s := pg.broken(r, r.way); s != "" {
+						why[s]++
 					}
-					if c := lightIn(s, want); want != "" && c != want && c != warnKey {
-						why["lights a line in another colour than the box's"]++
+					want := "var(--h" + box + ")"
+					if box == "" {
+						want = "var(--h" + r.hue + ")"
+					}
+					if got := r.vars["--k"+j]; got != want {
+						why["lights a line in another colour than it should take"]++
 					}
 				}
 			}
 		}
 	}
-	t.Logf("pointed at %d shapes, which light %d strokes: %v", shapes, lines, why)
+	t.Logf("pointed at %d shapes, which light %d lines: %v", shapes, lines, why)
 	if len(why) > 0 {
 		t.Errorf("shapes light lines that are not whole or not in one colour: %v", why)
 	}
 }
 
-// lightIn is the colour a stroke takes while the box of colour box is
-// pointed at, as hoverCSS sets it.
-func lightIn(s pointable, box string) string {
-	if s.is("route") && box != "" && !s.is("bypass") && !s.is("mutual") && strings.Contains(hoverCSS, ":not(.bypass,.mutual){--c:") {
-		return box
+// Pointing at a box or chip lights exactly its own relations, the lines in
+// and out with an end there, and the shapes at their other ends: the shapes
+// one hop away, and nothing else. No lit stroke reaches a shape that is not
+// one of them.
+func TestPointingAtAShapeLightsOnlyItsOneHopNeighbours(t *testing.T) {
+	shapes := 0
+	why := map[string]int{}
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			pg := readDrawn(t, v.d)
+			for _, sh := range pg.shapes {
+				js := numbered(sh.class, "p")
+				if len(js) == 0 {
+					continue
+				}
+				j := js[0]
+				shapes++
+				hop := numbered(sh.class, "n")
+				far := []string{j}
+				for _, r := range pg.routes {
+					if !classIs(r.class, "e"+j) {
+						continue
+					}
+					ends := numbered(r.class, "e")
+					far = append(far, ends...)
+					w := r.way
+					for _, other := range pg.shapes {
+						ks := numbered(other.class, "p")
+						if len(ks) == 0 || slices.Contains(ends, ks[0]) {
+							continue
+						}
+						if slices.ContainsFunc(fpieces(w.pts), func(p [2]fpt) bool { return enters(p, other.r.grow(1)) }) {
+							why["lights a stroke that reaches a shape at neither of its ends"]++
+							t.Logf("%s %s: pointing at %s lights %v (ink %v), which reaches %s %v", name, v.name, sh.id, w.pts, r.way.pts, other.id, other.r)
+						}
+					}
+				}
+				slices.Sort(far)
+				far = slices.Compact(far)
+				slices.Sort(hop)
+				if !slices.Equal(far, hop) {
+					why["lights other shapes than its one-hop neighbours"]++
+					t.Logf("%s %s: pointing at %s lights lines to %v, its neighbours are %v", name, v.name, sh.id, far, hop)
+				}
+			}
+		}
 	}
-	return s.hue
+	t.Logf("pointed at %d shapes: %v", shapes, why)
+	if len(why) > 0 {
+		t.Errorf("pointing at a shape lights more or less than its one-hop neighbours: %v", why)
+	}
+}
+
+// enters says the piece p, across or down, meets the rect r.
+func enters(p [2]fpt, r frect) bool {
+	lx, hx := math.Min(p[0].x, p[1].x), math.Max(p[0].x, p[1].x)
+	ly, hy := math.Min(p[0].y, p[1].y), math.Max(p[0].y, p[1].y)
+	return lx <= r.x+r.w && hx >= r.x && ly <= r.y+r.h && hy >= r.y
+}
+
+// Every arrowhead a route ends in paints in the route's own colour, which
+// the page sets on the route, so a head never shows in another colour or
+// none.
+func TestARouteHeadWearsItsRoutesColour(t *testing.T) {
+	pg := readDrawn(t, fixture(t, "ripgrep").Overview)
+	for _, s := range routeHeads {
+		if st := pg.heads[s]; !strings.Contains(st, "var(--c)") || strings.Contains(st, "context-") {
+			t.Errorf("arrowhead %s paints with %q", s, st)
+		}
+	}
+	for _, r := range pg.routes {
+		for _, tp := range r.way.tips {
+			if _, ok := pg.heads[tp.shape]; !ok {
+				t.Errorf("a route ends in arrowhead %q, which the drawing does not define", tp.shape)
+			}
+		}
+	}
+}
+
+// Every real drawing holds few enough shapes and lines to take part.
+func TestEveryRealDrawingTakesPart(t *testing.T) {
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			if len(v.d.Wires) > 0 && len(v.d.Routes) == 0 {
+				t.Errorf("%s %s: has lines but routes none of them, so pointing lights nothing", name, v.name)
+			}
+			if len(v.d.Routes) > routeMax {
+				t.Errorf("%s %s: routes %d lines, more than %d", name, v.name, len(v.d.Routes), routeMax)
+			}
+			for _, p := range v.d.Ports {
+				if len(v.d.Routes) > 0 && p.Lit == "" {
+					t.Errorf("%s %s: chip %q stays lit while its box dims", name, v.name, p.Label)
+				}
+			}
+		}
+	}
+}
+
+// hairpins is how many lines ride a bus past the stub or drop they leave
+// it by, step to another track and come back along it, so their ink and
+// their route double back. In the ripgrep overview, grep's line to
+// grep-regex runs right along y=244 to the trunk at x=724 and back left
+// along y=252 to x=519. It is a routing defect that hover shows rather
+// than hides, a known count that may only fall.
+const hairpins = 40
+
+func TestFewLinesDoubleBack(t *testing.T) {
+	n := 0
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			for _, r := range v.d.Routes {
+				rs := r.runs
+				for i := 2; i < len(rs); i++ {
+					a, step, b := rs[i-2], rs[i-1], rs[i]
+					short := abs(step[1].x-step[0].x)+abs(step[1].y-step[0].y) <= 24
+					back := sign(a[1].x-a[0].x) == -sign(b[1].x-b[0].x) && sign(a[1].y-a[0].y) == -sign(b[1].y-b[0].y)
+					if short && back && shared(a, b) > 0 {
+						n++
+						break
+					}
+				}
+			}
+		}
+	}
+	t.Logf("%d lines double back on a bus", n)
+	if n > hairpins {
+		t.Errorf("%d lines double back on a bus, more than the %d known", n, hairpins)
+	}
+}
+
+// shared is how far two parallel pieces span the same stretch, on any two
+// tracks.
+func shared(a, b [2]pt) int {
+	if a[0].y == a[1].y {
+		return min(max(a[0].x, a[1].x), max(b[0].x, b[1].x)) - max(min(a[0].x, a[1].x), min(b[0].x, b[1].x))
+	}
+	return min(max(a[0].y, a[1].y), max(b[0].y, b[1].y)) - max(min(a[0].y, a[1].y), min(b[0].y, b[1].y))
 }

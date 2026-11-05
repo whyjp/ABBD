@@ -92,9 +92,10 @@ svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
 svg .box, svg .port { transition: opacity .12s; }
-svg path.route { fill: none; stroke: var(--c); stroke-width: 3; opacity: 0; pointer-events: stroke; transition: opacity .12s; }
-svg path.route.back { stroke-dasharray: 6 4; }
-svg path.route:hover { opacity: 1; }
+svg g.route { opacity: 0; pointer-events: none; transition: opacity .12s; }
+svg g.route path.way { fill: none; stroke: var(--c); stroke-width: 3; }
+svg g.route.back path.way { stroke-dasharray: 6 4; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
+svg path.w:hover { stroke-width: 3.5; }
 svg marker path { stroke: none; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; margin-top: 6px; align-items: center; }
 .legend svg { vertical-align: middle; margin-right: 4px; }

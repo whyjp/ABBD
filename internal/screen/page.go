@@ -24,8 +24,8 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 		return s
 	},
 	"head":       head,
-	"routeHeads": func() []string { return []string{"dep", "impl", "use"} },
 	"routeHead":  routeHead,
+	"routeHeads": func() []string { return routeHeads },
 	"tip":        func(k string) string { return tips[k] },
 	"css": func(tmpl string) template.CSS {
 		if tmpl == "index" || tmpl == "module" || tmpl == "around" {

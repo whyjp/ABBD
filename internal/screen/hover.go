@@ -2,7 +2,7 @@ package screen
 
 import (
 	"fmt"
-	"maps"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -17,8 +17,9 @@ import (
 // script, so this is plain CSS. Each drawing numbers its shapes. A shape
 // carries pN for its own number and nN for itself and each shape a relation
 // of the view joins it to. A line or a dot carries eN for each shape at an
-// end of a line it carries. One fixed set of rules (hoverCSS) then serves
-// every drawing.
+// end of a line it carries. Each line's route carries rK for its own number,
+// and each piece of ink rK for every route that runs along it. One fixed set
+// of rules (hoverCSS) then serves every drawing.
 
 // hoverMax is how many shapes a drawing may hold and still take part. A
 // twin counts with its unit, and a chip that stands for several ports
@@ -27,6 +28,11 @@ import (
 // largest drawing holds 35, and a test fails when a real drawing holds
 // more than this.
 const hoverMax = 48
+
+// routeMax is how many lines a drawing may route and still take part,
+// since each line has its own rule that lights it. The fixtures' largest
+// drawing routes 79, and a test fails when a real drawing routes more.
+const routeMax = 96
 
 func (d *Drawing) hover() {
 	at := map[string]int{}
@@ -49,9 +55,11 @@ func (d *Drawing) hover() {
 	for _, p := range d.Ports {
 		number(p.Keys...)
 	}
-	if n > hoverMax {
+	if n > hoverMax || len(d.Routes) > routeMax {
+		d.Routes = nil
 		return
 	}
+	d.numbers = at
 	num := func(id string) (int, bool) {
 		j, ok := at[string(base(model.ID(id)))]
 		return j, ok
@@ -70,7 +78,7 @@ func (d *Drawing) hover() {
 			join(b, a)
 		}
 	}
-	classes := func(ends []string) []string {
+	nums := func(ends []string) []int {
 		var is []int
 		for _, e := range ends {
 			if j, ok := num(e); ok && !slices.Contains(is, j) {
@@ -78,17 +86,38 @@ func (d *Drawing) hover() {
 			}
 		}
 		slices.Sort(is)
+		return is
+	}
+	classes := func(is, ks []int) string {
 		var cls []string
 		for _, j := range is {
 			cls = append(cls, fmt.Sprint("e", j))
 		}
-		return cls
+		for _, k := range ks {
+			cls = append(cls, fmt.Sprint("r", k))
+		}
+		return strings.Join(cls, " ")
 	}
+	for k := range d.Routes {
+		r := &d.Routes[k]
+		r.at = nums(r.ends)
+		r.Lit = classes(r.at, []int{k})
+	}
+	// A piece of ink lights every route that runs along it, and keeps lit
+	// the shapes at their ends.
 	for i := range d.Wires {
-		d.Wires[i].Lit = strings.Join(classes(d.Wires[i].ends), " ")
-	}
-	for i := range d.Routes {
-		d.Routes[i].Lit = strings.Join(classes(d.Routes[i].ends), " ")
+		w := &d.Wires[i]
+		ink := runs(w.D)
+		is := nums(w.ends)
+		var ks []int
+		for k := range d.Routes {
+			if alongside(ink, d.Routes[k].runs) {
+				ks = append(ks, k)
+				is = append(is, d.Routes[k].at...)
+			}
+		}
+		slices.Sort(is)
+		w.Lit = classes(slices.Compact(is), ks)
 	}
 	for i := range d.Dots {
 		dot := pt{d.Dots[i].X, d.Dots[i].Y}
@@ -98,7 +127,7 @@ func (d *Drawing) hover() {
 				ends = append(ends, w.ends...)
 			}
 		}
-		d.Dots[i].Lit = strings.Join(classes(ends), " ")
+		d.Dots[i].Lit = classes(nums(ends), nil)
 	}
 	lit := func(id string) string {
 		j, ok := num(id)
@@ -118,73 +147,125 @@ func (d *Drawing) hover() {
 		d.Boxes[i].Lit = lit(d.Boxes[i].ID)
 	}
 	for i := range d.Ports {
-		if len(d.Ports[i].Keys) > 0 {
-			d.Ports[i].Lit = lit(d.Ports[i].Keys[0])
+		p := &d.Ports[i]
+		if len(p.Keys) > 0 {
+			p.Lit = lit(p.Keys[0])
+			continue
+		}
+		// A contract chip on a box is part of it: it dims and lights with
+		// its box, and pointing at it points at the box.
+		x, y := p.X+p.W/2, p.RectY()+p.H/2
+		for _, b := range d.Boxes {
+			if b.X <= x && x <= b.X+b.W && b.Y <= y && y <= b.Y+b.H {
+				p.Lit = b.Lit
+			}
 		}
 	}
 }
 
-// route adds each request's route along its way. title says what the
-// request's line stands for.
-func (d *Drawing) route(r routing, reqs []wireReq, title func(int) string) {
+// route adds each request's route along its way, with an arrowhead at its
+// end, and at its start too when the two boxes use each other.
+func (d *Drawing) route(r routing, reqs []wireReq) {
 	for i, way := range r.ways {
 		src := reqs[i].from.node
 		if src == "" {
 			src = reqs[i].to.node
 		}
-		d.Routes = append(d.Routes, Route{D: polyline(way), Kind: reqs[i].kind, Title: title(i), Back: r.back[i], Both: reqs[i].kind == "mutual", src: src, ends: endsOf(reqs, []int{i})})
+		ps := straight(way)
+		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == "mutual", Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i})}
+		rt.runs = runs(rt.D)
+		if rt.Head == "" {
+			rt.Head = "use"
+		}
+		if k := len(ps); k >= 2 {
+			rt.Tips = append(rt.Tips, tip(ps[k-1], ps[k-2]))
+			if rt.Both {
+				rt.Tips = append(rt.Tips, tip(ps[0], ps[1]))
+			}
+		}
+		d.Routes = append(d.Routes, rt)
 	}
 }
 
-// through says the path d, written as polyline writes it, passes p.
-func through(d string, p pt) bool {
+// tip places an arrowhead as a marker would: its point on p, its back
+// toward from.
+func tip(p, from pt) string {
+	return fmt.Sprintf("translate(%d %d) rotate(%g)", p.x, p.y, math.Atan2(float64(p.y-from.y), float64(p.x-from.x))*180/math.Pi)
+}
+
+// runs are the straight pieces of a path written as polyline writes it.
+func runs(d string) [][2]pt {
 	fs := strings.Fields(d)
+	var out [][2]pt
 	var last pt
 	for i := 0; i+1 < len(fs); i += 2 {
 		x, _ := strconv.Atoi(fs[i][1:])
 		y, _ := strconv.Atoi(fs[i+1])
 		q := pt{x, y}
-		if fs[i][0] == 'L' && on(p, last, q) {
-			return true
+		if fs[i][0] == 'L' {
+			out = append(out, [2]pt{last, q})
 		}
 		last = q
 	}
+	return out
+}
+
+// alongside says some piece of a runs along some piece of b for a length,
+// not only across it.
+func alongside(a, b [][2]pt) bool {
+	for _, p := range a {
+		for _, q := range b {
+			if overlap(p, q) > 0 {
+				return true
+			}
+		}
+	}
 	return false
+}
+
+// overlap is how far the pieces p and q run along each other. Lines run
+// only across and down.
+func overlap(p, q [2]pt) int {
+	switch {
+	case p[0].y == p[1].y && q[0].y == q[1].y && p[0].y == q[0].y:
+		return min(max(p[0].x, p[1].x), max(q[0].x, q[1].x)) - max(min(p[0].x, p[1].x), min(q[0].x, q[1].x))
+	case p[0].x == p[1].x && q[0].x == q[1].x && p[0].x == q[0].x:
+		return min(max(p[0].y, p[1].y), max(q[0].y, q[1].y)) - max(min(p[0].y, p[1].y), min(q[0].y, q[1].y))
+	}
+	return 0
+}
+
+// through says the path d, written as polyline writes it, passes p.
+func through(d string, p pt) bool {
+	return slices.ContainsFunc(runs(d), func(r [2]pt) bool { return on(p, r[0], r[1]) })
 }
 
 // hoverCSS are the rules that light what a pointed-at shape or line joins.
 // A lit line shows as its route, whole and above the ink, and all the ink
 // fades, so no piece of another line's colour shows through. A pointed-at
-// box colours every line it lights its own colour, except a line that skips
-// the contract boundary, which keeps the warning colour; a pointed-at line
-// or chip keeps the line's own. Hover takes part only where a pointer can
-// rest, so a tap on a phone does not leave a view faded, and focus only
-// when it came from the keyboard, so a click that opens a focus view does
-// not leave V faded on the way back.
+// shape lights each line with an end there in the colour the line's --kN
+// names for it (paint): a box's own, whatever the line's kind, which its
+// dash and arrowhead still show. Pointing at ink lights every line that
+// runs along it in its own colour, with its marks and the shapes at its
+// ends, and the ink keeps its title. Every rule takes part only where a pointer can rest, so
+// a tap on a phone does not leave a view faded, and focus only when it came
+// from the keyboard, so a click that opens a focus view does not leave V
+// faded on the way back.
 var hoverCSS = func() string {
 	var b strings.Builder
-	keys := slices.Sorted(maps.Keys(inks()))
-	rules := func(on string) {
-		for j := range hoverMax {
-			a := fmt.Sprintf(on, j, "")
-			fmt.Fprintf(&b, "svg:has(%s) :is(.w,.junction){opacity:.1}\n", a)
-			fmt.Fprintf(&b, "svg:has(%s) :is(.count,.lab,.origin):not(.e%d){opacity:.1}\n", a, j)
-			fmt.Fprintf(&b, "svg:has(%s) :is(.box,.port[class*=\" n\"]):not(.n%d){opacity:.3}\n", a, j)
-			fmt.Fprintf(&b, "svg:has(%s) .route.e%d{opacity:1}\n", a, j)
-			for _, k := range keys {
-				box := fmt.Sprintf(on, j, fmt.Sprintf("[data-h=%q]", k))
-				fmt.Fprintf(&b, "svg:has(%s) .route.e%d:not(.bypass,.mutual){--c:var(--h%s)}\n", box, j, k)
-			}
-		}
-	}
 	b.WriteString("@media (hover:hover){\n")
-	rules(".p%d%s:hover")
-	b.WriteString("svg:has(.route:hover) :is(.w,.count,.lab,.origin,.junction){opacity:.1}\n")
-	b.WriteString("svg:has(.route:hover) :is(.box,.port[class*=\" n\"]){opacity:.3}\n")
+	shape := `:is(.box,.port)[class*=" n"]`
+	pointed := fmt.Sprintf("svg:has(.route):has(%s:hover,:focus-visible>%s,.w:hover)", shape, shape)
+	fmt.Fprintf(&b, "%s :where(.w,.junction,.count,.lab,.origin){opacity:.1}\n", pointed)
+	fmt.Fprintf(&b, "%s :where(.box,.port[class*=\" n\"]){opacity:.3}\n", pointed)
 	for j := range hoverMax {
-		fmt.Fprintf(&b, "svg:has(.route.e%d:hover) .p%d{opacity:1}\n", j, j)
+		on := fmt.Sprintf("svg:has(.p%d:hover,:focus-visible>.p%d)", j, j)
+		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
+		fmt.Fprintf(&b, "%s .route.e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
+	}
+	for k := range routeMax {
+		fmt.Fprintf(&b, "svg:has(.w.r%d:hover) .r%d:not(.w){opacity:1}\n", k, k)
 	}
 	b.WriteString("}\n")
-	rules(":focus-visible>.p%d%s")
 	return b.String()
 }()

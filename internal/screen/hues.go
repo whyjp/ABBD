@@ -189,14 +189,16 @@ func colours(ds []*Drawing, t tree) map[model.ID]int {
 // head draws the arrowhead a marker key names: its shape, then its colour.
 func head(key string) template.HTML {
 	shape, h, _ := strings.Cut(key, "-")
-	return headIn(shape, "var(--h"+h+")")
+	return headPath(shape, "var(--h"+h+")")
 }
 
-// routeHead draws a route's arrowhead in the colour of the route it ends,
-// which a pointed-at box sets, so the head always matches its line.
-func routeHead(shape string) template.HTML { return headIn(shape, "context-stroke") }
+// routeHeads are the arrowheads a route may end in, each drawn in the
+// colour of the route whose tip uses it, which a pointed-at box may set.
+var routeHeads = []string{"dep", "impl", "use"}
 
-func headIn(shape, c string) template.HTML {
+func routeHead(shape string) template.HTML { return headPath(shape, "var(--c)") }
+
+func headPath(shape, c string) template.HTML {
 	switch shape {
 	case "dep":
 		return template.HTML(`<path d="M1 1 L9 5 L1 9" style="fill: none; stroke: ` + c + `; stroke-width: 1.6"/>`)

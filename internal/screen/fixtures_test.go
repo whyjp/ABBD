@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -16,13 +17,28 @@ import (
 // pstack reader, Orca, and pstack's own skill tree. Each holds only the unit files the drawings read.
 var fixtures = []string{"self", "ripgrep", "orca", "pstack"}
 
+// built holds each fixture's model, built once for every test that reads
+// it. A test must not change the model it gets.
+var built sync.Map
+
+type builtModel struct {
+	once sync.Once
+	m    Model
+	err  error
+}
+
 func fixture(t *testing.T, name string) Model {
 	t.Helper()
-	units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-	if err != nil {
-		t.Fatal(err)
+	v, _ := built.LoadOrStore(name, &builtModel{})
+	b := v.(*builtModel)
+	b.once.Do(func() {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		b.m, b.err = Build(Input{Units: units}), err
+	})
+	if b.err != nil {
+		t.Fatal(b.err)
 	}
-	return Build(Input{Units: units})
+	return b.m
 }
 
 func measured(t *testing.T, d Drawing) Metrics {
