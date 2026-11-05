@@ -11,6 +11,7 @@
   --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
   --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #b93e0a;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --lead-ink: #ffffff;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -18,6 +19,7 @@
     --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
     --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
     --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    --lead-ink: #161614;
     color-scheme: dark;
   }
 }
@@ -25,6 +27,7 @@
   --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
   --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
   --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  --lead-ink: #161614;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -65,15 +68,21 @@ a { color: var(--accent); }
 .mapbox svg { display: block; margin: 0 auto; }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
-svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.8; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
 svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
 svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
 svg .box.focus rect { stroke-width: 3.4; }
+svg .box.lead rect { fill: var(--c); stroke: var(--c); }
+svg .box.lead text.name, svg .box.lead text.sub { fill: var(--lead-ink); }
+svg .box.lead text.sub { opacity: .85; }
+svg g.zone, svg g.leadway { pointer-events: none; }
+svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); stroke: color-mix(in srgb, var(--c) 26%, transparent); stroke-width: 1; }
+svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
 svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
 .picker a.chip { text-decoration: none; }
@@ -96,6 +105,13 @@ svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
 svg path.w.joins { marker-end: none; }
+svg path.w.plan:not(.back) { stroke-dasharray: 3 2; }
+svg.quiet path.w { stroke-width: 1.2; }
+svg.quiet path.w.provides, svg.quiet path.w.bypass, svg.quiet path.w.mutual { stroke-width: 1.5; }
+svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke-linejoin: round; }
+svg g.badge circle { fill: var(--c); stroke: var(--panel); stroke-width: 2; }
+svg g.badge text { fill: var(--lead-ink); font: 700 10.5px system-ui, sans-serif; text-anchor: middle; }
+svg g.hop, svg g.badge { transition: opacity .12s; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
@@ -567,7 +583,7 @@ svg [data-h="n"] { --c: var(--hn); }
     <div class="key muted anchors">internal/model/model.go sourced · internal/model/model.go validate</div>
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>internal/model/model.go &#34;if why &amp;&amp; f.Writer.Origin() == Extracted {&#34;</q></div><div class="quote">근거 <q>internal/model/model.go &#34;func sourced(w Writer, source string) error {&#34;</q></div></details></td></tr><tr id="u-MOD-0034"><td class="id key">MOD-0034</td><td><a href="MOD-0034.html"><strong>internal/screen</strong></a> <span class="muted">모듈</span>
     <div>builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
-    <div class="key muted anchors">internal/screen · internal/screen/entries.go · internal/screen/figure.go · internal/screen/flow.go · internal/screen/focus.go · internal/screen/gate.go · internal/screen/graph.go · internal/screen/hover.go · internal/screen/hues.go · internal/screen/ink.go · internal/screen/inside.go · internal/screen/layered.go · internal/screen/layout.go · internal/screen/legible.go · internal/screen/levels.go · internal/screen/lint.go · internal/screen/marks.go · internal/screen/notes.go · internal/screen/overview.go · internal/screen/page.go · internal/screen/route.go · internal/screen/screen.go · internal/screen/site.go · internal/screen/stack.go · internal/screen/table.go · internal/screen/trace.go · internal/screen/tree.go · internal/screen/weigh.go · internal/screen/words.go</div>
+    <div class="key muted anchors">internal/screen · internal/screen/dress.go · internal/screen/entries.go · internal/screen/figure.go · internal/screen/flow.go · internal/screen/focus.go · internal/screen/gate.go · internal/screen/graph.go · internal/screen/hover.go · internal/screen/hues.go · internal/screen/ink.go · internal/screen/inside.go · internal/screen/layered.go · internal/screen/layout.go · internal/screen/lead.go · internal/screen/legible.go · internal/screen/levels.go · internal/screen/lint.go · internal/screen/marks.go · internal/screen/notes.go · internal/screen/overview.go · internal/screen/page.go · internal/screen/route.go · internal/screen/screen.go · internal/screen/site.go · internal/screen/stack.go · internal/screen/table.go · internal/screen/trace.go · internal/screen/tree.go · internal/screen/weigh.go · internal/screen/words.go · internal/screen/zone.go</div>
     </td></tr><tr id="u-MOD-0035"><td class="id key">MOD-0035</td><td><strong>module inside</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0034.html" title="MOD-0034">internal/screen</a> 안</span>
     <div>draws a module&#39;s child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">internal/screen/inside.go · internal/screen/inside.go inferred · internal/screen/inside.go inside</div>

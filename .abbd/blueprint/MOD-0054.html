@@ -11,6 +11,7 @@
   --accent: #2f5d8a; --accent-bg: #e6eef6; --warn-bg: #fdf3e1;
   --ok: #2e6b3a; --ok-bg: #e8f3ea; --guess: #7a5aa6; --guess-bg: #f1ecf8; --stale: #8a4b00; --bypass: #b93e0a;
   --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --lead-ink: #ffffff;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -18,6 +19,7 @@
     --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
     --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
     --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+    --lead-ink: #161614;
     color-scheme: dark;
   }
 }
@@ -25,6 +27,7 @@
   --bg: #161614; --panel: #201f1c; --ink: #ecebe6; --muted: #a29e93; --line: #3a3833;
   --accent: #7fb0e0; --accent-bg: #1d2a38; --warn-bg: #362a16;
   --ok: #86c995; --ok-bg: #1b3020; --guess: #c3a8ec; --guess-bg: #2b2338; --stale: #f0b060; --bypass: #fb923c;
+  --lead-ink: #161614;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -65,15 +68,21 @@ a { color: var(--accent); }
 .mapbox svg { display: block; margin: 0 auto; }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
-svg text.sub { font-size: 11px; fill: var(--muted); }
+svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
-svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.8; }
+svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
 svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
 svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
 svg .box.focus rect { stroke-width: 3.4; }
+svg .box.lead rect { fill: var(--c); stroke: var(--c); }
+svg .box.lead text.name, svg .box.lead text.sub { fill: var(--lead-ink); }
+svg .box.lead text.sub { opacity: .85; }
+svg g.zone, svg g.leadway { pointer-events: none; }
+svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); stroke: color-mix(in srgb, var(--c) 26%, transparent); stroke-width: 1; }
+svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
 svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
 .picker a.chip { text-decoration: none; }
@@ -96,6 +105,13 @@ svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
 svg path.w.joins { marker-end: none; }
+svg path.w.plan:not(.back) { stroke-dasharray: 3 2; }
+svg.quiet path.w { stroke-width: 1.2; }
+svg.quiet path.w.provides, svg.quiet path.w.bypass, svg.quiet path.w.mutual { stroke-width: 1.5; }
+svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke-linejoin: round; }
+svg g.badge circle { fill: var(--c); stroke: var(--panel); stroke-width: 2; }
+svg g.badge text { fill: var(--lead-ink); font: 700 10.5px system-ui, sans-serif; text-anchor: middle; }
+svg g.hop, svg g.badge { transition: opacity .12s; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg path.w { transition: opacity .12s; }
@@ -231,103 +247,103 @@ svg [data-h="5"] { --c: var(--h5); }
 svg [data-h="b"] { --c: var(--hb); }
 svg [data-h="n"] { --c: var(--hn); }
 @media (hover:hover){
-svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.w,.junction,.count,.lab,.origin){opacity:.1}
+svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}
 svg:has(.route):has(:is(.box,.port)[class*=" n"]:hover,:focus-visible>:is(.box,.port)[class*=" n"],.w:hover) :where(.box,.port[class*=" n"]){opacity:.3}
-svg:has(.p0:hover,:focus-visible>.p0) :is(.box,.port).n0,svg:has(.p0:hover,:focus-visible>.p0) :is(.count,.lab,.origin).e0,svg:has(.w.e0:hover) .p0{opacity:1}
+svg:has(.p0:hover,:focus-visible>.p0) :is(.box,.port).n0,svg:has(.p0:hover,:focus-visible>.p0) :is(.count,.lab,.origin,.badge).e0,svg:has(.w.e0:hover) .p0{opacity:1}
 svg:has(.p0:hover,:focus-visible>.p0) .route.e0{opacity:1;--c:var(--k0)}
-svg:has(.p1:hover,:focus-visible>.p1) :is(.box,.port).n1,svg:has(.p1:hover,:focus-visible>.p1) :is(.count,.lab,.origin).e1,svg:has(.w.e1:hover) .p1{opacity:1}
+svg:has(.p1:hover,:focus-visible>.p1) :is(.box,.port).n1,svg:has(.p1:hover,:focus-visible>.p1) :is(.count,.lab,.origin,.badge).e1,svg:has(.w.e1:hover) .p1{opacity:1}
 svg:has(.p1:hover,:focus-visible>.p1) .route.e1{opacity:1;--c:var(--k1)}
-svg:has(.p2:hover,:focus-visible>.p2) :is(.box,.port).n2,svg:has(.p2:hover,:focus-visible>.p2) :is(.count,.lab,.origin).e2,svg:has(.w.e2:hover) .p2{opacity:1}
+svg:has(.p2:hover,:focus-visible>.p2) :is(.box,.port).n2,svg:has(.p2:hover,:focus-visible>.p2) :is(.count,.lab,.origin,.badge).e2,svg:has(.w.e2:hover) .p2{opacity:1}
 svg:has(.p2:hover,:focus-visible>.p2) .route.e2{opacity:1;--c:var(--k2)}
-svg:has(.p3:hover,:focus-visible>.p3) :is(.box,.port).n3,svg:has(.p3:hover,:focus-visible>.p3) :is(.count,.lab,.origin).e3,svg:has(.w.e3:hover) .p3{opacity:1}
+svg:has(.p3:hover,:focus-visible>.p3) :is(.box,.port).n3,svg:has(.p3:hover,:focus-visible>.p3) :is(.count,.lab,.origin,.badge).e3,svg:has(.w.e3:hover) .p3{opacity:1}
 svg:has(.p3:hover,:focus-visible>.p3) .route.e3{opacity:1;--c:var(--k3)}
-svg:has(.p4:hover,:focus-visible>.p4) :is(.box,.port).n4,svg:has(.p4:hover,:focus-visible>.p4) :is(.count,.lab,.origin).e4,svg:has(.w.e4:hover) .p4{opacity:1}
+svg:has(.p4:hover,:focus-visible>.p4) :is(.box,.port).n4,svg:has(.p4:hover,:focus-visible>.p4) :is(.count,.lab,.origin,.badge).e4,svg:has(.w.e4:hover) .p4{opacity:1}
 svg:has(.p4:hover,:focus-visible>.p4) .route.e4{opacity:1;--c:var(--k4)}
-svg:has(.p5:hover,:focus-visible>.p5) :is(.box,.port).n5,svg:has(.p5:hover,:focus-visible>.p5) :is(.count,.lab,.origin).e5,svg:has(.w.e5:hover) .p5{opacity:1}
+svg:has(.p5:hover,:focus-visible>.p5) :is(.box,.port).n5,svg:has(.p5:hover,:focus-visible>.p5) :is(.count,.lab,.origin,.badge).e5,svg:has(.w.e5:hover) .p5{opacity:1}
 svg:has(.p5:hover,:focus-visible>.p5) .route.e5{opacity:1;--c:var(--k5)}
-svg:has(.p6:hover,:focus-visible>.p6) :is(.box,.port).n6,svg:has(.p6:hover,:focus-visible>.p6) :is(.count,.lab,.origin).e6,svg:has(.w.e6:hover) .p6{opacity:1}
+svg:has(.p6:hover,:focus-visible>.p6) :is(.box,.port).n6,svg:has(.p6:hover,:focus-visible>.p6) :is(.count,.lab,.origin,.badge).e6,svg:has(.w.e6:hover) .p6{opacity:1}
 svg:has(.p6:hover,:focus-visible>.p6) .route.e6{opacity:1;--c:var(--k6)}
-svg:has(.p7:hover,:focus-visible>.p7) :is(.box,.port).n7,svg:has(.p7:hover,:focus-visible>.p7) :is(.count,.lab,.origin).e7,svg:has(.w.e7:hover) .p7{opacity:1}
+svg:has(.p7:hover,:focus-visible>.p7) :is(.box,.port).n7,svg:has(.p7:hover,:focus-visible>.p7) :is(.count,.lab,.origin,.badge).e7,svg:has(.w.e7:hover) .p7{opacity:1}
 svg:has(.p7:hover,:focus-visible>.p7) .route.e7{opacity:1;--c:var(--k7)}
-svg:has(.p8:hover,:focus-visible>.p8) :is(.box,.port).n8,svg:has(.p8:hover,:focus-visible>.p8) :is(.count,.lab,.origin).e8,svg:has(.w.e8:hover) .p8{opacity:1}
+svg:has(.p8:hover,:focus-visible>.p8) :is(.box,.port).n8,svg:has(.p8:hover,:focus-visible>.p8) :is(.count,.lab,.origin,.badge).e8,svg:has(.w.e8:hover) .p8{opacity:1}
 svg:has(.p8:hover,:focus-visible>.p8) .route.e8{opacity:1;--c:var(--k8)}
-svg:has(.p9:hover,:focus-visible>.p9) :is(.box,.port).n9,svg:has(.p9:hover,:focus-visible>.p9) :is(.count,.lab,.origin).e9,svg:has(.w.e9:hover) .p9{opacity:1}
+svg:has(.p9:hover,:focus-visible>.p9) :is(.box,.port).n9,svg:has(.p9:hover,:focus-visible>.p9) :is(.count,.lab,.origin,.badge).e9,svg:has(.w.e9:hover) .p9{opacity:1}
 svg:has(.p9:hover,:focus-visible>.p9) .route.e9{opacity:1;--c:var(--k9)}
-svg:has(.p10:hover,:focus-visible>.p10) :is(.box,.port).n10,svg:has(.p10:hover,:focus-visible>.p10) :is(.count,.lab,.origin).e10,svg:has(.w.e10:hover) .p10{opacity:1}
+svg:has(.p10:hover,:focus-visible>.p10) :is(.box,.port).n10,svg:has(.p10:hover,:focus-visible>.p10) :is(.count,.lab,.origin,.badge).e10,svg:has(.w.e10:hover) .p10{opacity:1}
 svg:has(.p10:hover,:focus-visible>.p10) .route.e10{opacity:1;--c:var(--k10)}
-svg:has(.p11:hover,:focus-visible>.p11) :is(.box,.port).n11,svg:has(.p11:hover,:focus-visible>.p11) :is(.count,.lab,.origin).e11,svg:has(.w.e11:hover) .p11{opacity:1}
+svg:has(.p11:hover,:focus-visible>.p11) :is(.box,.port).n11,svg:has(.p11:hover,:focus-visible>.p11) :is(.count,.lab,.origin,.badge).e11,svg:has(.w.e11:hover) .p11{opacity:1}
 svg:has(.p11:hover,:focus-visible>.p11) .route.e11{opacity:1;--c:var(--k11)}
-svg:has(.p12:hover,:focus-visible>.p12) :is(.box,.port).n12,svg:has(.p12:hover,:focus-visible>.p12) :is(.count,.lab,.origin).e12,svg:has(.w.e12:hover) .p12{opacity:1}
+svg:has(.p12:hover,:focus-visible>.p12) :is(.box,.port).n12,svg:has(.p12:hover,:focus-visible>.p12) :is(.count,.lab,.origin,.badge).e12,svg:has(.w.e12:hover) .p12{opacity:1}
 svg:has(.p12:hover,:focus-visible>.p12) .route.e12{opacity:1;--c:var(--k12)}
-svg:has(.p13:hover,:focus-visible>.p13) :is(.box,.port).n13,svg:has(.p13:hover,:focus-visible>.p13) :is(.count,.lab,.origin).e13,svg:has(.w.e13:hover) .p13{opacity:1}
+svg:has(.p13:hover,:focus-visible>.p13) :is(.box,.port).n13,svg:has(.p13:hover,:focus-visible>.p13) :is(.count,.lab,.origin,.badge).e13,svg:has(.w.e13:hover) .p13{opacity:1}
 svg:has(.p13:hover,:focus-visible>.p13) .route.e13{opacity:1;--c:var(--k13)}
-svg:has(.p14:hover,:focus-visible>.p14) :is(.box,.port).n14,svg:has(.p14:hover,:focus-visible>.p14) :is(.count,.lab,.origin).e14,svg:has(.w.e14:hover) .p14{opacity:1}
+svg:has(.p14:hover,:focus-visible>.p14) :is(.box,.port).n14,svg:has(.p14:hover,:focus-visible>.p14) :is(.count,.lab,.origin,.badge).e14,svg:has(.w.e14:hover) .p14{opacity:1}
 svg:has(.p14:hover,:focus-visible>.p14) .route.e14{opacity:1;--c:var(--k14)}
-svg:has(.p15:hover,:focus-visible>.p15) :is(.box,.port).n15,svg:has(.p15:hover,:focus-visible>.p15) :is(.count,.lab,.origin).e15,svg:has(.w.e15:hover) .p15{opacity:1}
+svg:has(.p15:hover,:focus-visible>.p15) :is(.box,.port).n15,svg:has(.p15:hover,:focus-visible>.p15) :is(.count,.lab,.origin,.badge).e15,svg:has(.w.e15:hover) .p15{opacity:1}
 svg:has(.p15:hover,:focus-visible>.p15) .route.e15{opacity:1;--c:var(--k15)}
-svg:has(.p16:hover,:focus-visible>.p16) :is(.box,.port).n16,svg:has(.p16:hover,:focus-visible>.p16) :is(.count,.lab,.origin).e16,svg:has(.w.e16:hover) .p16{opacity:1}
+svg:has(.p16:hover,:focus-visible>.p16) :is(.box,.port).n16,svg:has(.p16:hover,:focus-visible>.p16) :is(.count,.lab,.origin,.badge).e16,svg:has(.w.e16:hover) .p16{opacity:1}
 svg:has(.p16:hover,:focus-visible>.p16) .route.e16{opacity:1;--c:var(--k16)}
-svg:has(.p17:hover,:focus-visible>.p17) :is(.box,.port).n17,svg:has(.p17:hover,:focus-visible>.p17) :is(.count,.lab,.origin).e17,svg:has(.w.e17:hover) .p17{opacity:1}
+svg:has(.p17:hover,:focus-visible>.p17) :is(.box,.port).n17,svg:has(.p17:hover,:focus-visible>.p17) :is(.count,.lab,.origin,.badge).e17,svg:has(.w.e17:hover) .p17{opacity:1}
 svg:has(.p17:hover,:focus-visible>.p17) .route.e17{opacity:1;--c:var(--k17)}
-svg:has(.p18:hover,:focus-visible>.p18) :is(.box,.port).n18,svg:has(.p18:hover,:focus-visible>.p18) :is(.count,.lab,.origin).e18,svg:has(.w.e18:hover) .p18{opacity:1}
+svg:has(.p18:hover,:focus-visible>.p18) :is(.box,.port).n18,svg:has(.p18:hover,:focus-visible>.p18) :is(.count,.lab,.origin,.badge).e18,svg:has(.w.e18:hover) .p18{opacity:1}
 svg:has(.p18:hover,:focus-visible>.p18) .route.e18{opacity:1;--c:var(--k18)}
-svg:has(.p19:hover,:focus-visible>.p19) :is(.box,.port).n19,svg:has(.p19:hover,:focus-visible>.p19) :is(.count,.lab,.origin).e19,svg:has(.w.e19:hover) .p19{opacity:1}
+svg:has(.p19:hover,:focus-visible>.p19) :is(.box,.port).n19,svg:has(.p19:hover,:focus-visible>.p19) :is(.count,.lab,.origin,.badge).e19,svg:has(.w.e19:hover) .p19{opacity:1}
 svg:has(.p19:hover,:focus-visible>.p19) .route.e19{opacity:1;--c:var(--k19)}
-svg:has(.p20:hover,:focus-visible>.p20) :is(.box,.port).n20,svg:has(.p20:hover,:focus-visible>.p20) :is(.count,.lab,.origin).e20,svg:has(.w.e20:hover) .p20{opacity:1}
+svg:has(.p20:hover,:focus-visible>.p20) :is(.box,.port).n20,svg:has(.p20:hover,:focus-visible>.p20) :is(.count,.lab,.origin,.badge).e20,svg:has(.w.e20:hover) .p20{opacity:1}
 svg:has(.p20:hover,:focus-visible>.p20) .route.e20{opacity:1;--c:var(--k20)}
-svg:has(.p21:hover,:focus-visible>.p21) :is(.box,.port).n21,svg:has(.p21:hover,:focus-visible>.p21) :is(.count,.lab,.origin).e21,svg:has(.w.e21:hover) .p21{opacity:1}
+svg:has(.p21:hover,:focus-visible>.p21) :is(.box,.port).n21,svg:has(.p21:hover,:focus-visible>.p21) :is(.count,.lab,.origin,.badge).e21,svg:has(.w.e21:hover) .p21{opacity:1}
 svg:has(.p21:hover,:focus-visible>.p21) .route.e21{opacity:1;--c:var(--k21)}
-svg:has(.p22:hover,:focus-visible>.p22) :is(.box,.port).n22,svg:has(.p22:hover,:focus-visible>.p22) :is(.count,.lab,.origin).e22,svg:has(.w.e22:hover) .p22{opacity:1}
+svg:has(.p22:hover,:focus-visible>.p22) :is(.box,.port).n22,svg:has(.p22:hover,:focus-visible>.p22) :is(.count,.lab,.origin,.badge).e22,svg:has(.w.e22:hover) .p22{opacity:1}
 svg:has(.p22:hover,:focus-visible>.p22) .route.e22{opacity:1;--c:var(--k22)}
-svg:has(.p23:hover,:focus-visible>.p23) :is(.box,.port).n23,svg:has(.p23:hover,:focus-visible>.p23) :is(.count,.lab,.origin).e23,svg:has(.w.e23:hover) .p23{opacity:1}
+svg:has(.p23:hover,:focus-visible>.p23) :is(.box,.port).n23,svg:has(.p23:hover,:focus-visible>.p23) :is(.count,.lab,.origin,.badge).e23,svg:has(.w.e23:hover) .p23{opacity:1}
 svg:has(.p23:hover,:focus-visible>.p23) .route.e23{opacity:1;--c:var(--k23)}
-svg:has(.p24:hover,:focus-visible>.p24) :is(.box,.port).n24,svg:has(.p24:hover,:focus-visible>.p24) :is(.count,.lab,.origin).e24,svg:has(.w.e24:hover) .p24{opacity:1}
+svg:has(.p24:hover,:focus-visible>.p24) :is(.box,.port).n24,svg:has(.p24:hover,:focus-visible>.p24) :is(.count,.lab,.origin,.badge).e24,svg:has(.w.e24:hover) .p24{opacity:1}
 svg:has(.p24:hover,:focus-visible>.p24) .route.e24{opacity:1;--c:var(--k24)}
-svg:has(.p25:hover,:focus-visible>.p25) :is(.box,.port).n25,svg:has(.p25:hover,:focus-visible>.p25) :is(.count,.lab,.origin).e25,svg:has(.w.e25:hover) .p25{opacity:1}
+svg:has(.p25:hover,:focus-visible>.p25) :is(.box,.port).n25,svg:has(.p25:hover,:focus-visible>.p25) :is(.count,.lab,.origin,.badge).e25,svg:has(.w.e25:hover) .p25{opacity:1}
 svg:has(.p25:hover,:focus-visible>.p25) .route.e25{opacity:1;--c:var(--k25)}
-svg:has(.p26:hover,:focus-visible>.p26) :is(.box,.port).n26,svg:has(.p26:hover,:focus-visible>.p26) :is(.count,.lab,.origin).e26,svg:has(.w.e26:hover) .p26{opacity:1}
+svg:has(.p26:hover,:focus-visible>.p26) :is(.box,.port).n26,svg:has(.p26:hover,:focus-visible>.p26) :is(.count,.lab,.origin,.badge).e26,svg:has(.w.e26:hover) .p26{opacity:1}
 svg:has(.p26:hover,:focus-visible>.p26) .route.e26{opacity:1;--c:var(--k26)}
-svg:has(.p27:hover,:focus-visible>.p27) :is(.box,.port).n27,svg:has(.p27:hover,:focus-visible>.p27) :is(.count,.lab,.origin).e27,svg:has(.w.e27:hover) .p27{opacity:1}
+svg:has(.p27:hover,:focus-visible>.p27) :is(.box,.port).n27,svg:has(.p27:hover,:focus-visible>.p27) :is(.count,.lab,.origin,.badge).e27,svg:has(.w.e27:hover) .p27{opacity:1}
 svg:has(.p27:hover,:focus-visible>.p27) .route.e27{opacity:1;--c:var(--k27)}
-svg:has(.p28:hover,:focus-visible>.p28) :is(.box,.port).n28,svg:has(.p28:hover,:focus-visible>.p28) :is(.count,.lab,.origin).e28,svg:has(.w.e28:hover) .p28{opacity:1}
+svg:has(.p28:hover,:focus-visible>.p28) :is(.box,.port).n28,svg:has(.p28:hover,:focus-visible>.p28) :is(.count,.lab,.origin,.badge).e28,svg:has(.w.e28:hover) .p28{opacity:1}
 svg:has(.p28:hover,:focus-visible>.p28) .route.e28{opacity:1;--c:var(--k28)}
-svg:has(.p29:hover,:focus-visible>.p29) :is(.box,.port).n29,svg:has(.p29:hover,:focus-visible>.p29) :is(.count,.lab,.origin).e29,svg:has(.w.e29:hover) .p29{opacity:1}
+svg:has(.p29:hover,:focus-visible>.p29) :is(.box,.port).n29,svg:has(.p29:hover,:focus-visible>.p29) :is(.count,.lab,.origin,.badge).e29,svg:has(.w.e29:hover) .p29{opacity:1}
 svg:has(.p29:hover,:focus-visible>.p29) .route.e29{opacity:1;--c:var(--k29)}
-svg:has(.p30:hover,:focus-visible>.p30) :is(.box,.port).n30,svg:has(.p30:hover,:focus-visible>.p30) :is(.count,.lab,.origin).e30,svg:has(.w.e30:hover) .p30{opacity:1}
+svg:has(.p30:hover,:focus-visible>.p30) :is(.box,.port).n30,svg:has(.p30:hover,:focus-visible>.p30) :is(.count,.lab,.origin,.badge).e30,svg:has(.w.e30:hover) .p30{opacity:1}
 svg:has(.p30:hover,:focus-visible>.p30) .route.e30{opacity:1;--c:var(--k30)}
-svg:has(.p31:hover,:focus-visible>.p31) :is(.box,.port).n31,svg:has(.p31:hover,:focus-visible>.p31) :is(.count,.lab,.origin).e31,svg:has(.w.e31:hover) .p31{opacity:1}
+svg:has(.p31:hover,:focus-visible>.p31) :is(.box,.port).n31,svg:has(.p31:hover,:focus-visible>.p31) :is(.count,.lab,.origin,.badge).e31,svg:has(.w.e31:hover) .p31{opacity:1}
 svg:has(.p31:hover,:focus-visible>.p31) .route.e31{opacity:1;--c:var(--k31)}
-svg:has(.p32:hover,:focus-visible>.p32) :is(.box,.port).n32,svg:has(.p32:hover,:focus-visible>.p32) :is(.count,.lab,.origin).e32,svg:has(.w.e32:hover) .p32{opacity:1}
+svg:has(.p32:hover,:focus-visible>.p32) :is(.box,.port).n32,svg:has(.p32:hover,:focus-visible>.p32) :is(.count,.lab,.origin,.badge).e32,svg:has(.w.e32:hover) .p32{opacity:1}
 svg:has(.p32:hover,:focus-visible>.p32) .route.e32{opacity:1;--c:var(--k32)}
-svg:has(.p33:hover,:focus-visible>.p33) :is(.box,.port).n33,svg:has(.p33:hover,:focus-visible>.p33) :is(.count,.lab,.origin).e33,svg:has(.w.e33:hover) .p33{opacity:1}
+svg:has(.p33:hover,:focus-visible>.p33) :is(.box,.port).n33,svg:has(.p33:hover,:focus-visible>.p33) :is(.count,.lab,.origin,.badge).e33,svg:has(.w.e33:hover) .p33{opacity:1}
 svg:has(.p33:hover,:focus-visible>.p33) .route.e33{opacity:1;--c:var(--k33)}
-svg:has(.p34:hover,:focus-visible>.p34) :is(.box,.port).n34,svg:has(.p34:hover,:focus-visible>.p34) :is(.count,.lab,.origin).e34,svg:has(.w.e34:hover) .p34{opacity:1}
+svg:has(.p34:hover,:focus-visible>.p34) :is(.box,.port).n34,svg:has(.p34:hover,:focus-visible>.p34) :is(.count,.lab,.origin,.badge).e34,svg:has(.w.e34:hover) .p34{opacity:1}
 svg:has(.p34:hover,:focus-visible>.p34) .route.e34{opacity:1;--c:var(--k34)}
-svg:has(.p35:hover,:focus-visible>.p35) :is(.box,.port).n35,svg:has(.p35:hover,:focus-visible>.p35) :is(.count,.lab,.origin).e35,svg:has(.w.e35:hover) .p35{opacity:1}
+svg:has(.p35:hover,:focus-visible>.p35) :is(.box,.port).n35,svg:has(.p35:hover,:focus-visible>.p35) :is(.count,.lab,.origin,.badge).e35,svg:has(.w.e35:hover) .p35{opacity:1}
 svg:has(.p35:hover,:focus-visible>.p35) .route.e35{opacity:1;--c:var(--k35)}
-svg:has(.p36:hover,:focus-visible>.p36) :is(.box,.port).n36,svg:has(.p36:hover,:focus-visible>.p36) :is(.count,.lab,.origin).e36,svg:has(.w.e36:hover) .p36{opacity:1}
+svg:has(.p36:hover,:focus-visible>.p36) :is(.box,.port).n36,svg:has(.p36:hover,:focus-visible>.p36) :is(.count,.lab,.origin,.badge).e36,svg:has(.w.e36:hover) .p36{opacity:1}
 svg:has(.p36:hover,:focus-visible>.p36) .route.e36{opacity:1;--c:var(--k36)}
-svg:has(.p37:hover,:focus-visible>.p37) :is(.box,.port).n37,svg:has(.p37:hover,:focus-visible>.p37) :is(.count,.lab,.origin).e37,svg:has(.w.e37:hover) .p37{opacity:1}
+svg:has(.p37:hover,:focus-visible>.p37) :is(.box,.port).n37,svg:has(.p37:hover,:focus-visible>.p37) :is(.count,.lab,.origin,.badge).e37,svg:has(.w.e37:hover) .p37{opacity:1}
 svg:has(.p37:hover,:focus-visible>.p37) .route.e37{opacity:1;--c:var(--k37)}
-svg:has(.p38:hover,:focus-visible>.p38) :is(.box,.port).n38,svg:has(.p38:hover,:focus-visible>.p38) :is(.count,.lab,.origin).e38,svg:has(.w.e38:hover) .p38{opacity:1}
+svg:has(.p38:hover,:focus-visible>.p38) :is(.box,.port).n38,svg:has(.p38:hover,:focus-visible>.p38) :is(.count,.lab,.origin,.badge).e38,svg:has(.w.e38:hover) .p38{opacity:1}
 svg:has(.p38:hover,:focus-visible>.p38) .route.e38{opacity:1;--c:var(--k38)}
-svg:has(.p39:hover,:focus-visible>.p39) :is(.box,.port).n39,svg:has(.p39:hover,:focus-visible>.p39) :is(.count,.lab,.origin).e39,svg:has(.w.e39:hover) .p39{opacity:1}
+svg:has(.p39:hover,:focus-visible>.p39) :is(.box,.port).n39,svg:has(.p39:hover,:focus-visible>.p39) :is(.count,.lab,.origin,.badge).e39,svg:has(.w.e39:hover) .p39{opacity:1}
 svg:has(.p39:hover,:focus-visible>.p39) .route.e39{opacity:1;--c:var(--k39)}
-svg:has(.p40:hover,:focus-visible>.p40) :is(.box,.port).n40,svg:has(.p40:hover,:focus-visible>.p40) :is(.count,.lab,.origin).e40,svg:has(.w.e40:hover) .p40{opacity:1}
+svg:has(.p40:hover,:focus-visible>.p40) :is(.box,.port).n40,svg:has(.p40:hover,:focus-visible>.p40) :is(.count,.lab,.origin,.badge).e40,svg:has(.w.e40:hover) .p40{opacity:1}
 svg:has(.p40:hover,:focus-visible>.p40) .route.e40{opacity:1;--c:var(--k40)}
-svg:has(.p41:hover,:focus-visible>.p41) :is(.box,.port).n41,svg:has(.p41:hover,:focus-visible>.p41) :is(.count,.lab,.origin).e41,svg:has(.w.e41:hover) .p41{opacity:1}
+svg:has(.p41:hover,:focus-visible>.p41) :is(.box,.port).n41,svg:has(.p41:hover,:focus-visible>.p41) :is(.count,.lab,.origin,.badge).e41,svg:has(.w.e41:hover) .p41{opacity:1}
 svg:has(.p41:hover,:focus-visible>.p41) .route.e41{opacity:1;--c:var(--k41)}
-svg:has(.p42:hover,:focus-visible>.p42) :is(.box,.port).n42,svg:has(.p42:hover,:focus-visible>.p42) :is(.count,.lab,.origin).e42,svg:has(.w.e42:hover) .p42{opacity:1}
+svg:has(.p42:hover,:focus-visible>.p42) :is(.box,.port).n42,svg:has(.p42:hover,:focus-visible>.p42) :is(.count,.lab,.origin,.badge).e42,svg:has(.w.e42:hover) .p42{opacity:1}
 svg:has(.p42:hover,:focus-visible>.p42) .route.e42{opacity:1;--c:var(--k42)}
-svg:has(.p43:hover,:focus-visible>.p43) :is(.box,.port).n43,svg:has(.p43:hover,:focus-visible>.p43) :is(.count,.lab,.origin).e43,svg:has(.w.e43:hover) .p43{opacity:1}
+svg:has(.p43:hover,:focus-visible>.p43) :is(.box,.port).n43,svg:has(.p43:hover,:focus-visible>.p43) :is(.count,.lab,.origin,.badge).e43,svg:has(.w.e43:hover) .p43{opacity:1}
 svg:has(.p43:hover,:focus-visible>.p43) .route.e43{opacity:1;--c:var(--k43)}
-svg:has(.p44:hover,:focus-visible>.p44) :is(.box,.port).n44,svg:has(.p44:hover,:focus-visible>.p44) :is(.count,.lab,.origin).e44,svg:has(.w.e44:hover) .p44{opacity:1}
+svg:has(.p44:hover,:focus-visible>.p44) :is(.box,.port).n44,svg:has(.p44:hover,:focus-visible>.p44) :is(.count,.lab,.origin,.badge).e44,svg:has(.w.e44:hover) .p44{opacity:1}
 svg:has(.p44:hover,:focus-visible>.p44) .route.e44{opacity:1;--c:var(--k44)}
-svg:has(.p45:hover,:focus-visible>.p45) :is(.box,.port).n45,svg:has(.p45:hover,:focus-visible>.p45) :is(.count,.lab,.origin).e45,svg:has(.w.e45:hover) .p45{opacity:1}
+svg:has(.p45:hover,:focus-visible>.p45) :is(.box,.port).n45,svg:has(.p45:hover,:focus-visible>.p45) :is(.count,.lab,.origin,.badge).e45,svg:has(.w.e45:hover) .p45{opacity:1}
 svg:has(.p45:hover,:focus-visible>.p45) .route.e45{opacity:1;--c:var(--k45)}
-svg:has(.p46:hover,:focus-visible>.p46) :is(.box,.port).n46,svg:has(.p46:hover,:focus-visible>.p46) :is(.count,.lab,.origin).e46,svg:has(.w.e46:hover) .p46{opacity:1}
+svg:has(.p46:hover,:focus-visible>.p46) :is(.box,.port).n46,svg:has(.p46:hover,:focus-visible>.p46) :is(.count,.lab,.origin,.badge).e46,svg:has(.w.e46:hover) .p46{opacity:1}
 svg:has(.p46:hover,:focus-visible>.p46) .route.e46{opacity:1;--c:var(--k46)}
-svg:has(.p47:hover,:focus-visible>.p47) :is(.box,.port).n47,svg:has(.p47:hover,:focus-visible>.p47) :is(.count,.lab,.origin).e47,svg:has(.w.e47:hover) .p47{opacity:1}
+svg:has(.p47:hover,:focus-visible>.p47) :is(.box,.port).n47,svg:has(.p47:hover,:focus-visible>.p47) :is(.count,.lab,.origin,.badge).e47,svg:has(.w.e47:hover) .p47{opacity:1}
 svg:has(.p47:hover,:focus-visible>.p47) .route.e47{opacity:1;--c:var(--k47)}
 svg:has(.w.r0:hover) .r0:not(.w){opacity:1}
 svg:has(.w.r1:hover) .r1:not(.w){opacity:1}
@@ -454,7 +470,9 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="412" height="164" viewBox="0 0 412 164" role="img" aria-label="모듈의 안">
 <defs><marker id="m-impl-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--h0); stroke-width: 1.4"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 <rect class="frame" x="6" y="18" width="400" height="128" rx="8"/>
+
 <path class="w provides back e0 e2 r0" d="M107 38 L107 62" data-origin="inferred" data-h="0" marker-end="url(#m-impl-0)"><title>internal/model provides first anchor is a module&#39;s directory (via data), 판독</title></path><circle class="origin inferred e0 e2 r0" cx="107" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w consumes e1 e3 r1" d="M309 38 L309 70" data-origin="inferred" data-h="1" marker-end="url(#m-use-1)"><title>internal/screen consumes boxes in one view (via data), 판독</title></path><circle class="origin inferred e1 e3 r1" cx="309" cy="38" r="3.5"><title>판독: pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab e1 e3 r1" data-h="1" x="331" y="58" text-anchor="middle">데이터</text>
+
 
 <g class="route provides back e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h0)"><path class="way" d="M107 38 L107 62"/><use href="#t-impl" transform="translate(107 62) rotate(90)"/></g><g class="route consumes e1 e3 r1" data-h="1" style="--k1:var(--h1);--k3:var(--h1)"><path class="way" d="M309 38 L309 70"/><use href="#t-use" transform="translate(309 70) rotate(90)"/></g>
 <g class="box inner p0 n0 n2" data-id="DATA-0017" data-h="0"><title>DATA-0017 first anchor is a module&#39;s directory: the group fallback reads a module&#39;s home directory from its first anchor, which holds only because anchors sort by path#symbol so a directory comes before the files in it</title><rect x="24" y="62" width="166" height="60" rx="4"/><path class="bar" d="M25 67 V117"/><text class="name" x="32" y="81">first anchor is a</text><text class="name" x="32" y="97">module&#39;s directory</text><text class="sub" x="32" y="114">데이터</text></g><g class="box inner p1 n1 n3" data-id="DATA-0022" data-h="1"><title>DATA-0022 boxes in one view: what counts as a box in a view against the group budget; group leaves top-level contracts out, while the screen draws a contract no module provides as a loose box</title><rect x="230" y="70" width="158" height="44" rx="4"/><path class="bar" d="M231 75 V109"/><text class="name" x="238" y="89">boxes in one view</text><text class="sub" x="238" y="106">데이터</text></g>
@@ -472,6 +490,12 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 <span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div><div class="legend keys">
+
+
+
+
+<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
   
   <div class="text">
@@ -502,12 +526,14 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" width="320" height="300" viewBox="0 0 320 300" role="img" aria-label="모듈과 계약">
 <defs><marker id="m-dep-b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--hb); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 
+
 <path class="w bypass e0 e2 r0" d="M160 92 L160 128" data-origin="extracted" data-h="b" marker-end="url(#m-dep-b)"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 건너는 것: dir grouping (판독) 1/1</title></path><text class="lab said e0 e2 r0" data-h="b" x="206" y="114" text-anchor="middle">dir grouping</text><path class="w bypass e1 e2 r1" d="M160 188 L160 224" data-origin="extracted" data-h="b" marker-end="url(#m-dep-b)"><title>internal/group → internal/model: 계약을 거치지 않는 직접 의존
 건너는 것: Unit, Kind, Module (판독) 1/1</title></path><text class="lab said e1 e2 r1" data-h="b" x="230" y="210" text-anchor="middle">Unit, Kind, Module</text>
 
+
 <g class="route bypass e0 e2 r0" data-h="b" style="--k0:var(--h0);--k2:var(--h2)"><path class="way" d="M160 92 L160 128"/><use href="#t-dep" transform="translate(160 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="b" style="--k1:var(--h1);--k2:var(--h2)"><path class="way" d="M160 188 L160 224"/><use href="#t-dep" transform="translate(160 224) rotate(90)"/></g>
-<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="32" width="150" height="60" rx="6"/><path class="bar" d="M86 37 V87"/><text class="name" x="160" y="67" text-anchor="middle">abbd CLI</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p1 n1 n2" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="224" width="150" height="60" rx="6"/><path class="bar" d="M86 229 V279"/><text class="name" x="160" y="259" text-anchor="middle">internal/model</text></g></a><a href="#m-MOD-0054"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0054" data-h="2"><title>MOD-0054 internal/group. 누르면 이 모듈의 안을 봅니다</title><rect x="85" y="128" width="150" height="60" rx="6"/><path class="bar" d="M86 133 V183"/><text class="name" x="160" y="163" text-anchor="middle">internal/group</text></g></a>
+<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="32" width="150" height="60" rx="6"/><path class="bar" d="M86 37 V87"/><text class="name" x="160" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="160" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p1 n1 n2" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="224" width="150" height="60" rx="6"/><path class="bar" d="M86 229 V279"/><text class="name" x="160" y="251" text-anchor="middle">internal/model</text><text class="sub" x="160" y="266" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0054"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0054" data-h="2"><title>MOD-0054 internal/group. 누르면 이 모듈의 안을 봅니다</title><rect x="85" y="128" width="150" height="60" rx="6"/><path class="bar" d="M86 133 V183"/><text class="name" x="160" y="155" text-anchor="middle">internal/group</text><text class="sub" x="160" y="170" text-anchor="middle">모듈</text></g></a>
 
 </svg></div>
   <div class="legend">
@@ -524,6 +550,12 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 <span title="사람이 말함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>
+</div><div class="legend keys">
+
+
+
+
+<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
 </section>
 
