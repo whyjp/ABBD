@@ -19234,7 +19234,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20261,7 +20261,7 @@
                 "Code": true
               },
               {
-                "Text": ", how far the drawing runs past one screen (",
+                "Text": " is how far the drawing runs past one screen (criterion S): ",
                 "Code": false
               },
               {
@@ -20269,7 +20269,15 @@
                 "Code": true
               },
               {
-                "Text": " by ",
+                "Text": " wide and the view's ",
+                "Code": false
+              },
+              {
+                "Text": "room",
+                "Code": true
+              },
+              {
+                "Text": " tall, ",
                 "Code": false
               },
               {
@@ -20277,7 +20285,15 @@
                 "Code": true
               },
               {
-                "Text": ", criterion S), is weighed right after the hard breaches, and a fold or entry drawing that moves more boxes than the least plainly ranked one is passed over; ",
+                "Text": " less what its page sets above the drawing, the overview's questions (",
+                "Code": false
+              },
+              {
+                "Text": "overviewRoom",
+                "Code": true
+              },
+              {
+                "Text": ") or a page's note. Whether it runs past is weighed right after the hard breaches and how far only after lint's weighed sum. A fold or entry drawing is passed over when it moves more boxes than the least plainly ranked one, or when it neither has fewer hard breaches nor fits where the plain one does not, so a small change cannot flip the overview's ranking to save a few turns; ",
                 "Code": false
               },
               {
@@ -20285,7 +20301,15 @@
                 "Code": true
               },
               {
-                "Text": " holds the fold. ",
+                "Text": " holds the fold and ",
+                "Code": false
+              },
+              {
+                "Text": "fit_test.go",
+                "Code": true
+              },
+              {
+                "Text": " the choice. ",
                 "Code": false
               },
               {
