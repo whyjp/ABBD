@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 
@@ -231,5 +232,29 @@ func TestAKnotOnAnotherBoxsTrackStillBends(t *testing.T) {
 	got = lookAt(t, boxes, fork, [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}, {"E", "B"}}).bendsAllowed()
 	if len(got) != 1 || got[0].Items[1].ID != "B" || got[0].Allowed != 0 {
 		t.Fatalf("%+v; want the branch into B, on E's track, to break B1", got)
+	}
+}
+
+// A stem is a fork only when every line down it is of one kind, turns onto
+// one track, and runs straight or as a branch: a straight drop of another
+// kind, a branch onto a second track, or a line that ends on a box's side
+// leaves the bent line into B breaking B1.
+func TestAForkIsOneKindOnOneTrack(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	rels := [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}}
+	toB := `<path class="w contract" d="M230 20 V50 H100 V80"/>`
+	for name, rest := range map[string]string{
+		"a straight drop of another kind": `<path class="w depends_on" d="M230 20 V80"/><path class="w contract" d="M230 20 V50 H360 V80"/>`,
+		"a branch onto a second track":    `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V64 H360 V80"/>`,
+		"a line onto a box's side":        `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V70 H320"/>`,
+	} {
+		bs := boxes
+		if strings.Contains(name, "side") {
+			bs = []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 60 80 40"}
+		}
+		got := lookAt(t, bs, toB+rest, rels).bendsAllowed()
+		if !slices.ContainsFunc(got, func(b Breach) bool { return b.Items[1].ID == "B" && b.Allowed == 0 }) {
+			t.Errorf("with %s: %+v; want the line into B to break B1", name, got)
+		}
 	}
 }

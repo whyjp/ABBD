@@ -13,7 +13,9 @@ Every case measures the traced geometry itself, never the lint's breaches,
 so a change to a lint criterion cannot move a case.
 
 It prints one row per case: case, source, view, measure, value, target and
-pass when the value is at or under the target. A case comes from a user
+pass when the value is at or under the target, and exits 1 when a
+case fails. When go test writes no tables, as when the build fails, it
+stops with go's output before measuring anything. A case comes from a user
 screenshot in D:/abbd-eval/exemplars (user-NN) or from the day's review
 (today); its view is a fixture view, by the name TestLintFixtures gives it.
 --record writes eval/lint/acceptance.tsv with the values as the recorded
@@ -253,12 +255,18 @@ CASES = [
 def run(out, hover_on):
     os.makedirs(out, exist_ok=True)
     pages = os.path.join(out, "pages")
-    env = dict(os.environ, ABBD_LINT_FIXTURES=os.path.join(out, "fix.tsv"), ABBD_ACCEPT_WAYS=os.path.join(out, "ways.tsv"),
-               ABBD_BLUEPRINTS=pages)
+    tables = [os.path.join(out, "fix.tsv"), os.path.join(out, "ways.tsv")]
+    for f in tables:
+        if os.path.exists(f):
+            os.remove(f)
+    env = dict(os.environ, ABBD_LINT_FIXTURES=tables[0], ABBD_ACCEPT_WAYS=tables[1], ABBD_BLUEPRINTS=pages)
     go = subprocess.run(["go", "test", "./internal/screen", "-count=1", "-run", "^(TestLintFixtures|TestAcceptWays|TestEveryRealDrawingIsLegible)$"],
                         cwd=ROOT, env=env, capture_output=True, text=True)
+    tail = (go.stdout + go.stderr)[-2000:]
+    if not all(os.path.exists(f) for f in tables):
+        sys.exit(f"go test wrote no tables, so nothing was measured (exit {go.returncode}):\n{tail}")
     if go.returncode:
-        print(f"go test failed (tables still read):\n{go.stdout[-2000:]}", file=sys.stderr)
+        print(f"go test failed (tables still read):\n{tail}", file=sys.stderr)
     if hover_on:
         shoot = os.path.join(ROOT, "eval", "skill-polish", "tools", "shoot.py")
         repos = [f"{r}={os.path.join(pages, r)}" for r in sorted(os.listdir(pages))]
@@ -290,6 +298,7 @@ def main():
         with open(os.path.join(HERE, "acceptance.tsv"), "w", newline="", encoding="utf8") as f:
             f.write("case\tsource\tview\tmeasure\trecorded\tcommit\ttarget\tnote\n")
             f.writelines("\t".join(r[:5] + [at] + r[5:]) + "\n" for r in rows)
+    sys.exit(1 if "fail" in results else 0)
 
 
 if __name__ == "__main__":
