@@ -151,7 +151,7 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 
 ### Levels
 
-- **L. Each full view stands at one level.** Report only. The overview draws 4 to 12 modules, the parts an engineer names when explaining the system, and a contract no drawn module provides does not count. A module's page draws at least 2 boxes and at most 16 (rule 1). Most of a view's line labels say what crosses, not the via. `abbd lint` prints a `level` line for each view that misses, with what to change in the units, and `--json` lists every full view under `levels`. It never fails lint and is never debt, since the renderer cannot fix it: the reader's choice of units does (abbd-setup, step 1). On three repositories set up by agents from the skill alone, every view the eye found wrong at its level carried such a line (`eval/skill-polish`).
+- **L. Each full view stands at one level.** Report only. The overview draws 4 to 12 modules, the parts an engineer names when explaining the system, and a contract no drawn module provides does not count. A nested module's page draws at least 2 boxes, a top-level module's page 0 or at least 2, and any page at most 16 (rule 1). A view of 4 or more boxes draws at most 2 lines a box, past the lines into a hub: a box at least 3 boxes and half of the others use, such as shared types, listed as `hubs`. The first `abbd lint --record` of a repository refuses while a view with hard breaches has a level line. `abbd lint` prints a `level` line for each view that misses, with what to change in the units, and `--json` lists every full view under `levels`. It never fails lint and is never debt, since the renderer cannot fix it: the reader's choice of units does (abbd-setup, step 1).
 
 ### What a change is weighed by
 

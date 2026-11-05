@@ -65,6 +65,9 @@ func (e env) lint(pos []string) error {
 		return err
 	}
 	if e.record {
+		if off := offLevel(views, levelsOf(m, views)); len(debt.Views) == 0 && len(debt.Ceilings) == 0 && len(off) > 0 {
+			return fmt.Errorf("will not take the first debt while a view with hard breaches stands at the wrong level, since its breaches come from its units: %s. Change the units as each level line of abbd lint says (abbd-setup step 1), rerun setup, and record only the routing debt that stays", strings.Join(off, "; "))
+		}
 		d := screen.Record(views, debt)
 		if err := e.st.SaveLintDebt(d); err != nil {
 			return err
@@ -145,6 +148,25 @@ func printLint(e env, r lintReport) {
 	for _, f := range r.Lowerable {
 		fmt.Fprintf(e.stdout, "lint: may be lowered: %s\n", f)
 	}
+}
+
+// offLevel names each view with a hard breach that a level line says is
+// drawn at the wrong level. Its breaches are the cost of the units, not
+// routing debt.
+func offLevel(views []screen.ViewLint, levels []screen.Level) []string {
+	hard := map[string]bool{}
+	for _, v := range views {
+		for _, b := range v.Breaches {
+			hard[v.View] = hard[v.View] || b.Hard
+		}
+	}
+	var out []string
+	for _, l := range levels {
+		if hard[l.View] && len(l.Advice) > 0 {
+			out = append(out, l.View+" ("+l.Advice[0]+")")
+		}
+	}
+	return out
 }
 
 // levelsOf is the levels of the full views lint checked.

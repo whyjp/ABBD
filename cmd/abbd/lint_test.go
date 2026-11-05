@@ -184,6 +184,20 @@ func TestLintRecordNeverRaisesACeiling(t *testing.T) {
 	}
 }
 
+// The first --record of a repository refuses while a view with hard
+// breaches stands at the wrong level, since the units, not the routing,
+// owe those breaches.
+func TestLintFirstRecordWaitsForTheLevels(t *testing.T) {
+	root := copyFixture(t, "pstack", "")
+	code, out := lintAt(t, root, "--record")
+	if code != exitError || !strings.Contains(out, "will not take the first debt") || !strings.Contains(out, "overview (the view draws") {
+		t.Fatalf("exit %d, want 1 naming the overview's level:\n%s", code, out)
+	}
+	if _, err := os.Stat(filepath.Join(root, ".abbd", "lint-debt.yaml")); err == nil {
+		t.Error("the refused record wrote a debt file")
+	}
+}
+
 // This repository's own blueprint keeps the gate its debt file sets.
 func TestLintPassesThisRepository(t *testing.T) {
 	if code, out := lintAt(t, filepath.Join("..", "..")); code != exitOK {
