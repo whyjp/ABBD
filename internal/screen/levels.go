@@ -2,8 +2,12 @@ package screen
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"sort"
 	"strings"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // The bounds of a level. The overview shows the parts an engineer names
@@ -30,12 +34,12 @@ const (
 // Bounds are the numbers a level is held to, which the abbd-setup skill
 // states to the agent that chooses the units.
 type Bounds struct {
-	OverviewFewest, OverviewMost, PageFewest, PageMost, LinesPerBox int
+	OverviewFewest, OverviewMost, PageFewest, PageMost, LinesPerBox, LeafFiles int
 }
 
 // LevelBounds are the bounds Levels holds every view to.
 func LevelBounds() Bounds {
-	return Bounds{overviewFewest, overviewMost, insideFewest, viewBudget, linesPerBox}
+	return Bounds{overviewFewest, overviewMost, insideFewest, viewBudget, linesPerBox, leafFiles}
 }
 
 // Level is how one full view stands as a level of abstraction: the boxes
@@ -49,10 +53,26 @@ type Level struct {
 	// shared UI kit. The lines into them do not count toward the density.
 	Hubs   []string `json:"hubs,omitempty"`
 	Advice []string `json:"advice,omitempty"`
+	// Unseen is what the view leaves out of sight because of the units: the
+	// relations a module's page cannot draw, a page with code and no parts,
+	// and lines that say only how they arise. Unlike Advice, the first
+	// lint --record waits for it whatever the view's breaches.
+	Unseen []string `json:"unseen,omitempty"`
 	// Kept is why the repository keeps the view at this level, as
 	// .abbd/lint-debt.yaml records it.
 	Kept string `json:"kept,omitempty"`
 }
+
+// Off says the view has a level line: advice or something it leaves unseen.
+func (l Level) Off() bool { return len(l.Advice)+len(l.Unseen) > 0 }
+
+// leafFiles is the fewest files a top-level module must hold before a page
+// with no parts leaves its code unseen: two parts of several files each.
+const leafFiles = 4
+
+// fewestPhrased is the fewest relations a view must draw before the share
+// of them that carries a phrase says anything.
+const fewestPhrased = 4
 
 // where a full view stands: the overview, the page of a top-level module,
 // or the page of a module inside another.
@@ -69,10 +89,18 @@ const (
 // which draw the units a feature reaches rather than parts of a module.
 func Levels(m Model) []Level {
 	unit := map[string]UnitRow{}
+	kids := map[string][]string{}
 	for _, u := range m.Units {
 		unit[u.ID] = u
+		kids[u.Parent] = append(kids[u.Parent], u.ID)
 	}
-	out := []Level{level("overview", m.Overview, atOverview)}
+	said := map[string]bool{}
+	for _, e := range m.Edges {
+		said[model.Edge{From: model.ID(e.From), To: model.ID(e.To), Kind: model.RelationKind(e.Kind)}.String()] = e.Phrase != ""
+	}
+	ov := level("overview", m.Overview, atOverview)
+	ov.Unseen = unphrased(m.Overview, said)
+	out := []Level{ov}
 	for _, ins := range m.Insides {
 		if unit[ins.ID].Kind != "MOD" {
 			continue
@@ -81,9 +109,113 @@ func Levels(m Model) []Level {
 		if unit[ins.ID].Parent != "" {
 			at = atNested
 		}
-		out = append(out, level(ins.ID+" "+ins.Name, ins.Drawing, at))
+		l := level(ins.ID+" "+ins.Name, ins.Drawing, at)
+		l.Unseen = append(ownCode(m, unit, kids, ins.ID, at), unphrased(ins.Drawing, said)...)
+		out = append(out, l)
 	}
 	return out
+}
+
+// ownCode says what a module's page leaves unseen of the module's own code,
+// the code it holds outside every part. A page draws its parts and what
+// meets them, so a relation of the module's own code has no box to start or
+// end at there. A top-level module of several files with no parts draws an
+// empty frame.
+func ownCode(m Model, unit map[string]UnitRow, kids map[string][]string, id string, at where) []string {
+	if len(kids[id]) == 0 {
+		if n := len(files(unit[id].paths)); at == atTop && n >= leafFiles {
+			return []string{fmt.Sprintf("the page draws no box, though the module holds %d files, so it shows neither what the module holds nor what meets it. Give it 2 to %d parts, each a responsibility of several files, by the part rule of abbd-setup step 1", n, viewBudget)}
+		}
+		return nil
+	}
+	var meets []string
+	for _, e := range m.Edges {
+		if e.From == id || e.To == id {
+			meets = append(meets, unit[e.From].Name+" "+e.Kind+" "+unit[e.To].Name)
+		}
+	}
+	if len(meets) == 0 {
+		return nil
+	}
+	held := map[string]bool{}
+	var below func(string)
+	below = func(k string) {
+		for _, c := range kids[k] {
+			for _, p := range unit[c].paths {
+				held[p] = true
+			}
+			below(c)
+		}
+	}
+	below(id)
+	all := append(slices.Clone(unit[id].paths), slices.Collect(maps.Keys(held))...)
+	var own []string
+	for _, p := range files(all) {
+		if slices.Contains(unit[id].paths, p) && !held[p] && !heldUnder(p, held) {
+			own = append(own, p)
+		}
+	}
+	verb := "meet"
+	if len(meets) == 1 {
+		verb = "meets"
+	}
+	s := fmt.Sprintf("%s %s the module itself rather than one of its parts, so the page draws none of them, such as %s", plural(len(meets), "relation"), verb, strings.Join(meets[:min(len(meets), 3)], "; "))
+	if len(own) > 0 {
+		s += fmt.Sprintf(". Its files %s", strings.Join(own[:min(len(own), 4)], ", "))
+		if len(own) > 4 {
+			s += fmt.Sprintf(" and %d more", len(own)-4)
+		}
+		s += " sit in no part, so place each in the part it serves"
+	}
+	return []string{s + ". Have the script end each coupling at the part whose file holds its code, at both ends (abbd-setup step 3)"}
+}
+
+// files are the paths that name no directory of another: a module's
+// directory anchor holds its file anchors and is no file of its own.
+func files(paths []string) []string {
+	var out []string
+	for _, p := range paths {
+		dir := false
+		for _, q := range paths {
+			dir = dir || strings.HasPrefix(q, p+"/")
+		}
+		if !dir && !slices.Contains(out, p) {
+			out = append(out, p)
+		}
+	}
+	slices.Sort(out)
+	return out
+}
+
+// heldUnder says a directory some part anchors holds p.
+func heldUnder(p string, held map[string]bool) bool {
+	for q := range held {
+		if strings.HasPrefix(p, q+"/") {
+			return true
+		}
+	}
+	return false
+}
+
+// unphrased says a view's lines mostly say only how they arise: fewer than
+// half of the relations it draws carry a phrase of what crosses them.
+func unphrased(d Drawing, said map[string]bool) []string {
+	drawn := map[string]bool{}
+	for _, w := range d.Wires {
+		for _, r := range w.Rels {
+			drawn[r] = true
+		}
+	}
+	n := 0
+	for r := range drawn {
+		if said[r] {
+			n++
+		}
+	}
+	if len(drawn) < fewestPhrased || 2*n >= len(drawn) {
+		return nil
+	}
+	return []string{fmt.Sprintf("%d of the %s the view draws carry no phrase, so their lines say at most how they arise, such as 임포트. Give each coupling a phrase that names what crosses it, as abbd-setup step 4 says", len(drawn)-n, plural(len(drawn), "relation"))}
 }
 
 func level(name string, d Drawing, at where) Level {

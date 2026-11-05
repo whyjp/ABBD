@@ -7850,7 +7850,47 @@
                 "Code": true
               },
               {
-                "Text": " finds a view with a hard breach that a level line says stands at the wrong level, since those breaches come from its units and not from routing. ",
+                "Text": " finds a view with a hard breach that a level line says stands at the wrong level, since those breaches come from its units and not from routing, or any view whose ",
+                "Code": false
+              },
+              {
+                "Text": "Unseen",
+                "Code": true
+              },
+              {
+                "Text": " is not empty, breaches or not. ",
+                "Code": false
+              },
+              {
+                "Text": "printLint",
+                "Code": true
+              },
+              {
+                "Text": " prints each unseen line as a ",
+                "Code": false
+              },
+              {
+                "Text": "level VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " line too, and ",
+                "Code": false
+              },
+              {
+                "Text": "Level.Off",
+                "Code": true
+              },
+              {
+                "Text": " counts both for ",
+                "Code": false
+              },
+              {
+                "Text": "keptLevels",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -22924,6 +22964,78 @@
               },
               {
                 "Text": " lines a box besides those into its hubs. Each advice says what to change in the units, since only a reader's choice of units fixes a level. ",
+                "Code": false
+              },
+              {
+                "Text": "Levels",
+                "Code": true
+              },
+              {
+                "Text": " also fills ",
+                "Code": false
+              },
+              {
+                "Text": "Unseen",
+                "Code": true
+              },
+              {
+                "Text": " with what a view's units leave out of sight. ",
+                "Code": false
+              },
+              {
+                "Text": "ownCode",
+                "Code": true
+              },
+              {
+                "Text": " names the relations that meet a module with parts itself, which no box of its page can draw, with the files that sit in no part, and a top-level module of ",
+                "Code": false
+              },
+              {
+                "Text": "leafFiles",
+                "Code": true
+              },
+              {
+                "Text": " files or more with no parts, whose page is an empty frame. ",
+                "Code": false
+              },
+              {
+                "Text": "unphrased",
+                "Code": true
+              },
+              {
+                "Text": " names a view of at least ",
+                "Code": false
+              },
+              {
+                "Text": "fewestPhrased",
+                "Code": true
+              },
+              {
+                "Text": " drawn relations of which fewer than half carry a phrase, read from ",
+                "Code": false
+              },
+              {
+                "Text": "Model.Edges",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "UnitRow.paths",
+                "Code": true
+              },
+              {
+                "Text": " carries each unit's anchor paths for ",
+                "Code": false
+              },
+              {
+                "Text": "ownCode",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {

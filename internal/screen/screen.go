@@ -117,6 +117,8 @@ type UnitRow struct {
 	// them.
 	Notes   []Note   `json:",omitempty"`
 	Entries *Entries `json:",omitempty"`
+	// paths are the files and directories its anchors name.
+	paths []string
 }
 
 type Model struct {
@@ -153,6 +155,9 @@ func Build(in Input) Model {
 		}
 		for _, e := range u.Evidence {
 			row.Evidence = append(row.Evidence, cite(e))
+		}
+		for _, a := range u.Anchors {
+			row.paths = append(row.paths, a.Path)
 		}
 		m.Units = append(m.Units, row)
 	}

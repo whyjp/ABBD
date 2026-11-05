@@ -189,12 +189,19 @@ func TestLintRecordNeverRaisesACeiling(t *testing.T) {
 // The first --record of a repository refuses while a view with hard
 // breaches stands at the wrong level, since the units, not the routing,
 // owe those breaches. Orca's renderer page draws 21 lines between 9 parts,
-// and its shared types page 22 parts.
+// and its shared types page 22 parts. It refuses too while a view leaves
+// something unseen, breaches or not: no line of Orca's overview carries a
+// phrase, and its push service's relations meet the module, not its parts.
 func TestLintFirstRecordWaitsForTheLevels(t *testing.T) {
 	root := copyFixture(t, "orca", "")
 	code, out := lintAt(t, root, "--record")
 	if code != exitError || !strings.Contains(out, "will not take the first debt") || !strings.Contains(out, "MOD-0072 desktop renderer UI (the view draws 21 lines between 9 boxes") || !strings.Contains(out, "--keep-level VIEW=REASON") {
 		t.Fatalf("exit %d, want 1 naming the renderer page's level and the way to keep it:\n%s", code, out)
+	}
+	for _, want := range []string{"overview (32 of the 32 relations the view draws carry no phrase", "MOD-0002 @orca-cloud/push (4 relations meet the module itself rather than one of its parts"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the refusal does not name %q:\n%s", want, out)
+		}
 	}
 	if _, err := os.Stat(filepath.Join(root, ".abbd", "lint-debt.yaml")); err == nil {
 		t.Error("the refused record wrote a debt file")
@@ -215,7 +222,13 @@ func TestLintRecordKeepsAJustifiedLevel(t *testing.T) {
 	if code, out := lintAt(t, root, "--keep-level", "MOD-0072=x"); code != exitError || !strings.Contains(out, "with --record") {
 		t.Errorf("--keep-level without --record: exit %d:\n%s", code, out)
 	}
-	if code, out := lintAt(t, root, "--record", "--keep-level", "MOD-0072=renderer UI parts are the app's screens", "--keep-level", "MOD-0081=one schema per wire format"); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: renderer UI parts are the app's screens") {
+	args := []string{"--record", "--keep-level", "MOD-0072=renderer UI parts are the app's screens", "--keep-level", "MOD-0081=one schema per wire format"}
+	for _, v := range unseenViews(t, root) {
+		if v != "MOD-0072 desktop renderer UI" && v != "MOD-0081 shared types and schemas" {
+			args = append(args, "--keep-level", v+"=the fixture keeps it")
+		}
+	}
+	if code, out := lintAt(t, root, args...); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: renderer UI parts are the app's screens") {
 		t.Fatalf("exit %d, want the record to keep both levels:\n%s", code, out)
 	}
 	b, err := os.ReadFile(filepath.Join(root, ".abbd", "lint-debt.yaml"))
@@ -235,9 +248,26 @@ func TestLintRecordKeepsAJustifiedLevel(t *testing.T) {
 	for _, l := range r.Levels {
 		kept[l.View] = l.Kept
 	}
-	if kept["MOD-0072 desktop renderer UI"] == "" || kept["MOD-0081 shared types and schemas"] == "" || kept["overview"] != "" {
-		t.Errorf("levels kept %v, want the two kept views alone", kept)
+	if kept["MOD-0072 desktop renderer UI"] != "renderer UI parts are the app's screens" || kept["MOD-0081 shared types and schemas"] != "one schema per wire format" || kept["overview"] != "the fixture keeps it" {
+		t.Errorf("levels kept %v, want each view kept with its own reason", kept)
 	}
+}
+
+// unseenViews names each view of root whose units leave something unseen.
+func unseenViews(t *testing.T, root string) []string {
+	t.Helper()
+	_, out := lintAt(t, root, "--json")
+	var r lintReport
+	if err := json.NewDecoder(strings.NewReader(out)).Decode(&r); err != nil {
+		t.Fatal(err)
+	}
+	var views []string
+	for _, l := range r.Levels {
+		if len(l.Unseen) > 0 {
+			views = append(views, l.View)
+		}
+	}
+	return views
 }
 
 // A repository that already keeps a debt file records again whatever its

@@ -131,3 +131,16 @@ Defects the passes still name:
 - gin's overview lines climb into request context, and generic 임포트 labels remain on httpie and storefront.
 
 A review of PR #101 then found the gathered wires' tooltips named only the first module they gather, the gathered chips lost their links, and the chip's 24-rune name cap let Hangul names wrap. 7111bdd fixes all three. On the held-out runs that changes tooltips and links only, so the judged pages are unchanged.
+
+## Iteration 7
+
+it7 changes the skill and the CLI, so it is judged under the fresh-run rule, on new candidate runs against base and it6. The renderer is as on main.
+
+Two defects the judges named share one cause in the units. A module's page draws its parts and what meets them, so a relation that meets the module itself has no box there. On the it6 runs storefront's shopify client page draws no chip, though 8 modules use it: they all import its own `index.ts`, which sits in no part. gin it4's Context page was an empty frame: the module held 7 files and no parts. A probe over the kept runs found the same in every repository: 1 to 6 module pages with parts per run whose own code carries relations (6 on gin, 1 on httpie, 4 on storefront), and 1 to 4 top-level modules of 4 files or more with no parts, such as gin's engine and httpie's cli and manager.
+
+- Hypothesis 1. A check that names both, which the first `abbd lint --record` waits for, makes the candidate end each coupling at a part and cut each module of 4 files or more into parts. `abbd lint` now lists them under `unseen` in its level lines: the relations that meet a module with parts itself, with the files that sit in no part, and a top-level module of 4 files or more with no parts.
+- Hypothesis 2. The setup skill gets a part rule a script can run on any language, with the key, the merge order and the count defined: subdirectories first, then a file's receiver type or class, or in component code its default or first export with `use`, `Provider`, `Context` and `Props` taken off, then its name stem. A module's import file is its API part. One-file parts merge, first by name, into the part that uses the most of their names, and merging stops at two parts. Step 3 says to end each coupling at the part whose file holds its code at each end.
+- Hypothesis 3. A view of 4 drawn relations or more of which fewer than half carry a phrase is listed under `unseen` too. On the it6 runs that names httpie's overview (45 of 83 without one) and its runtime page (53 of 56), and 5 gin pages.
+- The skill also says how to find the shared module, by the count `abbd lint` uses for hubs, and which top-level modules a web app has.
+
+The criteria these target, named before any judge runs, are set of views, density (c2) and labels (c5) on the module pages, and labels on the overview. Lint on the fresh runs should list no `unseen` line, or name each one kept with `--keep-level`.
