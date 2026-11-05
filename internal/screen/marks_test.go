@@ -367,7 +367,7 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 			for _, w := range d.Wires {
 				for _, rel := range w.Rels {
 					drawn[rel] = true
-					if s, _ := word(tr, w.Rels); s != "" {
+					if s, _ := word(tr, w.lines); s != "" {
 						worded[rel] = true
 					}
 					if w.Label != nil {
