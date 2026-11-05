@@ -137,6 +137,13 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
+abbd parts DIR [--json] [--root DIR]
+                                     propose the parts of one directory from its code, for an
+                                     extraction script to place: each subdirectory is a node, a
+                                     file only one part uses sits in it, files that construct or
+                                     implement one type are a family, the single files several
+                                     parts use are the shared layer; each part has a name from
+                                     the type the others know it by and the lines that tie it
 abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--root DIR]
                                      hold every drawing of the blueprint, or the views whose name
                                      starts with VIEW or holds it as a word, such as a unit ID, to
@@ -288,6 +295,7 @@ var commands = map[string]command{
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"parts":           {flags: []string{"root", "json"}, pos: []int{1}, run: func(e env, pos []string) error { return e.parts(pos[0]) }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
