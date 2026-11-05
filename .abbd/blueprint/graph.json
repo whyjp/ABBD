@@ -20047,15 +20047,15 @@
                 "Code": true
               },
               {
-                "Text": "), drawn unseen above the ink in its source's colour, with an arrowhead that takes the route's colour (",
+                "Text": "), drawn unseen above the ink in its source's colour and taking no pointer, with arrowheads that are ",
                 "Code": false
               },
               {
-                "Text": "context-stroke",
+                "Text": "\u003cuse\u003e",
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": " of heads painted in the route's own colour. ",
                 "Code": false
               },
               {
@@ -20063,7 +20063,7 @@
                 "Code": true
               },
               {
-                "Text": " numbers a drawing's boxes and chips, a twin with its unit, and classes each line, route and dot by the shapes at its ends and each shape by the shapes its relations join it to. The fixed ",
+                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The fixed ",
                 "Code": false
               },
               {
@@ -20071,7 +20071,23 @@
                 "Code": true
               },
               {
-                "Text": " rules, with no script on the page, fade all the ink while a reader points at a line or a shape and show the lines lit as their routes, whole: a pointed-at line shows its own route alone, and a pointed-at box shows every route with an end there in the box's colour, a warning line aside, so no lit piece wears another line's colour. A drawing with more than ",
+                "Text": " rules, with no script on the page, fade all the ink while a reader points at ink or a shape and show the lines lit as their routes, whole: pointed-at ink shows every route along it in its own colour, with its marks and its ends, and keeps its title, and a pointed-at box shows exactly its one-hop lines in the box's colour (",
+                "Code": false
+              },
+              {
+                "Text": "--kN",
+                "Code": true
+              },
+              {
+                "Text": ", set by ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": "). A drawing with more than ",
                 "Code": false
               },
               {
@@ -20079,7 +20095,15 @@
                 "Code": true
               },
               {
-                "Text": " shapes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": " shapes or ",
+                "Code": false
+              },
+              {
+                "Text": "routeMax",
+                "Code": true
+              },
+              {
+                "Text": " routes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
@@ -21031,47 +21055,7 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등 when at least half carry it and otherwise by its first name with 외 and how many do not. A path that stands for several lines counts lines, not relations, so its word adds up to its bus's ",
-                "Code": false
-              },
-              {
-                "Text": "×N",
-                "Code": true
-              },
-              {
-                "Text": ". ",
-                "Code": false
-              },
-              {
-                "Text": "Wire.carry",
-                "Code": true
-              },
-              {
-                "Text": " gives each wire its distinct ",
-                "Code": false
-              },
-              {
-                "Text": "Rels",
-                "Code": true
-              },
-              {
-                "Text": " and the relations of each line its label speaks for, which on the drop that shows a count are the lines the count counts (",
-                "Code": false
-              },
-              {
-                "Text": "drawn.counted",
-                "Code": true
-              },
-              {
-                "Text": "). A phrase wider than ",
-                "Code": false
-              },
-              {
-                "Text": "labelMax",
-                "Code": true
-              },
-              {
-                "Text": " keeps the names before its commas outside brackets that fit, and when even those do not fit the next phrase speaks only if at least half carry it. With no phrase that fits, the word is the ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
                 "Code": false
               },
               {
@@ -21079,31 +21063,15 @@
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...). ",
+                "Text": " word they all share (호출, 데이터, ...), which also stands in when the phrase, with 등, is wider than ",
                 "Code": false
               },
               {
-                "Text": "TestLabelAudit",
+                "Text": "labelMax",
                 "Code": true
               },
               {
-                "Text": " holds the label every line of the fixtures and of this repository's own ",
-                "Code": false
-              },
-              {
-                "Text": ".abbd",
-                "Code": true
-              },
-              {
-                "Text": " draws to the lines it speaks for and its ",
-                "Code": false
-              },
-              {
-                "Text": "×N",
-                "Code": true
-              },
-              {
-                "Text": ", and no line to a relation held twice. ",
+                "Text": ". ",
                 "Code": false
               },
               {
