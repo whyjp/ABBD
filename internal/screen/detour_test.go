@@ -55,3 +55,37 @@ func TestALineKeepsToItsColumnPastAWideSpace(t *testing.T) {
 		}
 	}
 }
+
+// On orca's src/ the WSL guest agent sends one line down its trunk to
+// shared types and one to @orca/process-host, whose arrival trunk every
+// place on it also reaches shared types from. The line to process-host
+// runs its track onto that trunk: it turns twice, with no small step
+// beside the trunk, since following its track from the trunk leads a
+// reader only where the trunk's lines already go.
+func TestAHarmlessJoinTakesNoStep(t *testing.T) {
+	for _, v := range views(fixture(t, "orca")) {
+		if v.name != "MOD-0098 src/" {
+			continue
+		}
+		s, err := sheetOf(v.d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		l := newLook(v, s)
+		seen := 0
+		for _, w := range l.trace.Ways {
+			if l.shapeName(w.from) != `box "WSL guest agent" (MOD-0094)` || l.shapeName(w.to) != `box "@orca/process-host" (MOD-0070)` {
+				continue
+			}
+			seen++
+			if n := len(w.pts) - 2; n != 2 {
+				t.Errorf("WSL guest agent to process-host turns %d times, want 2: %v", n, w.pts)
+			}
+		}
+		if seen != 1 {
+			t.Fatalf("want one line from WSL guest agent to process-host, got %d", seen)
+		}
+		return
+	}
+	t.Fatal("no view MOD-0098 src/")
+}

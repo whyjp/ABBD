@@ -1195,9 +1195,16 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 	// its bus reaches. Every other line that leaves a departure trunk for
 	// the arrival trunk steps down off its departure track a little before
 	// the trunk, onto a track of its own that ends on the trunk; a reader
-	// coming along the trunk cannot climb that step.
+	// coming along the trunk cannot climb that step. A line whose track
+	// would lead such a reader nowhere its lines do not go (joinsHarmless)
+	// needs no step and runs its track onto the trunk. It still holds the
+	// x its step would take, so the steps of the others stand as they did.
 	vias := map[int][]int{}
-	for _, b := range buses {
+	wants := map[[2]string]bool{}
+	for _, w := range wanted(reqs) {
+		wants[w] = true
+	}
+	for bi, b := range buses {
 		if !b.arrive {
 			continue
 		}
@@ -1259,8 +1266,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool) rout
 				}
 				return true
 			}
-			q.via = viaX(t, d, free)
-			vias[g] = append(vias[g], q.via)
+			x := viaX(t, d, free)
+			vias[g] = append(vias[g], x)
+			if !joinsHarmless(wants, reqs, plans, buses, q.dep, bi, g) {
+				q.via = x
+			}
 		}
 	}
 	// owner says whose track crossing j of line i runs on: its departure
