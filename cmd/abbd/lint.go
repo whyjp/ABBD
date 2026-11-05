@@ -86,7 +86,7 @@ func (e env) lint(pos []string) error {
 				fmt.Fprintf(e.stdout, "lint: kept the level of %s: %s\n", l.View, r)
 			}
 		}
-		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, placement %d, overflow %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["placement"], d.Ceilings["overflow"], store.Dir)
+		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, placement %d, overflow %d, detours %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["placement"], d.Ceilings["overflow"], d.Ceilings["detours"], store.Dir)
 		return nil
 	}
 	every := only == ""
@@ -153,7 +153,7 @@ func printLint(e env, r lintReport) {
 	}
 	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
 	if len(r.Ceilings) > 0 {
-		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, placement %d, overflow %d\n", r.Ceilings["weighed"], r.Ceilings["placement"], r.Ceilings["overflow"])
+		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
@@ -251,8 +251,8 @@ func totalsLine(t screen.Totals) string {
 			by = append(by, fmt.Sprintf("%s %d", c.ID, n))
 		}
 	}
-	return fmt.Sprintf("hard %d, target %d (%s); excess turns %d, placement %d, crossings %d, weighed %d; steps %d, jogs %d, phantoms %d, paths over 2 bends %d, traced bends %d, back %d",
-		t.Hard, t.Target, strings.Join(by, ", "), t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back)
+	return fmt.Sprintf("hard %d, target %d (%s); excess turns %d, placement %d, crossings %d, weighed %d; steps %d, jogs %d, phantoms %d, paths over 2 bends %d, traced bends %d, back %d, detours %d",
+		t.Hard, t.Target, strings.Join(by, ", "), t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Detours)
 }
 
 // plural is n with the noun, in the plural unless n is 1.

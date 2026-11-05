@@ -125,6 +125,10 @@ The terms are these.
 
   Each line that turns more is a breach, with its turns, its allowance, the turns in excess, and the obstacle or the reason. Measured over the fixtures, 1145 lines break B1. 728 of them have no step, since they turn twice where their ends allow 0. Orca's `src/` has such a spot at the `native/` chip, whose line to desktop main turns twice in a clear column. Only 3 lines stand in a column whose drop and corners are all blocked, so allowing them 2 where 4 is the fewest they can turn adds 6 excess turns.
 - **B2. No jogs.** Target. A jog is a stretch shorter than 24px between two turns (rule 16). Each line with one is a breach, allowed 0, with its turning points.
+- **B3. A line never rides past its turn and comes back.** Target. A line turns back where one stretch runs one way, the next crosses, and the one after runs back the other way, such as a line that runs right along a bus past the drop it needs, steps down a lane and runs back left to it. A hand-drawn line turns where it has to. Each line that turns back is a breach, allowed 0, with how many times and how far it rode past, the shorter of the two stretches that run against each other. Lines that share one turn-back, as the lines of one trunk do, count it once, on the first line traced along it. A back line, one that runs up to its end or leftward along its row, climbs out through a gutter and turns back by its nature, so rule 13 counts it and B3 leaves it out.
+- **B4. A line never runs as a doubled track beside itself.** Target. Two stretches of one traced line, or of two subpaths of one drawn bundle, that run the same way in parallel, apart but within 12px, for 24px or more read as one line drawn twice. Two stretches that run against each other are a turn-back, which B3 counts, and a pair of a bundle's subpaths along a pair a traced line already counts is that line's. Each line or bundle with such a pair is a breach, allowed 0, with how many pairs it has.
+
+  The **detours** of a drawing are the turn-backs B3 counts plus the pairs B4 counts. They have a ceiling of their own (What a change is weighed by). Most turn-backs on the fixtures rode around a row on a gutter rather than along one bus, and most of those along a bus came from where a departure trunk that runs on below steps down onto an arrival track: every pair of buses stepped down above its lead line's end, so its other lines rode past their own drops and came back. A pair now steps down on the trunk itself when every place on its arrival bus already reaches every place the trunk leads to below, so the join adds no phantom pair. Otherwise it steps down above its end, or at the clear x nearest it on the trunk's side, and a line whose end lies under the trunk where another pair steps down on it runs straight on down. On the 244 views of the fixtures that takes the detours from 159 to 137 and the weighed sum from 8086 to 7713 (`eval/lint/decisions.tsv` rows 67 to 75). No line runs beside itself. The turn-backs left ride around rows whose gaps between boxes are full, which is placement, not routing.
 
 The **excess turns** of a drawing are each line's turns past its B1 allowance, summed over the lines, plus every jog. They are the measure a change to the renderer lowers. They are not the steps of Staircases first. A step is a turn past a line's second, whatever its ends allow, so a line that turns twice in a clear column has no step and 2 excess turns, and a line between columns that turns 4 times around an obstacle has 2 steps and no excess turn. `abbd lint` still reports the steps, beside the excess turns.
 
@@ -168,8 +172,9 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 5. The phantom pairs and the climbing lines have no ceiling of their own. J3 holds the phantoms at their debt, and rule 13 bounds the climbing lines.
 6. Any view whose weighed sum rises by more than 8 needs a look by eye, even when the totals fall. `eval/lint/compare.py` lists those views.
 7. After each kept change, `abbd lint --record` lowers the debts and the ceilings to what the drawings measure. It never raises a ceiling. A total the gate lets pass its ceiling, as the placement debt may by 2%, keeps the ceiling it had, so the slack cannot ratchet a ceiling up one kept change at a time. Raising a ceiling is an edit to the file that a review sees.
+8. The detours (B3, B4) stay at or under their ceiling. A line that rides past its turn and comes back, or runs beside itself, is what a person polishing the drawing by hand removes first, so no change may add one, whatever it saves elsewhere.
 
-`abbd lint` checks the first three over every view and fails when one breaks. With a VIEW it checks only the first. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. When the criteria were set, the fixtures' 274 views measured as follows.
+`abbd lint` checks the first three and the eighth over every view and fails when one breaks. With a VIEW it checks only the first. `TestLintFixtures` checks each fixture against its own `.abbd/lint-debt.yaml`, and fails as well when a debt or a ceiling stands above what the fixture measures, so a kept change always lowers them. When the criteria were set, the fixtures' 274 views measured as follows.
 
 | Total | Fixtures | Gate |
 | --- | --- | --- |
@@ -185,6 +190,7 @@ The **excess turns** of a drawing are each line's turns past its B1 allowance, s
 | jogs | 408 | in the excess turns |
 | traced bends | 4960 | tie-breaker |
 | paths that turn more than twice | 417 | tie-breaker |
+| detours (B3, B4) | 159 on the 244 views of the fixtures with the routing before the step rule | the ceiling, per fixture |
 | phantom pairs | 52 | J3 |
 | climbing lines | 74 | rule 13 |
 

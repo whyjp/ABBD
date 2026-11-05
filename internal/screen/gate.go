@@ -27,6 +27,7 @@ var gated = []struct {
 }{
 	{"weighed", func(t Totals) int { return t.Weighed }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
+	{"detours", func(t Totals) int { return t.Detours }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).
 	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
 }

@@ -127,3 +127,69 @@ func TestAClimbOutsideACycleIsHard(t *testing.T) {
 		t.Fatalf("%+v; want the climb that closes a cycle allowed", got)
 	}
 }
+
+// A line that rides right past the x of its drop, steps down a lane, and
+// comes back left turns back (B3) once. Its two lanes run against each
+// other, so they are that turn-back and not a doubled track (B4). The same
+// line stepping down above its drop does neither.
+func TestALineThatRidesPastItsTurnTurnsBack(t *testing.T) {
+	boxes := []string{"A 40 0 60 20", "B 80 160 60 20"}
+	rels := [][2]string{{"A", "B"}}
+	past := lookAt(t, boxes, `<path class="w contract" d="M60 20 V80 H200 V88 H110 V160"/>`, rels)
+	if got := past.noTurnBacks(); len(got) != 1 || got[0].Got != 1 || !strings.Contains(got[0].Text, "riding 90px") {
+		t.Fatalf("%+v; want one turn back, riding 90px past", got)
+	}
+	if got := past.noDoubles(); len(got) != 0 {
+		t.Fatalf("%+v; want the turn-back's two lanes left to B3", got)
+	}
+	above := lookAt(t, boxes, `<path class="w contract" d="M60 20 V80 H110 V160"/>`, rels)
+	if got := append(above.noTurnBacks(), above.noDoubles()...); len(got) != 0 {
+		t.Fatalf("%+v; want no detour", got)
+	}
+}
+
+// Two subpaths of one drawn bundle that run the same way 8px apart for
+// 40px read as one line drawn twice (B4). Run against each other they do
+// not: that is a turn-back's shape, which B3 counts on a line.
+func TestABundleBesideItselfIsDoubled(t *testing.T) {
+	boxes := []string{"A 40 0 60 20", "B 40 160 60 20"}
+	same := lookAt(t, boxes, `<path class="w contract" d="M150 40 H190 M150 48 H190"/>`, nil)
+	if got := same.noDoubles(); len(got) != 1 || got[0].Got != 1 || !strings.Contains(got[0].Text, "bundle") {
+		t.Fatalf("%+v; want the bundle beside itself once", got)
+	}
+	against := lookAt(t, boxes, `<path class="w contract" d="M150 40 H190 M190 48 H150"/>`, nil)
+	if got := against.noDoubles(); len(got) != 0 {
+		t.Fatalf("%+v; want subpaths that run against each other left alone", got)
+	}
+}
+
+// A line that climbs from a box to one above it leaves downward, runs
+// round through the gutter and comes down into its end, so it turns back
+// by its nature. Rule 13 counts it as a back line, and B3 leaves it out.
+func TestAClimbIsNotATurnBack(t *testing.T) {
+	boxes := []string{"A 40 0 60 20", "B 40 160 60 20"}
+	l := lookAt(t, boxes, `<path class="w contract" d="M70 180 V200 H10 V-20 H70 V0"/>`, [][2]string{{"B", "A"}})
+	if len(l.trace.Ways) == 0 || !backWay(l.trace.Ways[0].pts) {
+		t.Fatalf("%+v; want the climb traced as a back line", l.trace.Ways)
+	}
+	if got := l.noTurnBacks(); len(got) != 0 {
+		t.Fatalf("%+v; want no turn-back on a climb", got)
+	}
+}
+
+// Two lines that share one turn-back, as the lines of one trunk do, count
+// it once.
+func TestASharedTurnBackCountsOnce(t *testing.T) {
+	boxes := []string{"A 40 0 60 20", "B 80 160 40 20", "C 160 160 40 20"}
+	l := lookAt(t, boxes, `<path class="w contract" data-net="1" d="M60 20 V80 H240 V88 H100 V160"/><path class="w contract" data-net="1" d="M180 88 V160"/>`, [][2]string{{"A", "B"}, {"A", "C"}})
+	if len(l.trace.Ways) != 2 {
+		t.Fatalf("%+v; want both lines traced", l.trace.Ways)
+	}
+	n := 0
+	for _, b := range l.noTurnBacks() {
+		n += b.Got
+	}
+	if n != 1 {
+		t.Fatalf("%d turn-backs; want the shared one counted once", n)
+	}
+}

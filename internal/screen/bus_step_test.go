@@ -66,3 +66,22 @@ func TestAStepOntoAnArrivalTrackTakesAClearX(t *testing.T) {
 		t.Errorf("nothing clear: steps at %d, want the trunk's 500", got)
 	}
 }
+
+// The lines of trunk 0 bound for arrival bus 1 may step down on the trunk
+// only when every place on that bus reaches every place the trunk leads to
+// below. T rides bus 1 too and does not reach D, so the join would show a
+// relation from T to D that is not there.
+func TestAJoinThatShowsAMissingRelationIsHarmful(t *testing.T) {
+	e := func(n string) end { return end{node: n} }
+	reqs := []wireReq{{from: e("S"), to: e("A")}, {from: e("S"), to: e("D")}, {from: e("T"), to: e("A")}}
+	plans := []plan{{dep: 0, arr: 1, ride: 0, gaps: []int{2}}, {dep: 0, arr: -1, ride: 1, gaps: []int{2, 4}}, {dep: -1, arr: 1, gaps: []int{2}}}
+	buses := []*bus{{members: []int{0, 1}}, {members: []int{0, 2}, arrive: true}}
+	reach := map[[2]string]bool{{"S", "A"}: true, {"S", "D"}: true, {"T", "A"}: true}
+	if joinsHarmless(reach, reqs, plans, buses, 0, 1, 2) {
+		t.Fatal("want the join refused: T does not reach D")
+	}
+	reach[[2]string{"T", "D"}] = true
+	if !joinsHarmless(reach, reqs, plans, buses, 0, 1, 2) {
+		t.Fatal("want the join allowed once T reaches D")
+	}
+}

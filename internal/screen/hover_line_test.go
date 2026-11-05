@@ -507,11 +507,12 @@ func TestEveryRealDrawingTakesPart(t *testing.T) {
 
 // hairpins is how many lines ride a bus past the stub or drop they leave
 // it by, step to another track and come back along it, so their ink and
-// their route double back. In the ripgrep overview, grep's line to
-// grep-regex runs right along y=244 to the trunk at x=724 and back left
-// along y=252 to x=519. It is a routing defect that hover shows rather
-// than hides, a known count that may only fall.
-const hairpins = 40
+// their route double back. Most are a chip's line that steps 8 down beside
+// the chip and comes back (pstack's /swarm focus). In orca's shared types
+// page CFG-0006's line runs right along y=62 to x=385 and back left along
+// y=82 to x=181. It is a routing defect that hover shows rather than
+// hides, a known count that may only fall.
+const hairpins = 15
 
 func TestFewLinesDoubleBack(t *testing.T) {
 	n := 0

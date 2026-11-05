@@ -74,6 +74,9 @@ type Totals struct {
 	// Weighed is the crossings plus stepCrossings for each excess turn, so
 	// a turn saved may cost at most stepCrossings crossings.
 	Weighed int `json:"weighed"`
+	// Detours are the times lines turn back (B3) plus the pairs of
+	// stretches that run beside their own line or bundle (B4).
+	Detours int `json:"detours"`
 }
 
 // Sum adds up the totals of several views.
@@ -84,6 +87,7 @@ func Sum(views []ViewLint) Totals {
 		t.Hard, t.Target, t.ExcessTurns, t.Placement = t.Hard+o.Hard, t.Target+o.Target, t.ExcessTurns+o.ExcessTurns, t.Placement+o.Placement
 		t.Steps, t.Jogs, t.Crossings = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
+		t.Detours += o.Detours
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -119,6 +123,8 @@ var criteria = []Criterion{
 	{ID: "P2", Placement: true, Says: "boxes used by exactly the same places stand in one row", check: (*look).siblingsInARow},
 	{ID: "B1", Says: "a line turns 0 times within a column whose straight drop is clear and 2 when it is blocked, 2 between columns and 4 when every corner is blocked, 4 between ends that share a row", check: (*look).bendsAllowed},
 	{ID: "B2", Says: "no stretch between two turns of a line is shorter than 24px", check: (*look).noJogs},
+	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
+	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
 	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
 	{ID: "J2", Hard: true, Says: "every split and merge carries a dot (rule 17)", check: (*look).dotted},
 	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins (rule 18)", check: (*look).noPhantoms},
@@ -253,6 +259,9 @@ func lintView(v view) (ViewLint, error) {
 			}
 			if c.Placement {
 				vl.Totals.Placement++
+			}
+			if c.ID == "B3" || c.ID == "B4" {
+				vl.Totals.Detours += b.Got
 			}
 		}
 	}
@@ -655,6 +664,168 @@ func (l *look) noJogs() []Breach {
 		}
 	}
 	return out
+}
+
+// B3. A line turns back where a stretch runs one way, the next stretch
+// crosses, and the one after runs back the other way: it rode past the
+// turn it needed and came back on a lane beside its own. Each breach gives
+// how many times the line turns back and how far it rode past, the shorter
+// of the two stretches that run against each other. Lines that share a
+// turn-back, as the lines of one trunk do, count it once, on the first
+// line traced along it. A back line, which runs up or leftward to its end,
+// climbs out through a gutter beside its row and turns back by its nature,
+// so rule 13 counts it and B3 does not.
+func (l *look) noTurnBacks() []Breach {
+	var out []Breach
+	seen := map[[2]fpt]bool{}
+	for _, w := range l.trace.Ways {
+		if backWay(w.pts) {
+			continue
+		}
+		n, past := 0, 0.0
+		for _, tb := range turnsBack(w.pts) {
+			if !seen[tb.step] {
+				seen[tb.step] = true
+				n++
+				past += tb.past
+			}
+		}
+		if n > 0 {
+			out = append(out, Breach{Items: l.itemsOf(w.from, w.to), Got: n, Allowed: 0,
+				Text: fmt.Sprintf("the line from %s to %s turns back %s, riding %.0fpx past its turn, at %s", l.shapeName(w.from), l.shapeName(w.to), plural(n, "time"), past, pointList(w.pts))})
+		}
+	}
+	return out
+}
+
+// backWay says a path runs against the reading direction, up to its end or
+// leftward along one row, as rule 13's back lines do.
+func backWay(pts []fpt) bool {
+	a, b := pts[0], pts[len(pts)-1]
+	dy, dx := b.y-a.y, b.x-a.x
+	return !(dy > 2 || math.Abs(dy) <= 2 && dx >= 0)
+}
+
+// turnBack is one place a path runs back against the stretch two before:
+// the stretch that crosses between them, and how far it rode past.
+type turnBack struct {
+	step [2]fpt
+	past float64
+}
+
+// turnsBack lists where a path of turning points runs back against the
+// stretch two before.
+func turnsBack(pts []fpt) []turnBack {
+	var out []turnBack
+	for i := 0; i+3 < len(pts); i++ {
+		a, b := dirOf(pts[i], pts[i+1]), dirOf(pts[i+2], pts[i+3])
+		if a.x == -b.x && a.y == -b.y {
+			out = append(out, turnBack{[2]fpt{pts[i+1], pts[i+2]}, math.Min(dist(pts[i], pts[i+1]), dist(pts[i+2], pts[i+3]))})
+		}
+	}
+	return out
+}
+
+// doubleGap is how close two parallel stretches of one line run before a
+// reader sees one doubled line, and jogLen how long they must run so.
+const doubleGap = 12.0
+
+// B4. A doubled track is two stretches of one traced line, or of one drawn
+// bundle, that run the same way side by side closer than doubleGap for
+// jogLen or more: a reader sees the line twice. Two stretches that run
+// against each other are a turn-back, which B3 counts. A pair of a
+// bundle's subpaths along a pair a traced line already counts is that
+// line's. Each breach gives how many such pairs the line or bundle has.
+func (l *look) noDoubles() []Breach {
+	var out []Breach
+	var counted [][2][2]fpt
+	for _, w := range l.trace.Ways {
+		segs, n := stretches(w.pts), 0
+		for i := range segs {
+			for _, q := range segs[i+1:] {
+				if sideBySide(segs[i], q) {
+					counted = append(counted, [2][2]fpt{segs[i], q})
+					n++
+				}
+			}
+		}
+		if n > 0 {
+			out = append(out, Breach{Items: l.itemsOf(w.from, w.to), Got: n, Allowed: 0,
+				Text: fmt.Sprintf("the line from %s to %s runs beside itself %s, at %s", l.shapeName(w.from), l.shapeName(w.to), plural(n, "time"), pointList(w.pts))})
+		}
+	}
+	// A bundle's own subpaths beside each other: a stroke beside itself is
+	// its line's, which the trace counts above.
+	groups := map[int][]int{}
+	for k, st := range l.s.strokes {
+		groups[st.group] = append(groups[st.group], k)
+	}
+	for _, g := range indexes(groups) {
+		n := 0
+		for i, a := range groups[g] {
+			for _, b := range groups[g][i+1:] {
+				for _, p := range stretches(l.s.strokes[a].pts) {
+					for _, q := range stretches(l.s.strokes[b].pts) {
+						if sideBySide(p, q) && !slices.ContainsFunc(counted, func(c [2][2]fpt) bool {
+							return onStretch(p, c[0]) && onStretch(q, c[1]) || onStretch(p, c[1]) && onStretch(q, c[0])
+						}) {
+							n++
+						}
+					}
+				}
+			}
+		}
+		if n > 0 {
+			out = append(out, Breach{Got: n, Allowed: 0, Text: fmt.Sprintf("a drawn bundle runs beside itself %s", plural(n, "time"))})
+		}
+	}
+	return out
+}
+
+// stretches are the straight pieces of a path of points.
+func stretches(pts []fpt) [][2]fpt {
+	var out [][2]fpt
+	for i := 1; i < len(pts); i++ {
+		out = append(out, [2]fpt{pts[i-1], pts[i]})
+	}
+	return out
+}
+
+// sideBySide says two straight stretches run the same way in parallel,
+// apart but closer than doubleGap, over jogLen or more.
+func sideBySide(p, q [2]fpt) bool {
+	if dirOf(p[0], p[1]) != dirOf(q[0], q[1]) {
+		return false
+	}
+	ph, qh := math.Abs(p[0].y-p[1].y) < 0.5, math.Abs(q[0].y-q[1].y) < 0.5
+	pv, qv := math.Abs(p[0].x-p[1].x) < 0.5, math.Abs(q[0].x-q[1].x) < 0.5
+	var gap, run float64
+	switch {
+	case ph && qh:
+		gap, run = math.Abs(p[0].y-q[0].y), spanOf(p[0].x, p[1].x, q[0].x, q[1].x)
+	case pv && qv:
+		gap, run = math.Abs(p[0].x-q[0].x), spanOf(p[0].y, p[1].y, q[0].y, q[1].y)
+	default:
+		return false
+	}
+	return gap > 0.5 && gap < doubleGap+0.5 && run >= jogLen
+}
+
+// onStretch says the stretch p lies on the line of the stretch q and shares
+// jogLen or more of it.
+func onStretch(p, q [2]fpt) bool {
+	switch {
+	case math.Abs(p[0].y-p[1].y) < 0.5 && math.Abs(q[0].y-q[1].y) < 0.5 && math.Abs(p[0].y-q[0].y) < 0.5:
+		return spanOf(p[0].x, p[1].x, q[0].x, q[1].x) >= jogLen
+	case math.Abs(p[0].x-p[1].x) < 0.5 && math.Abs(q[0].x-q[1].x) < 0.5 && math.Abs(p[0].x-q[0].x) < 0.5:
+		return spanOf(p[0].y, p[1].y, q[0].y, q[1].y) >= jogLen
+	}
+	return false
+}
+
+// spanOf is how far the spans a..b and c..d overlap.
+func spanOf(a, b, c, d float64) float64 {
+	return math.Min(math.Max(a, b), math.Max(c, d)) - math.Max(math.Min(a, b), math.Min(c, d))
 }
 
 // position places a height among the rows: 2k+1 inside row k, 2k in the
