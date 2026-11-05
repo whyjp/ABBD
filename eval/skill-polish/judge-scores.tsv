@@ -8,3 +8,30 @@ httpie	it3	3.67	2.00	3.00	1.67	2.00	1.67	2.33	3	3	runtime page is a lattice of a
 storefront	base	3.33	4.00	3.33	3.67	2.33	2.67	3.22	2	2	overview is three folders without the Shopify backend
 storefront	it2	3.33	2.33	3.33	1.67	2.67	2.00	2.56	3	3	staircase spaghetti overview at mixed levels
 storefront	it3	4.00	3.00	3.33	3.33	2.67	3.00	3.22	4	1	overview import bus with stair jogs, part pages drop their chips
+gin	base@4a	2.00	2.67	2.67	2.67	2.33	2.33	2.44	2	2	-
+gin	base@4b	2.67	2.33	2.67	2.67	2.67	2.33	2.56	2	2	-
+gin	base@4	2.33	2.50	2.67	2.67	2.50	2.33	2.50	2.00	2	render module page draws nothing
+gin	it3@4a	3.67	2.67	2.67	2.00	2.67	2.00	2.61	3	1	-
+gin	it3@4b	3.67	2.67	3.00	2.67	3.00	2.67	2.94	3	1	-
+gin	it3@4	3.67	2.67	2.83	2.33	2.83	2.33	2.77	3.00	1	shared runtime page too dense to follow its lines
+gin	it4@4a	2.33	2.67	2.33	2.00	2.33	2.00	2.28	2	3	-
+gin	it4@4b	2.00	2.33	2.33	2.00	2.33	2.00	2.17	2	3	-
+gin	it4@4	2.17	2.50	2.33	2.00	2.33	2.00	2.22	2.00	3	Context module page draws nothing; 6 of 7 pages under 2 boxes
+httpie	base@4a	2.33	3.33	2.67	2.67	2.00	2.00	2.50	2	1	-
+httpie	base@4b	3.33	3.00	3.00	2.67	2.67	2.33	2.83	3	2	-
+httpie	base@4	2.83	3.17	2.83	2.67	2.33	2.17	2.67	2.50	1	overview is a package dump, manager page nearly empty
+httpie	it3@4a	3.67	2.00	3.00	1.67	1.67	1.67	2.28	3	3	-
+httpie	it3@4b	3.33	2.00	2.33	1.67	1.67	1.67	2.11	1	3	-
+httpie	it3@4	3.50	2.00	2.67	1.67	1.67	1.67	2.19	2.00	3	runtime page is a lattice of lines from many chips
+httpie	it4@4a	3.67	2.33	2.67	1.67	2.67	1.67	2.44	3	2	-
+httpie	it4@4b	4.00	2.67	3.00	1.67	3.00	2.33	2.78	3	1	-
+httpie	it4@4	3.83	2.50	2.83	1.67	2.83	2.00	2.61	3.00	2	http program page too dense to follow its lines
+storefront	base@4a	2.67	4.00	3.00	2.67	2.00	2.33	2.78	2	3	-
+storefront	base@4b	3.00	3.67	3.00	3.33	2.00	2.67	2.94	2	3	-
+storefront	base@4	2.83	3.83	3.00	3.00	2.00	2.50	2.86	2.00	3	overview is three folder boxes (app, components, lib)
+storefront	it3@4a	4.00	4.00	3.67	3.33	2.00	2.67	3.28	3	2	-
+storefront	it3@4b	3.33	3.33	3.67	3.33	2.33	2.67	3.11	3	2	-
+storefront	it3@4	3.67	3.67	3.67	3.33	2.17	2.67	3.19	3.00	2	overview lines staircase, labels generic
+storefront	it4@4a	4.00	4.33	3.67	3.33	3.33	3.67	3.72	4	1	-
+storefront	it4@4b	4.00	4.00	3.00	3.33	3.00	3.33	3.44	4	1	-
+storefront	it4@4	4.00	4.17	3.33	3.33	3.17	3.50	3.58	4.00	1	overview lines run as stepped buses

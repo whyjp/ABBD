@@ -10,3 +10,7 @@ it3	a2611d7	all	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	kept as the working base, not 
 base	a0a792f	gin	2.56	-	-	3	-	2	1	17	124	0	0	8	7	11	5	0	0	reference
 base	a0a792f	httpie	2.67	-	-	2	-	2	7	65	348	4	7	22	7	25	3	2	0	reference
 base	a0a792f	storefront	3.22	-	-	2	-	2	1	57	399	7	0	28	3	8	6	2	0	reference
+it4	0b83eca	gin	2.22	2.50	-0.28	2.0	2.0	3	0	38	256	0	0	15	7	13	6	0	0	loss: judge mean 2.22 against base 2.50 and it3 2.77 (passes 2.28/2.17); 6 of 7 module pages under 2 boxes, so the Context page draws nothing
+it4	0b83eca	httpie	2.61	2.67	-0.06	3.0	2.5	2	2	254	1733	37	1	32	5	10	1	0	0	tie with base inside noise: 2.61 against 2.67 (passes 2.44/2.78, disagreement 0.34); beats it3 2.19; lines stay at 1.67
+it4	0b83eca	storefront	3.58	2.86	+0.72	4.0	2.0	1	0	49	373	5	0	18	7	13	2	0	0	win: 3.58 against base 2.86 and it3 3.19, first in both passes (3.72/3.44); labels 2.17 to 3.17
+it4	0b83eca	all	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	rejected and reverted in f89ca26: two blind Opus passes (seeds 4101, 7919), averaged; beats base and it3 in 1 of 3 (storefront), ties base on httpie, loses gin by 0.28 to base and 0.55 to it3, more than the largest pass disagreement of 0.34 (mean 0.22); base row means here are the @4 averages in judge-scores.tsv, not the earlier single pass
