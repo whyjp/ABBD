@@ -20381,7 +20381,63 @@
                 "Code": true
               },
               {
-                "Text": " holds src/'s bottom edge to it. ",
+                "Text": " holds src/'s bottom edge to it. A ",
+                "Code": false
+              },
+              {
+                "Text": "gather",
+                "Code": true
+              },
+              {
+                "Text": " tactic, plain and median, draws one chip per box and edge for the modules outside that meet that box with no contract (a port keyed by ",
+                "Code": false
+              },
+              {
+                "Text": "gatherPort",
+                "Code": true
+              },
+              {
+                "Text": " and the box, a key no title, label or link shows), named while the names fit ",
+                "Code": false
+              },
+              {
+                "Text": "gatheredPx",
+                "Code": true
+              },
+              {
+                "Text": " and the label fits one line, cut only between names and counted as ",
+                "Code": false
+              },
+              {
+                "Text": "+N",
+                "Code": true
+              },
+              {
+                "Text": " past that, so each box takes one line from the frame. Each gathered line keeps the tooltip line and evidence of every line it gathers, said with its real far end, and a chip that gathers one module links to that module's view. It is drawn only where some outside module meets two or more boxes, ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " passes over it where it crosses more than the least of the ungathered drawings, and a gathered view's focus views gather the same way (",
+                "Code": false
+              },
+              {
+                "Text": "Inside.gathered",
+                "Code": true
+              },
+              {
+                "Text": "); ",
+                "Code": false
+              },
+              {
+                "Text": "gather_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds it. ",
                 "Code": false
               },
               {
@@ -20659,7 +20715,31 @@
                 "Code": true
               },
               {
-                "Text": " compares every pair of strands. ",
+                "Text": " compares every pair of strands. A line between two modules that use each other reads both ways, so two of them bundled at one box would join their far ends. Where some do (",
+                "Code": false
+              },
+              {
+                "Text": "bundlesPairs",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " also draws the view with each such line on buses of its own pair, and keeps that drawing unless ",
+                "Code": false
+              },
+              {
+                "Text": "costOf",
+                "Code": true
+              },
+              {
+                "Text": " finds it breaks more of rules 13 and 15; the checker's rule 4 counts each such line as a bundle of its own. ",
                 "Code": false
               },
               {

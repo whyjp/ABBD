@@ -1,10 +1,11 @@
 # What the drawings owe the drawing criteria of docs/blueprint-svg.md.
 # abbd lint fails on a hard breach past its view's debt, on a weighed sum
 # past its ceiling, and on a placement debt more than 2% past its ceiling.
-# abbd lint --record writes this file from what the drawings measure now.
+# abbd lint --record writes this file from what the drawings measure now,
+# and levels from each --keep-level VIEW=REASON.
 ceilings:
-    placement: 44
-    weighed: 1283
+    placement: 41
+    weighed: 1247
 debt:
     MOD-0047 internal/topology:
         R: 1

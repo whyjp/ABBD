@@ -74,3 +74,60 @@ By set mean, all three passes rank it5, it3, base on gin and base, it5, it3 on h
 it5 is kept under the paired rule. It changes only the renderer, and it draws it3's runs, so it is judged against it3. It raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged. Lines (c4) and every other criterion except overall (c6) score the same as it3's, and c6 rises by 0.11 on gin and storefront. Its mean gain over it3 is 0.09, 0.06 and 0.22.
 
 Under the fresh-run rule it would have been rejected, and it was first reverted in 79f1779 on that ground. It beats base and it3 on gin and storefront, but loses httpie to base by 0.26, more than the largest pass disagreement there (0.17). That gap is it3's topology, which it5 draws unchanged, so it measures it3 against base, not the label rule. f0d42b1 undid that revert.
+
+## Iteration 6
+
+it6 is a renderer-only change, so it is judged under the paired rule against it5: the it5 runs (`w8/*-it5`) copied to `w9/*-it6` and synced with the it6 binary, the same 9 pages screenshotted the same way.
+
+The criteria it targets, named before any judge runs, are lines (c4) and density (c2). In rounds 3 to 5 every blind judge named the same two defects in all three repositories:
+
+- On the overview, lines merge into shared orange buses that read as joining modules that do not relate, with staircases near the bus and long detours round the right edge. Lint counts the false joins as J3 phantoms: 12 on gin's overview and 7 on httpie's.
+- On part pages, the lines to the frame's chips tangle the page while the boxes inside are few: gin's shared runtime draws about 25 lines from 6 chips into 5 boxes, httpie's runtime 13 chips, and httpie's program entry 18 arriving lines.
+
+Each hypothesis is measured on the fixture lint gate and on the held-out re-renders, and logged in `eval/lint/decisions.tsv`. It is kept only if it lowers crossings, phantoms or excess turns on the re-renders without raising hard breaches on the fixtures.
+
+Two hypotheses were kept (rows 55 and 56 of `eval/lint/decisions.tsv`). The before numbers are the it5 runs re-rendered with main's binary (a4390c5), the after numbers the `w9/*-it6` runs, drawn by 2b922df.
+
+- Two-headed lines apart (6c2e890). Every J3 phantom on the gin and httpie overviews ran along two lines between modules that use each other, bundled at one box. Each such line is a start and a head at both ends, so the bundle joined their far ends. Each now runs on buses of its own pair, unless that breaks more of rules 13 and 15, as on pstack's overview, which stays bundled.
+- Gathered chips (2b922df). A part view may draw one chip per box and edge for the modules outside that meet that box with no contract, instead of one chip per module, so each box takes one line from the frame. choose keeps that drawing only where it crosses no more than the others.
+
+| view | before: phantoms, crossings, excess turns, weighed | after |
+|---|---|---|
+| gin overview | 12, 6, 48, 198 | 0, 14, 42, 182 |
+| httpie overview | 7, 15, 95, 395 | 0, 26, 90, 386 |
+| gin shared runtime | 0, 3, 59, 239 | 0, 1, 26, 105 |
+| httpie runtime and shared types | 0, 26, 124, 522 | 0, 0, 57, 228 |
+| httpie program entry | 0, 0, 19, 76 | 0, 0, 11, 44 |
+| gin, every view | 12, 11, 267, 1079 (hard 12) | 0, 17, 129, 533 (hard 0) |
+| httpie, all views | 7, 43, 412, 1691 (hard 10) | 0, 26, 243, 998 (hard 2) |
+| storefront, all views | 0, 4, 61, 248 | the same, byte for byte |
+
+The overviews cross more: each two-headed line now crosses the rows on its own track. gin's routing page is no longer dense, so its 3 focus views are gone. On the fixtures, hard breaches stay at 61 and no view gains one. Over the 244 views both drawings hold, the weighed sum falls from 9812 to 8116 and placement from 326 to 252. Five views are no longer dense, so their 30 focus views are gone. Every fixture ceiling went down, none up. `shots/it6-*.png` are the after pages, and `shots/it5-gin-MOD-0027.png` and `shots/it5-httpie-MOD-0003.png` the part pages before.
+
+Three fresh Opus judges scored base, it5 and it6 in one pass each, from the prompts and blind keys `judge-prompt-6a` to `6c` and `review6a-key.json` to `review6c-key.json`, under blind seeds 61, 62 and 63. Rows `@6a`, `@6b` and `@6c` in `judge-scores.tsv` are the passes and `@6` their average. Averaged means, with the passes in brackets:
+
+| repo | base | it5 | it6 |
+|---|---|---|---|
+| gin | 2.55 (2.33, 2.61, 2.72) | 3.17 (3.33, 3.11, 3.06) | 3.44 (3.72, 3.28, 3.33) |
+| httpie | 2.68 (2.61, 2.61, 2.83) | 2.33 (2.50, 2.11, 2.39) | 2.80 (3.11, 2.50, 2.78) |
+| storefront | 3.11 (3.22, 3.11, 3.00) | 3.46 (3.61, 3.22, 3.56) | 3.45 (3.56, 3.22, 3.56) |
+
+The named criteria, averaged over the passes:
+
+| repo | c2 density, it5 to it6 | c4 lines, it5 to it6 |
+|---|---|---|
+| gin | 3.00 to 3.56 | 2.67 to 3.11 |
+| httpie | 2.00 to 2.67 | 1.67 to 2.44 |
+| storefront | 4.00 to 4.00 | 3.33 to 3.33 |
+
+it6 is kept under the paired rule. c2 and c4 rise on gin and httpie in every pass, and hold on storefront, whose drawings it6 leaves byte for byte as they were. All three passes rank it6 first on gin. On httpie every pass puts it6 above it5, and two of them put base first, so it6's mean gain over base there (+0.12) is inside the passes' disagreement. Every other criterion holds or rises on gin and httpie.
+
+The one criterion that falls is labels (c5) on storefront, from 3.11 to 3.00, inside the cell's pass disagreement (0 to -0.33). It does not come from it6. `shots5` were drawn by the kit5 binary, which predates PR #100's fix round, and that round's label fallback put more generic 임포트 labels on storefront's overview, which two judges named. it5's and it6's storefront drawings differ only by that fallback.
+
+Defects the passes still name:
+
+- httpie's overview is a hairball that runs past the 1600px viewport.
+- storefront's part pages draw no outside chips, so the ui kit and the shopify client pages show nothing of what meets them, and its overview runs one orange bus through unrelated pages.
+- gin's overview lines climb into request context, and generic 임포트 labels remain on httpie and storefront.
+
+A review of PR #101 then found the gathered wires' tooltips named only the first module they gather, the gathered chips lost their links, and the chip's 24-rune name cap let Hangul names wrap. 7111bdd fixes all three. On the held-out runs that changes tooltips and links only, so the judged pages are unchanged.

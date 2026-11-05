@@ -47,9 +47,9 @@ func (w weight) beats(o weight) bool {
 // its steps.
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
-	// hard, seen and linted are what abbd lint reads from the drawn view
-	// (judge).
-	hard, seen, linted int
+	// hard, seen, linted and crossed are what abbd lint reads from the
+	// drawn view (judge), crossed its crossings.
+	hard, seen, linted, crossed int
 	// moved counts the placement breaches and folded chips.
 	moved int
 }
@@ -78,7 +78,7 @@ func (c *cost) judge(d Drawing) {
 			moved++
 		}
 	}
-	c.hard, c.moved = t.Hard, moved
+	c.hard, c.moved, c.crossed = t.Hard, moved, t.Crossings
 	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
 	c.linted = t.Weighed + stepCrossings*moved
 }
@@ -177,11 +177,13 @@ const laneMoves = 1
 // than the least of the unlaned ones, or whose weighed sum passes the least
 // of theirs, is passed over, however few its steps. Both bounds are mins
 // over the unlaned drawings judge read; one the touches and breaks passed
-// over sets neither.
+// over sets neither. A gathered drawing that crosses more than the least of
+// the ungathered ones is passed over too: its chips stand over their boxes,
+// so it should only spare crossings, never add them to save turns.
 func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
-	least, plain := 1<<20, 1<<20
+	least, plain, crossed := 1<<20, 1<<20, 1<<20
 	for i, t := range tactics {
 		var c cost
 		v, ok := draw(t, &c)
@@ -192,6 +194,11 @@ func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, re
 			continue
 		}
 		judge(v, &c)
+		if !t.gather {
+			crossed = min(crossed, c.crossed)
+		} else if c.crossed > crossed {
+			continue
+		}
 		if !t.laned {
 			least, plain = min(least, c.moved), min(plain, c.linted-stepCrossings*c.moved)
 		} else if c.moved > least+laneMoves || c.linted-stepCrossings*c.moved > plain {

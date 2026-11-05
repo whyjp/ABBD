@@ -122,21 +122,66 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 	return keys
 }
 
-// route draws every request. Where lines could share arrival buses, it
+// route draws every request. Lines between modules that use each other,
+// bundled, read both ways and join every pair of their far ends (rule 18),
+// so they are drawn apart, on buses of their own pair, unless that runs a
+// line out of its way past rule 15 or back past rule 13, which bundling
+// spares.
+func (l *layout) route(reqs []wireReq) routing {
+	if !bundlesPairs(reqs) {
+		return l.routeOnce(reqs, false)
+	}
+	before := l.keep()
+	apart := l.routeOnce(reqs, true)
+	after := l.keep()
+	*l = before
+	bundled := l.routeOnce(reqs, false)
+	if costOf(apart, reqs).breaks <= costOf(bundled, reqs).breaks {
+		*l = after
+		return apart
+	}
+	return bundled
+}
+
+// bundlesPairs says some two lines between modules that use each other
+// leave or reach one box toward different places, so bundling them would
+// join those places.
+func bundlesPairs(reqs []wireReq) bool {
+	far := map[string]string{}
+	for _, r := range reqs {
+		if r.kind != "mutual" {
+			continue
+		}
+		for _, e := range [][2]string{{place(r.from), place(r.to)}, {place(r.to), place(r.from)}} {
+			if o, ok := far[e[0]]; ok && o != e[1] {
+				return true
+			}
+			far[e[0]] = e[1]
+		}
+	}
+	return false
+}
+
+// keep is a copy of the layout to restore: lay sets the gaps and rows
+// afresh, and the boxes' y in place.
+func (l *layout) keep() layout {
+	k := *l
+	k.pos = maps.Clone(l.pos)
+	return k
+}
+
+// routeOnce draws every request. Where lines could share arrival buses, it
 // draws the view both ways and keeps the shared buses only when they spare
 // the reader turns and cost nothing else, as weigh measures it. weigh
 // compares every pair of strands, so a view with more than shareMost
 // requests keeps the plain drawing rather than pay for that.
-func (l *layout) route(reqs []wireReq) routing {
-	plain := l.lay(reqs, false)
+func (l *layout) routeOnce(reqs []wireReq, apart bool) routing {
+	plain := l.lay(reqs, false, apart)
 	if !plain.shares || len(reqs) > shareMost {
 		return plain
 	}
-	// lay sets the gaps and rows afresh, and the boxes' y in place, so the
-	// plain drawing's layout is kept to restore.
-	kept := *l
-	kept.pos = maps.Clone(l.pos)
-	if shared := l.lay(reqs, true); weigh(shared, reqs).beats(weigh(plain, reqs)) {
+	kept := l.keep()
+	if shared := l.lay(reqs, true, apart); weigh(shared, reqs).beats(weigh(plain, reqs)) {
 		return shared
 	}
 	*l = kept
@@ -156,8 +201,9 @@ type routing struct {
 }
 
 // lay draws every request, with shared arrival buses where shared allows
-// them.
-func (l *layout) lay(reqs []wireReq, shared bool) routing {
+// them, and with each line between modules that use each other on buses of
+// its own pair where apart says so.
+func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -211,6 +257,12 @@ func (l *layout) lay(reqs []wireReq, shared bool) routing {
 		}
 		dk.key += "|" + r.kind
 		ak.key += "|" + r.kind
+		// A line between two modules that use each other reads both ways,
+		// so apart keeps it off the buses of other pairs' lines (rule 18).
+		if apart && r.kind == "mutual" {
+			dk.key += "|" + place(r.to)
+			ak.key += "|" + place(r.from)
+		}
 		leave[dk] = append(leave[dk], i)
 		arrive[ak] = append(arrive[ak], i)
 	}

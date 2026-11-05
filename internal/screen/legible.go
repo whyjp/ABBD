@@ -600,8 +600,11 @@ func measure(s sheet) Metrics {
 		}
 		return false
 	}
+	// A line between two modules that use each other reads both ways, so
+	// a bundle of two of them would join their far ends (rule 18): it is a
+	// bundle of its own, as a straight drop is.
 	straight := func(w stroke) bool {
-		return len(w.pts) == 2 && w.pts[0].x == w.pts[1].x && onBox(w.pts[0]) && onBox(w.pts[1])
+		return kindOf(w.class) == "mutual" || len(w.pts) == 2 && w.pts[0].x == w.pts[1].x && onBox(w.pts[0]) && onBox(w.pts[1])
 	}
 	leaving := map[string]map[int]bool{}
 	for _, w := range ws {
