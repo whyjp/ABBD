@@ -3,12 +3,15 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/screen"
 )
 
 var (
@@ -211,6 +214,36 @@ func TestAbbdSetupAsksForCheckableCouplingsAndNoAlignment(t *testing.T) {
 	steps, _, _ = strings.Cut(steps, "\n## ")
 	if i := strings.Index(steps, "`abbd install`"); i < 0 || i < strings.LastIndex(steps, "abbd understand") {
 		t.Errorf("abbd-setup's steps must install the CLAUDE.md block after storing how's text")
+	}
+}
+
+// Setup lints the drawings, records the debt that stays, then installs the
+// block, and names the way out of the first record's refusal. The bounds it
+// gives the agent choosing the units are the ones abbd lint holds.
+func TestAbbdSetupLintsRecordsThenInstallsAtTheBoundsLintHolds(t *testing.T) {
+	skill := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
+	_, steps, _ := strings.Cut(skill, "## Steps")
+	steps, _, _ = strings.Cut(steps, "\n## ")
+	last := -1
+	for _, s := range []string{"run `abbd lint`", "`abbd lint --record`", "`abbd install`"} {
+		i := strings.Index(steps, s)
+		if i <= last {
+			t.Fatalf("abbd-setup's steps must run lint, then lint --record, then install; %q is out of place", s)
+		}
+		last = i
+	}
+	if !strings.Contains(steps, "`abbd lint --record --keep-level <VIEW>=<REASON>`") {
+		t.Errorf("abbd-setup must name --keep-level, the way out of the first record's refusal for a level it lets stay")
+	}
+	b := screen.LevelBounds()
+	for _, want := range []string{
+		fmt.Sprintf("%d to %d top-level modules", b.OverviewFewest, b.OverviewMost),
+		fmt.Sprintf("draws %d to %d parts", b.PageFewest, b.PageMost),
+		fmt.Sprintf("about %d a box at most", b.LinesPerBox),
+	} {
+		if !strings.Contains(steps, want) {
+			t.Errorf("abbd-setup must state the bound lint holds, %q", want)
+		}
 	}
 }
 

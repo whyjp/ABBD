@@ -137,7 +137,7 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
-abbd lint [VIEW] [--json] [--list] [--record] [--root DIR]
+abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--root DIR]
                                      hold every drawing of the blueprint, or the views whose name
                                      starts with VIEW or holds it as a word, such as a unit ID, to
                                      the drawing criteria of docs/blueprint-svg.md; prints each
@@ -147,7 +147,9 @@ abbd lint [VIEW] [--json] [--list] [--record] [--root DIR]
                                      .abbd/lint-debt.yaml records for its view, or, over every
                                      view, on a total past its ceiling there; --list names the
                                      views; --record writes what the drawings measure now as
-                                     their debt and ceilings
+                                     their debt and ceilings; the first --record refuses while a
+                                     view with hard breaches has a level line, unless
+                                     --keep-level names that view and why it stays
 abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
@@ -192,7 +194,8 @@ type opts struct {
 	features         bool
 	verbose, restamp bool
 	rereadBy         string
-	evidence         evidenceFlags
+	evidence         listFlag
+	keepLevel        listFlag
 	argv             []string
 }
 
@@ -231,6 +234,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"record": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.record, "record", false, "write what the drawings measure now as their debt and ceilings")
+	},
+	"keep-level": func(fs *flag.FlagSet, o *opts) {
+		fs.Var(&o.keepLevel, "keep-level", "VIEW=REASON, a view --record keeps at the level lint would change, and why; repeat for more")
 	},
 	"check": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.check, "check", false, "exit 1 on what the command's usage line names")
@@ -282,7 +288,7 @@ var commands = map[string]command{
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
-	"lint":            {flags: []string{"root", "json", "list", "record"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
+	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
 type invocation struct {

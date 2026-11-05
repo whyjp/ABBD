@@ -1,0 +1,10 @@
+label	views	ov_boxes	ov_lines	pages	thin_pages	dense_views	level_advice	hard	target	weighed	crossings	phantoms	debt_file	lint_rc
+base-gin	8	7	11	7	5	0	0	1	17	124	0	0	1	0
+base-httpie	22	7	25	9	3	2	2	7	65	348	4	7	1	0
+base-storefront	28	3	8	13	6	2	8	1	57	399	7	0	1	0
+it2-gin	41	7	26	7	0	5	3	1	195	1176	16	0	1	0
+it2-httpie	30	9	41	9	0	3	1	5	152	1043	15	5	1	0
+it2-storefront	36	10	28	11	5	2	1	2	106	716	16	0	1	0
+it3-gin	32	8	29	9	2	2	0	12	163	1079	11	12	1	0
+it3-httpie	40	10	45	10	4	3	0	10	243	1691	43	7	1	0
+it3-storefront	19	9	27	9	5	1	0	0	37	248	4	0	1	0
