@@ -1,8 +1,10 @@
 package screen
 
 import (
+	"cmp"
 	"fmt"
 	"hash/fnv"
+	"html/template"
 	"maps"
 	"slices"
 	"strings"
@@ -164,6 +166,30 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 			used[w.Head] = true
 		}
 	}
+	boxHue := map[int]string{}
+	for _, b := range d.Boxes {
+		if j, ok := d.numbers[string(base(model.ID(b.ID)))]; ok && b.Hue != "" {
+			boxHue[j] = b.Hue
+		}
+	}
+	for i := range d.Routes {
+		r := &d.Routes[i]
+		r.Hue = colour(r.src)
+		if warns(r.Kind) {
+			r.Hue = warnKey
+		}
+		// A pointed-at box lights the line in the box's colour, whatever
+		// its kind; a chip or a box of no colour leaves it its own.
+		var vars []string
+		for _, j := range r.at {
+			h, ok := boxHue[j]
+			if !ok {
+				h = r.Hue
+			}
+			vars = append(vars, fmt.Sprintf("--k%d:var(--h%s)", j, h))
+		}
+		r.Vars = template.CSS(strings.Join(vars, ";"))
+	}
 	d.Heads = slices.Sorted(maps.Keys(used))
 	for i, dot := range d.Dots {
 		p, got := pt{dot.X, dot.Y}, ""
@@ -292,8 +318,8 @@ const (
 	labelPx, labelH, labelPad, labelOff, labelRoom = 11, 10, 10, 3, 2
 	// labelMax is the widest a label may be, about 21 letters with 등.
 	labelMax = 170
-	// most is the mark after a phrase that names most of a line's
-	// relations but not all.
+	// most is the mark after a phrase that names at least half of a line's
+	// relations but not all, or that keeps only its leading names.
 	most = " 등"
 )
 
@@ -314,51 +340,123 @@ func (l Label) area() box {
 	return box{l.X - half, l.Y - labelH + 1, 2 * half, labelH}
 }
 
-// word is what a wire's label says about the relations it stands for: the
-// phrase they all share; else the phrase most of them carry, the first by
-// name among equals, marked with 등 for the rest; else, or when that phrase
-// is wider than labelMax, the via word they all share; else "".
-func word(t tree, rels []string) string {
-	n, best := map[string]int{}, ""
-	for _, r := range rels {
-		if p := t.phrases[r].text; p != "" {
-			n[p]++
-		}
+// units are what a line's label counts, given the relations of each line it
+// speaks for: the lines when there are several, so that its count agrees
+// with the bus's ×N, else the one line's relations.
+func units(lines [][]string) [][]string {
+	if len(lines) != 1 {
+		return lines
 	}
-	for p, c := range n {
-		if c > n[best] || c == n[best] && p < best {
-			best = p
-		}
+	out := make([][]string, len(lines[0]))
+	for i, r := range lines[0] {
+		out[i] = []string{r}
 	}
-	if best != "" && n[best] < len(rels) {
-		best += most
-	}
-	if best != "" && textWidth(best, labelPx) <= labelMax {
-		return best
-	}
-	via := ""
-	for i, r := range rels {
-		w := t.vias[r].Word()
-		if w == "" || i > 0 && w != via {
-			return ""
-		}
-		via = w
-	}
-	return via
+	return out
 }
 
-// said lists the phrases of a wire's relations, each once with whose words
-// it is and how many of the relations carry it, for its tooltip.
-func said(t tree, rels []string) []string {
+// carried counts, for each key that key gives a relation, the units with a
+// relation of that key.
+func carried(us [][]string, key func(string) string) map[string]int {
 	n := map[string]int{}
-	for _, r := range rels {
-		if p := t.phrases[r]; p.text != "" {
-			n[fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)])]++
+	for _, u := range us {
+		seen := map[string]bool{}
+		for _, r := range u {
+			if k := key(r); k != "" && !seen[k] {
+				seen[k] = true
+				n[k]++
+			}
 		}
 	}
+	return n
+}
+
+// phraseNames splits a phrase at its commas, but not at those inside brackets,
+// so f(a, b) stays one name.
+func phraseNames(p string) []string {
+	var out []string
+	depth, from := 0, 0
+	for i := 0; i < len(p); i++ {
+		switch p[i] {
+		case '(', '[', '{':
+			depth++
+		case ')', ']', '}':
+			depth--
+		case ',':
+			if depth == 0 && strings.HasPrefix(p[i:], ", ") {
+				out, from = append(out, p[from:i]), i+2
+			}
+		}
+	}
+	return append(out, p[from:])
+}
+
+// word is what a wire's label says about the lines it speaks for (units),
+// and whether it is a phrase. It names the phrase the most units carry, the
+// first by name among equals: alone when every relation carries it, with 등
+// when at least half the units do, and otherwise by its first name with 외
+// and how many units do not carry it, so a phrase that few lines carry
+// never passes for the bus, and the lines that carry it and N add up to
+// the bus's ×N. A phrase too wide for labelMax keeps the names before its
+// commas that fit, with 등. When it still does not fit the next phrase
+// speaks, but only one at least half the units carry; else the via word
+// all the relations share, else "".
+func word(t tree, lines [][]string) (string, bool) {
+	us := units(lines)
+	n := carried(us, func(r string) string { return t.phrases[r].text })
+	for i, p := range slices.SortedFunc(maps.Keys(n), func(a, b string) int { return cmp.Or(n[b]-n[a], strings.Compare(a, b)) }) {
+		c := n[p]
+		if i > 0 && 2*c < len(us) {
+			break
+		}
+		ns := phraseNames(p)
+		tries := []string{fmt.Sprintf("%s 외 %d", ns[0], len(us)-c)}
+		if 2*c >= len(us) {
+			rest := most
+			if every(lines, func(r string) bool { return t.phrases[r].text == p }) {
+				rest = ""
+			}
+			tries = []string{p + rest}
+			for k := len(ns) - 1; k > 0; k-- {
+				tries = append(tries, strings.Join(ns[:k], ", ")+most)
+			}
+		}
+		for _, s := range tries {
+			if textWidth(s, labelPx) <= labelMax {
+				return s, true
+			}
+		}
+	}
+	via := ""
+	for _, line := range lines {
+		for _, r := range line {
+			w := t.vias[r].Word()
+			if w == "" || via != "" && w != via {
+				return "", false
+			}
+			via = w
+		}
+	}
+	return via, false
+}
+
+func every(lines [][]string, f func(string) bool) bool {
+	return !slices.ContainsFunc(lines, func(l []string) bool { return slices.ContainsFunc(l, func(r string) bool { return !f(r) }) })
+}
+
+// said lists the phrases of the lines a wire's label speaks for, each once
+// with whose words it is and how many of its units (see units) carry it,
+// for its tooltip.
+func said(t tree, lines [][]string) []string {
+	us := units(lines)
+	n := carried(us, func(r string) string {
+		if p := t.phrases[r]; p.text != "" {
+			return fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)])
+		}
+		return ""
+	})
 	out := make([]string, 0, len(n))
 	for s, c := range n {
-		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(rels)))
+		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(us)))
 	}
 	slices.Sort(out)
 	return out
@@ -409,10 +507,10 @@ func (d *Drawing) marked(heads []box) []box {
 func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	taken := d.marked(heads)
 	canvas := box{0, 0, d.Width, d.Height}
-	words := make([]string, len(d.Wires))
+	words, saids := make([]string, len(d.Wires)), make([]bool, len(d.Wires))
 	for i, w := range d.Wires {
-		words[i] = word(t, w.Rels)
-		if ps := said(t, w.Rels); len(ps) > 0 {
+		words[i], saids[i] = word(t, w.lines)
+		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 		}
 	}
@@ -439,7 +537,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			continue
 		}
 		tw := textWidth(s, labelPx)
-		said := slices.ContainsFunc(d.Wires[i].Rels, func(r string) bool { return t.phrases[r].text == strings.TrimSuffix(s, most) })
+		said := saids[i]
 		var mine []seg
 		for _, g := range segs {
 			if mate(i, g.wire) {

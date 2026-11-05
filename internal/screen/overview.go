@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"html/template"
 	"maps"
 	"slices"
 	"sort"
@@ -28,6 +29,33 @@ type Drawing struct {
 	Relations [][2]string `json:"-"`
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
+	// Routes are each line's whole way, one per line the view requests.
+	Routes []Route `json:"-"`
+	// numbers are the shapes' numbers by place, as hover gave them.
+	numbers map[string]int
+}
+
+// Route is one line's whole way from the shape it leaves to the shape it
+// reaches, over every bus it rides, drawn unseen above the ink. While a
+// reader points at a piece of ink, each route that runs along it shows in
+// its line's colour, so every line there lights whole however many paths
+// draw its ink. A route takes no pointer itself, so the ink keeps its title.
+type Route struct {
+	D, Kind    string
+	Back, Both bool
+	Hue, Lit   string
+	// Vars name, for each box at an end, the colour the route takes while
+	// that box is pointed at: --kN for the box numbered N (hover.go).
+	Vars template.CSS
+	// Tips place the arrowheads, of shape Head, at the route's ends.
+	Head string
+	Tips []string
+	// src is the place whose colour the line wears, ends where it joins,
+	// at the numbers of the shapes there, and runs its straight pieces.
+	src  string
+	ends []string
+	at   []int
+	runs [][2]pt
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -124,6 +152,38 @@ type Wire struct {
 	// srcs are the places each of the line's relations leaves, which give
 	// it its colour.
 	srcs []string
+	// lines are the relations of each line the label speaks for: on the
+	// path that shows a bus's count, the lines it counts, else the path's
+	// own.
+	lines [][]string
+}
+
+// carry gives w the relations of the lines its path p draws and of those
+// its count counts, each relation once, however many requests merged it.
+func (w *Wire) carry(p drawn, rels func(int) []string) {
+	of := func(is []int) (out [][]string) {
+		for _, i := range is {
+			var line []string
+			for _, r := range rels(i) {
+				if !slices.Contains(line, r) {
+					line = append(line, r)
+				}
+			}
+			out = append(out, line)
+		}
+		return out
+	}
+	w.lines = of(p.reqs)
+	for _, line := range w.lines {
+		for _, r := range line {
+			if !slices.Contains(w.Rels, r) {
+				w.Rels = append(w.Rels, r)
+			}
+		}
+	}
+	if p.count > 1 {
+		w.lines = of(p.counted)
+	}
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -953,7 +1013,6 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.Both = w.Kind == "mutual" && p.starts[0] != noStart
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
-			w.Rels = append(w.Rels, merged[i].rels...)
 			og := o.origin(merged[i].rels)
 			if og != Badge(model.Extracted) {
 				titles[j] += ", " + labels[og]
@@ -971,6 +1030,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			w.Origin = "mixed"
 		}
 		w.Title = strings.Join(titles, "\n")
+		w.carry(p, func(i int) []string { return merged[i].rels })
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}
@@ -978,6 +1038,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.route(routed, reqs)
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d

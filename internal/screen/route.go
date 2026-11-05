@@ -43,8 +43,10 @@ type drawn struct {
 	starts []pt
 	label  pt
 	// net groups the paths of one bus; count is how many lines a bus
-	// carries, on the path that shows the count.
+	// carries, on the path that shows the count, and counted are the
+	// requests it counts.
 	net, count int
+	counted    []int
 	parts      [][]pt
 	// joins says the path ends on a bus, not at a box, so it has no
 	// arrowhead.
@@ -196,6 +198,8 @@ type routing struct {
 	// ways are the points each line turns at on its way from its start to
 	// its end, along the ink a reader follows, its buses' included.
 	ways [][]pt
+	// back says each line runs against the reading direction, rule 13.
+	back []bool
 	// shares says some lines could share an arrival bus.
 	shares bool
 }
@@ -1370,7 +1374,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		if first.up {
 			lb.y = s.y - 6
 		}
-		out = append(out, drawn{D: strings.Join(ds, " "), parts: parts, reqs: bs.members, starts: starts, net: nets, count: len(bs.members), label: lb, joins: true, back: back(bs.members[0]), own: [2]pt{s, {s.x, trackY(first.gaps[0], o)}}})
+		out = append(out, drawn{D: strings.Join(ds, " "), parts: parts, reqs: bs.members, starts: starts, net: nets, count: len(bs.members), counted: bs.members, label: lb, joins: true, back: back(bs.members[0]), own: [2]pt{s, {s.x, trackY(first.gaps[0], o)}}})
 	}
 	// Arrival buses: the trunk and the track, then a drop into each place.
 	for b, bs := range buses {
@@ -1467,10 +1471,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		}
 		// Each box the bus feeds shows how many lines go there, its own and
 		// those of the buses whose tracks end on its drop.
-		reach := map[string]int{}
+		reach := map[string][]int{}
 		for i := range reqs {
 			if plans[i].arr >= 0 && drop(i) == b {
-				reach[reqs[i].to.key]++
+				reach[reqs[i].to.key] = append(reach[reqs[i].to.key], i)
 			}
 		}
 		drops := map[int][]int{}
@@ -1493,8 +1497,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			e := endOf(is[0])
 			line := []pt{{x, y}, e}
 			dd := drawn{D: polyline(line), parts: [][]pt{line}, reqs: is, starts: none[:len(is)], net: nets, back: back(is[0])}
-			if n := reach[reqs[is[0]].to.key]; n > 0 {
-				dd.count, dd.label, dd.own = n, pt{x + 5, (y+e.y)/2 + 4}, [2]pt{{x, y}, e}
+			if n := reach[reqs[is[0]].to.key]; len(n) > 0 {
+				dd.count, dd.counted, dd.label, dd.own = len(n), n, pt{x + 5, (y+e.y)/2 + 4}, [2]pt{{x, y}, e}
 				delete(reach, reqs[is[0]].to.key)
 			}
 			out = append(out, dd)
@@ -1534,7 +1538,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
 	anchor(out, pieces(out), boxes)
-	return routing{out, ways, can}
+	backs := make([]bool, len(reqs))
+	for i := range reqs {
+		backs[i] = back(i)
+	}
+	return routing{drawn: out, ways: ways, back: backs, shares: can}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more

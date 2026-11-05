@@ -1,0 +1,65 @@
+id	c1	c2	c3	c4	c5	c6	reason
+c01	B	B	B	B	B	B	A (render page) draws an empty frame with no boxes. B shows 5 parts with their surroundings on the frame
+c02	=	B	=	B	B	B	Same 5 parts in the same places. A has a denser tangle of generic 임포트/호출 lines. B has fewer lines and specific phrases (json.API.Marshal, Bind/WrapF)
+c03	B	A	A	A	B	B	A is a package dump: gin is one monolith box beside internal/bytesconv and fs utilities. B names engine/routing/context/middleware, which is denser but tells the architecture
+c04	=	=	=	=	=	=	Identical images
+c05	A	B	B	B	A	A	A splits gin into server engine/routing/request context/middleware (bytesconv and fs still appear) and puts the env chip mid-drawing. B is clean but has a monolithic gin box
+c06	B	A	A	A	B	B	Same as c03. B has the right parts but more climbing lines than 9708. A is tidy but has a monolithic gin box and utility leaves
+c07	B	B	B	B	B	B	A has 13 boxes mixing data items (access-log line, Error types) with subsystems. B is a clean 6-box binding chain with call-level labels
+c08	A	A	A	A	A	A	B (server engine) is a hairball of 6 boxes with climbing dashed lines and odd parts (test, version, utils). A's lines can be followed and it names recognizable gin parts
+c09	A	A	A	A	A	A	A shows routing's 4 parts cleanly. B's render page drawing is empty
+c10	B	B	B	B	B	B	Same as c07: B is a clean binding chain. A has 13 mixed-kind boxes
+c11	A	A	A	=	A	A	A has no utility leaves (bytesconv, fs), keeps contracts on the frame and labels with calls (c.Next, Params). B puts the env chip mid-drawing and uses generic 임포트/호출. Both are tangled
+c12	B	B	B	B	B	B	A's render page drawing is empty
+c13	B	B	B	B	B	B	A is tangled with climbs and odd parts. B is a clean binding chain
+c14	=	=	=	=	=	=	Identical images
+c15	=	A	A	A	=	A	Same boxes and places. B adds more orange lines that climb into request context and engine (HandlerFunc, debugPrintRoute)
+c16	B	B	B	B	B	B	A's shared runtime is a grab-bag of utilities with generic labels. B's routing parts (router group, tree, path, fs) are known, with few, clearly labeled lines
+c17	A	=	=	A	=	A	A's boxes are module names readers know (context, models, config, compat). B has function-level boxes (get default config dir, json dict preserving duplicate keys) and more jogs, though its line labels are richer
+c18	A	A	=	=	A	A	Both are hairballs. B has more boxes, which reads like a dump, and repeats one generic phrase "Environment 등" on many lines
+c19	A	A	A	=	A	A	B (manager) is just 2 boxes fanning to chips, barely a decomposition. A has 5 output parts with specific labels (FormatterPlugin, ParserSpec)
+c20	=	B	=	B	B	B	Same 9 boxes. A buries them in a gray tangle with no labels. B has fewer lines and an OUT_* label
+c21	B	A	A	A	B	A	A is a readable 7-box package view, but its labels are mostly 임포트 and it lumps the core into "httpie". B names the right parts but is an unreadable orange hairball
+c22	B	B	B	B	A	B	B's output parts (formatters, lexers, ui) are known, in 6 boxes with fewer lines, though labeled 임포트. A has helper-level boxes and many jogs, though richer labels
+c23	A	A	=	=	=	A	A (output, 6 boxes) is a clearer part view than B's 9-box grab-bag of base modules
+c24	=	=	=	=	=	=	Identical images
+c25	A	A	A	A	A	A	B is 2 boxes and a chip fan. A is a clean 4-box sessions view with HTTPieCookiePolicy and HTTPHeadersDict labels
+c26	=	=	=	A	=	A	Nearly identical. B has more crossing lines bundled under persistent sessions
+c27	A	A	A	A	A	A	B is an unlabeled gray tangle of 9 boxes. A has 6 boxes with followable lines
+c28	B	B	B	B	A	B	A is a big hairball with too many boxes. B shows one level in 7 boxes in one look, though its labels are generic 임포트
+c29	=	B	=	B	B	B	Same 4 boxes. A has extra lines and jogs and no labels. B is cleaner and labeled
+c30	=	B	=	B	=	B	Both are fine part views. B is smaller, with fewer and straighter lines
+c31	B	A	A	A	B	A	Same as c21: A is the readable package view, B the hairball with better part names
+c32	B	B	B	=	=	B	A (manager) is 2 boxes. B shows sessions' 4 parts
+c33	B	B	B	=	A	B	B's parts (shell, catalog search, content, metadata, ui kit, client) have pages on top and the hub below. A has grid and /[page] as peers and more climbs, though better line phrases. B's bus bundle offsets its tidiness
+c34	B	B	B	=	A	B	A has 3 boxes and no surroundings on the frame. B has 6 parts with app/components chips, though path-like names
+c35	A	A	=	A	B	A	A has more parts and clean lines. B fans a bus to many chips, though its labels (revalidateTag, /search path) are better
+c36	B	B	B	=	A	B	Same as c34
+c37	B	B	B	B	B	B	B is a clean 3-box search page with a /search/{handle} label. A is a folder-path components view with long overlapping runs
+c38	=	=	=	=	=	=	Identical images
+c39	B	A	=	A	B	B	A (app/components/lib) is too coarse to tell the architecture, though readable. B names the real parts with specific labels but is tangled
+c40	B	=	B	=	=	B	A has one disconnected box and no surroundings on the frame. B ties its parts to callers and contracts on the frame
+c41	A	B	A	B	=	A	B has an isolated box and no frame chips. A shows components' parts with their lib/app surroundings, though with more lines
+c42	=	=	=	=	=	=	Identical images
+c43	A	B	A	B	A	A	B is 3 coarse folder boxes. A names the system's parts with the hub at the bottom
+c44	B	A	B	A	=	B	Same as c41, reversed
+c45	=	=	=	=	=	=	Identical images
+c46	=	=	=	=	B	B	Same drawing. B drops the generic 임포트 labels
+c47	=	A	B	A	B	B	Both have 3 parts. B puts callers and contracts on the frame with specific labels. A shows no surroundings
+c48	A	B	A	B	A	A	Same as c43
+id	set	reason
+s01	A	A's overview names gin's parts and binding is clean. B's overview has a monolithic gin box and its render page is empty
+s02	B	The binding views are the same. B's overview has fewer climbing lines. A's shared runtime view is cleaner, but the overview decides
+s03	B	B's overview names the parts. A's render view is empty
+s04	B	A's overview has utility leaves and its server engine view is a tangle. B is cleaner throughout
+s05	A	A splits gin and has a clean routing view. B has a monolithic overview and an empty render page, despite a good gin page
+s06	B	A has two hairballs (overview and runtime types). B is readable throughout, though its manager page is thin
+s07	B	Same parts, but each of B's views is slightly cleaner and labeled
+s08	A	A's overview names client, sessions, transport, plugins and output, and its sessions and runtime pages are decent. B lumps the core into "httpie" and its manager page is nearly empty
+s09	A	B's overview is a bigger hairball with repeated generic labels. A's sessions view is clean
+s10	A	A's output and shared foundation pages carry more structure than B's thin manager page. Both overviews are weak
+s11	A	B's overview is 3 coarse folders. A's overview tells the architecture, though its pages are weak
+s12	=	Same views. The only difference is a few generic labels on the overview
+s13	A	Same as s11
+s14	A	A's pages tie parts to their callers and contracts on the frame. B's pages are disconnected or show no surroundings, though B's overview is somewhat tidier
+s15	B	A's overview is 3 coarse folders. B names the real parts

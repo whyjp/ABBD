@@ -1,0 +1,605 @@
+{
+ "files": {
+  "gin-3371.png": [
+   "base",
+   "gin",
+   "overview",
+   0
+  ],
+  "gin-9026.png": [
+   "base",
+   "gin",
+   "MOD-0002",
+   1
+  ],
+  "gin-9275.png": [
+   "base",
+   "gin",
+   "MOD-0016",
+   2
+  ],
+  "gin-5786.png": [
+   "it5",
+   "gin",
+   "overview",
+   0
+  ],
+  "gin-3942.png": [
+   "it5",
+   "gin",
+   "MOD-0002",
+   1
+  ],
+  "gin-3735.png": [
+   "it5",
+   "gin",
+   "MOD-0027",
+   2
+  ],
+  "gin-5270.png": [
+   "it6",
+   "gin",
+   "overview",
+   0
+  ],
+  "gin-3565.png": [
+   "it6",
+   "gin",
+   "MOD-0002",
+   1
+  ],
+  "gin-1546.png": [
+   "it6",
+   "gin",
+   "MOD-0027",
+   2
+  ],
+  "gin-8102.png": [
+   "it7",
+   "gin",
+   "overview",
+   0
+  ],
+  "gin-8726.png": [
+   "it7",
+   "gin",
+   "MOD-0033",
+   1
+  ],
+  "gin-2629.png": [
+   "it7",
+   "gin",
+   "MOD-0034",
+   2
+  ],
+  "gin-4240.png": [
+   "it6",
+   "gin",
+   "overview",
+   0
+  ],
+  "httpie-4966.png": [
+   "base",
+   "httpie",
+   "overview",
+   0
+  ],
+  "httpie-6852.png": [
+   "base",
+   "httpie",
+   "MOD-0006",
+   1
+  ],
+  "httpie-5970.png": [
+   "base",
+   "httpie",
+   "MOD-0008",
+   2
+  ],
+  "httpie-1440.png": [
+   "it5",
+   "httpie",
+   "overview",
+   0
+  ],
+  "httpie-9827.png": [
+   "it5",
+   "httpie",
+   "MOD-0002",
+   1
+  ],
+  "httpie-7045.png": [
+   "it5",
+   "httpie",
+   "MOD-0003",
+   2
+  ],
+  "httpie-8228.png": [
+   "it6",
+   "httpie",
+   "overview",
+   0
+  ],
+  "httpie-7816.png": [
+   "it6",
+   "httpie",
+   "MOD-0002",
+   1
+  ],
+  "httpie-7295.png": [
+   "it6",
+   "httpie",
+   "MOD-0003",
+   2
+  ],
+  "httpie-5745.png": [
+   "it7",
+   "httpie",
+   "overview",
+   0
+  ],
+  "httpie-7439.png": [
+   "it7",
+   "httpie",
+   "MOD-0029",
+   1
+  ],
+  "httpie-5146.png": [
+   "it7",
+   "httpie",
+   "MOD-0052",
+   2
+  ],
+  "httpie-1436.png": [
+   "it6",
+   "httpie",
+   "overview",
+   0
+  ],
+  "storefront-7768.png": [
+   "base",
+   "storefront",
+   "overview",
+   0
+  ],
+  "storefront-1041.png": [
+   "base",
+   "storefront",
+   "MOD-0007",
+   1
+  ],
+  "storefront-5930.png": [
+   "base",
+   "storefront",
+   "MOD-0017",
+   2
+  ],
+  "storefront-6818.png": [
+   "it5",
+   "storefront",
+   "overview",
+   0
+  ],
+  "storefront-4230.png": [
+   "it5",
+   "storefront",
+   "MOD-0012",
+   1
+  ],
+  "storefront-2531.png": [
+   "it5",
+   "storefront",
+   "MOD-0017",
+   2
+  ],
+  "storefront-8547.png": [
+   "it6",
+   "storefront",
+   "overview",
+   0
+  ],
+  "storefront-8000.png": [
+   "it6",
+   "storefront",
+   "MOD-0012",
+   1
+  ],
+  "storefront-1408.png": [
+   "it6",
+   "storefront",
+   "MOD-0017",
+   2
+  ],
+  "storefront-2633.png": [
+   "it7",
+   "storefront",
+   "overview",
+   0
+  ],
+  "storefront-9526.png": [
+   "it7",
+   "storefront",
+   "MOD-0008",
+   1
+  ],
+  "storefront-7674.png": [
+   "it7",
+   "storefront",
+   "MOD-0022",
+   2
+  ],
+  "storefront-7063.png": [
+   "it6",
+   "storefront",
+   "overview",
+   0
+  ]
+ },
+ "pairs": {
+  "c01": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "it6",
+   "B": "it6"
+  },
+  "c02": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "base",
+   "B": "it7"
+  },
+  "c03": {
+   "repo": "gin",
+   "slot": 1,
+   "A": "it5",
+   "B": "it6"
+  },
+  "c04": {
+   "repo": "gin",
+   "slot": 1,
+   "A": "it6",
+   "B": "it7"
+  },
+  "c05": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "it5",
+   "B": "base"
+  },
+  "c06": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "it6",
+   "B": "it5"
+  },
+  "c07": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "base",
+   "B": "it6"
+  },
+  "c08": {
+   "repo": "gin",
+   "slot": 2,
+   "A": "it7",
+   "B": "base"
+  },
+  "c09": {
+   "repo": "gin",
+   "slot": 2,
+   "A": "it6",
+   "B": "it5"
+  },
+  "c10": {
+   "repo": "gin",
+   "slot": 2,
+   "A": "it7",
+   "B": "it6"
+  },
+  "c11": {
+   "repo": "gin",
+   "slot": 1,
+   "A": "it6",
+   "B": "base"
+  },
+  "c12": {
+   "repo": "gin",
+   "slot": 1,
+   "A": "base",
+   "B": "it5"
+  },
+  "c13": {
+   "repo": "gin",
+   "slot": 2,
+   "A": "base",
+   "B": "it5"
+  },
+  "c14": {
+   "repo": "gin",
+   "slot": 1,
+   "A": "it7",
+   "B": "base"
+  },
+  "c15": {
+   "repo": "gin",
+   "slot": 2,
+   "A": "it6",
+   "B": "base"
+  },
+  "c16": {
+   "repo": "gin",
+   "slot": 0,
+   "A": "it7",
+   "B": "it6"
+  },
+  "c17": {
+   "repo": "httpie",
+   "slot": 2,
+   "A": "base",
+   "B": "it6"
+  },
+  "c18": {
+   "repo": "httpie",
+   "slot": 1,
+   "A": "it7",
+   "B": "base"
+  },
+  "c19": {
+   "repo": "httpie",
+   "slot": 1,
+   "A": "it6",
+   "B": "it7"
+  },
+  "c20": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "base",
+   "B": "it6"
+  },
+  "c21": {
+   "repo": "httpie",
+   "slot": 2,
+   "A": "it6",
+   "B": "it5"
+  },
+  "c22": {
+   "repo": "httpie",
+   "slot": 1,
+   "A": "base",
+   "B": "it6"
+  },
+  "c23": {
+   "repo": "httpie",
+   "slot": 2,
+   "A": "base",
+   "B": "it5"
+  },
+  "c24": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "it6",
+   "B": "it7"
+  },
+  "c25": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "base",
+   "B": "it7"
+  },
+  "c26": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "it5",
+   "B": "base"
+  },
+  "c27": {
+   "repo": "httpie",
+   "slot": 2,
+   "A": "it7",
+   "B": "base"
+  },
+  "c28": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "it5",
+   "B": "it6"
+  },
+  "c29": {
+   "repo": "httpie",
+   "slot": 0,
+   "A": "it6",
+   "B": "it6"
+  },
+  "c30": {
+   "repo": "httpie",
+   "slot": 1,
+   "A": "base",
+   "B": "it5"
+  },
+  "c31": {
+   "repo": "httpie",
+   "slot": 1,
+   "A": "it5",
+   "B": "it6"
+  },
+  "c32": {
+   "repo": "httpie",
+   "slot": 2,
+   "A": "it7",
+   "B": "it6"
+  },
+  "c33": {
+   "repo": "storefront",
+   "slot": 2,
+   "A": "it6",
+   "B": "base"
+  },
+  "c34": {
+   "repo": "storefront",
+   "slot": 2,
+   "A": "it7",
+   "B": "it6"
+  },
+  "c35": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "it7",
+   "B": "base"
+  },
+  "c36": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "base",
+   "B": "it5"
+  },
+  "c37": {
+   "repo": "storefront",
+   "slot": 1,
+   "A": "it6",
+   "B": "it5"
+  },
+  "c38": {
+   "repo": "storefront",
+   "slot": 2,
+   "A": "it5",
+   "B": "base"
+  },
+  "c39": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "it5",
+   "B": "it6"
+  },
+  "c40": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "it7",
+   "B": "it6"
+  },
+  "c41": {
+   "repo": "storefront",
+   "slot": 1,
+   "A": "base",
+   "B": "it6"
+  },
+  "c42": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "base",
+   "B": "it6"
+  },
+  "c43": {
+   "repo": "storefront",
+   "slot": 1,
+   "A": "it6",
+   "B": "it7"
+  },
+  "c44": {
+   "repo": "storefront",
+   "slot": 2,
+   "A": "base",
+   "B": "it7"
+  },
+  "c45": {
+   "repo": "storefront",
+   "slot": 2,
+   "A": "it5",
+   "B": "it6"
+  },
+  "c46": {
+   "repo": "storefront",
+   "slot": 1,
+   "A": "it7",
+   "B": "base"
+  },
+  "c47": {
+   "repo": "storefront",
+   "slot": 1,
+   "A": "it5",
+   "B": "base"
+  },
+  "c48": {
+   "repo": "storefront",
+   "slot": 0,
+   "A": "it6",
+   "B": "it6"
+  }
+ },
+ "sets": {
+  "s01": {
+   "repo": "gin",
+   "A": "base",
+   "B": "it5"
+  },
+  "s02": {
+   "repo": "gin",
+   "A": "it6",
+   "B": "it5"
+  },
+  "s03": {
+   "repo": "gin",
+   "A": "it6",
+   "B": "base"
+  },
+  "s04": {
+   "repo": "gin",
+   "A": "it7",
+   "B": "it6"
+  },
+  "s05": {
+   "repo": "gin",
+   "A": "base",
+   "B": "it7"
+  },
+  "s06": {
+   "repo": "httpie",
+   "A": "it5",
+   "B": "base"
+  },
+  "s07": {
+   "repo": "httpie",
+   "A": "it6",
+   "B": "it5"
+  },
+  "s08": {
+   "repo": "httpie",
+   "A": "it6",
+   "B": "base"
+  },
+  "s09": {
+   "repo": "httpie",
+   "A": "it7",
+   "B": "it6"
+  },
+  "s10": {
+   "repo": "httpie",
+   "A": "base",
+   "B": "it7"
+  },
+  "s11": {
+   "repo": "storefront",
+   "A": "it5",
+   "B": "base"
+  },
+  "s12": {
+   "repo": "storefront",
+   "A": "it6",
+   "B": "it5"
+  },
+  "s13": {
+   "repo": "storefront",
+   "A": "base",
+   "B": "it6"
+  },
+  "s14": {
+   "repo": "storefront",
+   "A": "it6",
+   "B": "it7"
+  },
+  "s15": {
+   "repo": "storefront",
+   "A": "base",
+   "B": "it7"
+  }
+ }
+}

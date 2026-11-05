@@ -1,0 +1,43 @@
+path	top	inner
+httpie/__init__.py	core	entry
+httpie/__main__.py	core	entry
+httpie/core.py	core	program main
+httpie/context.py	core	environment & config
+httpie/config.py	core	environment & config
+httpie/status.py	core	exit status
+httpie/utils.py	core	shared utils
+httpie/compat.py	core	shared utils
+httpie/cli/	cli	argument parser
+httpie/cli/definition.py	cli	option definitions
+httpie/cli/options.py	cli	option definitions
+httpie/cli/constants.py	cli	option definitions
+httpie/cli/requestitems.py	cli	request items
+httpie/cli/dicts.py	cli	request items
+httpie/cli/nested_json/	cli	nested JSON
+httpie/client.py	client	request building
+httpie/adapters.py	client	transport & SSL
+httpie/ssl_.py	client	transport & SSL
+httpie/uploads.py	client	uploads
+httpie/models.py	client	message models & encoding
+httpie/encoding.py	client	message models & encoding
+httpie/sessions.py	sessions	session store
+httpie/cookies.py	sessions	cookie policy
+httpie/legacy/	sessions	legacy format migration
+httpie/downloads.py	downloads	-
+httpie/output/	output	writer & streams
+httpie/output/processing.py	output	formatters
+httpie/output/formatters/	output	formatters
+httpie/output/utils.py	output	formatters
+httpie/output/lexers/	output	lexers
+httpie/output/ui/	output	terminal UI
+httpie/plugins/	plugins	plugin manager
+httpie/plugins/base.py	plugins	plugin base classes
+httpie/plugins/builtin.py	plugins	builtin auth plugins
+httpie/manager/	httpie manager	entry & dispatch
+httpie/manager/cli.py	httpie manager	CLI spec
+httpie/manager/tasks/	httpie manager	other tasks
+httpie/manager/tasks/plugins.py	httpie manager	plugin installer
+httpie/manager/tasks/sessions.py	httpie manager	session upgrade
+httpie/internal/	update checker	daemon spawning
+httpie/internal/update_warnings.py	update checker	update warnings
+httpie/internal/__build_channel__.py	update checker	update warnings

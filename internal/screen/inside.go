@@ -714,8 +714,8 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 				origins[ln.origin] = true
 				w.Origin = ln.origin
 			}
-			w.Rels = append(w.Rels, ln.rels...)
 		}
+		w.carry(p, func(i int) []string { return lines[i].rels })
 		ln := lines[p.reqs[0]]
 		w.D, w.Kind, w.Title = p.D, string(ln.kind), strings.Join(titles, "\n")
 		if len(origins) > 1 {
@@ -731,6 +731,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
+	d.route(routed, reqs)
 	d.mark(paths, reqs, t)
 	d.hover()
 	ins.Drawing = d
