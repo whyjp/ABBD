@@ -1,0 +1,30 @@
+path	top	inner
+src/main.rs	cli	entry
+src/cli.rs	cli	argument definition
+src/options.rs	cli	options
+src/error.rs	cli	errors
+src/command.rs	commands	command list
+src/parameter/	commands	parameter scans
+src/shell_syntax.rs	commands	shell syntax checks
+src/benchmark/mod.rs	benchmark	benchmark run
+src/benchmark/scheduler.rs	benchmark	scheduler
+src/benchmark/executor.rs	benchmark	executors
+src/benchmark/measurement.rs	benchmark	measurements & results
+src/benchmark/benchmark_result.rs	benchmark	measurements & results
+src/timer/mod.rs	timer	timer interface
+src/timer/wall_clock_timer.rs	timer	wall clock
+src/timer/unix_timer.rs	timer	unix CPU timer
+src/timer/linux_counters.rs	timer	unix CPU timer
+src/timer/macos_counters.rs	timer	unix CPU timer
+src/timer/windows_timer.rs	timer	windows CPU timer
+src/metric.rs	statistics	metrics
+src/quantity/mod.rs	statistics	quantities & units
+src/quantity/statistics.rs	statistics	descriptive stats
+src/outlier_detection.rs	statistics	outlier detection
+src/export/	export	markup formats
+src/export/mod.rs	export	export manager
+src/export/csv.rs	export	csv
+src/export/json.rs	export	json
+src/export/json/	export	json
+src/output/	output	-
+src/util/	util	-
