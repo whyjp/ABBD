@@ -70,6 +70,8 @@ type layout struct {
 	// ring says the rows stand about a focus (ring), so every line has the
 	// focus at one end and a bus would only gather what drops straight.
 	ring bool
+	// idle says the tactic's fold or entry flag changed nothing (arrange).
+	idle bool
 }
 
 const (
@@ -187,6 +189,21 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	// more outgoing than incoming edges); those edges are left out of the
 	// ranking only.
 	keep := map[ledge]bool{}
+	// A folding tactic leaves out of the ranking the edges of two places
+	// that use each other: one line with a head at each end joins them and
+	// reads both ways, so neither has to stand a row above the other.
+	// idle says the tactic's flags changed nothing here.
+	idle := true
+	both := func(v, w string) bool {
+		if !t.fold || !slices.Contains(out[w], v) {
+			return false
+		}
+		idle = false
+		return true
+	}
+	if !t.fold && !t.entry {
+		idle = false
+	}
 	{
 		in := map[string]map[string]bool{}
 		outs := map[string]map[string]bool{}
@@ -197,7 +214,9 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		for v, ws := range out {
 			for _, w := range ws {
-				outs[v][w], in[w][v] = true, true
+				if !both(v, w) {
+					outs[v][w], in[w][v] = true, true
+				}
 			}
 		}
 		var front, back []string
@@ -234,11 +253,39 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 			if moved {
 				continue
 			}
+			score := func(v string) int { return len(outs[v]) - len(in[v]) }
 			best := ids[0]
 			for _, v := range ids {
-				if len(outs[v])-len(in[v]) > len(outs[best])-len(in[best]) {
+				if score(v) > score(best) {
 					best = v
 				}
+			}
+			// An entering tactic breaks the cycle at the node the places
+			// already ranked use most, where a reader comes into it.
+			if t.entry {
+				placed := map[string]bool{}
+				for _, f := range front {
+					placed[f] = true
+				}
+				from := func(v string) int {
+					n := 0
+					for u, ws := range out {
+						if placed[u] && slices.Contains(ws, v) {
+							n++
+						}
+					}
+					return n
+				}
+				entry := ids[0]
+				for _, v := range ids {
+					if fv, fe := from(v), from(entry); fv > fe || fv == fe && score(v) > score(entry) {
+						entry = v
+					}
+				}
+				if entry != best {
+					idle = false
+				}
+				best = entry
 			}
 			front = append(front, best)
 			remove(best)
@@ -249,7 +296,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		for v, ws := range out {
 			for _, w := range ws {
-				if at[v] < at[w] {
+				if at[v] < at[w] && !both(v, w) {
 					keep[ledge{v, w}] = true
 				}
 			}
@@ -419,7 +466,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)

@@ -52,6 +52,12 @@ type cost struct {
 	hard, seen, linted, crossed int
 	// moved counts the placement breaches and folded chips.
 	moved int
+	// over is how far, in pixels, the drawing runs past one screen (S),
+	// read for the overview only, and weighed right after the hard
+	// breaches: a reader who must scroll cannot read it at a glance.
+	// Weighed so for a module's page too, it took 162 more over the
+	// fixtures for one view fewer past the screen.
+	over int
 }
 
 // judge reads the drawn view the way abbd lint does: its hard breaches,
@@ -88,8 +94,8 @@ func (c *cost) judge(d Drawing) {
 // stepCrossings crossings, so a drawing with fewer wins unless it buys each
 // one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, c.hard, c.seen, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, o.hard, o.seen, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.over, c.seen, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.over, o.seen, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
@@ -179,12 +185,15 @@ const laneMoves = 1
 // over the unlaned drawings judge read; one the touches and breaks passed
 // over sets neither. A gathered drawing that crosses more than the least of
 // the ungathered ones is passed over too: its chips stand over their boxes,
-// so it should only spare crossings, never add them to save turns.
-func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
+// so it should only spare crossings, never add them to save turns. A
+// drawing ranked by fold or entry that stands more boxes off what they join
+// than the least of the plainly ranked ones is passed over as well: a new
+// ranking should take rows away, not move boxes.
+func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
-	least, plain, crossed := 1<<20, 1<<20, 1<<20
-	for i, t := range tactics {
+	least, plain, crossed, ranked := 1<<20, 1<<20, 1<<20, 1<<20
+	for i, t := range ts {
 		var c cost
 		v, ok := draw(t, &c)
 		if !ok {
@@ -202,6 +211,11 @@ func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, re
 		if !t.laned {
 			least, plain = min(least, c.moved), min(plain, c.linted-stepCrossings*c.moved)
 		} else if c.moved > least+laneMoves || c.linted-stepCrossings*c.moved > plain {
+			continue
+		}
+		if !t.fold && !t.entry {
+			ranked = min(ranked, c.moved)
+		} else if c.moved > ranked {
 			continue
 		}
 		if i == 0 || c.beats(bc) {

@@ -157,11 +157,26 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
-	// The overview is drawn in the plain order only. Every module's page
-	// holds a focus view seated by it, so an overview that took another
-	// order after a small change would redraw every page.
-	o := planOverview(in.Units, "", nil)
-	m.Overview = o.draw(func(id model.ID) string { return viewOf(o.tree, id) })
+	// The overview is drawn in the plain order of its rows only. Every
+	// module's page holds a focus view seated by it, so an overview that took
+	// another order after a small change would redraw every page. It may
+	// still take another ranking, the way a person lays out a cycle, where
+	// that fits the screen better or reads better and moves no box off what
+	// it joins.
+	o := planOverview(in.Units, "", nil, tactic{})
+	href := func(id model.ID) string { return viewOf(o.tree, id) }
+	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+		p := planOverview(in.Units, "", nil, t)
+		if p.layout.idle {
+			return Drawing{}, false
+		}
+		d := p.draw(href)
+		*read = p.read
+		return d, true
+	}, func(d Drawing, read *cost) {
+		read.judge(d)
+		read.over = max(0, d.Width-screenW, d.Height-screenH)
+	})
 	m.Focus = o.overviewFocus(in.Units, m.Overview)
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
@@ -190,7 +205,7 @@ func Build(in Input) Model {
 		return nil
 	}
 	for _, id := range views {
-		ins := choose(func(t tactic, read *cost) (Inside, bool) {
+		ins := choose(tactics, func(t tactic, read *cost) (Inside, bool) {
 			return o.inside(id, in.Units, "", nil, t, read)
 		}, func(ins Inside, read *cost) { read.judge(ins.Drawing) })
 		ins.Focus = o.insideFocus(id, in.Units, ins)

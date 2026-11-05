@@ -147,7 +147,7 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m, centres(full))
+		f := planOverview(units, m, centres(full), tactic{})
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
