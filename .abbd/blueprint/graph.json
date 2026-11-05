@@ -19237,7 +19237,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20244,7 +20244,15 @@
                 "Code": true
               },
               {
-                "Text": ", which the level check reads.",
+                "Text": ", which the level check reads. ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
                 "Code": false
               }
             ]
