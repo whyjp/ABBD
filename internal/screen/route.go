@@ -198,6 +198,8 @@ type routing struct {
 	// ways are the points each line turns at on its way from its start to
 	// its end, along the ink a reader follows, its buses' included.
 	ways [][]pt
+	// back says each line runs against the reading direction, rule 13.
+	back []bool
 	// shares says some lines could share an arrival bus.
 	shares bool
 }
@@ -1555,7 +1557,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
 	anchor(out, pieces(out), boxes)
-	return routing{out, ways, can}
+	backs := make([]bool, len(reqs))
+	for i := range reqs {
+		backs[i] = back(i)
+	}
+	return routing{drawn: out, ways: ways, back: backs, shares: can}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more

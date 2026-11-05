@@ -66,13 +66,13 @@ GEOMETRY = r"""
   svg.setAttribute('data-shot', '1');
   const R = svg.getBoundingClientRect();
   const toPage = (m, x, y) => { const p = new DOMPoint(x, y).matrixTransform(m); return [p.x, p.y]; };
-  const wires = [...svg.querySelectorAll('path.w')].map((p, i) => {
+  const wires = [...svg.querySelectorAll('path.w, path.route, g.route path.way')].map((p, i) => {
     p.setAttribute('data-wi', i);
     const m = p.getScreenCTM(); const L = p.getTotalLength(); const pts = [];
     for (let s = 0; s <= L; s += %STEP%) { const q = p.getPointAtLength(s); pts.push(toPage(m, q.x, q.y)); }
     const q = p.getPointAtLength(L); pts.push(toPage(m, q.x, q.y));
     const cs = getComputedStyle(p);
-    return {i, cls: p.getAttribute('class'), color: cs.stroke, width: parseFloat(cs.strokeWidth), pts};
+    return {i, cls: p.getAttribute('class'), route: !p.classList.contains('w'), color: cs.stroke, width: parseFloat(cs.strokeWidth), pts};
   });
   const targets = [...svg.querySelectorAll('g.box, g.port')].map((g, i) => {
     g.setAttribute('data-ti', i);
@@ -89,7 +89,7 @@ LIT = r"""
 () => {
   const svg = document.querySelector('svg[data-shot]');
   const eff = (el) => { let o = 1; for (let e = el; e && e !== svg.parentNode; e = e.parentElement) o *= parseFloat(getComputedStyle(e).opacity); return o; };
-  const wires = [...svg.querySelectorAll('path.w')].map(p => { const cs = getComputedStyle(p); return [eff(p) > 0.5, parseFloat(cs.strokeWidth), cs.stroke]; });
+  const wires = [...svg.querySelectorAll('path.w, path.route, g.route path.way')].map(p => { const cs = getComputedStyle(p); return [eff(p) > 0.5, parseFloat(cs.strokeWidth), cs.stroke]; });
   const targets = [...svg.querySelectorAll('g.box, g.port')].map(g => eff(g) > 0.5);
   return {wires, targets};
 }
@@ -301,7 +301,7 @@ def route_check(lit_w, lit_t, geo, colors):
 
 
 def overlaps(geo):
-    wires = geo["wires"]
+    wires = [w for w in geo["wires"] if not w["route"]]
     pts_of = {w["i"]: w["pts"] for w in wires}
     grid = Grid(wires)
     run = {}
@@ -374,7 +374,10 @@ def view(pg, url, sel, out, stem, hover_shots):
             flagged.append(("box", t, who))
         if len(lit_w) > hub_n:
             hub, hub_n = t, len(lit_w)
+    routes = any(w["route"] for w in geo["wires"])
     for w in geo["wires"]:
+        if w["route"]:
+            continue
         spot = None
         for p in w["pts"][len(w["pts"]) // 2:] + w["pts"][:len(w["pts"]) // 2]:
             if pg.evaluate(TOP_OF, p) == w["i"]:
@@ -387,7 +390,9 @@ def view(pg, url, sel, out, stem, hover_shots):
         lit = pg.evaluate(LIT)
         on = [i for i, (_, sw, _) in enumerate(lit["wires"]) if sw > base["wires"][i][1] + 0.1]
         dim = [i for i, (o, _, _) in enumerate(lit["wires"]) if o]
-        if dim and len(dim) < len(lit["wires"]):
+        if routes:
+            on = dim
+        elif dim and len(dim) < len(lit["wires"]):
             on = sorted(set(on) | set(dim))
         if not on:
             continue
