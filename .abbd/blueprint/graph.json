@@ -19226,7 +19226,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -20999,15 +20999,7 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
-                "Code": false
-              },
-              {
-                "Text": "via",
-                "Code": true
-              },
-              {
-                "Text": " word they all share (호출, 데이터, ...), which also stands in when the phrase, with 등, is wider than ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등 when at least half carry it and with 외 and how many do not otherwise. A phrase wider than ",
                 "Code": false
               },
               {
@@ -21015,7 +21007,31 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " keeps the names before its commas that fit, and when even those do not fit the next phrase that fits speaks. With no phrase that fits, the word is the ",
+                "Code": false
+              },
+              {
+                "Text": "via",
+                "Code": true
+              },
+              {
+                "Text": " word they all share (호출, 데이터, ...). ",
+                "Code": false
+              },
+              {
+                "Text": "TestLabelAudit",
+                "Code": true
+              },
+              {
+                "Text": " holds every line of the fixtures and of this repository's own ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " to a word that never names a minority phrase without its count. ",
                 "Code": false
               },
               {
