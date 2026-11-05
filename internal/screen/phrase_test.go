@@ -7,11 +7,10 @@ import (
 )
 
 // A line says the phrase its relations share. A bundle whose relations
-// differ, and more than half of whose relations carry a phrase, says the
-// phrase that names more than half of those, with 등. Otherwise it falls
-// back to the via word they share (rule 25). Two different phrases on two
-// relations name no majority, and one phrase among unphrased relations
-// does not speak for them.
+// differ says the phrase most of them carry, the first by name among equals,
+// with 등, even when most carry none, since a bundle that names what crosses
+// it reads better than one that names how (rule 25). A line with no phrase
+// falls back to the via word its relations share.
 func TestALineSaysWhatCrossesIt(t *testing.T) {
 	tr := tree{
 		vias:    map[string]model.Via{"a": "call", "b": "call", "c": "call", "d": "data", "e": "call"},
@@ -23,14 +22,15 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 	}{
 		{[]string{"a", "b"}, "Cypher"},
 		{[]string{"a", "b", "c"}, "Cypher 등"},
-		{[]string{"a", "c"}, "호출"},
-		{[]string{"c", "a"}, "호출"},
+		{[]string{"a", "c"}, "Cypher 등"},
+		{[]string{"c", "a"}, "Cypher 등"},
 		{[]string{"a", "b", "c", "e"}, "Cypher 등"},
-		{[]string{"a", "c", "e"}, "호출"},
-		{[]string{"a", "d", "c", "x"}, ""},
-		{[]string{"a", "b", "d", "x"}, ""},
-		{[]string{"a", "x"}, ""},
-		{[]string{"c", "x", "y"}, ""},
+		{[]string{"a", "c", "e"}, "Cypher 등"},
+		{[]string{"a", "d", "c", "x"}, "Cypher 등"},
+		{[]string{"a", "x"}, "Cypher 등"},
+		{[]string{"c", "x", "y"}, "schema fetch 등"},
+		{[]string{"d", "e"}, ""},
+		{[]string{"e", "x"}, ""},
 		{[]string{"d"}, "데이터"},
 		{[]string{"x"}, ""},
 	} {
