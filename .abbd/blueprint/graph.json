@@ -7794,7 +7794,7 @@
                 "Code": true
               },
               {
-                "Text": ", the one write lint makes. ",
+                "Text": ", the one write lint makes, and prints the weighed, placement and detours ceilings it recorded. The totals line names the detours, the lines that turn back or run beside themselves. ",
                 "Code": false
               },
               {
@@ -20643,7 +20643,15 @@
                 "Code": true
               },
               {
-                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. A line alone in its slot that passes no row and runs down no chain, between boxes in rows next to each other or between a frame chip and a first- or last-row box, takes the x its other end already stands at when that edge has it clear, so it drops straight. A frame's edge keeps no list of the stubs set on it, so there clear means only on the edge and off the chains passing the next row. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
+                "Text": " into the boxes beside its row, and the lines of a box's chips and of the box itself never share an x on one edge. A line alone in its slot that passes no row and runs down no chain, between boxes in rows next to each other or between a frame chip and a first- or last-row box, takes the x its other end already stands at when that edge has it clear, so it drops straight. A frame's edge keeps no list of the stubs set on it, so there clear means only on the edge and off the chains passing the next row. Lines of one kind that leave one box share a departure trunk through every row two of them still pass. Where such a trunk runs on below the gap in which some of its lines step down onto an arrival bus, they step down on the trunk itself when ",
+                "Code": false
+              },
+              {
+                "Text": "joinsHarmless",
+                "Code": true
+              },
+              {
+                "Text": " finds that every place on that bus already reaches every place the trunk leads to below. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
                 "Code": false
               },
               {
@@ -22710,6 +22718,38 @@
               },
               {
                 "Text": " for each excess turn, and the placement debt counts the breaches of the placement criteria. ",
+                "Code": false
+              },
+              {
+                "Text": "noTurnBacks",
+                "Code": true
+              },
+              {
+                "Text": " (B3) finds a line whose stretch runs against the stretch two before it, and ",
+                "Code": false
+              },
+              {
+                "Text": "noDoubles",
+                "Code": true
+              },
+              {
+                "Text": " (B4) two stretches of one traced line, or of two subpaths of one bundle, that run side by side within ",
+                "Code": false
+              },
+              {
+                "Text": "doubleGap",
+                "Code": true
+              },
+              {
+                "Text": ". Their sum is the detours, a total ",
+                "Code": false
+              },
+              {
+                "Text": "gate.go",
+                "Code": true
+              },
+              {
+                "Text": " holds to a ceiling of its own. ",
                 "Code": false
               },
               {
@@ -25345,7 +25385,7 @@
                 "Code": true
               },
               {
-                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals, and under ",
+                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the placement debt and the detours, as the file's header says), and under ",
                 "Code": false
               },
               {
