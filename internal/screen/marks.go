@@ -290,8 +290,7 @@ const (
 	// how far it stands off its line, and labelRoom how far it keeps from
 	// every other mark.
 	labelPx, labelH, labelPad, labelOff, labelRoom = 11, 10, 10, 3, 2
-	// labelMax is the widest a label may be, about a phrase of
-	// model.PhraseMax letters. A longer one is left to the tooltip.
+	// labelMax is the widest a label may be, about 21 letters with 등.
 	labelMax = 170
 	// most is the mark after a phrase that names most of a line's
 	// relations but not all.
@@ -316,24 +315,26 @@ func (l Label) area() box {
 }
 
 // word is what a wire's label says about the relations it stands for: the
-// phrase they all share; else, when more than half of them carry a phrase,
-// the phrase that names more than half of those, marked with 등 for the
-// rest; else the via word they all share; else "".
+// phrase they all share; else the phrase most of them carry, the first by
+// name among equals, marked with 등 for the rest; else, or when that phrase
+// is wider than labelMax, the via word they all share; else "".
 func word(t tree, rels []string) string {
-	n, phrased := map[string]int{}, 0
+	n, best := map[string]int{}, ""
 	for _, r := range rels {
 		if p := t.phrases[r].text; p != "" {
 			n[p]++
-			phrased++
 		}
 	}
 	for p, c := range n {
-		switch {
-		case c == len(rels):
-			return p
-		case 2*c > phrased && 2*phrased > len(rels):
-			return p + most
+		if c > n[best] || c == n[best] && p < best {
+			best = p
 		}
+	}
+	if best != "" && n[best] < len(rels) {
+		best += most
+	}
+	if best != "" && textWidth(best, labelPx) <= labelMax {
+		return best
 	}
 	via := ""
 	for i, r := range rels {
@@ -346,16 +347,18 @@ func word(t tree, rels []string) string {
 	return via
 }
 
-// said lists the phrases of a wire's relations, each once and with whose
-// words they are, for its tooltip.
+// said lists the phrases of a wire's relations, each once with whose words
+// it is and how many of the relations carry it, for its tooltip.
 func said(t tree, rels []string) []string {
-	var out []string
+	n := map[string]int{}
 	for _, r := range rels {
 		if p := t.phrases[r]; p.text != "" {
-			if s := fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)]); !slices.Contains(out, s) {
-				out = append(out, s)
-			}
+			n[fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)])]++
 		}
+	}
+	out := make([]string, 0, len(n))
+	for s, c := range n {
+		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(rels)))
 	}
 	slices.Sort(out)
 	return out
@@ -436,9 +439,6 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			continue
 		}
 		tw := textWidth(s, labelPx)
-		if tw > labelMax {
-			continue
-		}
 		said := slices.ContainsFunc(d.Wires[i].Rels, func(r string) bool { return t.phrases[r].text == strings.TrimSuffix(s, most) })
 		var mine []seg
 		for _, g := range segs {
