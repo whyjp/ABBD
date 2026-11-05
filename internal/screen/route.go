@@ -204,6 +204,8 @@ type routing struct {
 	back []bool
 	// shares says some lines could share an arrival bus.
 	shares bool
+	// roomy says the counted tactic would give some ×N room (lay).
+	roomy bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
@@ -627,6 +629,29 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	// set is where each line's end already stands on its edge, by line and
 	// whether it is the line's start.
 	set := map[int]map[bool]int{}
+	// reach is how many lines of each arrival bus drop into each place, the
+	// ×N its drop shows (draw).
+	type into struct {
+		bus   int
+		place string
+	}
+	reach := map[into]int{}
+	for i := range reqs {
+		if plans[i].arr >= 0 {
+			reach[into{drop(i), reqs[i].to.key}]++
+		}
+	}
+	shown := func(sl slot) int {
+		i := sl.is[0]
+		if b := plans[i].dep; sl.leave && b >= 0 {
+			return len(buses[b].members)
+		}
+		if b := drop(i); !sl.leave && b >= 0 {
+			return reach[into{b, reqs[i].to.key}]
+		}
+		return 0
+	}
+	roomy := false
 	for _, k := range sortedKeys(edges) {
 		var slots []slot
 		seen := map[[2]int]int{}
@@ -806,37 +831,64 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 				}
 			}
 		}
-		// A slot of several lines carries a ×N beside its stub or drop, so
-		// between two other slots it keeps the count's width from the
-		// nearer of them, rule 22, where the edge has room for it.
+		// spread keeps each slot apartBy[s] from the slot before it and
+		// apartBy[s+1] from the slot after it, within the edge.
+		spread := func(apartBy []int) []int {
+			ys := slices.Clone(xs)
+			edge := r.lo - gap
+			for s := range ys {
+				ys[s] = max(ys[s], edge+apartBy[s])
+				edge = ys[s]
+			}
+			edge = r.hi + gap
+			for s := len(ys) - 1; s >= 0; s-- {
+				ys[s] = min(ys[s], edge-apartBy[s+1])
+				edge = ys[s]
+			}
+			return ys
+		}
 		apartBy := make([]int, len(xs)+1)
 		for s := range apartBy {
 			apartBy[s] = gap
 		}
-		for s := 1; s < len(xs)-1 && l.counted; s++ {
-			if n := len(slots[s].is); n >= 2 {
-				w := textWidth(fmt.Sprintf("×%d", n), 11) + 9
-				if xs[s+1]-xs[s] >= xs[s]-xs[s-1] {
-					apartBy[s+1] = max(apartBy[s+1], w)
-				} else {
-					apartBy[s] = max(apartBy[s], w)
-				}
+		// A ×N stands on whichever side of its stub or drop has the more
+		// open ink (anchor), so a slot that shows one between two others
+		// keeps the count's width on its wider side, rule 22. The end slots
+		// have the edge's open end beside them. Each count in turn gets
+		// that room where the edge still has it and no slot the room moves
+		// stands on a line of the box's chips. A slot moved off a chain
+		// stays: its jog is what judge weighs against the room. roomy says
+		// some count got room, so counted draws something else.
+		plain := spread(apartBy)
+		ys := plain
+		for s := 1; s+1 < len(xs); s++ {
+			n := shown(slots[s])
+			if n < 2 {
+				continue
+			}
+			try := slices.Clone(apartBy)
+			side := s + 1
+			if ys[s+1]-ys[s] < ys[s]-ys[s-1] {
+				side = s
+			}
+			try[side] = max(try[side], textWidth(fmt.Sprintf("×%d", n), 11)+9)
+			if sum(try[1:len(xs)]) > r.hi-r.lo {
+				continue
+			}
+			zs := spread(try)
+			ok := true
+			for t, z := range zs {
+				ok = ok && (z == plain[t] || r.node == "" || apart(z))
+			}
+			if ok {
+				roomy = roomy || !slices.Equal(zs, ys)
+				apartBy, ys = try, zs
 			}
 		}
-		if sum(apartBy[1:len(xs)]) > r.hi-r.lo {
-			for s := range apartBy {
-				apartBy[s] = gap
-			}
-		}
-		edge := r.lo - gap
-		for s := range xs {
-			xs[s] = max(xs[s], edge+apartBy[s])
-			edge = xs[s]
-		}
-		edge = r.hi + gap
-		for s := len(xs) - 1; s >= 0; s-- {
-			xs[s] = min(xs[s], edge-apartBy[s+1])
-			edge = xs[s]
+		if l.counted {
+			xs = ys
+		} else {
+			xs = plain
 		}
 		if r.node != "" {
 			used[edgeOf] = append(used[edgeOf], xs...)
@@ -1621,7 +1673,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	for i := range reqs {
 		backs[i] = back(i)
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy}
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more

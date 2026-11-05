@@ -60,6 +60,9 @@ type cost struct {
 	// Weighed so for a module's page too, it took 162 more over the
 	// fixtures for one view fewer past the screen.
 	over int
+	// roomy says the counted tactic would give some ×N room, so drawing
+	// with it would draw something else.
+	roomy bool
 }
 
 // past is 1 for a drawing that runs past one screen, else 0.
@@ -111,7 +114,7 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid}
+	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -171,14 +174,6 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 	}
 }
 
-// readsBetter says lint reads drawing a better than drawing b.
-func readsBetter(a, b Drawing) bool {
-	var ca, cb cost
-	ca.judge(a)
-	cb.judge(b)
-	return ca.beats(cb)
-}
-
 // laneMoves is how many more placement breaches and folded chips a laned
 // drawing may have than the unlaned drawings of its view: its lanes save
 // steps by standing chips away from their boxes, and seen weighs each
@@ -213,8 +208,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	var bc cost
 	var bt tactic
 	found := false
-	least, plain, crossed, ranked := 1<<20, 1<<20, 1<<20, 1<<20
-	hard, past := 1<<20, 1
+	b := newGates()
 	for i, t := range ts {
 		var c cost
 		v, ok := draw(t, &c)
@@ -225,38 +219,59 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			continue
 		}
 		judge(v, &c)
-		if !t.fold && !t.entry {
-			ranked, hard, past = min(ranked, c.moved), min(hard, c.hard), min(past, c.past())
-		} else if c.moved > ranked || c.hard >= hard && c.past() >= past {
-			continue
-		}
-		if !t.gather {
-			crossed = min(crossed, c.crossed)
-		} else if c.crossed > crossed {
-			continue
-		}
-		if !t.laned {
-			least, plain = min(least, c.moved), min(plain, c.linted-stepCrossings*c.moved)
-		} else if c.moved > least+laneMoves || c.linted-stepCrossings*c.moved > plain {
+		if !b.admit(t, c) {
 			continue
 		}
 		if i == 0 || c.beats(bc) {
 			best, bc, bt, found = v, c, t, true
 		}
 	}
-	// The kept drawing is drawn again with room for its counts, and that
-	// is kept unless it reads worse.
-	if found {
+	// The kept drawing is drawn again with room for its counts, where some
+	// count would get it, and that is kept if the checks above pass it and
+	// it reads no worse.
+	if found && bc.roomy {
 		bt.counted = true
 		var c cost
 		if v, ok := draw(bt, &c); ok {
 			judge(v, &c)
-			if !bc.beats(c) {
+			if b.admit(bt, c) && !bc.beats(c) {
 				best = v
 			}
 		}
 	}
 	return best
+}
+
+// gates are the least costs, over the drawings choose read with a tactic
+// that neither lanes, gathers nor ranks anew, that a drawing with one of
+// those tactics is measured against.
+type gates struct {
+	least, plain, crossed, ranked, hard, past int
+}
+
+func newGates() gates {
+	return gates{least: 1 << 20, plain: 1 << 20, crossed: 1 << 20, ranked: 1 << 20, hard: 1 << 20, past: 1}
+}
+
+// admit says whether choose may keep a drawing of cost c drawn with t, and
+// lowers b by c where t is the plain kind of tactic the bound is over.
+func (b *gates) admit(t tactic, c cost) bool {
+	if !t.fold && !t.entry {
+		b.ranked, b.hard, b.past = min(b.ranked, c.moved), min(b.hard, c.hard), min(b.past, c.past())
+	} else if c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past {
+		return false
+	}
+	if !t.gather {
+		b.crossed = min(b.crossed, c.crossed)
+	} else if c.crossed > b.crossed {
+		return false
+	}
+	if !t.laned {
+		b.least, b.plain = min(b.least, c.moved), min(b.plain, c.linted-stepCrossings*c.moved)
+	} else if c.moved > b.least+laneMoves || c.linted-stepCrossings*c.moved > b.plain {
+		return false
+	}
+	return true
 }
 
 type strand struct {

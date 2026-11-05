@@ -45,6 +45,8 @@ type Inside struct {
 	// gathered says the view was drawn by a gathering tactic, so its focus
 	// views gather their chips the same way.
 	gathered bool
+	// roomy says the counted tactic would give some ×N room (lay).
+	roomy bool
 }
 
 // Group is a run of names that share a first word, shown once as Head.
@@ -611,6 +613,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	routed := l.route(reqs)
 	paths := routed.drawn
 	weighed(read, routed, reqs)
+	ins.roomy = routed.roomy
 
 	frame.H = l.gapTop[len(l.rows)] + l.gapH[len(l.rows)] - frame.Y
 	if len(bottoms) > 0 {
