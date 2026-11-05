@@ -6,7 +6,7 @@ An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, s
 - `judge-scores.tsv` holds one blind judge pass (Opus) over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
 - `lint-levels.tsv` is `abbd lint --json` for every run, measured with the a2611d7 binary.
 - `decisions.tsv` joins both and records the verdicts. A variant is kept only if, on judge means averaged over all judge passes, it beats both base and the current kept iteration in at least 2 of 3 repositories, and in the third loses to neither by more than the passes' disagreement there.
-- `shots/` holds the base, it3 and it4 overviews.
+- `shots/` holds the base, it3, it4 and it5 overviews.
 
 ## Verdict
 
@@ -46,4 +46,28 @@ The same base and it3 screenshots scored lower this round than in the single pas
 
 ## Iteration 5
 
-it5 (fa9a75c) tests iteration 4's phrase rule alone. A line whose relations carry different phrases says the phrase the most of them carry, with 등, and falls back to the via word only when none carries a phrase. The skill text, the part rule and the overview bound are as on main. The fixtures hold no phrase, so their lint table is unchanged. It is unjudged.
+it5 (fa9a75c) tests iteration 4's phrase rule alone. A line whose relations carry different phrases says the phrase the most of them carry, with 등, and falls back to the via word only when none carries a phrase. The skill text, the part rule and the overview bound are as on main.
+
+The change is in the renderer only, so it5 was not run as new candidates. The it3 runs were copied and synced with the fa9a75c binary. Every element of every page except label text is byte-identical to it3, and so is every lint total (`it5-*` and `it3k5-*` rows in `lint-levels.tsv`). The screenshots are the same 9 pages as it3's, taken the same way; retaking an it3 page reproduced its old screenshot byte for byte.
+
+On the overviews the via words give way to phrases:
+
+| repo | it3 labels | it5 labels |
+|---|---|---|
+| gin | 1 phrase with 등, 11 via words | 6 phrases with 등, 5 via words |
+| httpie | 2 phrases | 2 phrases, 7 phrases with 등 |
+| storefront | 2 phrases, 8 via words | 2 phrases, 4 phrases with 등 |
+
+Three fresh Opus judges scored base, it3 and it5 in one pass each, under blind seeds 5303, 6211 and 8803. Rows `@5a`, `@5b` and `@5c` in `judge-scores.tsv` are the passes and `@5` their average. Averaged means, with the passes in brackets:
+
+| repo | base | it3 | it5 |
+|---|---|---|---|
+| gin | 2.48 (2.33, 2.61, 2.50) | 3.09 (3.00, 3.11, 3.17) | 3.19 (3.06, 3.28, 3.22) |
+| httpie | 2.55 (2.44, 2.61, 2.61) | 2.24 (2.22, 2.33, 2.17) | 2.30 (2.28, 2.39, 2.22) |
+| storefront | 3.13 (3.11, 3.17, 3.11) | 3.24 (3.28, 3.06, 3.39) | 3.46 (3.50, 3.33, 3.56) |
+
+All three passes rank the sets the same way: it5, it3, base on gin and storefront, and base, it5, it3 on httpie. Two passes differ by 0.11 to 0.15 on a set mean on average, and by 0.33 at most.
+
+it5 is rejected and reverted in 79f1779. It beats base and it3 on gin and storefront. On httpie it loses to base by 0.26, more than the largest pass disagreement there (0.17).
+
+The rule judges a renderer-only change against base's topology, though. it5 draws it3's runs, and it3 already lost httpie to base. Paired against it3, the change raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged, and leaves lines (c4) unchanged. Its mean gain over it3 is 0.09, 0.06 and 0.22. A rule that compares a drawing change with the drawing it changes would keep it.
