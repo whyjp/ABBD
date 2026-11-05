@@ -83,17 +83,17 @@ func (d *Drawing) hub() {
 	if top < 0 || n[d.Boxes[top].ID] < hubLines || float64(n[d.Boxes[top].ID]) < hubOver*float64(next) {
 		return
 	}
-	d.Boxes[top].Class += " lead hub"
+	d.Boxes[top].Role = "hub"
 }
 
 // role is what a box is in its view beyond its kind.
 func role(b Box) string {
-	switch c := " " + b.Class + " "; {
-	case strings.Contains(c, " hub "):
+	switch {
+	case b.Role == "hub":
 		return "허브"
-	case strings.Contains(c, " lead "):
+	case b.Role == "entry":
 		return "진입점"
-	case strings.Contains(c, " loose "):
+	case !coloured(b):
 		return "외부"
 	}
 	return ""
@@ -153,7 +153,7 @@ func subWidth(s string) int {
 // Filled is the box the view fills, if any, for the key.
 func (d Drawing) Filled() *Box {
 	for i, b := range d.Boxes {
-		if strings.Contains(" "+b.Class+" ", " lead ") {
+		if b.Role != "" {
 			return &d.Boxes[i]
 		}
 	}

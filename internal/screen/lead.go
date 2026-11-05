@@ -119,9 +119,6 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 		return
 	}
 	l := &Lead{Key: key, Title: title, Entry: hops[0].from}
-	if key != "" {
-		l.Title = "주 흐름: " + title
-	}
 	for _, b := range d.Boxes {
 		if b.ID == l.Entry {
 			l.Hue = b.Hue
@@ -154,7 +151,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 	d.quiet()
 	for i := range d.Boxes {
 		if d.Boxes[i].ID == l.Entry && d.Boxes[i].Hue != "" {
-			d.Boxes[i].Class += " lead"
+			d.Boxes[i].Role = "entry"
 		}
 	}
 }

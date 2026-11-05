@@ -84,6 +84,9 @@ type Box struct {
 	// Lit are the classes that light the box while a reader points at it
 	// or at a box it shares a line with (hover.go).
 	Lit string `json:"-"`
+	// Role is "entry" for the box a view's lead starts from and "hub" for
+	// one most lines touch; either is drawn filled (dress.go).
+	Role string `json:",omitempty"`
 }
 
 // Text is one line of a label and where it starts; Mid centres it on X.
