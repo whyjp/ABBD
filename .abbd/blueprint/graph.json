@@ -20659,7 +20659,31 @@
                 "Code": true
               },
               {
-                "Text": " compares every pair of strands. ",
+                "Text": " compares every pair of strands. A line between two modules that use each other reads both ways, so two of them bundled at one box would join their far ends. Where some do (",
+                "Code": false
+              },
+              {
+                "Text": "bundlesPairs",
+                "Code": true
+              },
+              {
+                "Text": "), ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " also draws the view with each such line on buses of its own pair, and keeps that drawing unless ",
+                "Code": false
+              },
+              {
+                "Text": "costOf",
+                "Code": true
+              },
+              {
+                "Text": " finds it breaks more of rules 13 and 15; the checker's rule 4 counts each such line as a bundle of its own. ",
                 "Code": false
               },
               {

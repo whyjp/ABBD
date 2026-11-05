@@ -74,3 +74,14 @@ By set mean, all three passes rank it5, it3, base on gin and base, it5, it3 on h
 it5 is kept under the paired rule. It changes only the renderer, and it draws it3's runs, so it is judged against it3. It raises labels (c5) in all 9 pass-and-repo cells, by 0.44 on gin, 0.33 on httpie and 1.22 on storefront averaged. Lines (c4) and every other criterion except overall (c6) score the same as it3's, and c6 rises by 0.11 on gin and storefront. Its mean gain over it3 is 0.09, 0.06 and 0.22.
 
 Under the fresh-run rule it would have been rejected, and it was first reverted in 79f1779 on that ground. It beats base and it3 on gin and storefront, but loses httpie to base by 0.26, more than the largest pass disagreement there (0.17). That gap is it3's topology, which it5 draws unchanged, so it measures it3 against base, not the label rule. f0d42b1 undid that revert.
+
+## Iteration 6
+
+it6 is a renderer-only change, so it is judged under the paired rule against it5: the it5 runs (`w8/*-it5`) copied to `w9/*-it6` and synced with the it6 binary, the same 9 pages screenshotted the same way.
+
+The criteria it targets, named before any judge runs, are lines (c4) and density (c2). In rounds 3 to 5 every blind judge named the same two defects in all three repositories:
+
+- On the overview, lines merge into shared orange buses that read as joining modules that do not relate, with staircases near the bus and long detours round the right edge. Lint counts the false joins as J3 phantoms: 12 on gin's overview and 7 on httpie's.
+- On part pages, the lines to the frame's chips tangle the page while the boxes inside are few: gin's shared runtime draws about 25 lines from 6 chips into 5 boxes, httpie's runtime 13 chips, and httpie's program entry 18 arriving lines.
+
+Each hypothesis is measured on the fixture lint gate and on the held-out re-renders, and logged in `eval/lint/decisions.tsv`. It is kept only if it lowers crossings, phantoms or excess turns on the re-renders without raising hard breaches on the fixtures.
