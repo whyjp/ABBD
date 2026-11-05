@@ -27,6 +27,8 @@ var gated = []struct {
 }{
 	{"weighed", func(t Totals) int { return t.Weighed }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
+	// overflow is how many views pass one screen (S).
+	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way

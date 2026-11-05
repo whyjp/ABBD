@@ -210,6 +210,10 @@ type tactic struct {
 	// gather draws one chip per box and side for the modules outside
 	// that meet it with no contract, instead of one chip per module.
 	gather bool
+	// fold leaves the edges of two places that use each other out of the
+	// ranking (arrange), and entry breaks each cycle where the places
+	// ranked before it come in.
+	fold, entry bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},
@@ -219,6 +223,10 @@ var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {na
 	{loose: true}, {loose: true, median: true}, {loose: true, reversed: true},
 	{cover: true}, {loose: true, cover: true}, {loose: true, cover: true, reorder: true},
 	{gather: true}, {gather: true, median: true}}
+
+// overviewTactics are those an overview is drawn with: it has no frame, so
+// only the order of its rows and its ranking vary.
+var overviewTactics = []tactic{{}, {fold: true}, {fold: true, median: true}, {entry: true}}
 
 // order sorts each row to cut the crossings between adjacent rows: sweeps
 // by where each item's neighbours stand, down and up, each followed by

@@ -361,6 +361,8 @@ type overview struct {
 	// and origins say where each stored relation came from.
 	rels    map[string][]string
 	origins map[string]model.Origin
+	// read is what the routing draw last made costs a reader (costOf).
+	read cost
 }
 
 // top lists the top-level units, those with no parent, and the drawn
@@ -442,7 +444,7 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // overview, then keeps only that module's part of it and lays that out: the
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {
+func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -569,7 +571,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overvi
 			nodes = append(nodes, lnode{id: string(c), w: w, h: chipH + 12 + (len(ls)-1)*14})
 		}
 	}
-	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})
+	o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)
 	o.layout.top = padY
 	return o
 }
@@ -930,6 +932,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
 	}
 	routed := l.route(reqs)
+	o.read = costOf(routed, reqs)
 	paths := routed.drawn
 	at = chips()
 

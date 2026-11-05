@@ -2114,8 +2114,8 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int) *overview {\"",
-        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic) *overview {\"",
+        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
       ]
     },
     {
@@ -4381,7 +4381,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
+      "Quote": "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
     },
     {
       "From": "MOD-0038",
@@ -7754,7 +7754,15 @@
                 "Code": true
               },
               {
-                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
+                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. The ceilings are the weighed sum, the placement debt and the overflow, the views past one screen, and ",
+                "Code": false
+              },
+              {
+                "Text": "--record",
+                "Code": true
+              },
+              {
+                "Text": " prints all three. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
                 "Code": false
               },
               {
@@ -20197,7 +20205,111 @@
                 "Code": true
               },
               {
-                "Text": " beats the best so far, which starts as the first tactic's. The overview is laid out with the plain tactic only and never weighed, since every module's page holds a focus view seated by it. ",
+                "Text": " beats the best so far, which starts as the first tactic's. The overview keeps the plain order of its rows, since every module's page holds a focus view seated by it, but ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " picks its ranking from ",
+                "Code": false
+              },
+              {
+                "Text": "overviewTactics",
+                "Code": true
+              },
+              {
+                "Text": ": plain, ",
+                "Code": false
+              },
+              {
+                "Text": "fold",
+                "Code": true
+              },
+              {
+                "Text": ", which leaves the edges of two places that use each other out of the ranking, as one two-headed line joins them, and ",
+                "Code": false
+              },
+              {
+                "Text": "entry",
+                "Code": true
+              },
+              {
+                "Text": ", which breaks each cycle at the node the places already ranked use most. ",
+                "Code": false
+              },
+              {
+                "Text": "arrange",
+                "Code": true
+              },
+              {
+                "Text": " marks a fold or entry that changes nothing ",
+                "Code": false
+              },
+              {
+                "Text": "idle",
+                "Code": true
+              },
+              {
+                "Text": ", and the draw closure skips it. For the overview ",
+                "Code": false
+              },
+              {
+                "Text": "cost.over",
+                "Code": true
+              },
+              {
+                "Text": " is how far the drawing runs past one screen (criterion S): ",
+                "Code": false
+              },
+              {
+                "Text": "screenW",
+                "Code": true
+              },
+              {
+                "Text": " wide and the view's ",
+                "Code": false
+              },
+              {
+                "Text": "room",
+                "Code": true
+              },
+              {
+                "Text": " tall, ",
+                "Code": false
+              },
+              {
+                "Text": "screenH",
+                "Code": true
+              },
+              {
+                "Text": " less what its page sets above the drawing, the overview's questions (",
+                "Code": false
+              },
+              {
+                "Text": "overviewRoom",
+                "Code": true
+              },
+              {
+                "Text": ") or a page's note. Whether it runs past is weighed right after the hard breaches and how far only after lint's weighed sum. A fold or entry drawing is passed over when it moves more boxes than the least plainly ranked one, or when it neither has fewer hard breaches nor fits where the plain one does not, so a small change cannot flip the overview's ranking to save a few turns; ",
+                "Code": false
+              },
+              {
+                "Text": "fold_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the fold and ",
+                "Code": false
+              },
+              {
+                "Text": "fit_test.go",
+                "Code": true
+              },
+              {
+                "Text": " the choice. ",
                 "Code": false
               },
               {
@@ -20229,7 +20341,7 @@
                 "Code": true
               },
               {
-                "Text": " compares touches, then breaks of rules 13 and 15, then lint's hard breaches, then the crossings plus the excess turns plus ",
+                "Text": " compares touches, then breaks of rules 13 and 15, then lint's hard breaches, then the overflow, then the crossings plus the excess turns plus ",
                 "Code": false
               },
               {
@@ -23152,7 +23264,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), tactic{})\""
+            "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
           ]
         },
         {

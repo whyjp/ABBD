@@ -52,7 +52,18 @@ type cost struct {
 	hard, seen, linted, crossed int
 	// moved counts the placement breaches and folded chips.
 	moved int
+	// over is how far, in pixels, the drawing runs past one screen (S),
+	// read for the overview only. Whether it runs past at all is weighed
+	// right after the hard breaches: a reader who must scroll cannot read
+	// it at a glance. How far is weighed only after linted, so a drawing a
+	// few pixels shorter that still scrolls wins nothing by crossing more.
+	// Weighed so for a module's page too, it took 162 more over the
+	// fixtures for one view fewer past the screen.
+	over int
 }
+
+// past is 1 for a drawing that runs past one screen, else 0.
+func (c cost) past() int { return min(c.over, 1) }
 
 // judge reads the drawn view the way abbd lint does: its hard breaches,
 // then seen, the crossings, one more for each excess turn and
@@ -66,7 +77,7 @@ type cost struct {
 // crossings each traded crossings for corners a reader does not see as a
 // staircase. Weighing them as none let one crossing buy 12 of them.
 func (c *cost) judge(d Drawing) {
-	vl, err := lintView(view{d: d, budget: insideWidth})
+	vl, err := lintView(view{d: d, budget: insideWidth, room: screenH})
 	if err != nil {
 		c.hard = 1 << 20
 		return
@@ -88,8 +99,8 @@ func (c *cost) judge(d Drawing) {
 // stepCrossings crossings, so a drawing with fewer wins unless it buys each
 // one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, c.hard, c.seen, c.linted, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, o.hard, o.seen, o.linted, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.past(), c.seen, c.linted, c.over, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.past(), o.seen, o.linted, o.over, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
@@ -179,12 +190,22 @@ const laneMoves = 1
 // over the unlaned drawings judge read; one the touches and breaks passed
 // over sets neither. A gathered drawing that crosses more than the least of
 // the ungathered ones is passed over too: its chips stand over their boxes,
-// so it should only spare crossings, never add them to save turns.
-func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
+// so it should only spare crossings, never add them to save turns. A
+// drawing ranked by fold or entry that stands more boxes off what they join
+// than the least of the plainly ranked ones is passed over as well: a new
+// ranking should take rows away, not move boxes. It is passed over too
+// unless it has fewer hard breaches than every plainly ranked drawing, or
+// fits the screen where none of them does: a new ranking moves every box's
+// centre and so rewrites every focus page seated by them, so it must buy
+// more than a few saved turns, or a small change to the units would flip
+// the overview between rankings. These checks come first, so a drawing
+// they pass over sets no bound of the others.
+func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var best T
 	var bc cost
-	least, plain, crossed := 1<<20, 1<<20, 1<<20
-	for i, t := range tactics {
+	least, plain, crossed, ranked := 1<<20, 1<<20, 1<<20, 1<<20
+	hard, past := 1<<20, 1
+	for i, t := range ts {
 		var c cost
 		v, ok := draw(t, &c)
 		if !ok {
@@ -194,6 +215,11 @@ func choose[T any](draw func(t tactic, read *cost) (T, bool), judge func(v T, re
 			continue
 		}
 		judge(v, &c)
+		if !t.fold && !t.entry {
+			ranked, hard, past = min(ranked, c.moved), min(hard, c.hard), min(past, c.past())
+		} else if c.moved > ranked || c.hard >= hard && c.past() >= past {
+			continue
+		}
 		if !t.gather {
 			crossed = min(crossed, c.crossed)
 		} else if c.crossed > crossed {

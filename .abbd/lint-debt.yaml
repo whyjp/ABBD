@@ -4,6 +4,7 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
+    overflow: 1
     placement: 41
     weighed: 1247
 debt:

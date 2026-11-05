@@ -86,7 +86,7 @@ func (e env) lint(pos []string) error {
 				fmt.Fprintf(e.stdout, "lint: kept the level of %s: %s\n", l.View, r)
 			}
 		}
-		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, placement %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["placement"], store.Dir)
+		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, placement %d, overflow %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["placement"], d.Ceilings["overflow"], store.Dir)
 		return nil
 	}
 	every := only == ""
@@ -153,7 +153,7 @@ func printLint(e env, r lintReport) {
 	}
 	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
 	if len(r.Ceilings) > 0 {
-		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, placement %d\n", r.Ceilings["weighed"], r.Ceilings["placement"])
+		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, placement %d, overflow %d\n", r.Ceilings["weighed"], r.Ceilings["placement"], r.Ceilings["overflow"])
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
