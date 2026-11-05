@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -21,7 +22,21 @@ const (
 	// hubFrom is the fewest users that make a box a shared layer, when
 	// they are also at least half of the view's other boxes.
 	hubFrom = 3
+	// mostHubs is the most shared layers one view has. When as many boxes
+	// qualify as do not, none stands out as the layer the rest stand on.
+	mostHubs = 2
 )
+
+// Bounds are the numbers a level is held to, which the abbd-setup skill
+// states to the agent that chooses the units.
+type Bounds struct {
+	OverviewFewest, OverviewMost, PageFewest, PageMost, LinesPerBox int
+}
+
+// LevelBounds are the bounds Levels holds every view to.
+func LevelBounds() Bounds {
+	return Bounds{overviewFewest, overviewMost, insideFewest, viewBudget, linesPerBox}
+}
 
 // Level is how one full view stands as a level of abstraction: the boxes
 // and the lines it draws, and what to change in the units when the level is
@@ -34,6 +49,9 @@ type Level struct {
 	// shared UI kit. The lines into them do not count toward the density.
 	Hubs   []string `json:"hubs,omitempty"`
 	Advice []string `json:"advice,omitempty"`
+	// Kept is why the repository keeps the view at this level, as
+	// .abbd/lint-debt.yaml records it.
+	Kept string `json:"kept,omitempty"`
 }
 
 // where a full view stands: the overview, the page of a top-level module,
@@ -47,16 +65,20 @@ const (
 )
 
 // Levels reads the overview and every module's inside as levels. Focus
-// views are cut from them and are left out.
+// views are cut from them and are left out, and so are features' pages,
+// which draw the units a feature reaches rather than parts of a module.
 func Levels(m Model) []Level {
-	parent := map[string]string{}
+	unit := map[string]UnitRow{}
 	for _, u := range m.Units {
-		parent[u.ID] = u.Parent
+		unit[u.ID] = u
 	}
 	out := []Level{level("overview", m.Overview, atOverview)}
 	for _, ins := range m.Insides {
+		if unit[ins.ID].Kind != "MOD" {
+			continue
+		}
 		at := atTop
-		if parent[ins.ID] != "" {
+		if unit[ins.ID].Parent != "" {
 			at = atNested
 		}
 		out = append(out, level(ins.ID+" "+ins.Name, ins.Drawing, at))
@@ -66,33 +88,41 @@ func Levels(m Model) []Level {
 
 func level(name string, d Drawing, at where) Level {
 	l := Level{View: name}
+	// The parts are the view's boxes. A frame's chips stand for what lies
+	// outside the module, and a contract no drawn module provides stands
+	// loose on the overview, so neither is a part.
+	part := map[string]bool{}
 	for _, b := range d.Boxes {
-		// A contract no drawn module provides stands loose on the
-		// overview. It is not one of the system's parts.
 		if at != atOverview || b.Class == "design" {
-			l.Boxes++
+			part[b.ID] = true
 		}
 	}
-	pairs := map[[2]string]bool{}
+	l.Boxes = len(part)
+	// A line joins two parts once, whichever way it runs, and one between
+	// two parts that use each other is one line.
+	lines := map[[2]string]bool{}
 	users := map[string]map[string]bool{}
 	for _, r := range d.Relations {
-		pairs[r] = true
-		if users[r[1]] == nil {
-			users[r[1]] = map[string]bool{}
+		from, to := r[0], r[1]
+		if !part[from] || !part[to] || from == to {
+			continue
 		}
-		users[r[1]][r[0]] = true
+		lines[[2]string{min(from, to), max(from, to)}] = true
+		if users[to] == nil {
+			users[to] = map[string]bool{}
+		}
+		users[to][from] = true
 	}
-	l.Lines = len(pairs)
-	hub := map[string]bool{}
+	l.Lines = len(lines)
+	hub := hubs(d.Boxes, part, users)
 	for _, b := range d.Boxes {
-		if n := len(users[b.ID]); n >= hubFrom && 2*n >= l.Boxes-1 {
-			hub[b.ID] = true
+		if hub[b.ID] {
 			l.Hubs = append(l.Hubs, b.Name)
 		}
 	}
 	own := 0
-	for p := range pairs {
-		if !hub[p[1]] {
+	for p := range lines {
+		if !(hub[p[1]] && users[p[1]][p[0]]) && !(hub[p[0]] && users[p[0]][p[1]]) {
 			own++
 		}
 	}
@@ -117,6 +147,27 @@ func level(name string, d Drawing, at where) Level {
 		l.Advice = append(l.Advice, fmt.Sprintf("the view draws %d lines between %s%s, more than %d a box. Merge parts that change together into one responsibility, and make what most parts use, such as shared types, helpers or UI, one shared module, whose incoming lines do not count here", own, n, besides, linesPerBox))
 	}
 	return l
+}
+
+// hubs are the shared layers of a view: the parts used by at least hubFrom
+// other parts and half of them, the most used first and at most mostHubs.
+// When as many parts qualify as do not, none is a shared layer.
+func hubs(boxes []Box, part map[string]bool, users map[string]map[string]bool) map[string]bool {
+	var found []string
+	for _, b := range boxes {
+		if n := len(users[b.ID]); part[b.ID] && n >= hubFrom && 2*n >= len(part)-1 {
+			found = append(found, b.ID)
+		}
+	}
+	if 2*len(found) >= len(part) {
+		return nil
+	}
+	sort.SliceStable(found, func(i, j int) bool { return len(users[found[i]]) > len(users[found[j]]) })
+	hub := map[string]bool{}
+	for _, id := range found[:min(len(found), mostHubs)] {
+		hub[id] = true
+	}
+	return hub
 }
 
 func boxCount(n int) string {

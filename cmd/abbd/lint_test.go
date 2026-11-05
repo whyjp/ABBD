@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/screen"
 )
 
 func lintAt(t *testing.T, root string, args ...string) (int, string) {
@@ -186,15 +188,94 @@ func TestLintRecordNeverRaisesACeiling(t *testing.T) {
 
 // The first --record of a repository refuses while a view with hard
 // breaches stands at the wrong level, since the units, not the routing,
-// owe those breaches.
+// owe those breaches. Orca's renderer page draws 21 lines between 9 parts,
+// and its shared types page 22 parts.
 func TestLintFirstRecordWaitsForTheLevels(t *testing.T) {
-	root := copyFixture(t, "pstack", "")
+	root := copyFixture(t, "orca", "")
 	code, out := lintAt(t, root, "--record")
-	if code != exitError || !strings.Contains(out, "will not take the first debt") || !strings.Contains(out, "overview (the view draws") {
-		t.Fatalf("exit %d, want 1 naming the overview's level:\n%s", code, out)
+	if code != exitError || !strings.Contains(out, "will not take the first debt") || !strings.Contains(out, "MOD-0072 desktop renderer UI (the view draws 21 lines between 9 boxes") || !strings.Contains(out, "--keep-level VIEW=REASON") {
+		t.Fatalf("exit %d, want 1 naming the renderer page's level and the way to keep it:\n%s", code, out)
 	}
 	if _, err := os.Stat(filepath.Join(root, ".abbd", "lint-debt.yaml")); err == nil {
 		t.Error("the refused record wrote a debt file")
+	}
+}
+
+// A level the agent can justify stays: --keep-level names the view and the
+// reason, the record goes through and keeps the reason in the debt file,
+// and lint then prints it beside the level line and under levels in JSON.
+// A view kept without a reason, or one with no level line, is refused.
+func TestLintRecordKeepsAJustifiedLevel(t *testing.T) {
+	root := copyFixture(t, "orca", "")
+	for _, bad := range []string{"MOD-0072", "overview=it reads", "MOD-0072=  "} {
+		if code, out := lintAt(t, root, "--record", "--keep-level", bad); code != exitError || !strings.Contains(out, "--keep-level") {
+			t.Errorf("--keep-level %q: exit %d, want 1:\n%s", bad, code, out)
+		}
+	}
+	if code, out := lintAt(t, root, "--keep-level", "MOD-0072=x"); code != exitError || !strings.Contains(out, "with --record") {
+		t.Errorf("--keep-level without --record: exit %d:\n%s", code, out)
+	}
+	if code, out := lintAt(t, root, "--record", "--keep-level", "MOD-0072=renderer UI parts are the app's screens", "--keep-level", "MOD-0081=one schema per wire format"); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: renderer UI parts are the app's screens") {
+		t.Fatalf("exit %d, want the record to keep both levels:\n%s", code, out)
+	}
+	b, err := os.ReadFile(filepath.Join(root, ".abbd", "lint-debt.yaml"))
+	if err != nil || !strings.Contains(string(b), "levels:") || !strings.Contains(string(b), "MOD-0081 shared types and schemas: one schema per wire format") {
+		t.Fatalf("the debt file does not keep the reasons (%v):\n%s", err, b)
+	}
+	code, out := lintAt(t, root)
+	if code != exitOK || !strings.Contains(out, "level MOD-0072 desktop renderer UI: kept, renderer UI parts are the app's screens") {
+		t.Fatalf("exit %d, want lint to pass and print the kept reason:\n%s", code, out)
+	}
+	var r lintReport
+	_, out = lintAt(t, root, "--json")
+	if err := json.Unmarshal([]byte(out), &r); err != nil {
+		t.Fatal(err)
+	}
+	kept := map[string]string{}
+	for _, l := range r.Levels {
+		kept[l.View] = l.Kept
+	}
+	if kept["MOD-0072 desktop renderer UI"] == "" || kept["MOD-0081 shared types and schemas"] == "" || kept["overview"] != "" {
+		t.Errorf("levels kept %v, want the two kept views alone", kept)
+	}
+}
+
+// A repository that already keeps a debt file records again whatever its
+// levels say, and the reasons it kept stay while their level lines do.
+func TestLintRecordOverAnExistingDebtFile(t *testing.T) {
+	debt := "ceilings:\n  weighed: 999999\n  placement: 999999\nlevels:\n  MOD-0072 desktop renderer UI: screens\n  MOD-0001 gone: a view that no longer has a level line\n"
+	root := copyFixture(t, "orca", debt)
+	if code, out := lintAt(t, root, "--record"); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: screens") {
+		t.Fatalf("exit %d, want the record to go through and keep the prior reason:\n%s", code, out)
+	}
+	b, _ := os.ReadFile(filepath.Join(root, ".abbd", "lint-debt.yaml"))
+	if !strings.Contains(string(b), "MOD-0072 desktop renderer UI: screens") || strings.Contains(string(b), "MOD-0001 gone") {
+		t.Errorf("the debt file must keep the reason of a level line that stays and drop the rest:\n%s", b)
+	}
+}
+
+// lint --json lists every module's page and the overview under levels, with
+// the parts and the lines between them, and leaves features' pages out:
+// they draw the units a feature reaches, not a module's parts.
+func TestLintJSONListsTheLevels(t *testing.T) {
+	_, out := lintAt(t, fixtureRoot("self"), "--json")
+	var r lintReport
+	if err := json.Unmarshal([]byte(out), &r); err != nil {
+		t.Fatal(err)
+	}
+	by := map[string]screen.Level{}
+	for _, l := range r.Levels {
+		by[l.View] = l
+		if strings.HasPrefix(l.View, "FEAT-") {
+			t.Errorf("levels lists the feature page %s", l.View)
+		}
+	}
+	ov, ok := by["overview"]
+	if !ok || ov.Boxes != 14 || len(ov.Advice) != 1 || strings.Join(ov.Hubs, ",") != "internal/model" {
+		t.Errorf("overview level %+v, want 14 boxes, internal/model as its hub and one level line", ov)
+	}
+	if _, ok := by["MOD-0034 internal/screen"]; !ok {
+		t.Errorf("levels has no MOD-0034 internal/screen: %v", r.Levels)
 	}
 }
 

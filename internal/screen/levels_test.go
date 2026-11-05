@@ -8,8 +8,8 @@ import (
 
 func withBoxes(n int, class string) Drawing {
 	var d Drawing
-	for range n {
-		d.Boxes = append(d.Boxes, Box{Class: class})
+	for i := range n {
+		d.Boxes = append(d.Boxes, Box{ID: fmt.Sprint("b", i), Name: fmt.Sprint("b", i), Class: class})
 	}
 	return d
 }
@@ -34,12 +34,14 @@ func TestLevelsAskForOtherUnits(t *testing.T) {
 		{"empty nested page", withBoxes(0, "inner"), atNested, "fewer than 2"},
 		{"one box under a top-level module", withBoxes(1, "inner"), atTop, "repeats the module"},
 		{"dense page", func() Drawing {
-			d := withBoxes(4, "inner")
-			for i := range 9 {
-				d.Relations = append(d.Relations, [2]string{fmt.Sprint(i), "x"})
+			d := withBoxes(6, "inner")
+			for i := range 6 {
+				for j := i + 1; j < 6; j++ {
+					d.Relations = append(d.Relations, [2]string{fmt.Sprint("b", i), fmt.Sprint("b", j)})
+				}
 			}
 			return d
-		}(), atNested, "9 lines between 4 boxes,"},
+		}(), atNested, "15 lines between 6 boxes,"},
 	}
 	for _, c := range cases {
 		got := strings.Join(level(c.name, c.d, c.at).Advice, "\n")
@@ -48,7 +50,7 @@ func TestLevelsAskForOtherUnits(t *testing.T) {
 		}
 	}
 	d := withBoxes(6, "design")
-	d.Relations = [][2]string{{"a", "b"}, {"b", "c"}}
+	d.Relations = [][2]string{{"b0", "b1"}, {"b1", "b2"}}
 	if a := level("overview", d, atOverview).Advice; len(a) > 0 {
 		t.Errorf("a readable overview asks for %q", a)
 	}
@@ -82,5 +84,61 @@ func TestLevelsLeaveASharedLayerOutOfTheDensity(t *testing.T) {
 func TestLevelsLeaveALeafModuleAlone(t *testing.T) {
 	if a := level("MOD-0001 leaf", withBoxes(0, "inner"), atTop).Advice; len(a) > 0 {
 		t.Errorf("a leaf module asks for %q", a)
+	}
+}
+
+// Only lines between the view's parts count. A frame's chips, the modules
+// outside, and the overview's loose contracts are no parts, so lines to them
+// neither make a view dense nor make a box a shared layer. Two parts that use
+// each other draw one line.
+func TestLevelsCountOnlyLinesBetweenParts(t *testing.T) {
+	d := withBoxes(6, "inner")
+	for i := range 6 {
+		for _, chip := range []string{"outside-a", "outside-b", "outside-c", "outside-d"} {
+			d.Relations = append(d.Relations, [2]string{fmt.Sprint("b", i), chip}, [2]string{chip, fmt.Sprint("b", i)})
+		}
+	}
+	d.Relations = append(d.Relations, [2]string{"b0", "b1"}, [2]string{"b1", "b0"}, [2]string{"b2", "b3"})
+	l := level("MOD-0001 m", d, atNested)
+	if l.Lines != 2 || len(l.Hubs) > 0 || len(l.Advice) > 0 {
+		t.Errorf("lines %d, hubs %v, advice %q; want the 2 lines between parts, no hub and no advice", l.Lines, l.Hubs, l.Advice)
+	}
+
+	o := withBoxes(6, "design")
+	o.Boxes = append(o.Boxes, Box{ID: "loose", Name: "loose", Class: "loose design"})
+	for i := range 6 {
+		o.Relations = append(o.Relations, [2]string{fmt.Sprint("b", i), "loose"})
+	}
+	if l := level("overview", o, atOverview); l.Boxes != 6 || l.Lines != 0 || len(l.Hubs) > 0 {
+		t.Errorf("boxes %d, lines %d, hubs %v; a loose contract is no part and no shared layer", l.Boxes, l.Lines, l.Hubs)
+	}
+}
+
+// When as many parts are used by most of the view as are not, none of them
+// is the layer the rest stand on, and the view's density counts every line.
+// Otherwise at most the two most used are.
+func TestLevelsCapTheSharedLayers(t *testing.T) {
+	d := withBoxes(8, "inner")
+	for i := range 8 {
+		for j := range 4 {
+			if i != j {
+				d.Relations = append(d.Relations, [2]string{fmt.Sprint("b", i), fmt.Sprint("b", j)})
+			}
+		}
+	}
+	if l := level("MOD-0001 m", d, atNested); len(l.Hubs) > 0 || !strings.Contains(strings.Join(l.Advice, ""), "22 lines between 8 boxes,") {
+		t.Errorf("hubs %v, advice %q; want no hub when four of eight qualify, and the density counted in full", l.Hubs, l.Advice)
+	}
+
+	d = withBoxes(9, "inner")
+	for i := range 9 {
+		for _, hub := range []int{0, 1, 2} {
+			if i != hub && (hub < 2 || i < 6) {
+				d.Relations = append(d.Relations, [2]string{fmt.Sprint("b", i), fmt.Sprint("b", hub)})
+			}
+		}
+	}
+	if l := level("MOD-0001 m", d, atNested); strings.Join(l.Hubs, ",") != "b0,b1" {
+		t.Errorf("hubs %v, want the two most used, b0 and b1", l.Hubs)
 	}
 }

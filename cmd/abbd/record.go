@@ -11,11 +11,11 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// evidenceFlags collects every --evidence on the command line.
-type evidenceFlags []string
+// listFlag collects every use of a repeatable flag, such as --evidence.
+type listFlag []string
 
-func (f *evidenceFlags) String() string     { return strings.Join(*f, " ") }
-func (f *evidenceFlags) Set(s string) error { *f = append(*f, s); return nil }
+func (f *listFlag) String() string     { return strings.Join(*f, " ") }
+func (f *listFlag) Set(s string) error { *f = append(*f, s); return nil }
 
 // citations parses --evidence and refuses any quote the file it names does not
 // hold now, so a finding enters the state only with evidence that is live.
