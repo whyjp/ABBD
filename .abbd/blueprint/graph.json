@@ -21031,15 +21031,39 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등 when at least half carry it and otherwise by its first name with 외 and how many do not. A path that stands for several lines counts lines, not relations, so its word adds up to its bus's ",
                 "Code": false
               },
               {
-                "Text": "via",
+                "Text": "×N",
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...), which also stands in when the phrase, with 등, is wider than ",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Wire.carry",
+                "Code": true
+              },
+              {
+                "Text": " gives each wire its distinct ",
+                "Code": false
+              },
+              {
+                "Text": "Rels",
+                "Code": true
+              },
+              {
+                "Text": " and the relations of each line its label speaks for, which on the drop that shows a count are the lines the count counts (",
+                "Code": false
+              },
+              {
+                "Text": "drawn.counted",
+                "Code": true
+              },
+              {
+                "Text": "). A phrase wider than ",
                 "Code": false
               },
               {
@@ -21047,7 +21071,39 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": " keeps the names before its commas outside brackets that fit, and when even those do not fit the next phrase speaks only if at least half carry it. With no phrase that fits, the word is the ",
+                "Code": false
+              },
+              {
+                "Text": "via",
+                "Code": true
+              },
+              {
+                "Text": " word they all share (호출, 데이터, ...). ",
+                "Code": false
+              },
+              {
+                "Text": "TestLabelAudit",
+                "Code": true
+              },
+              {
+                "Text": " holds the label every line of the fixtures and of this repository's own ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " draws to the lines it speaks for and its ",
+                "Code": false
+              },
+              {
+                "Text": "×N",
+                "Code": true
+              },
+              {
+                "Text": ", and no line to a relation held twice. ",
                 "Code": false
               },
               {
