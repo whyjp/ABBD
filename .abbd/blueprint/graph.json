@@ -7770,7 +7770,7 @@
                 "Code": true
               },
               {
-                "Text": " proves both on self's internal/model page, whose rule 13 breach its fixture records as debt, and holds orca src/'s totals and the staircases it names. ",
+                "Text": " proves both on self's internal/model page, whose rule 13 breach its fixture records as debt, and holds orca src/'s excess turns and steps, which only fall, and the staircases it names. ",
                 "Code": false
               },
               {
@@ -20843,7 +20843,31 @@
                 "Code": true
               },
               {
-                "Text": " finds that every place on that bus already reaches every place the trunk leads to below. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Where a pair steps down on the trunk, a line whose end lies under the trunk in the same gap keeps the trunk's x and runs straight on down. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
+                "Text": " finds that every place on that bus already reaches every place the trunk leads to below. A line leaving its departure trunk for an arrival trunk below its top steps down a little before it on a via, except where ",
+                "Code": false
+              },
+              {
+                "Text": "joinsHarmless",
+                "Code": true
+              },
+              {
+                "Text": " says the join misleads no reader: then its track runs onto the trunk and keeps the via's x for the others. The arrival trunk a line leads may pass a row where that line's own departure trunk ended, so it runs on down the lead's chain instead of swinging out to a gap's middle. Where a trunkless stub can stand over the member that leads its arrival trunk, or a member's own chain passes on the far side of the box its bus reaches, ",
+                "Code": false
+              },
+              {
+                "Text": "layStraight",
+                "Code": true
+              },
+              {
+                "Text": " lays the view both ways, standing the stub over that line and letting the far member join the bus on its track, and keeps that drawing only where ",
+                "Code": false
+              },
+              {
+                "Text": "costOf",
+                "Code": true
+              },
+              {
+                "Text": " finds it beats the other. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Where a pair steps down on the trunk, a line whose end lies under the trunk in the same gap keeps the trunk's x and runs straight on down. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
                 "Code": false
               },
               {
