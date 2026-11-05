@@ -117,6 +117,7 @@ func (d *Drawing) hubLines() {
 		}
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
+	d.unlabelKin()
 }
 
 // classNumbers are the numbers of the classes in cls that are p and digits.

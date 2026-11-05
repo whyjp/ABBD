@@ -353,4 +353,32 @@ func (d *Drawing) quiet() {
 		d.Dots[i].Hue = n
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
+	d.unlabelKin()
+}
+
+// unlabelKin drops a label that, once the view is quiet, stands right over
+// a flat track of another line of its colour, where it would read as that
+// line's. Labels were set while the lines wore their boxes' colours. The
+// words stay in the line's tooltip.
+func (d *Drawing) unlabelKin() {
+	for i := range d.Wires {
+		l := d.Wires[i].Label
+		if l == nil {
+			continue
+		}
+		lb := l.area()
+		for j, o := range d.Wires {
+			if j == i || o.Hue != d.Wires[i].Hue || o.Net != 0 && o.Net == d.Wires[i].Net {
+				continue
+			}
+			for _, r := range runs(o.D) {
+				if r[0].y != r[1].y || max(r[0].x, r[1].x) <= lb.x || lb.x+lb.w <= min(r[0].x, r[1].x) {
+					continue
+				}
+				if abs(lb.y+lb.h-r[0].y) <= labelOff+2 || abs(lb.y-r[0].y) <= labelOff+2 {
+					d.Wires[i].Label = nil
+				}
+			}
+		}
+	}
 }
