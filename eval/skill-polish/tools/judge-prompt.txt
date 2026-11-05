@@ -1,0 +1,21 @@
+You are judging architecture diagrams, two at a time. Everything you need is in {pack}: rubric.md (read it first), pairs.tsv, sets.tsv and {n_files} PNG files. Open nothing outside that folder.
+
+The images are blueprint views of the repositories {repos}. Each is one view's whole drawing, captured in dark mode at its drawn size. The UI labels are Korean. A module page shows "<name>의 안" (the module's inside) as its drawing, with its surroundings as dashed chips on the frame. Judge only the drawings. You may use your knowledge of these projects to judge whether the boxes are the parts an engineer would draw.
+
+pairs.tsv lists {n_pairs} comparisons. Each shows one view of one repository drawn by two different versions of the tool, as image A and image B{hover_note}. sets.tsv lists {n_sets} set comparisons, each two sets of images of one repository (an overview and its module pages).
+
+Open every image with the Read tool, then:
+1. For each comparison in pairs.tsv, answer criteria 1 to {last_crit} of the rubric with A, B or =, and give one short reason that names what decided it.
+2. For each set comparison in sets.tsv, answer the per-repository criterion (Set of views) with A, B or =, with one short reason.
+
+Answer each comparison on its own merits, as if you had not seen the others.
+
+Return the answers as your final answer, as two tab-separated tables exactly in these shapes, one row per id, in id order:
+
+id	{crit_cols}	reason
+c01	{crit_example}	...
+
+id	set	reason
+s01	A	...
+
+Do not edit or create files, and do not send messages; your final answer is collected.
