@@ -1,245 +1,245 @@
-view	hard	target	P1	P2	B1	B2	J1	J2	J3	H1	H2	O1	O2	O3	F1	R	excess_turns	placement	crossings	weighed	steps	jogs	phantoms	paths_over2	traced_bends	back
-self overview	0	30	5	1	20	3	0	0	0	1	0	0	0	0	0	0	64	7	8	264	38	4	0	13	102	3
-self overview focus FEAT-0001 /abbd	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-self overview focus FEAT-0002 /abbd-setup	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-self overview focus MOD-0001 abbd CLI	0	6	0	1	5	0	0	0	0	0	0	0	0	0	0	0	10	1	0	40	6	0	0	3	30	0
-self overview focus MOD-0009 internal/bootstrap	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self overview focus MOD-0013 internal/evidence	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self overview focus MOD-0017 internal/extract	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-self overview focus MOD-0022 internal/gitx	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-self overview focus MOD-0026 internal/identity	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0
-self overview focus MOD-0030 internal/model	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	2	0	0	1	18	0
-self overview focus MOD-0034 internal/screen	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	6	0
-self overview focus MOD-0041 internal/store	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	0
-self overview focus MOD-0047 internal/topology	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self overview focus MOD-0054 internal/group	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self overview focus MOD-0055 pstack (external)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0001 /abbd	0	17	0	0	9	1	0	0	0	0	0	0	0	0	7	0	22	7	0	88	6	2	0	2	40	2
-self FEAT-0001 focus FEAT-0003 /abbd ground rules	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0001 focus FEAT-0004 /abbd ask the blueprint before the code	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
-self FEAT-0001 focus FEAT-0005 /abbd read the code through pstack	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0001 focus FEAT-0006 /abbd record what a reader found	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self FEAT-0001 focus FEAT-0007 /abbd what the human states	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self FEAT-0001 focus FEAT-0008 /abbd after work	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self FEAT-0001 focus FEAT-0009 /abbd evidence and CI gate	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self FEAT-0002 /abbd-setup	0	16	0	1	9	3	0	0	0	1	0	0	0	0	2	0	21	4	2	86	9	3	0	3	40	0
-self FEAT-0002 focus FEAT-0010 /abbd-setup preconditions and stance	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0011 /abbd-setup find units with a reader swarm	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0012 /abbd-setup build the deterministic extractor	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0013 /abbd-setup write the reader supplement	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0014 /abbd-setup run setup and resolve refusals	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0015 /abbd-setup store how's account per module	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self FEAT-0002 focus FEAT-0016 /abbd-setup verify, install and hand over	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self FEAT-0002 focus FEAT-0017 /abbd-setup extraction format	0	3	0	0	2	1	0	0	0	0	0	0	0	0	0	0	5	0	0	20	1	1	0	0	8	0
-self MOD-0001 abbd CLI	0	26	1	0	14	5	0	0	0	0	0	0	0	0	6	0	35	7	11	151	19	7	0	6	60	1
-self MOD-0001 focus DATA-0001 CLAUDE.md abbd block	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0001 focus MOD-0002 review commands	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
-self MOD-0001 focus MOD-0003 argv parsing and dispatch	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0001 focus MOD-0004 sync pipeline	0	6	0	0	2	1	0	0	0	0	0	0	0	0	3	0	5	3	0	20	1	1	0	0	12	0
-self MOD-0001 focus MOD-0005 query commands	0	1	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	1	0	0	0	0	0	0	2	0
-self MOD-0001 focus MOD-0006 record writers	0	3	0	0	1	0	0	0	0	0	0	0	0	0	2	0	2	2	0	8	0	0	0	0	6	0
-self MOD-0001 focus MOD-0007 blueprint publish	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0001 focus MOD-0008 setup determinism proof and supplement fold	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0009 internal/bootstrap	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0013 internal/evidence	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0
-self MOD-0017 internal/extract	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0
-self MOD-0022 internal/gitx	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0026 internal/identity	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0030 internal/model	1	25	0	0	18	7	0	0	0	0	0	0	0	0	0	1	57	0	6	234	45	9	0	15	84	3
-self MOD-0030 focus DATA-0010 drawn versus listed relation rule	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0030 focus DATA-0012 unit kind directories	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0030 focus DATA-0015 unit absent flag	0	4	0	0	2	0	0	0	0	0	0	0	0	0	2	0	4	2	0	16	0	0	0	0	8	1
-self MOD-0030 focus DATA-0016 empty parent origin means extracted	0	5	0	0	3	0	0	0	0	0	0	0	0	0	2	0	6	2	0	24	0	0	0	0	10	1
-self MOD-0030 focus DATA-0019 evidence line range text	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	1
-self MOD-0030 focus DATA-0020 citable evidence paths	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0030 focus IF-0016 unit ID format	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0030 focus IF-0017 evidence citation	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self MOD-0030 focus MOD-0031 guess versus topology rule	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0
-self MOD-0030 focus MOD-0032 relation grammar	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0030 focus MOD-0033 fact origins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0034 internal/screen	0	8	0	1	5	1	0	0	0	0	0	0	0	0	1	0	13	2	0	52	3	1	0	1	24	0
-self MOD-0034 focus DATA-0014 origin display words	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0034 focus MOD-0035 module inside	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0034 focus MOD-0036 layered layout and routing	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0034 focus MOD-0037 overview plan	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-self MOD-0034 focus MOD-0038 page template	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-self MOD-0034 focus MOD-0039 freshness verdicts	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
-self MOD-0034 focus MOD-0040 understanding text	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-self MOD-0041 internal/store	0	7	0	0	6	1	0	0	0	0	0	0	0	0	0	0	17	0	0	68	9	1	0	4	26	2
-self MOD-0047 internal/topology	1	5	0	0	3	1	0	0	0	0	0	0	1	0	0	1	7	1	1	29	1	1	0	0	10	2
-self MOD-0054 internal/group	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1
-self MOD-0055 pstack (external)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview	0	30	1	0	17	7	0	0	0	0	1	0	4	0	0	0	48	6	2	194	34	8	0	11	82	0
-ripgrep overview focus FEAT-0001 pcre2 cargo feature	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus FEAT-0002 pcre2 feature (ripgrep -> grep -> grep-pcre2)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus FEAT-0003 pcre2 cargo feature chain	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus FEAT-0004 grep-printer 'serde' feature (default)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0001 ripgrep	0	4	0	1	3	0	0	0	0	0	0	0	0	0	0	0	6	1	1	25	2	0	0	1	24	0
-ripgrep overview focus MOD-0002 grep-cli	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0005 globset	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0006 grep	0	2	0	1	1	0	0	0	0	0	0	0	0	0	0	0	2	1	0	8	0	0	0	0	12	0
-ripgrep overview focus MOD-0007 ignore	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0008 grep-matcher	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	10	0
-ripgrep overview focus MOD-0009 grep-pcre2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0010 grep-printer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep overview focus MOD-0011 grep-regex	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-ripgrep overview focus MOD-0012 grep-searcher	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0
-ripgrep MOD-0001 ripgrep	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-ripgrep MOD-0002 grep-cli	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep MOD-0005 globset	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-ripgrep MOD-0006 grep	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep MOD-0007 ignore	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	10	1
-ripgrep MOD-0008 grep-matcher	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep MOD-0009 grep-pcre2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep MOD-0010 grep-printer	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	1
-ripgrep MOD-0011 grep-regex	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-ripgrep MOD-0012 grep-searcher	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca overview	0	5	1	1	3	0	0	0	0	0	0	0	0	0	0	0	6	2	0	24	0	0	0	0	6	1
-orca MOD-0002 @orca-cloud/push	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0003 @orca-cloud/relay	0	2	0	1	1	0	0	0	0	0	0	0	0	0	0	0	2	1	0	8	0	0	0	0	8	0
-orca MOD-0007 mobile app (Expo)	1	111	25	0	52	29	0	0	0	2	0	0	0	0	3	1	199	30	38	834	153	35	0	43	254	11
-orca MOD-0007 focus MOD-0014 mobile/components	0	5	0	0	5	0	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	0	0	3	38	0
-orca MOD-0007 focus MOD-0015 mobile/files	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0
-orca MOD-0007 focus MOD-0016 mobile/host-screen	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0
-orca MOD-0007 focus MOD-0017 mobile/mobile-web-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0
-orca MOD-0007 focus MOD-0018 mobile/notifications	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-orca MOD-0007 focus MOD-0019 mobile/platform	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	20	0
-orca MOD-0007 focus MOD-0020 mobile/session	0	12	0	0	11	1	0	0	0	0	0	0	0	0	0	0	27	0	0	108	21	1	0	10	58	0
-orca MOD-0007 focus MOD-0021 mobile/source-control	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-orca MOD-0007 focus MOD-0022 mobile/tasks	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0
-orca MOD-0007 focus MOD-0023 mobile/terminal	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0
-orca MOD-0007 focus MOD-0024 mobile/transport	0	11	0	0	7	1	0	0	0	0	0	0	0	0	3	0	15	3	0	60	11	1	0	5	42	0
-orca MOD-0007 focus MOD-0025 mobile/worktree	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0
-orca MOD-0009 orca-mobile-web-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0010 orca-notification-dismissal	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0013 @orca/expo-two-way-audio	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0027 computer-use-macos	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-orca MOD-0042 desktop main process	1	130	27	1	61	33	0	0	0	2	0	0	1	0	5	1	248	36	58	1050	176	48	0	46	284	9
-orca MOD-0042 focus CFG-0003 desktop cloud service origins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0042 focus MOD-0043 desktop-main/agent-hooks	0	6	0	0	5	1	0	0	0	0	0	0	0	0	0	0	11	0	1	45	1	1	0	0	32	0
-orca MOD-0042 focus MOD-0044 desktop-main/ai-vault	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0
-orca MOD-0042 focus MOD-0045 desktop-main/browser	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0
-orca MOD-0042 focus MOD-0046 desktop-main/claude	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0
-orca MOD-0042 focus MOD-0047 desktop-main/codex	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0
-orca MOD-0042 focus MOD-0048 desktop-main/computer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0042 focus MOD-0049 desktop-main/daemon	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-orca MOD-0042 focus MOD-0050 desktop-main/git	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0
-orca MOD-0042 focus MOD-0051 desktop-main/github	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0
-orca MOD-0042 focus MOD-0052 desktop-main/ipc	0	10	0	0	6	1	0	0	0	0	0	0	0	0	3	0	13	3	1	53	5	1	0	2	62	0
-orca MOD-0042 focus MOD-0053 desktop-main/native-chat	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	20	0
-orca MOD-0042 focus MOD-0054 desktop-main/persistence	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	24	0
-orca MOD-0042 focus MOD-0055 desktop-main/plugins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-orca MOD-0042 focus MOD-0069 desktop-main/ssh	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0
-orca MOD-0043 desktop-main/agent-hooks	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0048 desktop-main/computer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0052 desktop-main/ipc	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0056 Orca runtime (RPC host)	1	58	11	1	34	11	0	0	0	0	0	0	1	0	0	1	112	13	13	461	74	16	0	23	148	7
-orca MOD-0056 focus DATA-0003 orca-runtime.json	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0056 focus MOD-0057 desktop-runtime/agent-session	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-orca MOD-0056 focus MOD-0058 desktop-runtime/browser	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0056 focus MOD-0059 desktop-runtime/browser-host	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0
-orca MOD-0056 focus MOD-0060 desktop-runtime/files	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0056 focus MOD-0061 desktop-runtime/mobile-cloud-relay	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-orca MOD-0056 focus MOD-0062 desktop-runtime/orchestration	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-orca MOD-0056 focus MOD-0063 desktop-runtime/rpc	0	6	0	1	3	0	0	0	0	0	0	0	0	0	2	0	6	3	0	24	0	0	0	0	30	0
-orca MOD-0056 focus MOD-0064 desktop-runtime/runtime-rpc	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0
-orca MOD-0056 focus MOD-0065 desktop-runtime/session-tabs	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0
-orca MOD-0056 focus MOD-0066 desktop-runtime/sidebar-inputs	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0056 focus MOD-0067 desktop-runtime/terminal	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	24	0
-orca MOD-0056 focus MOD-0068 desktop-runtime/workspaces	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0
-orca MOD-0063 desktop-runtime/rpc	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0064 desktop-runtime/runtime-rpc	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-orca MOD-0072 desktop renderer UI	1	56	15	0	25	13	0	0	0	2	0	0	0	0	1	1	85	18	16	356	59	19	0	19	116	6
-orca MOD-0072 focus DATA-0001 paired web client bundle	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0072 focus MOD-0073 renderer/app-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0
-orca MOD-0072 focus MOD-0074 renderer/components	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	24	0
-orca MOD-0072 focus MOD-0075 renderer/hooks	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	18	0
-orca MOD-0072 focus MOD-0076 renderer/lib	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	20	0
-orca MOD-0072 focus MOD-0077 renderer/runtime	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	22	0
-orca MOD-0072 focus MOD-0078 renderer/ssh	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-orca MOD-0072 focus MOD-0079 renderer/store	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0
-orca MOD-0072 focus MOD-0080 renderer/web	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-orca MOD-0080 renderer/web	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-orca MOD-0081 shared types and schemas	2	33	3	2	20	6	0	0	0	0	0	1	0	0	1	2	65	7	9	269	47	9	0	14	110	6
-orca MOD-0090 shared/rpc-contract	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-orca MOD-0094 WSL guest agent	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0095 cloud/	0	4	0	0	4	0	0	0	0	0	0	0	0	0	0	0	8	0	0	32	0	0	0	0	12	0
-orca MOD-0096 mobile/	0	4	0	1	2	0	0	0	0	0	0	0	0	0	1	0	4	2	0	16	0	0	0	0	16	0
-orca MOD-0097 native/	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	22	0
-orca MOD-0098 src/	0	34	3	0	23	7	0	0	0	0	0	0	0	0	1	0	62	4	18	266	40	10	0	14	88	3
-orca MOD-0098 focus MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-orca MOD-0098 focus MOD-0042 desktop main process	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	18	0
-orca MOD-0098 focus MOD-0056 Orca runtime (RPC host)	0	2	0	0	1	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	8	1
-orca MOD-0098 focus MOD-0070 @orca/process-host	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	10	0
-orca MOD-0098 focus MOD-0071 desktop preload bridge	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-orca MOD-0098 focus MOD-0072 desktop renderer UI	0	1	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	1	0	0	0	0	0	0	2	0
-orca MOD-0098 focus MOD-0081 shared types and schemas	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	8	0	1	33	4	0	0	2	18	1
-orca MOD-0098 focus MOD-0094 WSL guest agent	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0
-pstack overview	52	80	21	1	42	8	0	0	52	2	5	0	1	0	0	0	131	30	15	539	97	11	52	35	204	2
-pstack overview focus MOD-0001 setup and help	0	7	0	0	7	0	0	0	0	0	0	0	0	0	0	0	14	0	0	56	4	0	0	2	44	0
-pstack overview focus MOD-0002 parallel fan-out and multi-model review	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	14	0
-pstack overview focus MOD-0003 principles	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	20	0
-pstack overview focus MOD-0004 poteto-mode, the front door	0	4	0	0	4	0	0	0	0	0	0	0	0	0	0	0	8	0	0	32	0	0	0	0	30	0
-pstack overview focus MOD-0005 writing and prose	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	0
-pstack overview focus MOD-0006 restate and catch up	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	6	0
-pstack overview focus MOD-0007 understand code	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0
-pstack overview focus MOD-0008 design	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-pstack overview focus MOD-0009 build and clean the diff	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-pstack overview focus MOD-0010 verification	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	16	0
-pstack overview focus MOD-0011 unattended runs	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	16	0
-pstack overview focus MOD-0012 make it yours	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0
-pstack MOD-0001 setup and help	0	9	0	0	6	3	0	0	0	0	0	0	0	0	0	0	18	0	0	72	6	4	0	1	18	0
-pstack MOD-0002 parallel fan-out and multi-model review	0	9	0	0	5	4	0	0	0	0	0	0	0	0	0	0	15	0	0	60	7	5	0	1	12	0
-pstack MOD-0002 focus FEAT-0010 /arena	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-pstack MOD-0002 focus FEAT-0021 /interrogate	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0
-pstack MOD-0002 focus FEAT-0060 /swarm	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0
-pstack MOD-0003 principles	0	14	1	0	7	5	0	0	0	0	0	0	0	0	1	0	26	2	2	106	16	8	0	3	26	1
-pstack MOD-0003 focus FEAT-0005 docs/guide/08-principles.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0003 focus MOD-0013 core principles	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	6	0
-pstack MOD-0003 focus MOD-0014 architecture principles	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0003 focus MOD-0015 verification principles	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0
-pstack MOD-0003 focus MOD-0016 delegation principles	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0003 focus MOD-0017 meta principles	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0
-pstack MOD-0004 poteto-mode, the front door	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	4	0	1	6	0
-pstack MOD-0005 writing and prose	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	6	0	0	24	2	2	0	0	6	0
-pstack MOD-0006 restate and catch up	0	6	0	0	6	0	0	0	0	0	0	0	0	0	0	0	12	0	0	48	0	0	0	0	12	0
-pstack MOD-0007 understand code	0	37	1	1	21	11	0	0	0	0	0	0	0	0	3	0	79	5	8	324	61	19	0	18	98	1
-pstack MOD-0007 focus FEAT-0019 /how	0	9	0	0	6	1	0	0	0	0	0	0	0	0	2	0	13	2	0	52	1	1	0	0	18	0
-pstack MOD-0007 focus FEAT-0054 /recall	0	6	0	0	1	1	0	0	0	0	0	0	0	0	4	0	3	4	0	12	1	1	0	0	10	0
-pstack MOD-0007 focus FEAT-0062 /teach	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0
-pstack MOD-0007 focus FEAT-0066 /why	0	10	0	0	6	1	0	0	0	0	0	0	0	0	3	0	13	3	0	52	1	1	0	0	20	0
-pstack MOD-0008 design	0	8	0	0	2	1	0	0	0	0	0	0	0	0	5	0	9	5	0	36	5	3	0	1	16	0
-pstack MOD-0009 build and clean the diff	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	4	0	1	6	0
-pstack MOD-0009 focus FEAT-0027 /no-comments	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0
-pstack MOD-0009 focus FEAT-0061 /tdd	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0009 focus FEAT-0064 /typescript-best-practices	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0010 verification	0	32	2	1	17	10	0	0	0	1	0	0	0	0	1	0	58	5	3	235	42	14	0	13	74	2
-pstack MOD-0010 focus FEAT-0003 docs/guide/06-verify-and-ship.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0010 focus FEAT-0012 /benchmark-checklist	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
-pstack MOD-0010 focus FEAT-0013 /blast-radius	0	3	0	0	2	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0
-pstack MOD-0010 focus FEAT-0016 /create-formal-verification-skill	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	4	0
-pstack MOD-0010 focus FEAT-0017 /create-verification-skill	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0
-pstack MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0010 focus FEAT-0025 /maintain-verification-skill	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-pstack MOD-0010 focus FEAT-0059 /statechart	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0011 unattended runs	0	6	0	0	4	2	0	0	0	0	0	0	0	0	0	0	13	0	0	52	5	3	0	1	10	0
-pstack MOD-0011 focus FEAT-0004 docs/guide/07-overnight.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0011 focus FEAT-0018 /figure-it-out	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0
-pstack MOD-0011 focus FEAT-0058 /show-me-your-work	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0
-pstack MOD-0012 make it yours	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	14	0	0	56	10	6	0	2	8	0
-pstack MOD-0012 focus FEAT-0006 docs/guide/09-make-it-yours.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0012 focus FEAT-0011 /automate-me	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0
-pstack MOD-0012 focus FEAT-0015 /correct	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0012 focus FEAT-0026 /make-bot-ui	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0012 focus FEAT-0055 /reflect	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0
-pstack MOD-0013 core principles	0	23	0	0	11	6	0	0	0	0	0	0	0	0	6	0	35	6	0	140	17	9	0	4	40	0
-pstack MOD-0014 architecture principles	0	3	0	0	2	1	0	0	0	0	0	0	0	0	0	0	5	0	0	20	1	1	0	0	4	0
-pstack MOD-0015 verification principles	0	10	0	0	5	4	0	0	0	0	0	0	0	0	1	0	14	1	0	56	4	4	0	0	14	0
-pstack MOD-0015 focus FEAT-0036 /principle-explain-the-number	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0015 focus FEAT-0037 /principle-fix-root-causes	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0015 focus FEAT-0047 /principle-prove-it-works	0	4	0	0	3	1	0	0	0	0	0	0	0	0	0	0	7	0	0	28	1	1	0	0	6	0
-pstack MOD-0015 focus FEAT-0050 /principle-sequence-verifiable-units	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0015 focus FEAT-0052 /principle-test-behavior-not-implementation	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
-pstack MOD-0016 delegation principles	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0
-pstack MOD-0017 meta principles	0	5	0	0	1	0	0	0	0	0	0	0	0	0	4	0	2	4	0	8	0	0	0	0	10	0
+view	hard	target	P1	P2	B1	B2	B3	B4	J1	J2	J3	H1	H2	O1	O2	O3	F1	R	excess_turns	placement	crossings	weighed	steps	jogs	phantoms	paths_over2	traced_bends	back	detours
+self overview	0	39	5	1	20	3	9	0	0	0	0	1	0	0	0	0	0	0	64	7	8	264	38	4	0	13	102	3	11
+self overview focus FEAT-0001 /abbd	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+self overview focus FEAT-0002 /abbd-setup	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+self overview focus MOD-0001 abbd CLI	0	8	0	1	5	0	2	0	0	0	0	0	0	0	0	0	0	0	10	1	0	40	6	0	0	3	30	0	2
+self overview focus MOD-0009 internal/bootstrap	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self overview focus MOD-0013 internal/evidence	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self overview focus MOD-0017 internal/extract	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+self overview focus MOD-0022 internal/gitx	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+self overview focus MOD-0026 internal/identity	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0
+self overview focus MOD-0030 internal/model	0	4	0	0	3	0	1	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	2	0	0	1	18	0	1
+self overview focus MOD-0034 internal/screen	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	6	0	0
+self overview focus MOD-0041 internal/store	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	0	0
+self overview focus MOD-0047 internal/topology	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self overview focus MOD-0054 internal/group	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self overview focus MOD-0055 pstack (external)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0001 /abbd	0	17	0	0	9	1	0	0	0	0	0	0	0	0	0	0	7	0	22	7	0	88	6	2	0	2	40	2	0
+self FEAT-0001 focus FEAT-0003 /abbd ground rules	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0001 focus FEAT-0004 /abbd ask the blueprint before the code	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0	0
+self FEAT-0001 focus FEAT-0005 /abbd read the code through pstack	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0001 focus FEAT-0006 /abbd record what a reader found	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0	0
+self FEAT-0001 focus FEAT-0007 /abbd what the human states	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self FEAT-0001 focus FEAT-0008 /abbd after work	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self FEAT-0001 focus FEAT-0009 /abbd evidence and CI gate	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0	0
+self FEAT-0002 /abbd-setup	0	17	0	1	9	3	1	0	0	0	0	1	0	0	0	0	2	0	21	4	2	86	9	3	0	3	40	0	1
+self FEAT-0002 focus FEAT-0010 /abbd-setup preconditions and stance	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0011 /abbd-setup find units with a reader swarm	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0012 /abbd-setup build the deterministic extractor	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0013 /abbd-setup write the reader supplement	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0014 /abbd-setup run setup and resolve refusals	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0015 /abbd-setup store how's account per module	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self FEAT-0002 focus FEAT-0016 /abbd-setup verify, install and hand over	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0	0
+self FEAT-0002 focus FEAT-0017 /abbd-setup extraction format	0	3	0	0	2	1	0	0	0	0	0	0	0	0	0	0	0	0	5	0	0	20	1	1	0	0	8	0	0
+self MOD-0001 abbd CLI	0	27	1	0	14	5	1	0	0	0	0	0	0	0	0	0	6	0	35	7	11	151	19	7	0	6	60	1	1
+self MOD-0001 focus DATA-0001 CLAUDE.md abbd block	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0001 focus MOD-0002 review commands	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0	0
+self MOD-0001 focus MOD-0003 argv parsing and dispatch	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0001 focus MOD-0004 sync pipeline	0	6	0	0	2	1	0	0	0	0	0	0	0	0	0	0	3	0	5	3	0	20	1	1	0	0	12	0	0
+self MOD-0001 focus MOD-0005 query commands	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	1	0	0	0	0	0	0	2	0	0
+self MOD-0001 focus MOD-0006 record writers	0	3	0	0	1	0	0	0	0	0	0	0	0	0	0	0	2	0	2	2	0	8	0	0	0	0	6	0	0
+self MOD-0001 focus MOD-0007 blueprint publish	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0001 focus MOD-0008 setup determinism proof and supplement fold	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0009 internal/bootstrap	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0013 internal/evidence	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0	0
+self MOD-0017 internal/extract	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0
+self MOD-0022 internal/gitx	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0026 internal/identity	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0030 internal/model	1	31	0	0	18	7	6	0	0	0	0	0	0	0	0	0	0	1	57	0	6	234	45	9	0	15	84	3	6
+self MOD-0030 focus DATA-0010 drawn versus listed relation rule	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0030 focus DATA-0012 unit kind directories	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0030 focus DATA-0015 unit absent flag	0	4	0	0	2	0	0	0	0	0	0	0	0	0	0	0	2	0	4	2	0	16	0	0	0	0	8	1	0
+self MOD-0030 focus DATA-0016 empty parent origin means extracted	0	5	0	0	3	0	0	0	0	0	0	0	0	0	0	0	2	0	6	2	0	24	0	0	0	0	10	1	0
+self MOD-0030 focus DATA-0019 evidence line range text	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	1	0
+self MOD-0030 focus DATA-0020 citable evidence paths	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0030 focus IF-0016 unit ID format	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0030 focus IF-0017 evidence citation	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0	0
+self MOD-0030 focus MOD-0031 guess versus topology rule	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	0	8	0	0	0	0	4	0	0
+self MOD-0030 focus MOD-0032 relation grammar	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0030 focus MOD-0033 fact origins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0034 internal/screen	0	9	0	1	5	1	1	0	0	0	0	0	0	0	0	0	1	0	13	2	0	52	3	1	0	1	24	0	1
+self MOD-0034 focus DATA-0014 origin display words	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0034 focus MOD-0035 module inside	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0034 focus MOD-0036 layered layout and routing	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0034 focus MOD-0037 overview plan	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+self MOD-0034 focus MOD-0038 page template	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+self MOD-0034 focus MOD-0039 freshness verdicts	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0	0
+self MOD-0034 focus MOD-0040 understanding text	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+self MOD-0041 internal/store	0	10	0	0	6	1	3	0	0	0	0	0	0	0	0	0	0	0	17	0	0	68	9	1	0	4	26	2	3
+self MOD-0047 internal/topology	1	5	0	0	3	1	0	0	0	0	0	0	0	0	1	0	0	1	7	1	1	29	1	1	0	0	10	2	0
+self MOD-0054 internal/group	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0
+self MOD-0055 pstack (external)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview	0	23	1	0	13	0	4	0	0	0	0	0	1	0	4	0	0	0	28	6	2	114	14	0	0	6	70	0	5
+ripgrep overview focus FEAT-0001 pcre2 cargo feature	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus FEAT-0002 pcre2 feature (ripgrep -> grep -> grep-pcre2)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus FEAT-0003 pcre2 cargo feature chain	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus FEAT-0004 grep-printer 'serde' feature (default)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0001 ripgrep	0	4	0	1	3	0	0	0	0	0	0	0	0	0	0	0	0	0	6	1	1	25	2	0	0	1	24	0	0
+ripgrep overview focus MOD-0002 grep-cli	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0005 globset	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0006 grep	0	2	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	1	0	8	0	0	0	0	12	0	0
+ripgrep overview focus MOD-0007 ignore	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0008 grep-matcher	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	10	0	0
+ripgrep overview focus MOD-0009 grep-pcre2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0010 grep-printer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep overview focus MOD-0011 grep-regex	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+ripgrep overview focus MOD-0012 grep-searcher	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0	0
+ripgrep MOD-0001 ripgrep	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+ripgrep MOD-0002 grep-cli	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep MOD-0005 globset	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+ripgrep MOD-0006 grep	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep MOD-0007 ignore	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	10	1	0
+ripgrep MOD-0008 grep-matcher	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep MOD-0009 grep-pcre2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep MOD-0010 grep-printer	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	1	0
+ripgrep MOD-0011 grep-regex	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+ripgrep MOD-0012 grep-searcher	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca overview	0	5	1	1	3	0	0	0	0	0	0	0	0	0	0	0	0	0	6	2	0	24	0	0	0	0	6	1	0
+orca MOD-0002 @orca-cloud/push	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0003 @orca-cloud/relay	0	2	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	1	0	8	0	0	0	0	8	0	0
+orca MOD-0007 mobile app (Expo)	1	127	25	0	51	19	29	0	0	0	0	2	0	0	0	0	1	1	179	28	48	764	149	27	0	45	254	11	32
+orca MOD-0007 focus MOD-0014 mobile/components	0	7	0	0	5	0	2	0	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	0	0	3	38	0	2
+orca MOD-0007 focus MOD-0015 mobile/files	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0	0
+orca MOD-0007 focus MOD-0016 mobile/host-screen	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0	0
+orca MOD-0007 focus MOD-0017 mobile/mobile-web-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0	0
+orca MOD-0007 focus MOD-0018 mobile/notifications	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+orca MOD-0007 focus MOD-0019 mobile/platform	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	20	0	0
+orca MOD-0007 focus MOD-0020 mobile/session	0	15	0	0	10	0	5	0	0	0	0	0	0	0	0	0	0	0	22	0	0	88	18	0	0	9	54	0	5
+orca MOD-0007 focus MOD-0021 mobile/source-control	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+orca MOD-0007 focus MOD-0022 mobile/tasks	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0	0
+orca MOD-0007 focus MOD-0023 mobile/terminal	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	10	0	0
+orca MOD-0007 focus MOD-0024 mobile/transport	0	14	0	0	7	1	3	0	0	0	0	0	0	0	0	0	3	0	15	3	0	60	11	1	0	5	42	0	3
+orca MOD-0007 focus MOD-0025 mobile/worktree	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0	0
+orca MOD-0009 orca-mobile-web-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0010 orca-notification-dismissal	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0013 @orca/expo-two-way-audio	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0027 computer-use-macos	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+orca MOD-0042 desktop main process	1	140	27	1	61	24	20	0	0	0	0	2	0	0	1	0	4	1	198	35	55	847	142	34	0	44	252	9	21
+orca MOD-0042 focus CFG-0003 desktop cloud service origins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0042 focus MOD-0043 desktop-main/agent-hooks	0	7	0	0	5	1	1	0	0	0	0	0	0	0	0	0	0	0	14	0	1	57	4	2	0	1	32	0	1
+orca MOD-0042 focus MOD-0044 desktop-main/ai-vault	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0	0
+orca MOD-0042 focus MOD-0045 desktop-main/browser	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0
+orca MOD-0042 focus MOD-0046 desktop-main/claude	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0	0
+orca MOD-0042 focus MOD-0047 desktop-main/codex	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0	0
+orca MOD-0042 focus MOD-0048 desktop-main/computer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0042 focus MOD-0049 desktop-main/daemon	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+orca MOD-0042 focus MOD-0050 desktop-main/git	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0	0
+orca MOD-0042 focus MOD-0051 desktop-main/github	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0
+orca MOD-0042 focus MOD-0052 desktop-main/ipc	0	9	0	0	6	1	1	0	0	0	0	0	0	0	0	0	1	0	13	1	2	54	3	1	0	1	58	0	1
+orca MOD-0042 focus MOD-0053 desktop-main/native-chat	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	20	0	0
+orca MOD-0042 focus MOD-0054 desktop-main/persistence	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	24	0	0
+orca MOD-0042 focus MOD-0055 desktop-main/plugins	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+orca MOD-0042 focus MOD-0069 desktop-main/ssh	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0	0
+orca MOD-0043 desktop-main/agent-hooks	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0048 desktop-main/computer	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0052 desktop-main/ipc	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0056 Orca runtime (RPC host)	1	72	11	1	34	11	14	0	0	0	0	0	0	0	1	0	0	1	112	13	13	461	74	16	0	23	148	7	16
+orca MOD-0056 focus DATA-0003 orca-runtime.json	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0056 focus MOD-0057 desktop-runtime/agent-session	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+orca MOD-0056 focus MOD-0058 desktop-runtime/browser	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0056 focus MOD-0059 desktop-runtime/browser-host	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0	0
+orca MOD-0056 focus MOD-0060 desktop-runtime/files	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0056 focus MOD-0061 desktop-runtime/mobile-cloud-relay	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+orca MOD-0056 focus MOD-0062 desktop-runtime/orchestration	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+orca MOD-0056 focus MOD-0063 desktop-runtime/rpc	0	6	0	1	3	0	0	0	0	0	0	0	0	0	0	0	2	0	6	3	0	24	0	0	0	0	30	0	0
+orca MOD-0056 focus MOD-0064 desktop-runtime/runtime-rpc	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	8	0	0
+orca MOD-0056 focus MOD-0065 desktop-runtime/session-tabs	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0
+orca MOD-0056 focus MOD-0066 desktop-runtime/sidebar-inputs	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0056 focus MOD-0067 desktop-runtime/terminal	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	24	0	0
+orca MOD-0056 focus MOD-0068 desktop-runtime/workspaces	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	16	0	0
+orca MOD-0063 desktop-runtime/rpc	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0064 desktop-runtime/runtime-rpc	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+orca MOD-0072 desktop renderer UI	1	60	15	0	24	13	5	0	0	0	0	2	0	0	0	0	1	1	85	18	19	359	59	19	0	18	116	6	5
+orca MOD-0072 focus DATA-0001 paired web client bundle	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0072 focus MOD-0073 renderer/app-shell	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0
+orca MOD-0072 focus MOD-0074 renderer/components	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	24	0	0
+orca MOD-0072 focus MOD-0075 renderer/hooks	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	18	0	0
+orca MOD-0072 focus MOD-0076 renderer/lib	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	20	0	0
+orca MOD-0072 focus MOD-0077 renderer/runtime	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	22	0	0
+orca MOD-0072 focus MOD-0078 renderer/ssh	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+orca MOD-0072 focus MOD-0079 renderer/store	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0	0
+orca MOD-0072 focus MOD-0080 renderer/web	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+orca MOD-0080 renderer/web	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+orca MOD-0081 shared types and schemas	2	42	3	2	20	6	9	0	0	0	0	0	0	1	0	0	1	2	65	7	9	269	47	9	0	14	110	6	10
+orca MOD-0090 shared/rpc-contract	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+orca MOD-0094 WSL guest agent	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0095 cloud/	0	4	0	0	4	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0	32	0	0	0	0	12	0	0
+orca MOD-0096 mobile/	0	4	0	1	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	2	0	16	0	0	0	0	16	0	0
+orca MOD-0097 native/	0	1	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	22	0	0
+orca MOD-0098 src/	0	39	3	0	23	7	5	0	0	0	0	0	0	0	0	0	1	0	64	4	17	273	42	10	0	15	90	3	5
+orca MOD-0098 focus MOD-0038 orca CLI	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+orca MOD-0098 focus MOD-0042 desktop main process	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	18	0	0
+orca MOD-0098 focus MOD-0056 Orca runtime (RPC host)	0	2	0	0	1	0	0	0	0	0	0	0	0	0	0	0	1	0	2	1	1	9	0	0	0	0	8	1	0
+orca MOD-0098 focus MOD-0070 @orca/process-host	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	10	0	0
+orca MOD-0098 focus MOD-0071 desktop preload bridge	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+orca MOD-0098 focus MOD-0072 desktop renderer UI	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	1	0	0	0	0	0	0	2	0	0
+orca MOD-0098 focus MOD-0081 shared types and schemas	0	5	0	0	3	0	2	0	0	0	0	0	0	0	0	0	0	0	8	0	1	33	4	0	0	2	18	1	2
+orca MOD-0098 focus MOD-0094 WSL guest agent	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0
+pstack overview	52	108	21	1	42	7	29	0	0	0	52	2	5	0	1	0	0	0	128	30	15	527	94	10	52	34	202	2	35
+pstack overview focus MOD-0001 setup and help	0	8	0	0	7	0	1	0	0	0	0	0	0	0	0	0	0	0	14	0	0	56	4	0	0	2	44	0	1
+pstack overview focus MOD-0002 parallel fan-out and multi-model review	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	14	0	0
+pstack overview focus MOD-0003 principles	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	20	0	0
+pstack overview focus MOD-0004 poteto-mode, the front door	0	4	0	0	4	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0	32	0	0	0	0	30	0	0
+pstack overview focus MOD-0005 writing and prose	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	10	0	0
+pstack overview focus MOD-0006 restate and catch up	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	6	0	0
+pstack overview focus MOD-0007 understand code	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	16	0	0
+pstack overview focus MOD-0008 design	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+pstack overview focus MOD-0009 build and clean the diff	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+pstack overview focus MOD-0010 verification	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	16	0	0
+pstack overview focus MOD-0011 unattended runs	0	3	0	0	3	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	0	0	0	0	16	0	0
+pstack overview focus MOD-0012 make it yours	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	12	0	0
+pstack MOD-0001 setup and help	0	9	0	0	6	3	0	0	0	0	0	0	0	0	0	0	0	0	18	0	0	72	6	4	0	1	18	0	0
+pstack MOD-0002 parallel fan-out and multi-model review	0	9	0	0	5	4	0	0	0	0	0	0	0	0	0	0	0	0	15	0	0	60	7	5	0	1	12	0	0
+pstack MOD-0002 focus FEAT-0010 /arena	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+pstack MOD-0002 focus FEAT-0021 /interrogate	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0	0
+pstack MOD-0002 focus FEAT-0060 /swarm	0	3	0	0	1	1	1	0	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0	1
+pstack MOD-0003 principles	0	15	1	0	7	5	1	0	0	0	0	0	0	0	0	0	1	0	26	2	2	106	16	8	0	3	26	1	1
+pstack MOD-0003 focus FEAT-0005 docs/guide/08-principles.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0003 focus MOD-0013 core principles	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	6	0	0
+pstack MOD-0003 focus MOD-0014 architecture principles	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0003 focus MOD-0015 verification principles	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0	0
+pstack MOD-0003 focus MOD-0016 delegation principles	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0003 focus MOD-0017 meta principles	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0	0
+pstack MOD-0004 poteto-mode, the front door	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	4	0	1	6	0	0
+pstack MOD-0005 writing and prose	0	4	0	0	2	2	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	24	2	2	0	0	6	0	0
+pstack MOD-0006 restate and catch up	0	6	0	0	6	0	0	0	0	0	0	0	0	0	0	0	0	0	12	0	0	48	0	0	0	0	12	0	0
+pstack MOD-0007 understand code	0	42	1	1	21	11	5	0	0	0	0	0	0	0	0	0	3	0	81	5	8	332	63	19	0	18	100	1	6
+pstack MOD-0007 focus FEAT-0019 /how	0	9	0	0	6	1	0	0	0	0	0	0	0	0	0	0	2	0	13	2	0	52	1	1	0	0	18	0	0
+pstack MOD-0007 focus FEAT-0054 /recall	0	6	0	0	1	1	0	0	0	0	0	0	0	0	0	0	4	0	3	4	0	12	1	1	0	0	10	0	0
+pstack MOD-0007 focus FEAT-0062 /teach	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0
+pstack MOD-0007 focus FEAT-0066 /why	0	10	0	0	6	1	0	0	0	0	0	0	0	0	0	0	3	0	13	3	0	52	1	1	0	0	20	0	0
+pstack MOD-0008 design	0	9	0	0	2	1	1	0	0	0	0	0	0	0	0	0	5	0	9	5	0	36	5	3	0	1	16	0	1
+pstack MOD-0009 build and clean the diff	0	5	0	0	2	2	1	0	0	0	0	0	0	0	0	0	0	0	10	0	0	40	6	4	0	1	6	0	1
+pstack MOD-0009 focus FEAT-0027 /no-comments	0	3	0	0	1	1	1	0	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0	1
+pstack MOD-0009 focus FEAT-0061 /tdd	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0009 focus FEAT-0064 /typescript-best-practices	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0010 verification	0	35	2	1	17	9	4	0	0	0	0	1	0	0	0	0	1	0	55	5	3	223	39	13	0	12	72	2	4
+pstack MOD-0010 focus FEAT-0003 docs/guide/06-verify-and-ship.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0010 focus FEAT-0012 /benchmark-checklist	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0	0
+pstack MOD-0010 focus FEAT-0013 /blast-radius	0	3	0	0	2	0	0	0	0	0	0	0	0	0	0	0	1	0	4	1	0	16	0	0	0	0	6	0	0
+pstack MOD-0010 focus FEAT-0016 /create-formal-verification-skill	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	4	0	0
+pstack MOD-0010 focus FEAT-0017 /create-verification-skill	0	2	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	4	0	0	16	0	0	0	0	4	0	0
+pstack MOD-0010 focus FEAT-0024 /maintain-formal-verification-skill	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0010 focus FEAT-0025 /maintain-verification-skill	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+pstack MOD-0010 focus FEAT-0059 /statechart	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0011 unattended runs	0	6	0	0	4	2	0	0	0	0	0	0	0	0	0	0	0	0	13	0	0	52	5	3	0	1	10	0	0
+pstack MOD-0011 focus FEAT-0004 docs/guide/07-overnight.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0011 focus FEAT-0018 /figure-it-out	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0	0
+pstack MOD-0011 focus FEAT-0058 /show-me-your-work	0	1	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	8	0	0	0	0	2	0	0
+pstack MOD-0012 make it yours	0	6	0	0	2	2	2	0	0	0	0	0	0	0	0	0	0	0	14	0	0	56	10	6	0	2	8	0	2
+pstack MOD-0012 focus FEAT-0006 docs/guide/09-make-it-yours.md	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0012 focus FEAT-0011 /automate-me	0	3	0	0	1	1	1	0	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0	1
+pstack MOD-0012 focus FEAT-0015 /correct	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0012 focus FEAT-0026 /make-bot-ui	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0012 focus FEAT-0055 /reflect	0	3	0	0	1	1	1	0	0	0	0	0	0	0	0	0	0	0	7	0	0	28	5	3	0	1	4	0	1
+pstack MOD-0013 core principles	0	23	0	0	11	6	0	0	0	0	0	0	0	0	0	0	6	0	35	6	0	140	17	9	0	4	40	0	0
+pstack MOD-0014 architecture principles	0	3	0	0	2	1	0	0	0	0	0	0	0	0	0	0	0	0	5	0	0	20	1	1	0	0	4	0	0
+pstack MOD-0015 verification principles	0	10	0	0	5	4	0	0	0	0	0	0	0	0	0	0	1	0	14	1	0	56	4	4	0	0	14	0	0
+pstack MOD-0015 focus FEAT-0036 /principle-explain-the-number	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0015 focus FEAT-0037 /principle-fix-root-causes	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0015 focus FEAT-0047 /principle-prove-it-works	0	4	0	0	3	1	0	0	0	0	0	0	0	0	0	0	0	0	7	0	0	28	1	1	0	0	6	0	0
+pstack MOD-0015 focus FEAT-0050 /principle-sequence-verifiable-units	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0015 focus FEAT-0052 /principle-test-behavior-not-implementation	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+pstack MOD-0016 delegation principles	0	2	0	0	1	1	0	0	0	0	0	0	0	0	0	0	0	0	3	0	0	12	1	1	0	0	2	0	0
+pstack MOD-0017 meta principles	0	5	0	0	1	0	0	0	0	0	0	0	0	0	0	0	4	0	2	4	0	8	0	0	0	0	10	0	0

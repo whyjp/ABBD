@@ -5,9 +5,9 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
-    detours: 122
-    placement: 127
-    weighed: 3993
+    detours: 103
+    placement: 122
+    weighed: 3735
 debt:
     MOD-0007 mobile app (Expo):
         R: 1

@@ -872,9 +872,13 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	// and a reader could follow one bus's lines down the other's step into
 	// places they never reach. Where the trunk ends, the first pair steps
 	// straight on down it and the others a lane or more beside it, toward
-	// their ends. Where the trunk runs on below, every pair steps down
-	// above its end instead: an arrival track that ended on that trunk
-	// would join the two the same way.
+	// their ends. Where the trunk runs on below, an arrival track that
+	// ended on the trunk would join the two the same way, so a pair steps
+	// down on the trunk only when that join leads no reader anywhere its
+	// lines do not go (joinsHarmless). Otherwise it steps down above its
+	// end, or at the clear x nearest it on the trunk's side: a step past
+	// the end would make the line ride beyond its turn and come back
+	// beside its own track (B3, B4).
 	{
 		type step struct{ dep, arr, gap int }
 		var steps []step
@@ -888,6 +892,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			}
 		}
 		at := map[step]int{}
+		reach := map[[2]string]bool{}
+		for _, w := range wanted(reqs) {
+			reach[w] = true
+		}
 		for _, st := range steps {
 			lead := -1
 			for i := range plans {
@@ -932,7 +940,18 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			}
 			base := p.xs[k-1]
 			if buses[st.dep].deep > p.ride {
+				if joinsHarmless(reach, reqs, plans, buses, st.dep, st.arr, st.gap) {
+					at[st] = base
+					continue
+				}
+				d := base
 				base = p.tx
+				if dir := sign(d - base); dir != 0 {
+					if x, ok := walk(base, d-dir*lane, dir, free); ok {
+						at[st] = x
+						continue
+					}
+				}
 			}
 			at[st] = stepX(base, p.tx, free)
 		}
@@ -1932,6 +1951,42 @@ func stepX(base, end int, free func(int) bool) int {
 		}
 	}
 	return base
+}
+
+// joinsHarmless says the lines of departure bus dep bound for arrival bus
+// arr may step down where dep's trunk runs on below gap: every place whose
+// lines ride arr already reaches every place the trunk leads to below, so a
+// reader who turns from arr's track down the trunk meets no place its
+// lines do not reach.
+func joinsHarmless(reach map[[2]string]bool, reqs []wireReq, plans []plan, buses []*bus, dep, arr, gap int) bool {
+	var from, below []string
+	for _, m := range buses[arr].members {
+		if m < len(reqs) {
+			from = append(from, endID(reqs[m].from))
+		}
+	}
+	for i := range plans {
+		q, n := &plans[i], len(plans[i].gaps)
+		if q.dep != dep || q.arr == arr && q.ride == n-1 && q.gaps[n-1] == gap {
+			continue
+		}
+		below = append(below, endID(reqs[i].to))
+		if q.arr >= 0 {
+			for _, m := range buses[q.arr].members {
+				if m < len(reqs) {
+					below = append(below, endID(reqs[m].to))
+				}
+			}
+		}
+	}
+	for _, f := range from {
+		for _, b := range below {
+			if f != b && !reach[[2]string{f, b}] {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // viaX is where a line steps down off its departure track at x d onto a
