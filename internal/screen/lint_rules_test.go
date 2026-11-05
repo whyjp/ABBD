@@ -127,3 +127,22 @@ func TestAClimbOutsideACycleIsHard(t *testing.T) {
 		t.Fatalf("%+v; want the climb that closes a cycle allowed", got)
 	}
 }
+
+// A line that rides right past the x of its drop, steps down a lane, and
+// comes back left turns back (B3) and runs beside itself (B4). The same
+// line stepping down above its drop does neither.
+func TestALineThatRidesPastItsTurnTurnsBack(t *testing.T) {
+	boxes := []string{"A 40 0 60 20", "B 80 160 60 20"}
+	rels := [][2]string{{"A", "B"}}
+	past := lookAt(t, boxes, `<path class="w contract" d="M60 20 V80 H200 V88 H110 V160"/>`, rels)
+	if got := past.noTurnBacks(); len(got) != 1 || got[0].Got != 1 || !strings.Contains(got[0].Text, "riding 90px") {
+		t.Fatalf("%+v; want one turn back, riding 90px past", got)
+	}
+	if got := past.noDoubles(); len(got) != 1 || got[0].Got != 1 {
+		t.Fatalf("%+v; want the line beside itself once", got)
+	}
+	above := lookAt(t, boxes, `<path class="w contract" d="M60 20 V80 H110 V160"/>`, rels)
+	if got := append(above.noTurnBacks(), above.noDoubles()...); len(got) != 0 {
+		t.Fatalf("%+v; want no detour", got)
+	}
+}

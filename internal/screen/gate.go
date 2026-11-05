@@ -27,6 +27,7 @@ var gated = []struct {
 }{
 	{"weighed", func(t Totals) int { return t.Weighed }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
+	{"detours", func(t Totals) int { return t.Detours }, func(int) int { return 0 }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way
