@@ -2029,6 +2029,7 @@
         "internal/screen/layered.go",
         "internal/screen/layout.go",
         "internal/screen/legible.go",
+        "internal/screen/levels.go",
         "internal/screen/lint.go",
         "internal/screen/marks.go",
         "internal/screen/notes.go",
@@ -2789,8 +2790,6 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
-      "Phrase": "module text",
-      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
     },
     {
@@ -2823,6 +2822,13 @@
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0026",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
     },
     {
       "From": "FEAT-0003",
@@ -5176,7 +5182,8 @@
             "path",
             "exit codes",
             "migrate",
-            "record evidence"
+            "record evidence",
+            "lint"
           ]
         }
       ],
@@ -7802,7 +7809,55 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures.",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures. The report also carries ",
+                "Code": false
+              },
+              {
+                "Text": "levelsOf",
+                "Code": true
+              },
+              {
+                "Text": " the model, ",
+                "Code": false
+              },
+              {
+                "Text": "screen.Levels",
+                "Code": true
+              },
+              {
+                "Text": " of the full views lint checked, and prints each advice as a ",
+                "Code": false
+              },
+              {
+                "Text": "level VIEW:",
+                "Code": true
+              },
+              {
+                "Text": " line after the totals. ",
+                "Code": false
+              },
+              {
+                "Text": "--record",
+                "Code": true
+              },
+              {
+                "Text": " refuses the first debt, when the old debt names no view and no ceiling, while ",
+                "Code": false
+              },
+              {
+                "Text": "offLevel",
+                "Code": true
+              },
+              {
+                "Text": " finds a view with a hard breach that a level line says stands at the wrong level, since those breaches come from its units and not from routing; ",
+                "Code": false
+              },
+              {
+                "Text": "lint_test.go",
+                "Code": true
+              },
+              {
+                "Text": " checks that refusal.",
                 "Code": false
               }
             ]
@@ -9625,6 +9680,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
@@ -22571,6 +22631,108 @@
               },
               {
                 "Text": ", when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Levels",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "levels.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "Levels",
+                "Code": true
+              },
+              {
+                "Text": " reads the overview and each module's inside as a level of abstraction, never a focus view, and counts its boxes and the pairs of places its lines join. A loose contract on the overview is not a box. A box that at least ",
+                "Code": false
+              },
+              {
+                "Text": "hubFrom",
+                "Code": true
+              },
+              {
+                "Text": " boxes use, at least half of the others, is a hub, a shared layer such as shared types or a UI kit, and the lines into it do not count toward the density. ",
+                "Code": false
+              },
+              {
+                "Text": "level",
+                "Code": true
+              },
+              {
+                "Text": " gives advice, never a breach, when the overview draws fewer than ",
+                "Code": false
+              },
+              {
+                "Text": "overviewFewest",
+                "Code": true
+              },
+              {
+                "Text": " or more than ",
+                "Code": false
+              },
+              {
+                "Text": "overviewMost",
+                "Code": true
+              },
+              {
+                "Text": " boxes, a top-level module's page draws one box, a nested module's fewer than ",
+                "Code": false
+              },
+              {
+                "Text": "insideFewest",
+                "Code": true
+              },
+              {
+                "Text": ", a page more than ",
+                "Code": false
+              },
+              {
+                "Text": "viewBudget",
+                "Code": true
+              },
+              {
+                "Text": ", or a view of at least ",
+                "Code": false
+              },
+              {
+                "Text": "denseFrom",
+                "Code": true
+              },
+              {
+                "Text": " boxes more than ",
+                "Code": false
+              },
+              {
+                "Text": "linesPerBox",
+                "Code": true
+              },
+              {
+                "Text": " lines a box besides those into its hubs. Each advice says what to change in the units, since only a reader's choice of units fixes a level. ",
+                "Code": false
+              },
+              {
+                "Text": "levels_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds each bound on small models.",
                 "Code": false
               }
             ]

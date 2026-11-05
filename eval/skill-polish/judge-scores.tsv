@@ -1,0 +1,10 @@
+repo	variant	c1_level	c2_density	c3_placement	c4_lines	c5_labels	c6_overall	mean	set_of_views	rank	worst_defect
+gin	base	2.33	2.33	3.00	2.67	2.67	2.33	2.56	3	2	render module page draws nothing
+gin	it2	3.00	2.33	3.00	1.67	2.00	2.00	2.33	3	3	overview lines wrap the drawing edge, dashed lines climb
+gin	it3	4.00	3.00	3.33	2.67	2.67	2.67	3.06	4	1	overview orange lines cross, labelled only call/import
+httpie	base	2.67	3.00	3.33	2.67	2.00	2.33	2.67	2	2	the cli to core to client path appears in no view
+httpie	it2	3.33	3.33	3.33	2.67	3.00	2.33	3.00	3	1	overview is unlabelled spaghetti with staircases
+httpie	it3	3.67	2.00	3.00	1.67	2.00	1.67	2.33	3	3	runtime page is a lattice of about 40 lines from 13 chips
+storefront	base	3.33	4.00	3.33	3.67	2.33	2.67	3.22	2	2	overview is three folders without the Shopify backend
+storefront	it2	3.33	2.33	3.33	1.67	2.67	2.00	2.56	3	3	staircase spaghetti overview at mixed levels
+storefront	it3	4.00	3.00	3.33	3.33	2.67	3.00	3.22	4	1	overview import bus with stair jogs, part pages drop their chips
