@@ -1,8 +1,124 @@
 # Skill polish runs
 
+This folder holds how ABBD's setup skill, CLI and renderer are judged on repositories they were never tuned on, and every round judged so far. The goal is a blueprint that reads like a diagram an engineer polished by hand in draw.io, on any repository.
+
+- `rubric.md` is what a judge reads: the criteria and the pairwise format.
+- `tools/` holds the levers. Each script's docstring says how to run it.
+- `judge-scores.tsv` holds every absolute judge pass of rounds 3 to 7, `pairwise/` every pairwise pass, with its key.
+- `lint-levels.tsv` is `abbd lint --json` for every run, and `decisions.tsv` joins both with the verdicts of rounds 3 to 7.
+- `ref-parts/` holds the reference parts of the six pool repositories, for the parts proxy.
+- `shots/` holds the judged pages that iterations 5 to 7 name.
+
+## Protocol
+
+From iteration 8 on, a change goes through three tiers, cheapest first. It moves to the next tier only if it passes the one before. The tiers exist because a fresh-run round costs hours, and through iteration 7 every skill change waited for one before anyone learned it had failed.
+
+### Tier 0. Automated, minutes, no judge
+
+Every change, renderer or skill, runs these first.
+
+- **Renderer change.** `tools/rerender.sh BIN OUT NAME=RUN...` copies every finished run in the pool and syncs it with the change's binary. Six runs take 16 seconds. `tools/shoot.py OUT --pages all REPO=OUT/NAME/.abbd/blueprint...` draws every view whole and runs the hover pass, about 5 seconds a run. Compare its findings table and `abbd lint` totals with the same table for the current binary. `tools/pairs.py ... --same-runs --changed-only` then lists only the views whose drawing changed. A change whose hover findings or hard breaches rise with no reason written in advance stops here.
+- **Skill change.** Check the decomposition before any drawing is judged. A rule the skill states as a script (a part rule, a grouping step) is run as that script on all six pool repositories. A rule only an agent can apply is run through setup steps 1 to 5, which skip step 6's understanding texts and step 7's look; its cost is not yet measured. `abbd lint` level lines and `tools/parts.py ref-parts/REPO.tsv RUN...` then screen for collapse: a run with fewer than half the reference's top-level parts, or a top-level F1 under 0.5, stops here. The F1 does not rank two healthy runs (see the method study), so it never decides a keep.
+
+The pool is every finished run of the current kept iteration, plus the zero-base runs of the rotation repositories. A renderer change is drawn on all of them at once, never on three.
+
+### Tier 1. Pairwise judges, about 15 minutes
+
+Three fresh Opus judges, blind, each in one pass, compare the changed views in pairs (`rubric.md`). `tools/pairs.py OUT KEY SEED NAME=DIR... --pair X,Y` builds one pack per judge with its own seed. Keys go outside the judges' folder. Each pack also holds one view against a copy of itself per repository (`--null`), and a judge that prefers either side of a null pair is rerun.
+
+- A view's verdict on a criterion is the side at least two of three passes pick; otherwise it is a tie.
+- The headline is criterion 6 (overall). The criteria the change targets are written in this README before the judges run.
+- A renderer change, judged on the same runs, is kept if its targeted criteria win more views than they lose, criterion 6 wins at least as many views as it loses, and it loses no overview on criterion 6.
+- `tools/agree.py SCORES PAIRWISE_DIR` reports the passes' agreement. If the passes flip on more than 1 answer in 10, the round is rerun with three new judges before anyone acts on it.
+
+### Tier 2. Fresh runs, hours
+
+Only a skill or CLI change that passed tiers 0 and 1 on proxies gets fresh setup runs, one per repository, on the triple whose turn it is.
+
+- **Rotation.** The pool is gin, httpie and storefront (triple A) and express, click and hyperfine (triple B). Rounds alternate triples, so no repository decides two rounds in a row. A change kept on one triple is checked on the other at tier 0 before the next round starts. When a repository has decided four rounds, it is replaced by a new one of the same language family, and its runs stay in the tier 0 pool.
+- **Judging.** The judges compare the candidate's views with the current kept iteration's, overview against overview and the densest pages by rank, plus the hover shots `shoot.py` picks (criterion 7). Rank-matched pages show two different modules, so the overview verdicts carry the decision: the change is kept if it wins criterion 6 on the overview in 2 of 3 repositories and loses none, and wins at least as many page verdicts as it loses.
+- **Set of views** is recorded but gates nothing; its pairwise answers flipped between passes on 22 in 100 pass pairs.
+
+### What the judge sees
+
+- Every view whole, captured by `shoot.py` at its drawn size. Through iteration 7 the shots were a 1600x1100 viewport taken at the top of the page.
+- Hover shots of each view: the hub box's hover and each hover the checks flag, up to six.
+- The judge never sees lint numbers, findings or which version drew which.
+
+## Method study (before iteration 8)
+
+Through iteration 7 the round loop was slow. Each skill round cost hours of fresh runs before its first verdict, and three of the four skill rounds (it2, it4, it7) were rejected. Four parts of the method were examined on the data that already existed, and the protocol above is what the evidence supports.
+
+### Judge noise: absolute scores against pairwise verdicts
+
+The question was whether a judge's 1 to 5 scores drift so much between passes that they swamp real gains, and whether asking a judge which of two drawings of one view reads better is steadier.
+
+The same screenshots were judged many times. `shots0` (base) was scored in 11 absolute passes from rounds 4 to 7, and `shots5` and `shots6` in 6 each, byte for byte the same images (checked by hash against every review folder). Three new blind Opus judges then compared the four judged sets `shots0`, `shots5`, `shots6` and `shots7` in pairs, in packs built by `tools/pairs.py` with seeds 81, 82 and 83 (`pairwise/`). Each pack holds 48 comparisons: 5 variant pairs (base and it5, it5 and it6, base and it6, it6 and it7, base and it7) times 3 repositories times 3 views, plus one overview against a copy of itself per repository, and 15 set comparisons. A and B were drawn at random per comparison.
+
+`tools/agree.py judge-scores.tsv pairwise` measures both on the same 15 decision cells (variant pair and repository) per criterion. A pass answers a cell with X, Y or a tie. For absolute scores that is the sign of the difference of the two sets' scores in one pass; for pairwise, the sign of the wins over the set's three views. Over every pair of passes that answer a cell, measured:
+
+| criterion | absolute, same round: same answer, flip | pairwise: same answer, flip |
+|---|---|---|
+| c1 level | 0.90, 0.03 | 0.82, 0.13 |
+| c2 density | 0.78, 0.06 | 0.76, 0.11 |
+| c3 placement | 0.48, 0.08 | 0.71, 0.02 |
+| c4 lines | 0.54, 0.11 | 0.62, 0.02 |
+| c5 labels | 0.84, 0.03 | 0.82, 0.13 |
+| c6 overall | 0.73, 0.14 | 0.91, 0.04 |
+| all criteria together | 0.83, 0.08 | 0.64, 0.18 |
+| set of views | 0.62, 0.00 | 0.73, 0.22 |
+
+A flip is two passes giving opposite strict answers. Absolute pass pairs are taken inside one round (63 per criterion); pairwise has 45. With 15 cells a criterion, a difference under about 0.1 is not a difference.
+
+What it shows:
+
+- Pairwise is steadier where the drawing is the question. On overall (c6) passes flip on 4 in 100 pass pairs against 14, on lines (c4) 2 against 11, and on placement (c3) 2 against 8. These are the criteria a renderer change targets.
+- Absolute is steadier on level (c1) and labels (c5), and on the mean of all criteria, which averages six scores. The pairwise sum of wins over all criteria is the least steady pairwise answer.
+- Pairwise can say "no difference", which a 1 to 5 score cannot. Every pairwise answer on an image against its own copy was `=` (54 of 54), and so was every answer on the three views byte-identical between it5 and it6 (54 of 54). A side was picked 50% of the time among 574 strict answers, so no position bias showed.
+- Rank-matched module pages compare two different modules when the topologies differ (gin's routing page against its shared runtime page, for one). The overview is the only view that is the same view in every pair. On overview comparisons alone passes agree on 0.78 of answers and flip on 0.09.
+
+Judge noise was not what made the loop slow. The same image set's mean moves between passes by a standard deviation of 0.14 (median over 15 sets, range 0.03 to 0.22), while the median gap between the two variants of a decision cell is 0.31. The 0.3 to 0.4 swings named in iteration 4 are the range over 11 passes, not one pass's error. What cost the hours was that each skill change waited for fresh runs before its first verdict, that 3 judged views a repository showed little of each run, and that the judges never saw hover.
+
+So the protocol keeps pairwise verdicts with criterion 6 as the headline, and drops set of views and the all-criteria sum as gates.
+
+### Whole drawings
+
+Through iteration 7 each judged image was a 1600x1100 viewport at the top of the page. `tools/shoot.py` captures each view's drawing at its drawn size instead, from file URLs in headless Chrome, and reports what the old crop would have cut. On the overview and the two densest pages of each base, it5, it6 and it7 run (36 views; on the base runs `shoot.py`'s box count picks other pages than `shots0` holds) the crop cut only the httpie overview, 11% to 15% of its drawing in it5, it6 and it7. On the 63 views of the z0 rotation runs it cut 2, and on zM none. The crop explains one recurring judge complaint (httpie's overview "cut off at the fold"), not the scores.
+
+Capture is deterministic. Re-rendering the it6 runs with this branch's binary and capturing every view again gave byte-identical images for all 31 views, so `pairs.py --changed-only` dropped every comparison. Aside's clipped screenshot timed out after 31 seconds on the first view tried, where headless Chrome took 1.2 seconds, so the tool uses Playwright with the installed Chrome.
+
+### Hover
+
+The user found by hand that hovering a line lights it only partway, so its two end modules cannot be told, and that hovering a module mixes colours along a route. No judge could see that. `shoot.py` hovers every box, chip and line with the real mouse, lets the page's own CSS decide what lights, and checks the lit set geometrically. Measured on the judged runs:
+
+| run set | views | views with a cut route | with a mixed route | with a cut line hover | with a hidden line |
+|---|---|---|---|---|---|
+| base (`w0`) | 9 | 7 | 7 | 7 | 2 |
+| it6 (`w9`, every page) | 31 | 17 | 15 | 17 | 2 |
+| z0 (every page) | 63 | 17 | 9 | 17 | 6 |
+| zM (every page) | 30 | 14 | 13 | 15 | 3 |
+
+On the it6 httpie overview, 44 of the 54 line hovers light a set that leaves an end loose or reaches fewer than two boxes, because a line hover lights the one path segment under the mouse and a route drawn as a shared bus is several segments. A box hover lights a shared bus whole, so a lit route runs on to a dimmed box, and a box's coloured stub joins a grey bus, which the mixed check counts. Each flagged hover is saved as a hover shot for the judges' criterion 7, and the counts sit beside the verdicts. The checks are geometric heuristics with 8 and 12 pixel tolerances; a judge's look at the hover shot decides, the count only says where to look.
+
+### The parts proxy
+
+The hope was a judge-free screen for skill changes: score a run's modules against a reference decomposition and stop a change that lowers the score. A fresh blind Opus agent wrote the reference parts of all six pool repositories from their source trees alone, without seeing any run (`ref-parts/`, each table followed in the agent's report by the cuts it was least sure of). `tools/parts.py` scores a run by B-cubed F1 over files, for the top level and for the top two levels together.
+
+It does not predict the judges. Over the 13 judged topologies (base, it2, it3, it4 and it7, with it5 and it6 sharing it3's), 16 pairs of runs in one repository differ in judged level (c1) by 0.3 or more, and the two-level F1 orders 8 of them the same way, a coin's rate. The rank correlation with c1 is 0.67 on gin, -0.20 on httpie and -0.40 on storefront. On storefront the reference cuts the app by shared libraries and the runs by route areas, which the judges preferred: it3 scores 3.96 on c1 with an F1 of 0.59 against the reference. One engineer's reference is one valid cut among several, and F1 punishes the others.
+
+What it does catch is collapse. The base skill's runs of click and hyperfine put the whole package in 1 top-level module against the reference's 10 and 8 (top F1 0.24), and the base storefront run in 3 against 8, the storefront run the judges scored lowest on level. So the protocol uses it only as a gate on gross failure (fewer than half the reference's top-level parts, or a top F1 under 0.5), never to rank two runs.
+
+### Overfitting
+
+All seven rounds were decided on the same three repositories, so a rule could fit gin, httpie and storefront without being better. The zero-base runs of express, click and hyperfine (`z0` with the base skill, `zM` with main's) make a second triple, and the protocol alternates the two.
+
+## History of rounds 3 to 7
+
+These rounds used absolute 1 to 5 scores on viewport shots, under the rules below.
+
 An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, storefront) once per skill variant. Base is the skill at a0a792f, it2 is c43960f and it3 is a2611d7. Each it3 run used a binary built from a2611d7, which also holds it2's changes.
 
-- `rubric.md` is what the judge scored against.
+- The judges scored against `rubric.md` as it stood at 4dd399e: the same criteria 1 to 6, each scored from 1 to 5.
 - `judge-scores.tsv` holds every blind judge pass (Opus), one for the first round and two or three for each later iteration, each over 27 screenshots: per repository and variant, the overview and the two module pages with the most boxes, each a 1600x1100 dark-mode viewport shot taken at the top of the page. Sets were labelled P, Q and R in a seeded random order per repository, and the judge never saw the key.
 - `lint-levels.tsv` is `abbd lint --json` for every run, measured with the a2611d7 binary.
 - `decisions.tsv` joins both and records the verdicts. Judge scores are averaged over all judge passes, and a variant is kept by one of two rules, chosen by what it changes:
@@ -11,7 +127,7 @@ An agent ran the ABBD setup skill on three held-out repositories (gin, httpie, s
   - The paired rule was adopted after it5 failed the fresh-run rule, and it5 is the first change judged under it (see Iteration 5). The rule did not exist when it5's judges ran, so no criterion was named in advance. Labels (c5) is what its change targets, but its keep rests on a rule written with its scores in view.
 - `shots/` holds the base, it3, it4 and it5 overviews, and the pages iterations 5 to 7 name.
 
-## Verdict
+### Iterations 2 and 3
 
 Neither variant meets the fresh-run rule, the only rule at the time. it2 beats base in 1 of 3 repositories and is rejected.
 
@@ -27,7 +143,7 @@ it3 stays the working base for the next iteration, because its level score (c1_l
 
 The `level_advice` column of `lint-levels.tsv` comes from the a2611d7 binary. Its hub test counted lines to a frame's chips and both directions of a mutual line, so it marked most boxes of a small page as hubs. Later level checks count only lines between a view's boxes and can differ from it.
 
-## Iteration 4
+### Iteration 4
 
 it4 (0b83eca) gave the setup skill a part rule a script runs, dropped the overview bound from 12 boxes to 7, and labelled a mixed-phrase line with its most common phrase. Each it4 run used a binary built from 0b83eca.
 
@@ -47,7 +163,7 @@ it4 is rejected and reverted in f89ca26. It beats base and it3 on storefront onl
 
 The same base and it3 screenshots scored lower this round than in the single pass above (storefront base 3.22 to 2.86, gin it3 3.06 to 2.77). A gap of about 0.3 to 0.4 between rounds is judge noise, which makes the earlier one-pass verdicts weaker still.
 
-## Iteration 5
+### Iteration 5
 
 it5 (fa9a75c) tests iteration 4's phrase rule alone. A line whose relations carry different phrases says the phrase the most of them carry, with 등, and falls back to the via word only when none carries a phrase. The skill text, the part rule and the overview bound are as on main.
 
@@ -75,7 +191,7 @@ it5 is kept under the paired rule. It changes only the renderer, and it draws it
 
 Under the fresh-run rule it would have been rejected, and it was first reverted in 79f1779 on that ground. It beats base and it3 on gin and storefront, but loses httpie to base by 0.26, more than the largest pass disagreement there (0.17). That gap is it3's topology, which it5 draws unchanged, so it measures it3 against base, not the label rule. f0d42b1 undid that revert.
 
-## Iteration 6
+### Iteration 6
 
 it6 is a renderer-only change, so it is judged under the paired rule against it5: the it5 runs (`w8/*-it5`) copied to `w9/*-it6` and synced with the it6 binary, the same 9 pages screenshotted the same way.
 
@@ -132,7 +248,7 @@ Defects the passes still name:
 
 A review of PR #101 then found the gathered wires' tooltips named only the first module they gather, the gathered chips lost their links, and the chip's 24-rune name cap let Hangul names wrap. 7111bdd fixes all three. On the held-out runs that changes tooltips and links only, so the judged pages are unchanged.
 
-## Iteration 7
+### Iteration 7
 
 it7 changes the skill and the CLI, so it is judged under the fresh-run rule, on new candidate runs against base and it6. The renderer is as on main.
 

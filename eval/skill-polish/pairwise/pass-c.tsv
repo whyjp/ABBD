@@ -1,0 +1,65 @@
+id	c1	c2	c3	c4	c5	c6	reason
+c01	=	A	A	A	A	A	A (routing: 4 boxes, straight drops, specific phrases) vs B with a dashed climb, crossings and generic 호출/임포트
+c02	A	A	A	A	A	A	B is an empty frame with no boxes
+c03	B	A	A	A	B	B	A is a clean package dump with internal/bytesconv and fs beside a lumped gin box; B names engine, context, routing, middleware and gives specific phrases
+c04	B	A	A	A	B	A	B splits gin but adds bytesconv and fs, env-vars sits mid-drawing, orange staircases; A is cleaner and good enough for a doc
+c05	=	=	=	=	=	=	identical images
+c06	A	B	B	B	A	A	A names real parts with specific labels; B is cleaner but shows packages and internals
+c07	B	B	B	=	=	B	A mixes 15 data, interface, feature and module boxes; B is 6 boxes in a clean top-down chain
+c08	B	B	B	B	=	B	A adds bytesconv and fs, places env vars mid-drawing, more staircases
+c09	B	B	B	B	=	B	A is tangled, with dashed climbs and many chips; B is a clean 6-box chain
+c10	A	A	A	=	=	A	A is 6 clean boxes; B is 15 mixed-kind boxes
+c11	=	=	=	B	=	B	near-identical; A has more lines climbing into request context
+c12	A	A	A	A	A	A	B is empty
+c13	=	=	=	=	=	=	identical images
+c14	=	A	=	A	A	A	same 5 boxes; B's top region is a tangle of crossing lines with repeated 호출/임포트
+c15	A	A	A	=	A	A	B is empty; A is tangled but shows its parts
+c16	=	=	A	A	A	A	A reads top-down with call-phrase labels; B has dashed climbs and a knot around engine
+c17	=	=	B	B	A	B	B sits in cleaner rows with hubs at the bottom; A has richer labels but more long crossings
+c18	=	B	B	B	B	B	A is a hairball of unlabeled lines; B has 5 boxes, followable
+c19	=	A	=	A	=	A	A has fewer boxes and crossings; both labels weak (A repeats 임포트, B mostly unlabeled)
+c20	A	B	B	B	A	B	A names roles but is a tall orange hairball, cut off; B fits and can be followed
+c21	=	B	=	B	A	B	B has fewer, cleaner lines; A has more specific phrases
+c22	=	B	=	B	B	B	same 4 boxes; B has fewer lines and adds HTTPieCookiePolicy and HTTPHeadersDict
+c23	B	A	A	A	B	A	B is a wider, worse hairball cut at the bottom; A is readable
+c24	B	B	=	=	=	B	A is 2 boxes and one bus to chips, too thin
+c25	=	=	=	=	=	=	identical images
+c26	=	A	=	A	=	A	both hairballs; B has more boxes and longer full-width runs
+c27	B	B	=	B	B	B	B is 5 boxes with specific plugin and phrase labels; A is 2 boxes and a bus
+c28	=	=	=	A	B	=	A has simpler lines, B has richer labels
+c29	=	B	=	=	=	B	near-identical; A is stretched taller and more is cut off
+c30	B	B	=	B	B	B	A is 2 boxes and a bus; B is a clean 4-box view with labels
+c31	=	A	A	A	A	A	same 9 boxes; B is a dense mesh
+c32	A	B	B	B	A	B	A is a tall cut-off hairball; B fits and can be followed
+c33	=	A	B	A	B	B	A has no frame chips and shows no surroundings; B places contracts and users on the frame with phrases
+c34	=	A	B	A	=	B	A has a floating unconnected box and no chips, so says little
+c35	=	A	A	=	B	A	A has 6 named parts with chips on the frame; B has 3 boxes and no surroundings
+c36	B	B	B	A	B	B	A is 3 directory boxes with a climb; B is 9 role parts, though with a bus bundle
+c37	=	A	=	A	A	A	A has 3 clean boxes with phrase labels; B has crossings and a dashed climb
+c38	A	A	A	B	A	A	B is 3 directory boxes; A names pages, cart, client and externals, but with more crossings
+c39	=	=	=	=	=	=	identical images
+c40	=	=	=	=	B	=	same drawing; A adds generic 임포트 labels
+c41	=	=	=	=	=	=	identical images
+c42	=	=	=	B	A	A	B's lines are straighter but run in a merged bus; A carries specific phrases and shows checkout, webhooks and the GraphQL API
+c43	=	A	A	=	B	A	same as c35: B has 3 boxes and no frame chips
+c44	=	B	A	B	=	A	B is sparse with a floating box and no chips
+c45	A	A	A	B	A	A	B is 3 directory boxes
+c46	=	A	=	A	B	A	A is cleaner with 6 parts; B has a busy chip bus but better labels
+c47	=	=	=	=	=	=	identical images
+c48	=	=	A	=	A	A	A has frame chips and phrase labels; B has a floating box and no surroundings
+id	set	reason
+s01	A	A's overview names gin's parts; B's overview hides them in one gin box and its render page is empty
+s02	A	same overview level and binding page; A's shared runtime page is much cleaner
+s03	A	B has a package-level overview and an empty render page
+s04	A	B's overview mixes internals and is tangled, and its server engine page is a knot
+s05	B	B's overview at least splits gin into parts; A ships an empty render page
+s06	A	B's overview is a tall cut-off hairball and its runtime page is a mesh
+s07	A	same overview family; A's sessions and runtime pages are cleaner and labelled
+s08	A	A's overview can be followed; B's role-named overview is a hairball, though its pages are a little better
+s09	A	B's overview is the worst hairball; its pages are comparable
+s10	A	B's overview is unreadable; A is readable at package level
+s11	A	B's overview is 3 directories; A shows the pages, cart, client and UI kit
+s12	=	identical except generic 임포트 labels on A's overview
+s13	B	A's overview is too coarse to show the architecture
+s14	B	B's overview shows checkout, webhooks and GraphQL with specific labels, and its pages show their surroundings on the frame
+s15	B	A's overview is 3 directories; B shows the architecture and its externals

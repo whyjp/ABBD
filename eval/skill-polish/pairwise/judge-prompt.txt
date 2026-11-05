@@ -1,0 +1,25 @@
+You are judging architecture diagrams, two at a time. Read the rubric at C:/Users/cxx/orca/projects/cccv/.claude/worktrees/agent-a17f65886ce98739f/eval/skill-polish/rubric.md first, and nothing else in that repository.
+
+The screenshots are in C:/Users/cxx/AppData/Local/Temp/claude/C--Users-cxx-orca-projects-cccv--claude-worktrees-agent-a5e928540fa0264c2/000b9666-0ece-41a9-a3ee-b18520c3a8b9/scratchpad/ws-0b96/PACK/ (39 PNG files, plus pairs.tsv and sets.tsv). Open nothing else under that folder's parent directory.
+
+The images are blueprint views of three open-source repositories: gin (a Go web framework), httpie (a Python HTTP CLI) and storefront (a Next.js commerce app). Each is a 1600x1100 dark-mode viewport shot taken at the top of the page, so a tall drawing may be cut at the bottom; judge what you see. The UI labels are Korean. A module page shows "<name>의 안" (the module's inside) as its drawing, with its surroundings as dashed chips on the frame, followed by text you should ignore. Judge only the drawings. You may use your knowledge of these projects to judge whether the boxes are the parts an engineer would draw.
+
+pairs.tsv lists 48 comparisons. Each shows the same view of one repository (its overview, or one of its module pages) drawn by two different versions of the tool, as image A and image B. sets.tsv lists 15 set comparisons, each two sets of three images of one repository (an overview and two module pages).
+
+Open every image with the Read tool, then:
+1. For each comparison in pairs.tsv, answer criteria 1 to 6 of the rubric with A, B or =, and give one short reason that names what decided it. Skip criterion 7; this pack holds no hover shots.
+2. For each set comparison in sets.tsv, answer the per-repository criterion (Set of views) with A, B or =, with one short reason.
+
+Answer each comparison on its own merits, as if you had not seen the others. Some pairs may show identical images; say = on every criterion when they are.
+
+Return the answers as two tab-separated tables, exactly in these shapes, one row per id, in id order:
+
+id	c1	c2	c3	c4	c5	c6	reason
+c01	A	=	B	B	A	B	...
+
+id	set	reason
+s01	A	...
+
+Do not edit or create files.
+
+Delivery: send your full report (both tables) to the agent that launched you with the SendMessage tool, and also return the same full report as your final answer.
