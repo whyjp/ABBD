@@ -124,6 +124,38 @@ type Wire struct {
 	// srcs are the places each of the line's relations leaves, which give
 	// it its colour.
 	srcs []string
+	// lines are the relations of each line the label speaks for: on the
+	// path that shows a bus's count, the lines it counts, else the path's
+	// own.
+	lines [][]string
+}
+
+// carry gives w the relations of the lines its path p draws and of those
+// its count counts, each relation once, however many requests merged it.
+func (w *Wire) carry(p drawn, rels func(int) []string) {
+	of := func(is []int) (out [][]string) {
+		for _, i := range is {
+			var line []string
+			for _, r := range rels(i) {
+				if !slices.Contains(line, r) {
+					line = append(line, r)
+				}
+			}
+			out = append(out, line)
+		}
+		return out
+	}
+	w.lines = of(p.reqs)
+	for _, line := range w.lines {
+		for _, r := range line {
+			if !slices.Contains(w.Rels, r) {
+				w.Rels = append(w.Rels, r)
+			}
+		}
+	}
+	if p.count > 1 {
+		w.lines = of(p.counted)
+	}
 }
 
 // Mark is where a line from a reader or a human leaves its unit.
@@ -950,7 +982,6 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.Both = w.Kind == "mutual" && p.starts[0] != noStart
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
-			w.Rels = append(w.Rels, merged[i].rels...)
 			og := o.origin(merged[i].rels)
 			if og != Badge(model.Extracted) {
 				titles[j] += ", " + labels[og]
@@ -968,6 +999,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			w.Origin = "mixed"
 		}
 		w.Title = strings.Join(titles, "\n")
+		w.carry(p, func(i int) []string { return merged[i].rels })
 		if p.count > 1 {
 			w.Count, w.LX, w.LY = p.count, p.label.x, p.label.y
 		}

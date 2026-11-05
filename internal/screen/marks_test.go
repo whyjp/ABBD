@@ -367,7 +367,7 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 			for _, w := range d.Wires {
 				for _, rel := range w.Rels {
 					drawn[rel] = true
-					if word(tr, w.Rels) != "" {
+					if s, _ := word(tr, w.lines); s != "" {
 						worded[rel] = true
 					}
 					if w.Label != nil {
@@ -375,7 +375,7 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 					}
 					if tr.phrases[rel].text != "" {
 						phrased[rel] = true
-						if w.Label != nil && strings.TrimSuffix(w.Label.S, most) == tr.phrases[rel].text {
+						if w.Label != nil && w.Label.Said && mentions(w.Label.S, tr.phrases[rel].text) {
 							named[rel] = true
 						}
 					}
