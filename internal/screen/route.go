@@ -28,6 +28,8 @@ import (
 //     into a hub, which takes its lines as one trunk (H2).
 //     Where its box's other lines fork into that row anyway, such lines
 //     join the fork instead, the stem standing over one of them.
+//     Elsewhere such a line drops straight too, unless it reaches a hub
+//     or rides a shared bus, where the view reads better for it (layDrops).
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
