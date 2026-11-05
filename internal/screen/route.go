@@ -26,6 +26,8 @@ import (
 //   - In a focus view (ring), a line between rows next to each other
 //     whose two boxes' spans meet drops straight and joins no bus, except
 //     into a hub, which takes its lines as one trunk (H2).
+//     Where its box's other lines fork into that row anyway, such lines
+//     join the fork instead, the stem standing over one of them.
 //   - Boxes that the same two or more places all reach may share one
 //     arrival bus instead (share), kept only where it spares a reader
 //     turns at no other cost (route).
@@ -436,7 +438,18 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 	}
 	var buses []*bus
 	for _, k := range sortedKeys(leave) {
-		if is := alone(leave[k]); len(is) >= 2 {
+		// Where a place's other lines fork into the row below it anyway,
+		// its straight drops join the fork too: one stem, one track, a
+		// drop into each box, and the stem over one of them (stemOver), so
+		// no stub runs beside the stem through its track.
+		is := alone(leave[k])
+		oneRow := !slices.ContainsFunc(leave[k], func(i int) bool {
+			return len(plans[i].gaps) != 1 || place(reqs[i].from) != place(reqs[leave[k][0]].from)
+		})
+		if len(is) >= 2 && oneRow {
+			is = leave[k]
+		}
+		if len(is) >= 2 {
 			for _, i := range is {
 				plans[i].dep = len(buses)
 			}
@@ -683,6 +696,30 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 			x, ok := set[i][!sl.leave]
 			return x, ok && len(sl.is) == 1 && len(plans[i].gaps) == 1
 		}
+		// A departure bus that carries lines which could drop straight
+		// stands its stem over the one nearest its share of the edge, so
+		// that line still drops straight and the others fork off the stem.
+		stemOver := func(sl slot, want int) (int, bool) {
+			best, found := 0, false
+			for _, i := range sl.is {
+				if !sl.leave || len(sl.is) < 2 || !drops(i) {
+					continue
+				}
+				f, t := reqs[i].from, reqs[i].to
+				lo, hi := max(f.lo, t.lo), min(f.hi, t.hi)
+				x := clamp(want, lo, hi)
+				if at, ok := set[i][false]; ok {
+					if at < lo || at > hi {
+						continue
+					}
+					x = at
+				}
+				if !found || abs(x-want) < abs(best-want) {
+					best, found = x, true
+				}
+			}
+			return best, found
+		}
 		other := func(sl slot) int {
 			if x, ok := pin(sl); ok {
 				return x
@@ -725,7 +762,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool) routing {
 		pinned := make([]bool, len(slots))
 		for s, sl := range slots {
 			xs[s] = r.lo + (r.hi-r.lo)*(2*s+1)/(2*len(slots))
-			if x, ok := pin(sl); ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
+			x, ok := pin(sl)
+			if ok && x >= r.lo && x <= r.hi && (r.node == "" || apart(x)) {
+				xs[s], pinned[s] = x, true
+			} else if x, over := stemOver(sl, xs[s]); !ok && over && (r.node == "" || apart(x)) {
 				xs[s], pinned[s] = x, true
 			} else if i := sl.is[0]; !ok && len(sl.is) == 1 && drops(i) {
 				// A line that drops straight stands as near its share of

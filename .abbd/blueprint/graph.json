@@ -20835,7 +20835,15 @@
                 "Code": true
               },
               {
-                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. On such a layout ",
+                "Text": " set on the layout) a line between rows next to each other whose two boxes' spans meet joins no bus, unless it ends on a hub (H2), and its slot is clamped into the span both ends meet in, so it drops straight. Where the box's other lines of that kind fork into that same row and all leave one place, such lines join that fork instead: one stem over the straight drop nearest its share of the edge, one track and a drop into each box, so a hub over a row of children forks once, and ",
+                "Code": false
+              },
+              {
+                "Text": "fork_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds app-shell and lib to one stem. On such a layout ",
                 "Code": false
               },
               {
@@ -21255,7 +21263,15 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " will give its own colour, so a word beside a drop never reads as the track's. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
                 "Code": false
               },
               {
@@ -22910,6 +22926,14 @@
               },
               {
                 "Text": " for each excess turn, and the placement debt counts the breaches of the placement criteria. ",
+                "Code": false
+              },
+              {
+                "Text": "forks",
+                "Code": true
+              },
+              {
+                "Text": " lets a branch of a fork turn twice: a line between boxes in rows next to each other that leaves its box's bottom down a stem another of the box's lines of its kind drops straight down, every line on it of that kind, ending in that row and turning onto that same flat track, and no other place's line along its stretch of the track. ",
                 "Code": false
               },
               {

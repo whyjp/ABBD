@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 
@@ -191,5 +192,69 @@ func TestASharedTurnBackCountsOnce(t *testing.T) {
 	}
 	if n != 1 {
 		t.Fatalf("%d turn-backs; want the shared one counted once", n)
+	}
+}
+
+// Lines from one box that leave by one stem and fork off one flat track
+// into the row below read as one line splitting, so a branch into a box in
+// the box's own column may turn twice. The same bent line alone, on no
+// fork, still breaks B1.
+func TestAForkIntoTheRowBelowIsNoBend(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	toB := `<path class="w contract" d="M230 20 V50 H100 V80"/>`
+	fork := toB + `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V50 H360 V80"/>`
+	rels := [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}}
+	if got := lookAt(t, boxes, fork, rels).bendsAllowed(); len(got) != 0 {
+		t.Fatalf("%+v; want the fork's branch into B allowed its 2 turns", got)
+	}
+	got := lookAt(t, boxes, toB, [][2]string{{"A", "B"}}).bendsAllowed()
+	if len(got) != 1 || got[0].Got != 2 || got[0].Allowed != 0 {
+		t.Fatalf("%+v; want the lone bent line to break B1, 2 turns allowed 0", got)
+	}
+}
+
+// A stem that stands over no box of its own, whose two lines both bend onto
+// a track another box's line arrives along, is a knot, not a fork: both
+// bent lines still break B1. So does a fork whose track another place's
+// line runs along.
+func TestAKnotOnAnotherBoxsTrackStillBends(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "E 300 0 120 20", "B 60 80 80 20", "C 200 80 80 20"}
+	knot := `<path class="w contract" d="M340 20 V50 H110 V80"/>` +
+		`<path class="w contract" d="M180 20 V50 H110 V80"/><path class="w contract" d="M180 20 V50 H240 V80"/>`
+	got := lookAt(t, boxes, knot, [][2]string{{"E", "B"}, {"A", "B"}, {"A", "C"}}).bendsAllowed()
+	if len(got) != 2 {
+		t.Fatalf("%+v; want both of A's bent lines to break B1", got)
+	}
+
+	boxes = []string{"A 100 0 160 20", "E 420 0 60 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	fork := `<path class="w contract" d="M230 20 V50 H100 V80"/><path class="w contract" d="M230 20 V80"/>` +
+		`<path class="w contract" d="M230 20 V50 H360 V80"/><path class="w depends_on" d="M450 20 V50 H90 V80"/>`
+	got = lookAt(t, boxes, fork, [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}, {"E", "B"}}).bendsAllowed()
+	if len(got) != 1 || got[0].Items[1].ID != "B" || got[0].Allowed != 0 {
+		t.Fatalf("%+v; want the branch into B, on E's track, to break B1", got)
+	}
+}
+
+// A stem is a fork only when every line down it is of one kind, turns onto
+// one track, and runs straight or as a branch: a straight drop of another
+// kind, a branch onto a second track, or a line that ends on a box's side
+// leaves the bent line into B breaking B1.
+func TestAForkIsOneKindOnOneTrack(t *testing.T) {
+	boxes := []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 80 80 20"}
+	rels := [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}}
+	toB := `<path class="w contract" d="M230 20 V50 H100 V80"/>`
+	for name, rest := range map[string]string{
+		"a straight drop of another kind": `<path class="w depends_on" d="M230 20 V80"/><path class="w contract" d="M230 20 V50 H360 V80"/>`,
+		"a branch onto a second track":    `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V64 H360 V80"/>`,
+		"a line onto a box's side":        `<path class="w contract" d="M230 20 V80"/><path class="w contract" d="M230 20 V70 H320"/>`,
+	} {
+		bs := boxes
+		if strings.Contains(name, "side") {
+			bs = []string{"A 100 0 160 20", "B 60 80 80 20", "C 200 80 80 20", "D 320 60 80 40"}
+		}
+		got := lookAt(t, bs, toB+rest, rels).bendsAllowed()
+		if !slices.ContainsFunc(got, func(b Breach) bool { return b.Items[1].ID == "B" && b.Allowed == 0 }) {
+			t.Errorf("with %s: %+v; want the line into B to break B1", name, got)
+		}
 	}
 }
