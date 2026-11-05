@@ -1,0 +1,18 @@
+path	top	inner
+src/click/__init__.py	core	-
+src/click/core.py	core	-
+src/click/globals.py	core	-
+src/click/decorators.py	decorators	-
+src/click/types.py	parameter types	-
+src/click/parser.py	parser	-
+src/click/exceptions.py	exceptions	-
+src/click/formatting.py	help formatting	-
+src/click/_textwrap.py	help formatting	-
+src/click/termui.py	terminal UI	-
+src/click/_termui_impl.py	terminal UI	-
+src/click/shell_completion.py	shell completion	-
+src/click/testing.py	testing	-
+src/click/utils.py	utilities	public utils
+src/click/_compat.py	utilities	stream compat
+src/click/_winconsole.py	utilities	windows console
+src/click/_utils.py	utilities	sentinels

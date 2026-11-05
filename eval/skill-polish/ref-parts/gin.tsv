@@ -1,0 +1,41 @@
+path	top	inner
+gin.go	engine	engine core
+mode.go	engine	mode & debug
+debug.go	engine	mode & debug
+utils.go	engine	handler adapters & helpers
+version.go	engine	package info
+doc.go	engine	package info
+routergroup.go	router	route groups
+tree.go	router	radix tree
+path.go	router	path cleaning
+fs.go	router	static file serving
+context.go	context	request context
+context_appengine.go	context	request context
+deprecated.go	context	request context
+errors.go	context	error collection
+response_writer.go	context	response writer
+auth.go	middleware	-
+logger.go	middleware	-
+recovery.go	middleware	-
+binding/	binding	body decoders
+binding/binding.go	binding	binding interface & registry
+binding/binding_nomsgpack.go	binding	binding interface & registry
+binding/default_validator.go	binding	validation
+binding/form.go	binding	form & URL mapping
+binding/form_mapping.go	binding	form & URL mapping
+binding/multipart_form_mapping.go	binding	form & URL mapping
+binding/query.go	binding	form & URL mapping
+binding/header.go	binding	form & URL mapping
+binding/uri.go	binding	form & URL mapping
+render/	render	structured data renderers
+render/render.go	render	render interface
+render/html.go	render	HTML templates
+render/text.go	render	text & raw data
+render/data.go	render	text & raw data
+render/reader.go	render	text & raw data
+render/pdf.go	render	text & raw data
+render/redirect.go	render	redirect
+codec/json/	json codec	pluggable backends
+codec/json/api.go	json codec	codec API
+ginS/	ginS	-
+internal/	internal	-

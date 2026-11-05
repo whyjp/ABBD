@@ -1,0 +1,24 @@
+path	top	inner
+app/	app routes	root layout & home
+app/product/	app routes	product page
+app/search/	app routes	search & collections
+app/[page]/	app routes	CMS pages
+app/robots.ts	app routes	SEO & API routes
+app/sitemap.ts	app routes	SEO & API routes
+app/api/	app routes	SEO & API routes
+lib/shopify/	shopify	types
+lib/shopify/index.ts	shopify	client & operations
+lib/shopify/queries/	shopify	queries
+lib/shopify/mutations/	shopify	mutations
+lib/shopify/fragments/	shopify	fragments
+lib/	shared lib	-
+components/cart/	cart	-
+components/product/	product	-
+components/layout/	layout	product grid items
+components/layout/navbar/	layout	navbar
+components/layout/footer.tsx	layout	footer
+components/layout/footer-menu.tsx	layout	footer
+components/layout/search/	layout	search & filters
+components/grid/	merchandising	-
+components/carousel.tsx	merchandising	-
+components/	ui primitives	-
