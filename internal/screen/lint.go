@@ -1080,19 +1080,46 @@ func (l *look) dotted() []Breach {
 	return out
 }
 
-// J3 is rule 18, held at zero but where lines ride roads (confluence.go)
-// and the drawing holds their routes: there ink may join places no
-// relation joins, since each line's route lights whole under the pointer.
+// J3 is rule 18, held at zero but on roads (confluence.go): where lines
+// ride roads and the drawing holds their routes, ink may join places no
+// relation joins along routes, since each route lights whole under the
+// pointer. A phantom way off the routes still breaks it.
 func (l *look) noPhantoms() []Breach {
-	if l.v.d.roads && l.s.routed {
-		return nil
-	}
 	var out []Breach
 	for _, w := range l.trace.Phantoms {
+		if l.v.d.roads && l.s.routed && onRoutes(w.pts, l.s.routes) {
+			continue
+		}
 		out = append(out, Breach{Items: l.itemsOf(w.from, w.to), Got: 1, Allowed: 0,
 			Text: fmt.Sprintf("the ink leads from %s to %s, which no relation joins, at %s", l.shapeName(w.from), l.shapeName(w.to), pointList(w.pts))})
 	}
 	return out
+}
+
+// onRoutes says every stretch of the way pts lies on the routes' ink,
+// sampled every 2px.
+func onRoutes(pts []fpt, routes []stroke) bool {
+	on := func(p fpt) bool {
+		for _, r := range routes {
+			for k := 1; k < len(r.pts); k++ {
+				if segDist(p, r.pts[k-1], r.pts[k]) < 0.5 {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	for k := 1; k < len(pts); k++ {
+		a, b := pts[k-1], pts[k]
+		n := int(dist(a, b)/2) + 1
+		for i := 0; i <= n; i++ {
+			t := float64(i) / float64(n)
+			if !on(fpt{a.x + (b.x-a.x)*t, a.y + (b.y-a.y)*t}) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // hubs are the boxes hubUsers or more places use, each with its users.

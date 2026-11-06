@@ -104,15 +104,16 @@ func (d *Drawing) hover() {
 		r.at = nums(r.ends)
 		r.Lit = classes(r.at, []int{k})
 	}
-	// A piece of ink lights every route that runs along it, and keeps lit
-	// the shapes at their ends.
+	// A piece of ink lights every route of its kind that runs along it, and
+	// keeps lit the shapes at their ends: ink of another kind on the same
+	// track is another line.
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		ink := runs(w.D)
 		is := nums(w.ends)
 		var ks []int
 		for k := range d.Routes {
-			if alongside(ink, d.Routes[k].runs) {
+			if d.Routes[k].Kind == w.Kind && alongside(ink, d.Routes[k].runs) {
 				ks = append(ks, k)
 				is = append(is, d.Routes[k].at...)
 			}

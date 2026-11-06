@@ -90,8 +90,8 @@ func roadRuns(ways [][]pt, rv roadView) []straightRun {
 				keys = append(keys, k)
 			}
 			slide := [2]int{-1 << 30, 1 << 30}
-			for k, meets := range []bool{j == 1, j == len(w)-1} {
-				switch e := rv.ends[i][k]; {
+			for side, meets := range []bool{j == 1, j == len(w)-1} {
+				switch e := rv.ends[i][side]; {
 				case !meets:
 				case !v:
 					slide = [2]int{1, 0}
@@ -243,7 +243,7 @@ func boxed(w []pt, boxes []box) int {
 // pieces of different styles run on one another, the splits far from
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
-	crossings, turns, beside, clash, far, forks, tees int
+	crossings, turns, beside, clash, far, forks, tees, unseen int
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -263,7 +263,7 @@ type roadView struct {
 }
 
 func (v roadView) cost(ways [][]pt) roadCost {
-	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways)), tees: v.tees(ways)}
+	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways)), tees: v.tees(ways), unseen: v.unseen(ways)}
 	for _, w := range ways {
 		c.turns += max(0, len(straight(w))-2)
 	}
@@ -295,7 +295,7 @@ func (v roadView) cost(ways [][]pt) roadCost {
 }
 
 func (c roadCost) better(o roadCost) bool {
-	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.far > o.far || c.forks > o.forks || c.tees > o.tees {
+	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen {
 		return false
 	}
 	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.beside < o.beside
@@ -338,6 +338,50 @@ func (v roadView) alike(a, b straightRun) bool {
 // mix says run r carries dotted and solid lines both.
 func (v roadView) mix(r straightRun) bool {
 	return slices.ContainsFunc(r.segs, func(s [2]int) bool { return v.plan[s[0]] }) && slices.ContainsFunc(r.segs, func(s [2]int) bool { return !v.plan[s[0]] })
+}
+
+// unseen counts the dotted routes with less than planMin of ink no solid
+// route of their style runs on: dress draws a piece dotted only where all
+// its lines arise in design and it runs planMin or more, so such a line
+// shows nowhere as what it is.
+func (v roadView) unseen(ways [][]pt) int {
+	n := 0
+	for i, w := range ways {
+		if !v.plan[i] {
+			continue
+		}
+		own := 0
+		for k := 1; k < len(w); k++ {
+			a, b := w[k-1], w[k]
+			vert, at, lo, hi := runOf(a, b)
+			var cover [][2]int
+			for j, o := range ways {
+				if v.plan[j] || v.style[j] != v.style[i] {
+					continue
+				}
+				for m := 1; m < len(o); m++ {
+					if ov, oat, olo, ohi := runOf(o[m-1], o[m]); ov == vert && oat == at && o[m-1] != o[m] {
+						if l, h := max(lo, olo), min(hi, ohi); l < h {
+							cover = append(cover, [2]int{l, h})
+						}
+					}
+				}
+			}
+			sort.Slice(cover, func(x, y int) bool { return cover[x][0] < cover[y][0] })
+			free, at2 := 0, lo
+			for _, c := range cover {
+				if c[0] > at2 {
+					free += c[0] - at2
+				}
+				at2 = max(at2, c[1])
+			}
+			own += free + max(0, hi-at2)
+		}
+		if own < planMin {
+			n++
+		}
+	}
+	return n
 }
 
 // tees counts the points where a route that drops straight crosses a flat
@@ -488,6 +532,9 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	// branches on one track.
 	for _, f := range v.forks(ways) {
 		a, b := at[[2]int{f[0], 1}], at[[2]int{f[1], 1}]
+		if !v.alike(rs[a], rs[b]) {
+			continue
+		}
 		if rs[a].moves(rs[b].at) {
 			moves = append(moves, move{a, rs[b].at, 0})
 		}
@@ -500,7 +547,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	for i, w := range ways {
 		for j := 1; j+1 < len(w)-1; j++ {
 			a, b := at[[2]int{i, j - 1}], at[[2]int{i, j + 1}]
-			if rs[a].vertical != rs[b].vertical {
+			if rs[a].vertical != rs[b].vertical || !v.alike(rs[a], rs[b]) {
 				continue
 			}
 			if rs[a].moves(rs[b].at) {

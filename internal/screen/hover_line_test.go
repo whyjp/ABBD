@@ -270,8 +270,9 @@ func TestPointingAtInkLightsTheLinesThatRunAlongIt(t *testing.T) {
 				inks++
 				ps := inkPieces(ink)
 				var want []string
-				for k := range pg.routes {
-					if along(ps, ways[k]) {
+				// Ink of another kind on the same track is another line.
+				for k, r := range pg.routes {
+					if kindOf(strings.TrimPrefix(r.class, "route ")) == kindOf(ink.class) && along(ps, ways[k]) {
 						want = append(want, fmt.Sprint(k))
 					}
 				}
