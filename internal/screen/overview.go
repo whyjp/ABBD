@@ -312,11 +312,6 @@ func chipHeight(label string) int { return chipH + (len(chipLines(label))-1)*chi
 
 // RectY is where the chip's rect starts: below its edge on top of a box or
 // frame, above it on the bottom.
-// Bar is the accent bar along the box's left edge, in its colour.
-func (b Box) Bar() string {
-	return fmt.Sprintf("M%d %d V%d", b.X+1, b.Y+5, b.Y+b.H-5)
-}
-
 func (p Port) RectY() int {
 	if p.Below {
 		return p.Y - p.H - 3
