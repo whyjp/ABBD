@@ -20340,7 +20340,7 @@
                 "Code": true
               },
               {
-                "Text": "), which ",
+                "Text": "): ",
                 "Code": false
               },
               {
@@ -20348,7 +20348,7 @@
                 "Code": true
               },
               {
-                "Text": " fills an exit chip with and outlines an entry chip in, and ",
+                "Text": " tints an exit chip 15% toward it and outlines an entry chip in it, and a chip on a filled box keeps a panel-coloured border. ",
                 "Code": false
               },
               {
