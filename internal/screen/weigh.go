@@ -179,9 +179,9 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 }
 
 // laneMoves is how many more placement breaches and folded chips a laned
-// drawing may have than the unlaned drawings of its view: its lanes save
-// steps by standing chips away from their boxes, and seen weighs each
-// chip moved as only one step.
+// drawing may have than the drawing it takes the place of: its lanes save
+// steps by standing chips away from their boxes, and seen weighs each chip
+// moved as only one step.
 const laneMoves = 1
 
 // choose draws a view with every tactic and keeps the first, the one the
@@ -189,29 +189,36 @@ const laneMoves = 1
 // so far. draw leaves what each routing costs in its read, and says false
 // for a tactic that has nothing to draw differently in this view. judge
 // adds what lint reads from the drawn view. It runs only on a drawing that
-// does not already lose on the touches and breaks its routing costs, since
-// beats compares those first and lint is most of the work. A laned drawing
-// that stands more than laneMoves more chips or boxes off what they join
-// than the least of the unlaned ones, or whose weighed sum passes the least
-// of theirs, is passed over, however few its steps. Both bounds are mins
-// over the unlaned drawings judge read; one the touches and breaks passed
-// over sets neither. A gathered drawing that crosses more than the least of
-// the ungathered ones is passed over too: its chips stand over their boxes,
-// so it should only spare crossings, never add them to save turns. A
-// drawing ranked by fold or entry that stands more boxes off what they join
-// than the least of the plainly ranked ones is passed over as well: a new
-// ranking should take rows away, not move boxes. It is passed over too
-// unless it has fewer hard breaches than every plainly ranked drawing, or
-// fits the screen where none of them does: a new ranking moves every box's
-// centre and so rewrites every focus page seated by them, so it must buy
-// more than a few saved turns, or a small change to the units would flip
-// the overview between rankings. These checks come first, so a drawing
-// they pass over sets no bound of the others.
+// does not already lose on the touches and breaks its routing costs to an
+// unlaned drawing, since beats compares those first and lint is most of
+// the work.
+//
+// A laned drawing is kept only where it stands at most laneMoves more chips
+// or boxes off what they join, and weighs no more, than the drawing choose
+// would keep without it, however few its steps: seen weighs an excess turn
+// as one crossing and lint as stepCrossings. It is measured against that
+// drawing alone, not the least of every other drawing, since the lanes only
+// move chips, which moved counts, and a drawing choose would not keep
+// anyway costs a reader nothing; measured against the least, a gain in a
+// drawing that still loses moved the bound and flipped the view.
+//
+// A gathered drawing that crosses more than one drawn with neither lanes
+// nor gather is passed over: gathering changes what a chip stands for,
+// which no measure counts, so it should only spare crossings, never add
+// them to save turns. A drawing ranked by fold or entry that stands more
+// boxes off what they join than the least of the plainly ranked ones is
+// passed over as well: a new ranking should take rows away, not move boxes.
+// It is passed over too unless it has fewer hard breaches than every
+// plainly ranked drawing, or fits the screen where none of them does: a new
+// ranking moves every box's centre and so rewrites every focus page seated
+// by them, so it must buy more than a few saved turns, or a small change to
+// the units would flip the overview between rankings. A drawing these
+// checks pass over sets no bound of the others.
 func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
-	var best T
+	var vs []T
+	var cs []cost
+	var kept []tactic
 	var bc cost
-	var bt tactic
-	found := false
 	b := newGates()
 	for i, t := range ts {
 		var c cost
@@ -223,23 +230,36 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			continue
 		}
 		judge(v, &c)
-		if !b.admit(t, c) {
-			continue
+		if !t.laned {
+			if !b.admit(t, c) {
+				continue
+			}
+			if i == 0 || c.beats(bc) {
+				bc = c
+			}
 		}
-		if i == 0 || c.beats(bc) {
-			best, bc, bt, found = v, c, t, true
-		}
+		vs, cs, kept = append(vs, v), append(cs, c), append(kept, t)
+	}
+	k, without := pick(kept, cs, make([]bool, len(cs)))
+	if k < 0 {
+		var none T
+		return none
 	}
 	// The kept drawing is drawn again with room for its counts, where some
 	// count would get it, and that is kept if the checks above pass it and
 	// it reads no worse. Only the kept drawing's roomy is read, and it was
 	// drawn without counted.
-	if found && bc.roomy {
+	best, bt := vs[k], kept[k]
+	if cs[k].roomy {
 		bt.counted = true
 		var c cost
 		if v, ok := draw(bt, &c); ok {
 			judge(v, &c)
-			if b.admit(bt, c) && !bc.beats(c) {
+			pass := b.admit(bt, c)
+			if bt.laned {
+				pass = without < 0 || lanedFits(c, cs[without])
+			}
+			if pass && !cs[k].beats(c) {
 				best = v
 			}
 		}
@@ -247,34 +267,60 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	return best
 }
 
-// gates are the least costs, over the drawings choose read with a tactic
-// that neither lanes, gathers nor ranks anew, that a drawing with one of
+// pick is which of the drawings of costs cs, those out left out, choose
+// keeps, and which it would keep without that one where it is laned, or -1.
+// Ties go to the earlier drawing.
+func pick(ts []tactic, cs []cost, out []bool) (int, int) {
+	w := -1
+	for i, c := range cs {
+		if !out[i] && (w < 0 || c.beats(cs[w])) {
+			w = i
+		}
+	}
+	if w < 0 || !ts[w].laned {
+		return w, -1
+	}
+	out[w] = true
+	r, rr := pick(ts, cs, out)
+	out[w] = false
+	if r < 0 || lanedFits(cs[w], cs[r]) {
+		return w, r
+	}
+	return r, rr
+}
+
+// lanedFits says a laned drawing of cost c may take the place of one of
+// cost o.
+func lanedFits(c, o cost) bool {
+	return c.moved <= o.moved+laneMoves && c.linted-stepCrossings*c.moved <= o.linted-stepCrossings*o.moved
+}
+
+// gates are the least costs, over the drawings choose kept a place for with
+// a tactic that neither gathers nor ranks anew, that a drawing with one of
 // those tactics is measured against.
 type gates struct {
-	least, plain, crossed, ranked, hard, past int
+	crossed, ranked, hard, past int
 }
 
 func newGates() gates {
-	return gates{least: 1 << 20, plain: 1 << 20, crossed: 1 << 20, ranked: 1 << 20, hard: 1 << 20, past: 1}
+	return gates{crossed: 1 << 20, ranked: 1 << 20, hard: 1 << 20, past: 1}
 }
 
-// admit says whether choose may keep a drawing of cost c drawn with t, and
-// lowers b by c where t is the plain kind of tactic the bound is over.
+// admit says whether choose may keep a drawing of cost c drawn with t, and,
+// where it may, lowers b by c where t is the plain kind of tactic the bound
+// is over. Laned drawings are measured by lanedFits instead.
 func (b *gates) admit(t tactic, c cost) bool {
+	if (t.fold || t.entry) && (c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past) {
+		return false
+	}
+	if t.gather && c.crossed > b.crossed {
+		return false
+	}
 	if !t.fold && !t.entry {
 		b.ranked, b.hard, b.past = min(b.ranked, c.moved), min(b.hard, c.hard), min(b.past, c.past())
-	} else if c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past {
-		return false
 	}
 	if !t.gather {
 		b.crossed = min(b.crossed, c.crossed)
-	} else if c.crossed > b.crossed {
-		return false
-	}
-	if !t.laned {
-		b.least, b.plain = min(b.least, c.moved), min(b.plain, c.linted-stepCrossings*c.moved)
-	} else if c.moved > b.least+laneMoves || c.linted-stepCrossings*c.moved > b.plain {
-		return false
 	}
 	return true
 }
