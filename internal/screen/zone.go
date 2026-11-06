@@ -218,11 +218,11 @@ func (d *Drawing) shown(t tree) func(model.ID) string {
 // band is g's zone, when its boxes sit together: around them, with room
 // above or below for the title, on the canvas and inside the frame, clear
 // of every other box and chip and of the bands already set. The title
-// takes the first place along the top, then the bottom, that keeps inkGap
-// from every line, arrowhead, dot, chip and number; with none, the band
-// reaches zoneMore further and sets its title on two lines, and failing
-// that the title
-// takes the place fewest lines, labels and counts cross.
+// takes the first place that keeps inkGap from every line, arrowhead,
+// dot, chip, label, count and number. It tries the corner it has always
+// taken first, the usual room's corner the fewest of those cross, then
+// the rest of that room, then the other usual room, then a room zoneMore
+// taller, on two lines. With none, it keeps the corner it always took.
 func (d *Drawing) band(g group) (Zone, bool) {
 	in := map[string]bool{}
 	for _, id := range g.ids {
@@ -236,62 +236,96 @@ func (d *Drawing) band(g group) (Zone, bool) {
 			hues[b.Hue]++
 		}
 	}
-	best, cost := Zone{}, -1
-	plain, plainCost := Zone{}, -1
-	for _, try := range []struct {
-		below bool
-		more  int
-	}{{false, 0}, {true, 0}, {false, zoneMore}, {true, zoneMore}} {
-		if cost == 0 {
-			break
-		}
-		below := try.below
-		head, foot := zoneHead+try.more, zoneFoot
-		if below {
-			head, foot = zoneFoot, zoneHead+try.more
-		}
-		z := Zone{N: g.n, Title: g.title, X: lo.x - zoneSide, Y: lo.y - head, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + head + foot}
-		if !d.clear(z, in) {
-			continue
-		}
-		lines := []string{z.Label()}
-		if try.more > 0 {
-			lines = halves(z.Label())
-		}
-		w := 0
-		for _, l := range lines {
-			w = max(w, zoneWidth(l))
-		}
-		tall := 13 + (len(lines)-1)*zoneLine
-		y := z.Y + 14
-		if below {
-			y = z.Y + z.H - 6 - (len(lines)-1)*zoneLine
-		}
-		for x := z.X + zoneSide + 2; x == z.X+zoneSide+2 || x <= z.X+z.W-zoneSide-2-w; x += 4 {
-			area := box{x - 2, y - 10, w + 4, tall}
-			c := 1000 + d.crossed(area)
-			if d.clearOfInk(grow(area, inkGap), nil) && !d.onBadge(grow(area, inkGap)) {
-				c = 0
+	type spot struct {
+		z      Zone
+		lines  []string
+		x, y   int
+		corner bool
+	}
+	// The spots in the order they are tried: the four corners of the
+	// usual room, then every place along its top and its bottom, then the
+	// same in a taller room, where the title takes two lines.
+	var spots []spot
+	for _, more := range []int{0, zoneMore} {
+		var rooms []spot
+		for _, below := range []bool{false, true} {
+			head, foot := zoneHead+more, zoneFoot
+			if below {
+				head, foot = zoneFoot, zoneHead+more
 			}
-			if cost < 0 || c < cost {
-				best, cost = z, c
-				best.TX, best.TY = x, y
-				if len(lines) > 1 {
-					best.Lines = lines
+			z := Zone{N: g.n, Title: g.title, X: lo.x - zoneSide, Y: lo.y - head, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + head + foot}
+			if !d.clear(z, in) {
+				continue
+			}
+			lines := []string{z.Label()}
+			if more > 0 {
+				lines = halves(z.Label())
+			}
+			y := z.Y + 14
+			if below {
+				y = z.Y + z.H - 6 - (len(lines)-1)*zoneLine
+			}
+			rooms = append(rooms, spot{z: z, lines: lines, y: y})
+		}
+		for _, r := range rooms {
+			w := linesWidth(r.lines)
+			for _, x := range []int{r.z.X + zoneSide + 2, r.z.X + r.z.W - zoneSide - 2 - w} {
+				if x >= r.z.X+zoneSide {
+					spots = append(spots, spot{r.z, r.lines, x, r.y, more == 0})
 				}
 			}
-			if try.more == 0 && (plainCost < 0 || c < plainCost) {
-				plain, plainCost = z, c
-				plain.TX, plain.TY = x, y
+		}
+		for _, r := range rooms {
+			w := linesWidth(r.lines)
+			for x := r.z.X + zoneSide + 2; x <= r.z.X+r.z.W-zoneSide-2-w; x += 4 {
+				spots = append(spots, spot{r.z, r.lines, x, r.y, false})
 			}
 		}
 	}
-	if cost < 0 {
+	if len(spots) == 0 {
 		return Zone{}, false
 	}
-	// A band that reaching further does not clear keeps its usual room.
-	if cost > 0 && plainCost >= 0 {
-		best = plain
+	area := func(s spot) box {
+		return box{s.x - 2, s.y - 10, linesWidth(s.lines) + 4, 13 + (len(s.lines)-1)*zoneLine}
+	}
+	set := func(s spot) Zone {
+		z := s.z
+		z.TX, z.TY = s.x, s.y
+		if len(s.lines) > 1 {
+			z.Lines = s.lines
+		}
+		return z
+	}
+	// main is the corner the title has always taken: of the usual room's
+	// corners, the one the fewest lines, labels and counts cross. It is
+	// tried first, then the rest of its room, so a title that has room
+	// where it was stays there and its band keeps its shape.
+	main, cost := -1, -1
+	for k, sp := range spots {
+		if c := d.crossed(area(sp)); sp.corner && (cost < 0 || c < cost) {
+			main, cost = k, c
+		}
+	}
+	if main < 0 {
+		main = 0
+	}
+	order := []int{main}
+	for k, sp := range spots {
+		if k != main && sameRoom(sp.z, spots[main].z) {
+			order = append(order, k)
+		}
+	}
+	for k, sp := range spots {
+		if !sameRoom(sp.z, spots[main].z) {
+			order = append(order, k)
+		}
+	}
+	best := set(spots[main])
+	for _, k := range order {
+		if a := grow(area(spots[k]), inkGap); d.clearOfInk(a, nil) && !d.onBadge(a) && d.crossed(a) == 0 {
+			best = set(spots[k])
+			break
+		}
 	}
 	n := -1
 	for h, k := range hues {
@@ -352,6 +386,18 @@ func (d *Drawing) crossed(area box) int {
 		}
 	}
 	return n
+}
+
+// sameRoom says two bands are one band, the same rectangle.
+func sameRoom(a, b Zone) bool { return a.X == b.X && a.Y == b.Y && a.W == b.W && a.H == b.H }
+
+// linesWidth is how wide a title set on lines is.
+func linesWidth(lines []string) int {
+	w := 0
+	for _, l := range lines {
+		w = max(w, zoneWidth(l))
+	}
+	return w
 }
 
 // halves sets s on two lines, broken at the space nearest its middle, or

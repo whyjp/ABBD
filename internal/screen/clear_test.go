@@ -70,8 +70,8 @@ func TestABadgeKeepsClearOfOtherInk(t *testing.T) {
 	}
 }
 
-// A band's title keeps inkGap from every line, arrowhead, dot and chip on
-// every fixture. This repository's own overview is logged, not held: three
+// A band's title keeps inkGap from every line, arrowhead, dot, chip, label
+// and count on every fixture. This repository's own overview is logged, not held: three
 // buses run through the whole room above internal/screen there, which is
 // the routing's to clear.
 func TestAZoneTitleKeepsClearOfInk(t *testing.T) {
@@ -89,7 +89,7 @@ func TestAZoneTitleKeepsClearOfInk(t *testing.T) {
 					w = max(w, zoneWidth(l))
 				}
 				area := box{z.TX - 2, z.TY - 10, w + 4, 13 + (len(lines)-1)*zoneLine}
-				if !d.clearOfInk(grow(area, inkGap), nil) {
+				if !d.clearOfInk(grow(area, inkGap), nil) || d.crossed(grow(area, inkGap)) > 0 {
 					t.Logf("%s: band %q's title meets ink", name, z.Label())
 					if name != "repository" {
 						bad++

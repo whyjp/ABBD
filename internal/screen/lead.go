@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"maps"
 	"math"
 	"slices"
@@ -123,16 +124,12 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 	if l.Hue == "" {
 		l.Hue = hueKey(-1)
 	}
-	var taken []pt
 	for i, h := range hops {
 		r := d.ways[h.way]
 		hp := Hop{N: i + 1, D: r.D, Head: r.Head, Tips: r.Tips, way: h.way}
 		if h.way < len(d.Routes) {
 			hp.Lit = d.Routes[h.way].Lit
 		}
-		at, rad := d.badge(runs(r.D), taken)
-		taken = append(taken, at)
-		hp.X, hp.Y, hp.R = at.x, at.y, rad
 		l.Hops = append(l.Hops, hp)
 	}
 	d.Lead = l
@@ -251,7 +248,30 @@ func inferred(boxes []Box, uses []use) []use {
 // count, clear of the numbers already set and inkGap from every other
 // line, arrowhead, dot and chip; failing that, set up to its radius to one
 // side; failing that, the same at the small radius.
-func (d *Drawing) badge(way [][2]pt, taken []pt) (pt, int) {
+// number sets each hop's number once the view's boxes carry their last
+// lines (dress), so a number keeps off the words they end with. A number
+// first takes a place on ink no other hop runs along, so a trunk two hops
+// share does not carry one hop's number for both.
+func (d *Drawing) number() {
+	if d.Lead == nil {
+		return
+	}
+	var taken []pt
+	for i := range d.Lead.Hops {
+		h := &d.Lead.Hops[i]
+		var others [][2]pt
+		for j, o := range d.Lead.Hops {
+			if j != i {
+				others = append(others, runs(o.D)...)
+			}
+		}
+		at, rad := d.badge(runs(h.D), others, taken)
+		taken = append(taken, at)
+		h.X, h.Y, h.R = at.x, at.y, rad
+	}
+}
+
+func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
 	total := 0
 	for _, r := range way {
 		total += abs(r[1].x-r[0].x) + abs(r[1].y-r[0].y)
@@ -297,12 +317,17 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) (pt, int) {
 		}
 		return d.badgeClear(p, r, way)
 	}
-	for _, r := range []int{badgeR, badgeSmall} {
-		for _, side := range []int{0, -r / 2, r / 2, -r, r, -r - badgeBeside, r + badgeBeside} {
-			for k := 0; k <= 36; k++ {
-				f := .5 + float64((k+1)/2)*.025*float64(1-2*(k%2))
-				if p := along(f, side); free(p, r) {
-					return p, r
+	shared := func(p pt) bool {
+		return slices.ContainsFunc(others, func(o [2]pt) bool { return on(p, o[0], o[1]) || stretchDist(p, o[0], o[1]) < 1 })
+	}
+	for _, alone := range []bool{true, false} {
+		for _, r := range []int{badgeR, badgeSmall} {
+			for _, side := range []int{0, -r / 2, r / 2, -r, r, -r - badgeBeside, r + badgeBeside} {
+				for k := 0; k <= 36; k++ {
+					f := .5 + float64((k+1)/2)*.025*float64(1-2*(k%2))
+					if p := along(f, side); free(p, r) && (!alone || !shared(along(f, 0))) {
+						return p, r
+					}
 				}
 			}
 		}
@@ -312,13 +337,10 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) (pt, int) {
 	// box's words and chips and clear of every other mark.
 	for _, r := range []int{badgeR, badgeSmall} {
 		for _, f := range []float64{0, 1} {
-			end := along(f, 0)
 			for _, side := range []int{-r - badgeBeside, r + badgeBeside, -2*r - badgeBeside, 2*r + badgeBeside} {
+				// along sets the point off the run at that end, across
+				// that run, whichever way it runs.
 				p := along(f, side)
-				p = pt{p.x, end.y}
-				if len(way) > 0 && way[0][0].y == way[0][1].y {
-					p = pt{end.x, along(f, side).y}
-				}
 				if d.badgeClear(p, r, way) && !d.onWords(p, r) && !slices.ContainsFunc(taken, func(q pt) bool { return abs(p.x-q.x) < 3*r && abs(p.y-q.y) < 3*r }) {
 					return p, r
 				}
@@ -337,7 +359,8 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) (pt, int) {
 const badgeR, badgeSmall, badgeBeside, inkGap = 8, 6, 4, 3
 
 // clearOfInk says no ink of the view meets area: no stretch of a line
-// except one along own, no arrowhead, no dot and no chip. A stroke reaches
+// except one along own, no arrowhead, dot or chip, and no line's label or
+// count. A stroke reaches
 // 2px off its centre, an arrowhead 9px back from its tip and 5px to each
 // side.
 func (d *Drawing) clearOfInk(area box, own [][2]pt) bool {
@@ -371,7 +394,17 @@ func (d *Drawing) clearOfInk(area box, own [][2]pt) bool {
 			return false
 		}
 	}
+	for _, w := range d.Wires {
+		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, countBox(w)) {
+			return false
+		}
+	}
 	return true
+}
+
+// countBox is the area a line's ×N count covers.
+func countBox(w Wire) box {
+	return box{w.LX - 2, w.LY - 11, textWidth(fmt.Sprintf("×%d", w.Count), 11) + 4, 13}
 }
 
 // badgeClear says a number of radius r at c keeps inkGap from every line
