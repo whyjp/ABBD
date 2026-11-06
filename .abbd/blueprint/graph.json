@@ -2015,6 +2015,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/card.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
         "internal/screen/figure.go",
@@ -19245,7 +19246,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -20268,7 +20269,31 @@
                 "Code": true
               },
               {
-                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. A quiet view drops a label that now stands over a flat track of another line of its colour (",
+                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. ",
+                "Code": false
+              },
+              {
+                "Text": "card",
+                "Code": true
+              },
+              {
+                "Text": " keeps a small key (",
+                "Code": false
+              },
+              {
+                "Text": "Card",
+                "Code": true
+              },
+              {
+                "Text": ") in the first free corner of a view, a sample of each mark the view draws as the sample shows it, clear of every box, line, word, number and band (",
+                "Code": false
+              },
+              {
+                "Text": "room",
+                "Code": true
+              },
+              {
+                "Text": "). A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
               {

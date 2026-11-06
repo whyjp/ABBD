@@ -81,7 +81,10 @@ svg .box.lead rect { fill: var(--c); stroke: var(--c); }
 svg .box.lead text.name, svg .box.lead text.sub { fill: var(--lead-ink); }
 svg .box.lead text.sub { opacity: .85; }
 svg g.port.onfill rect { stroke: var(--panel); stroke-width: 1.4; }
-svg g.zone, svg g.leadway { pointer-events: none; }
+svg g.zone, svg g.leadway, svg g.card { pointer-events: none; }
+svg rect.card { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+svg text.ct { font: 600 9.5px var(--mono); letter-spacing: .14em; fill: var(--muted); }
+svg g.ci text { font-size: 11px; fill: var(--ink); }
 svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); stroke: color-mix(in srgb, var(--c) 26%, transparent); stroke-width: 1; }
 svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
@@ -484,6 +487,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 <g class="route provides back e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h0)"><path class="way" d="M107 38 L107 62"/><use href="#t-impl" transform="translate(107 62) rotate(90)"/></g><g class="route consumes e1 e3 r1" data-h="1" style="--k1:var(--h1);--k3:var(--h1)"><path class="way" d="M309 38 L309 70"/><use href="#t-use" transform="translate(309 70) rotate(90)"/></g>
 <g class="box inner p0 n0 n2" data-id="DATA-0017" data-h="0"><title>DATA-0017 first anchor is a module&#39;s directory: the group fallback reads a module&#39;s home directory from its first anchor, which holds only because anchors sort by path#symbol so a directory comes before the files in it</title><rect x="24" y="62" width="166" height="60" rx="4"/><text class="name" x="32" y="81">first anchor is a</text><text class="name" x="32" y="97">module&#39;s directory</text><text class="sub" x="32" y="114">데이터</text></g><g class="box inner p1 n1 n3" data-id="DATA-0022" data-h="1"><title>DATA-0022 boxes in one view: what counts as a box in a view against the group budget; group leaves top-level contracts out, while the screen draws a contract no module provides as a loose box</title><rect x="230" y="70" width="158" height="44" rx="4"/><text class="name" x="238" y="89">boxes in one view</text><text class="sub" x="238" y="106">데이터</text></g>
 <a href="MOD-0030.html"><g class="port other exit p2 n0 n2" data-id="port|MOD-0030true"><title>계약 없이 internal/model와 닿는 곳</title><rect x="83" y="21" width="49" height="17" rx="3"/><text class="chip" x="83" dx="4" y="21" dy="12.5">model</text></g></a><a href="MOD-0034.html"><g class="port other exit p3 n1 n3" data-id="port|MOD-0034true"><title>계약 없이 internal/screen와 닿는 곳</title><rect x="282" y="21" width="54" height="17" rx="3"/><text class="chip" x="282" dx="4" y="21" dy="12.5">screen</text></g></a>
+
 </svg></div>
   <div class="legend">
 <span><svg width="34" height="10"><path d="M0 5 H25" style="stroke:var(--hn);stroke-width:2"/><path d="M25 1 L33 5 L25 9 z" style="fill:var(--bg);stroke:var(--hn);stroke-width:1.4"/></svg>제공(구현)</span>
@@ -541,6 +545,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 <g class="route bypass e0 e2 r0" data-h="b" style="--k0:var(--h0);--k2:var(--h2)"><path class="way" d="M160 92 L160 128"/><use href="#t-dep" transform="translate(160 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="b" style="--k1:var(--h1);--k2:var(--h2)"><path class="way" d="M160 188 L160 224"/><use href="#t-dep" transform="translate(160 224) rotate(90)"/></g>
 <a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="32" width="150" height="60" rx="6"/><text class="name" x="160" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="160" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p1 n1 n2" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="224" width="150" height="60" rx="6"/><text class="name" x="160" y="251" text-anchor="middle">internal/model</text><text class="sub" x="160" y="266" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0054"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0054" data-h="2"><title>MOD-0054 internal/group. 누르면 이 모듈의 안을 봅니다</title><rect x="85" y="128" width="150" height="60" rx="6"/><text class="name" x="160" y="155" text-anchor="middle">internal/group</text><text class="sub" x="160" y="170" text-anchor="middle">모듈</text></g></a>
+
 
 </svg></div>
   <div class="legend">
