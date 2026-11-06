@@ -231,28 +231,35 @@ func TestJoinedBoxesWearDifferentColours(t *testing.T) {
 		t.Errorf("%d joined box pairs share a colour, ceiling %d", total, sameHueCeiling)
 	}
 }
-
-// A direct dependency that skips the contract boundary is drawn in the
-// warning colour, and so is a dot on its ink. No other line or dot is
-// (rule 11).
-func TestOnlyABypassWearsTheWarning(t *testing.T) {
+// A direct dependency that skips the contract boundary wears the colour
+// of the box it leaves, like every other line, so a view where most lines
+// are such dependencies still tells its lines apart at rest; its open head
+// says what it is. No line or dot wears the warning colour.
+func TestABypassWearsItsBoxsColour(t *testing.T) {
+	bypasses := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Quiet {
-				continue
-			}
 			for _, w := range d.Wires {
-				if warns(w.Kind) != (w.Hue == warnKey) {
-					t.Errorf("%s: a %s line wears %q", name, w.Kind, w.Hue)
+				if w.Hue == warnKey {
+					t.Errorf("%s: a %s line wears the warning colour", name, w.Kind)
+				}
+				if warns(w.Kind) {
+					bypasses++
+					if !w.Joins && w.Head != "" && !strings.HasPrefix(w.Head, "dep-") {
+						t.Errorf("%s: a %s line ends in %q, not an open head", name, w.Kind, w.Head)
+					}
 				}
 			}
 			for _, j := range d.Dots {
-				if warns(j.Kind) != (j.Hue == warnKey) {
-					t.Errorf("%s: a %s dot wears %q", name, j.Kind, j.Hue)
+				if j.Hue == warnKey {
+					t.Errorf("%s: a %s dot wears the warning colour", name, j.Kind)
 				}
 			}
 		}
+	}
+	if bypasses == 0 {
+		t.Error("no fixture view draws a bypass")
 	}
 }
 
@@ -270,9 +277,6 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 				hue[b.ID] = b.Hue
 			}
 			for _, w := range d.Wires {
-				if warns(w.Kind) {
-					continue
-				}
 				want := ""
 				for _, n := range w.srcs {
 					c := hue[n]

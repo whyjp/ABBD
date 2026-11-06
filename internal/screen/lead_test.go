@@ -136,7 +136,7 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 	marks := map[string]*regexp.Regexp{
 		"lead":   regexp.MustCompile(`<g class="leadway"`),
 		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
-		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b[^"]*" [^>]*data-h="b"`),
+		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
 		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
 	}

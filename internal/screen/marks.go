@@ -158,9 +158,6 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		if w.Hue == "" {
 			w.Hue = hueKey(-1)
 		}
-		if warns(w.Kind) {
-			w.Hue = warnKey
-		}
 		if !w.Joins {
 			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
@@ -175,9 +172,6 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 	for i := range d.Routes {
 		r := &d.Routes[i]
 		r.Hue = colour(r.src)
-		if warns(r.Kind) {
-			r.Hue = warnKey
-		}
 		// A pointed-at box lights the line in the box's colour, whatever
 		// its kind; a chip or a box of no colour leaves it its own.
 		var vars []string
@@ -533,9 +527,6 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	// ink is the colour paint will give a wire, as far as labels need it:
 	// the warning colour, its one source's, or neutral for several.
 	ink := func(w Wire) string {
-		if warns(w.Kind) {
-			return "warn"
-		}
 		var one model.ID
 		for _, n := range w.srcs {
 			if b := base(model.ID(n)); one == "" {
