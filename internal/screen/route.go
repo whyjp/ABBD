@@ -135,13 +135,91 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // bundled, read both ways and join every pair of their far ends (rule 18),
 // so they are drawn apart, on buses of their own pair, unless that runs a
 // line out of its way past rule 15 or back past rule 13, which bundling
-// spares. Only the kept drawing's counts are anchored: route may lay a
-// view many times to keep one, and no measure it compares them by reads
-// where a count stands, while placing the counts was most of a lay.
+// spares. A view with chains straighten moves is drawn again with them
+// moved, and that is kept where weigh reads it better, unless the view has
+// more than shareMost requests, as for shared buses. Only the kept
+// drawing's counts are anchored: route may lay a view many times to keep
+// one, and no measure it compares them by reads where a count stands,
+// while placing the counts was most of a lay.
 func (l *layout) route(reqs []wireReq) routing {
+	before := l.keep()
 	r := l.routeApart(reqs)
+	after := l.keep()
+	*l = before
+	if len(reqs) <= shareMost && l.straighten(reqs) {
+		if s := l.routeApart(reqs); weigh(s, reqs).beats(weigh(r, reqs)) {
+			r, after = s, l.keep()
+		}
+	}
+	*l = after
 	anchor(r.drawn, pieces(r.drawn), r.boxes)
 	return r
+}
+
+// straighten moves each chain that passes its rows outside the span its
+// lines' two ends share onto that span, where every row it passes has room,
+// so its lines leave their box over the place they reach and drop straight.
+// The layout seats a chain under what it joins, but a frame's chips are set
+// out after it, packed along the frame, and a row's boxes pull a chain to a
+// median, so a line may leave its box far from where it would drop into
+// the other, then turn twice to reach it. It says whether it moved a chain.
+func (l *layout) straighten(reqs []wireReq) bool {
+	chainOf := l.chainsOf(reqs)
+	moved := false
+	for c, ch := range l.chains {
+		lo, hi, used := 0, l.width, false
+		for i, k := range chainOf {
+			if k != c {
+				continue
+			}
+			f, t := reqs[i].from, reqs[i].to
+			used = true
+			lo, hi = max(lo, f.lo, t.lo), min(hi, f.hi, t.hi)
+		}
+		w := (ch.lanes - 1) * chainLane
+		if !used || hi-lo < w {
+			continue
+		}
+		straight := true
+		for r := ch.top; r <= ch.bottom; r++ {
+			x := l.pass[[2]int{c, r}]
+			straight = straight && x >= lo && x+w <= hi
+		}
+		if straight {
+			continue
+		}
+		room := func(x int) bool {
+			for r := ch.top; r <= ch.bottom; r++ {
+				for _, id := range l.rows[r] {
+					if p := l.pos[id]; x < p.X+p.W+chainSep && x+w > p.X-chainSep {
+						return false
+					}
+				}
+				for o, och := range l.chains {
+					y, ok := l.pass[[2]int{o, r}]
+					if o != c && ok && x < y+(och.lanes-1)*chainLane+chainSep && x+w > y-chainSep {
+						return false
+					}
+				}
+			}
+			return true
+		}
+		want := (lo + hi - w) / 2
+		for d := 0; d <= hi-lo-w; d++ {
+			x := want + d
+			if x+w > hi || !room(x) {
+				if x = want - d; x < lo || !room(x) {
+					continue
+				}
+			}
+			for r := ch.top; r <= ch.bottom; r++ {
+				l.pass[[2]int{c, r}] = x
+			}
+			moved = true
+			break
+		}
+	}
+	return moved
 }
 
 func (l *layout) routeApart(reqs []wireReq) routing {
@@ -158,6 +236,82 @@ func (l *layout) routeApart(reqs []wireReq) routing {
 		return apart
 	}
 	return bundled
+}
+
+// chainsOf is the chain each line runs down, or -1: a line between places
+// more than a row apart runs down the dummies the layout set straight for
+// it.
+func (l *layout) chainsOf(reqs []wireReq) []int {
+	chainOf := make([]int, len(reqs))
+	byPair := map[[2]string]int{}
+	// lanes are the lanes of the chips set out after the layout (proper).
+	lanes := map[string]int{}
+	for c, ch := range l.chains {
+		byPair[pairKey(ch.upper, ch.lower)] = c
+		switch {
+		case ch.lower == "":
+			lanes[ch.upper] = c
+		case ch.upper == "":
+			lanes[ch.lower] = c
+		}
+	}
+	// A line to a seated chip runs down the chip's own chain.
+	id := func(e end) string {
+		edge := frameBottomNode
+		switch {
+		case e.node != "":
+			return e.node
+		case e.row < 0:
+			edge = frameTopNode
+		}
+		c := chipNode(edge, strings.TrimPrefix(e.key, "port|"))
+		if _, ok := l.seats[c]; ok {
+			return c
+		}
+		return edge
+	}
+	for i, r := range reqs {
+		chainOf[i] = -1
+		if abs(r.from.row-r.to.row) > 1 {
+			if c, ok := lanes[id(r.from)]; ok {
+				chainOf[i] = c
+				continue
+			}
+			if c, ok := lanes[id(r.to)]; ok {
+				chainOf[i] = c
+				continue
+			}
+		}
+		c, ok := byPair[pairKey(id(r.from), id(r.to))]
+		if !ok {
+			continue
+		}
+		ch := l.chains[c]
+		if top, bottom := min(r.from.row, r.to.row)+1, max(r.from.row, r.to.row)-1; ch.top == top && ch.bottom == bottom {
+			chainOf[i] = c
+		}
+	}
+	// A frame's chips are set out after the layout, each over the
+	// mean of its lines, so a line to a chip may find its chain far off
+	// the way between its ends; it passes the rows on its own instead.
+	for i, r := range reqs {
+		c := chainOf[i]
+		if c < 0 {
+			continue
+		}
+		if r.from.node != "" && r.to.node != "" {
+			continue
+		}
+		a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
+		for row := min(r.from.row, r.to.row) + 1; row < max(r.from.row, r.to.row); row++ {
+			x := l.pass[[2]int{c, row}]
+			if abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
+				chainOf[i] = -1
+				break
+			}
+		}
+	}
+	return chainOf
 }
 
 // bundlesPairs says some two lines between modules that use each other
@@ -183,7 +337,7 @@ func bundlesPairs(reqs []wireReq) bool {
 // afresh, and the boxes' y in place.
 func (l *layout) keep() layout {
 	k := *l
-	k.pos = maps.Clone(l.pos)
+	k.pos, k.pass = maps.Clone(l.pos), maps.Clone(l.pass)
 	return k
 }
 
@@ -376,78 +530,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		leave[dk] = append(leave[dk], i)
 		arrive[ak] = append(arrive[ak], i)
 	}
-	// A line between places more than a row apart runs down its chain:
-	// the dummies the layout set straight for it.
-	chainOf := make([]int, len(reqs))
+	chainOf := l.chainsOf(reqs)
 	{
-		byPair := map[[2]string]int{}
-		// lanes are the lanes of the chips set out after the layout (proper).
-		lanes := map[string]int{}
-		for c, ch := range l.chains {
-			byPair[pairKey(ch.upper, ch.lower)] = c
-			switch {
-			case ch.lower == "":
-				lanes[ch.upper] = c
-			case ch.upper == "":
-				lanes[ch.lower] = c
-			}
-		}
-		// A line to a seated chip runs down the chip's own chain.
-		id := func(e end) string {
-			edge := frameBottomNode
-			switch {
-			case e.node != "":
-				return e.node
-			case e.row < 0:
-				edge = frameTopNode
-			}
-			c := chipNode(edge, strings.TrimPrefix(e.key, "port|"))
-			if _, ok := l.seats[c]; ok {
-				return c
-			}
-			return edge
-		}
-		for i, r := range reqs {
-			chainOf[i] = -1
-			if abs(r.from.row-r.to.row) > 1 {
-				if c, ok := lanes[id(r.from)]; ok {
-					chainOf[i] = c
-					continue
-				}
-				if c, ok := lanes[id(r.to)]; ok {
-					chainOf[i] = c
-					continue
-				}
-			}
-			c, ok := byPair[pairKey(id(r.from), id(r.to))]
-			if !ok {
-				continue
-			}
-			ch := l.chains[c]
-			if top, bottom := min(r.from.row, r.to.row)+1, max(r.from.row, r.to.row)-1; ch.top == top && ch.bottom == bottom {
-				chainOf[i] = c
-			}
-		}
-		// A frame's chips are set out after the layout, each over the
-		// mean of its lines, so a line to a chip may find its chain far off
-		// the way between its ends; it passes the rows on its own instead.
-		for i, r := range reqs {
-			c := chainOf[i]
-			if c < 0 {
-				continue
-			}
-			if r.from.node != "" && r.to.node != "" {
-				continue
-			}
-			a, b := (r.from.lo+r.from.hi)/2, (r.to.lo+r.to.hi)/2
-			for row := min(r.from.row, r.to.row) + 1; row < max(r.from.row, r.to.row); row++ {
-				x := l.pass[[2]int{c, row}]
-				if abs(x-a)+abs(x-b)-abs(a-b) > detourOffer {
-					chainOf[i] = -1
-					break
-				}
-			}
-		}
 		// A chain no line runs down keeps no room: a line that left it
 		// passes the rows on its own and may take its place.
 		l.reserved = map[int][]int{}

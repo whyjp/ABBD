@@ -20850,15 +20850,15 @@
                 "Code": true
               },
               {
-                "Text": ", its placement breaches and folded chips, exceeds the least of the view's unlaned drawings that ",
+                "Text": ", its placement breaches and folded chips, exceeds that of the drawing ",
                 "Code": false
               },
               {
-                "Text": "judge",
+                "Text": "pick",
                 "Code": true
               },
               {
-                "Text": " read by more than ",
+                "Text": " says it would keep without lanes by more than ",
                 "Code": false
               },
               {
@@ -20866,7 +20866,15 @@
                 "Code": true
               },
               {
-                "Text": " (1), or whose weighed sum passes the least of theirs: lanes save steps by standing chips off their boxes and trade excess turns for steps, which ",
+                "Text": " (1), or whose weighed sum passes that drawing's, and ",
+                "Code": false
+              },
+              {
+                "Text": "admit",
+                "Code": true
+              },
+              {
+                "Text": " runs every check before it lowers a bound, so a drawing it passes over sets none: lanes save steps by standing chips off their boxes and trade excess turns for steps, which ",
                 "Code": false
               },
               {
@@ -21024,7 +21032,31 @@
                 "Code": true
               },
               {
-                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain or between boxes. A line with no chain keeps the x it passed the row above at where the row lets it, and ",
+                "Text": "): orthogonal routing on that grid. A line crosses each gap on its own track and passes rows down its chain or between boxes. ",
+                "Code": false
+              },
+              {
+                "Text": "straighten",
+                "Code": true
+              },
+              {
+                "Text": " moves a chain that passes its rows outside the span its lines' ends share onto the middle of that span, where every row it passes has room, and ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " keeps that drawing only where ",
+                "Code": false
+              },
+              {
+                "Text": "weigh",
+                "Code": true
+              },
+              {
+                "Text": " finds it beats the other. A line with no chain keeps the x it passed the row above at where the row lets it, and ",
                 "Code": false
               },
               {
