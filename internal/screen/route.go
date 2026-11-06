@@ -245,14 +245,33 @@ func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
 // keeps that only where it costs the reader less than the plain drawing.
 func (l *layout) layStraight(reqs []wireReq, shared, apart bool, bent map[int]bool) routing {
 	before := l.keep()
-	r := l.lay(reqs, shared, apart, bent, true)
+	r := l.layJoined(reqs, shared, apart, bent, true)
 	if !r.tweaked {
 		return r
 	}
 	after := l.keep()
 	*l = before
-	plain := l.lay(reqs, shared, apart, bent, false)
+	plain := l.layJoined(reqs, shared, apart, bent, false)
 	if costOf(r, reqs).beats(costOf(plain, reqs)) {
+		*l = after
+		return r
+	}
+	return plain
+}
+
+// layJoined lays the view with a line that steps off its departure trunk
+// leading its arrival bus's drop (lay's early), and keeps that only where
+// weigh says it reads better than the plain drawing.
+func (l *layout) layJoined(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak bool) routing {
+	before := l.keep()
+	r := l.lay(reqs, shared, apart, bent, tweak, true)
+	if !r.joined {
+		return r
+	}
+	after := l.keep()
+	*l = before
+	plain := l.lay(reqs, shared, apart, bent, tweak, false)
+	if weigh(r, reqs).beats(weigh(plain, reqs)) {
 		*l = after
 		return r
 	}
@@ -283,13 +302,16 @@ type routing struct {
 	// tweaked says lay set some line straight onto its arrival trunk:
 	// a stub over the trunk's lead, or a line joining on the track.
 	tweaked bool
+	// joined says lay let a line that steps off its departure trunk lead
+	// its arrival bus, the bus's other lines joining on the track.
+	joined bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
 // them, and with each line between modules that use each other on buses of
 // its own pair where apart says so.
-func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak bool) routing {
-	tweaked := false
+func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak, early bool) routing {
+	tweaked, joined := false, false
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -684,6 +706,32 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			if abs(x-at) < abs(lx-at) {
 				b.lead = m
 			}
+		}
+	}
+	// A line that steps down onto its arrival bus's track off a departure
+	// trunk that passed the last row down a lane of the chain the bus's
+	// lead runs down too would meet that lead's trunk a lane off its own
+	// step and jog onto the drop. It leads the bus instead, so the drop
+	// stands under its step and it runs straight on down; the bus's other
+	// lines on that chain pass the rows on their own, off it, straight on
+	// where they can, and join on the track.
+	offChain := map[int]bool{}
+	for _, b := range buses {
+		if !early || !b.arrive || b.lead >= len(reqs) || chainOf[b.lead] < 0 || plans[b.lead].dep >= 0 {
+			continue
+		}
+		c := chainOf[b.lead]
+		for _, s := range b.members {
+			if q := &plans[s]; q.dep < 0 || q.onto || q.ride != len(q.gaps)-1 || chainOf[s] != c || buses[q.dep].lead != s {
+				continue
+			}
+			for _, m := range b.members {
+				if q := &plans[m]; m != s && q.dep < 0 && chainOf[m] == c {
+					q.late, chainOf[m], offChain[m] = true, -1, true
+				}
+			}
+			b.lead, joined = s, true
+			break
 		}
 	}
 	// A line that passes one row before it reaches its arrival bus's
@@ -1157,6 +1205,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			mine := func(q, y int) bool {
 				o, ok := held[[2]int{q, y}]
 				return ok && (o == i || p.dep >= 0 && o == -1-p.dep || p.arr >= 0 && o == -1-p.arr)
+			}
+			// A line set off its chain keeps straight on where nothing
+			// stands within 12px and no other line passes.
+			if x := p.xs[len(p.xs)-1]; offChain[i] && l.clearOf(r, x) && l.meetsOnly(r, x, mine) && !l.taken(r, x) &&
+				!slices.ContainsFunc(l.passes[r], func(y int) bool { return abs(y-x) < lane }) {
+				held[[2]int{r, x}] = i
+				l.passes[r] = append(l.passes[r], x)
+				p.xs = append(p.xs, x)
+				continue
 			}
 			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own, mine)
 			held[[2]int{r, x}] = i
@@ -1937,7 +1994,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined}
 }
 
 // teed says line i drops straight across a flat stretch of another line
