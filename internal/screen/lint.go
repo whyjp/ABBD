@@ -93,6 +93,10 @@ type Totals struct {
 	Segments    int `json:"segments"`
 	Lines       int `json:"lines"`
 	ForkLevels  int `json:"fork_levels"`
+	// InkCrossings are the points where ink passes through ink, however
+	// it is cut into paths, which a road cuts at other points than a bus
+	// (busy.go). The crossings above leave out those near a path's end.
+	InkCrossings int `json:"ink_crossings"`
 }
 
 // Sum adds up the totals of several views.
@@ -106,6 +110,7 @@ func Sum(views []ViewLint) Totals {
 		t.Detours += o.Detours
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
+		t.InkCrossings += o.InkCrossings
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -145,7 +150,7 @@ var criteria = []Criterion{
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
 	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
 	{ID: "J2", Hard: true, Says: "every split and merge carries a dot (rule 17)", check: (*look).dotted},
-	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins (rule 18)", check: (*look).noPhantoms},
+	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
 	{ID: "H1", Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
 	{ID: "H2", Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
 	{ID: "O1", Placement: true, Says: "a box that only uses stands in the top rows", check: (*look).sourcesOnTop},
@@ -295,6 +300,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.Height = v.d.Height
 	vl.Totals.ParallelInk, vl.Totals.Segments = parallelInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
+	vl.Totals.InkCrossings = inkCrossings(s)
 	return vl, nil
 }
 
@@ -1006,7 +1012,7 @@ func (l *look) splitsAtEnds() []Breach {
 		}
 		var tos []string
 		var ends []int
-		for _, w := range l.trace.Ways {
+		for _, w := range l.splitWays() {
 			if _, _, ok := passing(j.at, w.pts); ok && w.kind == j.kind && !slices.Contains(tos, w.to) {
 				tos = append(tos, w.to)
 				ends = append(ends, l.placeAt(w.to))
@@ -1027,11 +1033,30 @@ func (l *look) splitsAtEnds() []Breach {
 	return out
 }
 
+// splitWays are the ways J1 reads splits off: on roads with their routes
+// drawn, each line's own route, since a road joins places no line does
+// and a traced way may take another line's turn; else the traced ways.
+func (l *look) splitWays() []tracedWay {
+	if !l.v.d.roads || !l.s.routed {
+		return l.trace.Ways
+	}
+	var out []tracedWay
+	for _, r := range l.s.routes {
+		if len(r.pts) < 2 {
+			continue
+		}
+		if to := shapeOf(l.s, r.pts[len(r.pts)-1]); to >= 0 {
+			out = append(out, tracedWay{to: l.s.shapes[to].id, pts: r.pts, kind: colour(strings.TrimPrefix(r.class, "route "))})
+		}
+	}
+	return out
+}
+
 // splitAt says the lines of j's kind through dot j arrive from one side
 // and leave on more than one, to more than one place.
 func (l *look) splitAt(j junction) bool {
 	ins, outs, tos := map[fpt]bool{}, map[fpt]bool{}, map[string]bool{}
-	for _, w := range l.trace.Ways {
+	for _, w := range l.splitWays() {
 		in, out, ok := passing(j.at, w.pts)
 		if !ok || w.kind != j.kind {
 			continue
@@ -1074,14 +1099,46 @@ func (l *look) dotted() []Breach {
 	return out
 }
 
-// J3 is rule 18, held at zero.
+// J3 is rule 18, held at zero but on roads (confluence.go): where lines
+// ride roads and the drawing holds their routes, ink may join places no
+// relation joins along routes, since each route lights whole under the
+// pointer. A phantom way off the routes still breaks it.
 func (l *look) noPhantoms() []Breach {
 	var out []Breach
 	for _, w := range l.trace.Phantoms {
+		if l.v.d.roads && l.s.routed && onRoutes(w.pts, l.s.routes) {
+			continue
+		}
 		out = append(out, Breach{Items: l.itemsOf(w.from, w.to), Got: 1, Allowed: 0,
 			Text: fmt.Sprintf("the ink leads from %s to %s, which no relation joins, at %s", l.shapeName(w.from), l.shapeName(w.to), pointList(w.pts))})
 	}
 	return out
+}
+
+// onRoutes says every stretch of the way pts lies on the routes' ink,
+// sampled every 2px.
+func onRoutes(pts []fpt, routes []stroke) bool {
+	on := func(p fpt) bool {
+		for _, r := range routes {
+			for k := 1; k < len(r.pts); k++ {
+				if segDist(p, r.pts[k-1], r.pts[k]) < 0.5 {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	for k := 1; k < len(pts); k++ {
+		a, b := pts[k-1], pts[k]
+		n := int(dist(a, b)/2) + 1
+		for i := 0; i <= n; i++ {
+			t := float64(i) / float64(n)
+			if !on(fpt{a.x + (b.x-a.x)*t, a.y + (b.y-a.y)*t}) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // hubs are the boxes hubUsers or more places use, each with its users.

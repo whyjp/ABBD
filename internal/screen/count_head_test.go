@@ -80,12 +80,10 @@ func countsByHeads(svg string) []string {
 // so its entry goes.
 func TestCountsKeepOffArrowheads(t *testing.T) {
 	left := map[string][]string{
-		"self": {"overview: ×3 at {470 200}", "overview: ×2 at {550 200}"},
-		"orca": {"MOD-0007 mobile app (Expo): ×6 at {516 262}", "MOD-0007 mobile app (Expo): ×2 at {797 406}",
-			"MOD-0042 desktop main process: ×6 at {781 529}", "MOD-0056 Orca runtime (RPC host): ×2 at {455 450}",
-			"MOD-0072 desktop renderer UI: ×5 at {661 214}"},
-		"pstack": {"overview: ×3 at {204 456}", "overview: ×5 at {607 104}", "overview: ×2 at {92 104}",
-			"overview: ×2 at {451 280}", "overview: ×2 at {320 104}"},
+		"self": {"overview: ×2 at {550 200}"},
+		"orca": {"MOD-0072 desktop renderer UI: ×5 at {661 214}"},
+		"pstack": {"overview: ×2 at {41 104}", "overview: ×2 at {320 104}", "overview: ×5 at {607 104}",
+			"overview: ×2 at {451 280}", "overview: ×3 at {179 456}"},
 	}
 	for _, name := range fixtures {
 		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()

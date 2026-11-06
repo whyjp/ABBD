@@ -45,6 +45,8 @@ type Drawing struct {
 	Zones []Zone `json:",omitempty"`
 	// Card is the key the drawing keeps in a free corner (card.go).
 	Card *Card `json:",omitempty"`
+	// roads says its lines ride roads (confluence.go).
+	roads bool
 }
 
 // Route is one line's whole way from the shape it leaves to the shape it
@@ -950,14 +952,14 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			to.lo, to.hi = span([]string{s.toKey})
 			to.key = s.toKey
 		}
-		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
+		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind, plan: o.tree.planOnly(s.rels)})
 	}
 	routed := l.route(reqs)
 	o.read = costOf(routed, reqs)
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]

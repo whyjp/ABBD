@@ -599,7 +599,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	}
 	var reqs []wireReq
 	for _, ln := range lines {
-		r := wireReq{from: unitEnd(ln.from), kind: string(ln.kind)}
+		r := wireReq{from: unitEnd(ln.from), kind: string(ln.kind), plan: t.planOnly(ln.rels)}
 		switch {
 		case ln.inner:
 			r.to = unitEnd(ln.to)
@@ -622,7 +622,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	if len(inner) == 0 {
 		frame.H = max(frame.H, 80)
 	}
-	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs)}
+	d := Drawing{Width: width, Height: frame.Y + frame.H + 18, Frame: &frame, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads}
 	var unwired []port
 	for _, p := range ports {
 		k := fmt.Sprint(p.id, p.exit)

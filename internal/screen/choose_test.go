@@ -6,9 +6,10 @@ import (
 )
 
 // pickOf is the index of the tactic choose keeps of ts, drawing each with
-// the cost given for it.
+// the cost given for it, the kept one on roads as well.
 func pickOf(ts []tactic, costs []cost) int {
 	return choose(ts, func(t tactic, read *cost) (int, bool) {
+		t.roads = false
 		i := slices.Index(ts, t)
 		*read = costs[i]
 		return i, true

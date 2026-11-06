@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"maps"
 	"slices"
 	"strconv"
@@ -34,6 +35,11 @@ const (
 	planMin = 30
 )
 
+// planOnly says every one of rels, and at least one, arises only in design.
+func (t tree) planOnly(rels []string) bool {
+	return len(rels) > 0 && !slices.ContainsFunc(rels, func(r string) bool { return !planned[t.vias[r]] })
+}
+
 func insides(ins []Inside) []*Drawing {
 	var out []*Drawing
 	for i := range ins {
@@ -44,9 +50,43 @@ func insides(ins []Inside) []*Drawing {
 
 // dress sets the dotted lines, the filled box and every box's last line.
 func (d *Drawing) dress(t tree) {
+	// A road cuts a dotted line's ink into paths at every split and
+	// merge, so the paths of one kind whose lines all arise in design and
+	// that meet end to end are weighed together against planMin.
+	root := make([]int, len(d.Wires))
+	for i := range root {
+		root[i] = i
+	}
+	find := func(i int) int {
+		for root[i] != i {
+			i = root[i]
+		}
+		return i
+	}
+	ends := map[string][]int{}
+	for i, w := range d.Wires {
+		if !t.planOnly(w.Rels) {
+			continue
+		}
+		for _, r := range runs(w.D) {
+			for _, p := range r {
+				k := fmt.Sprint(w.Kind, p)
+				for _, j := range ends[k] {
+					root[find(j)] = find(i)
+				}
+				ends[k] = append(ends[k], i)
+			}
+		}
+	}
+	long := map[int]int{}
+	for i, w := range d.Wires {
+		if t.planOnly(w.Rels) {
+			long[find(i)] += runLength(w.D)
+		}
+	}
 	for i := range d.Wires {
 		w := &d.Wires[i]
-		w.Plan = len(w.Rels) > 0 && runLength(w.D) >= planMin && !slices.ContainsFunc(w.Rels, func(r string) bool { return !planned[t.vias[r]] })
+		w.Plan = t.planOnly(w.Rels) && long[find(i)] >= planMin
 	}
 	if d.Lead == nil && d.hub() && 2*d.ownLines() >= len(d.Wires) {
 		d.hubLines()

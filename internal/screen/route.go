@@ -164,8 +164,25 @@ func (l *layout) route(reqs []wireReq) routing {
 		}
 	}
 	*l = after
+	if l.roads {
+		r.confluent(reqs, l.position, len(l.rows))
+	}
 	anchor(r.drawn, pieces(r.drawn), r.boxes)
 	return r
+}
+
+// position is where height y stands among the rows, as the lint reads it:
+// 2k in the gap above row k, 2k+1 within it.
+func (l *layout) position(y int) int {
+	for k := range l.rowTop {
+		switch {
+		case y < l.rowTop[k]:
+			return 2 * k
+		case y <= l.rowTop[k]+l.rowH[k]:
+			return 2*k + 1
+		}
+	}
+	return 2 * len(l.rowTop)
 }
 
 // straighten moves each chain that passes its rows outside the span its

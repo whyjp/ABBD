@@ -93,6 +93,11 @@ type sheet struct {
 	markers       []fpt
 	junctions     []junction
 	counts        []countLabel
+	// routed says the drawing holds each line's route, which the pointer
+	// lights whole, so ink that joins two places no relation joins misleads
+	// no reader who points at it (rule 18), and routes are those routes.
+	routed bool
+	routes []stroke
 }
 
 // junction is a dot that marks a split or merge of one kind's ink.
@@ -136,6 +141,8 @@ func readSVG(src string) (sheet, error) {
 	var inText bool
 	var title *string
 	var count *countLabel
+	// route is the class of the route whose way is read next.
+	var route string
 	// last is the group of the path read last, its whole data-net when it
 	// has one: a count follows its wire, and its wire is that path's net.
 	last := -1
@@ -157,6 +164,9 @@ func readSVG(src string) (sheet, error) {
 			case "svg":
 				s.width, s.height = num(attr(t, "width")), num(attr(t, "height"))
 			case "g":
+				if hasClass(t, "route") {
+					s.routed, route = true, attr(t, "class")
+				}
 				for _, k := range []string{"box", "port"} {
 					if hasClass(t, k) {
 						group = &shape{kind: k, class: attr(t, "class"), id: attr(t, "data-id")}
@@ -185,6 +195,16 @@ func readSVG(src string) (sheet, error) {
 					group.px = append(group.px, px)
 				}
 			case "path":
+				if hasClass(t, "way") && route != "" {
+					parts, err := flatten(attr(t, "d"))
+					if err != nil {
+						return s, err
+					}
+					for _, p := range parts {
+						s.routes = append(s.routes, stroke{class: route, pts: p})
+					}
+					route = ""
+				}
 				if hasClass(t, "w") {
 					parts, err := flatten(attr(t, "d"))
 					if err != nil {
@@ -654,6 +674,14 @@ func measure(s sheet) Metrics {
 		}
 		return frect{}, false
 	}
+	// forwardOf says the line a-b reads down or right.
+	forwardOf := func(class string, a, b fpt) bool {
+		dy, dx := b.y-a.y, b.x-a.x
+		if strings.Contains(" "+class+" ", " provides ") {
+			dy, dx = -dy, -dx
+		}
+		return dy > 2 || math.Abs(dy) <= 2 && dx >= 0
+	}
 	arrivals := map[string]map[int]bool{}
 	for _, w := range ws {
 		a, b := w.pts[0], w.pts[len(w.pts)-1]
@@ -661,11 +689,16 @@ func measure(s sheet) Metrics {
 		if !ok {
 			continue
 		}
-		dy, dx := b.y-a.y, b.x-a.x
-		if strings.Contains(" "+w.class+" ", " provides ") {
-			dy, dx = -dy, -dx
+		forward := forwardOf(w.class, a, b)
+		// A stroke of a road many lines ride may end going up into a box
+		// that a line it carries reaches going across: the line's route,
+		// where the drawing holds it, says which way that line reads.
+		for _, c := range strings.Fields(w.class) {
+			if k, err := strconv.Atoi(strings.TrimPrefix(c, "r")); err == nil && c[0] == 'r' && k < len(s.routes) {
+				way := s.routes[k].pts
+				forward = forward || dist(way[len(way)-1], b) < 1 && forwardOf(w.class, way[0], b)
+			}
 		}
-		forward := dy > 2 || math.Abs(dy) <= 2 && dx >= 0
 		switch {
 		case forward:
 			m.Forward++

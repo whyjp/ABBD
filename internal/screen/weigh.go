@@ -274,18 +274,25 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	// drawn without counted.
 	best, bt := vs[k], kept[k]
 	if cs[k].roomy {
-		bt.counted = true
+		t := bt
+		t.counted = true
 		var c cost
-		if v, ok := draw(bt, &c); ok {
+		if v, ok := draw(t, &c); ok {
 			judge(v, &c)
-			pass := without < 0 || fits(bt, c, cs[without], b.crossed)
-			if !bt.laned && !bt.gather {
-				pass = b.admit(bt, c)
+			pass := without < 0 || fits(t, c, cs[without], b.crossed)
+			if !t.laned && !t.gather {
+				pass = b.admit(t, c)
 			}
 			if pass && !cs[k].beats(c) {
-				best = v
+				best, bt = v, t
 			}
 		}
+	}
+	// The kept drawing is drawn once more with its lines on roads.
+	bt.roads = true
+	var c cost
+	if v, ok := draw(bt, &c); ok {
+		best = v
 	}
 	return best
 }

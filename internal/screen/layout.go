@@ -75,8 +75,8 @@ type layout struct {
 	ring bool
 	// idle says the tactic's fold or entry flag changed nothing (arrange).
 	idle bool
-	// counted is the tactic's counted flag.
-	counted bool
+	// counted and roads are the tactic's flags.
+	counted, roads bool
 }
 
 const (
@@ -471,7 +471,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		sortRows(&g)
 	}
 
-	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted}
+	l := layout{pos: map[string]rect{}, row: map[string]int{}, lanes: map[[2]int]int{}, heights: map[string]int{}, minGap: 36, endGap: 12, pass: map[[2]int]int{}, idle: idle, counted: t.counted, roads: t.roads}
 	// Where even crooked chains leave the drawing wider than its budget,
 	// the shortest give up their slots.
 	g.shed(budget)
@@ -657,8 +657,11 @@ type end struct {
 
 type wireReq struct {
 	from, to end
-	// kind keeps lines of different kinds out of one bundle.
+	// kind keeps lines of different kinds out of one bundle, and plan says
+	// every relation the line stands for arises only in design, so it is
+	// drawn dotted and rides no road a solid line rides (confluence.go).
 	kind string
+	plan bool
 }
 
 func polyline(pts []pt) string {

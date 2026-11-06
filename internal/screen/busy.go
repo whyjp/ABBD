@@ -154,3 +154,52 @@ func flatNear(pts []fpt, last bool) (float64, bool) {
 	}
 	return 0, false
 }
+
+// inkCrossings counts the points where a straight stretch of ink passes
+// through another, each point once, however the ink is cut into paths: a
+// road and a bus cut the same ink at different points, and a junction,
+// where one stretch ends on another, is no crossing.
+func inkCrossings(s sheet) int {
+	type line struct {
+		vertical bool
+		at       int
+	}
+	spans := map[line][][2]float64{}
+	for _, st := range inkStretches(s) {
+		a, b := st.a, st.b
+		switch {
+		case math.Abs(a.x-b.x) < 0.5:
+			k := line{true, int(math.Round(a.x))}
+			spans[k] = append(spans[k], [2]float64{math.Min(a.y, b.y), math.Max(a.y, b.y)})
+		case math.Abs(a.y-b.y) < 0.5:
+			k := line{false, int(math.Round(a.y))}
+			spans[k] = append(spans[k], [2]float64{math.Min(a.x, b.x), math.Max(a.x, b.x)})
+		}
+	}
+	type run struct{ at, lo, hi float64 }
+	var vs, hs []run
+	for k, sp := range spans {
+		sort.Slice(sp, func(i, j int) bool { return sp[i][0] < sp[j][0] })
+		for i := 0; i < len(sp); i++ {
+			lo, hi := sp[i][0], sp[i][1]
+			for i+1 < len(sp) && sp[i+1][0] <= hi+0.5 {
+				i++
+				hi = math.Max(hi, sp[i][1])
+			}
+			if r := (run{float64(k.at), lo, hi}); k.vertical {
+				vs = append(vs, r)
+			} else {
+				hs = append(hs, r)
+			}
+		}
+	}
+	n := 0
+	for _, v := range vs {
+		for _, h := range hs {
+			if v.at > h.lo+0.5 && v.at < h.hi-0.5 && h.at > v.lo+0.5 && h.at < v.hi-0.5 {
+				n++
+			}
+		}
+	}
+	return n
+}
