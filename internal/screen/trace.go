@@ -93,7 +93,7 @@ func inkGraph(s sheet) ink {
 		}
 	}
 	g := ink{out: map[inkKey][]int{}, arms: map[inkKey]map[fpt]bool{}, pos: map[inkKey]fpt{}}
-	seen := map[[2]inkKey]bool{}
+	seen := map[[2]inkKey]int{}
 	for i, r := range raws {
 		cuts := []fpt{r.a, r.b}
 		// A dot where two lines of its colour cross says they join there.
@@ -116,10 +116,19 @@ func inkGraph(s sheet) ink {
 		for k := 1; k < len(cuts); k++ {
 			a, b := cuts[k-1], cuts[k]
 			ka, kb := keyOf(r.colour, a), keyOf(r.colour, b)
-			if ka == kb || seen[[2]inkKey{ka, kb}] {
+			if ka == kb {
 				continue
 			}
-			seen[[2]inkKey{ka, kb}] = true
+			// A piece a one-way stroke and a two-way stroke both draw may
+			// be followed either way.
+			if id, ok := seen[[2]inkKey{ka, kb}]; ok {
+				if (r.both || r.horiz) && !g.segs[id].free {
+					g.segs[id].free = true
+					g.out[kb] = append(g.out[kb], id)
+				}
+				continue
+			}
+			seen[[2]inkKey{ka, kb}] = len(g.segs)
 			g.pos[ka], g.pos[kb] = a, b
 			id := len(g.segs)
 			g.segs = append(g.segs, inkSeg{a, b, r.colour, r.both || r.horiz})
