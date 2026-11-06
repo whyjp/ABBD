@@ -18,9 +18,9 @@ const (
 	detourLimit = 240
 	// stepCrossings is how many crossings one staircase step is worth.
 	stepCrossings = 4
-	// teeCrossings is what lint weighs a tee at: more than the two excess
-	// turns a line pays to take its bus instead, since a T reads as a
-	// branch, a relation that is not there.
+	// teeCrossings is what turned weighs a tee at: more than the two
+	// excess turns a line pays to take its bus instead, since a T reads as
+	// a branch, a relation that is not there.
 	teeCrossings = 2*stepCrossings + 1
 )
 
@@ -40,9 +40,9 @@ func (w weight) beats(o weight) bool {
 // cost is what a whole drawn view costs a reader, in the order a reader
 // pays it: ink that joins places no relation joins (rule 18), then breaks
 // of rules 13 and 15, then what abbd lint reads from the drawing (hard
-// breaches, then the staircases a reader sees with the crossings, then the
-// weighed sum), then the staircase steps along each routed line's way with
-// its crossings, then lines that turn more than twice, braid, and the
+// breaches, then its weighed sum, then the crossings with each excess turn
+// and tee priced high), then the staircase steps along each routed line's
+// way with its crossings, then lines that turn more than twice, braid, and the
 // dashed ink of the lines that climb (rule 13). breaks counts the lines
 // that run more than detourLimit out of their way and the back lines past
 // rule 13's bound. steps counts, once per pair of places, each turn past
@@ -51,9 +51,9 @@ func (w weight) beats(o weight) bool {
 // its steps.
 type cost struct {
 	touches, breaks, steps, crossings, over2, braid, climb int
-	// hard, seen, linted and crossed are what abbd lint reads from the
+	// hard, seen, turned and crossed are what abbd lint reads from the
 	// drawn view (judge), crossed its crossings.
-	hard, seen, linted, crossed int
+	hard, seen, turned, crossed int
 	// clear counts the lines that turn where their ends stand in one
 	// column with a clear straight drop between (B1 allowing none).
 	clear int
@@ -62,7 +62,7 @@ type cost struct {
 	// over is how far, in pixels, the drawing runs past one screen (S),
 	// read for the overview only. Whether it runs past at all is weighed
 	// right after the hard breaches: a reader who must scroll cannot read
-	// it at a glance. How far is weighed only after linted, so a drawing a
+	// it at a glance. How far is weighed only after turned, so a drawing a
 	// few pixels shorter that still scrolls wins nothing by crossing more.
 	// Weighed so for a module's page too, it took 162 more over the
 	// fixtures for one view fewer past the screen.
@@ -76,9 +76,8 @@ type cost struct {
 func (c cost) past() int { return min(c.over, 1) }
 
 // judge reads the drawn view the way abbd lint does: its hard breaches,
-// then seen, the crossings, one more for each excess turn and
-// stepCrossings for each staircase step lint traces on the page, then
-// linted, its weighed sum. Both count each
+// then seen, lint's weighed sum, then turned, the crossings with each tee
+// as teeCrossings and each excess turn as stepCrossings. Both count each
 // placement breach and each chip the frame folds into a "+N" chip as
 // stepCrossings more, so a drawing that saves turns by folding chips or by
 // standing boxes and chips away from what they join reads no better. The
@@ -105,8 +104,8 @@ func (c *cost) judge(d Drawing) {
 			c.clear++
 		}
 	}
-	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
-	c.linted = t.Weighed + stepCrossings*moved
+	c.seen = t.Weighed + stepCrossings*moved
+	c.turned = t.Crossings + (teeCrossings-1)*t.Tees + stepCrossings*(t.ExcessTurns+moved)
 }
 
 // beats says c reads better than o: the first measure in which they differ
@@ -114,8 +113,8 @@ func (c *cost) judge(d Drawing) {
 // stepCrossings crossings, so a drawing with fewer wins unless it buys each
 // one it saves with more crossings than that.
 func (c cost) beats(o cost) bool {
-	a := [...]int{c.touches, c.breaks, c.hard, c.past(), c.seen, c.linted, c.over, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
-	b := [...]int{o.touches, o.breaks, o.hard, o.past(), o.seen, o.linted, o.over, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
+	a := [...]int{c.touches, c.breaks, c.hard, c.past(), c.seen, c.turned, c.over, stepCrossings*c.steps + c.crossings, c.steps, c.over2, c.braid, c.climb}
+	b := [...]int{o.touches, o.breaks, o.hard, o.past(), o.seen, o.turned, o.over, stepCrossings*o.steps + o.crossings, o.steps, o.over2, o.braid, o.climb}
 	for i := range a {
 		if a[i] != b[i] {
 			return a[i] < b[i]
@@ -202,9 +201,9 @@ const laneMoves = 1
 // the work.
 //
 // A laned drawing is kept only where it stands at most laneMoves more chips
-// or boxes off what they join, and weighs no more, than the drawing choose
-// would keep with no lanes, however few its steps: seen weighs an excess turn
-// as one crossing and lint as stepCrossings. It is measured against that
+// or boxes off what they join, and turns no more, than the drawing choose
+// would keep with no lanes, however few its steps: turned weighs an excess
+// turn as stepCrossings crossings and seen as one. It is measured against that
 // drawing alone, not the least of every other drawing, since the lanes only
 // move chips, which moved counts, and a drawing choose would not keep
 // anyway costs a reader nothing; measured against the least, a gain in a
@@ -332,7 +331,7 @@ func pick(ts []tactic, cs []cost, out []bool, least int) (int, int) {
 // the place of one of cost o, where least is the fewest crossings of a
 // drawing with neither lanes nor gather.
 func fits(t tactic, c, o cost, least int) bool {
-	if t.laned && (c.moved > o.moved+laneMoves || c.linted-stepCrossings*c.moved > o.linted-stepCrossings*o.moved) {
+	if t.laned && (c.moved > o.moved+laneMoves || c.turned-stepCrossings*c.moved > o.turned-stepCrossings*o.moved) {
 		return false
 	}
 	return !t.gather || c.crossed <= least || c.crossed <= o.crossed && c.clear <= o.clear

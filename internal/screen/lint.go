@@ -75,8 +75,10 @@ type Totals struct {
 	PathsOver2  int `json:"paths_over2"`
 	TracedBends int `json:"traced_bends"`
 	Back        int `json:"back"`
-	// Weighed is the crossings plus stepCrossings for each excess turn, so
-	// a turn saved may cost at most stepCrossings crossings.
+	// Weighed is the crossings, one more for each excess turn and
+	// stepCrossings for each step: the staircases a reader sees, which
+	// choose ranks a view's drawings by, so the gate and choose weigh a
+	// drawing alike.
 	Weighed int `json:"weighed"`
 	// Detours are the times lines turn back (B3) plus the pairs of
 	// stretches that run beside their own line or bundle (B4).
@@ -289,7 +291,7 @@ func lintView(v view) (ViewLint, error) {
 	for _, ln := range l.lines() {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
-	vl.Totals.Weighed = vl.Totals.Crossings + (teeCrossings-1)*vl.Totals.Tees + stepCrossings*vl.Totals.ExcessTurns
+	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
 	vl.Totals.Beside, vl.Totals.Pieces, vl.Totals.InkCrossings = besideInk(s), straightPieces(s), inkCrossings(s)
 	vl.Totals.ForkLevels, vl.Totals.Lines = l.forkLevels(), len(t.Ways)

@@ -7,8 +7,7 @@ import (
 
 // On orca's src/ some lines drop straight across a flat stretch of another
 // line from their own place, where no dot joins them. A reader takes each
-// such T for a branch, so lint counts it as a crossing and weighs it above
-// the two turns a line pays to take its bus instead.
+// such T for a branch, so lint counts it as a crossing.
 func TestATeeCountsAsACrossing(t *testing.T) {
 	got, err := Lint(fixture(t, "orca"), "MOD-0098 src/")
 	if err != nil {
@@ -30,9 +29,6 @@ func TestATeeCountsAsACrossing(t *testing.T) {
 		if tt.Crossings != r1+tt.Tees {
 			t.Errorf("crossings %d, want R1's %d plus %d tees", tt.Crossings, r1, tt.Tees)
 		}
-		if tt.Weighed-stepCrossings*tt.ExcessTurns-tt.Crossings <= (2*stepCrossings-1)*tt.Tees {
-			t.Errorf("weighed %d prices %d tees at no more than two excess turns each", tt.Weighed, tt.Tees)
-		}
 		return
 	}
 	t.Fatal("no view MOD-0098 src/")
@@ -41,8 +37,8 @@ func TestATeeCountsAsACrossing(t *testing.T) {
 // On pstack's setup and help, /poteto-help's line to 10-recipes stood
 // straight under it and dropped across its box's own bus to 01-setup. It
 // takes that bus instead, so no line drops across a line from its place,
-// and the page pays only that line's two turns (weighed 40 with the tee,
-// 48 without), not a redrawing of the page.
+// and the page pays only that line's two turns (weighed 20), not a
+// redrawing of the page.
 func TestAStraightDropDoesNotCrossItsOwnBus(t *testing.T) {
 	for _, v := range views(fixture(t, "pstack")) {
 		if v.name != "MOD-0001 setup and help" {
@@ -52,8 +48,8 @@ func TestAStraightDropDoesNotCrossItsOwnBus(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if w := got.Totals.Weighed; w > 48 {
-			t.Errorf("setup and help weighs %d, want at most 48", w)
+		if w := got.Totals.Weighed; w > 20 {
+			t.Errorf("setup and help weighs %d, want at most 20", w)
 		}
 		s, err := sheetOf(v.d)
 		if err != nil {

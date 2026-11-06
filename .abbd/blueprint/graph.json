@@ -7760,7 +7760,7 @@
                 "Code": true
               },
               {
-                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. The ceilings are the weighed sum, the placement debt, the overflow, the views past one screen, and the detours, and the ceilings line after the totals and ",
+                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. The ceilings are the weighed sum, the tees, the excess turns, the placement debt, the overflow, the views past one screen, and the detours, and the ceilings line after the totals and ",
                 "Code": false
               },
               {
@@ -7768,7 +7768,7 @@
                 "Code": true
               },
               {
-                "Text": " both print all four. The totals line names the detours, the lines that turn back or run beside themselves. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
+                "Text": " both print all six. The totals line names the tees beside the crossings they count among. The totals line names the detours, the lines that turn back or run beside themselves. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
                 "Code": false
               },
               {
@@ -20295,6 +20295,22 @@
                 "Code": true
               },
               {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " gives a bypass the colour of the box it leaves like any other line, its open head marking it (the card says so in a few words), and a hub's view greys the other lines only where the hub's own are at least half its ink (",
+                "Code": false
+              },
+              {
+                "Text": "ownLines",
+                "Code": true
+              },
+              {
                 "Text": "). A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
@@ -20407,7 +20423,7 @@
                 "Code": true
               },
               {
-                "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
+                "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its open head marks it without the weight.",
                 "Code": false
               }
             ]
@@ -20925,7 +20941,31 @@
                 "Code": true
               },
               {
-                "Text": " (1), or whose weighed sum passes that drawing's, and ",
+                "Text": " (1), or whose ",
+                "Code": false
+              },
+              {
+                "Text": "turned",
+                "Code": true
+              },
+              {
+                "Text": " sum, the crossings with each tee at ",
+                "Code": false
+              },
+              {
+                "Text": "teeCrossings",
+                "Code": true
+              },
+              {
+                "Text": " and each excess turn at ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": ", passes that drawing's, and ",
                 "Code": false
               },
               {
@@ -20941,7 +20981,23 @@
                 "Code": true
               },
               {
-                "Text": " weighs less than the gate does. Each ordering is drawn twice: wide, where ",
+                "Text": " weighs at one crossing each and ",
+                "Code": false
+              },
+              {
+                "Text": "turned",
+                "Code": true
+              },
+              {
+                "Text": " at ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": ". Each ordering is drawn twice: wide, where ",
                 "Code": false
               },
               {
@@ -21607,7 +21663,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the reserved warning orange instead, whatever box it leaves. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
                 "Code": false
               },
               {
@@ -23349,23 +23405,7 @@
                 "Code": true
               },
               {
-                "Text": " finds each tee, a line's straight drop that crosses a flat stretch of another line from the same place away from any dot, which a reader takes for a branch: it counts as a crossing and weighs ",
-                "Code": false
-              },
-              {
-                "Text": "teeCrossings",
-                "Code": true
-              },
-              {
-                "Text": ", more than two turns. The weighed sum is the crossings, ",
-                "Code": false
-              },
-              {
-                "Text": "teeCrossings",
-                "Code": true
-              },
-              {
-                "Text": " less one more for each tee, plus ",
+                "Text": " finds each tee, a line's straight drop that crosses a flat stretch of another line from the same place away from any dot, which a reader takes for a branch: it counts once as a crossing. The weighed sum is the crossings plus each excess turn plus ",
                 "Code": false
               },
               {
@@ -23373,7 +23413,31 @@
                 "Code": true
               },
               {
-                "Text": " for each excess turn, and the placement debt counts the breaches of the placement criteria. ",
+                "Text": " for each step, the one measure ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " ranks a view's drawings by (",
+                "Code": false
+              },
+              {
+                "Text": "cost.seen",
+                "Code": true
+              },
+              {
+                "Text": ", which adds ",
+                "Code": false
+              },
+              {
+                "Text": "stepCrossings",
+                "Code": true
+              },
+              {
+                "Text": " for each moved chip), so the chooser and the gate weigh a drawing alike, and the placement debt counts the breaches of the placement criteria. ",
                 "Code": false
               },
               {
@@ -23533,7 +23597,15 @@
                 "Code": true
               },
               {
-                "Text": " totals are the weighed sum, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. ",
+                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. ",
+                "Code": false
+              },
+              {
+                "Text": "gate_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy. ",
                 "Code": false
               },
               {
@@ -26097,7 +26169,7 @@
                 "Code": true
               },
               {
-                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the placement debt and the detours, as the file's header says), and under ",
+                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the tees, the excess turns, the placement debt and the detours, as the file's header says), and under ",
                 "Code": false
               },
               {

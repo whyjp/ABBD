@@ -243,7 +243,7 @@ func boxed(w []pt, boxes []box) int {
 // pieces of different styles run on one another, the splits far from
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
-	crossings, turns, beside, clash, far, forks int
+	crossings, turns, beside, clash, far, forks, tees int
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -260,7 +260,7 @@ type roadView struct {
 }
 
 func (v roadView) cost(ways [][]pt) roadCost {
-	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways))}
+	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways)), tees: v.tees(ways)}
 	for _, w := range ways {
 		c.turns += max(0, len(straight(w))-2)
 	}
@@ -292,7 +292,7 @@ func (v roadView) cost(ways [][]pt) roadCost {
 }
 
 func (c roadCost) better(o roadCost) bool {
-	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.far > o.far || c.forks > o.forks {
+	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.far > o.far || c.forks > o.forks || c.tees > o.tees {
 		return false
 	}
 	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.beside < o.beside
@@ -322,6 +322,30 @@ func (v roadView) forks(ways [][]pt) [][2]int {
 		}
 	}
 	return out
+}
+
+// tees counts the points where a route that drops straight crosses a flat
+// run of another route from its place, of any kind, where no turn of
+// either stands: a T a reader takes for a branch (lint's tees).
+func (v roadView) tees(ways [][]pt) int {
+	seen := map[pt]bool{}
+	for i, w := range ways {
+		if w = straight(w); len(w) != 2 || w[0].x != w[1].x {
+			continue
+		}
+		x, lo, hi := w[0].x, min(w[0].y, w[1].y), max(w[0].y, w[1].y)
+		for j, o := range ways {
+			if j == i || v.from[j] != v.from[i] {
+				continue
+			}
+			for k := 1; k < len(o); k++ {
+				if a, b := o[k-1], o[k]; a.y == b.y && a.y > lo && a.y < hi && x > min(a.x, b.x) && x < max(a.x, b.x) {
+					seen[pt{x, a.y}] = true
+				}
+			}
+		}
+	}
+	return len(seen)
 }
 
 // farSplits counts the points where routes of one style that arrive as one
@@ -481,7 +505,13 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 				break
 			}
 		}
-		if ok && v.cost(next).better(cost) {
+		if !ok {
+			continue
+		}
+		for _, s := range rs[m.run].segs {
+			next[s[0]] = straight(next[s[0]])
+		}
+		if v.cost(next).better(cost) {
 			return next, true
 		}
 	}

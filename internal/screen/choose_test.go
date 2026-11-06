@@ -16,10 +16,10 @@ func pickOf(ts []tactic, costs []cost) int {
 	}, func(int, *cost) {})
 }
 
-// drawnAt is the cost of a drawing that lint weighs at weighed, with moved
-// chips or boxes off what they join, seen as seen.
-func drawnAt(seen, weighed, moved, crossed int) cost {
-	return cost{seen: seen, linted: weighed + stepCrossings*moved, moved: moved, crossed: crossed}
+// drawnAt is the cost of a drawing seen as seen and turned as turned, with
+// moved chips or boxes off what they join.
+func drawnAt(seen, turned, moved, crossed int) cost {
+	return cost{seen: seen, turned: turned + stepCrossings*moved, moved: moved, crossed: crossed}
 }
 
 // A laned drawing is measured against the drawing choose would keep
@@ -36,7 +36,7 @@ func TestALanedDrawingIsMeasuredAgainstTheOneItReplaces(t *testing.T) {
 		t.Errorf("lanes moving two chips more: picked %d, want the plain one", got)
 	}
 	if got := pickOf(ts, []cost{plain, unkept, drawnAt(20, 33, 3, 0)}); got != 0 {
-		t.Errorf("lanes weighing more: picked %d, want the plain one", got)
+		t.Errorf("lanes turning more: picked %d, want the plain one", got)
 	}
 }
 

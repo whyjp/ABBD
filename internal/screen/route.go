@@ -1018,7 +1018,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				// An arrival bus into a frame chip that no line leads
 				// still drops where one of its lines runs down a chain
 				// over the chip, so that line lands straight rather than
-				// jogging a lane to the chip's middle.
+				// jogging a lane to the chip's middle. Unlike the stub
+				// above, it trades nothing for that, so it holds without
+				// tweak. Held to tweak and weighed against a plain drawing
+				// without it, layStraight took the plain one in two of
+				// pstack's views, each with 2 more excess turns.
 				if t := reqs[sl.is[0]].to; i >= len(reqs) && t.node == "" {
 					for _, m := range sl.is {
 						if x, ok := near(m, false); ok && x >= t.lo && x <= t.hi {
