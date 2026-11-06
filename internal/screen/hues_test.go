@@ -384,14 +384,20 @@ func TestAChipWearsItsBoxsColour(t *testing.T) {
 	}
 }
 
-// A filled chip's words, in the ink a filled box writes with, read at
-// least 4.5:1 on every colour in both themes.
-func TestAFilledChipsWordsRead(t *testing.T) {
-	ink := map[string]string{"light": "#ffffff", "dark": "#161614"}
+// An exit chip on a box is tinted 15% toward its box's colour and written
+// in that colour, so it reads as the box's without the solid pill the
+// exemplars keep for the one hub; its words stand at least 3:1 on that
+// tint in both themes, as every line and border does on the page.
+func TestAChipsWordsReadOnItsTint(t *testing.T) {
+	if !strings.Contains(pageCSS, "var(--c) 15%, var(--panel)") {
+		t.Fatal("page.css tints no exit chip 15% toward its box's colour")
+	}
+	panel := map[string]string{"light": "#ffffff", "dark": "#201f1c"}
 	for _, h := range palette {
 		for theme, c := range map[string]string{"light": h.light, "dark": h.dark} {
-			if r := contrast(parseHex(t, ink[theme]), parseHex(t, c)); r < 4.5 {
-				t.Errorf("%s %s: words on a filled chip read %.2f:1, under 4.5:1", h.name, theme, r)
+			col := parseHex(t, c)
+			if r := contrast(col, mixed(col, parseHex(t, panel[theme]), 15)); r < 3 {
+				t.Errorf("%s %s: a chip's words read %.2f:1 on its tint, under 3:1", h.name, theme, r)
 			}
 		}
 	}

@@ -148,8 +148,8 @@
 <span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>{{end}}
 {{define "legend"}}<div class="legend">{{if eq .Kind "overview"}}
-<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--accent)"/></svg>제공하는 계약 (출구)</span>
-<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:color-mix(in srgb, var(--h2) 15%, var(--panel));stroke:var(--h2)"/></svg>제공하는 계약 (출구), 상자의 색</span>
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--h2)"/></svg>쓰는 계약 (입구), 상자의 색</span>
 <span><svg width="34" height="10"><path d="M0 5 H26" style="stroke:var(--hn);stroke-width:1.5"/><path d="M24 1 L33 5 L24 9 z" style="fill:var(--hn)"/></svg>계약을 거친 사용</span>
 {{if .Quiet}}<span><svg width="34" height="10"><path d="M0 5 H31" style="stroke:var(--hn);stroke-width:1.5"/><path d="M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hn);stroke-width:1.6"/></svg>계약을 거치지 않는 직접 의존 (열린 머리. 이 그림에선 회색이고, 그 선을 가리키면 주황)</span>{{else}}<span><svg width="34" height="10"><path d="M0 5 H31" style="stroke:var(--hb);stroke-width:1.5"/><path d="M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hb);stroke-width:1.6"/></svg>계약을 거치지 않는 직접 의존 (주황, 경고)</span>{{end}}
 {{if .Quiet}}<span><svg width="34" height="10"><path d="M3 5 H31" style="stroke:var(--hn);stroke-width:1.5"/><path d="M9 1 L1 5 L9 9 M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hn);stroke-width:1.6"/></svg>서로 직접 의존</span>{{else}}<span><svg width="34" height="10"><path d="M3 5 H31" style="stroke:var(--hb);stroke-width:1.5"/><path d="M9 1 L1 5 L9 9 M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hb);stroke-width:1.6"/></svg>서로 직접 의존</span>{{end}}
