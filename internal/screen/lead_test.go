@@ -179,3 +179,19 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 		t.Error("no fixture view keeps a card")
 	}
 }
+
+// Every card's words fit inside the card.
+func TestACardsWordsFitIt(t *testing.T) {
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			if c := d.Card; c != nil {
+				for _, it := range c.Items {
+					if it.TX+textWidth(it.Text, 11) > c.X+c.W-6 {
+						t.Errorf("%s: the card's %q runs past its edge", name, it.Text)
+					}
+				}
+			}
+		}
+	}
+}
