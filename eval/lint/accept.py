@@ -307,7 +307,8 @@ def drawn(svg):
     """Routes as (r ids, e ids, turning points, heads), a head being the tip and
     unit heading of a #t- chevron; wires as (r ids, stretches); junction dots
     as (e ids, centre, radius); hop badges as (r ids, centre, radius); label,
-    count and zone title text and chips as x,y,w,h boxes."""
+    count and zone title text as x,y,w,h boxes, and chips as (p ids, box), a
+    chip's p id naming the place a route's e id names."""
     routes = []
     for cls, body in re.findall(r'<g class="route ([^"]*)"[^>]*>(.*?)</g>', svg):
         d = re.search(r'<path class="way" d="([^"]*)"', body)[1]
@@ -325,8 +326,8 @@ def drawn(svg):
         x, y = float(re.search(r'x="' + NUM, attrs)[1]), float(re.search(r'y="' + NUM, attrs)[1])
         w = sum(11 if ord(ch) > 0x2e80 else 6.6 for ch in html.unescape(words))
         texts.append((x - w / 2 if 'text-anchor="middle"' in attrs else x, y - 8.8, w, 11))
-    chips = [tuple(float(v) for v in r) for r in re.findall(
-        r'<g class="port[^"]*"[^>]*>(?:<title>[^<]*</title>)?<rect x="' + NUM + '" y="' + NUM + '" width="' + NUM + '" height="' + NUM + '"', svg)]
+    chips = [(tokens(cls, "p"), tuple(float(v) for v in r)) for cls, *r in re.findall(
+        r'<g class="(port[^"]*)"[^>]*>(?:<title>[^<]*</title>)?<rect x="' + NUM + '" y="' + NUM + '" width="' + NUM + '" height="' + NUM + '"', svg)]
     return Drawn(routes, wires, dots, badges, texts, chips)
 
 
@@ -385,7 +386,8 @@ def chevron(tip, heading):
 
 def head_gaps(t, view):
     """(tip, gap) for every drawn arrowhead: the least distance from its tip or
-    base to ink that is not its own route's line or the chip it points into.
+    base to ink that is not its own route's line or a chip at either end of
+    its route, the chip it points into known by its place, not its distance.
     Lines and other heads count by their centre line, junction dots of other
     nets and every hop badge by their disc, labels, counts and zone titles by
     a text box estimated at 11px type (11px a CJK glyph, 6.6px any other),
@@ -404,7 +406,8 @@ def head_gaps(t, view):
             gaps += [max(0, seg_point(*m, c) - r) for e2, c, r in d.dots if not es <= e2 for m in me]
             gaps += [max(0, seg_point(*m, c) - r) for _, c, r in d.badges for m in me]
             gaps += [seg_rect(m, r) for r in d.texts for m in me]
-            gaps += [seg_rect(m, r) for r in d.chips if seg_rect(me[0], r) > 1 for m in me]
+            own = {"p" + e[1:] for e in es}
+            gaps += [seg_rect(m, r) for ps, r in d.chips if not ps & own for m in me]
             out.append((tip, min(gaps, default=99)))
     return out
 
@@ -445,6 +448,58 @@ def fork_tangles(t, view):
         n += len({p for a, b in combinations(fork, 2) if a["from"] != b["from"]
                   for s in stretches(a) for q in stretches(b) for p in [crossing(s, q)] if p})
     return n
+
+
+def edge_slacks(got):
+    """{(line, end): slack} over a view's lines, for each end standing on a
+    box's top or bottom edge whose box overlaps the far end's in x: how far
+    the end stands from the nearest x of its edge over the far end's span,
+    clear by slotGap of the edge's other ends, where the line's sideways run
+    heads that way, so leaving or reaching there would have spared it that
+    run and the turns and crossings on it.
+    Lines sharing one end, a bus's stub or drop, move together: they count
+    only where their spans meet, and then each the group's slack."""
+    groups = {}
+    for n, w in enumerate(got):
+        for k, (p, r, far, nxt) in enumerate(((w["pts"][0], w["rects"][0], w["rects"][1], w["pts"][1:]),
+                                              (w["pts"][-1], w["rects"][1], w["rects"][0], w["pts"][-2::-1]))):
+            if r is None or far is None or p[1] not in (r[1], r[1] + r[3]):
+                continue
+            lo, hi = max(r[0], far[0]), min(r[0] + r[2], far[0] + far[2])
+            if lo > hi:
+                continue
+            side = next((q[0] - p[0] for q in nxt if q[0] != p[0]), 0)
+            groups.setdefault((r, p[1]), {}).setdefault(p[0], []).append(((n, k), lo, hi, side))
+    out = {}
+    for edge in groups.values():
+        for x, members in edge.items():
+            lo, hi = max(m[1] for m in members), min(m[2] for m in members)
+            slack = 0
+            if lo <= hi:
+                free = [z for z in range(int(lo), int(hi) + 1) if all(abs(z - y) >= 12 for y in edge if y != x)] or [x]
+                best = min(free, key=lambda z: abs(z - x))
+                if abs(best - x) > 12 and all(m[3] * (best - x) > 0 for m in members):
+                    slack = round(abs(best - x))
+            for m in members:
+                out[m[0]] = slack
+    return out
+
+
+def port_slack(frm=None, to=None):
+    """Line ends that leave or reach their box more than slotGap from the
+    nearest free x over the other end's span (edge_slacks): px of the one
+    line's start, or a count of ends over the view."""
+    def m(t, view):
+        n = 0
+        for v in views_of(t, view):
+            got = [w for w in t.ways if w["view"] == v]
+            for (i, k), s in edge_slacks(got).items():
+                if not frm:
+                    n += s > 0
+                elif (got[i]["from"], got[i]["to"]) == (frm, to) and k == 0:
+                    n += s
+        return n
+    return m
 
 
 ZONE_TITLE = re.compile(r'<text class="zt"[^>]*x="' + NUM + '" y="' + NUM + r'"[^>]*>([^<]*)<')
@@ -562,6 +617,12 @@ CASES = [
          "the same count over every view of every fixture"),
     Case("f01-badge-crossed", "user-21", "self FEAT-0001 /abbd", "hop badges another route's line passes within 2px of",
          crossed_badges, 0, "← abbd CLI -> after work's dotted bus at y=258 runs through badge 2's centre"),
+    Case("f01-port", "user-22", "self FEAT-0001 /abbd",
+         "px /abbd read the code -> chip → pstack leaves its box short of the nearest free x over the chip",
+         port_slack('box "/abbd read the code through pstack" (FEAT-0005)', 'chip "→ pstack (external)"'), 0,
+         "it leaves at 336, the left of the box's bottom, and crosses to the chip at 462; the box spans 250..422 over the chip's 381..531"),
+    Case("port-slack", "user-22", EVERY, "line ends more than 12px short of the nearest free x of their edge over the far end",
+         port_slack(), 0, "the same rule over both ends of every line of every fixture view"),
     Case("self-title-meets-ink", "today (zones, #112)", SELF_STATE, "zone titles whose glyph box meets line ink",
          titles_meet_ink, 0, "buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236"),
     Case("title-meets-ink", "today (zones, #112)", "every fixture overview", "zone titles whose glyph box meets line ink",
