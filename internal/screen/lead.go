@@ -502,10 +502,9 @@ func tipBox(tip, from pt) box {
 
 // quiet draws every line of a view that has a lead in grey, its heads,
 // labels and dots too, a bypass's included, so the lead is the one
-// coloured way: three blind judges preferred that 3 to 0 over keeping the
-// bypass orange. The bypass keeps its open head, and pointing at its ink
-// lights its route in orange, since each route keeps the colour paint gave
-// it. The caller drops the
+// coloured way. The bypass keeps its open head, and pointing at its ink
+// lights its route in its box's colour, since each route keeps the colour
+// paint gave it. The caller drops the
 // labels the grey leaves over another line's track (unlabelKin).
 func (d *Drawing) quiet() {
 	d.Quiet = true

@@ -232,27 +232,35 @@ func TestJoinedBoxesWearDifferentColours(t *testing.T) {
 	}
 }
 
-// A direct dependency that skips the contract boundary is drawn in the
-// warning colour, and so is a dot on its ink. No other line or dot is
-// (rule 11).
-func TestOnlyABypassWearsTheWarning(t *testing.T) {
+// A direct dependency that skips the contract boundary wears the colour
+// of the box it leaves, like every other line, so a view where most lines
+// are such dependencies still tells its lines apart at rest; its open head
+// says what it is. No line or dot wears the warning colour.
+func TestABypassWearsItsBoxsColour(t *testing.T) {
+	bypasses := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Quiet {
-				continue
-			}
 			for _, w := range d.Wires {
-				if warns(w.Kind) != (w.Hue == warnKey) {
-					t.Errorf("%s: a %s line wears %q", name, w.Kind, w.Hue)
+				if w.Hue == warnKey {
+					t.Errorf("%s: a %s line wears the warning colour", name, w.Kind)
+				}
+				if warns(w.Kind) {
+					bypasses++
+					if !w.Joins && w.Head != "" && !strings.HasPrefix(w.Head, "dep-") {
+						t.Errorf("%s: a %s line ends in %q, not an open head", name, w.Kind, w.Head)
+					}
 				}
 			}
 			for _, j := range d.Dots {
-				if warns(j.Kind) != (j.Hue == warnKey) {
-					t.Errorf("%s: a %s dot wears %q", name, j.Kind, j.Hue)
+				if j.Hue == warnKey {
+					t.Errorf("%s: a %s dot wears the warning colour", name, j.Kind)
 				}
 			}
 		}
+	}
+	if bypasses == 0 {
+		t.Error("no fixture view draws a bypass")
 	}
 }
 
@@ -270,9 +278,6 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 				hue[b.ID] = b.Hue
 			}
 			for _, w := range d.Wires {
-				if warns(w.Kind) {
-					continue
-				}
 				want := ""
 				for _, n := range w.srcs {
 					c := hue[n]
@@ -403,6 +408,43 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 			if r := contrast(words, tint); r < 4.5 {
 				t.Errorf("%s %s: a chip's words read %.2f:1 on its tint, under 4.5:1", h.name, theme, r)
 			}
+		}
+	}
+}
+
+// A hub's view whose own lines are under half its ink stays in colour:
+// it is not quiet, and each line keeps its box's colour, so it reads at
+// rest. The self overview and orca's desktop main are such views.
+func TestABusyHubViewStaysInColour(t *testing.T) {
+	cases := map[string]string{"self": "", "orca": "MOD-0042"}
+	for name, inside := range cases {
+		m := fixture(t, name)
+		d := &m.Overview
+		if inside != "" {
+			for i := range m.Insides {
+				if m.Insides[i].ID == inside {
+					d = &m.Insides[i].Drawing
+				}
+			}
+		}
+		f := d.Filled()
+		if f == nil || f.Role != "hub" {
+			t.Fatalf("%s %s: no hub to test", name, inside)
+		}
+		if own := d.ownLines(); 2*own >= len(d.Wires) {
+			t.Fatalf("%s %s: the hub owns %d of %d lines, not under half", name, inside, own, len(d.Wires))
+		}
+		if d.Quiet {
+			t.Errorf("%s %s: a hub owning under half its ink rests the view grey", name, inside)
+		}
+		hues := map[string]bool{}
+		for _, w := range d.Wires {
+			if w.Hue != hueKey(-1) {
+				hues[w.Hue] = true
+			}
+		}
+		if len(hues) < 2 {
+			t.Errorf("%s %s: its lines show %d colours at rest", name, inside, len(hues))
 		}
 	}
 }
