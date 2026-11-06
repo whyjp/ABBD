@@ -10,8 +10,8 @@ import (
 
 // The gate holds the drawings of a repository to what they owe, as its
 // .abbd/lint-debt.yaml records it. A view may keep the hard breaches it
-// owes and no more. Over every view, the weighed sum and the tees may not
-// pass their ceilings, and the placement debt may pass its ceiling by
+// owes and no more. Over every view, the weighed sum, the tees and the
+// excess turns may not pass their ceilings, and the placement debt may pass its ceiling by
 // placementRise of it, so a change that saves turns may move a few boxes.
 
 // placementRise is the share of its ceiling the placement debt may rise by,
@@ -30,6 +30,10 @@ var gated = []struct {
 	// branch, a relation that is not there, so they may not rise whatever
 	// else a change saves.
 	{"tees", func(t Totals) int { return t.Tees }, func(int) int { return 0 }},
+	// the weighed sum prices an excess turn at one crossing, so it would
+	// buy a crossing saved with a bend the reader has to follow; the
+	// excess turns may not rise whatever else a change saves.
+	{"excess_turns", func(t Totals) int { return t.ExcessTurns }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
 	{"detours", func(t Totals) int { return t.Detours }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).

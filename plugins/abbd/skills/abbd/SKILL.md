@@ -168,7 +168,7 @@ pre-push:
 The target is the excess turns. They are each line's turns past what its two ends allow under B1, plus every jog under B2. A line in a clear column is allowed 0 turns, so a line that turns twice there has 2 excess turns though it has no step. The weighed sum is the crossings plus the excess turns plus 4 for each staircase step, what the chooser ranks a view's drawings by. A tee, a straight drop across a flat stretch of another line from the same place with no dot, counts once among the crossings. The placement debt is the breaches of P1, P2, H1, H2, O1, O2 and F1 added up. A change to the renderer is kept only through this gate:
 
 1. No view has more hard breaches of a criterion than its debt records.
-2. The weighed sum and the tees stay at or under their ceilings.
+2. The weighed sum, the tees and the excess turns stay at or under their ceilings.
 3. The placement debt rises by at most 2% of its ceiling.
 4. The traced bends and the paths with more than two bends break ties. They have no ceiling.
 5. Any view whose weighed sum rises by more than 8 gets a look by eye.

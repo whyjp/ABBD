@@ -86,7 +86,7 @@ func (e env) lint(pos []string) error {
 				fmt.Fprintf(e.stdout, "lint: kept the level of %s: %s\n", l.View, r)
 			}
 		}
-		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, tees %d, placement %d, overflow %d, detours %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["tees"], d.Ceilings["placement"], d.Ceilings["overflow"], d.Ceilings["detours"], store.Dir)
+		fmt.Fprintf(e.stdout, "lint: recorded the debt of %s and the ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d in %s/lint-debt.yaml\n", plural(len(d.Views), "view"), d.Ceilings["weighed"], d.Ceilings["tees"], d.Ceilings["excess_turns"], d.Ceilings["placement"], d.Ceilings["overflow"], d.Ceilings["detours"], store.Dir)
 		return nil
 	}
 	every := only == ""
@@ -153,7 +153,7 @@ func printLint(e env, r lintReport) {
 	}
 	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
 	if len(r.Ceilings) > 0 {
-		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
+		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {

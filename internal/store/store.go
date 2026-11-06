@@ -404,8 +404,8 @@ func (s Store) LoadLintDebt() (LintDebt, error) {
 // lintDebtHead opens the lint debt file, which abbd lint --record writes.
 const lintDebtHead = `# What the drawings owe the drawing criteria of docs/blueprint-svg.md.
 # abbd lint fails on a hard breach past its view's debt, on a weighed sum
-# or a count of tees or detours past its ceiling, and on a placement debt
-# more than 2% past its ceiling.
+# or a count of tees, excess turns or detours past its ceiling, and on a
+# placement debt more than 2% past its ceiling.
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 `
