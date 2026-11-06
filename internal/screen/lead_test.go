@@ -121,3 +121,47 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 		t.Error("a view past the caps rests its lines grey with no way to light them")
 	}
 }
+
+// A view's card lists a sample only for a mark the view draws as the
+// sample shows it: the orange bypass only where a line is drawn orange,
+// the dotted line only where one is drawn dotted, the lead and the filled
+// box only where the view has them. It never covers a box or a band.
+func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
+	cards := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			c := d.Card
+			if c == nil {
+				continue
+			}
+			cards++
+			has := map[string]bool{
+				"lead":   d.Lead != nil,
+				"fill":   d.Filled() != nil,
+				"bypass": slices.ContainsFunc(d.Wires, func(w Wire) bool { return warns(w.Kind) && w.Hue == warnKey }),
+				"plan":   slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back }),
+				"back":   slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Back }),
+			}
+			for _, it := range c.Items {
+				if !has[it.Kind] {
+					t.Errorf("%s: a card lists %s, which its view does not draw", name, it.Kind)
+				}
+			}
+			area := box{c.X, c.Y, c.W, c.H}
+			for _, b := range d.Boxes {
+				if hit(area, box{b.X, b.Y, b.W, b.H}) {
+					t.Errorf("%s: a card covers box %s", name, b.ID)
+				}
+			}
+			for _, z := range d.Zones {
+				if hit(area, box{z.X, z.Y, z.W, z.H}) {
+					t.Errorf("%s: a card covers band %q", name, z.Title)
+				}
+			}
+		}
+	}
+	if cards == 0 {
+		t.Error("no fixture view keeps a card")
+	}
+}
