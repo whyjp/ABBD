@@ -43,6 +43,8 @@ type Drawing struct {
 	// Zones are the bands behind the boxes of the groupings the project
 	// shows (zone.go).
 	Zones []Zone `json:",omitempty"`
+	// Card is the key the drawing keeps in a free corner (card.go).
+	Card *Card `json:",omitempty"`
 }
 
 // Route is one line's whole way from the shape it leaves to the shape it
@@ -122,8 +124,11 @@ type Port struct {
 	// Folded says the edge folds this port into its row's "+N" chip.
 	Folded bool `json:"-"`
 	// OnFill says the chip sits on a filled box, where it takes an outline
-	// of the panel colour so it still reads as a chip (dress.go).
-	OnFill bool `json:"-"`
+	// of the panel colour so it still reads as a chip, and Hue is the
+	// colour of the box it sits on, which it wears (dress.go). A frame's
+	// chip sits on no box and keeps the accent.
+	OnFill bool   `json:"-"`
+	Hue    string `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
