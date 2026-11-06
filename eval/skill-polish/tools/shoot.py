@@ -29,6 +29,8 @@ checks run on what it shows:
   hue       a hover of a box that wears a colour, where the box's border
             takes another colour than the hue the lines it lights are drawn
             from (a climbing line's lighter tint counts as its hue)
+  lost      a chip on a filled box, at rest or under the pointer, whose
+            border and fill both take the box's fill, so it vanishes into it
   flat      a hover of a box that wears a colour, other than a focus view's
             centre, whose border does not grow thicker than it rests, so the
             pointed-at box does not show
@@ -111,6 +113,23 @@ HUE = r"""
   const lit = [...svg.querySelectorAll('g.route')].filter(r => eff(r) > 0.5).map(hueOf);
   const cs = getComputedStyle(g.querySelector('rect'));
   return [cs.stroke, [...new Set(lit)], parseFloat(cs.strokeWidth), g.classList.contains('focus')];
+}
+"""
+
+LOST = r"""
+() => {
+  const svg = document.querySelector('svg[data-shot]');
+  const out = [];
+  for (const b of svg.querySelectorAll('g.box.lead')) {
+    const br = b.querySelector('rect').getBoundingClientRect(), fill = getComputedStyle(b.querySelector('rect')).fill;
+    for (const p of svg.querySelectorAll('g.port')) {
+      const r = p.querySelector('rect'), pr = r.getBoundingClientRect(), x = pr.left + pr.width / 2, y = pr.top + pr.height / 2;
+      if (x < br.left || x > br.right || y < br.top || y > br.bottom) continue;
+      const cs = getComputedStyle(r);
+      if (cs.stroke === fill && cs.fill === fill) out.push(p.textContent.trim().slice(0, 30));
+    }
+  }
+  return out;
 }
 """
 
@@ -374,9 +393,10 @@ def view(pg, url, sel, out, stem, hover_shots):
     colors = {i: c for i, (_, _, c) in enumerate(base["wires"])}
     rec = {"view": stem, "width": round(geo["rect"][2]), "height": round(geo["rect"][3]), "old_cut": round(cut_old, 3),
            "boxes": sum(1 for t in geo["targets"] if "box" in t["cls"].split()), "lines": len(geo["wires"]),
-           "cut": [], "stray": [], "mixed": [], "line_cut": [], "hidden": [], "all_lit": [], "overlap": overlaps(geo), "hue": [], "flat": [], "shots": []}
+           "cut": [], "stray": [], "mixed": [], "line_cut": [], "hidden": [], "all_lit": [], "overlap": overlaps(geo), "hue": [], "flat": [], "lost": [], "shots": []}
     flagged = []
     hub, hub_n = None, -1
+    rec["lost"] += [{"rest": c} for c in pg.evaluate(LOST)]
     rest = pg.evaluate("() => [...document.querySelector('svg[data-shot]').querySelectorAll('g.box, g.port')].map(g => parseFloat(getComputedStyle(g.querySelector('rect')).strokeWidth))")
     for t in geo["targets"]:
         if not t["hov"]:
@@ -387,6 +407,7 @@ def view(pg, url, sel, out, stem, hover_shots):
         lit_t = [i for i, on in enumerate(lit["targets"]) if on]
         who = t["name"] or t["hov"]
         hue = pg.evaluate(HUE, t["i"])
+        rec["lost"] += [{"hover": who, "chip": c} for c in pg.evaluate(LOST)]
         if hue and hue[1] and hue[0] not in hue[1]:
             rec["hue"].append({"hover": who, "border": hue[0], "lines": hue[1]})
         if hue and not hue[3] and hue[2] <= rest[t["i"]]:
@@ -487,10 +508,10 @@ def main():
         pg.close()
     with open(os.path.join(out, "findings.json"), "w", encoding="utf8") as fh:
         json.dump(recs, fh, indent=1, ensure_ascii=False)
-    print("view\tsize\told_cut\tboxes\tlines\tcut\tstray\tmixed\tline_cut\thidden\tall_lit\toverlap\thue\tflat")
+    print("view\tsize\told_cut\tboxes\tlines\tcut\tstray\tmixed\tline_cut\thidden\tall_lit\toverlap\thue\tflat\tlost")
     for r in recs:
         print(f"{r['view']}\t{r['width']}x{r['height']}\t{r['old_cut']:.2f}\t{r['boxes']}\t{r['lines']}\t{len(r['cut'])}\t{len(r['stray'])}\t"
-              f"{len(r['mixed'])}\t{len(r['line_cut'])}\t{len(r['hidden'])}\t{len(r['all_lit'])}\t{len(r['overlap'])}\t{len(r['hue'])}\t{len(r['flat'])}")
+              f"{len(r['mixed'])}\t{len(r['line_cut'])}\t{len(r['hidden'])}\t{len(r['all_lit'])}\t{len(r['overlap'])}\t{len(r['hue'])}\t{len(r['flat'])}\t{len(r['lost'])}")
 
 
 main()

@@ -2015,6 +2015,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/card.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
         "internal/screen/figure.go",
@@ -20228,7 +20229,7 @@
                 "Code": true
               },
               {
-                "Text": "), plus the outside contracts, only where their padded area holds no other box, chip or band; its title takes the corner fewest lines cross. ",
+                "Text": "), plus the outside contracts, even a single one, only where their padded area holds no other box, chip or band; its title takes the corner fewest lines cross. ",
                 "Code": false
               },
               {
@@ -20268,7 +20269,31 @@
                 "Code": true
               },
               {
-                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. A quiet view drops a label that now stands over a flat track of another line of its colour (",
+                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. ",
+                "Code": false
+              },
+              {
+                "Text": "card",
+                "Code": true
+              },
+              {
+                "Text": " keeps a small key (",
+                "Code": false
+              },
+              {
+                "Text": "Card",
+                "Code": true
+              },
+              {
+                "Text": ", titled 범례) in a free corner of a view, or along an edge within a third of one, a sample of each mark the view draws as the sample shows it, clear of every box, line, word, number and band (",
+                "Code": false
+              },
+              {
+                "Text": "room",
+                "Code": true
+              },
+              {
+                "Text": "). A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
               {
@@ -20325,6 +20350,38 @@
               },
               {
                 "Text": " keeps in the hub's colour the ink whose every route has the hub at one end. ",
+                "Code": false
+              },
+              {
+                "Text": "dress",
+                "Code": true
+              },
+              {
+                "Text": " gives each chip on a box that box's colour (",
+                "Code": false
+              },
+              {
+                "Text": "Port.Hue",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " tints an exit chip 15% toward it, writing it in that colour drawn 20% toward the ink, and outlines an entry chip in it, and a chip on a filled box keeps a panel-coloured border. ",
+                "Code": false
+              },
+              {
+                "Text": "zoneWidth",
+                "Code": true
+              },
+              {
+                "Text": " measures a title as the 10px monospace capitals 0.14em apart that the page sets. ",
                 "Code": false
               },
               {

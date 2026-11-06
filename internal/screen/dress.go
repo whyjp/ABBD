@@ -57,9 +57,11 @@ func (d *Drawing) dress(t tree) {
 	for i := range d.Ports {
 		p := &d.Ports[i]
 		x, y := p.X+p.W/2, p.RectY()+p.H/2
-		p.OnFill = slices.ContainsFunc(d.Boxes, func(b Box) bool {
-			return b.Role != "" && b.X <= x && x <= b.X+b.W && b.Y <= y && y <= b.Y+b.H
-		})
+		for _, b := range d.Boxes {
+			if b.X <= x && x <= b.X+b.W && b.Y <= y && y <= b.Y+b.H {
+				p.OnFill, p.Hue = b.Role != "", b.Hue
+			}
+		}
 	}
 }
 
@@ -214,7 +216,7 @@ func (d Drawing) Filled() *Box {
 
 // Planned says the view draws a dotted line, for the key.
 func (d Drawing) Planned() bool {
-	return slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan })
+	return slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back })
 }
 
 // runLength is how long the path d runs.

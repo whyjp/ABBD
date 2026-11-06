@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"math"
 	"path"
 	"slices"
 	"strconv"
@@ -17,7 +18,8 @@ import (
 // stack's layers come first, numbered from the top. Without one, boxes
 // whose code sits in one directory share that directory's band. Contracts
 // with systems outside, drawn as boxes because nothing in the repository
-// provides them, share one more band. A band is drawn only where its boxes
+// provides them, share one more band, even when there is one, so a lone
+// outside contract reads as outside rather than as a stray box. A band is drawn only where its boxes
 // sit together: its area, with room for its title, holds no other box or
 // chip and meets no other band. Where they are apart the band is left out,
 // and the boxes read as they would without it.
@@ -53,6 +55,10 @@ const (
 	// zoneLine is how far a title's second line sits below its first.
 	zoneLine = 12
 	zonePx   = 10
+	// zoneMono is how wide a Latin letter of a title sets in the 10px
+	// monospace the page uses, and zoneTrack the 0.14em it spaces them by,
+	// so a title is measured as the page draws it.
+	zoneMono, zoneTrack = 6.0, 1.4
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
@@ -98,7 +104,7 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 			outside = append(outside, b.ID)
 		}
 	}
-	if len(outside) >= 2 && len(outside) < len(d.Boxes) {
+	if len(outside) >= 1 && len(outside) < len(d.Boxes) {
 		groups = append(groups, group{title: "외부 계약", ids: outside})
 	}
 	for _, g := range groups {
@@ -416,9 +422,19 @@ func halves(s string) []string {
 	return []string{strings.TrimSpace(string(r[:best])), strings.TrimSpace(string(r[best:]))}
 }
 
-// zoneWidth is how wide a title is set: small capitals spaced apart.
+// zoneWidth is how wide a title is set: monospace capitals spaced apart,
+// a wide letter such as Hangul taking a full em.
 func zoneWidth(s string) int {
-	return textWidth(strings.ToUpper(s), zonePx) + len([]rune(s))*2
+	w := 0.0
+	for _, r := range s {
+		if r < 0x80 {
+			w += zoneMono
+		} else {
+			w += zonePx
+		}
+		w += zoneTrack
+	}
+	return int(math.Ceil(w))
 }
 
 // onBadge says area meets a number of the view's lead.
