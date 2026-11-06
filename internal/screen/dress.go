@@ -10,9 +10,9 @@ import (
 )
 
 // Dress is how a box and a line say their role at a glance, the way a
-// diagram polished by hand does. A box is white with its colour in a bar
-// down its left edge and a last line in small capitals: its kind, and its
-// role where the view gives it one. One box may be filled with its colour:
+// diagram polished by hand does. A box wears its colour as its border over
+// a faint tint of it, and ends in a line in small capitals: its kind, and
+// its role where the view gives it one. One box may be filled with its colour:
 // the entry the lead starts from, or, in a view with no lead, a hub, the
 // box at least half again as many lines touch as any other. A line whose
 // relations all arise only in design, by a convention, an import, a trait,
