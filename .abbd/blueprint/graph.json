@@ -20340,7 +20340,7 @@
                 "Code": true
               },
               {
-                "Text": "), with no bar. It draws a pointed-at or focused box's border in its own colour (",
+                "Text": "), with no bar, and thickens an inner box that has an inside to 2.6px under the pointer. It draws a pointed-at or focused box's border in its own colour (",
                 "Code": false
               },
               {
