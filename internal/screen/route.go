@@ -509,7 +509,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		x += k * chainLane
 		for _, q := range []int{r - 1, r, r + 1} {
-			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i && owner != -1-plans[i].arr || !runsOn(i, o)) {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i && (plans[i].arr < 0 || owner != -1-plans[i].arr) || !runsOn(i, o)) {
 				return 0, false
 			}
 		}
