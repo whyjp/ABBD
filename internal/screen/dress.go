@@ -114,7 +114,7 @@ func (d *Drawing) hubLines() {
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		ks := classNumbers(w.Lit, "r")
-		if warns(w.Kind) || len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
+		if len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
 			continue
 		}
 		w.Hue = hue

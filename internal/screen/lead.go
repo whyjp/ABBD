@@ -312,10 +312,11 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) pt {
 const badgeR, badgeShift = 8, 6
 
 // quiet draws every line of a view that has a lead in grey, its heads,
-// labels and dots too, so the lead is the one coloured way, except a
-// bypass, which keeps the warning colour (rule 11) at the weight of any
-// other line. A pointed-at shape still lights its lines in its own colour,
-// since each route keeps the colour paint gave it. The caller drops the
+// labels and dots too, a bypass's included, so the lead is the one
+// coloured way: three blind judges preferred that 3 to 0 over keeping the
+// bypass orange. The bypass keeps its open head, and pointing at its ink
+// lights its route in orange, since each route keeps the colour paint gave
+// it. The caller drops the
 // labels the grey leaves over another line's track (unlabelKin).
 func (d *Drawing) quiet() {
 	d.Quiet = true
@@ -323,18 +324,14 @@ func (d *Drawing) quiet() {
 	used := map[string]bool{}
 	for i := range d.Wires {
 		w := &d.Wires[i]
-		if !warns(w.Kind) {
-			w.Hue = n
-		}
+		w.Hue = n
 		if !w.Joins {
 			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
 		}
 	}
 	for i := range d.Dots {
-		if d.Dots[i].Hue != warnKey {
-			d.Dots[i].Hue = n
-		}
+		d.Dots[i].Hue = n
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
 }
