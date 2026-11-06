@@ -10,9 +10,9 @@ import (
 
 // The gate holds the drawings of a repository to what they owe, as its
 // .abbd/lint-debt.yaml records it. A view may keep the hard breaches it
-// owes and no more. Over every view, the weighed sum may not pass its
-// ceiling, and the placement debt may pass its ceiling by placementRise of
-// it, so a change that saves turns may move a few boxes.
+// owes and no more. Over every view, the weighed sum and the tees may not
+// pass their ceilings, and the placement debt may pass its ceiling by
+// placementRise of it, so a change that saves turns may move a few boxes.
 
 // placementRise is the share of its ceiling the placement debt may rise by,
 // as a divisor: 2%.
@@ -26,6 +26,10 @@ var gated = []struct {
 	slack func(ceiling int) int
 }{
 	{"weighed", func(t Totals) int { return t.Weighed }, func(int) int { return 0 }},
+	// tees count once in the weighed sum, as crossings, and a T reads as a
+	// branch, a relation that is not there, so they may not rise whatever
+	// else a change saves.
+	{"tees", func(t Totals) int { return t.Tees }, func(int) int { return 0 }},
 	{"placement", func(t Totals) int { return t.Placement }, func(c int) int { return c / placementRise }},
 	{"detours", func(t Totals) int { return t.Detours }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).
