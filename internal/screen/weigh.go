@@ -54,6 +54,9 @@ type cost struct {
 	// hard, seen, linted and crossed are what abbd lint reads from the
 	// drawn view (judge), crossed its crossings.
 	hard, seen, linted, crossed int
+	// clear counts the lines that turn where their ends stand in one
+	// column with a clear straight drop between (B1 allowing none).
+	clear int
 	// moved counts the placement breaches and folded chips.
 	moved int
 	// over is how far, in pixels, the drawing runs past one screen (S),
@@ -97,6 +100,11 @@ func (c *cost) judge(d Drawing) {
 		}
 	}
 	c.hard, c.moved, c.crossed = t.Hard, moved, t.Crossings
+	for _, b := range vl.Breaches {
+		if b.Criterion == "B1" && b.Allowed == 0 {
+			c.clear++
+		}
+	}
 	c.seen = t.Crossings + t.ExcessTurns + stepCrossings*(t.Steps+moved)
 	c.linted = t.Weighed + stepCrossings*moved
 }
@@ -195,17 +203,26 @@ const laneMoves = 1
 //
 // A laned drawing is kept only where it stands at most laneMoves more chips
 // or boxes off what they join, and weighs no more, than the drawing choose
-// would keep without it, however few its steps: seen weighs an excess turn
+// would keep with no lanes, however few its steps: seen weighs an excess turn
 // as one crossing and lint as stepCrossings. It is measured against that
 // drawing alone, not the least of every other drawing, since the lanes only
 // move chips, which moved counts, and a drawing choose would not keep
 // anyway costs a reader nothing; measured against the least, a gain in a
 // drawing that still loses moved the bound and flipped the view.
 //
-// A gathered drawing that crosses more than one drawn with neither lanes
-// nor gather is passed over: gathering changes what a chip stands for,
+// A gathered drawing is kept where it crosses no more than every drawing
+// with neither lanes nor gather: gathering changes what a chip stands for,
 // which no measure counts, so it should only spare crossings, never add
-// them to save turns. A drawing ranked by fold or entry that stands more
+// them to save turns. Where it crosses more than one of them, it is kept
+// only where it crosses no more than the drawing choose would keep without
+// it, and turns no more lines that could drop straight (B1 in a clear
+// column): it gives each box a chip of its own so that the box takes one
+// straight line from the frame, so a gathered drawing that saves turns
+// elsewhere by bending lines that had dropped straight reads worse than
+// its count says. Measured against the least alone, a gain in a drawing
+// choose would not keep flipped a view to a gathered one or away from it.
+//
+// A drawing ranked by fold or entry that stands more
 // boxes off what they join than the least of the plainly ranked ones is
 // passed over as well: a new ranking should take rows away, not move boxes.
 // It is passed over too unless it has fewer hard breaches than every
@@ -230,7 +247,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			continue
 		}
 		judge(v, &c)
-		if !t.laned {
+		if !t.laned && !t.gather {
 			if !b.admit(t, c) {
 				continue
 			}
@@ -240,7 +257,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		}
 		vs, cs, kept = append(vs, v), append(cs, c), append(kept, t)
 	}
-	k, without := pick(kept, cs, make([]bool, len(cs)))
+	k, without := pick(kept, cs, make([]bool, len(cs)), b.crossed)
 	if k < 0 {
 		var none T
 		return none
@@ -255,9 +272,9 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 		var c cost
 		if v, ok := draw(bt, &c); ok {
 			judge(v, &c)
-			pass := b.admit(bt, c)
-			if bt.laned {
-				pass = without < 0 || lanedFits(c, cs[without])
+			pass := without < 0 || fits(bt, c, cs[without], b.crossed)
+			if !bt.laned && !bt.gather {
+				pass = b.admit(bt, c)
 			}
 			if pass && !cs[k].beats(c) {
 				best = v
@@ -268,36 +285,48 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 }
 
 // pick is which of the drawings of costs cs, those out left out, choose
-// keeps, and which it would keep without that one where it is laned, or -1.
-// Ties go to the earlier drawing.
-func pick(ts []tactic, cs []cost, out []bool) (int, int) {
+// keeps, and which it would keep without that one where it is laned or
+// gathered, or -1. For a laned drawing that is the one it would keep with
+// no lanes: measured against another laned drawing, each laned one in a
+// chain could move laneMoves more chips than the last. least is the fewest
+// crossings of a drawing with neither lanes nor gather. Ties go to the
+// earlier drawing.
+func pick(ts []tactic, cs []cost, out []bool, least int) (int, int) {
 	w := -1
 	for i, c := range cs {
 		if !out[i] && (w < 0 || c.beats(cs[w])) {
 			w = i
 		}
 	}
-	if w < 0 || !ts[w].laned {
+	if w < 0 || !ts[w].laned && !ts[w].gather {
 		return w, -1
 	}
 	out[w] = true
-	r, rr := pick(ts, cs, out)
+	r, rr := pick(ts, cs, out, least)
 	out[w] = false
-	if r < 0 || lanedFits(cs[w], cs[r]) {
-		return w, r
+	o := r
+	if ts[w].laned && r >= 0 && ts[r].laned {
+		o = rr
+	}
+	if o < 0 || fits(ts[w], cs[w], cs[o], least) {
+		return w, o
 	}
 	return r, rr
 }
 
-// lanedFits says a laned drawing of cost c may take the place of one of
-// cost o.
-func lanedFits(c, o cost) bool {
-	return c.moved <= o.moved+laneMoves && c.linted-stepCrossings*c.moved <= o.linted-stepCrossings*o.moved
+// fits says a drawing of cost c drawn with t, laned or gathered, may take
+// the place of one of cost o, where least is the fewest crossings of a
+// drawing with neither lanes nor gather.
+func fits(t tactic, c, o cost, least int) bool {
+	if t.laned && (c.moved > o.moved+laneMoves || c.linted-stepCrossings*c.moved > o.linted-stepCrossings*o.moved) {
+		return false
+	}
+	return !t.gather || c.crossed <= least || c.crossed <= o.crossed && c.clear <= o.clear
 }
 
 // gates are the least costs, over the drawings choose kept a place for with
-// a tactic that neither gathers nor ranks anew, that a drawing with one of
-// those tactics is measured against.
+// a tactic that neither lanes, gathers nor ranks anew, that a drawing with
+// one of those tactics is measured against.
 type gates struct {
 	crossed, ranked, hard, past int
 }
@@ -308,20 +337,15 @@ func newGates() gates {
 
 // admit says whether choose may keep a drawing of cost c drawn with t, and,
 // where it may, lowers b by c where t is the plain kind of tactic the bound
-// is over. Laned drawings are measured by lanedFits instead.
+// is over. Laned and gathered drawings are measured by fits instead.
 func (b *gates) admit(t tactic, c cost) bool {
 	if (t.fold || t.entry) && (c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past) {
-		return false
-	}
-	if t.gather && c.crossed > b.crossed {
 		return false
 	}
 	if !t.fold && !t.entry {
 		b.ranked, b.hard, b.past = min(b.ranked, c.moved), min(b.hard, c.hard), min(b.past, c.past())
 	}
-	if !t.gather {
-		b.crossed = min(b.crossed, c.crossed)
-	}
+	b.crossed = min(b.crossed, c.crossed)
 	return true
 }
 
