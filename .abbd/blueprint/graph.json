@@ -20308,7 +20308,7 @@
                 "Code": true
               },
               {
-                "Text": "), the colour hover lights its lines in, and darkens a filled box instead. It also draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
+                "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
                 "Code": false
               }
             ]
