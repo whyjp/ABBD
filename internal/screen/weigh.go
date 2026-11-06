@@ -203,7 +203,7 @@ const laneMoves = 1
 //
 // A laned drawing is kept only where it stands at most laneMoves more chips
 // or boxes off what they join, and weighs no more, than the drawing choose
-// would keep without it, however few its steps: seen weighs an excess turn
+// would keep with no lanes, however few its steps: seen weighs an excess turn
 // as one crossing and lint as stepCrossings. It is measured against that
 // drawing alone, not the least of every other drawing, since the lanes only
 // move chips, which moved counts, and a drawing choose would not keep
@@ -286,8 +286,11 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 
 // pick is which of the drawings of costs cs, those out left out, choose
 // keeps, and which it would keep without that one where it is laned or
-// gathered, or -1. least is the fewest crossings of a drawing with neither
-// lanes nor gather. Ties go to the earlier drawing.
+// gathered, or -1. For a laned drawing that is the one it would keep with
+// no lanes: measured against another laned drawing, each laned one in a
+// chain could move laneMoves more chips than the last. least is the fewest
+// crossings of a drawing with neither lanes nor gather. Ties go to the
+// earlier drawing.
 func pick(ts []tactic, cs []cost, out []bool, least int) (int, int) {
 	w := -1
 	for i, c := range cs {
@@ -301,8 +304,12 @@ func pick(ts []tactic, cs []cost, out []bool, least int) (int, int) {
 	out[w] = true
 	r, rr := pick(ts, cs, out, least)
 	out[w] = false
-	if r < 0 || fits(ts[w], cs[w], cs[r], least) {
-		return w, r
+	o := r
+	if ts[w].laned && r >= 0 && ts[r].laned {
+		o = rr
+	}
+	if o < 0 || fits(ts[w], cs[w], cs[o], least) {
+		return w, o
 	}
 	return r, rr
 }

@@ -74,3 +74,14 @@ func TestAGatheredDrawingKeepsTheStraightDropsOfTheOneItReplaces(t *testing.T) {
 		t.Errorf("a gather crossing more than the drawing it replaces: picked %d, want the median one", got)
 	}
 }
+
+// Every laned drawing is measured against the drawing choose would keep
+// with no lanes, not against another laned one: in a chain, each could move
+// one chip more than the last.
+func TestALanedDrawingIsNotMeasuredAgainstAnotherLanedOne(t *testing.T) {
+	ts := []tactic{{}, {laned: true}, {laned: true, median: true}}
+	plain, one, two := drawnAt(40, 32, 2, 0), drawnAt(30, 31, 3, 0), drawnAt(20, 30, 4, 0)
+	if got := pickOf(ts, []cost{plain, one, two}); got != 1 {
+		t.Errorf("lanes moving two chips more than the plain drawing, one more than other lanes: picked %d, want the laned one moving one more", got)
+	}
+}
