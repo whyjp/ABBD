@@ -77,7 +77,9 @@ func (s shape) is(c string) bool { return strings.Contains(" "+s.class+" ", " "+
 // stroke is one subpath of a drawn line. A bundle is one line drawn as
 // several subpaths; they share a group.
 type stroke struct {
-	group         int
+	// path is the index of the drawn path.w the stroke is a subpath of,
+	// and group its whole data-net.
+	path, group   int
 	class, origin string
 	pts           []fpt
 }
@@ -87,7 +89,7 @@ type sheet struct {
 	frame         *frect
 	shapes        []shape
 	strokes       []stroke
-	groups        int
+	paths, groups int
 	markers       []fpt
 	junctions     []junction
 	counts        []countLabel
@@ -201,8 +203,9 @@ func readSVG(src string) (sheet, error) {
 					}
 					last = g
 					for _, p := range parts {
-						s.strokes = append(s.strokes, stroke{group: g, class: attr(t, "class"), origin: attr(t, "data-origin"), pts: p})
+						s.strokes = append(s.strokes, stroke{path: s.paths, group: g, class: attr(t, "class"), origin: attr(t, "data-origin"), pts: p})
 					}
+					s.paths++
 				}
 			case "circle":
 				switch {
