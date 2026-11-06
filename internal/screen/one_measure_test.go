@@ -39,8 +39,12 @@ func TestTheGateWeighsAViewAsTheChooserRanksIt(t *testing.T) {
 	if len(all) < 2 {
 		t.Fatalf("%d drawings judged, want the view drawn more than one way", len(all))
 	}
+	// The chooser counts a folded chip as moved, as lint's placement debt
+	// does not, so the kept drawing's moved is read the chooser's way.
+	var k cost
+	k.judge(kept.Drawing)
 	for _, d := range all {
-		if d.hard <= got.Totals.Hard && d.moved <= got.Totals.Placement && d.weighed < got.Totals.Weighed {
+		if d.hard <= k.hard && d.moved <= k.moved && d.weighed < got.Totals.Weighed {
 			t.Errorf("the gate weighs the kept drawing %d, and a drawing the chooser passed over %d", got.Totals.Weighed, d.weighed)
 		}
 	}
