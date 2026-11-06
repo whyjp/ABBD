@@ -51,9 +51,8 @@ func TestAcceptWays(t *testing.T) {
 }
 
 // With ABBD_ACCEPT_SELF set to a directory, the pages of this repository's
-// own state go there, with its views' lint table as lint.tsv in the
-// columns TestLintFixtures writes. The fixtures hold units only, so the
-// stored stack's numbered zones show only on these pages.
+// own state go there. The fixtures hold units only, so the stored stack's
+// numbered zones show only on these pages.
 func TestAcceptSelfPages(t *testing.T) {
 	dir := os.Getenv("ABBD_ACCEPT_SELF")
 	if dir == "" {
@@ -63,8 +62,7 @@ func TestAcceptSelfPages(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	m := Build(in)
-	pages, err := Pages(m)
+	pages, err := Pages(Build(in))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,20 +73,5 @@ func TestAcceptSelfPages(t *testing.T) {
 		if err := os.WriteFile(filepath.Join(dir, f), b, 0o644); err != nil {
 			t.Fatal(err)
 		}
-	}
-	vs, err := Lint(m, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	rows := []string{"view\t" + strings.Join(lintColumns(), "\t")}
-	for _, v := range vs {
-		cells := []string{v.View}
-		for _, n := range lintRow(v) {
-			cells = append(cells, fmt.Sprint(n))
-		}
-		rows = append(rows, strings.Join(cells, "\t"))
-	}
-	if err := os.WriteFile(filepath.Join(dir, "lint.tsv"), []byte(strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
-		t.Fatal(err)
 	}
 }

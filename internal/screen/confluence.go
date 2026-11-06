@@ -273,7 +273,7 @@ func (v roadView) cost(ways [][]pt) roadCost {
 				switch d := abs(a.at - b.at); {
 				case d == 0 && a.style != b.style && o > 0:
 					c.clash += o
-				case d > 0 && d <= besideRoom && o > 0:
+				case d > 0 && d <= besideGap && o > 0:
 					c.beside += o
 				}
 				continue

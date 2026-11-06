@@ -31,6 +31,12 @@ counts. The zone title cases read the overview pages, and this repository's
 own state, rendered into OUT/self-pages (TestAcceptSelfPages), since only it
 stores the stack whose numbered zones the fixtures lack; a checkout without
 that test skips the case.
+
+The busy cases measure how a drawing reads at rest, before a hover tells
+its lines apart, as lint's parallel_ink, segments, lines and fork_levels
+columns do from the same geometry: ink of two drawn paths running side by
+side, turns per line and the tracks one fork splits off. Their targets
+come from the user's drawings user-07 and user-08, counted by eye.
 """
 import csv
 import html
@@ -57,10 +63,6 @@ GITX = 'box "internal/gitx" (MOD-0022)'
 APP_SHELL = 'box "app-shell" (MOD-0073)'
 M81 = "orca MOD-0081 shared types and schemas"
 RPC = 'box "shared/rpc-contract" (MOD-0090)'
-RIPGREP, SEARCHER = 'box "ripgrep" (MOD-0001)', 'box "grep-searcher" (MOD-0012)'
-PSTACK, S41, F01, SELF = "pstack overview", "self MOD-0041 internal/store", "self FEAT-0001 /abbd", "self overview"
-BESIDE = "px of ink running beside other ink within 10px, the same way, not on it"
-BENDS = "traced bends per line, x10"
 
 
 def read(path):
@@ -549,26 +551,154 @@ def titles_meet_ink(t, view):
     return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
 
 
-def rest(col):
-    """The lint table's column for the view, which says what the drawing shows at
-    rest (rest.go): summed over every fixture view for a total, or read off the
-    overview of this repository's own state (TestAcceptSelfPages's lint.tsv).
-    None where the checkout's table has no such column."""
+BESIDE = 10
+
+
+def drawn_of(t, view):
+    """The drawn map of a fixture view, or of this repository's own overview
+    (SELF_STATE), None when the checkout writes no such page."""
+    if view != SELF_STATE:
+        return page_map(t, view)
+    page = os.path.join(t.out, "self-pages", "index.html")
+    if not os.path.exists(page):
+        return None
+    if page not in DRAWN:
+        DRAWN[page] = drawn(overview_svg(page))
+    return DRAWN[page]
+
+
+def pieces(segs):
+    """A path's straight pieces: its stretches, each run of them one way
+    merged."""
+    out = []
+    for a, b in segs:
+        if a == b:
+            continue
+        if out and out[-1][1] == a and heading(*out[-1]) == heading(a, b):
+            out[-1] = (out[-1][0], b)
+        else:
+            out.append((a, b))
+    return out
+
+
+def side_by_side(paths):
+    """Px that pieces of two different paths run along one another, flat or
+    upright, no more than BESIDE apart, each pair of pieces once."""
+    n = 0
+    for ax in (1, 0):
+        o = 1 - ax
+        rs = sorted((a[ax], min(a[o], b[o]), max(a[o], b[o]), i) for i, ps in enumerate(paths) for a, b in ps if a[ax] == b[ax])
+        for k, (at, lo, hi, i) in enumerate(rs):
+            for at2, lo2, hi2, j in rs[k + 1:]:
+                if at2 - at > BESIDE:
+                    break
+                if i != j:
+                    n += max(0, min(hi, hi2) - max(lo, lo2))
+    return n
+
+
+def busy(fn):
+    """fn over the pieces of every drawn path.w of the view, or of every
+    fixture view."""
     def m(t, view):
-        if view == SELF_STATE:
-            p = os.path.join(t.out, "self-pages", "lint.tsv")
-            rows = {r["view"]: r for r in read(p)} if os.path.exists(p) else {}
-            return int(rows["overview"][col]) if col in rows.get("overview", {}) else None
-        rows = list(t.views.values()) if view == EVERY else [t.views[t.view(view)]]
-        return sum(int(r[col]) for r in rows) if col in rows[0] else None
+        got = [drawn_of(t, v) for v in views_of(t, view)]
+        if None in got:
+            return None
+        return round(sum(fn([pieces(segs) for _, segs in d.wires]) for d in got))
     return m
 
 
-def per_line(col):
-    """The lint table's column for the view per traced line, times 10."""
+def parallel_ink(t, view):
+    """Px of drawn ink that runs beside or on another drawn path, the same
+    way, within BESIDE: lines a reader sees doubled that a hand drawing
+    merges into one, or keeps apart."""
+    return busy(side_by_side)(t, view)
+
+
+def segments(t, view):
+    """Straight pieces of drawn ink."""
+    return busy(lambda paths: sum(map(len, paths)))(t, view)
+
+
+def bent(pts):
+    """How often a polyline turns."""
+    s = [heading(a, b) for a, b in zip(pts, pts[1:]) if a != b]
+    return sum(1 for h, g in zip(s, s[1:]) if h != g)
+
+
+def bends_per_line(t, view):
+    """Traced turns per line, in hundredths; on this repository's own
+    overview, the turns of each route the page lights."""
+    if view == SELF_STATE:
+        d = drawn_of(t, view)
+        if d is None:
+            return None
+        lines = [bent(pts) for _, _, pts, _ in d.routes]
+    else:
+        lines = [bent(w["pts"]) for v in views_of(t, view) for w in t.ways if w["view"] == v]
+    return round(100 * sum(lines) / max(1, len(lines)))
+
+
+def flat_near(pts, last):
+    """The y of the flat stretch nearest the polyline's last point, or its first."""
+    s = list(zip(pts, pts[1:]))
+    for a, b in reversed(s) if last else s:
+        if a[1] == b[1] and a[0] != b[0]:
+            return a[1]
+    return None
+
+
+def rows_of(rects):
+    """{rect: row} as busy.go bands boxes and chips: a row is a run of them,
+    by top, whose heights overlap."""
+    row, n, bottom = {}, 0, float("-inf")
+    for r in sorted(rects, key=lambda r: r[1]):
+        if r[1] >= bottom:
+            n += 1
+        bottom = max(bottom, r[1] + r[3])
+        row[r] = n
+    return row
+
+
+def fork_levels(t, view):
+    """Over every fork, the flat tracks its branches turn onto past the
+    first: a fork is the lines of one kind between one place (by name and
+    rect, as chips share names) and two or more places of one row, boxes
+    and chips banded together, the track being the flat stretch nearest
+    that row."""
+    n = 0
+    for v in views_of(t, view):
+        got = [w for w in t.ways if w["view"] == v]
+        row = rows_of({r for w in got for r in w["rects"] if r})
+        forks = {}
+        for w in got:
+            for out in (True, False):
+                (place, at), (far, r) = [*zip((w["from"], w["to"]), w["rects"])][::1 if out else -1]
+                if r is None:
+                    continue
+                f = forks.setdefault((place, at, w["kind"], row[r], out), (set(), set()))
+                f[0].add(far)
+                y = flat_near(w["pts"], out)
+                if y is not None:
+                    f[1].add(y)
+        n += sum(len(ys) - 1 for fars, ys in forks.values() if len(fars) > 1 and len(ys) > 1)
+    return n
+
+
+def crossings(*names):
+    """Points where two traced lines cross, flat over upright, inside both;
+    with names, only crossings of a line from names[0] to one of the rest."""
     def m(t, view):
-        n, lines = rest(col)(t, view), rest("lines")(t, view)
-        return None if n is None or not lines else round(10 * n / lines)
+        got = [w for w in t.ways if w["view"] == t.view(view)]
+        mine = [w for w in got if w["from"] == names[0] and w["to"] in names[1:]] if names else got
+        return len({p for a in mine for b in got if b is not a and (a["from"], a["to"]) != (b["from"], b["to"])
+                    for s in stretches(a) for q in stretches(b) for p in [crossing(s, q)] if p})
+    return m
+
+
+def turns_of(frm, *tos):
+    def m(t, view):
+        return sum(turns(w) for to in tos for w in ways(t, view, frm, to))
     return m
 
 
@@ -580,6 +710,18 @@ def hover(key):
         return sum(len(r[key]) for r in t.hover)
     return m
 
+
+EYE = "user 2026-11-06 (eye review of main)"
+PARALLEL = "px of ink beside or on another drawn path within 10px, the same way"
+BENDS = "traced turns per line, in hundredths"
+FORKS = "flat tracks past the first that one fork's branches turn onto"
+RIPGREP, SEARCHER = 'box "ripgrep" (MOD-0001)', 'box "grep-searcher" (MOD-0012)'
+EXEMPLAR_BENDS = "target 1.00, between user-08's about 0.56 (9 turns, 16 lines) and user-07's about 1.45 (32, 22), counted by eye"
+Q_PS = "\"수직수평-나란히 배치되는 선을 가급적 병합하도록한 지침이 많이 누락되어 표현되다보니 선이 너무 많습니다\""
+Q_RG_LEFT = "\"ripgrep -> grep-searcher / grep-matcher 로 가는 선은 좌측으로 우회했다면 깔끔하게 표현되었을 것\""
+Q_R72 = "\"renderer/lib 이나 중앙으로 집중되는 선들이 복잡하게 얽혀있습니다 ... 심각한 수준 ... 불필요한 꺾임 또한 크게 발생\""
+Q_S41 = "\"불필요한 꺾임이 많이 보입니다 불필요한 교차도 발생\""
+Q_SELF = "\"수평수직 병합이 덜 되어 복잡, 꺾임이 많음\""
 
 Case = namedtuple("Case", "id source view measure fn target note")
 
@@ -663,41 +805,36 @@ CASES = [
          titles_meet_ink, 0, "buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236"),
     Case("title-meets-ink", "today (zones, #112)", "every fixture overview", "zone titles whose glyph box meets line ink",
          titles_meet_ink, 0, "the same count over every fixture's overview"),
-    Case("pstack-beside", "user 2026-11-06 (pstack/index.html)", PSTACK, BESIDE, rest("beside"), 0,
-         "수직수평-나란히 배치되는 선을 가급적 병합하도록 한 지침이 많이 누락되어 표현되다 보니 선이 너무 많습니다"),
-    Case("pstack-bends", "user 2026-11-06 (pstack/index.html)", PSTACK, BENDS, per_line("traced_bends"), 20,
-         "the same view; rule 16's median of 2 bends per line, as a mean"),
-    Case("rg-beside", "user 2026-11-06 (ripgrep/index.html)", RG, BESIDE, rest("beside"), 0,
-         "the overview the user found busy with lines side by side"),
-    Case("rg-ripgrep-around", "user 2026-11-06 (ripgrep/index.html)", RG,
-         "excess turns, jogs and turn-backs of ripgrep -> grep-searcher and ripgrep -> grep-matcher",
-         lambda t, v: on(knots, RIPGREP, SEARCHER)(t, v) + on(knots, RIPGREP, MATCHER)(t, v), 0,
-         "ripgrep -> grep-searcher / grep-matcher 로 가는 선은 좌측으로 우회했다면 깔끔하게 표현되었을 것"),
-    Case("rg-regex-matcher-steps", "user 2026-11-06 (ripgrep/index.html)", RG, "jogs plus turns past 2 of grep-regex -> grep-matcher",
-         on(steps, REGEX, MATCHER), 0, "grep-regex -> grep-matcher 로 가는 선의 계단이 불필요하게 발생"),
-    Case("s98-beside", "user 2026-11-06 (orca/MOD-0098.html)", S98, BESIDE, rest("beside"), 0,
-         "수평-수직 선이 인접하게 진행할 때 병합하다 갈라지는 표현이 필요"),
-    Case("r72-beside", "user 2026-11-06 (orca/MOD-0072.html)", R72, BESIDE, rest("beside"), 0,
-         "renderer/lib 이나 중앙으로 집중되는 선들이 복잡하게 얽혀있습니다 ... 심각한 수준"),
-    Case("r72-bends", "user 2026-11-06 (orca/MOD-0072.html)", R72, BENDS, per_line("traced_bends"), 20,
-         "불필요한 꺾임 또한 크게 발생"),
-    Case("s41-bends", "user 2026-11-06 (self/MOD-0041.html)", S41, BENDS, per_line("traced_bends"), 20,
-         "불필요한 꺾임이 많이 보입니다"),
-    Case("s41-crossings", "user 2026-11-06 (self/MOD-0041.html)", S41, "crossings, a tee counted as one", rest("crossings"), 0,
-         "불필요한 교차도 발생"),
-    Case("f01-fork-levels", "user 2026-11-06 (self/FEAT-0001.html)", F01,
-         "heights past the first at which one place's lines into one row turn off their stem", rest("fork_levels"), 0,
-         "포크로 내려가 갈라지는 선이 포크의 수평이 일정하지 못해 지저분해 보입니다"),
-    Case("self-beside", "user 2026-11-06 (self/index.html)", SELF, BESIDE, rest("beside"), 0,
-         "수평수직 병합이 덜 되어 복잡, 꺾임이 많음"),
-    Case("self-bends", "user 2026-11-06 (self/index.html)", SELF, BENDS, per_line("traced_bends"), 20, "the same view's bends"),
-    Case("state-beside", "user 2026-11-06 (the repo's own overview)", SELF_STATE, BESIDE, rest("beside"), 0,
-         "수평수직 병합이 덜 되어 복잡, 꺾임이 많음"),
-    Case("state-bends", "user 2026-11-06 (the repo's own overview)", SELF_STATE, BENDS, per_line("traced_bends"), 20,
-         "the same view's bends"),
-    Case("beside", "user 2026-11-06", EVERY, BESIDE, rest("beside"), 0, "the same measure over every fixture view"),
-    Case("fork-levels", "user 2026-11-06", EVERY, "fork heights past the first, as f01-fork-levels", rest("fork_levels"), 0,
-         "the same measure over every fixture view"),
+    Case("ps-parallel", EYE, "pstack overview", PARALLEL, parallel_ink, 7 * 61,
+         Q_PS + "; lines 12 and 21 run 24px on one track, 17 and 41 40px; target 7px a line, user-07's, over 61 lines (user-08: 0)"),
+    Case("ps-bends", EYE, "pstack overview", BENDS, bends_per_line, 100, Q_PS + "; " + EXEMPLAR_BENDS),
+    Case("rg-left-turns", EYE, RG, "turns of ripgrep -> grep-searcher and grep-matcher",
+         turns_of(RIPGREP, SEARCHER, MATCHER), 4,
+         Q_RG_LEFT + "; each leaves at 578, joins grep's trunk at 428 between the rows and turns 4 times; round the left, 2 each"),
+    Case("rg-left-crossings", EYE, RG, "crossings of ripgrep -> grep-searcher and grep-matcher",
+         crossings(RIPGREP, SEARCHER, MATCHER), 0, Q_RG_LEFT + "; the trunk at 428 runs through the middle of the drawing"),
+    Case("rg-left-sideways", EYE, RG, "px ripgrep -> grep-searcher and grep-matcher run sideways",
+         lambda t, v: x_travel(RIPGREP, SEARCHER)(t, v) + x_travel(RIPGREP, MATCHER)(t, v), 505,
+         "guard: 505 is the x span between their ends; the way round the left must not add sideways for its fewer turns"),
+    Case("rg-regex-steps", EYE, RG, "steps of grep-regex -> grep-matcher", on(steps, REGEX, MATCHER), 0,
+         "\"grep-regex -> grep-matcher 로 가는 선의 계단이 불필요하게 발생\"; 483,340 down to 372, left to 448, down to 508, left to 376, down: 4 turns"),
+    Case("s98-parallel", EYE, S98, PARALLEL, parallel_ink, 7 * 37,
+         "\"수평-수직 선이 인접하게 진행할 때 병합하다 갈라지는 표현이 필요\"; target 7px a line over 37 lines"),
+    Case("r72-bends", EYE, R72, BENDS, bends_per_line, 100, Q_R72 + "; " + EXEMPLAR_BENDS),
+    Case("r72-parallel", EYE, R72, PARALLEL, parallel_ink, 7 * 43, Q_R72 + "; target 7px a line over 43 lines"),
+    Case("s41-bends", EYE, "self MOD-0041 internal/store", BENDS, bends_per_line, 100, Q_S41 + "; " + EXEMPLAR_BENDS),
+    Case("s41-crossings", EYE, "self MOD-0041 internal/store", "points where two traced lines cross", crossings(), 2,
+         Q_S41 + "; target 0.2 a line, the exemplars' (user-08 about 1 in 16 lines, user-07 about 8 in 22), over 11 lines"),
+    Case("f01-fork-levels", EYE, "self FEAT-0001 /abbd", FORKS, fork_levels, 0,
+         "\"포크로 내려가 갈라지는 선이 포크의 수평이 일정하지 못해 지저분해 보입니다\"; the forks into the bottom chips split at y=362, 378 and 386"),
+    Case("self-parallel", EYE, "self overview", PARALLEL, parallel_ink, 7 * 37, Q_SELF + "; target 7px a line over 37 lines"),
+    Case("self-bends", EYE, "self overview", BENDS, bends_per_line, 100, Q_SELF + "; " + EXEMPLAR_BENDS),
+    Case("repo-parallel", EYE, SELF_STATE, PARALLEL, parallel_ink, 7 * 39,
+         Q_SELF + " (.abbd/blueprint/index.html); target 7px a line over its 39 routes"),
+    Case("repo-bends", EYE, SELF_STATE, "turns per lit route, in hundredths", bends_per_line, 100,
+         Q_SELF + " (.abbd/blueprint/index.html); the page's routes, as it stores no trace; " + EXEMPLAR_BENDS),
+    Case("parallel-ink", EYE, EVERY, PARALLEL, parallel_ink, 0, "measured, not a goal of its own yet: the same count over every fixture view"),
+    Case("fork-levels", EYE, EVERY, FORKS, fork_levels, 0, "the same count over every fixture view"),
     Case("hover-cut", "today", "every shot page", "shoot.py cut", hover("cut"), 0, "guard: a lit route stops partway"),
     Case("hover-stray", "today", "every shot page", "shoot.py stray", hover("stray"), 0, "guard: a lit box no lit line reaches"),
     Case("hover-mixed", "today", "every shot page", "shoot.py mixed", hover("mixed"), 0, "guard: one lit route of two colours"),

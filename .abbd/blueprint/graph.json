@@ -2015,6 +2015,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/busy.go",
         "internal/screen/card.go",
         "internal/screen/confluence.go",
         "internal/screen/dress.go",
@@ -2038,7 +2039,6 @@
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
-        "internal/screen/rest.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
@@ -23606,6 +23606,14 @@
               },
               {
                 "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy. ",
+                "Code": false
+              },
+              {
+                "Text": "busy.go",
+                "Code": true
+              },
+              {
+                "Text": " measures, ungated, how busy a drawing reads at rest: the parallel ink, where a straight piece of one wire runs within 10px of another wire's in the same direction, the straight pieces drawn, the traced lines, and the fork levels, the flat-track heights a fork into one row takes past its first. ",
                 "Code": false
               },
               {
