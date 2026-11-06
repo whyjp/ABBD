@@ -1590,7 +1590,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	var out []drawn
 	nets := 0
 	// A line's own part: from its start, or where it leaves its departure
-	// bus, to its end, or where it joins its arrival bus.
+	// bus, to its end, or where it joins its arrival bus. Lines of one kind
+	// whose own parts run the same way, as two lines of one pair of buses
+	// stepping between them at the pair's x do, share one path, so neither
+	// hides the other from the pointer.
+	own := map[string]int{}
 	for i := range reqs {
 		p := &plans[i]
 		if p.onto {
@@ -1638,7 +1642,14 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		if len(pts) < 2 || pts[0] == pts[len(pts)-1] {
 			continue
 		}
-		out = append(out, drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{st}, joins: joins, back: back(i)})
+		d := polyline(pts)
+		key := fmt.Sprint(d, reqs[i].kind, joins, back(i))
+		if o, ok := own[key]; ok {
+			out[o].reqs, out[o].starts = append(out[o].reqs, i), append(out[o].starts, st)
+			continue
+		}
+		own[key] = len(out)
+		out = append(out, drawn{D: d, parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{st}, joins: joins, back: back(i)})
 	}
 	// Departure buses: one stub out of the box, the trunk down through the
 	// rows its lines share, and a track in each gap where some leave it.

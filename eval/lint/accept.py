@@ -22,8 +22,10 @@ screenshot in D:/abbd-eval/exemplars (user-NN) or from the day's review
 column and the commit they were measured on (git describe --dirty).
 """
 import csv
+import html
 import json
 import os
+import re
 import subprocess
 import sys
 from collections import namedtuple
@@ -56,6 +58,7 @@ class Tables:
         for w in self.ways:
             w["pts"] = [tuple(float(c) for c in p.split(",")) for p in w["points"].split()]
             w["rects"] = [tuple(float(c) for c in w[k].split(",")) if w[k] else None for k in ("from_rect", "to_rect")]
+        self.pages = os.path.join(out, "pages")
         self.hover = None
         if hover:
             with open(os.path.join(out, "shots", "findings.json"), encoding="utf8") as f:
@@ -211,6 +214,49 @@ def tees(t, view):
     return len(seen)
 
 
+WIRE = re.compile(r'<path class="w ([^" ]+)[^"]*" d="([^"]*)"([^>]*)>(?:<title>([^<]*)</title>)?')
+
+
+def ink(d):
+    """The straight stretches of a path's data."""
+    out, at = [], None
+    for c, x, y in re.findall(r"([ML])\s*(-?[\d.]+)[ ,](-?[\d.]+)", d):
+        p = (float(x), float(y))
+        if c == "L" and at:
+            out.append((at, p))
+        at = p
+    return out
+
+
+def along(s, t):
+    """How far two straight stretches run on one another."""
+    (a, b), (c, d) = s, t
+    for ax in (0, 1):
+        if a[ax] == b[ax] == c[ax] == d[ax]:
+            o = 1 - ax
+            return max(0, min(max(a[o], b[o]), max(c[o], d[o])) - max(min(a[o], b[o]), min(c[o], d[o])))
+    return 0
+
+
+def doubled(fixture, unit):
+    """Pairs of wires of one kind, not of one bundle (data-net), whose ink
+    runs on one another, where neither names every line of the other, so
+    the one drawn on top hides the other's lines from the pointer."""
+    def m(t, view):
+        t.view(view)
+        with open(os.path.join(t.pages, fixture, unit + ".html"), encoding="utf8") as f:
+            page = f.read()
+        at = page.index(f'id="m-{unit}"')
+        ws = []
+        for kind, d, rest, title in WIRE.findall(page[at:page.index("</section>", at)]):
+            net = re.search(r'data-net="(\d+)"', rest)
+            ws.append((kind, net and net[1], ink(d), set(html.unescape(title).split("\n"))))
+        return sum(1 for a, b in combinations(ws, 2)
+                   if a[0] == b[0] and (a[1] is None or a[1] != b[1]) and not (a[3] <= b[3] or b[3] <= a[3])
+                   and any(along(s, q) > 0 for s in a[2] for q in b[2]))
+    return m
+
+
 def hover(key):
     """Findings of this kind shoot.py records over every fixture page it hovers."""
     def m(t, view):
@@ -250,6 +296,8 @@ CASES = [
          on(knots, MOBILE), 0, "the mobile/ entry's lines stair down through the middle"),
     Case("s98-mobile-beside", "user-13, user-14", S98, "px two stems from chip ← mobile/ run beside each other within 16px",
          beside(MOBILE), 0, "the x2 and x5 stems run as two parallel verticals; one stem, or apart"),
+    Case("s98-doubled", "review-112", S98, "pairs of wires of one kind, not one bundle, drawn on one another",
+         doubled("orca", "MOD-0098"), 0, "wires 37 and 39 both draw M626 526 L626 558, so the pointer never reaches 37"),
     Case("s98-native", "user-11, user-12", S98, "excess turns, jogs and turn-backs of lines at chip ← native/",
          on(knots, NATIVE), 0, "guard: the native/ entry now drops straight into desktop main process"),
     Case("s98-host-jogs", "user-15", S98, "jogs of lines at @orca/process-host",
