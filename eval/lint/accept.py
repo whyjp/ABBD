@@ -307,7 +307,8 @@ def drawn(svg):
     """Routes as (r ids, e ids, turning points, heads), a head being the tip and
     unit heading of a #t- chevron; wires as (r ids, stretches); junction dots
     as (e ids, centre, radius); hop badges as (r ids, centre, radius); label,
-    count and zone title text and chips as x,y,w,h boxes."""
+    count and zone title text as x,y,w,h boxes, and chips as (p ids, box), a
+    chip's p id naming the place a route's e id names."""
     routes = []
     for cls, body in re.findall(r'<g class="route ([^"]*)"[^>]*>(.*?)</g>', svg):
         d = re.search(r'<path class="way" d="([^"]*)"', body)[1]
@@ -325,8 +326,8 @@ def drawn(svg):
         x, y = float(re.search(r'x="' + NUM, attrs)[1]), float(re.search(r'y="' + NUM, attrs)[1])
         w = sum(11 if ord(ch) > 0x2e80 else 6.6 for ch in html.unescape(words))
         texts.append((x - w / 2 if 'text-anchor="middle"' in attrs else x, y - 8.8, w, 11))
-    chips = [tuple(float(v) for v in r) for r in re.findall(
-        r'<g class="port[^"]*"[^>]*>(?:<title>[^<]*</title>)?<rect x="' + NUM + '" y="' + NUM + '" width="' + NUM + '" height="' + NUM + '"', svg)]
+    chips = [(tokens(cls, "p"), tuple(float(v) for v in r)) for cls, *r in re.findall(
+        r'<g class="(port[^"]*)"[^>]*>(?:<title>[^<]*</title>)?<rect x="' + NUM + '" y="' + NUM + '" width="' + NUM + '" height="' + NUM + '"', svg)]
     return Drawn(routes, wires, dots, badges, texts, chips)
 
 
@@ -385,7 +386,8 @@ def chevron(tip, heading):
 
 def head_gaps(t, view):
     """(tip, gap) for every drawn arrowhead: the least distance from its tip or
-    base to ink that is not its own route's line or the chip it points into.
+    base to ink that is not its own route's line or a chip at either end of
+    its route, the chip it points into known by its place, not its distance.
     Lines and other heads count by their centre line, junction dots of other
     nets and every hop badge by their disc, labels, counts and zone titles by
     a text box estimated at 11px type (11px a CJK glyph, 6.6px any other),
@@ -404,7 +406,8 @@ def head_gaps(t, view):
             gaps += [max(0, seg_point(*m, c) - r) for e2, c, r in d.dots if not es <= e2 for m in me]
             gaps += [max(0, seg_point(*m, c) - r) for _, c, r in d.badges for m in me]
             gaps += [seg_rect(m, r) for r in d.texts for m in me]
-            gaps += [seg_rect(m, r) for r in d.chips if seg_rect(me[0], r) > 1 for m in me]
+            own = {"p" + e[1:] for e in es}
+            gaps += [seg_rect(m, r) for ps, r in d.chips if not ps & own for m in me]
             out.append((tip, min(gaps, default=99)))
     return out
 
