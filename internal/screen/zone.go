@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"math"
 	"path"
 	"slices"
 	"strconv"
@@ -53,6 +54,10 @@ const (
 	// zoneLine is how far a title's second line sits below its first.
 	zoneLine = 12
 	zonePx   = 10
+	// zoneMono is how wide a Latin letter of a title sets in the 10px
+	// monospace the page uses, and zoneTrack the 0.14em it spaces them by,
+	// so a title is measured as the page draws it.
+	zoneMono, zoneTrack = 6.0, 1.4
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
@@ -416,9 +421,19 @@ func halves(s string) []string {
 	return []string{strings.TrimSpace(string(r[:best])), strings.TrimSpace(string(r[best:]))}
 }
 
-// zoneWidth is how wide a title is set: small capitals spaced apart.
+// zoneWidth is how wide a title is set: monospace capitals spaced apart,
+// a wide letter such as Hangul taking a full em.
 func zoneWidth(s string) int {
-	return textWidth(strings.ToUpper(s), zonePx) + len([]rune(s))*2
+	w := 0.0
+	for _, r := range s {
+		if r < 0x80 {
+			w += zoneMono
+		} else {
+			w += zonePx
+		}
+		w += zoneTrack
+	}
+	return int(math.Ceil(w))
 }
 
 // onBadge says area meets a number of the view's lead.

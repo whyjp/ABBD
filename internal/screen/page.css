@@ -92,6 +92,11 @@ svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
 svg .port.entry text { fill: var(--accent); }
 svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
 svg .port.other text { fill: var(--muted); }
+svg .port.exit[data-h] rect { fill: var(--c); stroke: var(--c); }
+svg .port.exit[data-h] text { fill: var(--lead-ink); }
+svg .port.entry[data-h] rect { stroke: var(--c); }
+svg .port.entry[data-h] text { fill: var(--c); }
+svg a:hover .port[data-h] rect { stroke: var(--c); }
 svg path.w { fill: none; stroke: var(--c); stroke-width: 1.5; }
 svg path.provides { stroke-width: 2; }
 svg path.bypass, svg path.mutual { stroke-width: 1.5; }

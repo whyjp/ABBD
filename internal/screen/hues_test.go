@@ -353,3 +353,46 @@ func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
 		t.Error("no fixture view draws a hub")
 	}
 }
+
+// A chip on a box wears that box's colour, so a module's contracts read as
+// its own and never in the accent blue beside it; a frame's chip, on no
+// box, keeps the accent.
+func TestAChipWearsItsBoxsColour(t *testing.T) {
+	chips := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			for _, p := range d.Ports {
+				x, y := p.X+p.W/2, p.RectY()+p.H/2
+				want := ""
+				for _, b := range d.Boxes {
+					if b.X <= x && x <= b.X+b.W && b.Y <= y && y <= b.Y+b.H {
+						want = b.Hue
+					}
+				}
+				if p.Hue != want {
+					t.Errorf("%s: chip %q wears %q, its box %q", name, p.Title, p.Hue, want)
+				}
+				if p.Hue != "" {
+					chips++
+				}
+			}
+		}
+	}
+	if chips == 0 {
+		t.Error("no chip wears a box's colour")
+	}
+}
+
+// A filled chip's words, in the ink a filled box writes with, read at
+// least 4.5:1 on every colour in both themes.
+func TestAFilledChipsWordsRead(t *testing.T) {
+	ink := map[string]string{"light": "#ffffff", "dark": "#161614"}
+	for _, h := range palette {
+		for theme, c := range map[string]string{"light": h.light, "dark": h.dark} {
+			if r := contrast(parseHex(t, ink[theme]), parseHex(t, c)); r < 4.5 {
+				t.Errorf("%s %s: words on a filled chip read %.2f:1, under 4.5:1", h.name, theme, r)
+			}
+		}
+	}
+}

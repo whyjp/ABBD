@@ -261,7 +261,7 @@ var hoverCSS = func() string {
 	fmt.Fprintf(&b, "%s :where(.box,.port[class*=\" n\"]){opacity:.3}\n", pointed)
 	for j := range hoverMax {
 		on := fmt.Sprintf("svg:has(.p%d:hover,:focus-visible>.p%d)", j, j)
-		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin,.badge).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
+		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
 		fmt.Fprintf(&b, "%s .route.e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
 	}
 	for k := range routeMax {
