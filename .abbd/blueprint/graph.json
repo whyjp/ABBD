@@ -20293,6 +20293,22 @@
                 "Code": true
               },
               {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " gives a bypass the colour of the box it leaves like any other line, its open head marking it (the card says so in a few words), and a hub's view greys the other lines only where the hub's own are at least half its ink (",
+                "Code": false
+              },
+              {
+                "Text": "ownLines",
+                "Code": true
+              },
+              {
                 "Text": "). A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
@@ -20405,7 +20421,7 @@
                 "Code": true
               },
               {
-                "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
+                "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its open head marks it without the weight.",
                 "Code": false
               }
             ]
@@ -21605,7 +21621,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the reserved warning orange instead, whatever box it leaves. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
                 "Code": false
               },
               {
