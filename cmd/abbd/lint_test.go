@@ -117,8 +117,8 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 			t.Errorf("lint does not report %q", w)
 		}
 	}
-	if r.Schema != lintSchema || r.Totals.ExcessTurns != 54 || r.Totals.Steps != 34 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
-		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 54, 34, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
+	if r.Schema != lintSchema || r.Totals.ExcessTurns != 49 || r.Totals.Steps != 31 || r.Totals.Hard != 0 || len(r.Failures) != 0 {
+		t.Errorf("schema %d, excess turns %d, steps %d, hard %d, failures %v; want %d, 49, 31, 0 and none", r.Schema, r.Totals.ExcessTurns, r.Totals.Steps, r.Totals.Hard, r.Failures, lintSchema)
 	}
 }
 

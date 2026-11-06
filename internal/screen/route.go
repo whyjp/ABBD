@@ -531,7 +531,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	drops := func(i int) bool {
 		f, t := reqs[i].from, reqs[i].to
 		_, hub := hubs[t.node]
-		return (l.ring || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+		return (l.ring && !bent[i] || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
 	}
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
@@ -1868,11 +1868,33 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	dropped := false
 	for i := range reqs {
 		dropped = dropped || !l.ring && drops(i) && plans[i].dep < 0
-		if !l.ring && drops(i) && plans[i].dep < 0 && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) {
+		if drops(i) && plans[i].dep < 0 && (!l.ring && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) || teed(reqs, ways, i)) {
 			crooked = append(crooked, i)
 		}
 	}
 	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked}
+}
+
+// teed says line i drops straight across a flat stretch of another line
+// leaving its place, a T a reader takes for a branch.
+func teed(reqs []wireReq, ways [][]pt, i int) bool {
+	a := ways[i]
+	if len(a) != 2 || a[0].x != a[1].x {
+		return false
+	}
+	x, y0, y1 := a[0].x, min(a[0].y, a[1].y), max(a[0].y, a[1].y)
+	for j, b := range ways {
+		if j == i || place(reqs[j].from) != place(reqs[i].from) {
+			continue
+		}
+		for k := 1; k < len(b); k++ {
+			p, q := b[k-1], b[k]
+			if p.y == q.y && y0 < p.y && p.y < y1 && min(p.x, q.x) < x && x < max(p.x, q.x) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more
