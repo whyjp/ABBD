@@ -20236,7 +20236,15 @@
                 "Code": true
               },
               {
-                "Text": " dots a line whose relations all arise by convention, import, trait, macro or build feature, fills a hub (half again as many lines as any other box) where no lead fills its entry, and gives each box a small-caps kind and role line where its chips leave room. A hop's number keeps ",
+                "Text": " dots a line whose relations all arise by convention, import, trait, macro or build feature, fills a hub (half again as many lines as any other box) where no lead fills its entry, and gives each box a small-caps kind and role line where its chips leave room. A hop's number is set by ",
+                "Code": false
+              },
+              {
+                "Text": "number",
+                "Code": true
+              },
+              {
+                "Text": " after dress, on ink no other hop runs along where it can, keeping ",
                 "Code": false
               },
               {
@@ -20252,15 +20260,7 @@
                 "Code": true
               },
               {
-                "Text": "), shrinking to ",
-                "Code": false
-              },
-              {
-                "Text": "badgeSmall",
-                "Code": true
-              },
-              {
-                "Text": " or sitting on the edge of a box its line joins where its line has no room, and a band's title scans its room for a clear place (",
+                "Text": "); a band's title keeps the corner it always took when that keeps clear of ink, labels and counts (",
                 "Code": false
               },
               {
@@ -20268,7 +20268,7 @@
                 "Code": true
               },
               {
-                "Text": "), taking two lines in a taller room where one line has none. A quiet view drops a label that now stands over a flat track of another line of its colour (",
+                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
               {
@@ -20332,7 +20332,7 @@
                 "Code": true
               },
               {
-                "Text": " draws a design-only line in round dots and a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
+                "Text": " draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
                 "Code": false
               }
             ]
