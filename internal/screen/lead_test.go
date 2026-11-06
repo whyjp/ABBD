@@ -129,14 +129,14 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 
 // A view's card lists a sample only for a mark its rendered drawing
 // shows as the sample does, read from the SVG the page draws: the lead's
-// bold way, a filled box, an orange bypass line, a dotted line that does
+// bold way, a filled box, a bypass line, a dotted line that does
 // not climb, a climbing line. Its area keeps cardRoom from all other ink
 // and every number, as the card promises.
 func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 	marks := map[string]*regexp.Regexp{
 		"lead":   regexp.MustCompile(`<g class="leadway"`),
 		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
-		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b[^"]*" [^>]*data-h="b"`),
+		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
 		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
 	}
@@ -177,5 +177,21 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 	}
 	if cards == 0 {
 		t.Error("no fixture view keeps a card")
+	}
+}
+
+// Every card's words fit inside the card.
+func TestACardsWordsFitIt(t *testing.T) {
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			if c := d.Card; c != nil {
+				for _, it := range c.Items {
+					if it.TX+textWidth(it.Text, 11) > c.X+c.W-6 {
+						t.Errorf("%s: the card's %q runs past its edge", name, it.Text)
+					}
+				}
+			}
+		}
 	}
 }

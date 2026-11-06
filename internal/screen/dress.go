@@ -48,7 +48,7 @@ func (d *Drawing) dress(t tree) {
 		w := &d.Wires[i]
 		w.Plan = len(w.Rels) > 0 && runLength(w.D) >= planMin && !slices.ContainsFunc(w.Rels, func(r string) bool { return !planned[t.vias[r]] })
 	}
-	if d.Lead == nil && d.hub() {
+	if d.Lead == nil && d.hub() && 2*d.ownLines() >= len(d.Wires) {
 		d.hubLines()
 	}
 	for i := range d.Boxes {
@@ -97,6 +97,25 @@ func (d *Drawing) hub() bool {
 	}
 	d.Boxes[top].Role = "hub"
 	return true
+}
+
+// ownLines counts the ink whose every route has the view's filled box at
+// one end: the lines a hub's view keeps in colour. A hub's view rests the
+// rest grey only when those are half its ink at least, so the view still
+// reads at rest; otherwise every line keeps its own box's colour.
+func (d *Drawing) ownLines() int {
+	f := d.Filled()
+	if f == nil {
+		return 0
+	}
+	n := 0
+	for _, w := range d.Wires {
+		ks := classNumbers(w.Lit, "r")
+		if len(ks) > 0 && !slices.ContainsFunc(ks, func(k int) bool { return k >= len(d.Routes) || !slices.Contains(d.Routes[k].ends, f.ID) }) {
+			n++
+		}
+	}
+	return n
 }
 
 // hubLines rests a hub's view the way a lead's does, except the hub's own
