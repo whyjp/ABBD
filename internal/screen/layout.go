@@ -691,12 +691,13 @@ func straight(pts []pt) []pt {
 
 // gutter picks the space in row r nearest to x for a line passing through
 // it, and the lane in that space the line takes.
-func (l *layout) gutter(r, x int) int { return l.gutterTo(r, x, x, -1) }
+func (l *layout) gutter(r, x int) int { return l.gutterTo(r, x, x, -1, nil) }
 
 // gutterTo is gutter for a line headed for to: of two spaces as far from x,
 // it takes the one nearer to, so a line that must step aside steps the way
-// it is going. own is the lane the line's own chain holds in row r, or -1.
-func (l *layout) gutterTo(r, x, to, own int) int {
+// it is going. own is the lane the line's own chain holds in row r, or -1,
+// and mine says the line passing row q at y is this line or a bus it rides.
+func (l *layout) gutterTo(r, x, to, own int, mine func(q, y int) bool) int {
 	ids := l.rows[r]
 	type gap struct{ from, to int }
 	var gaps []gap
@@ -733,17 +734,19 @@ func (l *layout) gutterTo(r, x, to, own int) int {
 	}
 	g := gaps[best]
 	k := l.lanes[[2]int{r, best}]
-	l.lanes[[2]int{r, best}]++
 	if best > 0 && best < len(gaps)-1 {
 		// A line already running down its own chain's lane keeps straight
 		// on it. runs refuses the chain where the line's own trunk passed
-		// the row before at that x, the one line meets may count; set in
+		// the row before at that x, the one line it may meet there; set in
 		// the space's middle, the line would ride past its turn and back.
-		if x == own && x >= g.from+12 && x <= g.to-12 && l.meets(r, x) <= 1 && !l.takenBut(r, x, own) && !l.onStub(r, x) &&
+		if x == own && x >= g.from+12 && x <= g.to-12 && l.meetsOnly(r, x, mine) && !l.takenBut(r, x, own) && !l.onStub(r, x) &&
 			!slices.ContainsFunc(l.passes[r], func(y int) bool { return abs(y-x) < lane }) {
 			l.passes[r] = append(l.passes[r], x)
 			return x
 		}
+	}
+	l.lanes[[2]int{r, best}]++
+	if best > 0 && best < len(gaps)-1 {
 		at := func(k int) int { return g.from + (g.to-g.from)/2 + offset(k, slots(best))*lane }
 		for k+1 < slots(best) && (l.nextTo(r, at(k)) || l.taken(r, at(k)) || l.onStub(r, at(k))) {
 			k++
@@ -803,6 +806,22 @@ func (l *layout) meets(r, x int) int {
 		}
 	}
 	return n
+}
+
+// meetsOnly says a line passing row r at x would meet at most one line
+// passing a row next to it, and that one is the line's own (mine).
+func (l *layout) meetsOnly(r, x int, mine func(q, y int) bool) bool {
+	n := 0
+	for _, q := range []int{r - 1, r + 1} {
+		for _, y := range l.passes[q] {
+			if abs(x-y) < 3 {
+				if n++; n > 1 || !mine(q, y) {
+					return false
+				}
+			}
+		}
+	}
+	return true
 }
 
 // nextTo says a line passing row r at x would meet one that passes a row

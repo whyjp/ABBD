@@ -135,8 +135,16 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // bundled, read both ways and join every pair of their far ends (rule 18),
 // so they are drawn apart, on buses of their own pair, unless that runs a
 // line out of its way past rule 15 or back past rule 13, which bundling
-// spares.
+// spares. Only the kept drawing's counts are anchored: route may lay a
+// view many times to keep one, and no measure it compares them by reads
+// where a count stands, while placing the counts was most of a lay.
 func (l *layout) route(reqs []wireReq) routing {
+	r := l.routeApart(reqs)
+	anchor(r.drawn, pieces(r.drawn), r.boxes)
+	return r
+}
+
+func (l *layout) routeApart(reqs []wireReq) routing {
 	if !bundlesPairs(reqs) {
 		return l.routeOnce(reqs, false)
 	}
@@ -269,6 +277,9 @@ type routing struct {
 	// dropped says some line of a view other than a focus view drops
 	// straight off its buses.
 	dropped bool
+	// boxes are what a ×N must not stand on: the boxes and the frame's
+	// chips.
+	boxes []box
 	// tweaked says lay set some line straight onto its arrival trunk:
 	// a stub over the trunk's lead, or a line joining on the track.
 	tweaked bool
@@ -498,7 +509,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		x += k * chainLane
 		for _, q := range []int{r - 1, r, r + 1} {
-			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i && owner != -1-plans[i].arr || !runsOn(i, o)) {
+			if o, ok := held[[2]int{q, x}]; ok && o != owner && (q == r || owner != i && (plans[i].arr < 0 || owner != -1-plans[i].arr) || !runsOn(i, o)) {
 				return 0, false
 			}
 		}
@@ -520,7 +531,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	drops := func(i int) bool {
 		f, t := reqs[i].from, reqs[i].to
 		_, hub := hubs[t.node]
-		return (l.ring || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
+		return (l.ring && !bent[i] || bent != nil && !bent[i] && shareOf[i] < 0 && !hub) && !plans[i].same && len(plans[i].gaps) == 1 && f.node != "" && t.node != "" && max(f.lo, t.lo) <= min(f.hi, t.hi)
 	}
 	alone := func(is []int) []int { return slices.DeleteFunc(slices.Clone(is), drops) }
 	// A hub, a box hubUsers or more places use, still takes its lines as
@@ -1143,7 +1154,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 					own = cx + laneOf[i]*chainLane
 				}
 			}
-			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own)
+			mine := func(q, y int) bool {
+				o, ok := held[[2]int{q, y}]
+				return ok && (o == i || p.dep >= 0 && o == -1-p.dep || p.arr >= 0 && o == -1-p.arr)
+			}
+			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own, mine)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
 		}
@@ -1575,7 +1590,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	var out []drawn
 	nets := 0
 	// A line's own part: from its start, or where it leaves its departure
-	// bus, to its end, or where it joins its arrival bus.
+	// bus, to its end, or where it joins its arrival bus. Lines of one kind
+	// whose own parts run the same way, as two lines of one pair of buses
+	// stepping between them at the pair's x do, share one path, so neither
+	// hides the other from the pointer.
+	own := map[string]int{}
 	for i := range reqs {
 		p := &plans[i]
 		if p.onto {
@@ -1623,7 +1642,14 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		if len(pts) < 2 || pts[0] == pts[len(pts)-1] {
 			continue
 		}
-		out = append(out, drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{st}, joins: joins, back: back(i)})
+		d := polyline(pts)
+		key := fmt.Sprint(d, reqs[i].kind, joins, back(i))
+		if o, ok := own[key]; ok {
+			out[o].reqs, out[o].starts = append(out[o].reqs, i), append(out[o].starts, st)
+			continue
+		}
+		own[key] = len(out)
+		out = append(out, drawn{D: d, parts: [][]pt{pts}, reqs: []int{i}, starts: []pt{st}, joins: joins, back: back(i)})
 	}
 	// Departure buses: one stub out of the box, the trunk down through the
 	// rows its lines share, and a track in each gap where some leave it.
@@ -1845,7 +1871,6 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	sort.Slice(boxes, func(i, j int) bool {
 		return boxes[i].y < boxes[j].y || boxes[i].y == boxes[j].y && boxes[i].x < boxes[j].x
 	})
-	anchor(out, pieces(out), boxes)
 	backs := make([]bool, len(reqs))
 	for i := range reqs {
 		backs[i] = back(i)
@@ -1854,11 +1879,33 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	dropped := false
 	for i := range reqs {
 		dropped = dropped || !l.ring && drops(i) && plans[i].dep < 0
-		if !l.ring && drops(i) && plans[i].dep < 0 && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) {
+		if drops(i) && plans[i].dep < 0 && (!l.ring && plans[i].fx != plans[i].tx && (len(leave[keys[i][0]]) > 1 || len(arrive[keys[i][1]]) > 1) || teed(reqs, ways, i)) {
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, tweaked: tweaked}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked}
+}
+
+// teed says line i drops straight across a flat stretch of another line
+// leaving its place, a T a reader takes for a branch.
+func teed(reqs []wireReq, ways [][]pt, i int) bool {
+	a := ways[i]
+	if len(a) != 2 || a[0].x != a[1].x {
+		return false
+	}
+	x, y0, y1 := a[0].x, min(a[0].y, a[1].y), max(a[0].y, a[1].y)
+	for j, b := range ways {
+		if j == i || place(reqs[j].from) != place(reqs[i].from) {
+			continue
+		}
+		for k := 1; k < len(b); k++ {
+			p, q := b[k-1], b[k]
+			if p.y == q.y && y0 < p.y && p.y < y1 && min(p.x, q.x) < x && x < max(p.x, q.x) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // share picks the shared buses. Two or more boxes that the same two or more
