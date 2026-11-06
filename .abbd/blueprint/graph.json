@@ -7758,7 +7758,7 @@
                 "Code": true
               },
               {
-                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. The ceilings are the weighed sum, the tees, the placement debt, the overflow, the views past one screen, and the detours, and the ceilings line after the totals and ",
+                "Text": " version, the criteria, the views, the totals, the ceilings and the gate's failures. The ceilings are the weighed sum, the tees, the excess turns, the placement debt, the overflow, the views past one screen, and the detours, and the ceilings line after the totals and ",
                 "Code": false
               },
               {
@@ -7766,7 +7766,7 @@
                 "Code": true
               },
               {
-                "Text": " both print all five. The totals line names the tees beside the crossings they count among. The totals line names the detours, the lines that turn back or run beside themselves. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
+                "Text": " both print all six. The totals line names the tees beside the crossings they count among. The totals line names the detours, the lines that turn back or run beside themselves. It returns an error, so the command exits 1, only when the gate fails: a hard breach past its view's debt, or over every view a total past its ceiling. ",
                 "Code": false
               },
               {
@@ -23579,7 +23579,7 @@
                 "Code": true
               },
               {
-                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. ",
+                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. ",
                 "Code": false
               },
               {
@@ -26143,7 +26143,7 @@
                 "Code": true
               },
               {
-                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the tees, the placement debt and the detours, as the file's header says), and under ",
+                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the tees, the excess turns, the placement debt and the detours, as the file's header says), and under ",
                 "Code": false
               },
               {
