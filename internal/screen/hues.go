@@ -11,10 +11,9 @@ import (
 )
 
 // A box's colour names it among the boxes drawn with it, and a line wears
-// the colour of the box it leaves, except a line that skips the contract
-// boundary, which wears the warning colour (rule 11). The colours come
-// from one table, so the page, the checker and the contrast test read the
-// same values.
+// the colour of the box it leaves, a line that skips the contract boundary
+// too (rule 11). The colours come from one table, so the page, the checker
+// and the contrast test read the same values.
 
 // swatch is one colour as the page draws it on a light page and on a dark one.
 type swatch struct{ name, light, dark string }
@@ -39,8 +38,11 @@ var palette = []swatch{
 // that leaves only a frame's chip and reaches no box.
 var neutral = swatch{"neutral", "#5f5b53", "#aca89d"}
 
-// warning is the colour of a direct dependency that skips the contract
-// boundary the overview shows, the one line whose colour says what it is.
+// warning is the orange that once marked a line skipping the contract
+// boundary. No line wears it now: a bypass takes its box's colour and its
+// open head marks it. The palette is still held apart from it, so a reader
+// with either common colour vision deficiency never takes a box's colour
+// for that warning.
 var warning = swatch{"orange", "#b93e0a", "#fb923c"}
 
 // warnKey names the warning colour the way the page's classes do.

@@ -129,7 +129,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 
 // A view's card lists a sample only for a mark its rendered drawing
 // shows as the sample does, read from the SVG the page draws: the lead's
-// bold way, a filled box, an orange bypass line, a dotted line that does
+// bold way, a filled box, a bypass line, a dotted line that does
 // not climb, a climbing line. Its area keeps cardRoom from all other ink
 // and every number, as the card promises.
 func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {

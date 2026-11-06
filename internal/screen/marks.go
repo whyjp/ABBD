@@ -123,15 +123,15 @@ var shapes = map[string]string{
 }
 
 // warns says a kind is a direct dependency that skips the contract
-// boundary the overview shows. Its line wears the warning colour, whatever
-// box it leaves.
+// boundary the overview shows. Its line wears the colour of the box it
+// leaves, like any other, and its open head marks it.
 func warns(kind string) bool { return kind == "bypass" || kind == "mutual" }
 
 // paint colours each box by its unit, each line by the boxes its lines
 // leave, and each dot by the lines through it (rule 11). A line that
 // leaves a frame's chip takes the colour of the box it reaches. Ink whose
-// lines leave boxes of different colours is neutral, and a line that skips
-// the contract boundary wears the warning colour.
+// lines leave boxes of different colours is neutral, a line that skips the
+// contract boundary included.
 func (d *Drawing) paint(hues map[model.ID]int) {
 	colour := func(node string) string {
 		if h, ok := hues[base(model.ID(node))]; ok && node != "" {
@@ -525,7 +525,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
 	// ink is the colour paint will give a wire, as far as labels need it:
-	// the warning colour, its one source's, or neutral for several.
+	// its one source's, or neutral for several.
 	ink := func(w Wire) string {
 		var one model.ID
 		for _, n := range w.srcs {

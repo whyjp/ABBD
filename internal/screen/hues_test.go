@@ -411,3 +411,40 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 		}
 	}
 }
+
+// A hub's view whose own lines are under half its ink stays in colour:
+// it is not quiet, and each line keeps its box's colour, so it reads at
+// rest. The self overview and orca's desktop main are such views.
+func TestABusyHubViewStaysInColour(t *testing.T) {
+	cases := map[string]string{"self": "", "orca": "MOD-0042"}
+	for name, inside := range cases {
+		m := fixture(t, name)
+		d := &m.Overview
+		if inside != "" {
+			for i := range m.Insides {
+				if m.Insides[i].ID == inside {
+					d = &m.Insides[i].Drawing
+				}
+			}
+		}
+		f := d.Filled()
+		if f == nil || f.Role != "hub" {
+			t.Fatalf("%s %s: no hub to test", name, inside)
+		}
+		if own := d.ownLines(); 2*own >= len(d.Wires) {
+			t.Fatalf("%s %s: the hub owns %d of %d lines, not under half", name, inside, own, len(d.Wires))
+		}
+		if d.Quiet {
+			t.Errorf("%s %s: a hub owning under half its ink rests the view grey", name, inside)
+		}
+		hues := map[string]bool{}
+		for _, w := range d.Wires {
+			if w.Hue != hueKey(-1) {
+				hues[w.Hue] = true
+			}
+		}
+		if len(hues) < 2 {
+			t.Errorf("%s %s: its lines show %d colours at rest", name, inside, len(hues))
+		}
+	}
+}
