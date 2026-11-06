@@ -20293,6 +20293,22 @@
                 "Code": true
               },
               {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": " gives a bypass the colour of the box it leaves like any other line, its open head marking it, and a hub's view greys the other lines only where the hub's own are at least half its ink (",
+                "Code": false
+              },
+              {
+                "Text": "ownLines",
+                "Code": true
+              },
+              {
                 "Text": "). A quiet view drops a label that now stands over a flat track of another line of its colour (",
                 "Code": false
               },
