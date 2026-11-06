@@ -1344,11 +1344,12 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	// lines do not go (joinsHarmless). Otherwise it steps down above its
 	// end, or at the clear x nearest it on the trunk's side: a step past
 	// the end would make the line ride beyond its turn and come back
-	// beside its own track (B3, B4). Where every clear x lies past it, a
-	// pair still steps at its base unless something in its own gap holds
-	// that x: a pair in another gap that steps straight down its own trunk
-	// there stands in the same column, a row or more away, and shares no
-	// ink with it.
+	// beside its own track (B3, B4). Where the trunk ends there and every
+	// clear x lies past the end, a pair still steps at the trunk's x unless
+	// something in its own gap holds it: a pair in another gap that steps
+	// straight down its own trunk there stands in the same column, a row
+	// or more away, and shares no ink with it. Where the trunk runs on,
+	// joinsHarmless alone decides whether a pair steps at its x.
 	{
 		type step struct{ dep, arr, gap int }
 		var steps []step
@@ -1418,7 +1419,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				return true
 			}
 			base := p.xs[k-1]
-			if buses[st.dep].deep > p.ride {
+			deep := buses[st.dep].deep > p.ride
+			if deep {
 				if joinsHarmless(reach, reqs, plans, buses, st.dep, st.arr, st.gap) {
 					at[st], down[st] = base, k > 1
 					continue
@@ -1433,7 +1435,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				}
 			}
 			at[st] = stepX(base, p.tx, free)
-			if x := at[st]; (x-base)*(x-p.tx) > 0 {
+			if x := at[st]; !deep && (x-base)*(x-p.tx) > 0 {
 				column = true
 				if free(base) {
 					at[st] = base
