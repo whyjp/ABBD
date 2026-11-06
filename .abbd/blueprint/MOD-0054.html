@@ -103,6 +103,12 @@ svg .port.entry rect { fill: var(--panel); stroke: var(--accent); }
 svg .port.entry text { fill: var(--accent); }
 svg .port.other rect { fill: var(--panel); stroke: var(--muted); stroke-dasharray: 3 2; }
 svg .port.other text { fill: var(--muted); }
+svg .port.exit[data-h] rect { fill: color-mix(in srgb, var(--c) 15%, var(--panel)); stroke: var(--c); }
+svg .port.exit[data-h] text { fill: color-mix(in srgb, var(--c) 80%, var(--ink)); }
+svg .port.entry[data-h] rect { stroke: var(--c); }
+svg .port.entry[data-h] text { fill: var(--c); }
+svg a:hover .port[data-h] rect { stroke: var(--c); }
+svg g.port.onfill[data-h] rect, svg a:hover g.port.onfill[data-h] rect { stroke: var(--panel); }
 svg path.w { fill: none; stroke: var(--c); stroke-width: 1.5; }
 svg path.provides { stroke-width: 2; }
 svg path.bypass, svg path.mutual { stroke-width: 1.5; }
@@ -549,8 +555,8 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 </svg></div>
   <div class="legend">
-<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--accent)"/></svg>제공하는 계약 (출구)</span>
-<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--accent)"/></svg>쓰는 계약 (입구)</span>
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:color-mix(in srgb, var(--h2) 15%, var(--panel));stroke:var(--h2)"/></svg>제공하는 계약 (출구), 상자의 색</span>
+<span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:var(--panel);stroke:var(--h2)"/></svg>쓰는 계약 (입구), 상자의 색</span>
 <span><svg width="34" height="10"><path d="M0 5 H26" style="stroke:var(--hn);stroke-width:1.5"/><path d="M24 1 L33 5 L24 9 z" style="fill:var(--hn)"/></svg>계약을 거친 사용</span>
 <span><svg width="34" height="10"><path d="M0 5 H31" style="stroke:var(--hb);stroke-width:1.5"/><path d="M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hb);stroke-width:1.6"/></svg>계약을 거치지 않는 직접 의존 (주황, 경고)</span>
 <span><svg width="34" height="10"><path d="M3 5 H31" style="stroke:var(--hb);stroke-width:1.5"/><path d="M9 1 L1 5 L9 9 M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hb);stroke-width:1.6"/></svg>서로 직접 의존</span>

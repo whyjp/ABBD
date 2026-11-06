@@ -20353,6 +20353,38 @@
                 "Code": false
               },
               {
+                "Text": "dress",
+                "Code": true
+              },
+              {
+                "Text": " gives each chip on a box that box's colour (",
+                "Code": false
+              },
+              {
+                "Text": "Port.Hue",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " tints an exit chip 15% toward it, writing it in that colour drawn 20% toward the ink, and outlines an entry chip in it, and a chip on a filled box keeps a panel-coloured border. ",
+                "Code": false
+              },
+              {
+                "Text": "zoneWidth",
+                "Code": true
+              },
+              {
+                "Text": " measures a title as the 10px monospace capitals 0.14em apart that the page sets. ",
+                "Code": false
+              },
+              {
                 "Text": "page.css",
                 "Code": true
               },
