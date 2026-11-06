@@ -1319,7 +1319,11 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 	// lines do not go (joinsHarmless). Otherwise it steps down above its
 	// end, or at the clear x nearest it on the trunk's side: a step past
 	// the end would make the line ride beyond its turn and come back
-	// beside its own track (B3, B4).
+	// beside its own track (B3, B4). Where every clear x lies past it, a
+	// pair still steps at its base unless something in its own gap holds
+	// that x: a pair in another gap that steps straight down its own trunk
+	// there stands in the same column, a row or more away, and shares no
+	// ink with it.
 	{
 		type step struct{ dep, arr, gap int }
 		var steps []step
@@ -1333,6 +1337,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			}
 		}
 		at := map[step]int{}
+		// down holds the pairs that step straight down their trunk's x.
+		down := map[step]bool{}
 		reach := map[[2]string]bool{}
 		for _, w := range wanted(reqs) {
 			reach[w] = true
@@ -1349,6 +1355,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			k := len(p.gaps)
 			g := p.gaps[k-1]
 			mixed := slices.ContainsFunc(buses[st.arr].members, func(m int) bool { return m < len(reqs) && place(reqs[m].from) != place(reqs[lead].from) })
+			column := false
 			free := func(x int) bool {
 				for _, r := range []int{g - 1, g} {
 					for _, y := range l.passes[r] {
@@ -1370,7 +1377,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 					if o.dep == st.dep && o.gap == st.gap && y == p.xs[k-1] && x == y && x == p.tx {
 						continue
 					}
-					if o != st && abs(x-y) < lane {
+					if o != st && abs(x-y) < lane && !(column && o.gap != st.gap && down[o]) {
 						return false
 					}
 				}
@@ -1388,7 +1395,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			base := p.xs[k-1]
 			if buses[st.dep].deep > p.ride {
 				if joinsHarmless(reach, reqs, plans, buses, st.dep, st.arr, st.gap) {
-					at[st] = base
+					at[st], down[st] = base, k > 1
 					continue
 				}
 				d := base
@@ -1401,6 +1408,13 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				}
 			}
 			at[st] = stepX(base, p.tx, free)
+			if x := at[st]; (x-base)*(x-p.tx) > 0 {
+				column = true
+				if free(base) {
+					at[st] = base
+				}
+			}
+			down[st] = k > 1 && at[st] == p.xs[k-1]
 		}
 		for i := range plans {
 			p := &plans[i]

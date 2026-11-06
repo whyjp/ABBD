@@ -515,22 +515,15 @@ func TestEveryRealDrawingTakesPart(t *testing.T) {
 // page CFG-0006's line runs right along y=62 to x=385 and back left along
 // y=82 to x=181. It is a routing defect that hover shows rather than
 // hides, a known count that may only fall.
-const hairpins = 15
+const hairpins = 14
 
 func TestFewLinesDoubleBack(t *testing.T) {
 	n := 0
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			for _, r := range v.d.Routes {
-				rs := r.runs
-				for i := 2; i < len(rs); i++ {
-					a, step, b := rs[i-2], rs[i-1], rs[i]
-					short := abs(step[1].x-step[0].x)+abs(step[1].y-step[0].y) <= 24
-					back := sign(a[1].x-a[0].x) == -sign(b[1].x-b[0].x) && sign(a[1].y-a[0].y) == -sign(b[1].y-b[0].y)
-					if short && back && shared(a, b) > 0 {
-						n++
-						break
-					}
+				if doublesBack(r.runs) {
+					n++
 				}
 			}
 		}
@@ -538,6 +531,42 @@ func TestFewLinesDoubleBack(t *testing.T) {
 	t.Logf("%d lines double back on a bus", n)
 	if n > hairpins {
 		t.Errorf("%d lines double back on a bus, more than the %d known", n, hairpins)
+	}
+}
+
+// doublesBack says a line's runs step a short way to another track and
+// come back along the one they rode.
+func doublesBack(rs [][2]pt) bool {
+	for i := 2; i < len(rs); i++ {
+		a, step, b := rs[i-2], rs[i-1], rs[i]
+		short := abs(step[1].x-step[0].x)+abs(step[1].y-step[0].y) <= 24
+		back := sign(a[1].x-a[0].x) == -sign(b[1].x-b[0].x) && sign(a[1].y-a[0].y) == -sign(b[1].y-b[0].y)
+		if short && back && shared(a, b) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// In pstack's "understand code" page two lines ride a departure trunk at
+// x=163 that stands in one column with another trunk stepping down two
+// gaps lower. They step straight down their own trunk rather than riding
+// past their drop and coming back.
+func TestALineStepsDownItsTrunkBesideAnotherGapsStep(t *testing.T) {
+	seen := false
+	for _, v := range views(fixture(t, "pstack")) {
+		if v.name != "MOD-0007 understand code" {
+			continue
+		}
+		seen = true
+		for _, r := range v.d.Routes {
+			if doublesBack(r.runs) {
+				t.Errorf("a line doubles back on a bus: %v", r.runs)
+			}
+		}
+	}
+	if !seen {
+		t.Fatal("no MOD-0007 understand code view in pstack")
 	}
 }
 
