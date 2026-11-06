@@ -570,6 +570,33 @@ func TestALineStepsDownItsTrunkBesideAnotherGapsStep(t *testing.T) {
 	}
 }
 
+// In pstack's focus pages, such as MOD-0007's /teach, a box's lines to the
+// modules outside, gathered into one chip under it, run down a chain whose
+// x stands over the chip. They land on the chip at that x rather than jog
+// a lane aside to the chip's middle just above it.
+func TestALineIntoAGatheredChipLandsAtItsOwnX(t *testing.T) {
+	n := 0
+	for _, v := range views(fixture(t, "pstack")) {
+		if !strings.Contains(v.name, " focus ") {
+			continue
+		}
+		for _, r := range v.d.Routes {
+			if len(r.ends) != 2 || !strings.Contains(r.ends[1], gatherPort) {
+				continue
+			}
+			n++
+			if k := len(r.runs); k >= 3 {
+				if a, b := r.runs[k-2][0], r.runs[k-2][1]; a.y == b.y && abs(b.x-a.x) <= lane {
+					t.Errorf("%s: a line jogs %dpx into its gathered chip: %v", v.name, abs(b.x-a.x), r.runs)
+				}
+			}
+		}
+	}
+	if n == 0 {
+		t.Fatal("no line into a gathered chip in pstack")
+	}
+}
+
 // shared is how far two parallel pieces span the same stretch, on any two
 // tracks.
 func shared(a, b [2]pt) int {

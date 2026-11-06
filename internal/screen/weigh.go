@@ -230,6 +230,13 @@ const laneMoves = 1
 // by them, so it must buy more than a few saved turns, or a small change to
 // the units would flip the overview between rankings. A drawing these
 // checks pass over sets no bound of the others.
+//
+// A laned or gathered drawing sets no bound either: not the least
+// crossings, not the ranking bounds, and not the touches and breaks a
+// later drawing must match, since fits measures it against the drawing
+// it would replace, which draws other chips. The ranking bounds never meet
+// a gathered drawing anyway: only an overview ranks anew, by fold or
+// entry, and only a module's inside gathers.
 func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge func(v T, read *cost)) T {
 	var vs []T
 	var cs []cost

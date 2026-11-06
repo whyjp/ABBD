@@ -20867,7 +20867,15 @@
                 "Code": true
               },
               {
-                "Text": " past that, so each box takes one line from the frame. Each gathered line keeps the tooltip line and evidence of every line it gathers, said with its real far end, and a chip that gathers one module links to that module's view. It is drawn only where some outside module meets two or more boxes, ",
+                "Text": " past that, so each box takes one line from the frame. A box's lines into its gathered chip ride one arrival bus with no lead, so ",
+                "Code": false
+              },
+              {
+                "Text": "pin",
+                "Code": true
+              },
+              {
+                "Text": " stands that bus's slot over one of its lines where that line's x lies inside the chip, and the line lands straight instead of stepping a lane aside off its own chain. Each gathered line keeps the tooltip line and evidence of every line it gathers, said with its real far end, and a chip that gathers one module links to that module's view. It is drawn only where some outside module meets two or more boxes, ",
                 "Code": false
               },
               {
