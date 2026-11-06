@@ -66,6 +66,7 @@ svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
 svg .box[data-h] rect { stroke: var(--c); fill: color-mix(in srgb, var(--c) 5%, var(--panel)); }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
+svg .box.inner.has:not(.focus):hover rect, svg a:hover .box.inner.has:not(.focus) rect, svg a:focus .box.inner.has:not(.focus) rect { stroke-width: 2.6; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
 svg .box.focus rect { stroke-width: 3.4; }
 svg .box.lead rect { fill: var(--c); stroke: var(--c); }

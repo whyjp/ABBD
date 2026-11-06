@@ -81,7 +81,7 @@ type Box struct {
 	H       int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
-	// Hue is the palette key of the box's border and its bar (rule 11),
+	// Hue is the palette key of the box's border and its tint (rule 11),
 	// empty for a box that stands for no unit's colour.
 	Hue string `json:"-"`
 	// Lit are the classes that light the box while a reader points at it
