@@ -123,7 +123,9 @@ func TestAContractLineJoinsItsBusOnItsOwnSide(t *testing.T) {
 		if seen < 3 {
 			t.Fatalf("want the contract lines into grep-matcher, got %d", seen)
 		}
+		return
 	}
+	t.Fatal("no view overview")
 }
 
 // A line down its own chain's lane keeps straight on it past a wide space
