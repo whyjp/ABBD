@@ -998,6 +998,17 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				}
 			} else if b := drop(i); !sl.leave && b >= 0 {
 				i = buses[b].lead
+				// An arrival bus into a frame chip that no line leads
+				// still drops where one of its lines runs down a chain
+				// over the chip, so that line lands straight rather than
+				// jogging a lane to the chip's middle.
+				if t := reqs[sl.is[0]].to; i >= len(reqs) && t.node == "" {
+					for _, m := range sl.is {
+						if x, ok := near(m, false); ok && x >= t.lo && x <= t.hi {
+							return x, true
+						}
+					}
+				}
 			} else if len(sl.is) != 1 {
 				return 0, false
 			}
