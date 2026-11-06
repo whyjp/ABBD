@@ -782,6 +782,17 @@ func (l *layout) onStub(r, x int) bool {
 	return false
 }
 
+// clearOf says a line passing row r at x stands 12px or more off every
+// shape in the row.
+func (l *layout) clearOf(r, x int) bool {
+	for _, id := range l.rows[r] {
+		if p := l.pos[id]; x > p.X-12 && x < p.X+p.W+12 {
+			return false
+		}
+	}
+	return true
+}
+
 // taken says x in row r lies on a chain's lane, or in its channel.
 func (l *layout) taken(r, x int) bool { return l.takenBut(r, x, -1) }
 
