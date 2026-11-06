@@ -2015,6 +2015,7 @@
       },
       "Anchors": [
         "internal/screen",
+        "internal/screen/dress.go",
         "internal/screen/entries.go",
         "internal/screen/figure.go",
         "internal/screen/flow.go",
@@ -2027,6 +2028,7 @@
         "internal/screen/inside.go",
         "internal/screen/layered.go",
         "internal/screen/layout.go",
+        "internal/screen/lead.go",
         "internal/screen/legible.go",
         "internal/screen/levels.go",
         "internal/screen/lint.go",
@@ -2042,7 +2044,8 @@
         "internal/screen/trace.go",
         "internal/screen/tree.go",
         "internal/screen/weigh.go",
-        "internal/screen/words.go"
+        "internal/screen/words.go",
+        "internal/screen/zone.go"
       ]
     },
     {
@@ -20136,6 +20139,168 @@
               },
               {
                 "Text": " lightens the dots only climbing lines meet at.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Lead",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "Zone",
+                "Code": true
+              },
+              {
+                "Text": " / dress",
+                "Code": false
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "lead.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "zone.go",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "dress.go",
+                "Code": true
+              },
+              {
+                "Text": "): what a view adds to read like a hand-polished diagram, after ",
+                "Code": false
+              },
+              {
+                "Text": "paint",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "lead",
+                "Code": true
+              },
+              {
+                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts, and ",
+                "Code": false
+              },
+              {
+                "Text": "quiet",
+                "Code": true
+              },
+              {
+                "Text": " greys every other line, head and dot while routes keep their colours for hover. ",
+                "Code": false
+              },
+              {
+                "Text": "zone",
+                "Code": true
+              },
+              {
+                "Text": " tints the boxes of a stored stack's layers, else of a shared directory (",
+                "Code": false
+              },
+              {
+                "Text": "home",
+                "Code": true
+              },
+              {
+                "Text": "), plus the outside contracts, only where their padded area holds no other box, chip or band; its title takes the corner fewest lines cross. ",
+                "Code": false
+              },
+              {
+                "Text": "dress",
+                "Code": true
+              },
+              {
+                "Text": " dots a line whose relations all arise by convention, import, trait, macro or build feature, fills a hub (half again as many lines as any other box) where no lead fills its entry, and gives each box a small-caps kind and role line where its chips leave room. A quiet view drops a label that now stands over a flat track of another line of its colour (",
+                "Code": false
+              },
+              {
+                "Text": "unlabelKin",
+                "Code": true
+              },
+              {
+                "Text": "). A view past hover's caps is never made quiet, and chips on a filled box carry ",
+                "Code": false
+              },
+              {
+                "Text": "OnFill",
+                "Code": true
+              },
+              {
+                "Text": " for a panel outline. The overview key reads ",
+                "Code": false
+              },
+              {
+                "Text": "Quiet",
+                "Code": true
+              },
+              {
+                "Text": " through ",
+                "Code": false
+              },
+              {
+                "Text": "legendFor",
+                "Code": true
+              },
+              {
+                "Text": ", so a quiet view's key draws the bypass grey. ",
+                "Code": false
+              },
+              {
+                "Text": "Box.Role",
+                "Code": true
+              },
+              {
+                "Text": " carries entry or hub apart from ",
+                "Code": false
+              },
+              {
+                "Text": "Class",
+                "Code": true
+              },
+              {
+                "Text": ", which the level check reads. A hub's view is quiet too, but ",
+                "Code": false
+              },
+              {
+                "Text": "hubLines",
+                "Code": true
+              },
+              {
+                "Text": " keeps in the hub's colour the ink whose every route has the hub at one end. ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
                 "Code": false
               }
             ]

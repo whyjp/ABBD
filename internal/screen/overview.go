@@ -33,6 +33,16 @@ type Drawing struct {
 	Routes []Route `json:"-"`
 	// numbers are the shapes' numbers by place, as hover gave them.
 	numbers map[string]int
+	// ways are every line's route, kept when hover leaves Routes empty,
+	// and Lead the way the view draws bold over them (lead.go).
+	ways []Route
+	Lead *Lead `json:",omitempty"`
+	// Quiet says the view rests its lines grey but for its lead's or its
+	// hub's own (lead.go, dress.go).
+	Quiet bool `json:"-"`
+	// Zones are the bands behind the boxes of the groupings the project
+	// shows (zone.go).
+	Zones []Zone `json:",omitempty"`
 }
 
 // Route is one line's whole way from the shape it leaves to the shape it
@@ -56,6 +66,8 @@ type Route struct {
 	ends []string
 	at   []int
 	runs [][2]pt
+	// rels are the stored relations the line stands for.
+	rels []string
 }
 
 // Box is a module on the overview, or a unit inside a module.
@@ -75,6 +87,9 @@ type Box struct {
 	// Lit are the classes that light the box while a reader points at it
 	// or at a box it shares a line with (hover.go).
 	Lit string `json:"-"`
+	// Role is "entry" for the box a view's lead starts from and "hub" for
+	// one most lines touch; either is drawn filled (dress.go).
+	Role string `json:",omitempty"`
 }
 
 // Text is one line of a label and where it starts; Mid centres it on X.
@@ -106,6 +121,9 @@ type Port struct {
 	Lit  string   `json:"-"`
 	// Folded says the edge folds this port into its row's "+N" chip.
 	Folded bool `json:"-"`
+	// OnFill says the chip sits on a filled box, where it takes an outline
+	// of the panel colour so it still reads as a chip (dress.go).
+	OnFill bool `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it
@@ -149,6 +167,9 @@ type Wire struct {
 	// its end, its shape for its kind and its colour (rule 11).
 	Hue  string `json:"-"`
 	Head string `json:"-"`
+	// Plan says every relation the line stands for arises only in design,
+	// with no call or data at run time, so it is drawn dotted (dress.go).
+	Plan bool `json:"-"`
 	// srcs are the places each of the line's relations leaves, which give
 	// it its colour.
 	srcs []string
@@ -1038,7 +1059,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		w.ends = endsOf(reqs, p.reqs)
 		d.Wires = append(d.Wires, w)
 	}
-	d.route(routed, reqs)
+	d.route(routed, reqs, func(i int) []string { return merged[i].rels })
 	d.mark(paths, reqs, o.tree)
 	d.hover()
 	return d

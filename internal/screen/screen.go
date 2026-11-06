@@ -224,6 +224,14 @@ func Build(in Input) Model {
 	for _, d := range m.drawings() {
 		d.paint(hues)
 	}
+	fs, ls := walks(in), layerings(in)
+	for _, d := range append([]*Drawing{&m.Overview}, insides(m.Insides)...) {
+		d.lead(o.tree, fs)
+		d.zone(o.tree, ls)
+	}
+	for _, d := range m.drawings() {
+		d.dress(o.tree)
+	}
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
 	o.linkFigures(&m)
