@@ -57,6 +57,10 @@ GITX = 'box "internal/gitx" (MOD-0022)'
 APP_SHELL = 'box "app-shell" (MOD-0073)'
 M81 = "orca MOD-0081 shared types and schemas"
 RPC = 'box "shared/rpc-contract" (MOD-0090)'
+RIPGREP, SEARCHER = 'box "ripgrep" (MOD-0001)', 'box "grep-searcher" (MOD-0012)'
+PSTACK, S41, F01, SELF = "pstack overview", "self MOD-0041 internal/store", "self FEAT-0001 /abbd", "self overview"
+BESIDE = "px of ink running beside other ink within 10px, the same way, not on it"
+BENDS = "traced bends per line, x10"
 
 
 def read(path):
@@ -545,6 +549,29 @@ def titles_meet_ink(t, view):
     return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
 
 
+def rest(col):
+    """The lint table's column for the view, which says what the drawing shows at
+    rest (rest.go): summed over every fixture view for a total, or read off the
+    overview of this repository's own state (TestAcceptSelfPages's lint.tsv).
+    None where the checkout's table has no such column."""
+    def m(t, view):
+        if view == SELF_STATE:
+            p = os.path.join(t.out, "self-pages", "lint.tsv")
+            rows = {r["view"]: r for r in read(p)} if os.path.exists(p) else {}
+            return int(rows["overview"][col]) if col in rows.get("overview", {}) else None
+        rows = list(t.views.values()) if view == EVERY else [t.views[t.view(view)]]
+        return sum(int(r[col]) for r in rows) if col in rows[0] else None
+    return m
+
+
+def per_line(col):
+    """The lint table's column for the view per traced line, times 10."""
+    def m(t, view):
+        n, lines = rest(col)(t, view), rest("lines")(t, view)
+        return None if n is None or not lines else round(10 * n / lines)
+    return m
+
+
 def hover(key):
     """Findings of this kind shoot.py records over every fixture page it hovers."""
     def m(t, view):
@@ -636,6 +663,41 @@ CASES = [
          titles_meet_ink, 0, "buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236"),
     Case("title-meets-ink", "today (zones, #112)", "every fixture overview", "zone titles whose glyph box meets line ink",
          titles_meet_ink, 0, "the same count over every fixture's overview"),
+    Case("pstack-beside", "user 2026-11-06 (pstack/index.html)", PSTACK, BESIDE, rest("beside"), 0,
+         "수직수평-나란히 배치되는 선을 가급적 병합하도록 한 지침이 많이 누락되어 표현되다 보니 선이 너무 많습니다"),
+    Case("pstack-bends", "user 2026-11-06 (pstack/index.html)", PSTACK, BENDS, per_line("traced_bends"), 20,
+         "the same view; rule 16's median of 2 bends per line, as a mean"),
+    Case("rg-beside", "user 2026-11-06 (ripgrep/index.html)", RG, BESIDE, rest("beside"), 0,
+         "the overview the user found busy with lines side by side"),
+    Case("rg-ripgrep-around", "user 2026-11-06 (ripgrep/index.html)", RG,
+         "excess turns, jogs and turn-backs of ripgrep -> grep-searcher and ripgrep -> grep-matcher",
+         lambda t, v: on(knots, RIPGREP, SEARCHER)(t, v) + on(knots, RIPGREP, MATCHER)(t, v), 0,
+         "ripgrep -> grep-searcher / grep-matcher 로 가는 선은 좌측으로 우회했다면 깔끔하게 표현되었을 것"),
+    Case("rg-regex-matcher-steps", "user 2026-11-06 (ripgrep/index.html)", RG, "jogs plus turns past 2 of grep-regex -> grep-matcher",
+         on(steps, REGEX, MATCHER), 0, "grep-regex -> grep-matcher 로 가는 선의 계단이 불필요하게 발생"),
+    Case("s98-beside", "user 2026-11-06 (orca/MOD-0098.html)", S98, BESIDE, rest("beside"), 0,
+         "수평-수직 선이 인접하게 진행할 때 병합하다 갈라지는 표현이 필요"),
+    Case("r72-beside", "user 2026-11-06 (orca/MOD-0072.html)", R72, BESIDE, rest("beside"), 0,
+         "renderer/lib 이나 중앙으로 집중되는 선들이 복잡하게 얽혀있습니다 ... 심각한 수준"),
+    Case("r72-bends", "user 2026-11-06 (orca/MOD-0072.html)", R72, BENDS, per_line("traced_bends"), 20,
+         "불필요한 꺾임 또한 크게 발생"),
+    Case("s41-bends", "user 2026-11-06 (self/MOD-0041.html)", S41, BENDS, per_line("traced_bends"), 20,
+         "불필요한 꺾임이 많이 보입니다"),
+    Case("s41-crossings", "user 2026-11-06 (self/MOD-0041.html)", S41, "crossings, a tee counted as one", rest("crossings"), 0,
+         "불필요한 교차도 발생"),
+    Case("f01-fork-levels", "user 2026-11-06 (self/FEAT-0001.html)", F01,
+         "heights past the first at which one place's lines into one row turn off their stem", rest("fork_levels"), 0,
+         "포크로 내려가 갈라지는 선이 포크의 수평이 일정하지 못해 지저분해 보입니다"),
+    Case("self-beside", "user 2026-11-06 (self/index.html)", SELF, BESIDE, rest("beside"), 0,
+         "수평수직 병합이 덜 되어 복잡, 꺾임이 많음"),
+    Case("self-bends", "user 2026-11-06 (self/index.html)", SELF, BENDS, per_line("traced_bends"), 20, "the same view's bends"),
+    Case("state-beside", "user 2026-11-06 (the repo's own overview)", SELF_STATE, BESIDE, rest("beside"), 0,
+         "수평수직 병합이 덜 되어 복잡, 꺾임이 많음"),
+    Case("state-bends", "user 2026-11-06 (the repo's own overview)", SELF_STATE, BENDS, per_line("traced_bends"), 20,
+         "the same view's bends"),
+    Case("beside", "user 2026-11-06", EVERY, BESIDE, rest("beside"), 0, "the same measure over every fixture view"),
+    Case("fork-levels", "user 2026-11-06", EVERY, "fork heights past the first, as f01-fork-levels", rest("fork_levels"), 0,
+         "the same measure over every fixture view"),
     Case("hover-cut", "today", "every shot page", "shoot.py cut", hover("cut"), 0, "guard: a lit route stops partway"),
     Case("hover-stray", "today", "every shot page", "shoot.py stray", hover("stray"), 0, "guard: a lit box no lit line reaches"),
     Case("hover-mixed", "today", "every shot page", "shoot.py mixed", hover("mixed"), 0, "guard: one lit route of two colours"),

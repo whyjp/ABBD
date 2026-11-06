@@ -33,7 +33,7 @@ func lintColumns() []string {
 	for _, c := range criteria {
 		cols = append(cols, c.ID)
 	}
-	return append(cols, "excess_turns", "placement", "crossings", "weighed", "steps", "jogs", "phantoms", "paths_over2", "traced_bends", "back", "detours", "height", "tees")
+	return append(cols, "excess_turns", "placement", "crossings", "weighed", "steps", "jogs", "phantoms", "paths_over2", "traced_bends", "back", "detours", "height", "tees", "beside", "pieces", "ink_crossings", "fork_levels", "lines")
 }
 
 func lintRow(v ViewLint) []int {
@@ -42,7 +42,7 @@ func lintRow(v ViewLint) []int {
 		row = append(row, v.Totals.Criteria[c.ID])
 	}
 	t := v.Totals
-	return append(row, t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Detours, t.Height, t.Tees)
+	return append(row, t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Detours, t.Height, t.Tees, t.Beside, t.Pieces, t.InkCrossings, t.ForkLevels, t.Lines)
 }
 
 // Every fixture keeps the gate its .abbd/lint-debt.yaml sets, the one abbd

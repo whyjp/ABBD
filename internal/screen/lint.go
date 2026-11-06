@@ -84,6 +84,13 @@ type Totals struct {
 	// Height is the drawing's height in px, so a change that runs a view
 	// taller or shorter shows in the sum.
 	Height int `json:"height"`
+	// Beside, Pieces, InkCrossings and ForkLevels are what the drawing
+	// shows at rest (rest.go), and Lines how many relations it traces.
+	Beside       int `json:"beside"`
+	Pieces       int `json:"pieces"`
+	InkCrossings int `json:"ink_crossings"`
+	ForkLevels   int `json:"fork_levels"`
+	Lines        int `json:"lines"`
 }
 
 // Sum adds up the totals of several views.
@@ -96,6 +103,7 @@ func Sum(views []ViewLint) Totals {
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
 		t.Height += o.Height
+		t.Beside, t.Pieces, t.InkCrossings, t.ForkLevels, t.Lines = t.Beside+o.Beside, t.Pieces+o.Pieces, t.InkCrossings+o.InkCrossings, t.ForkLevels+o.ForkLevels, t.Lines+o.Lines
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -283,6 +291,8 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + (teeCrossings-1)*vl.Totals.Tees + stepCrossings*vl.Totals.ExcessTurns
 	vl.Totals.Height = v.d.Height
+	vl.Totals.Beside, vl.Totals.Pieces, vl.Totals.InkCrossings = besideInk(s), straightPieces(s), inkCrossings(s)
+	vl.Totals.ForkLevels, vl.Totals.Lines = l.forkLevels(), len(t.Ways)
 	return vl, nil
 }
 
