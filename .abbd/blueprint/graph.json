@@ -5493,7 +5493,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7952,7 +7952,7 @@
                 "Code": true
               },
               {
-                "Text": " leaves features' pages out.",
+                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there.",
                 "Code": false
               }
             ]
@@ -19248,7 +19248,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -21476,6 +21476,76 @@
               },
               {
                 "Text": " holds each fixture to its exact list of crowded counts.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "confluent",
+                "Code": true
+              },
+              {
+                "Text": " / ",
+                "Code": false
+              },
+              {
+                "Text": "roads",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "confluence.go",
+                "Code": true
+              },
+              {
+                "Text": "): lines as bus routes on a highway (rule 4). On the drawing ",
+                "Code": false
+              },
+              {
+                "Text": "choose",
+                "Code": true
+              },
+              {
+                "Text": " keeps, and each focus view's (",
+                "Code": false
+              },
+              {
+                "Text": "tactic.roads",
+                "Code": true
+              },
+              {
+                "Text": "), a straight run of a line moves onto a parallel run of its kind within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; a line's end runs slide only along their edge span. A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, and the view gains no crossing, turn, fork height, tee, far split (J1) or dotted line left without 30px of ink of its own. ",
+                "Code": false
+              },
+              {
+                "Text": "roads",
+                "Code": true
+              },
+              {
+                "Text": " then draws the ink from the routes, one path per stretch the same routes ride, so each route lights whole and exactly (",
+                "Code": false
+              },
+              {
+                "Text": "hover",
+                "Code": true
+              },
+              {
+                "Text": " lights a piece's own kind only). ",
+                "Code": false
+              },
+              {
+                "Text": "Drawing.roads",
+                "Code": true
+              },
+              {
+                "Text": " exempts such a drawing from J3 where a phantom way runs wholly on routes, and J1 reads its splits off the routes.",
                 "Code": false
               }
             ]
