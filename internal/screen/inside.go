@@ -735,6 +735,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		if l.roads {
 			w.rides = p.reqs
 		}
+		w.ink = inkOf(w.Kind, p.road)
 		d.Wires = append(d.Wires, w)
 	}
 	d.route(routed, reqs, func(i int) []string { return lines[i].rels })

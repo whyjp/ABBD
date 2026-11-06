@@ -42,6 +42,9 @@ import (
 type drawn struct {
 	D    string
 	reqs []int
+	// road says the path is a piece of road (confluence.go), whose ink
+	// joins every kind's: a highway carries lines of several kinds.
+	road bool
 	// starts are where each request's line leaves its end, for the origin
 	// mark, or noStart when that end is on another path.
 	starts []pt

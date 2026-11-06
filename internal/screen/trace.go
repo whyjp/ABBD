@@ -36,6 +36,15 @@ func keyOf(colour string, p fpt) inkKey {
 	return inkKey{colour, int(math.Round(p.x * 2)), int(math.Round(p.y * 2))}
 }
 
+// inkColour is the ink a stroke joins: on roads every kind's, since a
+// highway carries several (confluence.go), else its colour.
+func (s sheet) inkColour(class string) string {
+	if s.roads {
+		return "road"
+	}
+	return colour(class)
+}
+
 // colour is the kind a stroke's colour shows; a line between two modules
 // that use each other is drawn in the direct-dependency colour.
 func colour(class string) string {
@@ -82,7 +91,7 @@ func inkGraph(s sheet) ink {
 	}
 	var raws []raw
 	for _, w := range s.strokes {
-		c := colour(w.class)
+		c := s.inkColour(w.class)
 		both := strings.Contains(" "+w.class+" ", " mutual ")
 		for i := 1; i < len(w.pts); i++ {
 			a, b := w.pts[i-1], w.pts[i]
@@ -289,7 +298,7 @@ func trace(s sheet, rels [][2]string) Trace {
 		if len(w.pts) < 2 {
 			continue
 		}
-		c := colour(w.class)
+		c := s.inkColour(w.class)
 		first, last := w.pts[0], w.pts[len(w.pts)-1]
 		both := strings.Contains(" "+w.class+" ", " mutual ")
 		if id := shapeOf(s, first); id >= 0 {
@@ -433,10 +442,12 @@ func trace(s sheet, rels [][2]string) Trace {
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
-	// On roads each line's route is the line: a road joins places no one
-	// line does, and carries kinds the ink's colours keep apart, so a way
-	// traced through the ink is no line's. The routes say each relation's
-	// way, its bends, jogs and crossings.
+	// Where the drawing holds its routes, each line's route is the line: a
+	// road joins places no one line does and carries kinds the ink's
+	// colours keep apart, and a bus's track is no one line's either, so a
+	// way traced through the ink may take another line's turn. The routes
+	// say each relation's way, its bends, jogs and crossings, so a drawing
+	// on roads and one off them are weighed alike.
 	if s.roads && s.routed {
 		traced = map[[2]string]bool{}
 		t.Bends, t.Jogs, t.Crossings, t.Ways = nil, nil, nil, nil

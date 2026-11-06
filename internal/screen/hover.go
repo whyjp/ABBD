@@ -127,7 +127,7 @@ func (d *Drawing) hover() {
 		dot := pt{d.Dots[i].X, d.Dots[i].Y}
 		var ends []string
 		for _, w := range d.Wires {
-			if hue(w.Kind) == d.Dots[i].Kind && through(w.D, dot) {
+			if w.inkKey() == d.Dots[i].Kind && through(w.D, dot) {
 				ends = append(ends, w.ends...)
 			}
 		}

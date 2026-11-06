@@ -2,6 +2,7 @@ package screen
 
 import (
 	"math"
+	"slices"
 	"sort"
 )
 
@@ -153,6 +154,50 @@ func flatNear(pts []fpt, last bool) (float64, bool) {
 		}
 	}
 	return 0, false
+}
+
+// colourSwitches counts, over every line a road drawing routes, the
+// times its ink changes colour on its way from its start to its end: at
+// rest a reader follows a line by its colour, and a line that turns
+// neutral for a stretch and back reads as broken.
+func colourSwitches(d Drawing) int {
+	n := 0
+	for k, r := range d.Routes {
+		way := runs(r.D)
+		at := func(p pt) int {
+			run := 0
+			for _, q := range way {
+				if on(p, q[0], q[1]) {
+					return run + abs(p.x-q[0].x) + abs(p.y-q[0].y)
+				}
+				run += abs(q[1].x-q[0].x) + abs(q[1].y-q[0].y)
+			}
+			return -1
+		}
+		type piece struct {
+			at  int
+			hue string
+		}
+		var ps []piece
+		for _, w := range d.Wires {
+			if !slices.Contains(w.rides, k) {
+				continue
+			}
+			rs := runs(w.D)
+			if len(rs) == 0 {
+				continue
+			}
+			a, b := at(rs[0][0]), at(rs[len(rs)-1][1])
+			ps = append(ps, piece{min(a, b), w.Hue})
+		}
+		slices.SortFunc(ps, func(a, b piece) int { return a.at - b.at })
+		for i := 1; i < len(ps); i++ {
+			if ps[i].hue != ps[i-1].hue {
+				n++
+			}
+		}
+	}
+	return n
 }
 
 // inkCrossings counts the points where a straight stretch of ink passes

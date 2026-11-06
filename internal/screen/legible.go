@@ -98,8 +98,8 @@ type sheet struct {
 	// no reader who points at it (rule 18), and routes are those routes.
 	routed bool
 	routes []stroke
-	// roads says the drawing's lines ride roads (confluence.go), set from
-	// the Drawing, not read off the SVG.
+	// roads says the drawing's lines ride roads (confluence.go), as its
+	// svg's data-roads says.
 	roads bool
 }
 
@@ -166,6 +166,7 @@ func readSVG(src string) (sheet, error) {
 			switch t.Name.Local {
 			case "svg":
 				s.width, s.height = num(attr(t, "width")), num(attr(t, "height"))
+				s.roads = s.roads || attr(t, "data-roads") != ""
 			case "g":
 				if hasClass(t, "route") {
 					s.routed, route = true, attr(t, "class")

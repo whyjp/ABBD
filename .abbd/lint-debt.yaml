@@ -9,8 +9,8 @@ ceilings:
     excess_turns: 155
     overflow: 1
     placement: 35
-    tees: 5
-    weighed: 370
+    tees: 3
+    weighed: 354
 debt:
     overview:
         R: 1
