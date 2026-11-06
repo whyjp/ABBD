@@ -38,7 +38,7 @@ type Hop struct {
 	N       int
 	D, Head string
 	Tips    []string
-	X, Y    int
+	X, Y, R int
 	Lit     string
 	way     int
 }
@@ -130,9 +130,9 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 		if h.way < len(d.Routes) {
 			hp.Lit = d.Routes[h.way].Lit
 		}
-		at := d.badge(runs(r.D), taken)
+		at, rad := d.badge(runs(r.D), taken)
 		taken = append(taken, at)
-		hp.X, hp.Y = at.x, at.y
+		hp.X, hp.Y, hp.R = at.x, at.y, rad
 		l.Hops = append(l.Hops, hp)
 	}
 	d.Lead = l
@@ -247,10 +247,11 @@ func inferred(boxes []Box, uses []use) []use {
 }
 
 // badge is where a hop's number sits: halfway along its way, or failing
-// that the nearest point to it, by twentieths, off every box, label and
-// count and clear of the numbers already set; failing that, set a little
-// to one side.
-func (d *Drawing) badge(way [][2]pt, taken []pt) pt {
+// that the nearest point to it, by fortieths, off every box, label and
+// count, clear of the numbers already set and inkGap from every other
+// line, arrowhead, dot and chip; failing that, set up to its radius to one
+// side; failing that, the same at the small radius.
+func (d *Drawing) badge(way [][2]pt, taken []pt) (pt, int) {
 	total := 0
 	for _, r := range way {
 		total += abs(r[1].x-r[0].x) + abs(r[1].y-r[0].y)
@@ -277,39 +278,194 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) pt {
 		}
 		return way[len(way)-1][1]
 	}
-	free := func(p pt) bool {
+	free := func(p pt, r int) bool {
 		for _, b := range d.Boxes {
-			if hit(box{p.x - badgeR, p.y - badgeR, 2 * badgeR, 2 * badgeR}, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+			if hit(box{p.x - r, p.y - r, 2 * r, 2 * r}, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
 				return false
 			}
 		}
-		here := box{p.x - badgeR - 2, p.y - badgeR - 2, 2*badgeR + 4, 2*badgeR + 4}
+		here := box{p.x - r - 2, p.y - r - 2, 2*r + 4, 2*r + 4}
 		for _, w := range d.Wires {
 			if w.Label != nil && hit(here, w.Label.area()) || w.Count > 0 && hit(here, box{w.LX - 2, w.LY - 11, 24, 13}) {
 				return false
 			}
 		}
 		for _, q := range taken {
-			if abs(p.x-q.x) < 3*badgeR && abs(p.y-q.y) < 3*badgeR {
+			if abs(p.x-q.x) < 3*r && abs(p.y-q.y) < 3*r {
 				return false
 			}
 		}
-		return true
+		return d.badgeClear(p, r, way)
 	}
-	for _, side := range []int{0, -badgeShift, badgeShift} {
-		for k := 0; k <= 16; k++ {
-			f := .5 + float64((k+1)/2)*.05*float64(1-2*(k%2))
-			if p := along(f, side); free(p) {
-				return p
+	for _, r := range []int{badgeR, badgeSmall} {
+		for _, side := range []int{0, -r / 2, r / 2, -r, r, -r - badgeBeside, r + badgeBeside} {
+			for k := 0; k <= 36; k++ {
+				f := .5 + float64((k+1)/2)*.025*float64(1-2*(k%2))
+				if p := along(f, side); free(p, r) {
+					return p, r
+				}
 			}
 		}
 	}
-	return along(.5, 0)
+	// Where the line has no room at all, the number sits on the edge of a
+	// box the line meets, beside where it leaves or arrives, off that
+	// box's words and chips and clear of every other mark.
+	for _, r := range []int{badgeR, badgeSmall} {
+		for _, f := range []float64{0, 1} {
+			end := along(f, 0)
+			for _, side := range []int{-r - badgeBeside, r + badgeBeside, -2*r - badgeBeside, 2*r + badgeBeside} {
+				p := along(f, side)
+				p = pt{p.x, end.y}
+				if len(way) > 0 && way[0][0].y == way[0][1].y {
+					p = pt{end.x, along(f, side).y}
+				}
+				if d.badgeClear(p, r, way) && !d.onWords(p, r) && !slices.ContainsFunc(taken, func(q pt) bool { return abs(p.x-q.x) < 3*r && abs(p.y-q.y) < 3*r }) {
+					return p, r
+				}
+			}
+		}
+	}
+	return along(.5, 0), badgeR
 }
 
-// badgeR is the radius of a hop's number, and badgeShift how far it may
-// stand off its line, still on it, where its line has no room.
-const badgeR, badgeShift = 8, 6
+// badgeR is the radius of a hop's number, and badgeSmall the radius it
+// takes where its line has no room for it. A badge may stand off its line
+// by up to its radius, still touching it, and last of all badgeBeside
+// further, beside it the way a label stands beside its line. inkGap is the least room a badge
+// or a band's title keeps from any line, arrowhead, dot or chip that is
+// not its own.
+const badgeR, badgeSmall, badgeBeside, inkGap = 8, 6, 4, 3
+
+// clearOfInk says no ink of the view meets area: no stretch of a line
+// except one along own, no arrowhead, no dot and no chip. A stroke reaches
+// 2px off its centre, an arrowhead 9px back from its tip and 5px to each
+// side.
+func (d *Drawing) clearOfInk(area box, own [][2]pt) bool {
+	for _, w := range d.Wires {
+		rs := runs(w.D)
+		for _, r := range rs {
+			mine := false
+			for _, o := range own {
+				if overlap(r, o) > 0 {
+					mine = true
+				}
+			}
+			if !mine && hit(area, grow(seg{a: r[0], b: r[1]}.bounds(), 2)) {
+				return false
+			}
+		}
+		if w.Head != "" && !w.Joins && len(rs) > 0 {
+			last := rs[len(rs)-1]
+			if hit(area, tipBox(last[1], last[0])) {
+				return false
+			}
+		}
+	}
+	for _, j := range d.Dots {
+		if hit(area, box{j.X - 3, j.Y - 3, 6, 6}) {
+			return false
+		}
+	}
+	for _, p := range d.Ports {
+		if hit(area, box{p.X, p.RectY(), p.W, p.H}) {
+			return false
+		}
+	}
+	return true
+}
+
+// badgeClear says a number of radius r at c keeps inkGap from every line
+// of the view that does not run along own, every arrowhead, dot and chip,
+// measured from its rim. A stroke reaches 1.5px off its centre.
+func (d *Drawing) badgeClear(c pt, r int, own [][2]pt) bool {
+	need := float64(r + inkGap)
+	for _, w := range d.Wires {
+		rs := runs(w.D)
+		for _, x := range rs {
+			mine := false
+			for _, o := range own {
+				mine = mine || overlap(x, o) > 0
+			}
+			if !mine && stretchDist(c, x[0], x[1]) < need+1.5 {
+				return false
+			}
+		}
+		if w.Head != "" && !w.Joins && len(rs) > 0 && boxDist(c, tipBox(rs[len(rs)-1][1], rs[len(rs)-1][0])) < need {
+			return false
+		}
+	}
+	for _, j := range d.Dots {
+		if math.Hypot(float64(c.x-j.X), float64(c.y-j.Y)) < need+3 {
+			return false
+		}
+	}
+	for _, p := range d.Ports {
+		if boxDist(c, box{p.X, p.RectY(), p.W, p.H}) < need {
+			return false
+		}
+	}
+	return true
+}
+
+// onWords says a number of radius r at c meets a box's name or last
+// line, or a line's label or count.
+func (d *Drawing) onWords(c pt, r int) bool {
+	area := box{c.x - r - 2, c.y - r - 2, 2*r + 4, 2*r + 4}
+	for _, b := range d.Boxes {
+		for _, l := range append(slices.Clone(b.Lines), func() []Text {
+			if b.Sub != nil {
+				return []Text{*b.Sub}
+			}
+			return nil
+		}()...) {
+			w := textWidth(l.S, 13)
+			x := l.X
+			if l.Mid {
+				x -= w / 2
+			}
+			if hit(area, box{x, l.Y - 12, w, 15}) {
+				return true
+			}
+		}
+	}
+	for _, w := range d.Wires {
+		if w.Label != nil && hit(area, w.Label.area()) || w.Count > 0 && hit(area, box{w.LX - 2, w.LY - 11, 24, 13}) {
+			return true
+		}
+	}
+	return false
+}
+
+// stretchDist is how far p lies from the stretch a-b.
+func stretchDist(p, a, b pt) float64 {
+	ax, ay, bx, by, px, py := float64(a.x), float64(a.y), float64(b.x), float64(b.y), float64(p.x), float64(p.y)
+	dx, dy := bx-ax, by-ay
+	t := 0.0
+	if l := dx*dx + dy*dy; l > 0 {
+		t = math.Max(0, math.Min(1, ((px-ax)*dx+(py-ay)*dy)/l))
+	}
+	return math.Hypot(px-ax-t*dx, py-ay-t*dy)
+}
+
+// boxDist is how far p lies from the rectangle r.
+func boxDist(p pt, r box) float64 {
+	dx := math.Max(0, math.Max(float64(r.x-p.x), float64(p.x-(r.x+r.w))))
+	dy := math.Max(0, math.Max(float64(r.y-p.y), float64(p.y-(r.y+r.h))))
+	return math.Hypot(dx, dy)
+}
+
+// tipBox is the area an arrowhead at tip, pointing away from from, covers.
+func tipBox(tip, from pt) box {
+	dx, dy := sign(tip.x-from.x), sign(tip.y-from.y)
+	back := pt{tip.x - 9*dx, tip.y - 9*dy}
+	b := box{min(tip.x, back.x), min(tip.y, back.y), abs(tip.x - back.x), abs(tip.y - back.y)}
+	if dx == 0 {
+		b.x, b.w = b.x-5, 10
+	} else {
+		b.y, b.h = b.y-5, 10
+	}
+	return b
+}
 
 // quiet draws every line of a view that has a lead in grey, its heads,
 // labels and dots too, a bypass's included, so the lead is the one

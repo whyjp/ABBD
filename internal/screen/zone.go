@@ -30,6 +30,9 @@ type Zone struct {
 	Title, Hue string
 	X, Y, W, H int
 	TX, TY     int
+	// Lines are the title set on two lines, where one line has no room
+	// clear of ink; empty when it fits on one.
+	Lines []string `json:",omitempty"`
 }
 
 // Label is the band's title as set: its layer's number, then its name.
@@ -44,7 +47,12 @@ const (
 	// zoneSide and zoneFoot are how far a band reaches past its boxes,
 	// and zoneHead how far above them, where its title sits.
 	zoneSide, zoneFoot, zoneHead = 8, 8, 20
-	zonePx                       = 10
+	// zoneMore is how much further a band reaches above or below its
+	// boxes when no place in its usual room keeps its title clear of ink.
+	zoneMore = 12
+	// zoneLine is how far a title's second line sits below its first.
+	zoneLine = 12
+	zonePx   = 10
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
@@ -210,7 +218,11 @@ func (d *Drawing) shown(t tree) func(model.ID) string {
 // band is g's zone, when its boxes sit together: around them, with room
 // above or below for the title, on the canvas and inside the frame, clear
 // of every other box and chip and of the bands already set. The title
-// takes the corner fewest lines, labels and counts cross.
+// takes the first place along the top, then the bottom, that keeps inkGap
+// from every line, arrowhead, dot, chip and number; with none, the band
+// reaches zoneMore further and sets its title on two lines, and failing
+// that the title
+// takes the place fewest lines, labels and counts cross.
 func (d *Drawing) band(g group) (Zone, bool) {
 	in := map[string]bool{}
 	for _, id := range g.ids {
@@ -225,32 +237,61 @@ func (d *Drawing) band(g group) (Zone, bool) {
 		}
 	}
 	best, cost := Zone{}, -1
-	for _, below := range []bool{false, true} {
-		head, foot := zoneHead, zoneFoot
+	plain, plainCost := Zone{}, -1
+	for _, try := range []struct {
+		below bool
+		more  int
+	}{{false, 0}, {true, 0}, {false, zoneMore}, {true, zoneMore}} {
+		if cost == 0 {
+			break
+		}
+		below := try.below
+		head, foot := zoneHead+try.more, zoneFoot
 		if below {
-			head, foot = zoneFoot, zoneHead
+			head, foot = zoneFoot, zoneHead+try.more
 		}
 		z := Zone{N: g.n, Title: g.title, X: lo.x - zoneSide, Y: lo.y - head, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + head + foot}
 		if !d.clear(z, in) {
 			continue
 		}
-		w := zoneWidth(z.Label())
+		lines := []string{z.Label()}
+		if try.more > 0 {
+			lines = halves(z.Label())
+		}
+		w := 0
+		for _, l := range lines {
+			w = max(w, zoneWidth(l))
+		}
+		tall := 13 + (len(lines)-1)*zoneLine
 		y := z.Y + 14
 		if below {
-			y = z.Y + z.H - 6
+			y = z.Y + z.H - 6 - (len(lines)-1)*zoneLine
 		}
-		for _, x := range []int{z.X + zoneSide + 2, z.X + z.W - zoneSide - 2 - w} {
-			if x < z.X+zoneSide {
-				continue
+		for x := z.X + zoneSide + 2; x == z.X+zoneSide+2 || x <= z.X+z.W-zoneSide-2-w; x += 4 {
+			area := box{x - 2, y - 10, w + 4, tall}
+			c := 1000 + d.crossed(area)
+			if d.clearOfInk(grow(area, inkGap), nil) && !d.onBadge(grow(area, inkGap)) {
+				c = 0
 			}
-			if c := d.crossed(box{x - 2, y - 10, w + 4, 13}); cost < 0 || c < cost {
+			if cost < 0 || c < cost {
 				best, cost = z, c
 				best.TX, best.TY = x, y
+				if len(lines) > 1 {
+					best.Lines = lines
+				}
+			}
+			if try.more == 0 && (plainCost < 0 || c < plainCost) {
+				plain, plainCost = z, c
+				plain.TX, plain.TY = x, y
 			}
 		}
 	}
 	if cost < 0 {
 		return Zone{}, false
+	}
+	// A band that reaching further does not clear keeps its usual room.
+	if cost > 0 && plainCost >= 0 {
+		best = plain
 	}
 	n := -1
 	for h, k := range hues {
@@ -313,7 +354,36 @@ func (d *Drawing) crossed(area box) int {
 	return n
 }
 
+// halves sets s on two lines, broken at the space nearest its middle, or
+// leaves it whole when it has no space.
+func halves(s string) []string {
+	r := []rune(s)
+	best := -1
+	for i, c := range r {
+		if c == ' ' && (best < 0 || abs(i-len(r)/2) < abs(best-len(r)/2)) {
+			best = i
+		}
+	}
+	if best <= 0 {
+		return []string{s}
+	}
+	return []string{strings.TrimSpace(string(r[:best])), strings.TrimSpace(string(r[best:]))}
+}
+
 // zoneWidth is how wide a title is set: small capitals spaced apart.
 func zoneWidth(s string) int {
 	return textWidth(strings.ToUpper(s), zonePx) + len([]rune(s))*2
+}
+
+// onBadge says area meets a number of the view's lead.
+func (d *Drawing) onBadge(area box) bool {
+	if d.Lead == nil {
+		return false
+	}
+	for _, h := range d.Lead.Hops {
+		if hit(area, box{h.X - h.R, h.Y - h.R, 2 * h.R, 2 * h.R}) {
+			return true
+		}
+	}
+	return false
 }
