@@ -251,6 +251,9 @@ type roadCost struct {
 // of the place it reaches, and the position of a height on the page.
 type roadView struct {
 	style []string
+	// plan says each route's relations all arise only in design, so it is
+	// drawn dotted where it rides alone.
+	plan []bool
 	// ends are each route's two ends, whose spans its first and last runs
 	// may slide along.
 	ends     [][2]end
@@ -324,9 +327,22 @@ func (v roadView) forks(ways [][]pt) [][2]int {
 	return out
 }
 
+// alike says runs a and b may ride one road: a move keeps a dotted line
+// off the roads solid lines ride, so the drawing keeps that cue (the user's
+// call). Where the routing already bundled the two, they stay one road,
+// drawn solid.
+func (v roadView) alike(a, b straightRun) bool {
+	return !v.mix(a) && !v.mix(b) && v.plan[a.segs[0][0]] == v.plan[b.segs[0][0]]
+}
+
+// mix says run r carries dotted and solid lines both.
+func (v roadView) mix(r straightRun) bool {
+	return slices.ContainsFunc(r.segs, func(s [2]int) bool { return v.plan[s[0]] }) && slices.ContainsFunc(r.segs, func(s [2]int) bool { return !v.plan[s[0]] })
+}
+
 // tees counts the points where a route that drops straight crosses a flat
-// run of another route from its place, of any kind, where no turn of
-// either stands: a T a reader takes for a branch (lint's tees).
+// run of another route from its place, of any kind: a T a reader takes for
+// a branch (lint's tees).
 func (v roadView) tees(ways [][]pt) int {
 	seen := map[pt]bool{}
 	for i, w := range ways {
@@ -403,21 +419,21 @@ func (v roadView) farSplits(ways [][]pt) int {
 
 // confluent moves the routes onto shared roads and draws the road.
 func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
-	style := make([]string, len(reqs))
+	ink, plan := make([]string, len(reqs)), make([]bool, len(reqs))
 	dest, to, from := make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
 		to[i], from[i] = place(q.to), place(q.from)
 		if q.from.node != "" {
 			from[i] = "node|" + q.from.node
 		}
-		style[i] = fmt.Sprint(q.kind, r.back[i])
+		ink[i], plan[i] = fmt.Sprint(q.kind, r.back[i]), q.plan
 		dest[i] = min(max(2*q.to.row+1, -1), 2*rows+1)
 	}
 	ends := make([][2]end, len(reqs))
 	for i, q := range reqs {
 		ends[i] = [2]end{q.from, q.to}
 	}
-	v := roadView{style, ends, from, to, dest, position}
+	v := roadView{ink, plan, ends, from, to, dest, position}
 	ways := make([][]pt, len(r.ways))
 	for i, w := range r.ways {
 		ways[i] = straight(w)
@@ -435,7 +451,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		cost = v.cost(ways)
 	}
 	r.ways = ways
-	r.drawn = roads(ways, style, reqs, r.back)
+	r.drawn = roads(ways, ink, reqs, r.back)
 }
 
 // step finds the first move that reads better than cost, in order: runs
@@ -449,7 +465,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	var moves []move
 	for i, a := range rs {
 		for k, b := range rs {
-			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style {
+			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style || !v.alike(a, b) {
 				continue
 			}
 			if d := abs(a.at - b.at); d == 0 || d > roadRoom {

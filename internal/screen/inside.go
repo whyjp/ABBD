@@ -599,7 +599,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	}
 	var reqs []wireReq
 	for _, ln := range lines {
-		r := wireReq{from: unitEnd(ln.from), kind: string(ln.kind)}
+		r := wireReq{from: unitEnd(ln.from), kind: string(ln.kind), plan: t.planOnly(ln.rels)}
 		switch {
 		case ln.inner:
 			r.to = unitEnd(ln.to)

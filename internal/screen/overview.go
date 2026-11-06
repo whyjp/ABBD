@@ -952,7 +952,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			to.lo, to.hi = span([]string{s.toKey})
 			to.key = s.toKey
 		}
-		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind})
+		reqs = append(reqs, wireReq{from: from, to: to, kind: s.kind, plan: o.tree.planOnly(s.rels)})
 	}
 	routed := l.route(reqs)
 	o.read = costOf(routed, reqs)

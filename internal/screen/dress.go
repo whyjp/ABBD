@@ -34,6 +34,11 @@ const (
 	planMin = 30
 )
 
+// planOnly says every one of rels, and at least one, arises only in design.
+func (t tree) planOnly(rels []string) bool {
+	return len(rels) > 0 && !slices.ContainsFunc(rels, func(r string) bool { return !planned[t.vias[r]] })
+}
+
 func insides(ins []Inside) []*Drawing {
 	var out []*Drawing
 	for i := range ins {
@@ -46,7 +51,7 @@ func insides(ins []Inside) []*Drawing {
 func (d *Drawing) dress(t tree) {
 	for i := range d.Wires {
 		w := &d.Wires[i]
-		w.Plan = len(w.Rels) > 0 && runLength(w.D) >= planMin && !slices.ContainsFunc(w.Rels, func(r string) bool { return !planned[t.vias[r]] })
+		w.Plan = runLength(w.D) >= planMin && t.planOnly(w.Rels)
 	}
 	if d.Lead == nil && d.hub() && 2*d.ownLines() >= len(d.Wires) {
 		d.hubLines()

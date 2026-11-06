@@ -657,8 +657,11 @@ type end struct {
 
 type wireReq struct {
 	from, to end
-	// kind keeps lines of different kinds out of one bundle.
+	// kind keeps lines of different kinds out of one bundle, and plan says
+	// every relation the line stands for arises only in design, so it is
+	// drawn dotted and rides no road a solid line rides (confluence.go).
 	kind string
+	plan bool
 }
 
 func polyline(pts []pt) string {
