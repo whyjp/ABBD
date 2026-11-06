@@ -5,12 +5,12 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
-    detours: 12
-    excess_turns: 193
+    detours: 11
+    excess_turns: 183
     overflow: 0
     placement: 38
-    tees: 3
-    weighed: 463
+    tees: 2
+    weighed: 428
 debt:
     MOD-0030 internal/model:
         R: 1

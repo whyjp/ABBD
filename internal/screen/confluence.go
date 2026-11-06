@@ -327,23 +327,10 @@ func (v roadView) forks(ways [][]pt) [][2]int {
 	return out
 }
 
-// alike says runs a and b may ride one road: a move keeps a dotted line
-// off the roads solid lines ride, so the drawing keeps that cue (the user's
-// call). Where the routing already bundled the two, they stay one road,
-// drawn solid.
-func (v roadView) alike(a, b straightRun) bool {
-	return !v.mix(a) && !v.mix(b) && v.plan[a.segs[0][0]] == v.plan[b.segs[0][0]]
-}
-
-// mix says run r carries dotted and solid lines both.
-func (v roadView) mix(r straightRun) bool {
-	return slices.ContainsFunc(r.segs, func(s [2]int) bool { return v.plan[s[0]] }) && slices.ContainsFunc(r.segs, func(s [2]int) bool { return !v.plan[s[0]] })
-}
-
-// unseen counts the dotted routes with less than planMin of ink no solid
-// route of their style runs on: dress draws a piece dotted only where all
-// its lines arise in design and it runs planMin or more, so such a line
-// shows nowhere as what it is.
+// unseen counts the dotted routes with no straight stretch of planMin that
+// no solid route of their style runs on: dress draws a path dotted only
+// where all its lines arise in design and it runs planMin or more, so such
+// a line shows nowhere as what it is.
 func (v roadView) unseen(ways [][]pt) int {
 	n := 0
 	for i, w := range ways {
@@ -368,14 +355,12 @@ func (v roadView) unseen(ways [][]pt) int {
 				}
 			}
 			sort.Slice(cover, func(x, y int) bool { return cover[x][0] < cover[y][0] })
-			free, at2 := 0, lo
+			at2 := lo
 			for _, c := range cover {
-				if c[0] > at2 {
-					free += c[0] - at2
-				}
+				own = max(own, c[0]-at2)
 				at2 = max(at2, c[1])
 			}
-			own += free + max(0, hi-at2)
+			own = max(own, hi-at2)
 		}
 		if own < planMin {
 			n++
@@ -509,7 +494,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	var moves []move
 	for i, a := range rs {
 		for k, b := range rs {
-			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style || !v.alike(a, b) {
+			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style {
 				continue
 			}
 			if d := abs(a.at - b.at); d == 0 || d > roadRoom {
@@ -532,9 +517,6 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	// branches on one track.
 	for _, f := range v.forks(ways) {
 		a, b := at[[2]int{f[0], 1}], at[[2]int{f[1], 1}]
-		if !v.alike(rs[a], rs[b]) {
-			continue
-		}
 		if rs[a].moves(rs[b].at) {
 			moves = append(moves, move{a, rs[b].at, 0})
 		}
@@ -547,7 +529,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	for i, w := range ways {
 		for j := 1; j+1 < len(w)-1; j++ {
 			a, b := at[[2]int{i, j - 1}], at[[2]int{i, j + 1}]
-			if rs[a].vertical != rs[b].vertical || !v.alike(rs[a], rs[b]) {
+			if rs[a].vertical != rs[b].vertical {
 				continue
 			}
 			if rs[a].moves(rs[b].at) {

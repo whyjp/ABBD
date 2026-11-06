@@ -1012,7 +1012,7 @@ func (l *look) splitsAtEnds() []Breach {
 		}
 		var tos []string
 		var ends []int
-		for _, w := range l.trace.Ways {
+		for _, w := range l.splitWays() {
 			if _, _, ok := passing(j.at, w.pts); ok && w.kind == j.kind && !slices.Contains(tos, w.to) {
 				tos = append(tos, w.to)
 				ends = append(ends, l.placeAt(w.to))
@@ -1033,11 +1033,30 @@ func (l *look) splitsAtEnds() []Breach {
 	return out
 }
 
+// splitWays are the ways J1 reads splits off: on roads with their routes
+// drawn, each line's own route, since a road joins places no line does
+// and a traced way may take another line's turn; else the traced ways.
+func (l *look) splitWays() []tracedWay {
+	if !l.v.d.roads || !l.s.routed {
+		return l.trace.Ways
+	}
+	var out []tracedWay
+	for _, r := range l.s.routes {
+		if len(r.pts) < 2 {
+			continue
+		}
+		if to := shapeOf(l.s, r.pts[len(r.pts)-1]); to >= 0 {
+			out = append(out, tracedWay{to: l.s.shapes[to].id, pts: r.pts, kind: colour(strings.TrimPrefix(r.class, "route "))})
+		}
+	}
+	return out
+}
+
 // splitAt says the lines of j's kind through dot j arrive from one side
 // and leave on more than one, to more than one place.
 func (l *look) splitAt(j junction) bool {
 	ins, outs, tos := map[fpt]bool{}, map[fpt]bool{}, map[string]bool{}
-	for _, w := range l.trace.Ways {
+	for _, w := range l.splitWays() {
 		in, out, ok := passing(j.at, w.pts)
 		if !ok || w.kind != j.kind {
 			continue
