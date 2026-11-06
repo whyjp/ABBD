@@ -31,7 +31,10 @@ type rect struct{ X, Y, W, H int }
 
 type layout struct {
 	pos map[string]rect
-	row map[string]int
+	// held is the track each crossing took in a drawing route lays this
+	// one against, by gap and owner: no crossing takes a higher one.
+	held map[[3]int]int
+	row  map[string]int
 	// rows are the wrapped layers, top to bottom.
 	rows  [][]string
 	width int

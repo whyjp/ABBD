@@ -138,18 +138,29 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // spares. Where the layout's straighten moves a chain, the view is drawn
 // again with the chains moved, and that is kept where weigh reads it
 // better, unless the view has more than shareMost requests, as for shared
-// buses. Only the kept
-// drawing's counts are anchored: route may lay a view many times to keep
-// one, and no measure it compares them by reads where a count stands,
-// while placing the counts was most of a lay.
+// buses. Where it is not, it is
+// drawn once more with every crossing held at or under its first track: a
+// line that drops straight leaves its track empty rather than pull the
+// tracks below it up, which would shorten the steps beneath into jogs.
+// Only the kept drawing's counts are anchored: route may lay a view many
+// times to keep one, and no measure it compares them by reads where a
+// count stands, while placing the counts was most of a lay.
 func (l *layout) route(reqs []wireReq) routing {
 	before := l.keep()
 	r := l.routeApart(reqs)
 	after := l.keep()
 	*l = before
 	if len(reqs) <= shareMost && l.straighten(reqs) {
-		if s := l.routeApart(reqs); weigh(s, reqs).beats(weigh(r, reqs)) {
-			r, after = s, l.keep()
+		moved := l.keep()
+		for _, held := range []map[[3]int]int{nil, r.tracks} {
+			*l = moved
+			l.held = held
+			s := l.routeApart(reqs)
+			l.held = nil
+			if weigh(s, reqs).beats(weigh(r, reqs)) {
+				r, after = s, l.keep()
+				break
+			}
 		}
 	}
 	*l = after
@@ -460,6 +471,8 @@ type routing struct {
 	// joined says lay let a line that steps off its departure trunk lead
 	// its arrival bus, the bus's other lines joining on the track.
 	joined bool
+	// tracks is the track each crossing took, by gap and owner.
+	tracks map[[3]int]int
 }
 
 // lay draws every request, with shared arrival buses where shared allows
@@ -1633,6 +1646,16 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		return c
 	}
 	track := map[[2]int]int{}
+	// took is each crossing's track keyed by what stays when the view is
+	// laid again: a line by its request, a bus by its first line and side.
+	took := map[[3]int]int{}
+	crossing := func(g, o int) [3]int {
+		if o >= 0 {
+			return [3]int{g, o, 0}
+		}
+		b := buses[-1-o]
+		return [3]int{g, b.members[0], map[bool]int{false: 1, true: 2}[b.arrive]}
+	}
 	tracks := make([]int, n+1)
 	for g := range spans {
 		// cost is how many crossings putting a above b makes between them.
@@ -1663,8 +1686,10 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		}
 		meet := func(a, b int) bool { return order[a].lo <= order[b].hi+lane && order[b].lo <= order[a].hi+lane }
 		held := func(a, b int) bool { return cost(order[a], order[b]) > 0 || cost(order[b], order[a]) > 0 }
-		for k, t := range shelve(len(order), meet, held) {
+		least := func(k int) int { return l.held[crossing(g, order[k].owner)] }
+		for k, t := range shelve(len(order), meet, held, least) {
 			track[[2]int{g, order[k].owner}] = t
+			took[crossing(g, order[k].owner)] = t
 			tracks[g] = max(tracks[g], t+1)
 		}
 	}
@@ -2093,7 +2118,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined, tracks: took}
 }
 
 // teed says line i drops straight across a flat stretch of another line
@@ -2503,10 +2528,12 @@ func tracksHeight(t int, room [2]int) int {
 // crossing ranked before it that it meets and is held by, as when their
 // order crosses something either way, and clear of every other crossing it
 // meets. Two that cross nothing whichever lies above may stand in either
-// order, so a gap holds no more tracks than its crossings need.
-func shelve(m int, meet, held func(a, b int) bool) []int {
+// order, so a gap holds no more tracks than its crossings need. No crossing
+// takes a track above least.
+func shelve(m int, meet, held func(a, b int) bool, least func(k int) int) []int {
 	t := make([]int, m)
 	for s := range m {
+		t[s] = least(s)
 		for q := range s {
 			if meet(q, s) && held(q, s) {
 				t[s] = max(t[s], t[q]+1)
