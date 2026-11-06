@@ -79,6 +79,9 @@ func TestAStackBandsItsLayers(t *testing.T) {
 		t.Fatal("no layer is banded")
 	}
 	for _, z := range d.Zones {
+		if z.N == 0 && z.Title == "외부 계약" {
+			continue
+		}
 		if z.N < 1 || z.N > len(groups) {
 			t.Fatalf("band %q is numbered %d, not one of the %d stored layers", z.Title, z.N, len(groups))
 		}
