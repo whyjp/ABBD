@@ -21428,7 +21428,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a left accent bar and a tinted border, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the reserved warning orange instead, whatever box it leaves. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the reserved warning orange instead, whatever box it leaves. ",
                 "Code": false
               },
               {
