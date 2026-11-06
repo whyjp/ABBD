@@ -14,11 +14,13 @@ f73-one-track	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct y's
 f73-beside	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	px two stems from app-shell run beside each other within 16px	0	31b09a6	<= 0	guard: no stub runs beside the stem through its track
 s98-mobile	user-11, user-12, user-15	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← mobile/	11	31b09a6	<= 0	the mobile/ entry's lines stair down through the middle
 s98-mobile-beside	user-13, user-14	orca MOD-0098 src/	px two stems from chip ← mobile/ run beside each other within 16px	376	31b09a6	<= 0	the x2 and x5 stems run as two parallel verticals; one stem, or apart
+s98-doubled	review-112	orca MOD-0098 src/	pairs of wires of one kind, not one bundle, drawn on one another	3	b71d042	<= 0	wires 37 and 39 both draw M626 526 L626 558, so the pointer never reaches 37
 s98-native	user-11, user-12	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← native/	0	31b09a6	<= 0	guard: the native/ entry now drops straight into desktop main process
 s98-host-jogs	user-15	orca MOD-0098 src/	jogs of lines at @orca/process-host	6	31b09a6	<= 0	process-host's arrivals step in small jogs above it
 s98-connector	user-02, user-03 (MOD-0100, not a fixture)	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip @orca-cloud/connector- contract	5	31b09a6	<= 0	MOD-0100's stairs down to the frame's bottom chips; MOD-0098 has the same chips
 n97-exit	user-04	orca MOD-0097 native/	px windows-agent-hook -> chip → src/ runs sideways	0	31b09a6	<= 0	guard: the exit ran left under process-footprint-macos, reading as its line
 self-gitx	user-05	self overview	excess turns, jogs and turn-backs of lines at internal/gitx	22	31b09a6	<= 0	the knot of steps between internal/extract, internal/store and internal/gitx
+p01-tee	today	pstack MOD-0001 setup and help	points where a line's straight drop crosses the track of another line leaving its box	1	54a63fc	<= 0	/poteto-help -> 10-recipes drops 420,106 to 420,142 across its box's own bus to 01-setup at 420,130
 hover-cut	today	every shot page	shoot.py cut	0	31b09a6	<= 0	guard: a lit route stops partway
 hover-stray	today	every shot page	shoot.py stray	0	31b09a6	<= 0	guard: a lit box no lit line reaches
 hover-mixed	today	every shot page	shoot.py mixed	0	31b09a6	<= 0	guard: one lit route of two colours

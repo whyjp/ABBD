@@ -383,6 +383,8 @@ type Metrics struct {
 	// Length is how long, in pixels, the lines run in all, and BackLength
 	// how much of that is drawn dashed: the ink of the lines that climb.
 	Length, BackLength int
+	// crossed are the points R1 counts as crossings.
+	crossed []fpt
 }
 
 func (m Metrics) String() string {
@@ -441,6 +443,7 @@ func measure(s sheet) Metrics {
 				}
 			}
 			m.Crossings += len(seen)
+			m.crossed = append(m.crossed, seen...)
 		}
 	}
 	// R3: two lines running side by side closer than minGap.

@@ -18,6 +18,10 @@ const (
 	detourLimit = 240
 	// stepCrossings is how many crossings one staircase step is worth.
 	stepCrossings = 4
+	// teeCrossings is what lint weighs a tee at: more than the two excess
+	// turns a line pays to take its bus instead, since a T reads as a
+	// branch, a relation that is not there.
+	teeCrossings = 2*stepCrossings + 1
 )
 
 // weight is what one routing costs a reader. touches counts pairs of strokes
