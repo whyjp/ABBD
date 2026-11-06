@@ -732,6 +732,9 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		w.ends = endsOf(reqs, p.reqs)
+		if l.roads {
+			w.rides = p.reqs
+		}
 		d.Wires = append(d.Wires, w)
 	}
 	d.route(routed, reqs, func(i int) []string { return lines[i].rels })

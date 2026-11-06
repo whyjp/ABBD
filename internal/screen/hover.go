@@ -113,7 +113,9 @@ func (d *Drawing) hover() {
 		is := nums(w.ends)
 		var ks []int
 		for k := range d.Routes {
-			if d.Routes[k].Kind == w.Kind && alongside(ink, d.Routes[k].runs) {
+			// A road lights the routes that ride it, whatever their kind;
+			// other ink the routes of its kind that run along it.
+			if rides := w.rides != nil; rides && slices.Contains(w.rides, k) || !rides && d.Routes[k].Kind == w.Kind && alongside(ink, d.Routes[k].runs) {
 				ks = append(ks, k)
 				is = append(is, d.Routes[k].at...)
 			}
