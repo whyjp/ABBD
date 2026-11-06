@@ -68,7 +68,8 @@ func (d *Drawing) card() {
 }
 
 // room is the first free w by h place in the view: its four corners
-// first, then every place on a 16px grid, clear by cardRoom of every box,
+// first, then places along an edge within a third of a corner, clear by
+// cardRoom of every box,
 // chip, line, arrowhead, dot, label, count, number and band, inside the
 // frame when the view has one.
 func (d *Drawing) room(w, h int) (pt, bool) {
@@ -99,9 +100,16 @@ func (d *Drawing) room(w, h int) (pt, bool) {
 			return p, true
 		}
 	}
-	for y := bottom; y >= edge.y; y -= 16 {
-		for x := edge.x; x <= right; x += 16 {
-			if p := (pt{x, y}); free(p) {
+	// Then along each edge from its corners inward, up to a third of the
+	// way, so the card stays a corner's key and never floats mid-edge.
+	reach := func(n int) int { return n / 3 }
+	for s := 16; s <= max(reach(right-edge.x), reach(bottom-edge.y)); s += 16 {
+		for _, p := range []pt{{edge.x + s, bottom}, {right - s, bottom}, {edge.x, bottom - s}, {right, bottom - s}, {right - s, edge.y}, {edge.x + s, edge.y}, {right, edge.y + s}, {edge.x, edge.y + s}} {
+			along := p.y == bottom || p.y == edge.y
+			if along && s > reach(right-edge.x) || !along && s > reach(bottom-edge.y) {
+				continue
+			}
+			if free(p) {
 				return p, true
 			}
 		}

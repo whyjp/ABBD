@@ -2,7 +2,9 @@ package screen
 
 import (
 	"path/filepath"
+	"regexp"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -122,11 +124,20 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	}
 }
 
-// A view's card lists a sample only for a mark the view draws as the
-// sample shows it: the orange bypass only where a line is drawn orange,
-// the dotted line only where one is drawn dotted, the lead and the filled
-// box only where the view has them. It never covers a box or a band.
+// A view's card lists a sample only for a mark its rendered drawing
+// shows as the sample does, read from the SVG the page draws: the lead's
+// bold way, a filled box, an orange bypass line, a dotted line that does
+// not climb, a climbing line. Its area keeps cardRoom from all other ink
+// and every number, as the card promises.
 func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
+	marks := map[string]*regexp.Regexp{
+		"lead":   regexp.MustCompile(`<g class="leadway"`),
+		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
+		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b[^"]*" [^>]*data-h="b"`),
+		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
+		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
+	}
+	climbs := regexp.MustCompile(`\bback\b`)
 	cards := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -136,27 +147,27 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 				continue
 			}
 			cards++
-			has := map[string]bool{
-				"lead":   d.Lead != nil,
-				"fill":   d.Filled() != nil,
-				"bypass": slices.ContainsFunc(d.Wires, func(w Wire) bool { return warns(w.Kind) && w.Hue == warnKey }),
-				"plan":   slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back }),
-				"back":   slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Back }),
+			var b strings.Builder
+			if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
+				t.Fatal(err)
 			}
+			svg := b.String()
 			for _, it := range c.Items {
-				if !has[it.Kind] {
-					t.Errorf("%s: a card lists %s, which its view does not draw", name, it.Kind)
+				found := marks[it.Kind].FindAllString(svg, -1)
+				if it.Kind == "plan" {
+					found = slices.DeleteFunc(found, func(s string) bool { return climbs.MatchString(s) })
+				}
+				if len(found) == 0 {
+					t.Errorf("%s: a card lists %s, which its drawing does not show", name, it.Kind)
 				}
 			}
-			area := box{c.X, c.Y, c.W, c.H}
-			for _, b := range d.Boxes {
-				if hit(area, box{b.X, b.Y, b.W, b.H}) {
-					t.Errorf("%s: a card covers box %s", name, b.ID)
-				}
+			area := grow(box{c.X, c.Y, c.W, c.H}, cardRoom)
+			if !d.clearOfInk(area, nil) || d.onBadge(area) {
+				t.Errorf("%s: a card at %d,%d comes within %dpx of other ink", name, c.X, c.Y, cardRoom)
 			}
-			for _, z := range d.Zones {
-				if hit(area, box{z.X, z.Y, z.W, z.H}) {
-					t.Errorf("%s: a card covers band %q", name, z.Title)
+			for _, bx := range d.Boxes {
+				if hit(area, box{bx.X, bx.Y, bx.W, bx.H}) {
+					t.Errorf("%s: a card covers box %s", name, bx.ID)
 				}
 			}
 		}

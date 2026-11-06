@@ -68,7 +68,7 @@ A view reads first by its lead, its bands and its filled box, the way a diagram 
 
 The setup skill does not yet ask readers to store flows, so most held-out runs get an inferred lead or none.
 
-- **Card.** A view keeps a small key in a free corner of its own canvas, titled 범례, the way a hand-drawn diagram does: a sample of each mark it draws that few readers would guess, the lead, the filled box, an orange bypass, a dotted design-only line, a climbing line, and nothing it does not draw. It needs two such samples at least, and room 6px clear of every box, chip, line, arrowhead, dot, label, count, number and band, a corner first; a view with no such room keeps only the key below it. Three blind judges given the exemplars preferred the views with a card on 7 of the 8 they compared and tied the last, on the overall criterion, and on all 8 for reading hand-drawn and self-explanatory.
+- **Card.** A view keeps a small key in a free corner of its own canvas, titled 범례, the way a hand-drawn diagram does: a sample of each mark it draws that few readers would guess, the lead, the filled box, an orange bypass, a dotted design-only line, a climbing line, and nothing it does not draw. It needs two such samples at least, and room 6px clear of every box, chip, line, arrowhead, dot, label, count, number and band, in a corner or along an edge within a third of one, so it never floats mid-edge; a view with no such room keeps only the key below it. Three blind judges given the exemplars preferred the views with a card on 7 of the 8 they compared and tied the last, on the overall criterion, and on all 8 for reading hand-drawn and self-explanatory.
 
 ## Flow
 
