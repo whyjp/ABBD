@@ -67,6 +67,10 @@ type Totals struct {
 	Steps       int `json:"steps"`
 	Jogs        int `json:"jogs"`
 	Crossings   int `json:"crossings"`
+	// Tees are the points where a line's straight drop crosses a flat
+	// stretch of another line from the same place, with no junction dot:
+	// a T a reader takes for a branch. Each is one of the crossings.
+	Tees        int `json:"tees"`
 	Phantoms    int `json:"phantoms"`
 	PathsOver2  int `json:"paths_over2"`
 	TracedBends int `json:"traced_bends"`
@@ -88,7 +92,7 @@ func Sum(views []ViewLint) Totals {
 	for _, v := range views {
 		o := v.Totals
 		t.Hard, t.Target, t.ExcessTurns, t.Placement = t.Hard+o.Hard, t.Target+o.Target, t.ExcessTurns+o.ExcessTurns, t.Placement+o.Placement
-		t.Steps, t.Jogs, t.Crossings = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings
+		t.Steps, t.Jogs, t.Crossings, t.Tees = t.Steps+o.Steps, t.Jogs+o.Jogs, t.Crossings+o.Crossings, t.Tees+o.Tees
 		t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Weighed = t.Phantoms+o.Phantoms, t.PathsOver2+o.PathsOver2, t.TracedBends+o.TracedBends, t.Back+o.Back, t.Weighed+o.Weighed
 		t.Detours += o.Detours
 		t.Height += o.Height
@@ -270,15 +274,58 @@ func lintView(v view) (ViewLint, error) {
 		}
 	}
 	t := l.trace
-	vl.Totals.Steps, vl.Totals.Jogs, vl.Totals.Crossings = steps(t), sum(t.Jogs), l.metrics.Crossings
+	vl.Totals.Tees = len(tees(l))
+	vl.Totals.Steps, vl.Totals.Jogs, vl.Totals.Crossings = steps(t), sum(t.Jogs), l.metrics.Crossings+vl.Totals.Tees
 	vl.Totals.Phantoms, vl.Totals.PathsOver2, vl.Totals.TracedBends, vl.Totals.Back = t.Phantom, over2(t.Bends), sum(t.Bends), l.metrics.Back
 	vl.Totals.ExcessTurns = vl.Totals.Jogs
 	for _, ln := range l.lines() {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
-	vl.Totals.Weighed = vl.Totals.Crossings + stepCrossings*vl.Totals.ExcessTurns
+	vl.Totals.Weighed = vl.Totals.Crossings + (teeCrossings-1)*vl.Totals.Tees + stepCrossings*vl.Totals.ExcessTurns
 	vl.Totals.Height = v.d.Height
 	return vl, nil
+}
+
+// tees are the points where a traced line's straight drop crosses a flat
+// stretch of another line leaving the same place, inside both, where no
+// junction dot joins them and R1 has not counted a crossing.
+func tees(l *look) []fpt {
+	var out []fpt
+	near := func(p fpt, ps []fpt, r float64) bool {
+		for _, q := range ps {
+			if dist(p, q) < r {
+				return true
+			}
+		}
+		return false
+	}
+	var dots []fpt
+	for _, j := range l.s.junctions {
+		dots = append(dots, j.at)
+	}
+	ws := l.trace.Ways
+	for i, a := range ws {
+		if len(a.pts) != 2 || a.pts[0].x != a.pts[1].x {
+			continue
+		}
+		x, y0, y1 := a.pts[0].x, min(a.pts[0].y, a.pts[1].y), max(a.pts[0].y, a.pts[1].y)
+		for j, b := range ws {
+			if i == j || b.from != a.from {
+				continue
+			}
+			for k := 1; k < len(b.pts); k++ {
+				p, q := b.pts[k-1], b.pts[k]
+				if p.y != q.y || p.y <= y0 || p.y >= y1 || x <= min(p.x, q.x) || x >= max(p.x, q.x) {
+					continue
+				}
+				at := fpt{x, p.y}
+				if !near(at, out, 1) && !near(at, dots, 3) && !near(at, l.metrics.crossed, 6) {
+					out = append(out, at)
+				}
+			}
+		}
+	}
+	return out
 }
 
 // look is one drawing read for the criteria: its shapes by id, the rows its
