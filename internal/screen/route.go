@@ -135,9 +135,10 @@ func sortedKeys(m map[slotKey][]int) []slotKey {
 // bundled, read both ways and join every pair of their far ends (rule 18),
 // so they are drawn apart, on buses of their own pair, unless that runs a
 // line out of its way past rule 15 or back past rule 13, which bundling
-// spares. A view with chains straighten moves is drawn again with them
-// moved, and that is kept where weigh reads it better, unless the view has
-// more than shareMost requests, as for shared buses. Only the kept
+// spares. Where the layout's straighten moves a chain, the view is drawn
+// again with the chains moved, and that is kept where weigh reads it
+// better, unless the view has more than shareMost requests, as for shared
+// buses. Only the kept
 // drawing's counts are anchored: route may lay a view many times to keep
 // one, and no measure it compares them by reads where a count stands,
 // while placing the counts was most of a lay.
