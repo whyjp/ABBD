@@ -29,6 +29,8 @@ fork-tangle	user 2026-11-06 (FEAT-0001, no shot)	every fixture view	points where
 f01-head-room	user-21	self FEAT-0001 /abbd	arrowheads under 6px from other ink	4	1cab3ed-dirty	4	ee92ea6	<= 0	the hop head at 265,274 sits 0.8px under badge 2 at 265,258; badge 1, and ×2 counts beside two chip heads
 head-room	user-21	every fixture view	arrowheads under 6px from other ink	474	1cab3ed-dirty	489	ee92ea6	<= 0	the same count over every view of every fixture
 f01-badge-crossed	user-21	self FEAT-0001 /abbd	hop badges another route's line passes within 2px of	1	1cab3ed-dirty	1	ee92ea6	<= 0	← abbd CLI -> after work's dotted bus at y=258 runs through badge 2's centre
+self-title-meets-ink	today (zones, #112)	self overview, this repository's state	zone titles whose glyph box meets line ink	2	bb767e3-dirty	2	ee92ea6	<= 0	buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236
+title-meets-ink	today (zones, #112)	every fixture overview	zone titles whose glyph box meets line ink	0	bb767e3-dirty	0	ee92ea6	<= 0	the same count over every fixture's overview
 hover-cut	today	every shot page	shoot.py cut	0	1cab3ed-dirty	0	ee92ea6	<= 0	guard: a lit route stops partway
 hover-stray	today	every shot page	shoot.py stray	0	1cab3ed-dirty	0	ee92ea6	<= 0	guard: a lit box no lit line reaches
 hover-mixed	today	every shot page	shoot.py mixed	0	1cab3ed-dirty	0	ee92ea6	<= 0	guard: one lit route of two colours

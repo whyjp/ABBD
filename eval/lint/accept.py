@@ -27,7 +27,10 @@ and commit; a case that skips keeps the values it had.
 
 The arrowhead cases read the drawn map off the view's rendered page: each
 route's way and its #t- chevrons, so a head at either end of a mutual line
-counts.
+counts. The zone title cases read the overview pages, and this repository's
+own state, rendered into OUT/self-pages (TestAcceptSelfPages), since only it
+stores the stack whose numbered zones the fixtures lack; a checkout without
+that test skips the case.
 """
 import csv
 import html
@@ -66,7 +69,7 @@ class Tables:
         for w in self.ways:
             w["pts"] = [tuple(float(c) for c in p.split(",")) for p in w["points"].split()]
             w["rects"] = [tuple(float(c) for c in w[k].split(",")) if w[k] else None for k in ("from_rect", "to_rect")]
-        self.pages = os.path.join(out, "pages")
+        self.out, self.pages = out, os.path.join(out, "pages")
         self.hover = None
         if hover:
             with open(os.path.join(out, "shots", "findings.json"), encoding="utf8") as f:
@@ -444,6 +447,46 @@ def fork_tangles(t, view):
     return n
 
 
+ZONE_TITLE = re.compile(r'<text class="zt"[^>]*x="' + NUM + '" y="' + NUM + r'"[^>]*>([^<]*)<')
+
+
+def zone_width(words):
+    """A zone title's set width as zone.go's zoneWidth reckons it: 10px small
+    capitals spaced 2px apart."""
+    w = 0
+    for ch in words.upper():
+        w += 11 if ord(ch) >= 0x1100 else 8 if ch.isupper() or ch in "MW@" else 7
+    return w + 2 * len(words)
+
+
+def inked_titles(svg):
+    """Zone titles whose glyph box, cap height above the baseline to 1px
+    under it, meets any stretch of line."""
+    segs = [s for _, d in re.findall(r'<path class="(w [^"]*)" d="([^"]*)"', svg) for s in ink(d)]
+    boxes = [(float(x), float(y) - 8, zone_width(html.unescape(w)), 9) for x, y, w in ZONE_TITLE.findall(svg)]
+    return sum(1 for r in boxes if any(seg_rect(s, r) == 0 for s in segs))
+
+
+def overview_svg(path):
+    with open(path, encoding="utf8") as f:
+        page = f.read()
+    at = page.index("<svg", page.index('id="overview"'))
+    return page[at:page.index("</svg>", at)]
+
+
+SELF_STATE = "self overview, this repository's state"
+
+
+def titles_meet_ink(t, view):
+    """Zone titles on overviews that meet line ink: the overview of this
+    repository's own state, whose stored stack numbers its zones, or every
+    fixture's overview."""
+    if view == SELF_STATE:
+        page = os.path.join(t.out, "self-pages", "index.html")
+        return inked_titles(overview_svg(page)) if os.path.exists(page) else None
+    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
+
+
 def hover(key):
     """Findings of this kind shoot.py records over every fixture page it hovers."""
     def m(t, view):
@@ -519,6 +562,10 @@ CASES = [
          "the same count over every view of every fixture"),
     Case("f01-badge-crossed", "user-21", "self FEAT-0001 /abbd", "hop badges another route's line passes within 2px of",
          crossed_badges, 0, "← abbd CLI -> after work's dotted bus at y=258 runs through badge 2's centre"),
+    Case("self-title-meets-ink", "today (zones, #112)", SELF_STATE, "zone titles whose glyph box meets line ink",
+         titles_meet_ink, 0, "buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236"),
+    Case("title-meets-ink", "today (zones, #112)", "every fixture overview", "zone titles whose glyph box meets line ink",
+         titles_meet_ink, 0, "the same count over every fixture's overview"),
     Case("hover-cut", "today", "every shot page", "shoot.py cut", hover("cut"), 0, "guard: a lit route stops partway"),
     Case("hover-stray", "today", "every shot page", "shoot.py stray", hover("stray"), 0, "guard: a lit box no lit line reaches"),
     Case("hover-mixed", "today", "every shot page", "shoot.py mixed", hover("mixed"), 0, "guard: one lit route of two colours"),
@@ -534,8 +581,10 @@ def run(out, hover_on, root):
     for f in tables:
         if os.path.exists(f):
             os.remove(f)
-    env = dict(os.environ, ABBD_LINT_FIXTURES=tables[0], ABBD_ACCEPT_WAYS=tables[1], ABBD_BLUEPRINTS=pages)
-    go = subprocess.run(["go", "test", "./internal/screen", "-count=1", "-run", "^(TestLintFixtures|TestAcceptWays|TestEveryRealDrawingIsLegible)$"],
+    env = dict(os.environ, ABBD_LINT_FIXTURES=tables[0], ABBD_ACCEPT_WAYS=tables[1], ABBD_BLUEPRINTS=pages,
+               ABBD_ACCEPT_SELF=os.path.join(out, "self-pages"))
+    go = subprocess.run(["go", "test", "./internal/screen", "-count=1", "-run",
+                         "^(TestLintFixtures|TestAcceptWays|TestEveryRealDrawingIsLegible|TestAcceptSelfPages)$"],
                         cwd=root, env=env, capture_output=True, text=True)
     tail = (go.stdout + go.stderr)[-2000:]
     if not all(os.path.exists(f) for f in tables):
