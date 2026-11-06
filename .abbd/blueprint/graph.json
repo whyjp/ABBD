@@ -2016,6 +2016,7 @@
       "Anchors": [
         "internal/screen",
         "internal/screen/card.go",
+        "internal/screen/confluence.go",
         "internal/screen/dress.go",
         "internal/screen/entries.go",
         "internal/screen/figure.go",
@@ -2037,6 +2038,7 @@
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
+        "internal/screen/rest.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
@@ -5491,7 +5493,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -19246,7 +19248,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
