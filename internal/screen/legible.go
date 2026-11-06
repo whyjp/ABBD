@@ -98,6 +98,9 @@ type sheet struct {
 	// no reader who points at it (rule 18), and routes are those routes.
 	routed bool
 	routes []stroke
+	// roads says the drawing's lines ride roads (confluence.go), set from
+	// the Drawing, not read off the SVG.
+	roads bool
 }
 
 // junction is a dot that marks a split or merge of one kind's ink.

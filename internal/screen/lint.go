@@ -241,7 +241,9 @@ func sheetOf(d Drawing) (sheet, error) {
 	if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
 		return sheet{}, err
 	}
-	return readSVG(b.String())
+	s, err := readSVG(b.String())
+	s.roads = d.roads
+	return s, err
 }
 
 // Lint checks every drawing of m whose view name matches only, or every
