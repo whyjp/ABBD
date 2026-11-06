@@ -243,7 +243,7 @@ func boxed(w []pt, boxes []box) int {
 // pieces of different styles run on one another, the splits far from
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
-	crossings, turns, beside, clash, far, forks, tees, unseen int
+	crossings, turns, beside, clash, near, far, forks, tees, unseen int
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -252,8 +252,9 @@ type roadCost struct {
 type roadView struct {
 	style []string
 	// plan says each route's relations all arise only in design, so it is
-	// drawn dotted where it rides alone.
-	plan []bool
+	// drawn dotted where it rides alone, and kinds is each route's kind.
+	plan  []bool
+	kinds []string
 	// ends are each route's two ends, whose spans its first and last runs
 	// may slide along.
 	ends     [][2]end
@@ -276,6 +277,9 @@ func (v roadView) cost(ways [][]pt) roadCost {
 				switch d := abs(a.at - b.at); {
 				case d == 0 && a.style != b.style && o > 0:
 					c.clash += o
+				case d < 5 && a.style != b.style && o >= 24:
+					// Rule 6: lines of two styles never run under 5px apart.
+					c.near += o
 				case d > 0 && d <= besideGap && o > 0:
 					c.beside += o
 				}
@@ -295,7 +299,7 @@ func (v roadView) cost(ways [][]pt) roadCost {
 }
 
 func (c roadCost) better(o roadCost) bool {
-	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen {
+	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen {
 		return false
 	}
 	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.beside < o.beside
@@ -367,6 +371,44 @@ func (v roadView) unseen(ways [][]pt) int {
 		}
 	}
 	return n
+}
+
+// joins says runs a and b may ride one road. In the middle any lines
+// may, a highway whatever their kind or dotting; a run that holds a line's
+// first or last run is a local road, which only lines of one kind and
+// dotting whose ends there are the same sort of shape, a box or a chip,
+// ride, so each line keeps its own look where it leaves and arrives.
+func (v roadView) joins(ways [][]pt, a, b straightRun) bool {
+	local, kind, asset := false, "", ""
+	for _, r := range []straightRun{a, b} {
+		for _, s := range r.segs {
+			i, j := s[0], s[1]
+			for side, end := range []bool{j == 0, j == len(ways[i])-2} {
+				if !end {
+					continue
+				}
+				local = true
+				if k := fmt.Sprint(v.ends[i][side].node != ""); asset == "" {
+					asset = k
+				} else if asset != k {
+					return false
+				}
+			}
+		}
+	}
+	if !local {
+		return true
+	}
+	for _, r := range []straightRun{a, b} {
+		for _, s := range r.segs {
+			if k := fmt.Sprint(v.kinds[s[0]], v.plan[s[0]]); kind == "" {
+				kind = k
+			} else if kind != k {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // tees counts the points where a route that drops straight crosses a flat
@@ -448,21 +490,21 @@ func (v roadView) farSplits(ways [][]pt) int {
 
 // confluent moves the routes onto shared roads and draws the road.
 func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) {
-	ink, plan := make([]string, len(reqs)), make([]bool, len(reqs))
+	ink, plan, kinds := make([]string, len(reqs)), make([]bool, len(reqs)), make([]string, len(reqs))
 	dest, to, from := make([]int, len(reqs)), make([]string, len(reqs)), make([]string, len(reqs))
 	for i, q := range reqs {
 		to[i], from[i] = place(q.to), place(q.from)
 		if q.from.node != "" {
 			from[i] = "node|" + q.from.node
 		}
-		ink[i], plan[i] = fmt.Sprint(q.kind, r.back[i]), q.plan
+		ink[i], plan[i], kinds[i] = fmt.Sprint(r.back[i]), q.plan, q.kind
 		dest[i] = min(max(2*q.to.row+1, -1), 2*rows+1)
 	}
 	ends := make([][2]end, len(reqs))
 	for i, q := range reqs {
 		ends[i] = [2]end{q.from, q.to}
 	}
-	v := roadView{ink, plan, ends, from, to, dest, position}
+	v := roadView{ink, plan, kinds, ends, from, to, dest, position}
 	ways := make([][]pt, len(r.ways))
 	for i, w := range r.ways {
 		ways[i] = straight(w)
@@ -494,7 +536,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	var moves []move
 	for i, a := range rs {
 		for k, b := range rs {
-			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style {
+			if k == i || !a.moves(b.at) || a.vertical != b.vertical || a.style != b.style || !v.joins(ways, a, b) {
 				continue
 			}
 			if d := abs(a.at - b.at); d == 0 || d > roadRoom {
@@ -517,6 +559,9 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	// branches on one track.
 	for _, f := range v.forks(ways) {
 		a, b := at[[2]int{f[0], 1}], at[[2]int{f[1], 1}]
+		if !v.joins(ways, rs[a], rs[b]) {
+			continue
+		}
 		if rs[a].moves(rs[b].at) {
 			moves = append(moves, move{a, rs[b].at, 0})
 		}
@@ -747,7 +792,20 @@ func road(pts []pt, is []int, ways [][]pt, reqs []wireReq, back []bool) drawn {
 			break
 		}
 	}
-	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: reqs[is[0]].kind, back: back[is[0]]}
+	// A piece several kinds ride wears the kind most of them have, the
+	// first by name among equals: only its ends, local roads of one kind,
+	// carry heads.
+	n := map[string]int{}
+	for _, i := range is {
+		n[reqs[i].kind]++
+	}
+	kind := reqs[is[0]].kind
+	for k, c := range n {
+		if c > n[kind] || c == n[kind] && k < kind {
+			kind = k
+		}
+	}
+	d := drawn{D: polyline(pts), parts: [][]pt{pts}, reqs: is, kind: kind, back: back[is[0]], road: true}
 	last := pts[len(pts)-1]
 	arrives := false
 	for _, i := range is {

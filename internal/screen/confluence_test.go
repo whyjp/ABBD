@@ -7,9 +7,8 @@ import (
 
 // A road many lines ride lights, under the pointer, exactly the lines that
 // ride it: the relations of the routes of its kind along its ink are the
-// relations it carries, no more and no fewer, however many places merge
-// onto it. A line of another kind that runs on a road is a clash the
-// routing before roads draws and confluent never adds.
+// relations it carries, no more and no fewer, however many places and
+// kinds merge onto it.
 func TestEveryRoadLightsExactlyItsRiders(t *testing.T) {
 	shared := 0
 	for _, name := range fixtures {
@@ -22,7 +21,7 @@ func TestEveryRoadLightsExactlyItsRiders(t *testing.T) {
 				var lit []string
 				ink := runs(w.D)
 				for _, r := range d.Routes {
-					if r.Kind == w.Kind && alongside(ink, r.runs) {
+					if (d.roads || r.Kind == w.Kind) && alongside(ink, r.runs) {
 						lit = append(lit, r.rels...)
 					}
 				}

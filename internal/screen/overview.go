@@ -49,6 +49,10 @@ type Drawing struct {
 	roads bool
 }
 
+// Roads says the drawing's lines ride roads, so the page marks it for
+// the checkers that read the SVG back.
+func (d Drawing) Roads() bool { return d.roads }
+
 // Route is one line's whole way from the shape it leaves to the shape it
 // reaches, over every bus it rides, drawn unseen above the ink. While a
 // reader points at a piece of ink, each route that runs along it shows in
@@ -162,7 +166,12 @@ type Wire struct {
 	// ends are the places the line's requests join, and Lit the classes
 	// that light it while a reader points at one of them (hover.go).
 	ends []string
-	Lit  string `json:"-"`
+	// rides are, on a road (confluence.go), the requests whose routes ride
+	// it, by route number: what pointing at it lights.
+	rides []int
+	// ink is the ink the path joins (inkOf).
+	ink string
+	Lit string `json:"-"`
 	// Gaps are where the line is cut because another passes over it, and
 	// Mask names the mask that cuts them (rule 24).
 	Gaps []Gap  `json:"-"`
@@ -1059,6 +1068,10 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		}
 		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		w.ends = endsOf(reqs, p.reqs)
+		if l.roads {
+			w.rides = p.reqs
+		}
+		w.ink = inkOf(w.Kind, p.road)
 		d.Wires = append(d.Wires, w)
 	}
 	d.route(routed, reqs, func(i int) []string { return merged[i].rels })

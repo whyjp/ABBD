@@ -97,6 +97,9 @@ type Totals struct {
 	// it is cut into paths, which a road cuts at other points than a bus
 	// (busy.go). The crossings above leave out those near a path's end.
 	InkCrossings int `json:"ink_crossings"`
+	// ColourSwitches are the times a line's ink changes colour on its
+	// way, on a road drawing (busy.go).
+	ColourSwitches int `json:"colour_switches"`
 }
 
 // Sum adds up the totals of several views.
@@ -111,6 +114,7 @@ func Sum(views []ViewLint) Totals {
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings += o.InkCrossings
+		t.ColourSwitches += o.ColourSwitches
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -300,7 +304,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.Height = v.d.Height
 	vl.Totals.ParallelInk, vl.Totals.Segments = parallelInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
-	vl.Totals.InkCrossings = inkCrossings(s)
+	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	return vl, nil
 }
 
@@ -1046,7 +1050,7 @@ func (l *look) splitWays() []tracedWay {
 			continue
 		}
 		if to := shapeOf(l.s, r.pts[len(r.pts)-1]); to >= 0 {
-			out = append(out, tracedWay{to: l.s.shapes[to].id, pts: r.pts, kind: colour(strings.TrimPrefix(r.class, "route "))})
+			out = append(out, tracedWay{to: l.s.shapes[to].id, pts: r.pts, kind: "road"})
 		}
 	}
 	return out

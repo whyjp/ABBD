@@ -105,7 +105,8 @@ func TestReferenceRanksFirst(t *testing.T) {
 		{"phantom", float64(ref.Phantom), float64(got.Phantom)},
 		{"bends median", median(ref.Bends), median(got.Bends)},
 		{"bends max", float64(maxOf(ref.Bends)), float64(maxOf(got.Bends))},
-		{"jogs", float64(sum(ref.Jogs)), float64(sum(got.Jogs))},
+		// Roads take out every jog the reference draws, so jogs no longer
+		// tell the two apart.
 		{"path crossings median", median(ref.Crossings), median(got.Crossings)},
 		{"path crossings max", float64(maxOf(ref.Crossings)), float64(maxOf(got.Crossings))},
 		{"unmarked T", float64(ref.UnmarkedT), float64(got.UnmarkedT)},
