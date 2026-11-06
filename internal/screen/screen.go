@@ -237,6 +237,7 @@ func Build(in Input) Model {
 	for _, d := range leads {
 		d.number()
 		d.zone(o.tree, ls)
+		d.card()
 	}
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables

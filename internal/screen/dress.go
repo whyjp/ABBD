@@ -216,7 +216,7 @@ func (d Drawing) Filled() *Box {
 
 // Planned says the view draws a dotted line, for the key.
 func (d Drawing) Planned() bool {
-	return slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan })
+	return slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Plan && !w.Back })
 }
 
 // runLength is how long the path d runs.

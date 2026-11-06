@@ -2,7 +2,9 @@ package screen
 
 import (
 	"path/filepath"
+	"regexp"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -122,5 +124,58 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	}
 	if d.Quiet {
 		t.Error("a view past the caps rests its lines grey with no way to light them")
+	}
+}
+
+// A view's card lists a sample only for a mark its rendered drawing
+// shows as the sample does, read from the SVG the page draws: the lead's
+// bold way, a filled box, an orange bypass line, a dotted line that does
+// not climb, a climbing line. Its area keeps cardRoom from all other ink
+// and every number, as the card promises.
+func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
+	marks := map[string]*regexp.Regexp{
+		"lead":   regexp.MustCompile(`<g class="leadway"`),
+		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
+		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b[^"]*" [^>]*data-h="b"`),
+		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
+		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
+	}
+	climbs := regexp.MustCompile(`\bback\b`)
+	cards := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			c := d.Card
+			if c == nil {
+				continue
+			}
+			cards++
+			var b strings.Builder
+			if err := site.ExecuteTemplate(&b, "drawing", d); err != nil {
+				t.Fatal(err)
+			}
+			svg := b.String()
+			for _, it := range c.Items {
+				found := marks[it.Kind].FindAllString(svg, -1)
+				if it.Kind == "plan" {
+					found = slices.DeleteFunc(found, func(s string) bool { return climbs.MatchString(s) })
+				}
+				if len(found) == 0 {
+					t.Errorf("%s: a card lists %s, which its drawing does not show", name, it.Kind)
+				}
+			}
+			area := grow(box{c.X, c.Y, c.W, c.H}, cardRoom)
+			if !d.clearOfInk(area, nil) || d.onBadge(area) {
+				t.Errorf("%s: a card at %d,%d comes within %dpx of other ink", name, c.X, c.Y, cardRoom)
+			}
+			for _, bx := range d.Boxes {
+				if hit(area, box{bx.X, bx.Y, bx.W, bx.H}) {
+					t.Errorf("%s: a card covers box %s", name, bx.ID)
+				}
+			}
+		}
+	}
+	if cards == 0 {
+		t.Error("no fixture view keeps a card")
 	}
 }

@@ -43,6 +43,8 @@ type Drawing struct {
 	// Zones are the bands behind the boxes of the groupings the project
 	// shows (zone.go).
 	Zones []Zone `json:",omitempty"`
+	// Card is the key the drawing keeps in a free corner (card.go).
+	Card *Card `json:",omitempty"`
 }
 
 // Route is one line's whole way from the shape it leaves to the shape it
