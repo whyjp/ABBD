@@ -20300,7 +20300,15 @@
                 "Code": true
               },
               {
-                "Text": " draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
+                "Text": " draws a pointed-at or focused box's border in its own colour (",
+                "Code": false
+              },
+              {
+                "Text": "--c",
+                "Code": true
+              },
+              {
+                "Text": "), the colour hover lights its lines in, and darkens a filled box instead. It also draws a bypass at the 1.5px of any other line, so its orange and open head mark it without the weight.",
                 "Code": false
               }
             ]
