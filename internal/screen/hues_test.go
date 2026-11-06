@@ -231,6 +231,7 @@ func TestJoinedBoxesWearDifferentColours(t *testing.T) {
 		t.Errorf("%d joined box pairs share a colour, ceiling %d", total, sameHueCeiling)
 	}
 }
+
 // A direct dependency that skips the contract boundary wears the colour
 // of the box it leaves, like every other line, so a view where most lines
 // are such dependencies still tells its lines apart at rest; its open head
