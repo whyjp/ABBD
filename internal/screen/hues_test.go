@@ -239,9 +239,6 @@ func TestOnlyABypassWearsTheWarning(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
-			if d.Quiet {
-				continue
-			}
 			for _, w := range d.Wires {
 				if warns(w.Kind) != (w.Hue == warnKey) {
 					t.Errorf("%s: a %s line wears %q", name, w.Kind, w.Hue)
@@ -305,15 +302,15 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 			}
 			leads++
 			for _, w := range d.Wires {
-				if w.Hue != hueKey(-1) {
-					t.Errorf("%s: a %s line beside a lead wears %q", name, w.Kind, w.Hue)
+				if want := map[bool]string{true: warnKey, false: hueKey(-1)}[warns(w.Kind)]; w.Hue != want {
+					t.Errorf("%s: a %s line beside a lead wears %q, want %q", name, w.Kind, w.Hue, want)
 				}
 			}
 			if !d.Quiet {
 				t.Errorf("%s: a view with a lead is not drawn quiet", name)
 			}
 			for _, j := range d.Dots {
-				if j.Hue != hueKey(-1) {
+				if j.Hue != hueKey(-1) && j.Hue != warnKey {
 					t.Errorf("%s: a dot beside a lead wears %q", name, j.Hue)
 				}
 			}
@@ -342,7 +339,11 @@ func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
 					own = own && slices.Contains(d.Routes[k].ends, f.ID)
 				}
 				own = own && len(classNumbers(w.Lit, "r")) > 0
-				if want := map[bool]string{true: f.Hue, false: hueKey(-1)}[own]; w.Hue != want {
+				want := map[bool]string{true: f.Hue, false: hueKey(-1)}[own]
+				if warns(w.Kind) {
+					want = warnKey
+				}
+				if w.Hue != want {
 					t.Errorf("%s: a %s line wears %q, want %q", name, w.Kind, w.Hue, want)
 				}
 			}

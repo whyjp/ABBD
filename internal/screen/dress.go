@@ -54,6 +54,13 @@ func (d *Drawing) dress(t tree) {
 	for i := range d.Boxes {
 		d.subtitle(&d.Boxes[i])
 	}
+	for i := range d.Ports {
+		p := &d.Ports[i]
+		x, y := p.X+p.W/2, p.RectY()+p.H/2
+		p.OnFill = slices.ContainsFunc(d.Boxes, func(b Box) bool {
+			return b.Role != "" && b.X <= x && x <= b.X+b.W && b.Y <= y && y <= b.Y+b.H
+		})
+	}
 }
 
 // hub fills the box at least hubOver times as many lines touch as any
@@ -107,7 +114,7 @@ func (d *Drawing) hubLines() {
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		ks := classNumbers(w.Lit, "r")
-		if len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
+		if warns(w.Kind) || len(ks) == 0 || slices.ContainsFunc(ks, func(k int) bool { return !slices.Contains(d.Routes[k].ends, hub) }) {
 			continue
 		}
 		w.Hue = hue

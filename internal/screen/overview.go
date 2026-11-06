@@ -121,6 +121,9 @@ type Port struct {
 	Lit  string   `json:"-"`
 	// Folded says the edge folds this port into its row's "+N" chip.
 	Folded bool `json:"-"`
+	// OnFill says the chip sits on a filled box, where it takes an outline
+	// of the panel colour so it still reads as a chip (dress.go).
+	OnFill bool `json:"-"`
 }
 
 // Wire is one line, or a bundle of lines into one place. Kind says what it

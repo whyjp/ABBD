@@ -1,11 +1,9 @@
 package screen
 
 import (
-	"fmt"
 	"maps"
 	"math"
 	"slices"
-	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -37,12 +35,12 @@ type Lead struct {
 // its arrowheads, where its number sits, and the classes that light it with
 // its route while a reader points at either end.
 type Hop struct {
-	N              int
-	D, Title, Head string
-	Tips           []string
-	X, Y           int
-	Lit            string
-	way            int
+	N       int
+	D, Head string
+	Tips    []string
+	X, Y    int
+	Lit     string
+	way     int
 }
 
 // leadMin is the fewest hops a lead has: one line is no path.
@@ -102,13 +100,11 @@ func (d *Drawing) uses() []use {
 func (d *Drawing) lead(t tree, flows []flowWalk) {
 	uses := d.uses()
 	var hops []use
-	var steps [][]int
 	var key, title string
 	if len(flows) > 0 {
 		for _, f := range flows {
-			hs, ss := d.followed(t, f, uses)
-			if len(hs) > len(hops) {
-				hops, steps, key, title = hs, ss, f.key, f.question
+			if hs := d.followed(t, f, uses); len(hs) > len(hops) {
+				hops, key, title = hs, f.key, f.question
 			}
 		}
 	} else {
@@ -137,18 +133,15 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 		at := d.badge(runs(r.D), taken)
 		taken = append(taken, at)
 		hp.X, hp.Y = at.x, at.y
-		hp.Title = fmt.Sprintf("%d. %s → %s", hp.N, d.boxName(h.from), d.boxName(h.to))
-		if steps != nil {
-			var ns []string
-			for _, s := range steps[i] {
-				ns = append(ns, fmt.Sprint(s))
-			}
-			hp.Title += fmt.Sprintf(" (흐름 %s단계)", strings.Join(ns, ", "))
-		}
 		l.Hops = append(l.Hops, hp)
 	}
 	d.Lead = l
-	d.quiet()
+	// A view past hover's caps has no routes to light, so resting its lines
+	// grey would leave no way to see their colours.
+	if len(d.Routes) > 0 {
+		d.quiet()
+		d.unlabelKin()
+	}
 	for i := range d.Boxes {
 		if d.Boxes[i].ID == l.Entry && d.Boxes[i].Hue != "" {
 			d.Boxes[i].Role = "entry"
@@ -162,9 +155,8 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 // the box on the lead that ran a step most recently and uses it, or, when
 // no box on the lead uses it, by its own line to the box of the step
 // before, as an entry that calls the first step's box does. With neither,
-// or at a step the view does not show, the lead stops. steps are the
-// flow's steps each hop leads into, from 1.
-func (d *Drawing) followed(t tree, f flowWalk, uses []use) ([]use, [][]int) {
+// or at a step the view does not show, the lead stops.
+func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 	boxes := map[string]bool{}
 	for _, b := range d.Boxes {
 		boxes[b.ID] = true
@@ -179,10 +171,8 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) ([]use, [][]int) {
 		return ""
 	}
 	var hops []use
-	var steps [][]int
 	var on []string
-	pending := []int{}
-	for i, u := range f.units {
+	for _, u := range f.units {
 		b := box(u)
 		if b == "" {
 			if len(on) == 0 {
@@ -190,7 +180,6 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) ([]use, [][]int) {
 			}
 			break
 		}
-		pending = append(pending, i+1)
 		if k := slices.Index(on, b); k >= 0 {
 			on = append(slices.Delete(on, k, k+1), b)
 			continue
@@ -210,11 +199,9 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) ([]use, [][]int) {
 			break
 		}
 		hops = append(hops, uses[j])
-		steps = append(steps, pending)
-		pending = []int{}
 		on = append(on, b)
 	}
-	return hops, steps
+	return hops
 }
 
 // inferred is the lead the lines show plainly: from the one box no other
@@ -324,36 +311,32 @@ func (d *Drawing) badge(way [][2]pt, taken []pt) pt {
 // stand off its line, still on it, where its line has no room.
 const badgeR, badgeShift = 8, 6
 
-func (d *Drawing) boxName(id string) string {
-	for _, b := range d.Boxes {
-		if b.ID == id {
-			return b.Name
-		}
-	}
-	return id
-}
-
 // quiet draws every line of a view that has a lead in grey, its heads,
-// labels and dots too, so the lead is the one coloured way. A pointed-at
-// shape still lights its lines in its own colour, since each route keeps
-// the colour paint gave it.
+// labels and dots too, so the lead is the one coloured way, except a
+// bypass, which keeps the warning colour (rule 11) at the weight of any
+// other line. A pointed-at shape still lights its lines in its own colour,
+// since each route keeps the colour paint gave it. The caller drops the
+// labels the grey leaves over another line's track (unlabelKin).
 func (d *Drawing) quiet() {
 	d.Quiet = true
 	n := hueKey(-1)
 	used := map[string]bool{}
 	for i := range d.Wires {
 		w := &d.Wires[i]
-		w.Hue = n
+		if !warns(w.Kind) {
+			w.Hue = n
+		}
 		if !w.Joins {
-			w.Head = shapes[w.Kind] + "-" + n
+			w.Head = shapes[w.Kind] + "-" + w.Hue
 			used[w.Head] = true
 		}
 	}
 	for i := range d.Dots {
-		d.Dots[i].Hue = n
+		if d.Dots[i].Hue != warnKey {
+			d.Dots[i].Hue = n
+		}
 	}
 	d.Heads = slices.Sorted(maps.Keys(used))
-	d.unlabelKin()
 }
 
 // unlabelKin drops a label that, once the view is quiet, stands right over
