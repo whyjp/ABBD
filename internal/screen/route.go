@@ -245,14 +245,33 @@ func (l *layout) layDrops(reqs []wireReq, shared, apart bool) routing {
 // keeps that only where it costs the reader less than the plain drawing.
 func (l *layout) layStraight(reqs []wireReq, shared, apart bool, bent map[int]bool) routing {
 	before := l.keep()
-	r := l.lay(reqs, shared, apart, bent, true)
+	r := l.layJoined(reqs, shared, apart, bent, true)
 	if !r.tweaked {
 		return r
 	}
 	after := l.keep()
 	*l = before
-	plain := l.lay(reqs, shared, apart, bent, false)
+	plain := l.layJoined(reqs, shared, apart, bent, false)
 	if costOf(r, reqs).beats(costOf(plain, reqs)) {
+		*l = after
+		return r
+	}
+	return plain
+}
+
+// layJoined lays the view with a line that steps off its departure trunk
+// leading its arrival bus's drop (lay's early), and keeps that only where
+// weigh says it reads better than the plain drawing.
+func (l *layout) layJoined(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak bool) routing {
+	before := l.keep()
+	r := l.lay(reqs, shared, apart, bent, tweak, true)
+	if !r.joined {
+		return r
+	}
+	after := l.keep()
+	*l = before
+	plain := l.lay(reqs, shared, apart, bent, tweak, false)
+	if weigh(r, reqs).beats(weigh(plain, reqs)) {
 		*l = after
 		return r
 	}
@@ -283,13 +302,16 @@ type routing struct {
 	// tweaked says lay set some line straight onto its arrival trunk:
 	// a stub over the trunk's lead, or a line joining on the track.
 	tweaked bool
+	// joined says lay let a line that steps off its departure trunk lead
+	// its arrival bus, the bus's other lines joining on the track.
+	joined bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
 // them, and with each line between modules that use each other on buses of
 // its own pair where apart says so.
-func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak bool) routing {
-	tweaked := false
+func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, tweak, early bool) routing {
+	tweaked, joined := false, false
 	l.lanes, l.beside, l.passes, l.stubs = map[[2]int]int{}, map[int][]int{}, map[int][]int{}, map[int][]int{}
 	n := len(l.rows)
 	plans := make([]plan, len(reqs))
@@ -684,6 +706,32 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			if abs(x-at) < abs(lx-at) {
 				b.lead = m
 			}
+		}
+	}
+	// A line that steps down onto its arrival bus's track off a departure
+	// trunk that passed the last row down a lane of the chain the bus's
+	// lead runs down too would meet that lead's trunk a lane off its own
+	// step and jog onto the drop. It leads the bus instead, so the drop
+	// stands under its step and it runs straight on down; the bus's other
+	// lines on that chain pass the rows on their own, off it, straight on
+	// where they can, and join on the track.
+	offChain := map[int]bool{}
+	for _, b := range buses {
+		if !early || !b.arrive || b.lead >= len(reqs) || chainOf[b.lead] < 0 || plans[b.lead].dep >= 0 {
+			continue
+		}
+		c := chainOf[b.lead]
+		for _, s := range b.members {
+			if q := &plans[s]; q.dep < 0 || q.onto || q.ride != len(q.gaps)-1 || chainOf[s] != c || buses[q.dep].lead != s {
+				continue
+			}
+			for _, m := range b.members {
+				if q := &plans[m]; m != s && q.dep < 0 && chainOf[m] == c {
+					q.late, chainOf[m], offChain[m] = true, -1, true
+				}
+			}
+			b.lead, joined = s, true
+			break
 		}
 	}
 	// A line that passes one row before it reaches its arrival bus's
@@ -1158,6 +1206,15 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 				o, ok := held[[2]int{q, y}]
 				return ok && (o == i || p.dep >= 0 && o == -1-p.dep || p.arr >= 0 && o == -1-p.arr)
 			}
+			// A line set off its chain keeps straight on where nothing
+			// stands within 12px and no other line passes.
+			if x := p.xs[len(p.xs)-1]; offChain[i] && l.clearOf(r, x) && l.meetsOnly(r, x, mine) && !l.taken(r, x) &&
+				!slices.ContainsFunc(l.passes[r], func(y int) bool { return abs(y-x) < lane }) {
+				held[[2]int{r, x}] = i
+				l.passes[r] = append(l.passes[r], x)
+				p.xs = append(p.xs, x)
+				continue
+			}
 			x := l.gutterTo(r, p.xs[len(p.xs)-1], p.tx, own, mine)
 			held[[2]int{r, x}] = i
 			p.xs = append(p.xs, x)
@@ -1533,10 +1590,64 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			}
 		}
 	}
+	// A line runs straight into its arrowhead for at least straightIn, so
+	// a gap keeps that room between a box and the track a line leaves for
+	// it: room above its tracks for a head into the row above, and a gap
+	// tall enough for a head into the row below. A box shorter than its
+	// row stands that much further off.
+	trackAt := func(g, t int) int { return room[g][0] + lane*(t+1) + t/bundle*lane }
+	type headIn struct {
+		g, t, off int
+		below     bool
+	}
+	var ins []headIn
+	headRoom := func(g, o int, e end, sideOf int) {
+		t, ok := track[[2]int{g, o}]
+		if !ok {
+			return
+		}
+		below := e.row >= 0
+		if e.node != "" {
+			below = sideOf < 0
+		}
+		off, r := 0, g-1
+		if below {
+			r = g
+		}
+		if e.node != "" && r >= 0 && r < n {
+			rh := 0
+			for _, id := range l.rows[r] {
+				rh = max(rh, l.heights[id])
+			}
+			off = (rh - l.pos[e.node].H) / 2
+		}
+		ins = append(ins, headIn{g, t, off, below})
+	}
+	for i, r := range reqs {
+		p := &plans[i]
+		k := len(p.gaps)
+		o := owner(i, k-1)
+		if p.dep >= 0 && !p.onto && p.arr >= 0 && p.ride == k-1 {
+			o = busOwner(p.arr)
+		}
+		headRoom(p.gaps[k-1], o, r.to, side(p.up, false, p.same))
+		if r.kind == "mutual" {
+			headRoom(p.gaps[0], owner(i, 0), r.from, side(p.up, true, p.same))
+		}
+	}
+	for _, h := range ins {
+		if !h.below {
+			room[h.g][0] += max(0, straightIn-h.off-trackAt(h.g, h.t))
+		}
+	}
+	for _, h := range ins {
+		if want := trackAt(h.g, h.t) + straightIn - h.off; h.below && want > l.gapHeight(h.g, tracks, room) {
+			room[h.g][1] += want - tracksHeight(tracks[h.g], room[h.g])
+		}
+	}
 	l.place(tracks, room)
 	trackY := func(g, o int) int {
-		t := track[[2]int{g, o}]
-		return l.gapTop[g] + room[g][0] + lane*(t+1) + t/bundle*lane
+		return l.gapTop[g] + trackAt(g, track[[2]int{g, o}])
 	}
 	endY := func(e end, sideOf int) int {
 		switch {
@@ -1883,7 +1994,7 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 			crooked = append(crooked, i)
 		}
 	}
-	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked}
+	return routing{drawn: out, ways: ways, back: backs, shares: can, roomy: roomy, bent: crooked, dropped: dropped, boxes: boxes, tweaked: tweaked, joined: joined}
 }
 
 // teed says line i drops straight across a flat stretch of another line
@@ -2236,6 +2347,10 @@ func permute[T any](v []T, order []int) []T {
 // carries the bus's count: the count's height and a clear margin.
 const countRoom = 16
 
+// straightIn is how far a line runs straight into its arrowhead: the
+// chevron's depth and 12px of line a reader sees enter it.
+const straightIn = 20
+
 // place sets each gap's height from its tracks and the room its counts
 // need above and below them, and each row below it.
 func (l *layout) place(tracks []int, room [][2]int) {
@@ -2244,13 +2359,7 @@ func (l *layout) place(tracks []int, room [][2]int) {
 	l.rowTop, l.rowH = make([]int, n), make([]int, n)
 	y := l.top
 	for g := 0; g <= n; g++ {
-		h := l.minGap
-		if g == 0 || g == n {
-			h = l.endGap
-		}
-		if tracks[g] > 0 {
-			h = max(h, lane*(tracks[g]+1)+lane/2+(tracks[g]-1)/bundle*lane+room[g][0]+room[g][1])
-		}
+		h := l.gapHeight(g, tracks, room)
 		l.gapTop[g], l.gapH[g] = y, h
 		y += h
 		if g == n {
@@ -2269,6 +2378,25 @@ func (l *layout) place(tracks []int, room [][2]int) {
 		y += rh
 	}
 	l.height = y
+}
+
+// gapHeight is how tall gap g stands: room for its tracks and counts, and
+// never under the layout's least gap.
+func (l *layout) gapHeight(g int, tracks []int, room [][2]int) int {
+	h := l.minGap
+	if g == 0 || g == len(l.rows) {
+		h = l.endGap
+	}
+	if tracks[g] > 0 {
+		h = max(h, tracksHeight(tracks[g], room[g]))
+	}
+	return h
+}
+
+// tracksHeight is how tall a gap of t tracks stands with the room given
+// above and below them.
+func tracksHeight(t int, room [2]int) int {
+	return lane*(t+1) + lane/2 + (t-1)/bundle*lane + room[0] + room[1]
 }
 
 // shelve gives each of m crossings of one gap, in the order they were

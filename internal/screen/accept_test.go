@@ -3,8 +3,11 @@ package screen
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // With ABBD_ACCEPT_WAYS set to a file, every traced line of every fixture
@@ -44,5 +47,31 @@ func TestAcceptWays(t *testing.T) {
 	}
 	if err := os.WriteFile(f, []byte(strings.Join(rows, "\n")+"\n"), 0o644); err != nil {
 		t.Fatal(err)
+	}
+}
+
+// With ABBD_ACCEPT_SELF set to a directory, the pages of this repository's
+// own state go there. The fixtures hold units only, so the stored stack's
+// numbered zones show only on these pages.
+func TestAcceptSelfPages(t *testing.T) {
+	dir := os.Getenv("ABBD_ACCEPT_SELF")
+	if dir == "" {
+		t.Skip("ABBD_ACCEPT_SELF is not set")
+	}
+	in, err := Load(store.Open(filepath.Join("..", "..")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	pages, err := Pages(Build(in))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for f, b := range pages {
+		if err := os.WriteFile(filepath.Join(dir, f), b, 0o644); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

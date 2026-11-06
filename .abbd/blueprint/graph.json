@@ -21225,7 +21225,39 @@
                 "Code": true
               },
               {
-                "Text": " finds a step onto an arrival track at the nearest clear x. In each gap the crossings are ranked by the crossings their order makes, and ",
+                "Text": " finds a step onto an arrival track at the nearest clear x. A line that steps onto an arrival bus off a departure trunk it leads down the chain the bus's lead takes leads that bus instead, so the drop stands under its step and it runs straight on, and the bus's other lines on that chain join late off it where nothing stands within 12px; ",
+                "Code": false
+              },
+              {
+                "Text": "layJoined",
+                "Code": true
+              },
+              {
+                "Text": " keeps that only where ",
+                "Code": false
+              },
+              {
+                "Text": "weigh",
+                "Code": true
+              },
+              {
+                "Text": " finds it beats the plain drawing. Each line's last track stands at least ",
+                "Code": false
+              },
+              {
+                "Text": "straightIn",
+                "Code": true
+              },
+              {
+                "Text": " above or below the box its head points into, so the line runs straight into its head, and ",
+                "Code": false
+              },
+              {
+                "Text": "place",
+                "Code": true
+              },
+              {
+                "Text": " grows a gap only by what it lacks for that. In each gap the crossings are ranked by the crossings their order makes, and ",
                 "Code": false
               },
               {
@@ -21359,7 +21391,15 @@
                 "Code": true
               },
               {
-                "Text": " sets each ×N beside its own stub or drop, on the side where the nearest other ink is farthest. ",
+                "Text": " sets each ×N beside its own stub or drop: first where it stands clear of other lines, then where it keeps off every arrowhead (",
+                "Code": false
+              },
+              {
+                "Text": "heads",
+                "Code": true
+              },
+              {
+                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. ",
                 "Code": false
               },
               {

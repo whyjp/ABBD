@@ -1,6 +1,6 @@
 """Measure the layout complaints the user keeps repeating, one exact case each.
 
-    python eval/lint/accept.py OUT [--no-hover] [--record]
+    python eval/lint/accept.py OUT [--no-hover] [--main DIR] [--record]
 
 OUT is a scratch directory. One go test run writes there the per-view table
 (ABBD_LINT_FIXTURES), every traced line with its turning points and its two
@@ -12,14 +12,25 @@ fixture gate fails, so a hillclimb trial is measured either way.
 Every case measures the traced geometry itself, never the lint's breaches,
 so a change to a lint criterion cannot move a case.
 
-It prints one row per case: case, source, view, measure, value, target and
-pass when the value is at or under the target, and exits 1 when a
+It prints one row per case: case, source, view, measure, value, main's
+value, target and pass when the value is at or under the target, and exits 1 when a
 case fails. When go test writes no tables, as when the build fails, it
 stops with go's output before measuring anything. A case comes from a user
 screenshot in D:/abbd-eval/exemplars (user-NN) or from the day's review
-(today); its view is a fixture view, by the name TestLintFixtures gives it.
---record writes eval/lint/acceptance.tsv with the values as the recorded
-column and the commit they were measured on (git describe --dirty).
+(today); its view is a fixture view, by the name TestLintFixtures gives it,
+or every fixture view for a total.
+--main DIR measures the checkout at DIR too, into OUT/main, with this
+script's cases, and prints its values in a main column. --record writes
+eval/lint/acceptance.tsv with the values as the recorded column, the commit
+they were measured on (git describe --dirty), and, with --main, DIR's values
+and commit; a case that skips keeps the values it had.
+
+The arrowhead cases read the drawn map off the view's rendered page: each
+route's way and its #t- chevrons, so a head at either end of a mutual line
+counts. The zone title cases read the overview pages, and this repository's
+own state, rendered into OUT/self-pages (TestAcceptSelfPages), since only it
+stores the stack whose numbered zones the fixtures lack; a checkout without
+that test skips the case.
 """
 import csv
 import html
@@ -58,7 +69,7 @@ class Tables:
         for w in self.ways:
             w["pts"] = [tuple(float(c) for c in p.split(",")) for p in w["points"].split()]
             w["rects"] = [tuple(float(c) for c in w[k].split(",")) if w[k] else None for k in ("from_rect", "to_rect")]
-        self.pages = os.path.join(out, "pages")
+        self.out, self.pages = out, os.path.join(out, "pages")
         self.hover = None
         if hover:
             with open(os.path.join(out, "shots", "findings.json"), encoding="utf8") as f:
@@ -257,6 +268,225 @@ def doubled(fixture, unit):
     return m
 
 
+EVERY = "every fixture view"
+DRAWN = {}
+
+
+def page_map(t, view):
+    """The drawn map of a fixture view, read off its rendered page: overview is
+    section overview, "U name" is m-U and "A focus B name" is f-A--B."""
+    t.view(view)
+    fixture, rest = view.split(" ", 1)
+    words = rest.split()
+    sid = "overview" if rest == "overview" else f"f-{words[0]}--{words[2]}" if words[1:2] == ["focus"] else f"m-{words[0]}"
+    key = (t.pages, fixture, sid)
+    if key not in DRAWN:
+        tag = f'id="{sid}"'
+        for name in sorted(os.listdir(os.path.join(t.pages, fixture))):
+            with open(os.path.join(t.pages, fixture, name), encoding="utf8") as f:
+                page = f.read()
+            if tag in page:
+                at = page.index("<svg", page.index(tag))
+                DRAWN[key] = drawn(page[at:page.index("</svg>", at)])
+                break
+        else:
+            sys.exit(f"no section {sid} for {view!r} in {t.pages}")
+    return DRAWN[key]
+
+
+Drawn = namedtuple("Drawn", "routes wires dots badges texts chips")
+CHEVRON_DEPTH, CHEVRON_HALF = 7.2, 3.6
+NUM = r"(-?[\d.]+)"
+
+
+def tokens(cls, p):
+    return frozenset(c for c in cls.split() if re.fullmatch(p + r"\d+", c))
+
+
+def drawn(svg):
+    """Routes as (r ids, e ids, turning points, heads), a head being the tip and
+    unit heading of a #t- chevron; wires as (r ids, stretches); junction dots
+    as (e ids, centre, radius); hop badges as (r ids, centre, radius); label,
+    count and zone title text and chips as x,y,w,h boxes."""
+    routes = []
+    for cls, body in re.findall(r'<g class="route ([^"]*)"[^>]*>(.*?)</g>', svg):
+        d = re.search(r'<path class="way" d="([^"]*)"', body)[1]
+        pts = [(float(x), float(y)) for x, y in re.findall(NUM + r"[ ,]" + NUM, d)]
+        heads = [((float(x), float(y)), (0.0, 1.0 if r == "90" else -1.0))
+                 for x, y, r in re.findall(r'<use href="#t-\w+" transform="translate\(' + NUM + " " + NUM + r"\) rotate\(" + NUM + r"\)", body)]
+        routes.append((tokens(cls, "r"), tokens(cls, "e"), pts, heads))
+    wires = [(tokens(cls, "r"), ink(d)) for cls, d in re.findall(r'<path class="(w [^"]*)" d="([^"]*)"', svg)]
+    disc = '<circle cx="' + NUM + '" cy="' + NUM + '" r="' + NUM + '"'
+    dots = [(tokens(cls, "e"), (float(x), float(y)), float(r))
+            for cls, x, y, r in re.findall(r'<circle class="(junction[^"]*)"[^>]*cx="' + NUM + '" cy="' + NUM + '" r="' + NUM + '"', svg)]
+    badges = [(tokens(cls, "r"), (float(x), float(y)), float(r)) for cls, x, y, r in re.findall(r'<g class="badge ([^"]*)">' + disc, svg)]
+    texts = []
+    for attrs, words in re.findall(r'<text class="(?:lab|count|zt)[^"]*"([^>]*)>([^<]*)<', svg):
+        x, y = float(re.search(r'x="' + NUM, attrs)[1]), float(re.search(r'y="' + NUM, attrs)[1])
+        w = sum(11 if ord(ch) > 0x2e80 else 6.6 for ch in html.unescape(words))
+        texts.append((x - w / 2 if 'text-anchor="middle"' in attrs else x, y - 8.8, w, 11))
+    chips = [tuple(float(v) for v in r) for r in re.findall(
+        r'<g class="port[^"]*"[^>]*>(?:<title>[^<]*</title>)?<rect x="' + NUM + '" y="' + NUM + '" width="' + NUM + '" height="' + NUM + '"', svg)]
+    return Drawn(routes, wires, dots, badges, texts, chips)
+
+
+def views_of(t, view):
+    return [v for v in t.views if v in {w["view"] for w in t.ways}] if view == EVERY else [view]
+
+
+def straight_ins(t, view):
+    """{tip: run} for every drawn arrowhead: the length of the straight stretch
+    that ends in the tip, the shortest when routes share the head."""
+    runs = {}
+    for _, _, pts, heads in page_map(t, view).routes:
+        for tip, _ in heads:
+            run = length(*(pts[-2:] if pts[-1] == tip else pts[:2]))
+            runs[tip] = min(run, runs.get(tip, run))
+    return runs
+
+
+def bent_heads(t, view):
+    """Arrowheads whose line turns closer to the tip than the chevron's depth
+    plus 12px."""
+    return sum(1 for v in views_of(t, view) for run in straight_ins(t, v).values() if run < CHEVRON_DEPTH + 12)
+
+
+def seg_point(a, b, p):
+    (ax, ay), (bx, by), (px, py) = a, b, p
+    dx, dy = bx - ax, by - ay
+    k = 0 if dx == dy == 0 else max(0, min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+    return ((ax + k * dx - px) ** 2 + (ay + k * dy - py) ** 2) ** 0.5
+
+
+def seg_seg(s, q):
+    (a, b), (c, d) = s, q
+
+    def side(p, u, v):
+        return (u[0] - p[0]) * (v[1] - p[1]) - (u[1] - p[1]) * (v[0] - p[0])
+    if side(a, b, c) * side(a, b, d) < 0 and side(c, d, a) * side(c, d, b) < 0:
+        return 0
+    return min(seg_point(c, d, a), seg_point(c, d, b), seg_point(a, b, c), seg_point(a, b, d))
+
+
+def seg_rect(s, r):
+    x, y, w, h = r
+    if any(x <= p[0] <= x + w and y <= p[1] <= y + h for p in s):
+        return 0
+    corners = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+    return min(seg_seg(s, e) for e in zip(corners, corners[1:] + corners[:1]))
+
+
+def chevron(tip, heading):
+    """A drawn chevron as its tip (a zero-length stretch) and its base."""
+    (x, y), (hx, hy) = tip, heading
+    bx, by = x - hx * CHEVRON_DEPTH, y - hy * CHEVRON_DEPTH
+    return [((x, y), (x, y)), ((bx - hy * CHEVRON_HALF, by - hx * CHEVRON_HALF), (bx + hy * CHEVRON_HALF, by + hx * CHEVRON_HALF))]
+
+
+def head_gaps(t, view):
+    """(tip, gap) for every drawn arrowhead: the least distance from its tip or
+    base to ink that is not its own route's line or the chip it points into.
+    Lines and other heads count by their centre line, junction dots of other
+    nets and every hop badge by their disc, labels, counts and zone titles by
+    a text box estimated at 11px type (11px a CJK glyph, 6.6px any other),
+    chips by their rect."""
+    d = page_map(t, view)
+    out, seen = [], set()
+    for rs, es, _, heads in d.routes:
+        for tip, hd in heads:
+            if tip in seen:
+                continue
+            seen.add(tip)
+            me = chevron(tip, hd)
+            gaps = [seg_seg(m, s) for rid, segs in d.wires if not rid & rs for s in segs for m in me]
+            gaps += [seg_seg(m, s) for rs2, _, _, hs in d.routes if not rs2 & rs
+                     for tip2, hd2 in hs if tip2 != tip for s in chevron(tip2, hd2) for m in me]
+            gaps += [max(0, seg_point(*m, c) - r) for e2, c, r in d.dots if not es <= e2 for m in me]
+            gaps += [max(0, seg_point(*m, c) - r) for _, c, r in d.badges for m in me]
+            gaps += [seg_rect(m, r) for r in d.texts for m in me]
+            gaps += [seg_rect(m, r) for r in d.chips if seg_rect(me[0], r) > 1 for m in me]
+            out.append((tip, min(gaps, default=99)))
+    return out
+
+
+def crowded_heads(t, view):
+    """Arrowheads with other ink closer than 6px."""
+    return sum(1 for v in views_of(t, view) for _, gap in head_gaps(t, v) if gap < 6)
+
+
+def crossed_badges(t, view):
+    """Hop badges that another route's line passes within 2px of."""
+    n = 0
+    for v in views_of(t, view):
+        d = page_map(t, v)
+        n += sum(any(seg_point(*s, c) < r + 2 for rid, segs in d.wires if not rid & rs for s in segs) for rs, c, r in d.badges)
+    return n
+
+
+def crossing(s, q):
+    """The point where a flat and an upright stretch cross inside both."""
+    for (a, b), (c, d) in ((s, q), (q, s)):
+        if a[1] == b[1] and c[0] == d[0] and min(a[0], b[0]) < c[0] < max(a[0], b[0]) and min(c[1], d[1]) < a[1] < max(c[1], d[1]):
+            return c[0], a[1]
+    return None
+
+
+def fork_tangles(t, view):
+    """Points where two traced lines that leave different places cross, each
+    line an arrival of a fork: a place that lines from two or more places
+    reach."""
+    n = 0
+    for v in views_of(t, view):
+        got = [w for w in t.ways if w["view"] == v]
+        froms = {}
+        for w in got:
+            froms.setdefault(w["to"], set()).add(w["from"])
+        fork = [w for w in got if len(froms[w["to"]]) > 1]
+        n += len({p for a, b in combinations(fork, 2) if a["from"] != b["from"]
+                  for s in stretches(a) for q in stretches(b) for p in [crossing(s, q)] if p})
+    return n
+
+
+ZONE_TITLE = re.compile(r'<text class="zt"[^>]*x="' + NUM + '" y="' + NUM + r'"[^>]*>([^<]*)<')
+
+
+def zone_width(words):
+    """A zone title's set width as zone.go's zoneWidth reckons it: 10px small
+    capitals spaced 2px apart."""
+    w = 0
+    for ch in words.upper():
+        w += 11 if ord(ch) >= 0x1100 else 8 if ch.isupper() or ch in "MW@" else 7
+    return w + 2 * len(words)
+
+
+def inked_titles(svg):
+    """Zone titles whose glyph box, cap height above the baseline to 1px
+    under it, meets any stretch of line."""
+    segs = [s for _, d in re.findall(r'<path class="(w [^"]*)" d="([^"]*)"', svg) for s in ink(d)]
+    boxes = [(float(x), float(y) - 8, zone_width(html.unescape(w)), 9) for x, y, w in ZONE_TITLE.findall(svg)]
+    return sum(1 for r in boxes if any(seg_rect(s, r) == 0 for s in segs))
+
+
+def overview_svg(path):
+    with open(path, encoding="utf8") as f:
+        page = f.read()
+    at = page.index("<svg", page.index('id="overview"'))
+    return page[at:page.index("</svg>", at)]
+
+
+SELF_STATE = "self overview, this repository's state"
+
+
+def titles_meet_ink(t, view):
+    """Zone titles on overviews that meet line ink: the overview of this
+    repository's own state, whose stored stack numbers its zones, or every
+    fixture's overview."""
+    if view == SELF_STATE:
+        page = os.path.join(t.out, "self-pages", "index.html")
+        return inked_titles(overview_svg(page)) if os.path.exists(page) else None
+    return sum(inked_titles(overview_svg(os.path.join(t.pages, f, "index.html"))) for f in sorted(os.listdir(t.pages)))
+
+
 def hover(key):
     """Findings of this kind shoot.py records over every fixture page it hovers."""
     def m(t, view):
@@ -313,6 +543,29 @@ CASES = [
     Case("p01-tee", "today", "pstack MOD-0001 setup and help",
          "points where a line's straight drop crosses the track of another line leaving its box",
          tees, 0, "/poteto-help -> 10-recipes drops 420,106 to 420,142 across its box's own bus to 01-setup at 420,130"),
+    Case("self-head-bend", "user-19", "self overview",
+         "arrowheads whose line turns under the chevron's 7.2px depth plus 12px before the tip",
+         bent_heads, 0, "/abbd -> /abbd-setup turns at 45,100 and runs 8px up into the head at 45,92 under plugins/abbd/skills/"),
+    Case("head-bend", "user-19", EVERY, "arrowheads whose line turns under the chevron's 7.2px depth plus 12px before the tip",
+         bent_heads, 0, "the same rule over every view of every fixture"),
+    Case("s41-hwm-steps", "user-20", "self MOD-0041 internal/store", "jogs plus turns past 2 of ← identity -> ID high-water mark",
+         on(steps, 'chip "← identity"', 'box "ID high-water mark" (DATA-0018)'), 0,
+         "369,38 down to 78, left to 332, down to 106, a 16px jog right to the junction at 348, down into the box: 4 turns, 1 jog"),
+    Case("f01-fork-tangle", "user 2026-11-06 (FEAT-0001, no shot)", "self FEAT-0001 /abbd",
+         "points where arrivals of forks, leaving different places, cross", fork_tangles, 0,
+         "record relation's bus at y=374 and diff's at 382 interleave: after work's feed crosses 569,374, relation's drop crosses 690,382"),
+    Case("fork-tangle", "user 2026-11-06 (FEAT-0001, no shot)", EVERY, "points where arrivals of forks, leaving different places, cross",
+         fork_tangles, 0, "the same count over every view of every fixture"),
+    Case("f01-head-room", "user-21", "self FEAT-0001 /abbd", "arrowheads under 6px from other ink",
+         crowded_heads, 0, "the hop head at 265,274 sits 0.8px under badge 2 at 265,258; badge 1, and ×2 counts beside two chip heads"),
+    Case("head-room", "user-21", EVERY, "arrowheads under 6px from other ink", crowded_heads, 0,
+         "the same count over every view of every fixture"),
+    Case("f01-badge-crossed", "user-21", "self FEAT-0001 /abbd", "hop badges another route's line passes within 2px of",
+         crossed_badges, 0, "← abbd CLI -> after work's dotted bus at y=258 runs through badge 2's centre"),
+    Case("self-title-meets-ink", "today (zones, #112)", SELF_STATE, "zone titles whose glyph box meets line ink",
+         titles_meet_ink, 0, "buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236"),
+    Case("title-meets-ink", "today (zones, #112)", "every fixture overview", "zone titles whose glyph box meets line ink",
+         titles_meet_ink, 0, "the same count over every fixture's overview"),
     Case("hover-cut", "today", "every shot page", "shoot.py cut", hover("cut"), 0, "guard: a lit route stops partway"),
     Case("hover-stray", "today", "every shot page", "shoot.py stray", hover("stray"), 0, "guard: a lit box no lit line reaches"),
     Case("hover-mixed", "today", "every shot page", "shoot.py mixed", hover("mixed"), 0, "guard: one lit route of two colours"),
@@ -321,26 +574,34 @@ CASES = [
 ]
 
 
-def run(out, hover_on):
+def run(out, hover_on, root):
     os.makedirs(out, exist_ok=True)
     pages = os.path.join(out, "pages")
     tables = [os.path.join(out, "fix.tsv"), os.path.join(out, "ways.tsv")]
     for f in tables:
         if os.path.exists(f):
             os.remove(f)
-    env = dict(os.environ, ABBD_LINT_FIXTURES=tables[0], ABBD_ACCEPT_WAYS=tables[1], ABBD_BLUEPRINTS=pages)
-    go = subprocess.run(["go", "test", "./internal/screen", "-count=1", "-run", "^(TestLintFixtures|TestAcceptWays|TestEveryRealDrawingIsLegible)$"],
-                        cwd=ROOT, env=env, capture_output=True, text=True)
+    env = dict(os.environ, ABBD_LINT_FIXTURES=tables[0], ABBD_ACCEPT_WAYS=tables[1], ABBD_BLUEPRINTS=pages,
+               ABBD_ACCEPT_SELF=os.path.join(out, "self-pages"))
+    go = subprocess.run(["go", "test", "./internal/screen", "-count=1", "-run",
+                         "^(TestLintFixtures|TestAcceptWays|TestEveryRealDrawingIsLegible|TestAcceptSelfPages)$"],
+                        cwd=root, env=env, capture_output=True, text=True)
     tail = (go.stdout + go.stderr)[-2000:]
     if not all(os.path.exists(f) for f in tables):
-        sys.exit(f"go test wrote no tables, so nothing was measured (exit {go.returncode}):\n{tail}")
+        sys.exit(f"go test in {root} wrote no tables, so nothing was measured (exit {go.returncode}):\n{tail}")
     if go.returncode:
-        print(f"go test failed (tables still read):\n{tail}", file=sys.stderr)
+        print(f"go test in {root} failed (tables still read):\n{tail}", file=sys.stderr)
     if hover_on:
         shoot = os.path.join(ROOT, "eval", "skill-polish", "tools", "shoot.py")
         repos = [f"{r}={os.path.join(pages, r)}" for r in sorted(os.listdir(pages))]
         subprocess.run([sys.executable, shoot, os.path.join(out, "shots"), *repos, "--pages", "all", "--hover-shots", "0"],
                        check=True, stdout=subprocess.DEVNULL)
+    t = Tables(out, hover_on)
+    return [None if v is None else int(v) for v in (c.fn(t, c.view) for c in CASES)]
+
+
+def describe(root):
+    return subprocess.run(["git", "describe", "--always", "--dirty"], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
 
 
 def main():
@@ -349,24 +610,27 @@ def main():
         sys.exit(__doc__)
     sys.stdout.reconfigure(encoding="utf8")
     out, hover_on, record = args[0], "--no-hover" not in args, "--record" in args
-    run(out, hover_on)
-    t = Tables(out, hover_on)
-    rows, results = [], []
-    print("case\tsource\tview\tmeasure\tvalue\ttarget\tresult")
-    for c in CASES:
-        v = c.fn(t, c.view)
-        v = None if v is None else int(v)
-        result = "skip" if v is None else "pass" if v <= c.target else "fail"
-        results.append(result)
-        print(f"{c.id}\t{c.source}\t{c.view}\t{c.measure}\t{'' if v is None else v}\t<= {c.target}\t{result}")
-        rows.append([c.id, c.source, c.view, c.measure, "" if v is None else str(v), f"<= {c.target}", c.note])
+    base = args[args.index("--main") + 1] if "--main" in args else None
+    values = run(out, hover_on, ROOT)
+    mains = run(os.path.join(out, "main"), hover_on, base) if base else [None] * len(CASES)
+    results = ["skip" if v is None else "pass" if v <= c.target else "fail" for c, v in zip(CASES, values)]
+    show = lambda v: "" if v is None else str(v)
+    print("case\tsource\tview\tmeasure\tvalue\tmain\ttarget\tresult")
+    for c, v, m, r in zip(CASES, values, mains, results):
+        print(f"{c.id}\t{c.source}\t{c.view}\t{c.measure}\t{show(v)}\t{show(m)}\t<= {c.target}\t{r}")
     skipped = results.count("skip")
     print(f"\n{results.count('fail')} of {len(results) - skipped} measured cases fail" + (f", {skipped} skipped" if skipped else ""))
     if record:
-        at = subprocess.run(["git", "describe", "--always", "--dirty"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
-        with open(os.path.join(HERE, "acceptance.tsv"), "w", newline="", encoding="utf8") as f:
-            f.write("case\tsource\tview\tmeasure\trecorded\tcommit\ttarget\tnote\n")
-            f.writelines("\t".join(r[:5] + [at] + r[5:]) + "\n" for r in rows)
+        path = os.path.join(HERE, "acceptance.tsv")
+        old = {r["case"]: r for r in read(path)} if os.path.exists(path) else {}
+        at, main_at = describe(ROOT), describe(base) if base else ""
+        with open(path, "w", newline="", encoding="utf8") as f:
+            f.write("case\tsource\tview\tmeasure\trecorded\tcommit\tmain\tmain_commit\ttarget\tnote\n")
+            for c, v, m in zip(CASES, values, mains):
+                was = old.get(c.id, {})
+                rec = [show(v), at] if v is not None else [was.get("recorded", ""), was.get("commit", "")]
+                mn = [show(m), main_at] if m is not None else [was.get("main", ""), was.get("main_commit", "")]
+                f.write("\t".join([c.id, c.source, c.view, c.measure, *rec, *mn, f"<= {c.target}", c.note]) + "\n")
     sys.exit(1 if "fail" in results else 0)
 
 
