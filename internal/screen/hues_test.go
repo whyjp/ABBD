@@ -239,6 +239,9 @@ func TestOnlyABypassWearsTheWarning(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
+			if d.Quiet {
+				continue
+			}
 			for _, w := range d.Wires {
 				if warns(w.Kind) != (w.Hue == warnKey) {
 					t.Errorf("%s: a %s line wears %q", name, w.Kind, w.Hue)
@@ -259,6 +262,9 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
+			if d.Quiet {
+				continue
+			}
 			hue := map[string]string{}
 			for _, b := range d.Boxes {
 				hue[b.ID] = b.Hue
@@ -284,5 +290,66 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+// A view that draws a lead draws every other line grey, its dots too, so
+// the lead is its one coloured way (lead.go).
+func TestALeadQuietsEveryOtherLine(t *testing.T) {
+	leads := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			if d.Lead == nil {
+				continue
+			}
+			leads++
+			for _, w := range d.Wires {
+				if w.Hue != hueKey(-1) {
+					t.Errorf("%s: a %s line beside a lead wears %q", name, w.Kind, w.Hue)
+				}
+			}
+			if !d.Quiet {
+				t.Errorf("%s: a view with a lead is not drawn quiet", name)
+			}
+			for _, j := range d.Dots {
+				if j.Hue != hueKey(-1) {
+					t.Errorf("%s: a dot beside a lead wears %q", name, j.Hue)
+				}
+			}
+		}
+	}
+	if leads == 0 {
+		t.Error("no fixture view draws a lead")
+	}
+}
+
+// A view with a hub and no lead rests every line grey but the hub's own,
+// which wear the hub's colour (dress.go).
+func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
+	hubs := 0
+	for _, name := range fixtures {
+		m := fixture(t, name)
+		for _, d := range m.drawings() {
+			f := d.Filled()
+			if d.Lead != nil || f == nil || f.Role != "hub" || !d.Quiet {
+				continue
+			}
+			hubs++
+			for _, w := range d.Wires {
+				own := true
+				for _, k := range classNumbers(w.Lit, "r") {
+					own = own && slices.Contains(d.Routes[k].ends, f.ID)
+				}
+				own = own && len(classNumbers(w.Lit, "r")) > 0
+				want := map[bool]string{true: f.Hue, false: hueKey(-1)}[own]
+				if w.Hue != want {
+					t.Errorf("%s: a %s line wears %q, want %q", name, w.Kind, w.Hue, want)
+				}
+			}
+		}
+	}
+	if hubs == 0 {
+		t.Error("no fixture view draws a hub")
 	}
 }

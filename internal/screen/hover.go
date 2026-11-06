@@ -55,6 +55,7 @@ func (d *Drawing) hover() {
 	for _, p := range d.Ports {
 		number(p.Keys...)
 	}
+	d.ways = d.Routes
 	if n > hoverMax || len(d.Routes) > routeMax {
 		d.Routes = nil
 		return
@@ -165,14 +166,14 @@ func (d *Drawing) hover() {
 
 // route adds each request's route along its way, with an arrowhead at its
 // end, and at its start too when the two boxes use each other.
-func (d *Drawing) route(r routing, reqs []wireReq) {
+func (d *Drawing) route(r routing, reqs []wireReq, rels func(int) []string) {
 	for i, way := range r.ways {
 		src := reqs[i].from.node
 		if src == "" {
 			src = reqs[i].to.node
 		}
 		ps := straight(way)
-		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == "mutual", Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i})}
+		rt := Route{D: polyline(ps), Kind: reqs[i].kind, Back: r.back[i], Both: reqs[i].kind == "mutual", Head: shapes[reqs[i].kind], src: src, ends: endsOf(reqs, []int{i}), rels: rels(i)}
 		rt.runs = runs(rt.D)
 		if rt.Head == "" {
 			rt.Head = "use"
@@ -256,11 +257,11 @@ var hoverCSS = func() string {
 	b.WriteString("@media (hover:hover){\n")
 	shape := `:is(.box,.port)[class*=" n"]`
 	pointed := fmt.Sprintf("svg:has(.route):has(%s:hover,:focus-visible>%s,.w:hover)", shape, shape)
-	fmt.Fprintf(&b, "%s :where(.w,.junction,.count,.lab,.origin){opacity:.1}\n", pointed)
+	fmt.Fprintf(&b, "%s :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}\n", pointed)
 	fmt.Fprintf(&b, "%s :where(.box,.port[class*=\" n\"]){opacity:.3}\n", pointed)
 	for j := range hoverMax {
 		on := fmt.Sprintf("svg:has(.p%d:hover,:focus-visible>.p%d)", j, j)
-		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
+		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin,.badge).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
 		fmt.Fprintf(&b, "%s .route.e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
 	}
 	for k := range routeMax {

@@ -26,7 +26,14 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 	"head":       head,
 	"routeHead":  routeHead,
 	"routeHeads": func() []string { return routeHeads },
-	"tip":        func(k string) string { return tips[k] },
+	"role":       role,
+	"legendFor": func(kind string, quiet bool) any {
+		return struct {
+			Kind  string
+			Quiet bool
+		}{kind, quiet}
+	},
+	"tip": func(k string) string { return tips[k] },
 	"css": func(tmpl string) template.CSS {
 		if tmpl == "index" || tmpl == "module" || tmpl == "around" {
 			return template.CSS(pageCSS + hueCSS + hoverCSS)

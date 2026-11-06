@@ -94,7 +94,7 @@ func render(t *testing.T, d Drawing) rendered {
 				switch {
 				case mask != "" && attr(e, "fill") != "#fff":
 					masks[mask] = append(masks[mask], rect())
-				case mask == "" && !hasClass(e, "frame"):
+				case mask == "" && !hasClass(e, "frame") && !hasClass(e, "band"):
 					r.rects = append(r.rects, rect())
 				}
 			case "path":
