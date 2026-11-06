@@ -21056,7 +21056,23 @@
                 "Code": true
               },
               {
-                "Text": " finds it beats the other. A line with no chain keeps the x it passed the row above at where the row lets it, and ",
+                "Text": " finds it beats the other. Where it does not, ",
+                "Code": false
+              },
+              {
+                "Text": "route",
+                "Code": true
+              },
+              {
+                "Text": " lays it once more with every crossing held at or under the track it took in the first drawing (",
+                "Code": false
+              },
+              {
+                "Text": "shelve",
+                "Code": true
+              },
+              {
+                "Text": "'s floor, keyed by request or by a bus's first member and side), so the track a straightened line left stays and the steps below keep their height. A line with no chain keeps the x it passed the row above at where the row lets it, and ",
                 "Code": false
               },
               {
