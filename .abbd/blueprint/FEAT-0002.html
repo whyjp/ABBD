@@ -106,7 +106,7 @@ svg text.count { font-size: 11px; font-weight: 700; fill: var(--muted); }
 svg text.lab { font-size: 11px; fill: var(--c); }
 svg text.lab.said { font-style: italic; }
 svg path.w.joins { marker-end: none; }
-svg path.w.plan:not(.back) { stroke-dasharray: 3 2; }
+svg path.w.plan:not(.back) { stroke-dasharray: 0.5 3.5; stroke-linecap: round; stroke-width: 2; }
 svg.quiet path.w { stroke-width: 1.2; }
 svg.quiet path.w.provides, svg.quiet path.w.bypass, svg.quiet path.w.mutual { stroke-width: 1.5; }
 svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke-linejoin: round; }
@@ -567,7 +567,7 @@ plugins/abbd/skills/abbd-setup/SKILL.md &#34;Write `.abbd/extractor/supplement.j
 </div><div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:3 2"/></svg>점선: 실행 중 호출이나 데이터 없이 설계로만 이어진 관계 (관례, 임포트, 트레이트, 매크로, 빌드 기능)</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 실행 중 호출이나 데이터 없이 설계로만 이어진 관계 (관례, 임포트, 트레이트, 매크로, 빌드 기능)</span>
 
 <span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
@@ -954,7 +954,7 @@ plugins/abbd/skills/abbd-setup/SKILL.md &#34;Write `.abbd/extractor/supplement.j
 </div><div class="legend keys">
 
 
-<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:3 2"/></svg>점선: 실행 중 호출이나 데이터 없이 설계로만 이어진 관계 (관례, 임포트, 트레이트, 매크로, 빌드 기능)</span>
+<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 실행 중 호출이나 데이터 없이 설계로만 이어진 관계 (관례, 임포트, 트레이트, 매크로, 빌드 기능)</span>
 
 <span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
