@@ -225,12 +225,18 @@ func Build(in Input) Model {
 		d.paint(hues)
 	}
 	fs, ls := walks(in), layerings(in)
-	for _, d := range append([]*Drawing{&m.Overview}, insides(m.Insides)...) {
+	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
+	for _, d := range leads {
 		d.lead(o.tree, fs)
-		d.zone(o.tree, ls)
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)
+	}
+	// Numbers and band titles keep off every word, so they are set once
+	// dress has given each box its last line.
+	for _, d := range leads {
+		d.number()
+		d.zone(o.tree, ls)
 	}
 	o.placeNotes(in, &m)
 	m.Flows, m.Stacks, m.Tables = flows, stacks, tables
