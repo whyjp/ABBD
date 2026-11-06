@@ -30,6 +30,9 @@ type Zone struct {
 	Title, Hue string
 	X, Y, W, H int
 	TX, TY     int
+	// Lines are the title set on two lines, where one line has no room
+	// clear of ink; empty when it fits on one.
+	Lines []string `json:",omitempty"`
 }
 
 // Label is the band's title as set: its layer's number, then its name.
@@ -44,7 +47,12 @@ const (
 	// zoneSide and zoneFoot are how far a band reaches past its boxes,
 	// and zoneHead how far above them, where its title sits.
 	zoneSide, zoneFoot, zoneHead = 8, 8, 20
-	zonePx                       = 10
+	// zoneMore is how much further a band reaches above or below its
+	// boxes when no place in its usual room keeps its title clear of ink.
+	zoneMore = 12
+	// zoneLine is how far a title's second line sits below its first.
+	zoneLine = 12
+	zonePx   = 10
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
@@ -210,7 +218,11 @@ func (d *Drawing) shown(t tree) func(model.ID) string {
 // band is g's zone, when its boxes sit together: around them, with room
 // above or below for the title, on the canvas and inside the frame, clear
 // of every other box and chip and of the bands already set. The title
-// takes the corner fewest lines, labels and counts cross.
+// takes the first place that keeps inkGap from every line, arrowhead,
+// dot, chip, label, count and number. It tries the corner it has always
+// taken first, the usual room's corner the fewest of those cross, then
+// the rest of that room, then the other usual room, then a room zoneMore
+// taller, on two lines. With none, it keeps the corner it always took.
 func (d *Drawing) band(g group) (Zone, bool) {
 	in := map[string]bool{}
 	for _, id := range g.ids {
@@ -224,33 +236,96 @@ func (d *Drawing) band(g group) (Zone, bool) {
 			hues[b.Hue]++
 		}
 	}
-	best, cost := Zone{}, -1
-	for _, below := range []bool{false, true} {
-		head, foot := zoneHead, zoneFoot
-		if below {
-			head, foot = zoneFoot, zoneHead
-		}
-		z := Zone{N: g.n, Title: g.title, X: lo.x - zoneSide, Y: lo.y - head, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + head + foot}
-		if !d.clear(z, in) {
-			continue
-		}
-		w := zoneWidth(z.Label())
-		y := z.Y + 14
-		if below {
-			y = z.Y + z.H - 6
-		}
-		for _, x := range []int{z.X + zoneSide + 2, z.X + z.W - zoneSide - 2 - w} {
-			if x < z.X+zoneSide {
+	type spot struct {
+		z      Zone
+		lines  []string
+		x, y   int
+		corner bool
+	}
+	// The spots in the order they are tried: the four corners of the
+	// usual room, then every place along its top and its bottom, then the
+	// same in a taller room, where the title takes two lines.
+	var spots []spot
+	for _, more := range []int{0, zoneMore} {
+		var rooms []spot
+		for _, below := range []bool{false, true} {
+			head, foot := zoneHead+more, zoneFoot
+			if below {
+				head, foot = zoneFoot, zoneHead+more
+			}
+			z := Zone{N: g.n, Title: g.title, X: lo.x - zoneSide, Y: lo.y - head, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + head + foot}
+			if !d.clear(z, in) {
 				continue
 			}
-			if c := d.crossed(box{x - 2, y - 10, w + 4, 13}); cost < 0 || c < cost {
-				best, cost = z, c
-				best.TX, best.TY = x, y
+			lines := []string{z.Label()}
+			if more > 0 {
+				lines = halves(z.Label())
+			}
+			y := z.Y + 14
+			if below {
+				y = z.Y + z.H - 6 - (len(lines)-1)*zoneLine
+			}
+			rooms = append(rooms, spot{z: z, lines: lines, y: y})
+		}
+		for _, r := range rooms {
+			w := linesWidth(r.lines)
+			for _, x := range []int{r.z.X + zoneSide + 2, r.z.X + r.z.W - zoneSide - 2 - w} {
+				if x >= r.z.X+zoneSide {
+					spots = append(spots, spot{r.z, r.lines, x, r.y, more == 0})
+				}
+			}
+		}
+		for _, r := range rooms {
+			w := linesWidth(r.lines)
+			for x := r.z.X + zoneSide + 2; x <= r.z.X+r.z.W-zoneSide-2-w; x += 4 {
+				spots = append(spots, spot{r.z, r.lines, x, r.y, false})
 			}
 		}
 	}
-	if cost < 0 {
+	if len(spots) == 0 {
 		return Zone{}, false
+	}
+	area := func(s spot) box {
+		return box{s.x - 2, s.y - 10, linesWidth(s.lines) + 4, 13 + (len(s.lines)-1)*zoneLine}
+	}
+	set := func(s spot) Zone {
+		z := s.z
+		z.TX, z.TY = s.x, s.y
+		if len(s.lines) > 1 {
+			z.Lines = s.lines
+		}
+		return z
+	}
+	// main is the corner the title has always taken: of the usual room's
+	// corners, the one the fewest lines, labels and counts cross. It is
+	// tried first, then the rest of its room, so a title that has room
+	// where it was stays there and its band keeps its shape.
+	main, cost := -1, -1
+	for k, sp := range spots {
+		if c := d.crossed(area(sp)); sp.corner && (cost < 0 || c < cost) {
+			main, cost = k, c
+		}
+	}
+	if main < 0 {
+		main = 0
+	}
+	order := []int{main}
+	for k, sp := range spots {
+		if k != main && sameRoom(sp.z, spots[main].z) {
+			order = append(order, k)
+		}
+	}
+	for k, sp := range spots {
+		if !sameRoom(sp.z, spots[main].z) {
+			order = append(order, k)
+		}
+	}
+	best := set(spots[main])
+	for _, k := range order {
+		if a := grow(area(spots[k]), inkGap); d.clearOfInk(a, nil) && !d.onBadge(a) && d.crossed(a) == 0 {
+			best = set(spots[k])
+			break
+		}
 	}
 	n := -1
 	for h, k := range hues {
@@ -313,7 +388,48 @@ func (d *Drawing) crossed(area box) int {
 	return n
 }
 
+// sameRoom says two bands are one band, the same rectangle.
+func sameRoom(a, b Zone) bool { return a.X == b.X && a.Y == b.Y && a.W == b.W && a.H == b.H }
+
+// linesWidth is how wide a title set on lines is.
+func linesWidth(lines []string) int {
+	w := 0
+	for _, l := range lines {
+		w = max(w, zoneWidth(l))
+	}
+	return w
+}
+
+// halves sets s on two lines, broken at the space nearest its middle, or
+// leaves it whole when it has no space.
+func halves(s string) []string {
+	r := []rune(s)
+	best := -1
+	for i, c := range r {
+		if c == ' ' && (best < 0 || abs(i-len(r)/2) < abs(best-len(r)/2)) {
+			best = i
+		}
+	}
+	if best <= 0 {
+		return []string{s}
+	}
+	return []string{strings.TrimSpace(string(r[:best])), strings.TrimSpace(string(r[best:]))}
+}
+
 // zoneWidth is how wide a title is set: small capitals spaced apart.
 func zoneWidth(s string) int {
 	return textWidth(strings.ToUpper(s), zonePx) + len([]rune(s))*2
+}
+
+// onBadge says area meets a number of the view's lead.
+func (d *Drawing) onBadge(area box) bool {
+	if d.Lead == nil {
+		return false
+	}
+	for _, h := range d.Lead.Hops {
+		if hit(area, box{h.X - h.R, h.Y - h.R, 2 * h.R, 2 * h.R}) {
+			return true
+		}
+	}
+	return false
 }

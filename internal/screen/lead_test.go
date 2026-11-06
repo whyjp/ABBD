@@ -79,6 +79,9 @@ func TestAStackBandsItsLayers(t *testing.T) {
 		t.Fatal("no layer is banded")
 	}
 	for _, z := range d.Zones {
+		if z.N < 1 || z.N > len(groups) {
+			t.Fatalf("band %q is numbered %d, not one of the %d stored layers", z.Title, z.N, len(groups))
+		}
 		g := groups[z.N-1]
 		if z.Title != []string{"commands", "store"}[z.N-1] {
 			t.Errorf("band %d is titled %q", z.N, z.Title)
@@ -98,4 +101,23 @@ func newTreeFor(t *testing.T) tree {
 		t.Fatal(err)
 	}
 	return newTree(units)
+}
+
+// A view past hover's caps has no routes to light its lines again, so it
+// draws its lead but never rests its other lines grey.
+func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
+	cli, st, gitx := model.ID("MOD-0001"), model.ID("MOD-0041"), model.ID("MOD-0022")
+	m := withFigures(t, []model.ID{cli, st, gitx}, nil, nil)
+	if !m.Overview.Quiet {
+		t.Fatal("the overview with a lead and routes is not quiet")
+	}
+	d := withFigures(t, []model.ID{cli, st, gitx}, nil, nil).Overview
+	d.Lead, d.Quiet, d.Routes = nil, false, nil
+	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}})
+	if d.Lead == nil {
+		t.Fatal("a view past the caps draws no lead")
+	}
+	if d.Quiet {
+		t.Error("a view past the caps rests its lines grey with no way to light them")
+	}
 }

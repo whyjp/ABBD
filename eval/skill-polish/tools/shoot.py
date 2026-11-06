@@ -29,6 +29,9 @@ checks run on what it shows:
   hue       a hover of a box that wears a colour, where the box's border
             takes another colour than the hue the lines it lights are drawn
             from (a climbing line's lighter tint counts as its hue)
+  flat      a hover of a box that wears a colour, other than a focus view's
+            centre, whose border does not grow thicker than it rests, so the
+            pointed-at box does not show
   all_lit   a box hover that lights every line of a view that has lines; it
             is checked like any other hover and listed, since it is also
             what a hover the page ignores would show
@@ -106,7 +109,8 @@ HUE = r"""
   if (!g.matches('g.box[data-h]')) return null;
   const hueOf = (el) => { const p = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); p.style.fill = 'var(--c)'; el.appendChild(p); const c = getComputedStyle(p).fill; p.remove(); return c; };
   const lit = [...svg.querySelectorAll('g.route')].filter(r => eff(r) > 0.5).map(hueOf);
-  return [getComputedStyle(g.querySelector('rect')).stroke, [...new Set(lit)]];
+  const cs = getComputedStyle(g.querySelector('rect'));
+  return [cs.stroke, [...new Set(lit)], parseFloat(cs.strokeWidth), g.classList.contains('focus')];
 }
 """
 
@@ -370,9 +374,10 @@ def view(pg, url, sel, out, stem, hover_shots):
     colors = {i: c for i, (_, _, c) in enumerate(base["wires"])}
     rec = {"view": stem, "width": round(geo["rect"][2]), "height": round(geo["rect"][3]), "old_cut": round(cut_old, 3),
            "boxes": sum(1 for t in geo["targets"] if "box" in t["cls"].split()), "lines": len(geo["wires"]),
-           "cut": [], "stray": [], "mixed": [], "line_cut": [], "hidden": [], "all_lit": [], "overlap": overlaps(geo), "hue": [], "shots": []}
+           "cut": [], "stray": [], "mixed": [], "line_cut": [], "hidden": [], "all_lit": [], "overlap": overlaps(geo), "hue": [], "flat": [], "shots": []}
     flagged = []
     hub, hub_n = None, -1
+    rest = pg.evaluate("() => [...document.querySelector('svg[data-shot]').querySelectorAll('g.box, g.port')].map(g => parseFloat(getComputedStyle(g.querySelector('rect')).strokeWidth))")
     for t in geo["targets"]:
         if not t["hov"]:
             continue
@@ -384,6 +389,8 @@ def view(pg, url, sel, out, stem, hover_shots):
         hue = pg.evaluate(HUE, t["i"])
         if hue and hue[1] and hue[0] not in hue[1]:
             rec["hue"].append({"hover": who, "border": hue[0], "lines": hue[1]})
+        if hue and not hue[3] and hue[2] <= rest[t["i"]]:
+            rec["flat"].append({"hover": who, "rest": rest[t["i"]], "hovered": hue[2]})
         if lit_w and len(lit_w) == len(lit["wires"]):
             rec["all_lit"].append(who)
         loose, reached, mixed = route_check(lit_w, lit_t, geo, {i: c for i, (_, _, c) in enumerate(lit["wires"])})
@@ -480,10 +487,10 @@ def main():
         pg.close()
     with open(os.path.join(out, "findings.json"), "w", encoding="utf8") as fh:
         json.dump(recs, fh, indent=1, ensure_ascii=False)
-    print("view\tsize\told_cut\tboxes\tlines\tcut\tstray\tmixed\tline_cut\thidden\tall_lit\toverlap\thue")
+    print("view\tsize\told_cut\tboxes\tlines\tcut\tstray\tmixed\tline_cut\thidden\tall_lit\toverlap\thue\tflat")
     for r in recs:
         print(f"{r['view']}\t{r['width']}x{r['height']}\t{r['old_cut']:.2f}\t{r['boxes']}\t{r['lines']}\t{len(r['cut'])}\t{len(r['stray'])}\t"
-              f"{len(r['mixed'])}\t{len(r['line_cut'])}\t{len(r['hidden'])}\t{len(r['all_lit'])}\t{len(r['overlap'])}\t{len(r['hue'])}")
+              f"{len(r['mixed'])}\t{len(r['line_cut'])}\t{len(r['hidden'])}\t{len(r['all_lit'])}\t{len(r['overlap'])}\t{len(r['hue'])}\t{len(r['flat'])}")
 
 
 main()

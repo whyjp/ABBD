@@ -51,10 +51,10 @@ func mixed(a, b srgb, p float64) srgb {
 }
 
 // Every colour a line or a border takes stands at least 3:1 against the
-// page and the box fill in both themes, and so does its climbing tint
-// against the page (rule 11, rule 13).
+// page, the box fill and its own tinted box fill in both themes, and so
+// does its climbing tint against the page (rule 11, rule 13).
 func TestEveryHueReadsOnBothThemes(t *testing.T) {
-	for _, mix := range []string{fmt.Sprintf("var(--c) %d%%, var(--bg)", backMix), fmt.Sprintf("var(--c) %d%%, var(--panel)", borderMix)} {
+	for _, mix := range []string{fmt.Sprintf("var(--c) %d%%, var(--bg)", backMix), fmt.Sprintf("var(--c) %d%%, var(--panel)", tintMix)} {
 		if !strings.Contains(pageCSS, mix) {
 			t.Errorf("page.css mixes no colour as %s", mix)
 		}
@@ -71,7 +71,7 @@ func TestEveryHueReadsOnBothThemes(t *testing.T) {
 				"page":          contrast(col, page),
 				"box fill":      contrast(col, panel),
 				"climbing tint": contrast(mixed(col, page, backMix), page),
-				"border tint":   contrast(mixed(col, panel, borderMix), page),
+				"tinted fill":   contrast(col, mixed(col, panel, tintMix)),
 			} {
 				if r < 3 {
 					t.Errorf("%s on the %s %s: %.2f:1, under 3:1", h.name, theme, what, r)
