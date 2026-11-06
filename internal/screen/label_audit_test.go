@@ -132,8 +132,11 @@ func TestLabelAudit(t *testing.T) {
 				if slices.ContainsFunc(w.Rels, func(r string) bool { return tr.phrases[r].text != "" }) {
 					phrased++
 				}
+				// A path of a bus with one count speaks for the lines it counts
+				// where it carries them all, as a bus drawn as one path does;
+				// a branch of a road carries only its own.
 				count := w.Count
-				if cs := counts[w.Net]; count < 2 && len(cs) == 1 {
+				if cs := counts[w.Net]; count < 2 && len(cs) == 1 && len(w.lines) == cs[0] {
 					count = cs[0]
 				}
 				kind := func(s string, phrase bool) string {

@@ -143,7 +143,7 @@ var criteria = []Criterion{
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
 	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
 	{ID: "J2", Hard: true, Says: "every split and merge carries a dot (rule 17)", check: (*look).dotted},
-	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins (rule 18)", check: (*look).noPhantoms},
+	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
 	{ID: "H1", Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
 	{ID: "H2", Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
 	{ID: "O1", Placement: true, Says: "a box that only uses stands in the top rows", check: (*look).sourcesOnTop},
@@ -1072,8 +1072,13 @@ func (l *look) dotted() []Breach {
 	return out
 }
 
-// J3 is rule 18, held at zero.
+// J3 is rule 18, held at zero but where lines ride roads (confluence.go)
+// and the drawing holds their routes: there ink may join places no
+// relation joins, since each line's route lights whole under the pointer.
 func (l *look) noPhantoms() []Breach {
+	if l.v.d.roads && l.s.routed {
+		return nil
+	}
 	var out []Breach
 	for _, w := range l.trace.Phantoms {
 		out = append(out, Breach{Items: l.itemsOf(w.from, w.to), Got: 1, Allowed: 0,

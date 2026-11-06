@@ -219,6 +219,10 @@ type tactic struct {
 	// so the count stands clear of the next line. choose and insideFocus
 	// try it on the drawing they keep.
 	counted bool
+	// roads lets lines that run side by side ride one road (confluence.go).
+	// choose and the focus views draw only the drawing they keep with it, so
+	// it moves no box: which drawing a view keeps is weighed on its own lines.
+	roads bool
 }
 
 var tactics = []tactic{{}, {median: true}, {reversed: true}, {narrow: true}, {narrow: true, median: true}, {narrow: true, reversed: true},

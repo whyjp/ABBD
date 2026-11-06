@@ -63,6 +63,7 @@ func TestTheOverviewKeepsThePlainRankingUnlessAnotherFixesIt(t *testing.T) {
 	pick := func(costs ...cost) int {
 		ts := overviewTactics[:len(costs)]
 		return choose(ts, func(t tactic, read *cost) (int, bool) {
+			t.roads = false
 			i := slices.Index(ts, t)
 			if t.counted {
 				i = slices.Index(ts, tactic{fold: t.fold, entry: t.entry})

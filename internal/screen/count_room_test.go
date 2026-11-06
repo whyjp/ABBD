@@ -125,8 +125,7 @@ func fixtureCountsCrowded(t *testing.T) map[string][]string {
 // fails too, so its entry goes.
 func TestCountsStandClearOfTheNextLine(t *testing.T) {
 	left := map[string][]string{
-		"self": {"MOD-0001 abbd CLI: ×2 at {852 142}", "MOD-0030 internal/model: ×2 at {716 50}"},
-		"orca": {"MOD-0056 Orca runtime (RPC host): ×2 at {1069 348}"},
+		"orca": {"MOD-0042 focus MOD-0052 desktop-main/ipc: ×12 at {667 285}"},
 	}
 	got := fixtureCountsCrowded(t)
 	for _, name := range fixtures {

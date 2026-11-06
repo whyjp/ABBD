@@ -147,7 +147,7 @@ func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m, centres(full), tactic{})
+		f := planOverview(units, m, centres(full), tactic{roads: true})
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
@@ -173,17 +173,22 @@ func (o *overview) insideFocus(scope model.ID, units []model.Unit, full Inside) 
 		// it, the view keeps that if choose's checks pass it against the
 		// first drawing and lint reads it no worse.
 		if ins.roomy {
-			t.counted = true
-			if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
+			ct := t
+			ct.counted = true
+			if alt, ok := o.inside(scope, units, id, centres(full.Drawing), ct, nil); ok {
 				var c, ac cost
 				c.judge(ins.Drawing)
 				ac.judge(alt.Drawing)
 				b := newGates()
 				b.admit(tactic{}, c)
-				if b.admit(t, ac) && !c.beats(ac) {
-					ins = alt
+				if b.admit(ct, ac) && !c.beats(ac) {
+					ins, t = alt, ct
 				}
 			}
+		}
+		t.roads = true
+		if alt, ok := o.inside(scope, units, id, centres(full.Drawing), t, nil); ok {
+			ins = alt
 		}
 		d := ins.Drawing
 		out = append(out, o.focus(scope, "#m-"+string(scope), full.Name+"의 안", id, d))
