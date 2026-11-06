@@ -55,6 +55,8 @@ HOST = 'box "@orca/process-host" (MOD-0070)'
 CONNECTOR = 'chip "@orca-cloud/connector- contract"'
 GITX = 'box "internal/gitx" (MOD-0022)'
 APP_SHELL = 'box "app-shell" (MOD-0073)'
+M81 = "orca MOD-0081 shared types and schemas"
+RPC = 'box "shared/rpc-contract" (MOD-0090)'
 
 
 def read(path):
@@ -168,11 +170,12 @@ def past_ends(frm, to):
     return m
 
 
-def x_travel(frm, to):
-    """Total length of the line's sideways stretches."""
+def x_travel(frm, to, *more):
+    """Total length of the sideways stretches of the line from frm to to, and
+    of the line from each place in more to to."""
     def m(t, view):
-        w = ways(t, view, frm, to)[0]["pts"]
-        return round(sum(abs(b[0] - a[0]) for a, b in zip(w, w[1:])))
+        return round(sum(abs(b[0] - a[0]) for f in (frm, *more) for w in [ways(t, view, f, to)[0]["pts"]]
+                         for a, b in zip(w, w[1:])))
     return m
 
 
@@ -593,6 +596,12 @@ CASES = [
     Case("n97-exit", "user-04", "orca MOD-0097 native/", "px windows-agent-hook -> chip → src/ runs sideways",
          x_travel('box "windows-agent-hook" (MOD-0034)', 'chip "→ src/"'), 0,
          "guard: the exit ran left under process-footprint-macos, reading as its line"),
+    Case("m81-rpc-sideways", "review-122", M81, "px chip Orca runtime and chip mobile/ -> shared/rpc-contract run sideways",
+         x_travel('chip "Orca runtime (RPC host)"', RPC, 'chip "mobile/"'), 220,
+         "#122 drew mobile/'s line from 1000 left to rpc-contract at 370 (630px), Orca runtime's from 502 (132px); before it, 220 in all"),
+    Case("m81-connector-turns", "review-122", M81, "turns of desktop copy of connector contract -> chip @orca-cloud/connector- contract",
+         on(turns, 'box "desktop copy of connector contract" (IF-0025)', CONNECTOR), 0,
+         "#122 leaves the drop at 782 and turns it twice to reach the chip at 962; before it, it dropped straight at 106"),
     Case("self-gitx", "user-05", "self overview", "excess turns, jogs and turn-backs of lines at internal/gitx",
          on(knots, GITX), 0, "the knot of steps between internal/extract, internal/store and internal/gitx"),
     Case("p01-tee", "today", "pstack MOD-0001 setup and help",
