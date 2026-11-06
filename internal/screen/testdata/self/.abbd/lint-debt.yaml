@@ -8,7 +8,7 @@ ceilings:
     detours: 20
     overflow: 0
     placement: 38
-    weighed: 1159
+    weighed: 1220
 debt:
     MOD-0030 internal/model:
         R: 1

@@ -123,5 +123,34 @@ func TestAContractLineJoinsItsBusOnItsOwnSide(t *testing.T) {
 		if seen < 3 {
 			t.Fatalf("want the contract lines into grep-matcher, got %d", seen)
 		}
+		return
+	}
+	t.Fatal("no view overview")
+}
+
+// A line down its own chain's lane keeps straight on it past a wide space
+// only where the one line it meets in the row next to it is its own: a
+// line that meets another's pass there would read as that line. Kept
+// straight, it takes no lane of the space.
+func TestALineKeepsItsChainOnlyPastItsOwnPass(t *testing.T) {
+	space := func(passer int) (layout, int) {
+		l := layout{
+			pos:    map[string]rect{"a": {X: 0, W: 100}, "b": {X: 500, W: 100}},
+			rows:   [][]string{{"a", "b"}, {"a", "b"}},
+			width:  600,
+			lanes:  map[[2]int]int{},
+			passes: map[int][]int{0: {200}},
+			beside: map[int][]int{},
+			stubs:  map[int][]int{},
+		}
+		held := map[[2]int]int{{0, 200}: passer}
+		mine := func(q, y int) bool { return held[[2]int{q, y}] == 7 }
+		return l, l.gutterTo(1, 200, 200, 200, mine)
+	}
+	if l, x := space(7); x != 200 || l.lanes[[2]int{1, 1}] != 0 {
+		t.Errorf("past its own pass the line runs at %d holding %d lanes; want 200 and none", x, l.lanes[[2]int{1, 1}])
+	}
+	if _, x := space(3); x == 200 {
+		t.Errorf("past another line's pass the line still runs down its chain at 200")
 	}
 }
