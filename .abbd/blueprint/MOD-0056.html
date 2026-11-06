@@ -71,8 +71,7 @@ svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
 svg text.chip { font-size: 11px; }
 svg .box rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
-svg .box[data-h] rect { stroke: color-mix(in srgb, var(--c) 80%, var(--panel)); }
-svg .box path.bar { fill: none; stroke: var(--c); stroke-width: 4; }
+svg .box[data-h] rect { stroke: var(--c); fill: color-mix(in srgb, var(--c) 5%, var(--panel)); }
 svg .box.inner rect { stroke-width: 1.5; }
 svg .box.inner.has rect { stroke-width: 2.2; }
 svg .box.loose rect { stroke-dasharray: 3 3; stroke: var(--muted); }
@@ -500,7 +499,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 
 
-<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
+<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
   
   <div class="text">
@@ -537,7 +536,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 
 <g class="route bypass e0 e2 r0" data-h="b" style="--k0:var(--h0);--k2:var(--h1)"><path class="way" d="M118 92 L118 128"/><use href="#t-dep" transform="translate(118 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="b" style="--k1:var(--h2);--k2:var(--h1)"><path class="way" d="M270 92 L270 128"/><use href="#t-dep" transform="translate(270 128) rotate(90)"/></g>
-<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="32" width="150" height="60" rx="6"/><path class="bar" d="M25 37 V87"/><text class="name" x="99" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="99" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0034.html#f-overview--MOD-0034"><g class="box design p1 n1 n2" data-id="MOD-0034" data-h="2"><title>MOD-0034 internal/screen. 누르면 이 모듈을 중심으로 봅니다</title><rect x="214" y="32" width="150" height="60" rx="6"/><path class="bar" d="M215 37 V87"/><text class="name" x="289" y="59" text-anchor="middle">internal/screen</text><text class="sub" x="289" y="74" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0056"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0056" data-h="1"><title>MOD-0056 internal/narrative. 누르면 이 모듈의 안을 봅니다</title><rect x="108" y="128" width="172" height="60" rx="6"/><path class="bar" d="M109 133 V183"/><text class="name" x="194" y="155" text-anchor="middle">internal/narrative</text><text class="sub" x="194" y="170" text-anchor="middle">모듈</text></g></a>
+<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="24" y="32" width="150" height="60" rx="6"/><text class="name" x="99" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="99" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0034.html#f-overview--MOD-0034"><g class="box design p1 n1 n2" data-id="MOD-0034" data-h="2"><title>MOD-0034 internal/screen. 누르면 이 모듈을 중심으로 봅니다</title><rect x="214" y="32" width="150" height="60" rx="6"/><text class="name" x="289" y="59" text-anchor="middle">internal/screen</text><text class="sub" x="289" y="74" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0056"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0056" data-h="1"><title>MOD-0056 internal/narrative. 누르면 이 모듈의 안을 봅니다</title><rect x="108" y="128" width="172" height="60" rx="6"/><text class="name" x="194" y="155" text-anchor="middle">internal/narrative</text><text class="sub" x="194" y="170" text-anchor="middle">모듈</text></g></a>
 
 </svg></div>
   <div class="legend">
@@ -559,7 +558,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 
 
-<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:var(--panel);stroke:var(--muted)"/><path d="M2 3 V11" style="stroke:var(--h0);stroke-width:3"/></svg>상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
+<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
 </div>
 </section>
 

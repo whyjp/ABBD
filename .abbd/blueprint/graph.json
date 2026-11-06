@@ -20300,7 +20300,15 @@
                 "Code": true
               },
               {
-                "Text": " draws a pointed-at or focused box's border in its own colour (",
+                "Text": " draws each coloured box with a 1.5px border in its colour over a 5% tint (",
+                "Code": false
+              },
+              {
+                "Text": "tintMix",
+                "Code": true
+              },
+              {
+                "Text": "), with no bar. It draws a pointed-at or focused box's border in its own colour (",
                 "Code": false
               },
               {
