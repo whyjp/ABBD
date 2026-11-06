@@ -20818,7 +20818,7 @@
                 "Code": true
               },
               {
-                "Text": " passes over it where it crosses more than the least of the ungathered drawings, and a gathered view's focus views gather the same way (",
+                "Text": " keeps it where it crosses no more than the least of the ungathered drawings, or else no more than the drawing it replaces while adding no line that turns in a clear column, and a gathered view's focus views gather the same way (",
                 "Code": false
               },
               {
@@ -20850,15 +20850,7 @@
                 "Code": true
               },
               {
-                "Text": ", its placement breaches and folded chips, exceeds that of the drawing ",
-                "Code": false
-              },
-              {
-                "Text": "pick",
-                "Code": true
-              },
-              {
-                "Text": " says it would keep without lanes by more than ",
+                "Text": ", its placement breaches and folded chips, exceeds that of the best drawing with no lanes by more than ",
                 "Code": false
               },
               {
@@ -21248,7 +21240,7 @@
                 "Code": true
               },
               {
-                "Text": " finds a step onto an arrival track at the nearest clear x. A line that steps onto an arrival bus off a departure trunk it leads down the chain the bus's lead takes leads that bus instead, so the drop stands under its step and it runs straight on, and the bus's other lines on that chain join late off it where nothing stands within 12px; ",
+                "Text": " finds a step onto an arrival track at the nearest clear x; where that x would fall past the line's end or before its trunk, the line steps at its trunk anyway unless something in its own gap holds that x, a step in another gap holding it only when that step is no straight step down its own trunk. A line that steps onto an arrival bus off a departure trunk it leads down the chain the bus's lead takes leads that bus instead, so the drop stands under its step and it runs straight on, and the bus's other lines on that chain join late off it where nothing stands within 12px; ",
                 "Code": false
               },
               {
