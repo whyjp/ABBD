@@ -86,6 +86,11 @@ svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); strok
 svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
 svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box[data-h]:not(.focus):hover rect { stroke-width: 2.6; }
+svg a:hover .box.focus rect, svg a:focus .box.focus rect { stroke-width: 3.4; }
+svg .box[data-h]:hover rect, svg a:hover .box[data-h] rect, svg a:focus .box[data-h] rect { stroke: var(--c); }
+svg .box.lead[data-h]:hover rect, svg a:hover .box.lead[data-h] rect, svg a:focus .box.lead[data-h] rect { fill: color-mix(in srgb, var(--c) 82%, var(--ink)); }
+svg a:focus-visible { outline: 2px dashed var(--ink); outline-offset: 3px; }
 .picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
@@ -498,15 +503,15 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 건너는 것: git query (판독) 5/5</title></path><path class="w bypass e2 e7 r18" d="M535 220 L535 248" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 건너는 것: ID reconcile (판독) 2/3, claims setup owns (판독) 1/3</title></path><path class="w bypass e2 e9 r19" d="M801 220 L801 248" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존
 건너는 것: blueprint freshness (판독) 1/3, render pages (판독) 2/3</title></path><path class="w bypass joins e2 e11 e14 r20 r22" d="M812 380 L812 388" data-h="n"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4</title></path><path class="w bypass e2 e12 r21" d="M1158 220 L1158 248" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
-건너는 것: dir grouping (판독) 1/1</title></path><path class="w bypass joins e2 e11 e14 r20 r22" d="M812 380 L812 388" data-h="n"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: long-section check (판독) 1/1</title></path><path class="w bypass joins e3 e5 r23" d="M327 332 L327 348" data-h="n"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존
+abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
+건너는 것: Compare revisions (판독) 1/2, Explain unit (판독) 1/2, ImpactOf seeds (판독) 1/2, diff boundary check (판독) 1/2, long-section check (판독) 1/2</title></path><path class="w bypass e2 e12 r21" d="M1158 220 L1158 248" data-h="n" marker-end="url(#m-dep-n)"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
+건너는 것: dir grouping (판독) 1/1</title></path><path class="w bypass joins e3 e5 r23" d="M327 332 L327 348" data-h="n"><title>internal/bootstrap → internal/extract: 계약을 거치지 않는 직접 의존
 건너는 것: extract.Unit (판독) 2/2</title></path><path class="w bypass joins e4 e8 r25" d="M788 644 L788 660" data-origin="extracted" data-h="n"><title>internal/evidence → internal/model: 계약을 거치지 않는 직접 의존
 건너는 것: Evidence, Status (판독) 1/2, Unit.Semantic (판독) 1/2</title></path><path class="w bypass joins e5 e7 r28" d="M310 340 L310 348" data-h="n"><title>internal/identity → internal/extract: 계약을 거치지 않는 직접 의존
 건너는 것: extract.Unit (판독) 1/1</title></path><path class="w bypass joins e6 e7 r29" d="M432 508 L432 548" data-h="n"><title>internal/identity → internal/gitx: 계약을 거치지 않는 직접 의존, 판독
 건너는 것: git renames (판독) 1/1</title></path><text class="lab said e6 e7 r29" data-h="n" x="475" y="532" text-anchor="middle">git renames</text><path class="w bypass joins e9 e11 e14 r32 r33" d="M801 340 L801 388" data-h="n"><title>internal/screen → internal/topology: 계약을 거치지 않는 직접 의존
-건너는 것: entry uses (판독) 1/1</title></path><path class="w bypass joins e9 e11 e14 r32 r33" d="M801 340 L801 388" data-h="n"><title>internal/screen → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: text lines (판독) 1/1</title></path><path class="w bypass joins e4 e10 r34" d="M561 516 L561 532" data-h="n"><title>internal/store → internal/evidence: 계약을 거치지 않는 직접 의존
+internal/screen → internal/narrative: 계약을 거치지 않는 직접 의존
+건너는 것: entry uses (판독) 1/2, text lines (판독) 1/2</title></path><path class="w bypass joins e4 e10 r34" d="M561 516 L561 532" data-h="n"><title>internal/store → internal/evidence: 계약을 거치지 않는 직접 의존
 건너는 것: quote lookup (판독) 1/1</title></path><path class="w bypass joins e6 e10 r35" d="M553 516 L553 548" data-h="n"><title>internal/store → internal/gitx: 계약을 거치지 않는 직접 의존
 건너는 것: files at rev (판독) 1/1</title></path><path class="w bypass back e7 e10 r36" d="M559 424 L559 308" data-origin="extracted" data-h="n" marker-end="url(#m-dep-n)"><title>internal/store → internal/identity: 계약을 거치지 않는 직접 의존
 건너는 것: ID format (판독) 1/2, merge candidates (판독) 1/2</title></path><path class="w bypass joins e8 e10 r37" d="M612 516 L612 524 L628 524" data-h="n"><title>internal/store → internal/model: 계약을 거치지 않는 직접 의존

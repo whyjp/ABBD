@@ -78,6 +78,11 @@ svg g.zone rect.band { fill: color-mix(in srgb, var(--c) 7%, transparent); strok
 svg g.zone text.zt { font: 600 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--c); }
 svg .box.twin rect { stroke-dasharray: 6 3; }
 svg a:hover .box rect, svg a:focus .box rect, svg a:hover .port rect { stroke: var(--accent); stroke-width: 2.6; }
+svg .box[data-h]:not(.focus):hover rect { stroke-width: 2.6; }
+svg a:hover .box.focus rect, svg a:focus .box.focus rect { stroke-width: 3.4; }
+svg .box[data-h]:hover rect, svg a:hover .box[data-h] rect, svg a:focus .box[data-h] rect { stroke: var(--c); }
+svg .box.lead[data-h]:hover rect, svg a:hover .box.lead[data-h] rect, svg a:focus .box.lead[data-h] rect { fill: color-mix(in srgb, var(--c) 82%, var(--ink)); }
+svg a:focus-visible { outline: 2px dashed var(--ink); outline-offset: 3px; }
 .picker a.chip { text-decoration: none; }
 svg rect.frame { fill: none; stroke: var(--ink); stroke-width: 2; }
 svg .port rect { stroke-width: 1.2; }
