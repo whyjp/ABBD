@@ -20328,6 +20328,38 @@
                 "Code": false
               },
               {
+                "Text": "dress",
+                "Code": true
+              },
+              {
+                "Text": " gives each chip on a box that box's colour (",
+                "Code": false
+              },
+              {
+                "Text": "Port.Hue",
+                "Code": true
+              },
+              {
+                "Text": "), which ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " fills an exit chip with and outlines an entry chip in, and ",
+                "Code": false
+              },
+              {
+                "Text": "zoneWidth",
+                "Code": true
+              },
+              {
+                "Text": " measures a title as the 10px monospace capitals 0.14em apart that the page sets. ",
+                "Code": false
+              },
+              {
                 "Text": "page.css",
                 "Code": true
               },
