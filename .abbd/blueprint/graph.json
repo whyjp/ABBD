@@ -20244,7 +20244,31 @@
                 "Code": true
               },
               {
-                "Text": "). ",
+                "Text": "). A view past hover's caps is never made quiet, and chips on a filled box carry ",
+                "Code": false
+              },
+              {
+                "Text": "OnFill",
+                "Code": true
+              },
+              {
+                "Text": " for a panel outline. The overview key reads ",
+                "Code": false
+              },
+              {
+                "Text": "Quiet",
+                "Code": true
+              },
+              {
+                "Text": " through ",
+                "Code": false
+              },
+              {
+                "Text": "legendFor",
+                "Code": true
+              },
+              {
+                "Text": ", so a quiet view's key draws the bypass grey. ",
                 "Code": false
               },
               {
