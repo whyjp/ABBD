@@ -110,7 +110,7 @@ func (d *Drawing) mark(paths []drawn, reqs []wireReq, t tree) {
 	}
 	segs := segsOf(paths)
 	d.gaps(segs)
-	d.labels(segs, heads(d.Wires, paths), t)
+	d.labels(segs, heads(paths), t)
 }
 
 // shapes are the arrowhead shapes that say a line's kind: a filled head for
@@ -281,7 +281,7 @@ func (d *Drawing) gaps(segs []seg) {
 // a whole path, and at its first too for a line that reads both ways, not
 // at each piece's ends. Its tip is on the point and it reaches 9px back
 // along the line, 5px to each side.
-func heads(ws []Wire, paths []drawn) []box {
+func heads(paths []drawn) []box {
 	var out []box
 	at := func(tip, from pt) {
 		dx, dy := sign(tip.x-from.x), sign(tip.y-from.y)
@@ -294,15 +294,15 @@ func heads(ws []Wire, paths []drawn) []box {
 		}
 		out = append(out, b)
 	}
-	for i, w := range ws {
-		ps := paths[i].parts
-		if w.Joins || len(ps) == 0 {
+	for _, p := range paths {
+		ps := p.parts
+		if p.joins || len(ps) == 0 {
 			continue
 		}
 		if last := straight(ps[len(ps)-1]); len(last) > 1 {
 			at(last[len(last)-1], last[len(last)-2])
 		}
-		if first := straight(ps[0]); len(first) > 1 && w.Both {
+		if first := straight(ps[0]); len(first) > 1 && p.kind == "mutual" && p.starts[0] != noStart {
 			at(first[0], first[1])
 		}
 	}

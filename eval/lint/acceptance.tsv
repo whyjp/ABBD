@@ -1,27 +1,37 @@
-case	source	view	measure	recorded	commit	target	note
-rg-regex-drop	today; user-16, user-17	ripgrep overview	turns past 0 in one column, 2 in two, of grep -> grep-regex	2	31b09a6	<= 0	rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice
-rg-regex-hairpin	today; user-16, user-17	ripgrep overview	turn-backs and doubled stretches of grep -> grep-regex	0	31b09a6	<= 0	guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back
-rg-doubled	user-18	ripgrep overview	stretches of one line side by side within 12px for 24px	0	31b09a6	<= 0	guard: two lanes of one line read as one doubled line
-rg-matcher-out	today	ripgrep overview	px grep -> grep-matcher runs past its ends' x span	341	31b09a6	<= 0	row 71: it passes at x=769 to reach 337 from 428
-rg-matcher-out-ripgrep	today	ripgrep overview	px ripgrep -> grep-matcher runs past its ends' x span	191	31b09a6	<= 0	the same bus as grep's line, from 578
-rg-matcher-back	today	ripgrep overview	turn-backs of lines at grep-matcher	5	31b09a6	<= 0	grep-matcher's arrivals ride around a row and back
-r72-straight	today	orca MOD-0072 desktop renderer UI	lines between boxes in one column that turn	14	31b09a6	<= 0	a line that could drop straight turns
-r72-back	today	orca MOD-0072 desktop renderer UI	turn-backs	5	31b09a6	<= 0	app-shell's lines ride 90px past their turn
-r72-jogs	today	orca MOD-0072 desktop renderer UI	jogs	19	31b09a6	<= 0	stretches under 24px between turns
-r72-steps	today	orca MOD-0072 desktop renderer UI	steps	59	31b09a6	<= 0	jogs plus turns past 2 per line
-f73-one-stem	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct x's app-shell's depends_on lines leave it at	1	31b09a6	<= 1	5 children in one row: x3/1/1 stubs at 493, 516, 586; one stem that forks
-f73-one-track	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct y's app-shell's depends_on lines turn onto	1	31b09a6	<= 1	the fork's branches leave its stem onto one track
-f73-beside	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	px two stems from app-shell run beside each other within 16px	0	31b09a6	<= 0	guard: no stub runs beside the stem through its track
-s98-mobile	user-11, user-12, user-15	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← mobile/	11	31b09a6	<= 0	the mobile/ entry's lines stair down through the middle
-s98-mobile-beside	user-13, user-14	orca MOD-0098 src/	px two stems from chip ← mobile/ run beside each other within 16px	376	31b09a6	<= 0	the x2 and x5 stems run as two parallel verticals; one stem, or apart
-s98-doubled	review-112	orca MOD-0098 src/	pairs of wires of one kind, not one bundle, drawn on one another	3	b71d042	<= 0	wires 37 and 39 both draw M626 526 L626 558, so the pointer never reaches 37
-s98-native	user-11, user-12	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← native/	0	31b09a6	<= 0	guard: the native/ entry now drops straight into desktop main process
-s98-host-jogs	user-15	orca MOD-0098 src/	jogs of lines at @orca/process-host	6	31b09a6	<= 0	process-host's arrivals step in small jogs above it
-s98-connector	user-02, user-03 (MOD-0100, not a fixture)	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip @orca-cloud/connector- contract	5	31b09a6	<= 0	MOD-0100's stairs down to the frame's bottom chips; MOD-0098 has the same chips
-n97-exit	user-04	orca MOD-0097 native/	px windows-agent-hook -> chip → src/ runs sideways	0	31b09a6	<= 0	guard: the exit ran left under process-footprint-macos, reading as its line
-self-gitx	user-05	self overview	excess turns, jogs and turn-backs of lines at internal/gitx	22	31b09a6	<= 0	the knot of steps between internal/extract, internal/store and internal/gitx
-p01-tee	today	pstack MOD-0001 setup and help	points where a line's straight drop crosses the track of another line leaving its box	1	54a63fc	<= 0	/poteto-help -> 10-recipes drops 420,106 to 420,142 across its box's own bus to 01-setup at 420,130
-hover-cut	today	every shot page	shoot.py cut	0	31b09a6	<= 0	guard: a lit route stops partway
-hover-stray	today	every shot page	shoot.py stray	0	31b09a6	<= 0	guard: a lit box no lit line reaches
-hover-mixed	today	every shot page	shoot.py mixed	0	31b09a6	<= 0	guard: one lit route of two colours
-hover-overlap	today	every shot page	shoot.py overlap	20	31b09a6	<= 0	two colours along one track, one painting over the other
+case	source	view	measure	recorded	commit	main	main_commit	target	note
+rg-regex-drop	today; user-16, user-17	ripgrep overview	turns past 0 in one column, 2 in two, of grep -> grep-regex	2	2ad85bb-dirty	2	9c06b23	<= 0	rows 67-70: the hairpin is gone, but grep-regex stands in grep's column and the line still turns twice
+rg-regex-hairpin	today; user-16, user-17	ripgrep overview	turn-backs and doubled stretches of grep -> grep-regex	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: rows 69-70 took the ride past pcre2 cargo feature's drop and back
+rg-doubled	user-18	ripgrep overview	stretches of one line side by side within 12px for 24px	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: two lanes of one line read as one doubled line
+rg-matcher-out	today	ripgrep overview	px grep -> grep-matcher runs past its ends' x span	0	2ad85bb-dirty	0	9c06b23	<= 0	row 71: it passes at x=769 to reach 337 from 428
+rg-matcher-out-ripgrep	today	ripgrep overview	px ripgrep -> grep-matcher runs past its ends' x span	0	2ad85bb-dirty	0	9c06b23	<= 0	the same bus as grep's line, from 578
+rg-matcher-back	today	ripgrep overview	turn-backs of lines at grep-matcher	0	2ad85bb-dirty	0	9c06b23	<= 0	grep-matcher's arrivals ride around a row and back
+r72-straight	today	orca MOD-0072 desktop renderer UI	lines between boxes in one column that turn	14	2ad85bb-dirty	14	9c06b23	<= 0	a line that could drop straight turns
+r72-back	today	orca MOD-0072 desktop renderer UI	turn-backs	5	2ad85bb-dirty	5	9c06b23	<= 0	app-shell's lines ride 90px past their turn
+r72-jogs	today	orca MOD-0072 desktop renderer UI	jogs	19	2ad85bb-dirty	19	9c06b23	<= 0	stretches under 24px between turns
+r72-steps	today	orca MOD-0072 desktop renderer UI	steps	59	2ad85bb-dirty	59	9c06b23	<= 0	jogs plus turns past 2 per line
+f73-one-stem	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct x's app-shell's depends_on lines leave it at	1	2ad85bb-dirty	1	9c06b23	<= 1	5 children in one row: x3/1/1 stubs at 493, 516, 586; one stem that forks
+f73-one-track	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	distinct y's app-shell's depends_on lines turn onto	1	2ad85bb-dirty	1	9c06b23	<= 1	the fork's branches leave its stem onto one track
+f73-beside	today	orca MOD-0072 focus MOD-0073 renderer/app-shell	px two stems from app-shell run beside each other within 16px	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: no stub runs beside the stem through its track
+s98-mobile	user-11, user-12, user-15	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← mobile/	4	2ad85bb-dirty	4	9c06b23	<= 0	the mobile/ entry's lines stair down through the middle
+s98-mobile-beside	user-13, user-14	orca MOD-0098 src/	px two stems from chip ← mobile/ run beside each other within 16px	0	2ad85bb-dirty	0	9c06b23	<= 0	the x2 and x5 stems run as two parallel verticals; one stem, or apart
+s98-doubled	review-112	orca MOD-0098 src/	pairs of wires of one kind, not one bundle, drawn on one another	0	2ad85bb-dirty	0	9c06b23	<= 0	wires 37 and 39 both draw M626 526 L626 558, so the pointer never reaches 37
+s98-native	user-11, user-12	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip ← native/	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: the native/ entry now drops straight into desktop main process
+s98-host-jogs	user-15	orca MOD-0098 src/	jogs of lines at @orca/process-host	4	2ad85bb-dirty	4	9c06b23	<= 0	process-host's arrivals step in small jogs above it
+s98-connector	user-02, user-03 (MOD-0100, not a fixture)	orca MOD-0098 src/	excess turns, jogs and turn-backs of lines at chip @orca-cloud/connector- contract	5	2ad85bb-dirty	5	9c06b23	<= 0	MOD-0100's stairs down to the frame's bottom chips; MOD-0098 has the same chips
+n97-exit	user-04	orca MOD-0097 native/	px windows-agent-hook -> chip → src/ runs sideways	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: the exit ran left under process-footprint-macos, reading as its line
+self-gitx	user-05	self overview	excess turns, jogs and turn-backs of lines at internal/gitx	14	2ad85bb-dirty	14	9c06b23	<= 0	the knot of steps between internal/extract, internal/store and internal/gitx
+p01-tee	today	pstack MOD-0001 setup and help	points where a line's straight drop crosses the track of another line leaving its box	0	2ad85bb-dirty	0	9c06b23	<= 0	/poteto-help -> 10-recipes drops 420,106 to 420,142 across its box's own bus to 01-setup at 420,130
+self-head-bend	user-19	self overview	arrowheads whose line turns under the chevron's 7.2px depth plus 12px before the tip	0	2ad85bb-dirty	1	9c06b23	<= 0	/abbd -> /abbd-setup turns at 45,100 and runs 8px up into the head at 45,92 under plugins/abbd/skills/
+head-bend	user-19	every fixture view	arrowheads whose line turns under the chevron's 7.2px depth plus 12px before the tip	0	2ad85bb-dirty	281	9c06b23	<= 0	the same rule over every view of every fixture
+s41-hwm-steps	user-20	self MOD-0041 internal/store	jogs plus turns past 2 of ← identity -> ID high-water mark	0	2ad85bb-dirty	3	9c06b23	<= 0	369,38 down to 78, left to 332, down to 106, a 16px jog right to the junction at 348, down into the box: 4 turns, 1 jog
+f01-fork-tangle	user 2026-11-06 (FEAT-0001, no shot)	self FEAT-0001 /abbd	points where arrivals of forks, leaving different places, cross	2	2ad85bb-dirty	2	9c06b23	<= 0	record relation's bus at y=374 and diff's at 382 interleave: after work's feed crosses 569,374, relation's drop crosses 690,382
+fork-tangle	user 2026-11-06 (FEAT-0001, no shot)	every fixture view	points where arrivals of forks, leaving different places, cross	606	2ad85bb-dirty	607	9c06b23	<= 0	the same count over every view of every fixture
+f01-head-room	user-21	self FEAT-0001 /abbd	arrowheads under 6px from other ink	1	2ad85bb-dirty	3	9c06b23	<= 0	the hop head at 265,274 sits 0.8px under badge 2 at 265,258; badge 1, and ×2 counts beside two chip heads
+head-room	user-21	every fixture view	arrowheads under 6px from other ink	198	2ad85bb-dirty	473	9c06b23	<= 0	the same count over every view of every fixture
+f01-badge-crossed	user-21	self FEAT-0001 /abbd	hop badges another route's line passes within 2px of	0	2ad85bb-dirty	0	9c06b23	<= 0	← abbd CLI -> after work's dotted bus at y=258 runs through badge 2's centre
+self-title-meets-ink	today (zones, #112)	self overview, this repository's state	zone titles whose glyph box meets line ink	2	2ad85bb-dirty	2	ee92ea6	<= 0	buses at y=220, 228 and 236 cross the room above internal/screen, so 2 · blueprint rendering at 683,242 sits on the one at 236
+title-meets-ink	today (zones, #112)	every fixture overview	zone titles whose glyph box meets line ink	0	2ad85bb-dirty	0	9c06b23	<= 0	the same count over every fixture's overview
+hover-cut	today	every shot page	shoot.py cut	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: a lit route stops partway
+hover-stray	today	every shot page	shoot.py stray	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: a lit box no lit line reaches
+hover-mixed	today	every shot page	shoot.py mixed	0	2ad85bb-dirty	0	9c06b23	<= 0	guard: one lit route of two colours
+hover-overlap	today	every shot page	shoot.py overlap	1	2ad85bb-dirty	1	9c06b23	<= 0	two colours along one track, one painting over the other

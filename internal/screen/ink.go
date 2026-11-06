@@ -162,9 +162,12 @@ func gapTo(b box, a, c pt) float64 {
 
 // anchor moves each ×N to the side of its own stretch of ink where the
 // nearest other ink is farthest, so the count reads as that stretch's.
-// Labels stay off the boxes.
+// A count stays off the boxes and, where its stretch leaves the room, more
+// than lineRoom off every other line; of those places, it takes one
+// headRoom off every arrowhead, its own included, where there is one.
 func anchor(out []drawn, ps []piece, boxes []box) {
 	var taken []box
+	hs := heads(out)
 	for k := range out {
 		d := &out[k]
 		if d.count < 2 || d.own[0] == d.own[1] {
@@ -173,7 +176,7 @@ func anchor(out []drawn, ps []piece, boxes []box) {
 		w := textWidth(fmt.Sprintf("×%d", d.count), 11) + 2
 		a, b := d.own[0], d.own[1]
 		lo, hi := min(a.y, b.y), max(a.y, b.y)
-		best, bestGap := d.label, -1.0
+		best, bestGap, bestRank := d.label, -1.0, -1
 		for y := lo + 6; y <= hi+6; y += 2 {
 			for _, x := range []int{a.x + 5, a.x - 5 - w} {
 				lb := box{x, y - 9, w, 11}
@@ -193,14 +196,37 @@ func anchor(out []drawn, ps []piece, boxes []box) {
 					}
 					near = math.Min(near, gapTo(lb, p.a, p.b))
 				}
-				if near > bestGap {
-					best, bestGap = pt{x, y}, near
+				rank := 0
+				if near > lineRoom {
+					rank = 1
+					if !byHead(lb, hs) {
+						rank = 2
+					}
+				}
+				if rank > bestRank || rank == bestRank && near > bestGap {
+					best, bestGap, bestRank = pt{x, y}, near, rank
 				}
 			}
 		}
 		d.label = best
 		taken = append(taken, box{best.x, best.y - 9, w, 11})
 	}
+}
+
+// headRoom is how far a count keeps from an arrowhead's box, which reaches
+// 1.8px past the chevron's base and 1.4px past its sides, so 6px or more
+// from the chevron; lineRoom is how far it keeps from another line, where
+// it can.
+const headRoom, lineRoom = 5, 2
+
+// byHead says box b stands within headRoom of an arrowhead's box.
+func byHead(b box, heads []box) bool {
+	for _, h := range heads {
+		if gapTo(b, pt{h.x, h.y}, pt{h.x + h.w, h.y + h.h}) < headRoom {
+			return true
+		}
+	}
+	return false
 }
 
 // mine says piece p runs along the stretch a-b, as the duplicate pieces of
