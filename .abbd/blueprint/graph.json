@@ -7123,7 +7123,47 @@
                 "Code": true
               },
               {
-                "Text": " out, since nothing there is committed.",
+                "Text": " out, since nothing there is committed. ",
+                "Code": false
+              },
+              {
+                "Text": "--base prev",
+                "Code": true
+              },
+              {
+                "Text": " needs the copy's ",
+                "Code": false
+              },
+              {
+                "Text": "HEAD",
+                "Code": true
+              },
+              {
+                "Text": " mark. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " also lists the units anchored at a file changed since the base (",
+                "Code": false
+              },
+              {
+                "Text": "anchoredAt",
+                "Code": true
+              },
+              {
+                "Text": ", through ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.ChangedSince",
+                "Code": true
+              },
+              {
+                "Text": ") and seeds from them, since most changes edit code and leave the topology alone.",
                 "Code": false
               }
             ]
@@ -14997,6 +15037,44 @@
               },
               {
                 "Text": "): every path that differs between two snapshots, with a moved file listed under both names. Nothing in the repository calls it today.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "ChangedSince",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the tracked files that differ between a revision and the working tree, from ",
+                "Code": false
+              },
+              {
+                "Text": "git diff --name-only REV --",
+                "Code": true
+              },
+              {
+                "Text": ", and the untracked files git does not ignore. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " reads it to seed from the units whose code changed.",
                 "Code": false
               }
             ]
@@ -26513,7 +26591,15 @@
                 "Code": true
               },
               {
-                "Text": " file), ",
+                "Text": " file, building the copy in ",
+                "Code": false
+              },
+              {
+                "Text": "prev.tmp",
+                "Code": true
+              },
+              {
+                "Text": " and renaming it into place), ",
                 "Code": false
               },
               {
@@ -31896,7 +31982,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "compares the stored units with the base revision's, or with the copy a write kept before a session's edits",
+              "Says": "compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit",
               "Verb": "사용"
             },
             {

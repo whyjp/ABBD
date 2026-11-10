@@ -114,10 +114,10 @@ rows:
       cells:
         blueprint: says whether its files are the ones the state rendered
         state.yaml: reads the fingerprint to say whether the state is CURRENT
-        unit files: compares the stored units with the base revision's, or with the copy a write kept before a session's edits
+        unit files: compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit
       evidence:
         - path: cmd/abbd/diff.go
-          lines: "171"
+          lines: "173"
           symbol: unitsAt
           quote: return e.st.UnitsAt(base)
         - path: cmd/abbd/evidence.go
@@ -130,7 +130,7 @@ rows:
           quote: switch in.BlueprintFreshness() {
       writer: reader
       code:
-        cmd/abbd/diff.go#quote-d7133fe3: 697a880350600c1c
+        cmd/abbd/diff.go#quote-d7133fe3: c0c3ba779b5a8e28
         cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
         cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
 retired:
@@ -292,6 +292,28 @@ retired:
           quote: switch in.BlueprintFreshness() {
       code:
         cmd/abbd/diff.go#quote-c3e410f2: 2bbb4ade6758f770
+        cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
+        cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
+    - unit: MOD-0002
+      cells:
+        blueprint: says whether its files are the ones the state rendered
+        state.yaml: reads the fingerprint to say whether the state is CURRENT
+        unit files: compares the stored units with the base revision's, or with the copy a write kept before a session's edits
+      evidence:
+        - path: cmd/abbd/diff.go
+          lines: "171"
+          symbol: unitsAt
+          quote: return e.st.UnitsAt(base)
+        - path: cmd/abbd/evidence.go
+          lines: "109"
+          symbol: status
+          quote: 'case in.Synced.Fingerprint == "":'
+        - path: cmd/abbd/evidence.go
+          lines: "112"
+          symbol: status
+          quote: switch in.BlueprintFreshness() {
+      code:
+        cmd/abbd/diff.go#quote-d7133fe3: 697a880350600c1c
         cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
         cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
 ---
