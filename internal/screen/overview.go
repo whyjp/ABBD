@@ -1041,8 +1041,8 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		for _, i := range p.reqs {
 			titles = append(titles, merged[i].title)
 		}
-		w := Wire{D: p.D, Kind: merged[p.reqs[0]].kind}
-		w.Both = w.Kind == "mutual" && p.starts[0] != noStart
+		w := Wire{D: p.D, Kind: p.kind}
+		w.Both = w.Kind == "mutual" && slices.ContainsFunc(p.starts, func(s pt) bool { return s != noStart })
 		origins := map[string]bool{}
 		for j, i := range p.reqs {
 			og := o.origin(merged[i].rels)
