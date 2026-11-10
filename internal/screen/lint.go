@@ -86,10 +86,13 @@ type Totals struct {
 	// Height is the drawing's height in px, so a change that runs a view
 	// taller or shorter shows in the sum.
 	Height int `json:"height"`
-	// ParallelInk, Segments, Lines and ForkLevels say how busy the drawing
-	// reads at rest, before any hover tells its lines apart (busy.go). They
-	// are measured, not gated.
+	// ParallelInk, Abreast, Segments, Lines and ForkLevels say how busy the
+	// drawing reads at rest, before any hover tells its lines apart
+	// (busy.go). ParallelInk is the lines doubled side by side, and Abreast
+	// the lines three or more abreast; a page the debt file names may not
+	// raise them, nor its ColourSwitches (gate.go).
 	ParallelInk int `json:"parallel_ink"`
+	Abreast     int `json:"abreast"`
 	Segments    int `json:"segments"`
 	Lines       int `json:"lines"`
 	ForkLevels  int `json:"fork_levels"`
@@ -113,7 +116,7 @@ func Sum(views []ViewLint) Totals {
 		t.Detours += o.Detours
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
-		t.InkCrossings += o.InkCrossings
+		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
 		t.ColourSwitches += o.ColourSwitches
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
@@ -302,7 +305,7 @@ func lintView(v view) (ViewLint, error) {
 	}
 	vl.Totals.Weighed = vl.Totals.Crossings + vl.Totals.ExcessTurns + stepCrossings*vl.Totals.Steps
 	vl.Totals.Height = v.d.Height
-	vl.Totals.ParallelInk, vl.Totals.Segments = parallelInk(s), len(inkStretches(s))
+	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	return vl, nil
