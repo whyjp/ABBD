@@ -430,7 +430,9 @@ func (s Store) InputsHash() (string, error) {
 		switch {
 		case err != nil:
 			return err
-		case d.IsDir() && (p == s.path("blueprint") || p == s.CompareDir()):
+		case d.IsDir() && p == s.path("blueprint"):
+			return filepath.SkipDir
+		case d.IsDir() && p == s.CompareDir():
 			return filepath.SkipDir
 		case p == s.path("state.yaml"), p == s.path("lint-debt.yaml"):
 			return nil
