@@ -546,24 +546,6 @@
       ]
     },
     {
-      "ID": "FEAT-0005",
-      "Kind": "FEAT",
-      "Name": "/abbd read the code through pstack",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": {
-        "Value": "When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.",
-        "Badge": "inferred"
-      },
-      "Anchors": [
-        "plugins/abbd/skills/abbd/SKILL.md"
-      ],
-      "Parent": "FEAT-0001",
-      "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"Start them from the units the queries named.\""
-      ]
-    },
-    {
       "ID": "FEAT-0006",
       "Kind": "FEAT",
       "Name": "/abbd record what a reader found",
@@ -636,24 +618,6 @@
       ]
     },
     {
-      "ID": "FEAT-0010",
-      "Kind": "FEAT",
-      "Name": "/abbd-setup preconditions and stance",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": {
-        "Value": "Requires pstack 0.15.36, and fixes that setup never asks the human: the first committed state is the baseline.",
-        "Badge": "inferred"
-      },
-      "Anchors": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md"
-      ],
-      "Parent": "FEAT-0002",
-      "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup never asks the human anything.\""
-      ]
-    },
-    {
       "ID": "FEAT-0011",
       "Kind": "FEAT",
       "Name": "/abbd-setup find units with a reader swarm",
@@ -686,7 +650,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the swarm result until every difference is explained.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
       ]
     },
     {
@@ -726,24 +690,6 @@
       ]
     },
     {
-      "ID": "FEAT-0015",
-      "Kind": "FEAT",
-      "Name": "/abbd-setup store how's account per module",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": {
-        "Value": "For each top-level module, runs pstack how and stores its Overview and Key Concepts.",
-        "Badge": "inferred"
-      },
-      "Anchors": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md"
-      ],
-      "Parent": "FEAT-0002",
-      "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
-      ]
-    },
-    {
       "ID": "FEAT-0016",
       "Kind": "FEAT",
       "Name": "/abbd-setup verify, install and hand over",
@@ -758,7 +704,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
       ]
     },
     {
@@ -792,30 +738,12 @@
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
-        "plugins/abbd/skills/abbd/SKILL.md"
+        "plugins/abbd/skills/abbd/SKILL.md",
+        "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Parent": "MOD-0055",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
-      ]
-    },
-    {
-      "ID": "FEAT-0019",
-      "Kind": "FEAT",
-      "Name": "pstack /blast-radius",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": {
-        "Value": "pstack's change-reach analysis; ABBD uses it for a change across several modules.",
-        "Badge": "inferred"
-      },
-      "Anchors": [
-        "plugins/abbd/skills/abbd/SKILL.md"
-      ],
-      "Parent": "MOD-0055",
-      "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
+        "plugins/abbd/skills/abbd/references/reader.md \"you may use pstack `how` to explore a module this reader calls complex\""
       ]
     },
     {
@@ -829,29 +757,84 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md"
+        "plugins/abbd/skills/abbd-setup/SKILL.md",
+        "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Parent": "MOD-0055",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
+        "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
       ]
     },
     {
-      "ID": "FEAT-0021",
+      "ID": "FEAT-0023",
       "Kind": "FEAT",
-      "Name": "pstack principle-build-the-lever",
+      "Name": "abbd reader",
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "pstack's principle of building the tool that does the work; it grounds the extractor script.",
+        "Value": "ABBD's own recipe for reading a module and storing what it found; it needs only the abbd CLI and uses pstack as an optional engine when installed.",
+        "Badge": "inferred"
+      },
+      "Anchors": [
+        "plugins/abbd/skills/abbd/references/reader.md"
+      ],
+      "Parent": "FEAT-0001",
+      "Evidence": [
+        "plugins/abbd/skills/abbd/references/reader.md \"ABBD reads code with this reader.\""
+      ]
+    },
+    {
+      "ID": "FEAT-0024",
+      "Kind": "FEAT",
+      "Name": "/abbd read the code with the reader",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": {
+        "Value": "When the topology is not enough, reads the code with the bundled reader, starting from the units the queries named.",
+        "Badge": "inferred"
+      },
+      "Anchors": [
+        "plugins/abbd/skills/abbd/SKILL.md"
+      ],
+      "Parent": "FEAT-0001",
+      "Evidence": [
+        "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
+      ]
+    },
+    {
+      "ID": "FEAT-0025",
+      "Kind": "FEAT",
+      "Name": "/abbd-setup store a reader's text per module",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": {
+        "Value": "For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader's name.",
         "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
       ],
-      "Parent": "MOD-0055",
+      "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+      ]
+    },
+    {
+      "ID": "FEAT-0026",
+      "Kind": "FEAT",
+      "Name": "/abbd-setup stance",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": {
+        "Value": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
+        "Badge": "inferred"
+      },
+      "Anchors": [
+        "plugins/abbd/skills/abbd-setup/SKILL.md"
+      ],
+      "Parent": "FEAT-0002",
+      "Evidence": [
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup never asks the human anything.\""
       ]
     },
     {
@@ -2504,11 +2487,11 @@
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
-        "plugins/abbd/skills/abbd/SKILL.md"
+        "plugins/abbd/skills/abbd/SKILL.md",
+        "plugins/abbd/skills/abbd/references/reader.md"
       ],
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"`\u003cpstack\u003e` is `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36`.\"",
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\""
+        "plugins/abbd/skills/abbd/references/reader.md \"pstack is an optional engine behind it.\""
       ]
     },
     {
@@ -2795,6 +2778,8 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Phrase": "module text",
+      "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
     },
     {
@@ -2886,32 +2871,8 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd path \u003cA\u003e \u003cB\u003e`: how two units connect\""
     },
     {
-      "From": "FEAT-0005",
-      "To": "FEAT-0004",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Start them from the units the queries named.\""
-    },
-    {
-      "From": "FEAT-0005",
-      "To": "FEAT-0018",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
-    },
-    {
-      "From": "FEAT-0005",
-      "To": "FEAT-0019",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
-    },
-    {
       "From": "FEAT-0006",
-      "To": "FEAT-0005",
+      "To": "FEAT-0024",
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
@@ -2943,7 +2904,9 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"store the new Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`\""
+      "Phrase": "how's text",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"store the new Overview and Key Concepts with\""
     },
     {
       "From": "FEAT-0007",
@@ -3016,36 +2979,22 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"`abbd diff --check` exits 1 when a contract's signature changed\""
     },
     {
-      "From": "FEAT-0010",
-      "To": "MOD-0055",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "config",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\""
-    },
-    {
       "From": "FEAT-0011",
       "To": "FEAT-0017",
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"reports in the extraction format below instead of `PASS`, `ISSUES` or `BLOCKED`\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"each reporting in the extraction format below\""
     },
     {
       "From": "FEAT-0011",
-      "To": "FEAT-0018",
+      "To": "FEAT-0023",
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
-    },
-    {
-      "From": "FEAT-0011",
-      "To": "FEAT-0020",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
+      "Phrase": "reader slices",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Read the candidates in slices, per the reader's \\\"At setup\\\" section\""
     },
     {
       "From": "FEAT-0012",
@@ -3053,7 +3002,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the swarm result until every difference is explained.\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
     },
     {
       "From": "FEAT-0012",
@@ -3065,11 +3014,13 @@
     },
     {
       "From": "FEAT-0012",
-      "To": "FEAT-0021",
+      "To": "FEAT-0023",
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
+      "Phrase": "the lever",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per the reader's \\\"At setup\\\" section.\""
     },
     {
       "From": "FEAT-0013",
@@ -3106,22 +3057,6 @@
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup --supplement .abbd/extractor/supplement.json -- \u003cinterpreter\u003e .abbd/extractor/extract.\u003cext\u003e\""
     },
     {
-      "From": "FEAT-0015",
-      "To": "FEAT-0018",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
-    },
-    {
-      "From": "FEAT-0015",
-      "To": "IF-0013",
-      "Kind": "consumes",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`.\""
-    },
-    {
       "From": "FEAT-0016",
       "To": "DATA-0001",
       "Kind": "consumes",
@@ -3145,7 +3080,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
     },
     {
       "From": "FEAT-0016",
@@ -3176,6 +3111,64 @@
       "Phrase": "parent placement",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+    },
+    {
+      "From": "FEAT-0023",
+      "To": "FEAT-0018",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "optional how",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd/references/reader.md \"you may use pstack `how` to explore a module this reader calls complex\""
+    },
+    {
+      "From": "FEAT-0023",
+      "To": "FEAT-0020",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "optional swarm",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
+    },
+    {
+      "From": "FEAT-0024",
+      "To": "FEAT-0004",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "data",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
+    },
+    {
+      "From": "FEAT-0024",
+      "To": "FEAT-0023",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "reader.md",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
+    },
+    {
+      "From": "FEAT-0025",
+      "To": "FEAT-0023",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "Overview, Key Concepts",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+    },
+    {
+      "From": "FEAT-0025",
+      "To": "IF-0013",
+      "Kind": "consumes",
+      "Origin": "INFERRED",
+      "Via": "call",
+      "Phrase": "module text",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with\""
     },
     {
       "From": "MOD-0001",
@@ -3799,7 +3792,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+      "Quote": "cmd/abbd/understand.go \"e.st.SaveUnderstanding(store.Understanding{Unit: id\""
     },
     {
       "From": "MOD-0006",
@@ -4778,17 +4771,6 @@
           "Understanding": null
         },
         {
-          "ID": "FEAT-0005",
-          "Name": "/abbd read the code through pstack",
-          "Kind": "기능",
-          "Sentence": "When the topology is not enough, hands the code reading to pstack how, or blast-radius for a change across modules, starting from the units the queries named.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd/SKILL.md"
-          ],
-          "Understanding": null
-        },
-        {
           "ID": "FEAT-0006",
           "Name": "/abbd record what a reader found",
           "Kind": "기능",
@@ -4826,6 +4808,28 @@
           "Name": "/abbd evidence and CI gate",
           "Kind": "기능",
           "Sentence": "Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.",
+          "Guess": true,
+          "Anchors": [
+            "plugins/abbd/skills/abbd/SKILL.md"
+          ],
+          "Understanding": null
+        },
+        {
+          "ID": "FEAT-0023",
+          "Name": "abbd reader",
+          "Kind": "기능",
+          "Sentence": "ABBD's own recipe for reading a module and storing what it found; it needs only the abbd CLI and uses pstack as an optional engine when installed.",
+          "Guess": true,
+          "Anchors": [
+            "plugins/abbd/skills/abbd/references/reader.md"
+          ],
+          "Understanding": null
+        },
+        {
+          "ID": "FEAT-0024",
+          "Name": "/abbd read the code with the reader",
+          "Kind": "기능",
+          "Sentence": "When the topology is not enough, reads the code with the bundled reader, starting from the units the queries named.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd/SKILL.md"
@@ -4927,35 +4931,8 @@
           ]
         },
         {
-          "From": "/abbd read the code through pstack",
-          "To": "/abbd ask the blueprint before the code",
-          "Kind": "depends_on",
-          "Via": "data",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"Start them from the units the queries named.\""
-          ]
-        },
-        {
-          "From": "/abbd read the code through pstack",
-          "To": "pstack /how",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
-          ]
-        },
-        {
-          "From": "/abbd read the code through pstack",
-          "To": "pstack /blast-radius",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
-          ]
-        },
-        {
           "From": "/abbd record what a reader found",
-          "To": "/abbd read the code through pstack",
+          "To": "/abbd read the code with the reader",
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
@@ -4986,7 +4963,7 @@
           "Kind": "consumes",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"store the new Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`\""
+            "plugins/abbd/skills/abbd/SKILL.md \"store the new Overview and Key Concepts with\""
           ]
         },
         {
@@ -5053,12 +5030,75 @@
           ]
         },
         {
+          "From": "/abbd-setup find units with a reader swarm",
+          "To": "abbd reader",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Read the candidates in slices, per the reader's \\\"At setup\\\" section\""
+          ]
+        },
+        {
+          "From": "/abbd-setup build the deterministic extractor",
+          "To": "abbd reader",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per the reader's \\\"At setup\\\" section.\""
+          ]
+        },
+        {
           "From": "/abbd-setup verify, install and hand over",
           "To": "/abbd",
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
             "plugins/abbd/skills/abbd-setup/SKILL.md \"From here on the abbd skill reads and queries the blueprint.\""
+          ]
+        },
+        {
+          "From": "abbd reader",
+          "To": "pstack /how",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd/references/reader.md \"you may use pstack `how` to explore a module this reader calls complex\""
+          ]
+        },
+        {
+          "From": "abbd reader",
+          "To": "pstack /swarm",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
+          ]
+        },
+        {
+          "From": "/abbd read the code with the reader",
+          "To": "/abbd ask the blueprint before the code",
+          "Kind": "depends_on",
+          "Via": "data",
+          "Quotes": [
+            "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
+          ]
+        },
+        {
+          "From": "/abbd read the code with the reader",
+          "To": "abbd reader",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
+          ]
+        },
+        {
+          "From": "/abbd-setup store a reader's text per module",
+          "To": "abbd reader",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
           ]
         }
       ]
@@ -5067,17 +5107,6 @@
       "ID": "FEAT-0002",
       "Name": "/abbd-setup",
       "Units": [
-        {
-          "ID": "FEAT-0010",
-          "Name": "/abbd-setup preconditions and stance",
-          "Kind": "기능",
-          "Sentence": "Requires pstack 0.15.36, and fixes that setup never asks the human: the first committed state is the baseline.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ],
-          "Understanding": null
-        },
         {
           "ID": "FEAT-0011",
           "Name": "/abbd-setup find units with a reader swarm",
@@ -5123,17 +5152,6 @@
           "Understanding": null
         },
         {
-          "ID": "FEAT-0015",
-          "Name": "/abbd-setup store how's account per module",
-          "Kind": "기능",
-          "Sentence": "For each top-level module, runs pstack how and stores its Overview and Key Concepts.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ],
-          "Understanding": null
-        },
-        {
           "ID": "FEAT-0016",
           "Name": "/abbd-setup verify, install and hand over",
           "Kind": "기능",
@@ -5149,6 +5167,28 @@
           "Name": "/abbd-setup extraction format",
           "Kind": "기능",
           "Sentence": "Defines the JSON contract shared by swarm workers, the extractor script and the supplement: unit kinds, relation kinds, via values, evidence and parent rules.",
+          "Guess": true,
+          "Anchors": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md"
+          ],
+          "Understanding": null
+        },
+        {
+          "ID": "FEAT-0025",
+          "Name": "/abbd-setup store a reader's text per module",
+          "Kind": "기능",
+          "Sentence": "For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader's name.",
+          "Guess": true,
+          "Anchors": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md"
+          ],
+          "Understanding": null
+        },
+        {
+          "ID": "FEAT-0026",
+          "Name": "/abbd-setup stance",
+          "Kind": "기능",
+          "Sentence": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -5189,39 +5229,21 @@
           ]
         },
         {
-          "From": "/abbd-setup preconditions and stance",
-          "To": "pstack (external)",
-          "Kind": "depends_on",
-          "Via": "config",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\""
-          ]
-        },
-        {
           "From": "/abbd-setup find units with a reader swarm",
           "To": "/abbd-setup extraction format",
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"reports in the extraction format below instead of `PASS`, `ISSUES` or `BLOCKED`\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"each reporting in the extraction format below\""
           ]
         },
         {
           "From": "/abbd-setup find units with a reader swarm",
-          "To": "pstack /how",
+          "To": "abbd reader",
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
-          ]
-        },
-        {
-          "From": "/abbd-setup find units with a reader swarm",
-          "To": "pstack /swarm",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Read the candidates in slices, per the reader's \\\"At setup\\\" section\""
           ]
         },
         {
@@ -5230,7 +5252,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the swarm result until every difference is explained.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Diff its output against the slices' result until every difference is explained.\""
           ]
         },
         {
@@ -5244,11 +5266,11 @@
         },
         {
           "From": "/abbd-setup build the deterministic extractor",
-          "To": "pstack principle-build-the-lever",
+          "To": "abbd reader",
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per the reader's \\\"At setup\\\" section.\""
           ]
         },
         {
@@ -5288,24 +5310,6 @@
           ]
         },
         {
-          "From": "/abbd-setup store how's account per module",
-          "To": "pstack /how",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
-          ]
-        },
-        {
-          "From": "/abbd-setup store how's account per module",
-          "To": "abbd understand",
-          "Kind": "consumes",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with `abbd understand \u003cMOD-ID\u003e \u003cFILE\u003e`.\""
-          ]
-        },
-        {
           "From": "/abbd-setup verify, install and hand over",
           "To": "CLAUDE.md abbd block",
           "Kind": "consumes",
@@ -5329,7 +5333,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the swarm described the code\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"Check too that each page reads the way the readers described the code\""
           ]
         },
         {
@@ -5357,6 +5361,24 @@
           "Via": "convention",
           "Quotes": [
             "plugins/abbd/skills/abbd-setup/SKILL.md \"`abbd record parent ID PARENT --evidence ...` places one unit later.\""
+          ]
+        },
+        {
+          "From": "/abbd-setup store a reader's text per module",
+          "To": "abbd reader",
+          "Kind": "depends_on",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+          ]
+        },
+        {
+          "From": "/abbd-setup store a reader's text per module",
+          "To": "abbd understand",
+          "Kind": "consumes",
+          "Via": "call",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with\""
           ]
         }
       ]
@@ -5785,7 +5807,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7202,7 +7224,31 @@
                 "Code": true
               },
               {
-                "Text": "): how's text for any module, at any depth, stored INFERRED with the digest, ",
+                "Text": "): a reader's text for any module, at any depth, stored INFERRED with the reader ",
+                "Code": false
+              },
+              {
+                "Text": "--reader",
+                "Code": true
+              },
+              {
+                "Text": " names, such as ",
+                "Code": false
+              },
+              {
+                "Text": "abbd reader",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "pstack how 0.15.36",
+                "Code": true
+              },
+              {
+                "Text": ", the digest, ",
                 "Code": false
               },
               {
@@ -7290,7 +7336,7 @@
                 "Code": true
               },
               {
-                "Text": " shows it as CURRENT or STALE. ",
+                "Text": " shows it with its reader as CURRENT or STALE. ",
                 "Code": false
               },
               {
@@ -10539,7 +10585,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {\""
+            "cmd/abbd/understand.go \"e.st.SaveUnderstanding(store.Understanding{Unit: id\""
           ]
         },
         {
@@ -24677,7 +24723,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -25870,7 +25916,7 @@
                 "Code": true
               },
               {
-                "Text": "): pstack how's Overview and Key Concepts for one module, with ",
+                "Text": "): a reader's Overview and Key Concepts for one module, with ",
                 "Code": false
               },
               {
@@ -25886,7 +25932,15 @@
                 "Code": true
               },
               {
-                "Text": ", ",
+                "Text": ", the ",
+                "Code": false
+              },
+              {
+                "Text": "Reader",
+                "Code": true
+              },
+              {
+                "Text": " who wrote it, ",
                 "Code": false
               },
               {
@@ -25972,7 +26026,15 @@
                 "Code": true
               },
               {
-                "Text": ", with its ",
+                "Text": ", with the ",
+                "Code": false
+              },
+              {
+                "Text": "Reader",
+                "Code": true
+              },
+              {
+                "Text": " who wrote it, its ",
                 "Code": false
               },
               {
@@ -29583,18 +29645,8 @@
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md",
-            "plugins/abbd/skills/abbd/SKILL.md"
-          ],
-          "Understanding": null
-        },
-        {
-          "ID": "FEAT-0019",
-          "Name": "pstack /blast-radius",
-          "Kind": "기능",
-          "Sentence": "pstack's change-reach analysis; ABBD uses it for a change across several modules.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd/SKILL.md"
+            "plugins/abbd/skills/abbd/SKILL.md",
+            "plugins/abbd/skills/abbd/references/reader.md"
           ],
           "Understanding": null
         },
@@ -29605,18 +29657,8 @@
           "Sentence": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
           "Guess": true,
           "Anchors": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md"
-          ],
-          "Understanding": null
-        },
-        {
-          "ID": "FEAT-0021",
-          "Name": "pstack principle-build-the-lever",
-          "Kind": "기능",
-          "Sentence": "pstack's principle of building the tool that does the work; it grounds the extractor script.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md"
+            "plugins/abbd/skills/abbd-setup/SKILL.md",
+            "plugins/abbd/skills/abbd/references/reader.md"
           ],
           "Understanding": null
         }
@@ -29629,66 +29671,21 @@
       ],
       "Inferred": [
         {
-          "From": "/abbd read the code through pstack",
+          "From": "abbd reader",
           "To": "pstack /how",
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
+            "plugins/abbd/skills/abbd/references/reader.md \"you may use pstack `how` to explore a module this reader calls complex\""
           ]
         },
         {
-          "From": "/abbd read the code through pstack",
-          "To": "pstack /blast-radius",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"or `\u003cpstack\u003e/skills/blast-radius/SKILL.md` for a change that spans several modules.\""
-          ]
-        },
-        {
-          "From": "/abbd-setup preconditions and stance",
-          "To": "pstack (external)",
-          "Kind": "depends_on",
-          "Via": "config",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"If `\u003cpstack\u003e/skills/swarm/SKILL.md` does not exist, stop and tell the user to install pstack 0.15.36.\""
-          ]
-        },
-        {
-          "From": "/abbd-setup find units with a reader swarm",
-          "To": "pstack /how",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"reads its slice the way `\u003cpstack\u003e/skills/how/references/explorer-prompt.md` describes\""
-          ]
-        },
-        {
-          "From": "/abbd-setup find units with a reader swarm",
+          "From": "abbd reader",
           "To": "pstack /swarm",
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Follow `\u003cpstack\u003e/skills/swarm/SKILL.md`, partitioned into slices of related candidates\""
-          ]
-        },
-        {
-          "From": "/abbd-setup build the deterministic extractor",
-          "To": "pstack principle-build-the-lever",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Build the lever, per `\u003cpstack\u003e/skills/principle-build-the-lever/SKILL.md`.\""
-          ]
-        },
-        {
-          "From": "/abbd-setup store how's account per module",
-          "To": "pstack /how",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, follow `\u003cpstack\u003e/skills/how/SKILL.md` unchanged\""
+            "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
           ]
         }
       ]
@@ -30736,14 +30733,14 @@
               "Code": true
             },
             {
-              "Text": ". Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.",
+              "Text": ". Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read. cells: 9 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation; abbd status lists them",
               "Code": false
             }
           ]
         }
       ],
       "Rows": 5,
-      "Stale": 3,
+      "Stale": 0,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -30819,7 +30816,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "re-stamps each old-format text whose module's code still matches",
+              "Says": "re-stamps old-format texts whose code matches, names the rest to re-read",
               "Verb": "",
               "Unbacked": true
             },
@@ -30840,11 +30837,7 @@
             "cmd/abbd/main.go \"return res, st.SaveState(state)\"",
             "cmd/abbd/main.go \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
             "cmd/abbd/main.go \"p, err := e.st.LoadProject()\""
-          ],
-          "Reasons": [
-            "cmd/abbd/main.go (the lines around it changed)"
-          ],
-          "Stale": true
+          ]
         },
         {
           "N": 2,
@@ -30870,7 +30863,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "writes how's text with the module's digest and cited code",
+              "Says": "writes a reader's text with its reader, the module's digest and cited code",
               "Verb": "사용"
             },
             {
@@ -30887,12 +30880,8 @@
           "Quotes": [
             "cmd/abbd/record.go \"u.PutRelation(rel)\"",
             "cmd/abbd/record.go \"u.PutNote(note)\"",
-            "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest\""
-          ],
-          "Reasons": [
-            "cmd/abbd/understand.go (the quote is gone, or no longer once in the file)"
-          ],
-          "Stale": true
+            "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id\""
+          ]
         },
         {
           "N": 3,
@@ -30919,7 +30908,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "reads how's text and says whether the module's code moved since",
+              "Says": "reads a reader's text and says whether the module's code moved since",
               "Verb": "사용"
             },
             {
@@ -30936,11 +30925,7 @@
           "Quotes": [
             "cmd/abbd/query.go \"texts, err := e.st.LoadUnderstandings()\"",
             "cmd/abbd/query.go \"if t.Digest != e.st.ModuleDigest(units, u.ID) {\""
-          ],
-          "Reasons": [
-            "cmd/abbd/query.go (the lines around it changed)"
-          ],
-          "Stale": true
+          ]
         },
         {
           "N": 4,
@@ -30968,7 +30953,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "reads how's texts to draw beside each module",
+              "Says": "reads the readers' texts to draw beside each module",
               "Verb": "",
               "Unbacked": true
             },

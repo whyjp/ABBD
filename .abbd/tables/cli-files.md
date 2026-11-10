@@ -15,40 +15,40 @@ columns:
 rows:
     - unit: MOD-0004
       cells:
-        module texts: re-stamps each old-format text whose module's code still matches
+        module texts: re-stamps old-format texts whose code matches, names the rest to re-read
         project.yaml: reads the extraction argv to run the project's script
         state.yaml: reads the ID high-water mark, then writes revision and fingerprint
         unit files: rewrites every unit file from the reconciled extraction
       evidence:
         - path: cmd/abbd/main.go
-          lines: "473"
+          lines: "503"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "444"
+          lines: "474"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "490"
+          lines: "520"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "479"
+          lines: "509"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "363"
+          lines: "393"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
         cmd/abbd/main.go#quote-045deabc: 277a8a331c1c57f6
         cmd/abbd/main.go#quote-714f2ba0: 59f3f48639d38179
-        cmd/abbd/main.go#quote-22175f6c: 228fd02a0d005209
+        cmd/abbd/main.go#quote-22175f6c: 98424d209f0d7558
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-e28fdf28: b662511d12a95a22
     - unit: MOD-0006
       cells:
-        module texts: writes how's text with the module's digest and cited code
+        module texts: writes a reader's text with its reader, the module's digest and cited code
         unit files: writes a record's claim, fact or parent, or just a phrase note on a shown edge
       evidence:
         - path: cmd/abbd/record.go
@@ -62,15 +62,15 @@ rows:
         - path: cmd/abbd/understand.go
           lines: "83"
           symbol: understand
-          quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
+          quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id'
       writer: reader
       code:
         cmd/abbd/record.go#quote-96b34390: cea44e852e7a7e92
         cmd/abbd/record.go#quote-5614cda7: dec0a70e1688a95f
-        cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
+        cmd/abbd/understand.go#quote-e0b4fa19: 747a51ddc1079f48
     - unit: MOD-0005
       cells:
-        module texts: reads how's text and says whether the module's code moved since
+        module texts: reads a reader's text and says whether the module's code moved since
         unit files: reads every unit to resolve and answer a query
       evidence:
         - path: cmd/abbd/query.go
@@ -84,11 +84,11 @@ rows:
       writer: reader
       code:
         cmd/abbd/query.go#quote-1a68db9a: 68d6b606e038c5c4
-        cmd/abbd/query.go#quote-0793a015: f3107515b0fe8519
+        cmd/abbd/query.go#quote-0793a015: a7577b4f52f97404
     - unit: MOD-0007
       cells:
         blueprint: writes every page and graph.json
-        module texts: reads how's texts to draw beside each module
+        module texts: reads the readers' texts to draw beside each module
         project.yaml: reads the extraction argv the page foot names
         state.yaml: records which inputs it rendered and which files it wrote
         unit files: reads every unit a page draws
@@ -187,6 +187,76 @@ retired:
         cmd/abbd/record.go#quote-96b34390: 7592c997356842e8
         cmd/abbd/record.go#quote-5614cda7: 06ebdcfaa1c5ed4e
         cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
+    - unit: MOD-0004
+      cells:
+        module texts: re-stamps each old-format text whose module's code still matches
+        project.yaml: reads the extraction argv to run the project's script
+        state.yaml: reads the ID high-water mark, then writes revision and fingerprint
+        unit files: rewrites every unit file from the reconciled extraction
+      evidence:
+        - path: cmd/abbd/main.go
+          lines: "473"
+          symbol: syncActual
+          quote: if err := st.SaveUnits(res.Units); err != nil {
+        - path: cmd/abbd/main.go
+          lines: "444"
+          symbol: syncActual
+          quote: state, err := st.LoadState()
+        - path: cmd/abbd/main.go
+          lines: "490"
+          symbol: syncActual
+          quote: return res, st.SaveState(state)
+        - path: cmd/abbd/main.go
+          lines: "479"
+          symbol: syncActual
+          quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
+        - path: cmd/abbd/main.go
+          lines: "363"
+          quote: p, err := e.st.LoadProject()
+      code:
+        cmd/abbd/main.go#quote-045deabc: 277a8a331c1c57f6
+        cmd/abbd/main.go#quote-714f2ba0: 59f3f48639d38179
+        cmd/abbd/main.go#quote-22175f6c: 228fd02a0d005209
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-e28fdf28: b662511d12a95a22
+    - unit: MOD-0006
+      cells:
+        module texts: writes how's text with the module's digest and cited code
+        unit files: writes a record's claim, fact or parent, or just a phrase note on a shown edge
+      evidence:
+        - path: cmd/abbd/record.go
+          lines: "141"
+          symbol: recordRelation
+          quote: u.PutRelation(rel)
+        - path: cmd/abbd/record.go
+          lines: "144"
+          symbol: recordRelation
+          quote: u.PutNote(note)
+        - path: cmd/abbd/understand.go
+          lines: "83"
+          symbol: understand
+          quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest'
+      code:
+        cmd/abbd/record.go#quote-96b34390: cea44e852e7a7e92
+        cmd/abbd/record.go#quote-5614cda7: dec0a70e1688a95f
+        cmd/abbd/understand.go#quote-c870eaa1: 94ae3f2c35dc5f77
+    - unit: MOD-0005
+      cells:
+        module texts: reads how's text and says whether the module's code moved since
+        unit files: reads every unit to resolve and answer a query
+      evidence:
+        - path: cmd/abbd/query.go
+          lines: "252"
+          symbol: explainHow
+          quote: texts, err := e.st.LoadUnderstandings()
+        - path: cmd/abbd/query.go
+          lines: "262"
+          symbol: explainHow
+          quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
+      code:
+        cmd/abbd/query.go#quote-1a68db9a: 68d6b606e038c5c4
+        cmd/abbd/query.go#quote-0793a015: f3107515b0fe8519
 ---
 
 Each row is one part of the CLI and each column one file under `.abbd/`. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.
+cells: 9 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation; abbd status lists them
