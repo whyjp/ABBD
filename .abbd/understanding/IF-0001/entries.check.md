@@ -2,14 +2,14 @@
 unit: IF-0001
 slot: entries.check
 origin: INFERRED
-digest: ae464dc9ef43a33f
+digest: 3f373ea7cb502c71
 format: 3
 evidence:
     - path: cmd/abbd/diff.go
       lines: "73"
       quote: if e.check && d.Boundary() {
 code:
-    cmd/abbd/diff.go#quote-2469385d: f366a2c3527bc805
+    cmd/abbd/diff.go#quote-2469385d: 548a1f40d02d98ea
 reread:
     by: concept-orch (Claude Opus 5.5)
     "on": "2026-11-10"

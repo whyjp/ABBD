@@ -1245,6 +1245,18 @@
       ]
     },
     {
+      "ID": "IF-0027",
+      "Kind": "IF",
+      "Name": "abbd review",
+      "Signature": "abbd review pos{0}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/review.go review"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1271,6 +1283,7 @@
         "cmd/abbd/narrative.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
+        "cmd/abbd/review.go",
         "cmd/abbd/screen.go",
         "cmd/abbd/setup.go",
         "cmd/abbd/stack.go",
@@ -2692,6 +2705,13 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd lint\""
     },
     {
+      "From": "FEAT-0001",
+      "To": "IF-0027",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd review\""
+    },
+    {
       "From": "FEAT-0002",
       "To": "IF-0001",
       "Kind": "consumes",
@@ -3408,6 +3428,12 @@
     {
       "From": "MOD-0001",
       "To": "IF-0026",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0027",
       "Kind": "provides",
       "Origin": "EXTRACTED"
     },
@@ -4835,7 +4861,8 @@
             "forget",
             "stack",
             "table",
-            "lint"
+            "lint",
+            "review"
           ]
         }
       ],
@@ -7032,7 +7059,109 @@
                 "Code": true
               },
               {
-                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state.",
+                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state. With ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "--page",
+                "Code": true
+              },
+              {
+                "Text": " names its path on stderr so stdout stays JSON.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Review",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "review.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " prints the change since the base, then who uses each contract or entry the change touched, through ",
+                "Code": false
+              },
+              {
+                "Text": "topology.Links",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "topology.EntryUses",
+                "Code": true
+              },
+              {
+                "Text": ", with each user's origin and the feature above it, a user of the whole contract counting for each entry and a removed entry found by the key its name takes; then the direct tier of ",
+                "Code": false
+              },
+              {
+                "Text": "topology.ImpactOf",
+                "Code": true
+              },
+              {
+                "Text": " seeded from the units the change added, changed or touched and the units an added or removed relation really joins (",
+                "Code": false
+              },
+              {
+                "Text": "topology.RelationEnds",
+                "Code": true
+              },
+              {
+                "Text": "), or ",
+                "Code": false
+              },
+              {
+                "Text": "byFeature",
+                "Code": true
+              },
+              {
+                "Text": " with ",
+                "Code": false
+              },
+              {
+                "Text": "--features",
+                "Code": true
+              },
+              {
+                "Text": "; then what is worth a look in a seed, under one, or in a unit that holds one (a removed relation's gone end seeds the nearest unit above it that is still there, and a drifted relation counts by either end of its FROM.KIND.TO subject): a reader's coupling the change added, a STALE text or note, a decision note with no why, skipping the orphaned notes status skips, and drifted evidence from ",
+                "Code": false
+              },
+              {
+                "Text": "checkEvidence",
+                "Code": true
+              },
+              {
+                "Text": ", or a line saying the evidence could not be checked. It always exits 0.",
                 "Code": false
               }
             ]
@@ -10407,6 +10536,40 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0027",
+          "Name": "abbd review",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0027",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "base",
+                "Name": "--base",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "features",
+                "Name": "--features",
+                "Shape": "bool",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -10434,7 +10597,8 @@
             "forget",
             "stack",
             "table",
-            "lint"
+            "lint",
+            "review"
           ]
         },
         {
@@ -29703,7 +29867,23 @@
                 "Code": true
               },
               {
-                "Text": " lists the reader's couplings that were live at the base and whose evidence is dead now. ",
+                "Text": " lists the reader's couplings that were live at the base and whose evidence is dead now, unless another reader's coupling on the same edge is still live. The ",
+                "Code": false
+              },
+              {
+                "Text": "~ renamed",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "~ moved",
+                "Code": true
+              },
+              {
+                "Text": " lines carry the origin of the name and of the winning parent claim. ",
                 "Code": false
               },
               {
@@ -29719,7 +29899,15 @@
                 "Code": true
               },
               {
-                "Text": " gives that set for one module or feature in either state, so a unit that moved in or out still counts.",
+                "Text": " gives that set for one module or feature in either state, so a unit that moved in or out still counts. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationEnds",
+                "Code": true
+              },
+              {
+                "Text": " turns a lifted relation back into the units that really join it.",
                 "Code": false
               }
             ]

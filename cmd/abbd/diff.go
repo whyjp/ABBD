@@ -68,7 +68,7 @@ func (e env) diff() error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprintln(e.stdout, "compare view:", page)
+		fmt.Fprintln(e.stderr, "compare view:", page)
 	}
 	if e.check && d.Boundary() {
 		return fmt.Errorf("the change reaches the boundary between modules: a contract's signature or one of its entries changed, a contract was added or removed, or a relation between top-level modules appeared or disappeared")

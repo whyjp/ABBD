@@ -24,7 +24,7 @@ func TestCompareNamesWhatChangedBesideTheTopology(t *testing.T) {
 	now[4].Absent, now[4].AbsentReason = true, model.Retracted
 	want := []string{
 		"- unit MOD-0005 MOD-0005 (retracted)",
-		`~ renamed MOD-0002 "MOD-0002" -> "store"`,
+		`~ renamed MOD-0002 "MOD-0002" -> "store", EXTRACTED`,
 		`~ purpose MOD-0002 store: "" -> "keeps the state", USER_STATED`,
 		"~ moved MOD-0004 MOD-0004: MOD-0001 -> MOD-0002",
 		"- inferred dead MOD-0004 depends_on MOD-0003 (MOD-0004 depends_on MOD-0003)",
@@ -34,5 +34,18 @@ func TestCompareNamesWhatChangedBesideTheTopology(t *testing.T) {
 	}
 	if got := Compare(base, base).String(); got != "no topology change\n" {
 		t.Errorf("an unchanged state reads %q", got)
+	}
+}
+
+// A reader's coupling whose evidence died is no dead coupling while another
+// reader's on the same edge is still live.
+func TestADeadCouplingBesideALiveOneIsNoChange(t *testing.T) {
+	live := rel("MOD-0002", model.DependsOn, model.Inferred)
+	dead := rel("MOD-0002", model.DependsOn, model.Inferred)
+	dead.Dead = true
+	base := []model.Unit{unit("MOD-0001", "", live), unit("MOD-0002", "")}
+	now := []model.Unit{unit("MOD-0001", "", dead, live), unit("MOD-0002", "")}
+	if got := Compare(base, now).String(); got != "no topology change\n" {
+		t.Errorf("a coupling still live on its edge reads %q", got)
 	}
 }
