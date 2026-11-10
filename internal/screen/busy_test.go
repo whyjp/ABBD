@@ -76,3 +76,20 @@ func TestSegmentsCountStraightPieces(t *testing.T) {
 		t.Fatalf("%d segments, want 3", got)
 	}
 }
+
+// Two lines of one kind that leave A for B and D by stubs 8 or 30px apart
+// are a comb of one tooth past the first; one stem, or stubs 60px apart,
+// are none.
+func TestCombsCountStubsOfOnePlaceSideBySide(t *testing.T) {
+	boxes := []string{"A 20 0 140 20", "B 0 140 40 20", "D 140 140 40 20"}
+	rels := [][2]string{{"A", "B"}, {"A", "D"}}
+	for _, c := range []struct {
+		left, right, want int
+	}{{76, 84, 1}, {70, 100, 1}, {80, 80, 0}, {50, 110, 0}} {
+		body := fmt.Sprintf(`<path class="w contract" d="M%d 20 V80 H20 V140"/><path class="w contract" d="M%d 20 V80 H160 V140"/>`, c.left, c.right)
+		l := lookAt(t, boxes, body, rels)
+		if got := combs(l.trace.Ways); got != c.want {
+			t.Errorf("stubs at %d and %d: %d combs, want %d", c.left, c.right, got, c.want)
+		}
+	}
+}

@@ -52,6 +52,9 @@ var paged = []struct {
 	{"colour_switches", func(t Totals) int { return t.ColourSwitches }},
 	{"parallel_ink", func(t Totals) int { return t.ParallelInk }},
 	{"abreast", func(t Totals) int { return t.Abreast }},
+	// combs are stubs a box's lines of one kind leave or reach it by side
+	// by side, where a hand drawing draws one stem.
+	{"combs", func(t Totals) int { return t.Combs }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way

@@ -103,6 +103,10 @@ type Totals struct {
 	// ColourSwitches are the times a line's ink changes colour on its
 	// way, on a road drawing (busy.go).
 	ColourSwitches int `json:"colour_switches"`
+	// Combs are the stubs that leave or reach one place the same way, for
+	// lines of one kind, within combGap of the next: teeth a hand drawing
+	// would draw as one stem (busy.go).
+	Combs int `json:"combs"`
 }
 
 // Sum adds up the totals of several views.
@@ -118,6 +122,7 @@ func Sum(views []ViewLint) Totals {
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
 		t.ColourSwitches += o.ColourSwitches
+		t.Combs += o.Combs
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -308,6 +313,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
+	vl.Totals.Combs = combs(t.Ways)
 	return vl, nil
 }
 
@@ -513,15 +519,23 @@ func plural(n int, noun string) string {
 func (l *look) usersAbove() []Breach {
 	var out []Breach
 	both, far := map[[2]int]bool{}, map[[2]int]bool{}
-	for _, w := range l.v.d.Wires {
-		if w.Kind != "mutual" || len(w.ends) != 2 {
-			continue
+	// A road draws a mutual line on pieces other lines ride too, so its own
+	// route names its two ends where no wire does.
+	mutual := func(kind string, ends []string) {
+		if kind != "mutual" || len(ends) != 2 {
+			return
 		}
-		a, okA := l.at[w.ends[0]]
-		b, okB := l.at[w.ends[1]]
+		a, okA := l.at[ends[0]]
+		b, okB := l.at[ends[1]]
 		if okA && okB {
 			both[[2]int{a, b}], both[[2]int{b, a}] = true, true
 		}
+	}
+	for _, w := range l.v.d.Wires {
+		mutual(w.Kind, w.ends)
+	}
+	for _, r := range l.v.d.Routes {
+		mutual(r.Kind, r.ends)
 	}
 	for _, r := range l.boxRels {
 		ru, rv := l.row[r[0]], l.row[r[1]]

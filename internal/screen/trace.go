@@ -200,8 +200,12 @@ type Trace struct {
 type tracedWay struct {
 	from, to string
 	pts      []fpt
-	// kind is the colour of the ink the path runs on.
-	kind string
+	// kind is the colour of the ink the path runs on, and line, where the
+	// drawing holds its routes, the kind of line it is, the colour of the
+	// place it comes from and whether it is dashed: two modules that use
+	// each other are drawn in the direct-dependency colour, a line of its
+	// own kind.
+	kind, line string
 }
 
 // jogLen is how short a stretch between two turns may be before it reads as
@@ -438,7 +442,7 @@ func trace(s sheet, rels [][2]string) Trace {
 			if len(b.path) > 0 {
 				kind = g.segs[b.path[0]].colour
 			}
-			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, kind})
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, kind, kind})
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
@@ -476,7 +480,11 @@ func trace(s sheet, rels [][2]string) Trace {
 			way := turns(r.pts)
 			t.Bends = append(t.Bends, len(way)-2)
 			t.Jogs = append(t.Jogs, jogs(way))
-			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, colour(strings.TrimPrefix(r.class, "route "))})
+			class, line := strings.TrimPrefix(r.class, "route "), ""
+			if line = kindOf(class) + " h" + r.hue; strings.Contains(" "+class+" ", " back ") {
+				line += " back"
+			}
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, colour(class), line})
 			t.Crossings = append(t.Crossings, routeCrossings(s, way))
 		}
 	}

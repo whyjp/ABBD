@@ -26,8 +26,10 @@ pages:
     MOD-0072 desktop renderer UI:
         abreast: 154
         colour_switches: 33
+        combs: 0
         parallel_ink: 647
     MOD-0098 src/:
         abreast: 204
         colour_switches: 45
+        combs: 0
         parallel_ink: 254

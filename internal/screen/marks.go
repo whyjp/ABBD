@@ -310,10 +310,12 @@ func heads(paths []drawn) []box {
 	}
 	for _, p := range paths {
 		ps := p.parts
-		if p.joins || len(ps) == 0 {
+		if len(ps) == 0 {
 			continue
 		}
-		if last := straight(ps[len(ps)-1]); len(last) > 1 {
+		// A path that ends on a trunk has no head there, but one that
+		// reads both ways still has one where it leaves its box.
+		if last := straight(ps[len(ps)-1]); len(last) > 1 && !p.joins {
 			at(last[len(last)-1], last[len(last)-2])
 		}
 		if first := straight(ps[0]); len(first) > 1 && p.kind == "mutual" && p.starts[0] != noStart {
