@@ -250,7 +250,7 @@ func boxed(w []pt, boxes []box) int {
 // pieces of different styles run on one another, the splits far from
 // their ends, and the forks whose branches leave at different heights.
 type roadCost struct {
-	crossings, turns, beside, clash, near, far, forks, tees, unseen int
+	crossings, turns, beside, clash, near, far, forks, tees, unseen, combs int
 }
 
 // roadView is what confluent weighs routes against: each route's style and
@@ -271,7 +271,7 @@ type roadView struct {
 }
 
 func (v roadView) cost(ways [][]pt) roadCost {
-	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways)), tees: v.tees(ways), unseen: v.unseen(ways)}
+	c := roadCost{far: v.farSplits(ways), forks: len(v.forks(ways)), tees: v.tees(ways), unseen: v.unseen(ways), combs: v.combs(ways)}
 	for _, w := range ways {
 		c.turns += max(0, len(straight(w))-2)
 	}
@@ -307,19 +307,90 @@ func (v roadView) cost(ways [][]pt) roadCost {
 
 // weight weighs settled roads against each other: a crossing, a turn and
 // roadBeside of road beside road weigh alike.
-func (c roadCost) weight() int { return c.crossings + c.turns + c.beside/roadBeside }
+func (c roadCost) weight() int { return c.crossings + c.turns + c.combs + c.beside/roadBeside }
 
 func (c roadCost) better(o roadCost) bool {
-	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen {
+	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen || c.combs > o.combs {
 		return false
 	}
-	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.beside < o.beside
+	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.combs < o.combs || c.beside < o.beside
 }
 
 // withers says o is no worse than c on any count.
 func (c roadCost) withers(o roadCost) bool {
 	return o.crossings <= c.crossings && o.turns <= c.turns && o.clash <= c.clash && o.near <= c.near && o.far <= c.far &&
-		o.forks <= c.forks && o.tees <= c.tees && o.unseen <= c.unseen && o.beside <= c.beside
+		o.forks <= c.forks && o.tees <= c.tees && o.unseen <= c.unseen && o.combs <= c.combs && o.beside <= c.beside
+}
+
+// stub is the way a route's first or last run leaves or reaches its place:
+// lines of one kind and dotting that leave or reach one place the same way
+// by stubs combGap or less apart draw a comb (lint's combs), which a hand
+// drawing brings out of the box as one stem.
+type stub struct {
+	place, kind string
+	plan, last  bool
+	way         pt
+}
+
+// stubOf is the stub route i's run k makes, if it is the route's first or
+// last run and stands upright on its place's top or bottom.
+func (v roadView) stubOf(ways [][]pt, i, k int) (stub, bool) {
+	w := ways[i]
+	last := k == len(w)-2
+	if k != 0 && !last || w[k].x != w[k+1].x || w[k] == w[k+1] {
+		return stub{}, false
+	}
+	place, a, b := v.from[i], w[0], w[1]
+	if k != 0 {
+		place, a, b = v.to[i], w[len(w)-1], w[len(w)-2]
+	}
+	return stub{place, v.kinds[i], v.plan[i], k != 0, pt{0, sign(b.y - a.y)}}, true
+}
+
+// combs counts the teeth of every comb: the stubs that stand within
+// combGap of the next stub of their place, kind, dotting and way.
+func (v roadView) combs(ways [][]pt) int {
+	at := map[stub][]int{}
+	for i, w := range ways {
+		for _, k := range []int{0, len(w) - 2} {
+			if k < 0 {
+				continue
+			}
+			if s, ok := v.stubOf(ways, i, k); ok {
+				at[s] = append(at[s], w[k].x)
+			}
+		}
+	}
+	n := 0
+	for _, xs := range at {
+		slices.Sort(xs)
+		xs = slices.Compact(xs)
+		for i := 1; i < len(xs); i++ {
+			if xs[i]-xs[i-1] <= combGap {
+				n++
+			}
+		}
+	}
+	return n
+}
+
+// combed says runs a and b each hold a stub of one comb.
+func (v roadView) combed(ways [][]pt, a, b straightRun) bool {
+	if !a.vertical || !b.vertical || a.at == b.at || abs(a.at-b.at) > combGap {
+		return false
+	}
+	of := map[stub]bool{}
+	for _, s := range a.segs {
+		if st, ok := v.stubOf(ways, s[0], s[1]); ok {
+			of[st] = true
+		}
+	}
+	for _, s := range b.segs {
+		if st, ok := v.stubOf(ways, s[0], s[1]); ok && of[st] {
+			return true
+		}
+	}
+	return false
 }
 
 // forks are pairs of routes that leave one place for boxes in one row and
@@ -669,6 +740,15 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst bool
 		}
 		if rs[b].moves(rs[a].at) {
 			moves = append(moves, move{b, rs[a].at, 0})
+		}
+	}
+	// A comb: stubs of one place, kind and way that leave or reach it apart.
+	// Moving one stub onto another brings the lines out as one stem.
+	for i, a := range rs {
+		for k, b := range rs {
+			if k != i && a.style == b.style && a.moves(b.at) && v.combed(ways, a, b) && v.joins(ways, a, b) {
+				moves = append(moves, move{i, b.at, 0})
+			}
 		}
 	}
 	// A stair: a run, a short step across, and a run on past it the same

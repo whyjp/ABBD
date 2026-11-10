@@ -200,8 +200,12 @@ type Trace struct {
 type tracedWay struct {
 	from, to string
 	pts      []fpt
-	// kind is the colour of the ink the path runs on.
-	kind string
+	// kind is the colour of the ink the path runs on, and line, where the
+	// drawing holds its routes, the kind of line it is, the colour of the
+	// place it comes from and whether it is dashed: two modules that use
+	// each other are drawn in the direct-dependency colour, a line of its
+	// own kind.
+	kind, line string
 }
 
 // jogLen is how short a stretch between two turns may be before it reads as
@@ -237,9 +241,10 @@ func jogs(pts []fpt) int {
 const doglegLen = 30.0
 
 // doglegs counts the stretches of a path shorter than doglegLen that run
-// between two of its turns, or from an end to the turn next to it.
+// between two of its turns, or from an end to the turn next to it. A point
+// a path repeats is no turn.
 func doglegs(pts []fpt) int {
-	ts, n := turns(pts), 0
+	ts, n := turns(slices.Compact(slices.Clone(pts))), 0
 	for i := 1; i < len(ts) && len(ts) > 2; i++ {
 		if dist(ts[i-1], ts[i]) < doglegLen {
 			n++
@@ -455,7 +460,7 @@ func trace(s sheet, rels [][2]string) Trace {
 			if len(b.path) > 0 {
 				kind = g.segs[b.path[0]].colour
 			}
-			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, kind})
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, kind, kind})
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
@@ -493,7 +498,11 @@ func trace(s sheet, rels [][2]string) Trace {
 			way := turns(r.pts)
 			t.Bends = append(t.Bends, len(way)-2)
 			t.Jogs = append(t.Jogs, jogs(way))
-			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, colour(strings.TrimPrefix(r.class, "route "))})
+			class, line := strings.TrimPrefix(r.class, "route "), ""
+			if line = kindOf(class) + " h" + r.hue; strings.Contains(" "+class+" ", " back ") {
+				line += " back"
+			}
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, colour(class), line})
 			t.Crossings = append(t.Crossings, routeCrossings(s, way))
 		}
 	}

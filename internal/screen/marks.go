@@ -310,10 +310,12 @@ func heads(paths []drawn) []box {
 	}
 	for _, p := range paths {
 		ps := p.parts
-		if p.joins || len(ps) == 0 {
+		if len(ps) == 0 {
 			continue
 		}
-		if last := straight(ps[len(ps)-1]); len(last) > 1 {
+		// A path that ends on a trunk has no head there, but one that
+		// reads both ways still has one where it leaves its box.
+		if last := straight(ps[len(ps)-1]); len(last) > 1 && !p.joins {
 			at(last[len(last)-1], last[len(last)-2])
 		}
 		if first := straight(ps[0]); len(first) > 1 && p.kind == "mutual" && p.starts[0] != noStart {
@@ -619,35 +621,69 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			}
 			return true
 		}
+		// pads are how far a word keeps from g's low and high ends: labelPad,
+		// or labelRoom at an end of g's piece where another wire's ink runs on
+		// straight from it.
+		pads := func(g seg) (int, int) {
+			runsOn := func(p pt) bool {
+				return slices.ContainsFunc(segs, func(o seg) bool {
+					return o != g && o.flat() == g.flat() && (o.a == p || o.b == p) && (g.flat() && o.a.y == p.y || !g.flat() && o.a.x == p.x)
+				})
+			}
+			a, b := labelPad, labelPad
+			if g.aEnd && runsOn(g.a) {
+				a = labelRoom
+			}
+			if g.bEnd && runsOn(g.b) {
+				b = labelRoom
+			}
+			if g.a.x+g.a.y > g.b.x+g.b.y {
+				return b, a
+			}
+			return a, b
+		}
 		var got *Label
+		// The first pass keeps labelPad from both ends of each stretch. The
+		// second lets a word come within labelRoom of an end where the line
+		// runs straight on along other lines' ink, a join and not a turn, so
+		// a road that shortens a line's own stretch does not lose its word.
 	search:
-		for _, g := range mine {
-			half := tw / 2
-			if !g.flat() {
-				half = labelH / 2
-			}
-			lo, hi := g.lo()+labelPad+half, g.hi()-labelPad-half
-			if lo > hi {
-				continue
-			}
-			mid := (lo + hi) / 2
-			for off := 0; mid-off >= lo || mid+off <= hi; off += 4 {
-				for _, c := range []int{mid - off, mid + off} {
-					if c < lo || c > hi {
+		for _, joined := range []bool{false, true} {
+			for _, g := range mine {
+				half := tw / 2
+				if !g.flat() {
+					half = labelH / 2
+				}
+				padLo, padHi := labelPad, labelPad
+				if joined {
+					padLo, padHi = pads(g)
+					if padLo == labelPad && padHi == labelPad {
 						continue
 					}
-					var opts []Label
-					if g.flat() {
-						y := g.a.y
-						opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
-					} else {
-						x, y := g.a.x, c+labelH/2-1
-						opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
-					}
-					for _, l := range opts {
-						if clear(g, l, c-half, c+half) {
-							got = &l
-							break search
+				}
+				lo, hi := g.lo()+padLo+half, g.hi()-padHi-half
+				if lo > hi {
+					continue
+				}
+				mid := (lo + hi) / 2
+				for off := 0; mid-off >= lo || mid+off <= hi; off += 4 {
+					for _, c := range []int{mid - off, mid + off} {
+						if c < lo || c > hi {
+							continue
+						}
+						var opts []Label
+						if g.flat() {
+							y := g.a.y
+							opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
+						} else {
+							x, y := g.a.x, c+labelH/2-1
+							opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
+						}
+						for _, l := range opts {
+							if clear(g, l, c-half, c+half) {
+								got = &l
+								break search
+							}
 						}
 					}
 				}

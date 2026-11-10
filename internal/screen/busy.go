@@ -300,3 +300,51 @@ func inkCrossings(s sheet) int {
 	}
 	return n
 }
+
+// combGap is how far apart, in px, two stubs that leave or reach one place
+// the same way may stand and still read as a comb: lines a hand drawing
+// would bring out of the box as one stem.
+const combGap = 50.0
+
+// combs counts, over every place, kind and way of leaving or arriving, the
+// stubs its lines run from or to the box edge by that stand within combGap
+// of the next one along that edge: each tooth past the first of a comb.
+func combs(ways []tracedWay) int {
+	type key struct {
+		place, kind string
+		out         bool
+		way         fpt
+	}
+	at := map[key][]float64{}
+	for _, w := range ways {
+		n := len(w.pts)
+		if n < 2 {
+			continue
+		}
+		for _, out := range []bool{true, false} {
+			place, a, b := w.from, w.pts[0], w.pts[1]
+			if !out {
+				place, a, b = w.to, w.pts[n-1], w.pts[n-2]
+			}
+			if a == b {
+				continue
+			}
+			k, pos := key{place, w.line, out, dirOf(a, b)}, a.x
+			if a.x != b.x {
+				pos = a.y
+			}
+			at[k] = append(at[k], math.Round(pos))
+		}
+	}
+	n := 0
+	for _, ps := range at {
+		slices.Sort(ps)
+		ps = slices.Compact(ps)
+		for i := 1; i < len(ps); i++ {
+			if ps[i]-ps[i-1] <= combGap {
+				n++
+			}
+		}
+	}
+	return n
+}

@@ -82,6 +82,8 @@ type stroke struct {
 	path, group   int
 	class, origin string
 	pts           []fpt
+	// hue is a route's data-h: the colour of the place its line comes from.
+	hue string
 }
 
 type sheet struct {
@@ -145,7 +147,7 @@ func readSVG(src string) (sheet, error) {
 	var title *string
 	var count *countLabel
 	// route is the class of the route whose way is read next.
-	var route string
+	var route, hue string
 	// last is the group of the path read last, its whole data-net when it
 	// has one: a count follows its wire, and its wire is that path's net.
 	last := -1
@@ -169,7 +171,7 @@ func readSVG(src string) (sheet, error) {
 				s.roads = s.roads || attr(t, "data-roads") != ""
 			case "g":
 				if hasClass(t, "route") {
-					s.routed, route = true, attr(t, "class")
+					s.routed, route, hue = true, attr(t, "class"), attr(t, "data-h")
 				}
 				for _, k := range []string{"box", "port"} {
 					if hasClass(t, k) {
@@ -205,7 +207,7 @@ func readSVG(src string) (sheet, error) {
 						return s, err
 					}
 					for _, p := range parts {
-						s.routes = append(s.routes, stroke{class: route, pts: p})
+						s.routes = append(s.routes, stroke{class: route, pts: p, hue: hue})
 					}
 					route = ""
 				}

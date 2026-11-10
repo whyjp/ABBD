@@ -33,7 +33,7 @@ func lintColumns() []string {
 	for _, c := range criteria {
 		cols = append(cols, c.ID)
 	}
-	return append(cols, "excess_turns", "placement", "crossings", "weighed", "steps", "jogs", "phantoms", "paths_over2", "traced_bends", "back", "detours", "height", "tees", "parallel_ink", "segments", "lines", "fork_levels", "ink_crossings", "colour_switches", "abreast", "doglegs")
+	return append(cols, "excess_turns", "placement", "crossings", "weighed", "steps", "jogs", "phantoms", "paths_over2", "traced_bends", "back", "detours", "height", "tees", "parallel_ink", "segments", "lines", "fork_levels", "ink_crossings", "colour_switches", "abreast", "combs", "doglegs")
 }
 
 func lintRow(v ViewLint) []int {
@@ -42,7 +42,7 @@ func lintRow(v ViewLint) []int {
 		row = append(row, v.Totals.Criteria[c.ID])
 	}
 	t := v.Totals
-	return append(row, t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Detours, t.Height, t.Tees, t.ParallelInk, t.Segments, t.Lines, t.ForkLevels, t.InkCrossings, t.ColourSwitches, t.Abreast, t.Doglegs)
+	return append(row, t.ExcessTurns, t.Placement, t.Crossings, t.Weighed, t.Steps, t.Jogs, t.Phantoms, t.PathsOver2, t.TracedBends, t.Back, t.Detours, t.Height, t.Tees, t.ParallelInk, t.Segments, t.Lines, t.ForkLevels, t.InkCrossings, t.ColourSwitches, t.Abreast, t.Combs, t.Doglegs)
 }
 
 // Every fixture keeps the gate its .abbd/lint-debt.yaml sets, the one abbd

@@ -621,7 +621,7 @@ cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;
 cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;
-cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><path class="w depends_on joins e1 e5 e7 e10 e17 e22 r3 r14 r22" d="M611 274 L603 274" data-h="1"><title>review commands depends_on internal/evidence (via call), 판독
+cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><text class="lab said e1 e5 e7 e10 e17 e22 r1 r3 r14 r22" data-h="1" x="556" y="270" text-anchor="middle">unit .md 등</text><path class="w depends_on joins e1 e5 e7 e10 e17 e22 r3 r14 r22" d="M611 274 L603 274" data-h="1"><title>review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 record writers consumes unit files (via data), 판독
@@ -1028,7 +1028,7 @@ record writers depends_on internal/evidence (via call), 판독
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;
 cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><path class="w depends_on e1 e5 r4" d="M306 214 L401 214 L401 234" data-net="6" data-h="0" marker-end="url(#m-dep-0)"><title>record writers depends_on internal/evidence (via call), 판독
 건너는 것: quote check (판독) 1/1
-cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><path class="w consumes e1 e3 r3" d="M306 214 L306 234" data-net="7" data-h="0" marker-end="url(#m-use-0)"><title>record writers consumes relation key (via convention), 판독
+cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><text class="lab said e1 e5 r4" data-h="0" x="353" y="226" text-anchor="middle">quote check</text><path class="w consumes e1 e3 r3" d="M306 214 L306 234" data-net="7" data-h="0" marker-end="url(#m-use-0)"><title>record writers consumes relation key (via convention), 판독
 건너는 것: edge key (판독) 1/1
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path>
 <circle class="junction road e1 e2 e3 e4" data-h="0" cx="196" cy="214" r="3"/><circle class="junction road e1 e3 e5" data-h="0" cx="258" cy="214" r="3"/><circle class="junction road e1 e3 e5" data-h="0" cx="306" cy="214" r="3"/>
