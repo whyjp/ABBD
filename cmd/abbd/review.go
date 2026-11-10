@@ -144,7 +144,22 @@ func (e env) review() error {
 	// A relation counts at its top-level ends in the diff; the units it
 	// really joins seed the impact, so a module's whole inside does not.
 	seeds = append(seeds, topology.RelationEnds(now, d.RelationsAdded)...)
-	seeds = append(seeds, topology.RelationEnds(was, d.RelationsRemoved)...)
+	// A removed relation's end may be gone too; the nearest unit above
+	// it that is still there stands for it.
+	wasByID := map[model.ID]model.Unit{}
+	for _, u := range was {
+		wasByID[u.ID] = u
+	}
+	for _, id := range topology.RelationEnds(was, d.RelationsRemoved) {
+		seen := map[model.ID]bool{}
+		for p := id; p != "" && !seen[p]; p = wasByID[p].Parent {
+			seen[p] = true
+			if _, ok := byID[p]; ok {
+				seeds = append(seeds, p)
+				break
+			}
+		}
+	}
 	seeds = slices.DeleteFunc(seeds, func(id model.ID) bool { _, ok := byID[id]; return !ok })
 	slices.Sort(seeds)
 	seeds = slices.Compact(seeds)
@@ -161,19 +176,23 @@ func (e env) review() error {
 
 	// What is worth a look is what sits in, above or under what the change
 	// touched, so a STALE text elsewhere in the repository stays out.
-	family := map[model.ID]bool{}
+	seeded, above := map[model.ID]bool{}, map[model.ID]bool{}
 	for _, id := range seeds {
-		seen := map[model.ID]bool{}
-		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
+		seeded[id] = true
+		seen := map[model.ID]bool{id: true}
+		for p := byID[id].Parent; p != "" && !seen[p]; p = byID[p].Parent {
 			seen[p] = true
-			family[p] = true
+			above[p] = true
 		}
 	}
 	related := func(id model.ID) bool {
+		if above[id] {
+			return true
+		}
 		seen := map[model.ID]bool{}
 		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
 			seen[p] = true
-			if family[p] {
+			if seeded[p] {
 				return true
 			}
 		}
@@ -217,7 +236,9 @@ func (e env) review() error {
 		if subject == "since" && len(f) > 3 {
 			subject = f[3]
 		}
-		if related(model.ID(strings.SplitN(subject, ".", 2)[0])) {
+		// A relation's subject is FROM.KIND.TO; either end counts.
+		ends := strings.Split(subject, ".")
+		if related(model.ID(ends[0])) || len(ends) > 2 && related(model.ID(ends[2])) {
 			look = append(look, "evidence "+l)
 		}
 	}

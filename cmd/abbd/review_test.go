@@ -47,3 +47,30 @@ func TestReviewKeepsToWhatTheChangeTouched(t *testing.T) {
 	out := p.want(0, "", "review", "--base", base)
 	contains(t, out, "MOD-0003 charger: seed", "the text of MOD-0001 billing is STALE", "the text of MOD-0004 notify is STALE")
 }
+
+// A STALE text on a unit the change did not touch stays out of review.
+func TestReviewLeavesAStaleTextElsewhereOut(t *testing.T) {
+	p, _ := entriesProject(t)
+	p.code("web/charges.ts", "export function Charges() {}\n")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.want(0, "", "sync")
+	text := p.file(t, "t.md", "### Overview\nIt runs.\n")
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
+	p.want(0, "understood FEAT-0001", "understand", "FEAT-0001", text)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "texts")
+	base := rev(t, p.root)
+	p.code("web/charges.ts", "export function Charges() { refund() }\n")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
+	p.code("web/refund.ts", "export function Refund() {}\n")
+	p.extract(strings.Replace(entriesBase, `
+ {"key":"page"`, `
+ {"key":"button","kind":"FEAT","name":"refund button","parent":"page","anchors":[{"path":"web/refund.ts","symbol":"Refund"}]},
+ {"key":"page"`, 1))
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "the text of FEAT-0001 charges page is STALE")
+	if strings.Contains(out, "MOD-0001 billing is STALE") {
+		t.Errorf("a STALE text the change did not touch is listed:\n%s", out)
+	}
+}
