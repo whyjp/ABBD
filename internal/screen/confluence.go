@@ -22,7 +22,7 @@ import (
 // bend the grid forced (re-implemented, no code copied). A route's first
 // and last run move only along the edge span its line may meet. A move is
 // kept only where no route then passes through a box, turns back, folds
-// onto itself or gains a jog, no route's first or last run comes to lie on
+// onto itself, gains a jog or turns more than it was routed, no route's first or last run comes to lie on
 // a line of another kind or dotting wherever it lands (a local road), and
 // the view gains no crossing, turn, fork height or split far from the
 // places it splits toward (J1), and loses one, or runs less ink beside
@@ -262,6 +262,8 @@ type roadView struct {
 	from, to []string
 	dest     []int
 	position func(y int) int
+	// turns are each route's turns as routed: no move gives a route more.
+	turns []int
 }
 
 func (v roadView) cost(ways [][]pt) roadCost {
@@ -559,11 +561,12 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, q := range reqs {
 		ends[i] = [2]end{q.from, q.to}
 	}
-	v := roadView{ink, plan, kinds, ends, from, to, dest, position}
-	ways := make([][]pt, len(r.ways))
+	ways, turns := make([][]pt, len(r.ways)), make([]int, len(r.ways))
 	for i, w := range r.ways {
 		ways[i] = straight(w)
+		turns[i] = len(ways[i]) - 2
 	}
+	v := roadView{ink, plan, kinds, ends, from, to, dest, position, turns}
 	cost := v.cost(ways)
 	for n := 0; n < roadMoves; n++ {
 		next, ok := r.step(ways, v, cost)
@@ -576,13 +579,21 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		}
 		cost = v.cost(ways)
 	}
+	if roadsDrawn != nil {
+		roadsDrawn(r.ways, ways)
+	}
 	r.ways = ways
 	r.drawn = roads(ways, ink, reqs, r.back)
 }
 
-// step finds the first move that reads better than cost, in order: runs
-// onto a neighbour beside them, longest shared stretch first, then forks
-// set on one track and stairs straightened.
+// roadsDrawn, when a test sets it, sees each view's routes as routed and
+// as the roads leave them.
+var roadsDrawn func(routed, ways [][]pt)
+
+// step finds the first move that reads better than cost, in order: stairs
+// straightened, so a route that could drop straight does before a road
+// bends it onto its track, then runs onto a neighbour beside them, longest
+// shared stretch first, then forks set on one track.
 func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRuns(ways, v)
 	type move struct {
@@ -626,6 +637,7 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	}
 	// A stair: a run, a short step across, and a run on past it the same
 	// way. Moving either run onto the other takes out the step.
+	var stairs []move
 	for i, w := range ways {
 		for j := 1; j+1 < len(w)-1; j++ {
 			a, b := at[[2]int{i, j - 1}], at[[2]int{i, j + 1}]
@@ -633,14 +645,15 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 				continue
 			}
 			if rs[a].moves(rs[b].at) {
-				moves = append(moves, move{a, rs[b].at, 0})
+				stairs = append(stairs, move{a, rs[b].at, 0})
 			}
 			if rs[b].moves(rs[a].at) {
-				moves = append(moves, move{b, rs[a].at, 0})
+				stairs = append(stairs, move{b, rs[a].at, 0})
 			}
 		}
 	}
 	sort.SliceStable(moves, func(i, j int) bool { return moves[i].gain > moves[j].gain })
+	moves = append(stairs, moves...)
 	for _, m := range moves {
 		next := moved(ways, rs[m.run], m.at)
 		ok := true
@@ -653,12 +666,13 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 		if !ok {
 			continue
 		}
-		touched := map[int]bool{}
+		gains, touched := false, map[int]bool{}
 		for _, s := range rs[m.run].segs {
 			next[s[0]] = straight(next[s[0]])
+			gains = gains || len(next[s[0]])-2 > v.turns[s[0]]
 			touched[s[0]] = true
 		}
-		if v.endMixes(next, touched) <= v.endMixes(ways, touched) && v.cost(next).better(cost) {
+		if !gains && v.endMixes(next, touched) <= v.endMixes(ways, touched) && v.cost(next).better(cost) {
 			return next, true
 		}
 	}
