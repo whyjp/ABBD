@@ -318,7 +318,7 @@ func (d *Drawing) nearCut(p pt, kind string) bool {
 			continue
 		}
 		for _, g := range w.Gaps {
-			if g.Y == p.y && g.X0-gapJoin < p.x && p.x < g.X1+gapJoin && through(w.D, p) {
+			if g.Y == p.y && g.Left()-gapJoin < p.x && p.x < g.Left()+g.Width()+gapJoin && through(w.D, p) {
 				return true
 			}
 		}
