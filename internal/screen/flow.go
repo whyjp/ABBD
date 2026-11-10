@@ -52,7 +52,13 @@ var verbs = map[model.RelationKind]string{model.DependsOn: "호출", model.Consu
 // module holds.
 type FlowRef struct {
 	ID, Question string
-	Steps        []int
+	Steps        []StepRef
+}
+
+// StepRef is one such step: its place, the unit it runs on and what it does.
+type StepRef struct {
+	N          int
+	Unit, Does string
 }
 
 // flows derives each stored flow's view, in key order.

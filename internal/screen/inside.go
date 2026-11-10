@@ -13,6 +13,9 @@ import (
 // implements or uses each one out to it.
 type Inside struct {
 	ID, Name string
+	// Purpose and Responsibility say why the module is there and what it
+	// is responsible for, as its unit records them.
+	Purpose, Responsibility *Fact `json:",omitempty"`
 	// Feature says the view is a feature's, which the page names 기능.
 	Feature bool `json:"-"`
 	// Drawing is what the module's page draws. graph.json leaves it out.
@@ -112,6 +115,7 @@ func (ln line) String() string {
 func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {
 	t := o.tree
 	ins := Inside{ID: string(m), Name: o.name(m), Feature: t.units[m].Kind == model.Feature, Up: "#overview"}
+	ins.Purpose, ins.Responsibility = fact(t.units[m].Purpose), fact(t.units[m].Responsibility)
 	if p := t.units[m].Parent; p != "" {
 		ins.Up = "#m-" + string(p)
 	}

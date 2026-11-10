@@ -52,6 +52,9 @@ code, .key { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywher
 ul.plain { list-style: none; padding: 0; margin: 4px 0; }
 ul.plain li { padding: 3px 0; border-bottom: 1px solid var(--line); }
 ul.plain li:last-child { border-bottom: 0; }
+ol.runs { margin: 4px 0 0; padding-left: 2em; }
+ul.plain ol.runs li { border-bottom: 0; padding: 1px 0; }
+p.role { margin: 4px 0; }
 table { border-collapse: collapse; width: 100%; }
 td { padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.id { white-space: nowrap; width: 1%; }
@@ -482,6 +485,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 <section class="inside page" id="m-MOD-0054">
   <div class="drawhead"><h2>internal/group의 안 <span class="muted key">MOD-0054</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
+  
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" data-roads="1" width="412" height="164" viewBox="0 0 412 164" role="img" aria-label="모듈의 안">
 <defs><marker id="m-impl-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--h0); stroke-width: 1.4"/></marker><marker id="m-use-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--h1)"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
@@ -529,7 +533,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
   </div>
   <div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span><span class="chip">top-level unit rule</span><span class="chip">unit absent flag</span><span class="chip">ID high-water mark</span></div>
   <h3>이 모듈을 지나는 흐름</h3>
-  <ul class="plain"><li><a href="flow-sync.html">What does abbd sync do, in order?</a> <span class="muted">단계 10</span></li></ul>
+  <ul class="plain"><li><a href="flow-sync.html">What does abbd sync do, in order?</a><ol class="runs"><li value="10">Fallback(units) → a crowded level placed in the directories its code lives in <span class="muted">internal/group</span></li></ol></li></ul>
   <h3>이 모듈이 놓인 층</h3>
   <ul class="plain"><li><a href="stack-cli.html">What are the layers of the abbd CLI?</a> <span class="muted">층 4</span></li></ul>
   
@@ -550,7 +554,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 
 <g class="route bypass e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h2)"><path class="way" d="M160 92 L160 128"/><use href="#t-dep" transform="translate(160 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="2" style="--k1:var(--h1);--k2:var(--h2)"><path class="way" d="M160 188 L160 224"/><use href="#t-dep" transform="translate(160 224) rotate(90)"/></g>
-<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="32" width="150" height="60" rx="6"/><text class="name" x="160" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="160" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p1 n1 n2" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="224" width="150" height="60" rx="6"/><text class="name" x="160" y="251" text-anchor="middle">internal/model</text><text class="sub" x="160" y="266" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0054"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0054" data-h="2"><title>MOD-0054 internal/group. 누르면 이 모듈의 안을 봅니다</title><rect x="85" y="128" width="150" height="60" rx="6"/><text class="name" x="160" y="155" text-anchor="middle">internal/group</text><text class="sub" x="160" y="170" text-anchor="middle">모듈</text></g></a>
+<a href="MOD-0001.html#f-overview--MOD-0001"><g class="box design p0 n0 n2" data-id="MOD-0001" data-h="0"><title>MOD-0001 abbd CLI: Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="32" width="150" height="60" rx="6"/><text class="name" x="160" y="59" text-anchor="middle">abbd CLI</text><text class="sub" x="160" y="74" text-anchor="middle">모듈</text></g></a><a href="MOD-0030.html#f-overview--MOD-0030"><g class="box design p1 n1 n2" data-id="MOD-0030" data-h="1"><title>MOD-0030 internal/model: Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.. 누르면 이 모듈을 중심으로 봅니다</title><rect x="85" y="224" width="150" height="60" rx="6"/><text class="name" x="160" y="251" text-anchor="middle">internal/model</text><text class="sub" x="160" y="266" text-anchor="middle">모듈</text></g></a><a href="#m-MOD-0054"><g class="box design focus p2 n0 n1 n2" data-id="MOD-0054" data-h="2"><title>MOD-0054 internal/group. 누르면 이 모듈의 안을 봅니다</title><rect x="85" y="128" width="150" height="60" rx="6"/><text class="name" x="160" y="155" text-anchor="middle">internal/group</text><text class="sub" x="160" y="170" text-anchor="middle">모듈</text></g></a>
 
 
 </svg></div>

@@ -980,6 +980,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
 		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
+		if f := sentence(u); f != nil {
+			b.Title += ": " + f.Value
+		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote
 			b.Class += " twin"

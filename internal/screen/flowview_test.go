@@ -58,7 +58,9 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	refs := map[string][]int{}
 	for _, ins := range m.Insides {
 		for _, r := range ins.Flows {
-			refs[ins.ID] = r.Steps
+			for _, s := range r.Steps {
+				refs[ins.ID] = append(refs[ins.ID], s.N)
+			}
 		}
 	}
 	if !slices.Equal(refs["MOD-0002"], []int{2, 3}) || !slices.Equal(refs["MOD-0003"], []int{4}) || refs["MOD-0004"] != nil {
@@ -66,7 +68,7 @@ func TestAFlowIsDrawnAsNumberedStepsLinkedIntoTheTree(t *testing.T) {
 	}
 	b := renderAll(t, m)
 	page := b.String()
-	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="flow-search.html">How does a search run?</a>`} {
+	for _, want := range []string{`<section class="inside flow" id="flow-search">`, `id="flow-search.4"`, "hands each file to it", "From argv to output.", `<a href="flow-search.html">How does a search run?</a>`, `<li value="3">hands each file to it`} {
 		if !strings.Contains(page, want) {
 			t.Errorf("the page must hold %q", want)
 		}
