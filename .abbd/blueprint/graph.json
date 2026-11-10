@@ -23425,7 +23425,7 @@
                 "Code": true
               },
               {
-                "Text": " template, with the overview legend in its plain and its quiet colours, and the 판독 key naming the reader rather than a tool. The header line that sends the reader to ",
+                "Text": " template, with the overview legend in its plain and its quiet colours, and the 판독 key naming the reader, not a tool. The header line that sends the reader to ",
                 "Code": false
               },
               {
@@ -29423,7 +29423,47 @@
                 "Code": true
               },
               {
-                "Text": " is not lifted and keeps each coupling's own ends.",
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "InferredDead",
+                "Code": true
+              },
+              {
+                "Text": " are not lifted and keep each coupling's own ends. ",
+                "Code": false
+              },
+              {
+                "Text": "Compare",
+                "Code": true
+              },
+              {
+                "Text": " also lists in ",
+                "Code": false
+              },
+              {
+                "Text": "Changed",
+                "Code": true
+              },
+              {
+                "Text": " each unit that kept its ID and changed its name, parent, purpose or responsibility, with the new value's origin, and a removed unit's ",
+                "Code": false
+              },
+              {
+                "Text": "Ref.Why",
+                "Code": true
+              },
+              {
+                "Text": " carries the absence reason the state records, such as retracted. ",
+                "Code": false
+              },
+              {
+                "Text": "InferredDead",
+                "Code": true
+              },
+              {
+                "Text": " lists the reader's couplings that were live at the base and whose evidence is dead now.",
                 "Code": false
               }
             ]
