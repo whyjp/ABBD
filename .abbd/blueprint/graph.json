@@ -21342,7 +21342,15 @@
                 "Code": true
               },
               {
-                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts, and ",
+                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts and ",
+                "Code": false
+              },
+              {
+                "Text": "badgeApart",
+                "Code": true
+              },
+              {
+                "Text": " from every other badge, and ",
                 "Code": false
               },
               {
@@ -21358,7 +21366,7 @@
                 "Code": true
               },
               {
-                "Text": " tints the boxes of a stored stack's layers, else of a shared directory (",
+                "Text": " tints the boxes of a stored stack's layers that hold two boxes or more, else of a shared directory (",
                 "Code": false
               },
               {
@@ -21366,7 +21374,7 @@
                 "Code": true
               },
               {
-                "Text": "), plus the outside contracts, even a single one, only where their padded area holds no other box, chip or band; its title takes the corner fewest lines cross. ",
+                "Text": "), plus the outside contracts, even a single one, only where their padded area holds no other box, chip or band, and numbers the layers' bands in the order they are drawn, with no gap; its title tries the top of its band first, left corner, right corner, then along the top. ",
                 "Code": false
               },
               {
@@ -21398,7 +21406,7 @@
                 "Code": true
               },
               {
-                "Text": "); a band's title keeps the corner it always took when that keeps clear of ink, labels and counts (",
+                "Text": "); a band's title takes the first place along the top of its room above that keeps clear of ink, labels and counts (",
                 "Code": false
               },
               {
@@ -21406,7 +21414,7 @@
                 "Code": true
               },
               {
-                "Text": "), else the first clear place in its room, the other room, or a taller room on two lines. ",
+                "Text": "), else the corner fewest lines cross, the first clear place in its room, the other room, or a taller room on two lines. ",
                 "Code": false
               },
               {
