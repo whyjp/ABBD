@@ -61,8 +61,8 @@ abbd migrate [--supplement FILE] [--root DIR]
                                      claims from a reader's by the supplement (default
                                      .abbd/extractor/supplement.json)
 abbd understand MOD-ID|FEAT-ID FILE|- [--root DIR]
-                                     store pstack how's Overview and Key Concepts for a module,
-                                     stamped with the module's code: every file of the module and
+                                     store pstack how's Overview and Key Concepts for a module
+                                     or feature, stamped with its code: every file of it and
                                      the units under it, a submodule by its recorded commit (so
                                      edits inside one count once committed there and staged), an
                                      ignored directory by its files on disk, and the lines around
