@@ -22,3 +22,36 @@ func TestTheLegendIsSaidOnce(t *testing.T) {
 		t.Errorf("a module page should link the legend")
 	}
 }
+
+// An entries table opens only when it is short and has a note to show, and
+// a table with no notes has no note column.
+func TestAnEntriesTableFoldsWhenItHasNothingToSay(t *testing.T) {
+	render := func(e Entries) string {
+		t.Helper()
+		var b strings.Builder
+		if err := site.ExecuteTemplate(&b, "entries", e); err != nil {
+			t.Fatal(err)
+		}
+		return b.String()
+	}
+	rows := func(n int) []EntryRow {
+		var out []EntryRow
+		for i := range n {
+			out = append(out, EntryRow{Key: string(rune('a' + i%26)), Name: "e"})
+		}
+		return out
+	}
+	bare := render(Entries{ID: "IF-0001", Shape: "시그니처", Rows: rows(3)})
+	if strings.Contains(bare, " open>") || strings.Contains(bare, "<th>설명</th>") {
+		t.Errorf("a table with no notes should start folded and drop its note column:\n%s", bare)
+	}
+	noted := rows(3)
+	noted[0].Note = &Note{}
+	if short := render(Entries{ID: "IF-0001", Shape: "시그니처", Rows: noted, Notes: true}); !strings.Contains(short, `<details class="entries" open>`) || !strings.Contains(short, "<th>설명</th>") {
+		t.Errorf("a short table with a note should open with its note column:\n%s", short)
+	}
+	long := append(rows(21), noted...)
+	if s := render(Entries{ID: "IF-0001", Shape: "시그니처", Rows: long, Notes: true}); strings.Contains(s, " open>") {
+		t.Errorf("a table of more than 20 rows should start folded")
+	}
+}

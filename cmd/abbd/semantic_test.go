@@ -253,5 +253,7 @@ func TestRestampingTheSameTextWithAByteOrderMarkIsRefused(t *testing.T) {
 // status names the units that say nothing of what they are for.
 func TestStatusReportsUndescribedUnits(t *testing.T) {
 	p := semanticProject(t)
-	p.want(0, "unit(s) without a purpose or responsibility", "status")
+	p.want(0, "described: 3 unit(s) without a purpose or responsibility: DATA-0001, MOD-0001, MOD-0002\n", "status")
+	p.want(0, "", "record", "fact", "MOD-0001.responsibility", "--value", "writes each charge", "--source", "pr 1")
+	p.want(0, "described: 2 unit(s) without a purpose or responsibility: DATA-0001, MOD-0002\n", "status")
 }
