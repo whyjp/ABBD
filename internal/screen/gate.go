@@ -13,6 +13,8 @@ import (
 // owes and no more. Over every view, the weighed sum, the tees and the
 // excess turns may not pass their ceilings, and the placement debt may pass its ceiling by
 // placementRise of it, so a change that saves turns may move a few boxes.
+// Each page the debt file names, one a reader looks at, may not raise what
+// it records of the page's own totals.
 
 // placementRise is the share of its ceiling the placement debt may rise by,
 // as a divisor: 2%.
@@ -40,13 +42,34 @@ var gated = []struct {
 	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
 }
 
+// paged are the totals of one page the debt file may bound, by the names it
+// gives them: what a reader sees at rest on that page, which a sum over
+// every view would trade against views no one looks at.
+var paged = []struct {
+	name  string
+	total func(Totals) int
+}{
+	{"colour_switches", func(t Totals) int { return t.ColourSwitches }},
+	{"parallel_ink", func(t Totals) int { return t.ParallelInk }},
+	{"abreast", func(t Totals) int { return t.Abreast }},
+}
+
 // Gate marks each hard breach the view owes as debt, and lists every way
 // views break the gate: a view with more hard breaches of a criterion than
-// it owes, and, when views are every drawing, a total past its ceiling.
+// it owes, a page total past its ceiling, and, when views are every
+// drawing, a page the debt file names that no view draws and a total past
+// its ceiling.
 func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
 	var fails []string
+	drawn := map[string]bool{}
 	for vi := range views {
 		v := &views[vi]
+		drawn[v.View] = true
+		for _, g := range paged {
+			if c, ok := d.Pages[v.View][g.name]; ok && g.total(v.Totals) > c {
+				fails = append(fails, fmt.Sprintf("%s: %s %d, past its page ceiling %d", v.View, g.name, g.total(v.Totals), c))
+			}
+		}
 		owed := d.Views[v.View]
 		for _, c := range criteria {
 			got := v.Totals.Criteria[c.ID]
@@ -67,6 +90,11 @@ func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
 	if !every {
 		return fails
 	}
+	for _, page := range slices.Sorted(maps.Keys(d.Pages)) {
+		if !drawn[page] {
+			fails = append(fails, fmt.Sprintf("%s: a page the debt file bounds, and no view draws it", page))
+		}
+	}
 	t := Sum(views)
 	for _, g := range gated {
 		c, ok := d.Ceilings[g.name]
@@ -78,13 +106,19 @@ func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
 }
 
 // Lowerable lists what the debt file records above what views measure: a debt
-// a view no longer owes in full, and, when views are every drawing, a
-// ceiling above its total. Each may be lowered.
+// a view no longer owes in full, a page ceiling above the page's total, and,
+// when views are every drawing, a ceiling above its total. Each may be
+// lowered.
 func Lowerable(views []ViewLint, d store.LintDebt, every bool) []string {
 	var out []string
 	measured := map[string]map[string]int{}
 	for _, v := range views {
 		measured[v.View] = v.Totals.Criteria
+		for _, g := range paged {
+			if c, ok := d.Pages[v.View][g.name]; ok && g.total(v.Totals) < c {
+				out = append(out, fmt.Sprintf("%s: page ceiling %s %d, %d measured", v.View, g.name, c, g.total(v.Totals)))
+			}
+		}
 	}
 	for _, view := range slices.Sorted(maps.Keys(d.Views)) {
 		got, ok := measured[view]
@@ -110,12 +144,26 @@ func Lowerable(views []ViewLint, d store.LintDebt, every bool) []string {
 }
 
 // Record is the debt of every drawing as views measure it: each view's
-// hard breaches by criterion, and each ceiling at its total or at what prior
-// sets it to, whichever is lower. A ceiling never rises on its own, so the
-// slack the gate allows a total cannot ratchet it up one record at a time.
+// hard breaches by criterion, each page prior names with its totals, and
+// each ceiling at its total or at what prior sets it to, whichever is
+// lower. A ceiling never rises on its own, so the slack the gate allows a
+// total cannot ratchet it up one record at a time.
 func Record(views []ViewLint, prior store.LintDebt) store.LintDebt {
 	d := store.LintDebt{Ceilings: map[string]int{}, Views: map[string]map[string]int{}}
 	for _, v := range views {
+		if was, ok := prior.Pages[v.View]; ok {
+			if d.Pages == nil {
+				d.Pages = map[string]map[string]int{}
+			}
+			d.Pages[v.View] = map[string]int{}
+			for _, g := range paged {
+				n := g.total(v.Totals)
+				if c, ok := was[g.name]; ok && c < n {
+					n = c
+				}
+				d.Pages[v.View][g.name] = n
+			}
+		}
 		for _, c := range criteria {
 			if n := v.Totals.Criteria[c.ID]; c.Hard && n > 0 {
 				if d.Views[v.View] == nil {
