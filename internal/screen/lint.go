@@ -111,6 +111,12 @@ type Totals struct {
 	// lines of one kind, within combGap of the next: teeth a hand drawing
 	// would draw as one stem (busy.go).
 	Combs int `json:"combs"`
+	// LabelRepeats are the labels that say a word another label says
+	// nearby (busy.go); a page the debt file names may not raise them.
+	// Labelled is the routes a reader finds a word on at rest, of Routes.
+	LabelRepeats int `json:"label_repeats"`
+	Labelled     int `json:"labelled"`
+	Routes       int `json:"routes"`
 }
 
 // Sum adds up the totals of several views.
@@ -127,6 +133,7 @@ func Sum(views []ViewLint) Totals {
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
 		t.ColourSwitches, t.Doglegs = t.ColourSwitches+o.ColourSwitches, t.Doglegs+o.Doglegs
 		t.Combs += o.Combs
+		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -321,6 +328,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	vl.Totals.Combs = combs(t.Ways)
+	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
 	return vl, nil
 }
 

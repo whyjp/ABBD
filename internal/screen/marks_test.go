@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/store"
 )
 
@@ -477,5 +478,48 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 			}
 		}
 		t.Logf("%s overview: %d labels on %d paths", name, labels, len(m.Overview.Wires))
+	}
+}
+
+// A word is said once where lines whose ink is one carry it: no two labels
+// of one word stand within repeatNear on touching ink of lines that leave
+// one place, or where one of them leaves several, as the five 호출 on one
+// fan of self's FEAT-0001 did.
+func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			d := v.d
+			var paths []drawn
+			for _, w := range d.Wires {
+				var p drawn
+				for _, r := range runs(w.D) {
+					p.parts = append(p.parts, []pt{r[0], r[1]})
+				}
+				paths = append(paths, p)
+			}
+			joined := touching(segsOf(paths), len(d.Wires))
+			from := func(w Wire) model.ID {
+				var one model.ID
+				for _, n := range w.srcs {
+					if b := base(model.ID(n)); one == "" {
+						one = b
+					} else if b != one {
+						return ""
+					}
+				}
+				return one
+			}
+			for i, a := range d.Wires {
+				for j, b := range d.Wires[:i] {
+					if a.Label == nil || b.Label == nil || a.Label.S != b.Label.S || !joined(i, j) {
+						continue
+					}
+					dx, dy := a.Label.X-b.Label.X, a.Label.Y-b.Label.Y
+					if dx*dx+dy*dy <= repeatNear*repeatNear && (from(a) == from(b) || from(a) == "" || from(b) == "") {
+						t.Errorf("%s %s: %q said at %d,%d and again at %d,%d on touching ink", name, v.name, a.Label.S, b.Label.X, b.Label.Y, a.Label.X, a.Label.Y)
+					}
+				}
+			}
+		}
 	}
 }

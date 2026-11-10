@@ -56,6 +56,9 @@ var paged = []struct {
 	// by side, where a hand drawing draws one stem.
 	{"combs", func(t Totals) int { return t.Combs }},
 	{"doglegs", func(t Totals) int { return t.Doglegs }},
+	// label repeats are words said again beside the same lines, where a
+	// hand drawing says each once.
+	{"label_repeats", func(t Totals) int { return t.LabelRepeats }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way

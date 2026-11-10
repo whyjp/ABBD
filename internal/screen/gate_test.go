@@ -107,6 +107,7 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		func(t *Totals) { t.Abreast++ },
 		func(t *Totals) { t.Combs++ },
 		func(t *Totals) { t.Doglegs++ },
+		func(t *Totals) { t.LabelRepeats++ },
 	} {
 		risen := slices.Clone(views)
 		rise(&risen[at].Totals)

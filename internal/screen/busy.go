@@ -348,3 +348,60 @@ func combs(ways []tracedWay) int {
 	}
 	return n
 }
+
+// repeatNear is how far apart, in px between centres, two labels of one
+// word may stand and still read as the word said twice in one place.
+const repeatNear = 200
+
+// labelRepeats counts the labels that repeat a word already set nearby:
+// over each word, the labels past the first of every group whose labels
+// stand within repeatNear of one another, one to the next. A hand drawing
+// says a word once where the lines it names run together.
+func labelRepeats(d Drawing) int {
+	at := map[string][]pt{}
+	for _, w := range d.Wires {
+		if l := w.Label; l != nil {
+			at[l.S] = append(at[l.S], pt{l.X, l.Y})
+		}
+	}
+	n := 0
+	for _, ps := range at {
+		group := make([]int, len(ps))
+		for i := range group {
+			group[i] = i
+		}
+		var root func(int) int
+		root = func(i int) int {
+			if group[i] != i {
+				group[i] = root(group[i])
+			}
+			return group[i]
+		}
+		for i := range ps {
+			for j := range i {
+				dx, dy := ps[i].x-ps[j].x, ps[i].y-ps[j].y
+				if dx*dx+dy*dy <= repeatNear*repeatNear && root(i) != root(j) {
+					group[root(i)] = root(j)
+					n++
+				}
+			}
+		}
+	}
+	return n
+}
+
+// labelled counts the routes a reader finds a word on at rest: a route is
+// labelled when a labelled wire rides it or carries one of its relations.
+func labelled(d Drawing) int {
+	n := 0
+	for k, r := range d.ways {
+		if slices.ContainsFunc(d.Wires, func(w Wire) bool {
+			return w.Label != nil && (slices.Contains(w.rides, k) || slices.ContainsFunc(w.lines, func(l []string) bool {
+				return slices.ContainsFunc(l, func(rel string) bool { return slices.Contains(r.rels, rel) })
+			}))
+		}) {
+			n++
+		}
+	}
+	return n
+}

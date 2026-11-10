@@ -17,4 +17,5 @@ pages:
         colour_switches: 55
         combs: 0
         doglegs: 9
+        label_repeats: 0
         parallel_ink: 0
