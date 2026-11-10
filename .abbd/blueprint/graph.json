@@ -20114,24 +20114,6 @@
         "Stale": false,
         "Blocks": [
           {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "unit: MOD-0034",
-                "Code": false
-              }
-            ]
-          },
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0034 ---",
-                "Code": false
-              }
-            ]
-          },
-          {
             "Kind": "h",
             "Parts": [
               {
@@ -22798,7 +22780,7 @@
                 "Code": true
               },
               {
-                "Text": " (200px) from the same word already set, then lets it stand near one on other lines, and drops it where a line whose ink touches its own, one leaving the same place or either leaving several, already says it nearby (",
+                "Text": " (200px) from the same word already set, then lets it stand near one on other lines, and drops it where a line whose ink touches its own directly, a piece of one ending on the other, one leaving the same place or either leaving several, already says it nearby (",
                 "Code": false
               },
               {
@@ -24740,7 +24722,15 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
+                "Code": false
+              },
+              {
+                "Text": "past",
+                "Code": true
+              },
+              {
+                "Text": "), a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
                 "Code": false
               },
               {
