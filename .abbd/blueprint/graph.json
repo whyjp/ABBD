@@ -6931,6 +6931,116 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "Diff",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "diff.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff",
+                "Code": true
+              },
+              {
+                "Text": " compares the units committed at a base, the merge base by default, with the state now through ",
+                "Code": false
+              },
+              {
+                "Text": "topology.Compare",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "--unit ID",
+                "Code": true
+              },
+              {
+                "Text": " keeps the changes inside one module or feature through ",
+                "Code": false
+              },
+              {
+                "Text": "Diff.Within",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "topology.Subtree",
+                "Code": true
+              },
+              {
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "--page",
+                "Code": true
+              },
+              {
+                "Text": " writes ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/compare/",
+                "Code": true
+              },
+              {
+                "Text": ": the blueprint files committed at the base under ",
+                "Code": false
+              },
+              {
+                "Text": "base/",
+                "Code": true
+              },
+              {
+                "Text": ", a ",
+                "Code": false
+              },
+              {
+                "Text": ".gitignore",
+                "Code": true
+              },
+              {
+                "Text": " of ",
+                "Code": false
+              },
+              {
+                "Text": "*",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
+                "Code": false
+              },
+              {
+                "Text": "index.html",
+                "Code": true
+              },
+              {
+                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Evidence and status",
                 "Code": false,
                 "Bold": true
@@ -8885,7 +8995,9 @@
                     "cmd/abbd/screen.go \"in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)\"",
                     "internal/screen/screen.go \"case in.Rendered == \\\"\\\" || in.Synced.Blueprint == \\\"\\\" || in.Synced.Rendered == \\\"\\\":\"",
                     "internal/store/store.go \"case p == s.path(\\\"state.yaml\\\"), p == s.path(\\\"lint-debt.yaml\\\"):\""
-                  ]
+                  ],
+                  "RereadBy": "concept-orch (Claude Opus 5.5)",
+                  "RereadOn": "2026-11-10"
                 }
               },
               {
@@ -9333,7 +9445,9 @@
                   ],
                   "Quotes": [
                     "cmd/abbd/diff.go \"if base, err = gitx.MergeBase(e.root); err != nil {\""
-                  ]
+                  ],
+                  "RereadBy": "concept-orch (Claude Opus 5.5)",
+                  "RereadOn": "2026-11-10"
                 }
               },
               {
@@ -9359,7 +9473,9 @@
                   ],
                   "Quotes": [
                     "cmd/abbd/diff.go \"if e.asJSON {\""
-                  ]
+                  ],
+                  "RereadBy": "concept-orch (Claude Opus 5.5)",
+                  "RereadOn": "2026-11-10"
                 }
               },
               {
@@ -9392,8 +9508,36 @@
                   ],
                   "Quotes": [
                     "cmd/abbd/diff.go \"if e.check \u0026\u0026 d.Boundary() {\""
-                  ]
+                  ],
+                  "RereadBy": "concept-orch (Claude Opus 5.5)",
+                  "RereadOn": "2026-11-10"
                 }
+              },
+              {
+                "Key": "unit",
+                "Name": "--unit",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              },
+              {
+                "Key": "page",
+                "Name": "--page",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": false,
@@ -26033,6 +26177,30 @@
                 "Code": false
               },
               {
+                "Text": "compare/",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "CompareDir",
+                "Code": true
+              },
+              {
+                "Text": ", the view ",
+                "Code": false
+              },
+              {
+                "Text": "abbd diff --page",
+                "Code": true
+              },
+              {
+                "Text": " writes), ",
+                "Code": false
+              },
+              {
                 "Text": "state.yaml",
                 "Code": true
               },
@@ -29463,7 +29631,23 @@
                 "Code": true
               },
               {
-                "Text": " lists the reader's couplings that were live at the base and whose evidence is dead now.",
+                "Text": " lists the reader's couplings that were live at the base and whose evidence is dead now. ",
+                "Code": false
+              },
+              {
+                "Text": "Within",
+                "Code": true
+              },
+              {
+                "Text": " keeps the changes that touch a set of units, by either end of a relation, a use or a coupling, and ",
+                "Code": false
+              },
+              {
+                "Text": "Subtree",
+                "Code": true
+              },
+              {
+                "Text": " gives that set for one module or feature in either state, so a unit that moved in or out still counts.",
                 "Code": false
               }
             ]
