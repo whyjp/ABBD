@@ -5435,7 +5435,7 @@
         "Uses": 13,
         "Direct": 12,
         "StaleNotes": 0,
-        "Dead": 1
+        "Dead": 4
       },
       "Units": [
         {
@@ -11240,7 +11240,7 @@
         "Uses": 0,
         "Direct": 3,
         "StaleNotes": 0,
-        "Dead": 0
+        "Dead": 2
       },
       "Units": [
         {
@@ -14357,6 +14357,7 @@
         "Provides": 0,
         "Uses": 1,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14396,7 +14397,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -20290,7 +20291,7 @@
         "Uses": 12,
         "Direct": 5,
         "StaleNotes": 0,
-        "Dead": 1
+        "Dead": 11
       },
       "Units": [
         {
@@ -21503,7 +21504,7 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes and the reader's claims in it whose evidence died, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
+                "Text": ") counts over its subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
                 "Code": false
               },
               {
@@ -25593,7 +25594,7 @@
         "Uses": 2,
         "Direct": 4,
         "StaleNotes": 0,
-        "Dead": 0
+        "Dead": 1
       },
       "Units": [
         {
@@ -29034,7 +29035,7 @@
         "Uses": 4,
         "Direct": 1,
         "StaleNotes": 0,
-        "Dead": 0
+        "Dead": 2
       },
       "Units": [
         {
