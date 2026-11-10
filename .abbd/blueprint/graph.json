@@ -3590,7 +3590,7 @@
       "Via": "call",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED",
-      "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+      "Quote": "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
     },
     {
       "From": "MOD-0001",
@@ -3644,7 +3644,7 @@
       "Via": "data",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED",
-      "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+      "Quote": "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
     },
     {
       "From": "MOD-0002",
@@ -7097,7 +7097,95 @@
                 "Code": true
               },
               {
-                "Text": " names its path on stderr so stdout stays JSON.",
+                "Text": " names its path on stderr so stdout stays JSON. Before a writing command runs, ",
+                "Code": false
+              },
+              {
+                "Text": "keepPrevious",
+                "Code": true
+              },
+              {
+                "Text": " has the store keep ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " as it was before the first write since the last commit, and ",
+                "Code": false
+              },
+              {
+                "Text": "--base prev",
+                "Code": true
+              },
+              {
+                "Text": " reads the units and the blueprint from that copy. The tests' ",
+                "Code": false
+              },
+              {
+                "Text": "snapshot",
+                "Code": true
+              },
+              {
+                "Text": " of ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " leaves ",
+                "Code": false
+              },
+              {
+                "Text": "compare/",
+                "Code": true
+              },
+              {
+                "Text": " out, since nothing there is committed. ",
+                "Code": false
+              },
+              {
+                "Text": "--base prev",
+                "Code": true
+              },
+              {
+                "Text": " needs the copy's ",
+                "Code": false
+              },
+              {
+                "Text": "HEAD",
+                "Code": true
+              },
+              {
+                "Text": " mark. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " also lists the units anchored at a file changed since the base (",
+                "Code": false
+              },
+              {
+                "Text": "anchoredAt",
+                "Code": true
+              },
+              {
+                "Text": ", through ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.ChangedSince",
+                "Code": true
+              },
+              {
+                "Text": ", a file name with a space included) and seeds from them, since most changes edit code and leave the topology alone.",
                 "Code": false
               }
             ]
@@ -7242,6 +7330,14 @@
               },
               {
                 "Text": "coverage",
+                "Code": true
+              },
+              {
+                "Text": ", through ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.LastCommitted",
                 "Code": true
               },
               {
@@ -10826,7 +10922,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -10854,7 +10950,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -14261,7 +14357,6 @@
         "Provides": 0,
         "Uses": 1,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14301,7 +14396,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -15021,6 +15116,90 @@
               },
               {
                 "Text": "): every path that differs between two snapshots, with a moved file listed under both names. Nothing in the repository calls it today.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "ChangedSince",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the tracked files that differ between a revision and the working tree, from ",
+                "Code": false
+              },
+              {
+                "Text": "git diff -z --name-only --no-renames --relative REV --",
+                "Code": true
+              },
+              {
+                "Text": ", and the untracked files git does not ignore, all NUL-separated and relative to the root, a renamed file under both names. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " reads it to seed from the units whose code changed.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "LastCommitted",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the date of the last commit that touched a path, as ",
+                "Code": false
+              },
+              {
+                "Text": "YYYY-MM-DD",
+                "Code": true
+              },
+              {
+                "Text": ", from ",
+                "Code": false
+              },
+              {
+                "Text": "git log -1 --format=%cs",
+                "Code": true
+              },
+              {
+                "Text": ", or empty. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " reads it for the oldest committed text.",
                 "Code": false
               }
             ]
@@ -25413,7 +25592,6 @@
         "Provides": 5,
         "Uses": 2,
         "Direct": 4,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -25513,7 +25691,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -26550,7 +26728,47 @@
                 "Code": true
               },
               {
-                "Text": " writes), ",
+                "Text": " writes, and ",
+                "Code": false
+              },
+              {
+                "Text": "PreviousDir",
+                "Code": true
+              },
+              {
+                "Text": " inside it, where ",
+                "Code": false
+              },
+              {
+                "Text": "KeepPrevious",
+                "Code": true
+              },
+              {
+                "Text": " copies ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " before the first write since the commit it records in a ",
+                "Code": false
+              },
+              {
+                "Text": "HEAD",
+                "Code": true
+              },
+              {
+                "Text": " file, building the copy in ",
+                "Code": false
+              },
+              {
+                "Text": "prev.tmp",
+                "Code": true
+              },
+              {
+                "Text": " and renaming it into place), ",
                 "Code": false
               },
               {
@@ -26730,7 +26948,15 @@
                 "Code": true
               },
               {
-                "Text": "): a reader's Overview and Key Concepts for one module or feature, with ",
+                "Text": "): a reader's Overview and Key Concepts for one module or feature, at ",
+                "Code": false
+              },
+              {
+                "Text": "UnderstandingFile",
+                "Code": true
+              },
+              {
+                "Text": " from the project root, with ",
                 "Code": false
               },
               {
@@ -28607,7 +28833,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -31961,7 +32187,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "compares the stored units with the base revision's",
+              "Says": "compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit",
               "Verb": "사용"
             },
             {
@@ -31988,7 +32214,7 @@
             }
           ],
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\"",
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\"",
             "cmd/abbd/evidence.go \"case in.Synced.Fingerprint == \\\"\\\":\"",
             "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\""
           ]

@@ -352,6 +352,27 @@ func Gitlinks(dir string) map[string]string {
 	return out
 }
 
+// ChangedSince lists the tracked files that differ between rev and the
+// working tree, and the untracked ones git does not ignore, relative to dir.
+// A renamed file counts under its old name as well as its new one.
+func ChangedSince(dir, rev string) ([]string, error) {
+	out, err := run(dir, nil, "diff", "-z", "--name-only", "--no-renames", "--relative", rev, "--")
+	if err != nil {
+		return nil, err
+	}
+	extra, err := run(dir, nil, "ls-files", "-z", "--others", "--exclude-standard")
+	if err != nil {
+		return nil, err
+	}
+	var files []string
+	for _, f := range strings.Split(out+"\x00"+extra, "\x00") {
+		if f != "" {
+			files = append(files, f)
+		}
+	}
+	return files, nil
+}
+
 // LastCommitted is the date, as YYYY-MM-DD, of the last commit that touched
 // path, or "" when none did.
 func LastCommitted(dir, path string) string {
