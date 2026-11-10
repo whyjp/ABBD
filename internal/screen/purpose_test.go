@@ -38,10 +38,12 @@ func TestPagesSayWhatEachModuleIsFor(t *testing.T) {
 // A module's page counts what the module provides and uses, the units it
 // reaches with no contract, and its STALE text, over its whole subtree.
 func TestAModulePageSaysItsStanding(t *testing.T) {
-	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", rel("IF-0002", model.Consumes)))
+	gone := model.Relation{To: "MOD-0004", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call", Dead: true,
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: "gone", Status: model.Dead}}}
+	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", rel("IF-0002", model.Consumes), gone))
 	in := Input{Units: units, Understandings: map[model.ID]store.Understanding{"MOD-0003": {Unit: "MOD-0003", Digest: "old", Text: "### Overview\nIt searches.\n"}}, Digests: map[model.ID]string{"MOD-0003": "new"}}
 	ps := pages(t, Build(in))
-	if want := `<p class="muted standing">제공 1 · 사용 2 · 계약 없는 직접 의존 1 · <span class="pill STALE">설명 STALE</span></p>`; !strings.Contains(ps["MOD-0003.html"], want) {
+	if want := `<p class="muted standing">제공 1 · 사용 2 · 계약 없는 직접 의존 1 · <span class="pill STALE">설명 STALE</span> · 죽은 근거 1개</p>`; !strings.Contains(ps["MOD-0003.html"], want) {
 		t.Errorf("MOD-0003.html should say %s", want)
 	}
 }
