@@ -166,6 +166,10 @@ func Compare(base, now []model.Unit) Diff {
 	}
 	died := deadInferred(n)
 	for _, k := range keys(died) {
+		// Another reader's coupling on the same edge may still be live.
+		if _, live := cur[k]; live {
+			continue
+		}
 		if _, ok := old[k]; ok {
 			d.InferredDead = append(d.InferredDead, died[k])
 		}
@@ -187,7 +191,7 @@ func (d *Diff) fields(old, u model.Unit) {
 	nr, ro := val(u.Responsibility)
 	for _, c := range []Changed{
 		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
-		{Field: "parent", Old: string(old.Parent), New: string(u.Parent)},
+		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
 	} {
@@ -400,9 +404,9 @@ func (d Diff) Lines() []string {
 	for _, c := range d.Changed {
 		switch c.Field {
 		case "name":
-			out = append(out, fmt.Sprintf("~ renamed %s %q -> %q", c.ID, c.Old, c.New))
+			out = append(out, fmt.Sprintf("~ renamed %s %q -> %q%s", c.ID, c.Old, c.New, by(c.Origin)))
 		case "parent":
-			out = append(out, fmt.Sprintf("~ moved %s %s: %s -> %s", c.ID, c.Name, orTop(c.Old), orTop(c.New)))
+			out = append(out, fmt.Sprintf("~ moved %s %s: %s -> %s%s", c.ID, c.Name, orTop(c.Old), orTop(c.New), by(c.Origin)))
 		default:
 			out = append(out, fmt.Sprintf("~ %s %s %s: %q -> %q%s", c.Field, c.ID, c.Name, c.Old, c.New, by(c.Origin)))
 		}

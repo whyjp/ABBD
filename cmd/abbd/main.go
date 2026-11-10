@@ -137,6 +137,12 @@ abbd diff [--base REV] [--json] [--check] [--root DIR]
                                      removed, or a relation between top-level modules appeared
                                      or disappeared; a contract's code change under the same
                                      signature is reported but does not fail it
+abbd review [--base REV] [--features] [--root DIR]
+                                     one surface for a reviewer: the change since REV, who uses
+                                     each contract or entry it touched with origin and feature,
+                                     what it reaches directly, and what is worth a look (a
+                                     reader's new coupling, a STALE text or note, a decision
+                                     with no why, drifted evidence); always exits 0
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
 abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--root DIR]
                                      hold every drawing of the blueprint, or the views whose name
@@ -291,6 +297,7 @@ var commands = map[string]command{
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
+	"review":          {flags: []string{"root", "base", "features"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
