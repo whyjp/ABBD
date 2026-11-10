@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -4729,6 +4729,14 @@
     {
       "ID": "FEAT-0001",
       "Name": "/abbd",
+      "Purpose": {
+        "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "FEAT-0003",
@@ -5068,6 +5076,14 @@
     {
       "ID": "FEAT-0002",
       "Name": "/abbd-setup",
+      "Purpose": {
+        "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "FEAT-0011",
@@ -5357,6 +5373,14 @@
     {
       "ID": "MOD-0001",
       "Name": "abbd CLI",
+      "Purpose": {
+        "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "DATA-0001",
@@ -10643,8 +10667,16 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            2,
-            13
+            {
+              "N": 2,
+              "Unit": "sync pipeline",
+              "Does": "runScript(argv) → the script's stdout, run in the project root"
+            },
+            {
+              "N": 13,
+              "Unit": "blueprint publish",
+              "Does": "publish() → every page and graph.json, after a command writes, or saves part of what it then refuses"
+            }
           ]
         }
       ],
@@ -10674,6 +10706,14 @@
     {
       "ID": "MOD-0009",
       "Name": "internal/bootstrap",
+      "Purpose": {
+        "Value": "so setup can add what only reading the code tells on top of the script's output without letting a reader overwrite code facts",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "MOD-0010",
@@ -11358,6 +11398,14 @@
     {
       "ID": "MOD-0013",
       "Name": "internal/evidence",
+      "Purpose": {
+        "Value": "so a reader's unit or coupling lives exactly as long as the code it quoted, decided the same way every time for the same tree",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "MOD-0014",
@@ -12272,7 +12320,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            9
+            {
+              "N": 9,
+              "Unit": "internal/evidence",
+              "Does": "Apply(units, rev) → every quote live, drifted or dead"
+            }
           ]
         }
       ],
@@ -12289,6 +12341,14 @@
     {
       "ID": "MOD-0017",
       "Name": "internal/extract",
+      "Purpose": {
+        "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "MOD-0018",
@@ -13721,7 +13781,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            3
+            {
+              "N": 3,
+              "Unit": "internal/extract",
+              "Does": "Parse(stdout) → extract.Result, the units by ref with anchors and relations"
+            }
           ]
         }
       ],
@@ -13738,6 +13802,14 @@
     {
       "ID": "MOD-0022",
       "Name": "internal/gitx",
+      "Purpose": {
+        "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "MOD-0023",
@@ -14871,9 +14943,21 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            5,
-            6,
-            7
+            {
+              "N": 5,
+              "Unit": "internal/gitx",
+              "Does": "Snapshot(root, .abbd) → the working tree's fingerprint"
+            },
+            {
+              "N": 6,
+              "Unit": "internal/gitx",
+              "Does": "Renames(last fingerprint, tree) → files moved since the last sync"
+            },
+            {
+              "N": 7,
+              "Unit": "internal/gitx",
+              "Does": "Head() → the revision, taken only when the tree changed"
+            }
           ]
         }
       ],
@@ -14890,6 +14974,14 @@
     {
       "ID": "MOD-0026",
       "Name": "internal/identity",
+      "Purpose": {
+        "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "MOD-0027",
@@ -15961,7 +16053,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            8
+            {
+              "N": 8,
+              "Unit": "internal/identity",
+              "Does": "Reconcile(stored, renames, extraction, prior) → units with their IDs kept"
+            }
           ]
         }
       ],
@@ -15978,6 +16074,14 @@
     {
       "ID": "MOD-0030",
       "Name": "internal/model",
+      "Purpose": {
+        "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "DATA-0010",
@@ -19525,6 +19629,14 @@
     {
       "ID": "MOD-0034",
       "Name": "internal/screen",
+      "Purpose": {
+        "Value": "shows a human the architecture as it is, read-only over the store",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "DATA-0014",
@@ -23324,7 +23436,15 @@
                 "Code": true
               },
               {
-                "Text": " lists every contract grouped by kind, IF, EVT, DATA, then CFG, and by name within a kind. Each row names the module it sits in as its owner, and the units whose live relations provide and use it. Each is a ",
+                "Text": " lists every contract grouped by kind, IF, EVT, DATA, then CFG, and by name within a kind, each with its responsibility, else its purpose. A module's ",
+                "Code": false
+              },
+              {
+                "Text": "Inside",
+                "Code": true
+              },
+              {
+                "Text": " carries its unit's purpose and responsibility, which its page prints under its heading as 왜 있는가 and 맡은 것, and an overview box's tooltip adds the responsibility, else the purpose. Each row names the module it sits in as its owner, and the units whose live relations provide and use it. Each is a ",
                 "Code": false
               },
               {
@@ -23720,7 +23840,7 @@
                 "Code": true
               },
               {
-                "Text": " lists on each inside the steps on the units it holds, the layers that hold its units and the rows its units head, by number. ",
+                "Text": " lists on each inside the steps on the units it holds, each with its number, its unit and what it does, and the layers that hold its units and the rows its units head, by number. ",
                 "Code": false
               },
               {
@@ -24653,6 +24773,14 @@
     {
       "ID": "MOD-0041",
       "Name": "internal/store",
+      "Purpose": {
+        "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "DATA-0003",
@@ -27969,10 +28097,26 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            1,
-            4,
-            11,
-            12
+            {
+              "N": 1,
+              "Unit": "internal/store",
+              "Does": "LoadProject() reads project.yaml → the registered extraction argv"
+            },
+            {
+              "N": 4,
+              "Unit": "internal/store",
+              "Does": "Writable(), LoadCandidates(), LoadState() → stored units, candidates, last state"
+            },
+            {
+              "N": 11,
+              "Unit": "internal/store",
+              "Does": "SaveUnits(), SaveCandidates() → the unit files and candidates.yaml"
+            },
+            {
+              "N": 12,
+              "Unit": "internal/store",
+              "Does": "UpgradeUnderstandings(), then SaveState() writes revision and fingerprint"
+            }
           ]
         }
       ],
@@ -27989,6 +28133,14 @@
     {
       "ID": "MOD-0047",
       "Name": "internal/topology",
+      "Purpose": {
+        "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
+        "Badge": "inferred"
+      },
+      "Responsibility": {
+        "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "DATA-0009",
@@ -29652,7 +29804,11 @@
           "ID": "flow-sync",
           "Question": "What does abbd sync do, in order?",
           "Steps": [
-            10
+            {
+              "N": 10,
+              "Unit": "internal/group",
+              "Does": "Fallback(units) → a crowded level placed in the directories its code lives in"
+            }
           ]
         }
       ],
@@ -29669,6 +29825,10 @@
     {
       "ID": "MOD-0055",
       "Name": "pstack (external)",
+      "Responsibility": {
+        "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
+        "Badge": "inferred"
+      },
       "Units": [
         {
           "ID": "FEAT-0018",

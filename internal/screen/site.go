@@ -57,8 +57,10 @@ type NavItem struct {
 // provides it and who uses it, each a link to where that unit is read.
 type ContractRow struct {
 	ID, Name, Kind, Signature string
-	Owner                     *Ref
-	Providers, Users          []Ref
+	// Sentence is what the contract is responsible for, else its purpose.
+	Sentence         *Fact `json:",omitempty"`
+	Owner            *Ref
+	Providers, Users []Ref
 }
 
 // Ref names a unit and the anchor where a reader finds it: its own page
@@ -258,7 +260,10 @@ func contractRows(m Model) []ContractRow {
 		if !model.Kind(u.Kind).IsContract() {
 			continue
 		}
-		c := ContractRow{ID: u.ID, Name: u.Name, Kind: u.Kind, Signature: u.Signature}
+		c := ContractRow{ID: u.ID, Name: u.Name, Kind: u.Kind, Signature: u.Signature, Sentence: u.Responsibility}
+		if c.Sentence == nil || c.Sentence.Value == "" {
+			c.Sentence = u.Purpose
+		}
 		if u.Parent != "" {
 			r := ref(u.Parent)
 			c.Owner = &r
