@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2021,6 +2021,7 @@
         "internal/screen/screen.go",
         "internal/screen/site.go",
         "internal/screen/stack.go",
+        "internal/screen/standing.go",
         "internal/screen/table.go",
         "internal/screen/trace.go",
         "internal/screen/tree.go",
@@ -4770,6 +4771,13 @@
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 21,
+        "Direct": 2,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0003",
@@ -5118,6 +5126,13 @@
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 16,
+        "Direct": 2,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0011",
@@ -5414,6 +5429,13 @@
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
         "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 28,
+        "Uses": 13,
+        "Direct": 12,
+        "StaleNotes": 0,
+        "Dead": 4
       },
       "Units": [
         {
@@ -7295,7 +7317,31 @@
                 "Code": true
               },
               {
-                "Text": " prints whether the state and the blueprint are current, names in its ",
+                "Text": " prints whether the state and the blueprint are current, prints a ",
+                "Code": false
+              },
+              {
+                "Text": "coverage:",
+                "Code": true
+              },
+              {
+                "Text": " line (",
+                "Code": false
+              },
+              {
+                "Text": "coverage",
+                "Code": true
+              },
+              {
+                "Text": ", through ",
+                "Code": false
+              },
+              {
+                "Text": "gitx.LastCommitted",
+                "Code": true
+              },
+              {
+                "Text": ": how many top-level modules and features carry a text, who read them, the oldest commit date of one, and which carry none), names in its ",
                 "Code": false
               },
               {
@@ -10248,6 +10294,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -11184,6 +11235,13 @@
         "Value": "Folds the supplement onto the extraction result: matches supplement units to script units by shared anchors, copies their purpose and responsibility as INFERRED, adds evidence-backed units the script cannot see, and adds the evidence-backed couplings the script did not extract.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 0,
+        "Direct": 3,
+        "StaleNotes": 0,
+        "Dead": 2
+      },
       "Units": [
         {
           "ID": "MOD-0010",
@@ -11875,6 +11933,13 @@
       "Responsibility": {
         "Value": "Finds each cited quote in its file whitespace-insensitively and on word boundaries within the named lines plus a three-line slack, marks semantic units absent and semantic relations dead when no quote survives, and moves live line numbers and digests to where the quote is now.",
         "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 2,
+        "Uses": 1,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 0
       },
       "Units": [
         {
@@ -12818,6 +12883,13 @@
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
         "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 1,
+        "Direct": 2,
+        "StaleNotes": 0,
+        "Dead": 0
       },
       "Units": [
         {
@@ -14281,6 +14353,13 @@
         "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 1,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "MOD-0023",
@@ -15083,6 +15162,52 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "LastCommitted",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the date of the last commit that touched a path, as ",
+                "Code": false
+              },
+              {
+                "Text": "YYYY-MM-DD",
+                "Code": true
+              },
+              {
+                "Text": ", from ",
+                "Code": false
+              },
+              {
+                "Text": "git log -1 --format=%cs",
+                "Code": true
+              },
+              {
+                "Text": ", or empty. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " reads it to date the oldest committed text in its coverage line.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "MergeBase",
                 "Code": true
               },
@@ -15490,6 +15615,13 @@
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
         "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 4,
+        "Uses": 2,
+        "Direct": 3,
+        "StaleNotes": 0,
+        "Dead": 0
       },
       "Units": [
         {
@@ -16590,6 +16722,13 @@
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
         "Badge": "inferred"
+      },
+      "Standing": {
+        "Provides": 2,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
       },
       "Units": [
         {
@@ -20146,6 +20285,13 @@
         "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 1,
+        "Uses": 12,
+        "Direct": 5,
+        "StaleNotes": 0,
+        "Dead": 11
+      },
       "Units": [
         {
           "ID": "DATA-0014",
@@ -20239,15 +20385,6 @@
       "Understanding": {
         "Stale": false,
         "Blocks": [
-          {
-            "Kind": "p",
-            "Parts": [
-              {
-                "Text": "--- unit: MOD-0034 ---",
-                "Code": false
-              }
-            ]
-          },
           {
             "Kind": "h",
             "Parts": [
@@ -21349,7 +21486,23 @@
                 "Code": true
               },
               {
-                "Text": ", so a quiet view's key draws the bypass grey. The full legend and the reading intros sit once on ",
+                "Text": ", so a quiet view's key draws the bypass grey. Each module's ",
+                "Code": false
+              },
+              {
+                "Text": "Inside.Standing",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "standing.go",
+                "Code": true
+              },
+              {
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
                 "Code": false
               },
               {
@@ -23979,7 +24132,7 @@
                 "Code": true
               },
               {
-                "Text": " holds that a relation or a unit added inside a module rewrites only its page, ",
+                "Text": " holds that a relation or a unit added inside a module rewrites only its page, the page of a unit whose standing it changed, ",
                 "Code": false
               },
               {
@@ -25490,6 +25643,13 @@
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 5,
+        "Uses": 2,
+        "Direct": 4,
+        "StaleNotes": 0,
+        "Dead": 1
+      },
       "Units": [
         {
           "ID": "DATA-0003",
@@ -26843,7 +27003,15 @@
                 "Code": true
               },
               {
-                "Text": "): a reader's Overview and Key Concepts for one module or feature, with ",
+                "Text": "): a reader's Overview and Key Concepts for one module or feature, at ",
+                "Code": false
+              },
+              {
+                "Text": "UnderstandingFile",
+                "Code": true
+              },
+              {
+                "Text": " from the project root, with ",
                 "Code": false
               },
               {
@@ -28916,6 +29084,13 @@
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 4,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 2
+      },
       "Units": [
         {
           "ID": "DATA-0009",
@@ -30551,6 +30726,13 @@
     {
       "ID": "MOD-0054",
       "Name": "internal/group",
+      "Standing": {
+        "Provides": 2,
+        "Uses": 1,
+        "Direct": 1,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "DATA-0017",
@@ -30684,6 +30866,13 @@
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
         "Badge": "inferred"
       },
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": [
         {
           "ID": "FEAT-0018",
@@ -30750,6 +30939,13 @@
     {
       "ID": "MOD-0056",
       "Name": "internal/narrative",
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
       "Units": null,
       "Understanding": {
         "Stale": false,
