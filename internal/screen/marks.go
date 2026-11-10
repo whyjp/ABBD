@@ -145,6 +145,13 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		}
 	}
 	used := map[string]bool{}
+	// onRoad is how far each route runs on roads, by route number.
+	onRoad := map[int]int{}
+	for _, w := range d.Wires {
+		for _, k := range w.rides {
+			onRoad[k] += runLength(w.D)
+		}
+	}
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Hue = ""
@@ -154,6 +161,19 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 			} else if c != w.Hue {
 				w.Hue = hueKey(-1)
 			}
+		}
+		// A road whose lines leave boxes of different colours wears the
+		// colour of its rider that runs furthest on roads, so a highway
+		// keeps one colour from piece to piece and that line never turns
+		// grey and back on its way.
+		far, at := -1, -1
+		for _, k := range w.rides {
+			if w.Hue == hueKey(-1) && k < len(d.ways) && onRoad[k] > far {
+				far, at = onRoad[k], k
+			}
+		}
+		if at >= 0 {
+			w.Hue = colour(d.ways[at].src)
 		}
 		if w.Hue == "" {
 			w.Hue = hueKey(-1)

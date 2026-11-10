@@ -21546,7 +21546,15 @@
                 "Code": true
               },
               {
-                "Text": "). A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
+                "Text": "). Where no run moves, ",
+                "Code": false
+              },
+              {
+                "Text": "wide",
+                "Code": true
+              },
+              {
+                "Text": " takes a stair the long way round: a line that comes down the middle, crosses a crowded row and swings round the box under it steps across higher, where nothing runs, and comes down beside that box, and a move that costs nothing is kept where a move of a whole run then reads better. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
                 "Code": false
               },
               {
@@ -21782,7 +21790,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, and a road whose riders leave boxes of different colours in the colour of the rider that runs furthest on roads, so a highway keeps one colour from piece to piece, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
                 "Code": false
               },
               {
@@ -23812,7 +23820,15 @@
                 "Code": true
               },
               {
-                "Text": ", when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone.",
+                "Text": ", when only that path's title and origin marks stand between them, as the template writes them; a count set apart from its paths, as in a hand-laid drawing, has no wire and keeps the stretch test alone. ",
+                "Code": false
+              },
+              {
+                "Text": "TestReferenceRanksFirst",
+                "Code": true
+              },
+              {
+                "Text": " holds the renderer's traced self overview to the hand-laid reference on every count but the most crossings of one path, where the renderer draws fewer (4 to 6) and is pinned at 4 instead.",
                 "Code": false
               }
             ]

@@ -264,8 +264,9 @@ func TestABypassWearsItsBoxsColour(t *testing.T) {
 	}
 }
 
-// A line wears the colour of the box it leaves, or neutral grey where its
-// lines leave boxes of different colours (rule 11).
+// A line wears the colour of the box it leaves. Ink whose lines leave boxes
+// of different colours wears one of those colours on a road, the colour of
+// its rider that runs furthest on roads, and neutral grey elsewhere (rule 11).
 func TestALineWearsItsBoxsColour(t *testing.T) {
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -278,17 +279,21 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 				hue[b.ID] = b.Hue
 			}
 			for _, w := range d.Wires {
-				want := ""
+				want, theirs := "", map[string]bool{}
 				for _, n := range w.srcs {
 					c := hue[n]
 					if c == "" {
 						c = hueKey(-1)
 					}
+					theirs[c] = true
 					if want == "" {
 						want = c
 					} else if c != want {
 						want = hueKey(-1)
 					}
+				}
+				if want == hueKey(-1) && len(w.rides) > 0 && theirs[w.Hue] {
+					continue
 				}
 				if want != "" && w.Hue != want {
 					t.Errorf("%s: a %s line wears %q, its boxes %q", name, w.Kind, w.Hue, want)

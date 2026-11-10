@@ -106,7 +106,6 @@ func TestReferenceRanksFirst(t *testing.T) {
 		{"bends median", median(ref.Bends), median(got.Bends)},
 		{"bends max", float64(maxOf(ref.Bends)), float64(maxOf(got.Bends))},
 		{"path crossings median", median(ref.Crossings), median(got.Crossings)},
-		{"path crossings max", float64(maxOf(ref.Crossings)), float64(maxOf(got.Crossings))},
 		{"unmarked T", float64(ref.UnmarkedT), float64(got.UnmarkedT)},
 		{"count ambiguity", float64(ref.CountAmbiguity), float64(got.CountAmbiguity)},
 		{"size spread", ref.SizeSpread, got.SizeSpread},
@@ -120,6 +119,11 @@ func TestReferenceRanksFirst(t *testing.T) {
 	// draws fewer; it must still draw no more.
 	if r, g := sum(ref.Jogs), sum(got.Jogs); g > r {
 		t.Errorf("jogs: the renderer draws %d, the hand-laid reference %d", g, r)
+	}
+	// The renderer's busiest path crosses fewer others than the reference's
+	// 6, so the most crossings are pinned at what it draws now.
+	if g := maxOf(got.Crossings); g > 4 {
+		t.Errorf("path crossings max: the renderer's busiest path crosses %d others, pinned at 4", g)
 	}
 }
 
