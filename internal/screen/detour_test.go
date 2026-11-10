@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -118,8 +119,13 @@ func TestAContractLineJoinsItsBusOnItsOwnSide(t *testing.T) {
 			// ripgrep's line runs out round grep-searcher on its route, on
 			// main as here; only the ink trace read it as turning on its
 			// own side. Taking it round the left from the start is the
-			// open fix (decisions.tsv).
+			// open fix (decisions.tsv): until then its way is pinned, so
+			// any change to it shows here.
 			if l.shapeName(w.from) == `box "ripgrep" (MOD-0001)` {
+				const pinned = "[{617 92} {617 116} {388 116} {388 396} {230 396} {230 508} {376 508} {376 536}]"
+				if got := fmt.Sprint(w.pts); got != pinned {
+					t.Errorf("ripgrep to grep-matcher moved: %s, pinned %s", got, pinned)
+				}
 				continue
 			}
 			for i := 2; i+1 < len(w.pts); i++ {
