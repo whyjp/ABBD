@@ -5524,7 +5524,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -23008,7 +23008,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -23016,7 +23016,39 @@
                 "Code": true
               },
               {
-                "Text": "). A module page carries its ",
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "legend",
+                "Code": true
+              },
+              {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "legend.html",
+                "Code": true
+              },
+              {
+                "Text": " renders the ",
+                "Code": false
+              },
+              {
+                "Text": "legendpage",
+                "Code": true
+              },
+              {
+                "Text": " template. The header line that sends the reader to ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " shows only on the overview and the legend page. A module page carries its ",
                 "Code": false
               },
               {
