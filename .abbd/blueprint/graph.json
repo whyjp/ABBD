@@ -5524,7 +5524,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6691,7 +6691,15 @@
                 "Code": true
               },
               {
-                "Text": " line the present units that record neither a purpose nor a responsibility, and names a state a merge left with two syncs STALE until ",
+                "Text": " line the present units that record neither a purpose nor a responsibility (",
+                "Code": false
+              },
+              {
+                "Text": "TestStatusReportsUndescribedUnits",
+                "Code": true
+              },
+              {
+                "Text": " holds its count and IDs), and names a state a merge left with two syncs STALE until ",
                 "Code": false
               },
               {
