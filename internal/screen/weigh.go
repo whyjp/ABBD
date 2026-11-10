@@ -1,5 +1,10 @@
 package screen
 
+import (
+	"fmt"
+	"os"
+)
+
 // A routing is weighed by what a reader pays to follow it, measured the way
 // docs/blueprint-svg.md bounds a drawing: where lines of different bundles
 // meet or run together away from their ends, and how often lines turn.
@@ -70,6 +75,38 @@ type cost struct {
 	// roomy says the counted tactic would give some ×N room, so drawing
 	// with it would draw something else.
 	roomy bool
+	pi10, pi16, inkX, abreast int
+	// parallel, inkCrossed and switches are what a reader sees at rest
+	// (busy.go): px of ink of two lines side by side within restGap, the
+	// points where ink crosses ink, and the times a line's ink changes
+	// colour, its boxes painted apart. A drawing louder on any of them
+	// takes no view from one choose would keep (choose).
+	parallel, inkCrossed, switches int
+}
+
+// restGap is how near two lines run before a reader at rest sees them as
+// lines to merge: wider than besideGap, so a drawing that pulls two lines
+// from 14px to 8px apart reads no quieter.
+const restGap = 16.0
+
+// louder says c is busier than o at rest on any of the measures a reader
+// sees without a hover.
+func (c cost) replaces(o cost) bool {
+	a := [...]int{c.touches, c.breaks, c.hard, c.past()}
+	b := [...]int{o.touches, o.breaks, o.hard, o.past()}
+	for i := range a {
+		if a[i] != b[i] {
+			return a[i] < b[i]
+		}
+	}
+	if c.parallel == o.parallel && c.inkCrossed == o.inkCrossed && c.switches == o.switches {
+		return c.beats(o)
+	}
+	return !c.louder(o) && c.pi10 <= o.pi10 && c.abreast <= o.abreast && c.moved <= o.moved
+}
+
+func (c cost) louder(o cost) bool {
+	return c.parallel > o.parallel || c.inkCrossed > o.inkCrossed || c.switches > o.switches
 }
 
 // past is 1 for a drawing that runs past one screen, else 0.
@@ -92,6 +129,12 @@ func (c *cost) judge(d Drawing) {
 		return
 	}
 	t := vl.Totals
+	if sh, err := sheetOf(d); err == nil {
+		c.pi16 = parallelWithin(sh, 16)
+		c.parallel = parallelWithin(sh, restGap)
+	}
+	c.inkCrossed, c.switches = t.InkCrossings, restSwitches(d)
+	c.pi10, c.inkX, c.abreast = t.ParallelInk, t.InkCrossings, t.Abreast
 	moved := t.Placement
 	for _, p := range d.Ports {
 		if p.Folded {
@@ -125,7 +168,10 @@ func (c cost) beats(o cost) bool {
 
 func costOf(r routing, reqs []wireReq) cost {
 	w := weigh(routing{drawn: r.drawn}, reqs)
-	c := cost{touches: w.touches, crossings: w.crossings, braid: w.braid, roomy: r.roomy}
+	c := cost{crossings: w.crossings, braid: w.braid, roomy: r.roomy}
+	if !r.roads {
+		c.touches = w.touches
+	}
 	// A reader traces each pair of places once, along its fewest turns.
 	type pair struct{ from, to string }
 	best := map[pair][]pt{}
@@ -245,11 +291,24 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	var bc cost
 	b := newGates()
 	for i, t := range ts {
+		if os.Getenv("ABBD_CHOOSE_LOG") != "" {
+			bt := t
+			var c cost
+			if v, ok := draw(bt, &c); ok {
+				judge(v, &c)
+				fmt.Fprintf(os.Stderr, "TAC %d bus %+v\n", i, c)
+			}
+		}
 		t.roads = true
 		var c cost
 		v, ok := draw(t, &c)
 		if !ok {
 			continue
+		}
+		if os.Getenv("ABBD_CHOOSE_LOG") != "" {
+			var cc = c
+			judge(v, &cc)
+			fmt.Fprintf(os.Stderr, "TAC %d road %+v\n", i, cc)
 		}
 		if i > 0 && (c.touches > bc.touches || c.touches == bc.touches && c.breaks > bc.breaks) {
 			continue
@@ -259,13 +318,16 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			if !b.admit(t, c) {
 				continue
 			}
-			if i == 0 || c.beats(bc) {
+			if i == 0 || c.replaces(bc) {
 				bc = c
 			}
 		}
 		vs, cs, kept = append(vs, v), append(cs, c), append(kept, t)
 	}
 	k, without := pick(kept, cs, make([]bool, len(cs)), b.crossed)
+	if os.Getenv("ABBD_CHOOSE_LOG") != "" && k >= 0 {
+		fmt.Fprintf(os.Stderr, "PICK %+v\n", kept[k])
+	}
 	if k < 0 {
 		var none T
 		return none
@@ -285,7 +347,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 			if !t.laned && !t.gather {
 				pass = b.admit(t, c)
 			}
-			if pass && !cs[k].beats(c) {
+			if pass && !cs[k].beats(c) && !c.louder(cs[k]) {
 				best = v
 			}
 		}
@@ -303,7 +365,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 func pick(ts []tactic, cs []cost, out []bool, least int) (int, int) {
 	w := -1
 	for i, c := range cs {
-		if !out[i] && (w < 0 || c.beats(cs[w])) {
+		if !out[i] && (w < 0 || c.replaces(cs[w])) {
 			w = i
 		}
 	}

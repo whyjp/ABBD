@@ -67,7 +67,9 @@ func axisRuns(s sheet) (flat, upright []axisRun) {
 // run along each other the same way, flat or upright, no more than
 // besideGap apart: lines doubled side by side, which a hand drawing would
 // merge into one bus, or keep apart. Each pair of stretches counts once.
-func parallelInk(s sheet) int {
+func parallelInk(s sheet) int { return parallelWithin(s, besideGap) }
+
+func parallelWithin(s sheet, besideGap float64) int {
 	flat, upright := axisRuns(s)
 	total := 0.0
 	for _, rs := range [][]axisRun{flat, upright} {
@@ -250,6 +252,15 @@ func colourSwitches(d Drawing) int {
 		}
 	}
 	return n
+}
+
+// restSwitches is colourSwitches of d painted with each box a colour of its
+// own: the colours a view is drawn in are set over every drawing at once,
+// after one is chosen, and boxes that no line joins may share one.
+func restSwitches(d Drawing) int {
+	d.Boxes, d.Wires, d.Routes, d.Dots = slices.Clone(d.Boxes), slices.Clone(d.Wires), slices.Clone(d.Routes), slices.Clone(d.Dots)
+	d.paint(colours([]*Drawing{&d}, tree{}))
+	return colourSwitches(d)
 }
 
 // inkCrossings counts the points where a straight stretch of ink passes

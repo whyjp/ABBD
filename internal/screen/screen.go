@@ -4,6 +4,8 @@
 package screen
 
 import (
+	"fmt"
+	"os"
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -168,6 +170,9 @@ func Build(in Input) Model {
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
+	if os.Getenv("ABBD_CHOOSE_LOG") != "" {
+		fmt.Fprintf(os.Stderr, "VIEW overview\n")
+	}
 	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
 		p := planOverview(in.Units, "", nil, t)
 		if p.layout.idle {
@@ -208,6 +213,9 @@ func Build(in Input) Model {
 		return nil
 	}
 	for _, id := range views {
+		if os.Getenv("ABBD_CHOOSE_LOG") != "" {
+			fmt.Fprintf(os.Stderr, "VIEW %s\n", id)
+		}
 		ins := choose(tactics, func(t tactic, read *cost) (Inside, bool) {
 			return o.inside(id, in.Units, "", nil, t, read)
 		}, func(ins Inside, read *cost) { read.judge(ins.Drawing) })

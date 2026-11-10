@@ -609,7 +609,7 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	if roadsDrawn != nil {
 		roadsDrawn(r.ways, ways)
 	}
-	r.ways = ways
+	r.ways, r.roads = ways, true
 	r.drawn = roads(ways, ink, reqs, r.back)
 }
 

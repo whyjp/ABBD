@@ -493,6 +493,9 @@ type routing struct {
 	joined bool
 	// tracks is the track each crossing took, by gap and owner.
 	tracks map[[3]int]int
+	// roads says the lines ride roads (confluent), where ink may join
+	// places no relation joins (J3).
+	roads bool
 }
 
 // lay draws every request, with shared arrival buses where shared allows
