@@ -305,6 +305,12 @@ func (c roadCost) better(o roadCost) bool {
 	return c.crossings < o.crossings || c.turns < o.turns || c.forks < o.forks || c.beside < o.beside
 }
 
+// withers says o is no worse than c on any count.
+func (c roadCost) withers(o roadCost) bool {
+	return o.crossings <= c.crossings && o.turns <= c.turns && o.clash <= c.clash && o.near <= c.near && o.far <= c.far &&
+		o.forks <= c.forks && o.tees <= c.tees && o.unseen <= c.unseen && o.beside <= c.beside
+}
+
 // forks are pairs of routes that leave one place for boxes in one row and
 // turn off their stem onto flat runs at different heights, as forkLevels
 // reads them, by route.
@@ -472,8 +478,14 @@ func (v roadView) farSplits(ways [][]pt) int {
 			}
 			outs[k][q.out], dests[k][v.to[q.route]] = true, v.dest[q.route]
 		}
+		// Lines that arrive from two sides or more merge there, and a merge
+		// may split at once anywhere, as J1 holds it.
+		sides := map[string]int{}
+		for k := range outs {
+			sides[k.style]++
+		}
 		for k, o := range outs {
-			if len(o) < 2 || len(dests[k]) < 2 {
+			if len(o) < 2 || len(dests[k]) < 2 || sides[k.style] > 1 {
 				continue
 			}
 			far := 1 << 30
@@ -529,6 +541,14 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 // onto a neighbour beside them, longest shared stretch first, then forks
 // set on one track and stairs straightened.
 func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+	if next, ok := r.shift(ways, v, cost); ok {
+		return next, true
+	}
+	return r.wide(ways, v, cost)
+}
+
+// shift is step's moves of whole runs of road.
+func (r *routing) shift(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 	rs := roadRuns(ways, v)
 	type move struct {
 		run, at, gain int
@@ -603,6 +623,61 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 		}
 		if v.cost(next).better(cost) {
 			return next, true
+		}
+	}
+	return nil, false
+}
+
+// wideStep is the step, and wideReach the farthest, that wide looks past a
+// stair's far run for a clear way down.
+const (
+	wideStep  = 8
+	wideReach = 96
+)
+
+// wide takes one route's stair another way round. Where a route runs down,
+// steps across and runs on down, its step may cross at another height and
+// its far run come down further out, clear of every box: a line that comes
+// down the middle, crosses a crowded row and swings round the box under it
+// may step across higher, where nothing runs, and come down beside that
+// box. Only that route moves, so the road it leaves keeps its other
+// riders, and the move is kept on the terms of every other.
+func (r *routing) wide(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+	for i, w := range ways {
+		for j := 2; j+3 < len(w); j++ {
+			a, b, c, d := w[j-1], w[j], w[j+1], w[j+2]
+			if a.x != b.x || c.x != d.x || b.y != c.y || (b.y-a.y)*(d.y-c.y) <= 0 {
+				continue
+			}
+			away, down := sign(c.x-b.x), sign(d.y-a.y)
+			for s := 0; s <= wideReach; s += wideStep {
+				x := c.x + away*s
+				for y := a.y; (d.y-y)*down >= roadEnd; y += down * wideStep {
+					if s == 0 && y == b.y {
+						continue
+					}
+					nw := append(slices.Clone(w[:j]), pt{b.x, y}, pt{x, y}, pt{x, d.y})
+					nw = straight(append(nw, w[j+3:]...))
+					if !keepsShape(w, nw, r.boxes) {
+						continue
+					}
+					next := slices.Clone(ways)
+					next[i] = nw
+					c := v.cost(next)
+					if c.better(cost) {
+						return next, true
+					}
+					// A move that costs nothing may free a run another route
+					// shared with this one, so it is kept where a move of a
+					// whole run then reads better.
+					if !cost.withers(c) {
+						continue
+					}
+					if then, ok := r.shift(next, v, c); ok && v.cost(then).better(cost) {
+						return then, true
+					}
+				}
+			}
 		}
 	}
 	return nil, false

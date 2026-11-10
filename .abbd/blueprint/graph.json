@@ -7952,7 +7952,7 @@
                 "Code": true
               },
               {
-                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
+                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, as taking a stair the long way round took two excess turns and two steps off src/, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
                 "Code": false
               }
             ]
@@ -21521,7 +21521,23 @@
                 "Code": true
               },
               {
-                "Text": "), a straight run of a line moves onto a parallel run within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; a line's end runs slide only along their edge span. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
+                "Text": "), a straight run of a line moves onto a parallel run within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; where a box keeps a stair's two runs apart, ",
+                "Code": false
+              },
+              {
+                "Text": "wide",
+                "Code": true
+              },
+              {
+                "Text": " takes that one line's stair another way round, its step at another height and its far run further out, kept where it reads better or frees a whole-run move that does, and ",
+                "Code": false
+              },
+              {
+                "Text": "farSplits",
+                "Code": true
+              },
+              {
+                "Text": " counts no split where lines arrive from two sides, a merge J1 does not hold; a line's end runs slide only along their edge span. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
                 "Code": false
               },
               {

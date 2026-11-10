@@ -115,11 +115,27 @@ func TestAContractLineJoinsItsBusOnItsOwnSide(t *testing.T) {
 				continue
 			}
 			seen++
-			// ripgrep's line runs out round grep-searcher on its route, on
-			// main as here; only the ink trace read it as turning on its
-			// own side. Taking it round the left from the start is the
-			// open fix (decisions.tsv).
+			// ripgrep stands right over the middle of the drawing, so its
+			// line goes round the left: it leaves the middle above
+			// grep-printer's row, comes down left of grep-printer and turns
+			// right only under grep-searcher, onto the bus. It never comes
+			// down the middle and swings round grep-searcher and back.
 			if l.shapeName(w.from) == `box "ripgrep" (MOD-0001)` {
+				var printer frect
+				for id, i := range l.at {
+					if strings.HasPrefix(l.shapeName(id), `box "grep-printer" `) {
+						printer = l.s.shapes[i].r
+					}
+				}
+				if printer.w == 0 {
+					t.Fatal("no box grep-printer")
+				}
+				for i := 1; i < len(w.pts); i++ {
+					a, b := w.pts[i-1], w.pts[i]
+					if a.x == b.x && min(a.y, b.y) < printer.y+printer.h && max(a.y, b.y) > printer.y && a.x >= printer.x {
+						t.Errorf("ripgrep to grep-matcher comes down at x=%g, not left of grep-printer (%g): %v", a.x, printer.x, w.pts)
+					}
+				}
 				continue
 			}
 			for i := 2; i+1 < len(w.pts); i++ {
