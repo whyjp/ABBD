@@ -18,6 +18,10 @@ var (
 	fence    = regexp.MustCompile("(?s)```[a-z]*\n(.*?)```")
 	inline   = regexp.MustCompile("`(abbd [^`]+)`")
 	argument = regexp.MustCompile(`"[^"]*"|'[^']*'|\S+`)
+
+	readerPath   = regexp.MustCompile("`((?:\\.\\./abbd/)?references/reader\\.md)`")
+	needsPstack  = regexp.MustCompile(`<pstack>|(?i)install pstack`)
+	pstackHowHop = regexp.MustCompile(`\b(?:how(?:'s| reads?)|run how)\b`)
 )
 
 func readRepo(t *testing.T, rel ...string) string {
@@ -128,7 +132,7 @@ func TestSkillsReferenceTheBundledReader(t *testing.T) {
 	for _, path := range skills(t) {
 		b, _ := os.ReadFile(path)
 		skill := string(b)
-		m := regexp.MustCompile("`((?:\\.\\./abbd/)?references/reader\\.md)`").FindStringSubmatch(skill)
+		m := readerPath.FindStringSubmatch(skill)
 		if m == nil {
 			t.Errorf("%s must name the bundled reader, references/reader.md", path)
 			continue
@@ -136,10 +140,10 @@ func TestSkillsReferenceTheBundledReader(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(filepath.Dir(path), m[1])); err != nil {
 			t.Errorf("%s names %s, which the plugin does not ship", path, m[1])
 		}
-		if regexp.MustCompile(`<pstack>|(?i)install pstack`).MatchString(skill) {
+		if needsPstack.MatchString(skill) {
 			t.Errorf("%s still needs pstack; it must work with the bundled reader alone", path)
 		}
-		if loc := regexp.MustCompile(`\bhow(?:'s| reads?)\b`).FindStringIndex(skill); loc != nil {
+		if loc := pstackHowHop.FindStringIndex(skill); loc != nil {
 			t.Errorf("%s still sends reading to pstack how: %q", path, skill[loc[0]:loc[1]])
 		}
 	}
