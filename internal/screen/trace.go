@@ -241,9 +241,10 @@ func jogs(pts []fpt) int {
 const doglegLen = 30.0
 
 // doglegs counts the stretches of a path shorter than doglegLen that run
-// between two of its turns, or from an end to the turn next to it.
+// between two of its turns, or from an end to the turn next to it. A point
+// a path repeats is no turn.
 func doglegs(pts []fpt) int {
-	ts, n := turns(pts), 0
+	ts, n := turns(slices.Compact(slices.Clone(pts))), 0
 	for i := 1; i < len(ts) && len(ts) > 2; i++ {
 		if dist(ts[i-1], ts[i]) < doglegLen {
 			n++

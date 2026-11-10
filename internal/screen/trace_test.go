@@ -260,3 +260,21 @@ func TestEveryRelationEndIsDrawn(t *testing.T) {
 		}
 	}
 }
+
+func TestDoglegs(t *testing.T) {
+	for _, c := range []struct {
+		shape string
+		pts   []fpt
+		want  int
+	}{
+		{"straight", []fpt{{0, 0}, {0, 100}}, 0},
+		{"straight through a repeated point", []fpt{{0, 0}, {0, 20}, {0, 20}, {0, 100}}, 0},
+		{"L with a 20px lead", []fpt{{0, 0}, {0, 20}, {100, 20}}, 1},
+		{"L with 50px legs", []fpt{{0, 0}, {0, 50}, {50, 50}}, 0},
+		{"Z with a 10px middle", []fpt{{0, 0}, {0, 50}, {10, 50}, {10, 100}}, 1},
+	} {
+		if got := doglegs(c.pts); got != c.want {
+			t.Errorf("%s: %d doglegs, want %d", c.shape, got, c.want)
+		}
+	}
+}
