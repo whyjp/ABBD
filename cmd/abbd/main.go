@@ -373,11 +373,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
 	c := commands[inv.name]
-	if c.writes {
-		if err := e.st.KeepPrevious(gitx.Head(inv.o.root)); err != nil {
-			fmt.Fprintln(stderr, "abbd: warning: could not keep the previous blueprint:", err)
-		}
-	}
+	e.keepPrevious(c)
 	ran := c.run(e, inv.pos)
 	if ran != nil {
 		fmt.Fprintln(stderr, "abbd:", ran)

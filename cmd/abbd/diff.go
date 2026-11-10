@@ -154,6 +154,17 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 // write since the last commit.
 const prev = "prev"
 
+// keepPrevious keeps .abbd as it was before a writing command's first
+// change since the last commit. A failure only warns: the write goes on.
+func (e env) keepPrevious(c command) {
+	if !c.writes {
+		return
+	}
+	if err := e.st.KeepPrevious(gitx.Head(e.root)); err != nil {
+		fmt.Fprintln(e.stderr, "abbd: warning: could not keep the previous blueprint:", err)
+	}
+}
+
 // unitsAt reads the units committed at base, or those of the kept copy.
 func (e env) unitsAt(base string) ([]model.Unit, error) {
 	if base != prev {
