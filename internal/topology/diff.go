@@ -539,6 +539,64 @@ func deadInferred(units map[model.ID]model.Unit) map[string]Coupling {
 	return out
 }
 
+// Within keeps the changes that touch a unit in, by either end of a
+// relation or use, so a reviewer can read one module's or feature's share.
+func (d Diff) Within(in func(model.ID) bool) Diff {
+	refs := func(rs []Ref) []Ref { return keep(rs, func(r Ref) bool { return in(r.ID) }) }
+	rels := func(rs []Relation) []Relation {
+		return keep(rs, func(r Relation) bool { return in(r.From) || in(r.To) })
+	}
+	return Diff{
+		UnitsAdded:       refs(d.UnitsAdded),
+		UnitsRemoved:     refs(d.UnitsRemoved),
+		Signatures:       keep(d.Signatures, func(s Signature) bool { return in(s.ID) }),
+		Code:             refs(d.Code),
+		Entries:          keep(d.Entries, func(e Entry) bool { return in(e.ID) }),
+		Listed:           keep(d.Listed, func(l Listed) bool { return in(l.ID) }),
+		UsesAdded:        keep(d.UsesAdded, func(u Use) bool { return in(u.From) || in(u.To) }),
+		UsesRemoved:      keep(d.UsesRemoved, func(u Use) bool { return in(u.From) || in(u.To) }),
+		UsesWidened:      rels(d.UsesWidened),
+		UsesNarrowed:     rels(d.UsesNarrowed),
+		RelationsAdded:   rels(d.RelationsAdded),
+		RelationsRemoved: rels(d.RelationsRemoved),
+		InferredAdded:    keep(d.InferredAdded, func(c Coupling) bool { return in(c.From) || in(c.To) }),
+		InferredDead:     keep(d.InferredDead, func(c Coupling) bool { return in(c.From) || in(c.To) }),
+		Changed:          keep(d.Changed, func(c Changed) bool { return in(c.ID) }),
+	}
+}
+
+func keep[T any](xs []T, ok func(T) bool) []T {
+	var out []T
+	for _, x := range xs {
+		if ok(x) {
+			out = append(out, x)
+		}
+	}
+	return out
+}
+
+// Subtree says whether a unit is id or sits under it, in either state, so
+// a unit that moved in or out still counts.
+func Subtree(id model.ID, states ...[]model.Unit) func(model.ID) bool {
+	in := map[model.ID]bool{id: true}
+	for _, units := range states {
+		m := map[model.ID]model.Unit{}
+		for _, u := range units {
+			m[u.ID] = u
+		}
+		for _, u := range units {
+			seen := map[model.ID]bool{}
+			for p := u.ID; p != "" && !seen[p]; p = m[p].Parent {
+				seen[p] = true
+				if p == id {
+					in[u.ID] = true
+				}
+			}
+		}
+	}
+	return func(x model.ID) bool { return in[x] }
+}
+
 // String is the whole difference as text, or a line saying there is none.
 func (d Diff) String() string {
 	ls := d.Lines()
