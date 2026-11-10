@@ -63,6 +63,10 @@ func snapshot(t *testing.T, root string) map[string]string {
 		if err != nil {
 			t.Fatal(err)
 		}
+		// The compare view and the kept copy are never committed.
+		if d.IsDir() && d.Name() == "compare" && filepath.Dir(p) == base {
+			return filepath.SkipDir
+		}
 		if !d.IsDir() {
 			b, _ := os.ReadFile(p)
 			rel, _ := filepath.Rel(base, p)
