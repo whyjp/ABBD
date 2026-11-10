@@ -15,8 +15,10 @@ import (
 // answer for one part before reading a line. It is a background and never
 // a box: it holds no line, takes no pointer and moves nothing. The
 // groupings come from the state alone, never from the drawing. A stored
-// stack's layers come first, numbered from the top. Without one, boxes
-// whose code sits in one directory share that directory's band. Contracts
+// stack's layers of two boxes or more come first, numbered from the top
+// among the bands drawn, so the numbers run without a gap. Without such a
+// stack, boxes whose code sits in one directory share that directory's
+// band. Contracts
 // with systems outside, drawn as boxes because nothing in the repository
 // provides them, share one more band, even when there is one, so a lone
 // outside contract reads as outside rather than as a stray box. A band is drawn only where its boxes
@@ -25,8 +27,8 @@ import (
 // and the boxes read as they would without it.
 
 // Zone is one band as the page draws it. N is a stored layer's place from
-// the top, 0 for any other grouping. Hue is the palette key its tint and
-// title take: the colour most of its boxes wear.
+// the top among the layers drawn, 0 for any other grouping. Hue is the
+// palette key its tint and title take: the colour most of its boxes wear.
 type Zone struct {
 	N          int
 	Title, Hue string
@@ -107,15 +109,21 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	if len(outside) >= 1 && len(outside) < len(d.Boxes) {
 		groups = append(groups, group{title: "외부 계약", ids: outside})
 	}
+	n := 0
 	for _, g := range groups {
 		if z, ok := d.band(g); ok {
+			if z.N > 0 {
+				n++
+				z.N = n
+			}
 			d.Zones = append(d.Zones, z)
 		}
 	}
 }
 
 // layered reads the stored stack that covers the most of d's boxes, when
-// it covers two of its layers at least.
+// two of its layers at least each hold two boxes. A layer of one box says
+// nothing its box does not, so it takes no band.
 func (d *Drawing) layered(t tree, stacks []layering) []group {
 	box := d.shown(t)
 	var best []group
@@ -130,7 +138,7 @@ func (d *Drawing) layered(t tree, stacks []layering) []group {
 					g.ids = append(g.ids, b)
 				}
 			}
-			if len(g.ids) > 0 {
+			if len(g.ids) >= 2 {
 				gs = append(gs, g)
 				n += len(g.ids)
 			}
@@ -225,10 +233,12 @@ func (d *Drawing) shown(t tree) func(model.ID) string {
 // above or below for the title, on the canvas and inside the frame, clear
 // of every other box and chip and of the bands already set. The title
 // takes the first place that keeps inkGap from every line, arrowhead,
-// dot, chip, label, count and number. It tries the corner it has always
-// taken first, the usual room's corner the fewest of those cross, then
-// the rest of that room, then the other usual room, then a room zoneMore
-// taller, on two lines. With none, it keeps the corner it always took.
+// dot, chip, label, count and number. It tries the usual room above first,
+// its left corner, its right, then along its top, so titles read along
+// the tops of their bands. Then the usual room's corner the fewest of
+// those cross, then the rest of that room, then the other usual room,
+// then a room zoneMore taller, on two lines. With none, it keeps the
+// corner the fewest cross.
 func (d *Drawing) band(g group) (Zone, bool) {
 	in := map[string]bool{}
 	for _, id := range g.ids {
@@ -247,6 +257,8 @@ func (d *Drawing) band(g group) (Zone, bool) {
 		lines  []string
 		x, y   int
 		corner bool
+		// top says the title sits along the top of the usual room above.
+		top bool
 	}
 	// The spots in the order they are tried: the four corners of the
 	// usual room, then every place along its top and its bottom, then the
@@ -277,14 +289,14 @@ func (d *Drawing) band(g group) (Zone, bool) {
 			w := linesWidth(r.lines)
 			for _, x := range []int{r.z.X + zoneSide + 2, r.z.X + r.z.W - zoneSide - 2 - w} {
 				if x >= r.z.X+zoneSide {
-					spots = append(spots, spot{r.z, r.lines, x, r.y, more == 0})
+					spots = append(spots, spot{r.z, r.lines, x, r.y, more == 0, more == 0 && r.y == r.z.Y+14})
 				}
 			}
 		}
 		for _, r := range rooms {
 			w := linesWidth(r.lines)
 			for x := r.z.X + zoneSide + 2; x <= r.z.X+r.z.W-zoneSide-2-w; x += 4 {
-				spots = append(spots, spot{r.z, r.lines, x, r.y, false})
+				spots = append(spots, spot{r.z, r.lines, x, r.y, false, more == 0 && r.y == r.z.Y+14})
 			}
 		}
 	}
@@ -302,10 +314,10 @@ func (d *Drawing) band(g group) (Zone, bool) {
 		}
 		return z
 	}
-	// main is the corner the title has always taken: of the usual room's
-	// corners, the one the fewest lines, labels and counts cross. It is
-	// tried first, then the rest of its room, so a title that has room
-	// where it was stays there and its band keeps its shape.
+	// main is, of the usual room's corners, the one the fewest lines,
+	// labels and counts cross. Past the top of the room above it is tried
+	// first, then the rest of its room, so a band keeps the shape its
+	// least crossed corner gives it.
 	main, cost := -1, -1
 	for k, sp := range spots {
 		if c := d.crossed(area(sp)); sp.corner && (cost < 0 || c < cost) {
@@ -326,8 +338,16 @@ func (d *Drawing) band(g group) (Zone, bool) {
 			order = append(order, k)
 		}
 	}
+	var top []int
+	for _, corner := range []bool{true, false} {
+		for k, sp := range spots {
+			if sp.top && sp.corner == corner {
+				top = append(top, k)
+			}
+		}
+	}
 	best := set(spots[main])
-	for _, k := range order {
+	for _, k := range append(top, order...) {
 		if a := grow(area(spots[k]), inkGap); d.clearOfInk(a, nil) && !d.onBadge(a) && d.crossed(a) == 0 {
 			best = set(spots[k])
 			break
