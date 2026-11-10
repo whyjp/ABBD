@@ -166,7 +166,7 @@ func (e env) status() error {
 		fmt.Fprintf(e.stdout, "orphaned: %s is not a module or feature now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
 	}
 	if stale > 0 {
-		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
+		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, read each again with the /abbd skill's reader and store it with abbd understand", stale))
 	}
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", n))

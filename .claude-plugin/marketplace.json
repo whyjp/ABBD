@@ -4,7 +4,7 @@
     "name": "whyjp"
   },
   "metadata": {
-    "description": "ABBD: a blueprint layer on top of pstack for Claude Code"
+    "description": "ABBD: an architecture blueprint for Claude Code"
   },
   "plugins": [
     {

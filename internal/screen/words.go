@@ -7,7 +7,7 @@ import (
 	"github.com/whyjp/abbd/internal/narrative"
 )
 
-// Understanding is a module's text from pstack's how, split into blocks the
+// Understanding is a module's text from a reader, split into blocks the
 // page renders without trusting any markup in it.
 type Understanding struct {
 	Stale  bool

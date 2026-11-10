@@ -21,7 +21,7 @@ type Input struct {
 	Tree     string
 	Inputs   string
 	Rendered string
-	// Understandings are pstack how's texts by module; Digests are each
+	// Understandings are readers' texts by module; Digests are each
 	// module's code as it is now, to tell a text written against older code.
 	Understandings map[model.ID]store.Understanding
 	Digests        map[model.ID]string
