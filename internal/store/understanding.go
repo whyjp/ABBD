@@ -22,15 +22,18 @@ import (
 // a text stored then.
 const CodeFormat = 3
 
-// Understanding is what pstack's how wrote about one module for a human to
+// Understanding is what a reader wrote about one module for a human to
 // read beside its drawing: its Overview and Key Concepts. It is a reader's
 // account, so its origin is INFERRED, and Digest is the module's code as it
 // was when the text was written. Code is that code by what read it, an
 // anchor or a quote, which lets a restamp prove on any clone that the
 // module's code has not changed since. An older ABBD recorded no Code.
+// Reader names who read the code, such as the /abbd skill's reader or
+// pstack how; an older text names none.
 type Understanding struct {
 	Unit   model.ID          `yaml:"unit"`
 	Origin model.Origin      `yaml:"origin"`
+	Reader string            `yaml:"reader,omitempty"`
 	Digest string            `yaml:"digest"`
 	Format int               `yaml:"format,omitempty"`
 	Code   map[string]string `yaml:"code,omitempty"`

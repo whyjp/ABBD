@@ -509,7 +509,7 @@ func writeFile(path string, b []byte) error {
 
 // Project is the per-project configuration in project.yaml.
 type Project struct {
-	// Extract is the argv of the project extraction script pstack generated.
+	// Extract is the argv of the project extraction script setup generated.
 	// It prints an extraction result on stdout.
 	Extract []string `yaml:"extract,omitempty"`
 }

@@ -224,6 +224,21 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	p.want(1, "code changed since this text was written", "understand", "MOD-0001", text)
 }
 
+// Whoever read the module is named with its text, so a reading done without
+// pstack is told apart from one done with it.
+func TestTheReaderOfAModuleTextIsKeptAndExplained(t *testing.T) {
+	p := semanticProject(t)
+	text := p.file(t, "how.md", "## Overview\nbilling writes each `charge` to the charges table.\n\n## Key Concepts\n- **Charge** (`billing/charge.go`): records one payment.\n")
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text, "--reader", "abbd reader")
+	stored, err := os.ReadFile(filepath.Join(p.root, ".abbd", "understanding", "MOD-0001.md"))
+	if err != nil || !strings.Contains(string(stored), "reader: abbd reader\n") {
+		t.Fatalf("the stored text should name its reader: %v\n%s", err, stored)
+	}
+	p.want(0, "how (INFERRED by abbd reader, CURRENT):", "explain", "MOD-0001")
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
+	p.want(0, "how (INFERRED, CURRENT):", "explain", "MOD-0001")
+}
+
 // Saving the text again with other line endings or trailing blanks does not
 // make it a new reading, so it cannot clear STALE either.
 func TestRestampingTheSameTextWithOtherLineEndingsIsRefused(t *testing.T) {

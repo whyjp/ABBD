@@ -243,7 +243,7 @@ func mark(ev model.Evidence) string {
 	return ""
 }
 
-// explainHow prints pstack how's text for a module, marked STALE
+// explainHow prints a reader's text for a module, marked STALE
 // when the module's code moved since it was written.
 func (e env) explainHow(units []model.Unit, u model.Unit) error {
 	if _, ok := textModule(units, u.ID); !ok {
@@ -255,14 +255,18 @@ func (e env) explainHow(units []model.Unit, u model.Unit) error {
 	}
 	t, ok := texts[u.ID]
 	if !ok {
-		fmt.Fprintf(e.stdout, "how: none; abbd understand %s FILE stores pstack how's text\n", u.ID)
+		fmt.Fprintf(e.stdout, "how: none; abbd understand %s FILE stores a reader's text\n", u.ID)
 		return nil
 	}
 	state := "CURRENT"
 	if t.Digest != e.st.ModuleDigest(units, u.ID) {
 		state = "STALE, the code changed since it was written"
 	}
-	fmt.Fprintf(e.stdout, "how (%s, %s):\n", t.Origin, state)
+	by := ""
+	if t.Reader != "" {
+		by = " by " + t.Reader
+	}
+	fmt.Fprintf(e.stdout, "how (%s%s, %s):\n", t.Origin, by, state)
 	for _, l := range strings.Split(t.Text, "\n") {
 		fmt.Fprintln(e.stdout, strings.TrimRight("  "+l, " "))
 	}

@@ -1,0 +1,41 @@
+# The ABBD reader
+
+ABBD reads code with this reader. Both skills follow it for every reading step: a module's text, a slot note, a flow, a coupling, and setup's slices. It needs nothing but the abbd CLI and the agent's own tools.
+
+pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plugins/pstack/0.15.36/skills/how/SKILL.md` exists (check with Glob; never assume), you may use pstack `how` to explore a module this reader calls complex, and pstack `swarm` to fan out setup's slices. Another pstack version counts as absent; say so in one line. Whichever engine explored, what you store passes the contract below, so rewrite how's output to it. Name who read when you store: `--reader "abbd reader"`, or `--reader "pstack how 0.15.36"` when how explored.
+
+## Reading one module
+
+1. Start from the blueprint. Run `abbd explain <MOD-ID>` for the module's units inside, its contracts, its neighbours and the couplings readers already recorded. Its anchors are in `.abbd/architecture/<MOD-ID>.md` under `anchors:`, and each inside unit's under its own ID. The stored text is stamped against every file of those anchors, so those files are what you read.
+2. Read the anchors entry first: `main.*`, `index.*`, `mod.rs`, `lib.rs`, `__init__.py` or the package's doc file, then the files the most stored relations point at, then the rest. Leave the module's anchors only to follow a contract one hop.
+3. Keep working notes while you read, never stored: the units you find, the order things happen in, where the module stops, what is not obvious, open questions and the files you read.
+4. Simple or complex. A module with at most 12 anchor files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
+
+## What you store
+
+**The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
+
+- Exactly two sections, `## Overview` then `## Key Concepts`. Split a long one under `###` headings inside it. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
+- Overview: one or two paragraphs, under 2,000 characters, in the present tense, with no dates, PR or issue numbers. It names what the module is responsible for, the contracts it provides and uses by their stored names, and one thing it does not do.
+- Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file or symbol, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet.
+- Inline marks are `code` spans and `**bold**` only. No links, images, HTML or mermaid. A fence holds code only.
+- `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters and each phrase that reads as history. Rewrite until it reports none.
+
+**A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill.
+
+**Order** (what one command does, a pipeline's stages): a flow, `abbd flow <KEY> <FILE>`.
+
+**Meaning, failure, states and decisions**: a slot note, `abbd understand <ID>.<SLOT> <FILE> --evidence <PATH:LINES:QUOTE> --reader "<WHO>"`.
+
+## Evidence
+
+Every claim outside a module's text cites `PATH:LINES:QUOTE`, verbatim, a quote its file holds only once. `abbd sync` keeps it alive while the file holds it and lets it drift and die when the code changes. A module's text cites nothing and is stamped against every anchor instead, so a text about files you did not read is a claim nobody made.
+
+## A change that spans modules
+
+Run `abbd impact <FILES> --features`, read the anchors of the direct tier, and name the one fact the change is safe because of with its `file:line`. When that fact can be run, run it.
+
+## At setup
+
+- **Slices.** Partition step 1's candidates into at most five slices of related units. Give each slice to one `Explore` subagent with this file and the setup skill's Extraction format section, run locally so it sees uncommitted code, and told not to edit files. Each returns the extraction JSON for its slice: every unit the layout does not show with verbatim `evidence`, every coupling with `via`, `phrase` and verbatim `evidence`, and a unit inside a module with that module as `parent`. Merge the slices by `ref`. Rerun a slice that returns nothing once, then name it as a gap in the reply. Check `git status` after.
+- **The lever.** Do the first module's extraction by hand, then write the extraction script, run it, and diff its output against the slices until every difference is explained. The script is the artifact a rerun proves.

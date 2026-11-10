@@ -22,7 +22,7 @@ func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
 	return u, ok && u.Kind == model.Module
 }
 
-// understand stores what pstack's how wrote about a module, stamped with the
+// understand stores what a reader wrote about a module, stamped with the
 // module's code as it is now, so the screen can show the text beside the
 // drawing and mark it STALE once the code moves on. With --restamp it stamps
 // the stored text again instead, when only what the module holds moved.
@@ -38,7 +38,7 @@ func (e env) understand(ref string, args []string) error {
 		return fmt.Errorf("a module's text describes all of its code and cites none; --evidence is for a slot such as %s.semantics", ref)
 	}
 	if e.rereadBy != "" {
-		return fmt.Errorf("--reread-by is for a slot note such as %s.semantics; a module's text reads its whole module, so run pstack how on it again", ref)
+		return fmt.Errorf("--reread-by is for a slot note such as %s.semantics; a module's text reads its whole module, so read it again with the /abbd skill's reader", ref)
 	}
 	id := model.ID(ref)
 	units, err := e.st.LoadUnits()
@@ -71,16 +71,16 @@ func (e env) understand(ref string, args []string) error {
 		fmt.Fprintf(e.stdout, "restamped %s %s against code %s; its code is unchanged since the text was written\n", id, u.Name.Value, digest)
 		return nil
 	}
-	text, err := e.readInput(args[0], "pass pstack how's Overview and Key Concepts")
+	text, err := e.readInput(args[0], "pass the reader's Overview and Key Concepts")
 	if err != nil {
 		return err
 	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.
 	if had && prev.Digest != digest && sameWords(prev.Text, text) {
-		return fmt.Errorf("%s's code changed since this text was written; run pstack how on it again and store the new text", id)
+		return fmt.Errorf("%s's code changed since this text was written; read the module again with the /abbd skill's reader and store the new text", id)
 	}
-	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {
+	if err := e.st.SaveUnderstanding(store.Understanding{Unit: id, Origin: model.Inferred, Reader: e.reader, Digest: digest, Format: store.CodeFormat, Code: code, Text: text}); err != nil {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
@@ -151,7 +151,7 @@ func (e env) note(r model.NoteRef, args []string) error {
 	if had && prev.Stale() && sameWords(prev.Text, text) && sameCitations(prev.Evidence, cited) {
 		return fmt.Errorf("the code %s cites changed since it was written (%s); read it again, then store the new text or cite the code it rests on now", r, strings.Join(prev.Changed, ", "))
 	}
-	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Text: text}
+	n := store.Note{Unit: r.Unit, Slot: r.Name(), Origin: model.Inferred, Reader: e.reader, Digest: digest, Format: store.CodeFormat, Evidence: cited, Code: code, Text: text}
 	// A decision on other quotes is another decision, and the human did not
 	// say why about it.
 	dropped := prev.Why != nil && !sameCitations(prev.Evidence, cited)
@@ -314,7 +314,7 @@ func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, 
 	case prev.Digest == digest:
 		return fmt.Errorf("%s's text is current; nothing to restamp", id)
 	case prev.Format != store.CodeFormat:
-		return fmt.Errorf("%s's text was stored before abbd recorded the code a text is written against; run pstack how on it again and store the new text", id)
+		return fmt.Errorf("%s's text was stored before abbd recorded the code a text is written against; read the module again with the /abbd skill's reader and store the new text", id)
 	}
 	changed := e.st.Changed(units, id, prev.Code)
 	if len(changed) == 0 {
@@ -323,5 +323,5 @@ func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, 
 	if len(changed) > 5 {
 		changed = append(changed[:5], fmt.Sprintf("and %d more", len(changed)-5))
 	}
-	return fmt.Errorf("%s's code changed since this text was written (%s); run pstack how on it again and store the new text", id, strings.Join(changed, ", "))
+	return fmt.Errorf("%s's code changed since this text was written (%s); read the module again with the /abbd skill's reader and store the new text", id, strings.Join(changed, ", "))
 }
