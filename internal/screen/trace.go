@@ -231,6 +231,23 @@ func jogs(pts []fpt) int {
 	return n
 }
 
+// doglegLen is how short a stretch may be, between two turns or between a
+// turn and an end, before it reads as a dogleg: a turn the line need not
+// have taken there.
+const doglegLen = 30.0
+
+// doglegs counts the stretches of a path shorter than doglegLen that run
+// between two of its turns, or from an end to the turn next to it.
+func doglegs(pts []fpt) int {
+	ts, n := turns(pts), 0
+	for i := 1; i < len(ts) && len(ts) > 2; i++ {
+		if dist(ts[i-1], ts[i]) < doglegLen {
+			n++
+		}
+	}
+	return n
+}
+
 func sum(xs []int) int {
 	s := 0
 	for _, x := range xs {

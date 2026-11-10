@@ -753,17 +753,17 @@ func (r *routing) wide(ways [][]pt, v roadView, cost roadCost, stairsFirst bool)
 					}
 					next := slices.Clone(ways)
 					next[i] = nw
-					c := v.cost(next)
-					if c.better(cost) {
+					nc := v.cost(next)
+					if nc.better(cost) {
 						return next, true
 					}
 					// A move that costs nothing may free a run another route
 					// shared with this one, so it is kept where a move of a
 					// whole run then reads better.
-					if !cost.withers(c) {
+					if !cost.withers(nc) {
 						continue
 					}
-					if then, ok := r.shift(next, v, c, stairsFirst); ok && v.cost(then).better(cost) {
+					if then, ok := r.shift(next, v, nc, stairsFirst); ok && v.cost(then).better(cost) {
 						return then, true
 					}
 				}

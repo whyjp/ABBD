@@ -52,6 +52,7 @@ var paged = []struct {
 	{"colour_switches", func(t Totals) int { return t.ColourSwitches }},
 	{"parallel_ink", func(t Totals) int { return t.ParallelInk }},
 	{"abreast", func(t Totals) int { return t.Abreast }},
+	{"doglegs", func(t Totals) int { return t.Doglegs }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way
