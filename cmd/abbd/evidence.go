@@ -162,7 +162,7 @@ func (e env) status() error {
 	slices.Sort(orphans)
 	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE, %d orphaned\n", len(in.Understandings), stale, len(orphans))
 	for _, id := range orphans {
-		fmt.Fprintf(e.stdout, "orphaned: %s is not a module now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
+		fmt.Fprintf(e.stdout, "orphaned: %s is not a module or feature now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
 	}
 	if stale > 0 {
 		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
