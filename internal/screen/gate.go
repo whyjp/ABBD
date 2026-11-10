@@ -55,6 +55,7 @@ var paged = []struct {
 	// combs are stubs a box's lines of one kind leave or reach it by side
 	// by side, where a hand drawing draws one stem.
 	{"combs", func(t Totals) int { return t.Combs }},
+	{"doglegs", func(t Totals) int { return t.Doglegs }},
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way

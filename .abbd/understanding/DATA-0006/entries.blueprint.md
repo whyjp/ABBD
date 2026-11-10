@@ -2,7 +2,7 @@
 unit: DATA-0006
 slot: entries.blueprint
 origin: INFERRED
-digest: 356042be036174f3
+digest: 0b68756f2d998a83
 format: 3
 evidence:
     - path: cmd/abbd/screen.go
@@ -12,12 +12,17 @@ evidence:
       lines: "85"
       quote: 'case in.Rendered == "" || in.Synced.Blueprint == "" || in.Synced.Rendered == "":'
     - path: internal/store/store.go
-      lines: "428"
+      lines: "437"
       quote: 'case p == s.path("state.yaml"), p == s.path("lint-debt.yaml"):'
 code:
     cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
     internal/screen/screen.go#quote-d414126d: e3c72928ae868344
-    internal/store/store.go#quote-29b1c1a4: a9b079924db104fe
+    internal/store/store.go#quote-29b1c1a4: e7406a0d740d07ef
+reread:
+    by: concept-orch (Claude Opus 5.5)
+    "on": "2026-11-10"
+    moved:
+        - internal/store/store.go (the lines around it changed)
 ---
 
 The `InputsHash` of `.abbd/` the blueprint was last rendered from, which `publish` writes after `SaveBlueprint` has written every page and `graph.json`. status calls the blueprint STALE when it differs from the hash now, and UNKNOWN when it is empty or `blueprint/` holds no files. `InputsHash` leaves `state.yaml` out, so writing this value does not change the hash it records. It leaves `lint-debt.yaml` out too, since no page draws it, so `abbd lint --record` leaves the blueprint current.

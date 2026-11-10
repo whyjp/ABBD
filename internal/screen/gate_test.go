@@ -72,8 +72,8 @@ func TestTheGateRefusesBendsTheWeighedSumWouldBuy(t *testing.T) {
 	}
 }
 
-// Each page a reader looks at keeps its colour switches, doubled lines and
-// lines abreast at what the debt file records for it, whatever a sum over
+// Each page a reader looks at keeps its colour switches, doubled lines,
+// lines abreast and doglegs at what the debt file records for it, whatever a sum over
 // every view would trade, and recording a rise never raises its ceiling.
 // The fixture's debt file is what abbd lint --record writes.
 func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
@@ -106,6 +106,7 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		func(t *Totals) { t.ParallelInk++ },
 		func(t *Totals) { t.Abreast++ },
 		func(t *Totals) { t.Combs++ },
+		func(t *Totals) { t.Doglegs++ },
 	} {
 		risen := slices.Clone(views)
 		rise(&risen[at].Totals)
