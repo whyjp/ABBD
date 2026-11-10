@@ -28,7 +28,7 @@ func (e env) diff() error {
 			return err
 		}
 	}
-	was, err := e.st.UnitsAt(base)
+	was, err := e.unitsAt(base)
 	if err != nil {
 		return err
 	}
@@ -95,22 +95,33 @@ var compareTmpl = template.Must(template.New("compare").Parse(`<!doctype html>
 // directory.
 func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	dir := e.st.CompareDir()
-	if err := os.RemoveAll(dir); err != nil {
+	then := filepath.Join(dir, "base")
+	if err := os.RemoveAll(then); err != nil {
 		return "", err
 	}
-	then := filepath.Join(dir, "base")
 	if err := os.MkdirAll(then, 0o755); err != nil {
 		return "", err
 	}
 	if err := os.WriteFile(filepath.Join(dir, ".gitignore"), []byte("*\n"), 0o644); err != nil {
 		return "", err
 	}
+	read := func(f string) ([]byte, error) { return gitx.Show(e.root, base, f) }
 	files, err := gitx.Files(e.root, base, store.Dir+"/blueprint")
+	if base == prev {
+		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
+		read = func(f string) ([]byte, error) { return os.ReadFile(filepath.Join(kept, filepath.Base(f))) }
+		var es []os.DirEntry
+		es, err = os.ReadDir(kept)
+		files = nil
+		for _, en := range es {
+			files = append(files, en.Name())
+		}
+	}
 	if err != nil {
 		return "", err
 	}
 	for _, f := range files {
-		b, err := gitx.Show(e.root, base, f)
+		b, err := read(f)
 		if err != nil {
 			return "", err
 		}
@@ -137,6 +148,21 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	}
 	page := filepath.Join(dir, "index.html")
 	return page, os.WriteFile(page, []byte(b.String()), 0o644)
+}
+
+// prev names the copy of .abbd that a write kept from before the first
+// write since the last commit.
+const prev = "prev"
+
+// unitsAt reads the units committed at base, or those of the kept copy.
+func (e env) unitsAt(base string) ([]model.Unit, error) {
+	if base != prev {
+		return e.st.UnitsAt(base)
+	}
+	if _, err := os.Stat(e.st.PreviousDir()); err != nil {
+		return nil, fmt.Errorf("no previous blueprint is kept yet; a write such as abbd sync keeps one before its first change since the last commit")
+	}
+	return store.Open(e.st.PreviousDir()).LoadUnits()
 }
 
 func short(rev string) string { return rev[:min(len(rev), 12)] }

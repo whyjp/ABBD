@@ -141,6 +141,8 @@ abbd diff [--base REV] [--unit ID] [--page] [--json] [--check] [--root DIR]
                                      reads only those, a relation counting at its top-level ends;
                                      --page writes .abbd/compare/index.html, the blueprint
                                      committed at REV beside the current one, never committed
+                                     REV prev is the copy of .abbd a write keeps from before its
+                                     first change since the last commit
 abbd review [--base REV] [--features] [--root DIR]
                                      one surface for a reviewer: the change since REV, who uses
                                      each contract or entry it touched with origin and feature,
@@ -371,6 +373,11 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	e := env{opts: inv.o, stdin: stdin, stdout: stdout, stderr: stderr, st: store.Open(inv.o.root)}
 	c := commands[inv.name]
+	if c.writes {
+		if err := e.st.KeepPrevious(gitx.Head(inv.o.root)); err != nil {
+			fmt.Fprintln(stderr, "abbd: warning: could not keep the previous blueprint:", err)
+		}
+	}
 	ran := c.run(e, inv.pos)
 	if ran != nil {
 		fmt.Fprintln(stderr, "abbd:", ran)

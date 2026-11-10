@@ -611,3 +611,52 @@ func readFrontmatter(path string, v any) error {
 	}
 	return yaml.Unmarshal(front, v)
 }
+
+// PreviousDir holds a copy of .abbd from before the first write since the
+// commit it records, so a person can open the blueprint as it was before a
+// session's edits and compare against it. It sits inside CompareDir, which
+// git and the fingerprint ignore.
+func (s Store) PreviousDir() string { return filepath.Join(s.CompareDir(), "prev") }
+
+// KeepPrevious copies .abbd, the compare view aside, into PreviousDir
+// before a write, unless it already holds the copy taken since head. So
+// the copy is the state as it was before the first write since the last
+// commit, and later writes leave it alone.
+func (s Store) KeepPrevious(head string) error {
+	dir := s.PreviousDir()
+	mark := filepath.Join(dir, "HEAD")
+	if b, err := os.ReadFile(mark); err == nil && strings.TrimSpace(string(b)) == head {
+		return nil
+	}
+	if _, err := os.Stat(s.path("blueprint")); err != nil {
+		return nil
+	}
+	if err := os.RemoveAll(dir); err != nil {
+		return err
+	}
+	to := filepath.Join(dir, Dir)
+	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() && p == s.CompareDir() {
+			return filepath.SkipDir
+		}
+		rel, err := filepath.Rel(s.root, p)
+		if err != nil || d.IsDir() {
+			return err
+		}
+		b, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		return writeFile(filepath.Join(to, rel), b)
+	})
+	if err != nil {
+		return err
+	}
+	if err := writeFile(filepath.Join(s.CompareDir(), ".gitignore"), []byte("*\n")); err != nil {
+		return err
+	}
+	return writeFile(mark, []byte(head+"\n"))
+}
