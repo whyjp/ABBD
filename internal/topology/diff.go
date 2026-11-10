@@ -8,11 +8,23 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// Ref names a unit as a human reads it.
+// Ref names a unit as a human reads it. Why says why a removed unit is
+// gone, when the state records it.
 type Ref struct {
-	ID   model.ID   `json:"id"`
-	Kind model.Kind `json:"kind"`
-	Name string     `json:"name"`
+	ID   model.ID           `json:"id"`
+	Kind model.Kind         `json:"kind"`
+	Name string             `json:"name"`
+	Why  model.AbsentReason `json:"why,omitempty"`
+}
+
+// Changed is one field of a unit that changed: its name, its parent, its
+// purpose or its responsibility, with the origin of the value now.
+type Changed struct {
+	Ref
+	Field  string       `json:"field"`
+	Old    string       `json:"old"`
+	New    string       `json:"new"`
+	Origin model.Origin `json:"origin,omitempty"`
 }
 
 // Signature is a contract whose signature changed.
@@ -94,6 +106,12 @@ type Diff struct {
 	RelationsAdded   []Relation `json:"relations_added"`
 	RelationsRemoved []Relation `json:"relations_removed"`
 	InferredAdded    []Coupling `json:"inferred_added"`
+	// InferredDead are reader's couplings that were live and whose
+	// evidence is now dead, so the blueprint no longer draws them.
+	InferredDead []Coupling `json:"inferred_dead"`
+	// Changed are the units that kept their ID and changed a name, a
+	// parent, a purpose or a responsibility.
+	Changed []Changed `json:"units_changed"`
 }
 
 // Compare lists what changed from base to now, each category sorted.
@@ -106,14 +124,24 @@ func Compare(base, now []model.Unit) Diff {
 		switch {
 		case !had:
 			d.UnitsAdded = append(d.UnitsAdded, ref(u))
-		case !u.Kind.IsContract():
 		default:
-			d.contract(old, u)
+			d.fields(old, u)
+			if u.Kind.IsContract() {
+				d.contract(old, u)
+			}
+		}
+	}
+	gone := map[model.ID]model.AbsentReason{}
+	for _, u := range now {
+		if u.Absent {
+			gone[u.ID] = u.AbsentReason
 		}
 	}
 	for _, id := range ids(b) {
 		if _, ok := n[id]; !ok {
-			d.UnitsRemoved = append(d.UnitsRemoved, ref(b[id]))
+			r := ref(b[id])
+			r.Why = gone[id]
+			d.UnitsRemoved = append(d.UnitsRemoved, r)
 		}
 	}
 	was, is := between(b), between(n)
@@ -136,7 +164,38 @@ func Compare(base, now []model.Unit) Diff {
 			d.InferredAdded = append(d.InferredAdded, cur[k])
 		}
 	}
+	died := deadInferred(n)
+	for _, k := range keys(died) {
+		if _, ok := old[k]; ok {
+			d.InferredDead = append(d.InferredDead, died[k])
+		}
+	}
 	return d
+}
+
+// fields notes each field a unit kept its ID through and changed.
+func (d *Diff) fields(old, u model.Unit) {
+	val := func(f *model.Fact) (string, model.Origin) {
+		if f == nil {
+			return "", ""
+		}
+		return f.Value, f.Origin
+	}
+	op, _ := val(old.Purpose)
+	np, no := val(u.Purpose)
+	or, _ := val(old.Responsibility)
+	nr, ro := val(u.Responsibility)
+	for _, c := range []Changed{
+		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
+		{Field: "parent", Old: string(old.Parent), New: string(u.Parent)},
+		{Field: "purpose", Old: op, New: np, Origin: no},
+		{Field: "responsibility", Old: or, New: nr, Origin: ro},
+	} {
+		if c.Old != c.New {
+			c.Ref = ref(u)
+			d.Changed = append(d.Changed, c)
+		}
+	}
 }
 
 // contract notes how one contract changed: its signature, its entries one
@@ -280,7 +339,11 @@ func (d Diff) Lines() []string {
 		out = append(out, fmt.Sprintf("+ unit %s %s", r.ID, r.Name))
 	}
 	for _, r := range d.UnitsRemoved {
-		out = append(out, fmt.Sprintf("- unit %s %s", r.ID, r.Name))
+		s := fmt.Sprintf("- unit %s %s", r.ID, r.Name)
+		if r.Why != "" {
+			s += " (" + string(r.Why) + ")"
+		}
+		out = append(out, s)
 	}
 	for _, s := range d.Signatures {
 		out = append(out, fmt.Sprintf("~ contract %s %s signature: %q -> %q", s.ID, s.Name, s.Old, s.New))
@@ -334,6 +397,19 @@ func (d Diff) Lines() []string {
 	for _, r := range d.UsesNarrowed {
 		out = append(out, fmt.Sprintf("~ entry use %s %s %s now uses only some of its entries (%s %s %s)", r.From, r.Kind, r.To, r.FromName, r.Kind, r.ToName))
 	}
+	for _, c := range d.Changed {
+		switch c.Field {
+		case "name":
+			out = append(out, fmt.Sprintf("~ renamed %s %q -> %q", c.ID, c.Old, c.New))
+		case "parent":
+			out = append(out, fmt.Sprintf("~ moved %s %s: %s -> %s", c.ID, c.Name, orTop(c.Old), orTop(c.New)))
+		default:
+			out = append(out, fmt.Sprintf("~ %s %s %s: %q -> %q%s", c.Field, c.ID, c.Name, c.Old, c.New, by(c.Origin)))
+		}
+	}
+	for _, c := range d.InferredDead {
+		out = append(out, "- inferred dead "+c.line())
+	}
 	for _, c := range d.InferredAdded {
 		s := "+ inferred " + c.line()
 		if c.Via != "" {
@@ -345,6 +421,20 @@ func (d Diff) Lines() []string {
 		out = append(out, s)
 	}
 	return out
+}
+
+func orTop(p string) string {
+	if p == "" {
+		return "top level"
+	}
+	return p
+}
+
+func by(o model.Origin) string {
+	if o == "" {
+		return ""
+	}
+	return ", " + string(o)
 }
 
 func (r Relation) line() string {
@@ -429,6 +519,21 @@ func inferred(units map[model.ID]model.Unit) map[string]Coupling {
 				c.Quote = r.Evidence[0].String()
 			}
 			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = c
+		}
+	}
+	return out
+}
+
+// deadInferred lists the reader's couplings whose evidence is dead, keyed
+// by edge.
+func deadInferred(units map[model.ID]model.Unit) map[string]Coupling {
+	out := map[string]Coupling{}
+	for _, u := range units {
+		for _, r := range u.Relations {
+			if _, ok := units[r.To]; !ok || !r.Guess() || !r.Dead {
+				continue
+			}
+			out[model.Edge{From: u.ID, To: r.To, Kind: r.Kind}.String()] = Coupling{Relation: Relation{From: u.ID, Kind: r.Kind, To: r.To, FromName: u.Name.Value, ToName: units[r.To].Name.Value}, Via: r.Via}
 		}
 	}
 	return out
