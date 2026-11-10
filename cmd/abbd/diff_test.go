@@ -191,3 +191,25 @@ func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
 	p.want(0, "blueprint: CURRENT", "status")
 	p.want(1, "is in neither", "diff", "--unit", "MOD-0099")
 }
+
+// A write keeps .abbd as it was before its first change since the last
+// commit, and diff --base prev compares against that copy.
+func TestAWriteKeepsThePreviousBlueprint(t *testing.T) {
+	p, _ := diffProject(t)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "work")
+	before := p.read("blueprint/index.html")
+	p.want(0, "", "record", "fact", "MOD-0004.responsibility", "--value", "sends mail", "--source", "pr 2")
+	p.want(0, "", "record", "fact", "MOD-0001.responsibility", "--value", "charges cards", "--source", "pr 2")
+	kept, err := os.ReadFile(filepath.Join(p.root, ".abbd", "compare", "prev", ".abbd", "blueprint", "index.html"))
+	if err != nil || string(kept) != before {
+		t.Fatalf("the kept blueprint is not the one from before the first write: %v", err)
+	}
+	out := p.want(0, "", "diff", "--base", "prev")
+	contains(t, out, `~ responsibility MOD-0004 notify: "" -> "sends mail"`, `~ responsibility MOD-0001 billing: "" -> "charges cards"`)
+	p.want(0, "", "diff", "--base", "prev", "--unit", "MOD-0004", "--page")
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "compare", "base", "MOD-0004.html")); err != nil {
+		t.Errorf("the compare view did not take the kept blueprint: %v", err)
+	}
+	p.want(0, "blueprint: CURRENT", "status")
+}

@@ -75,3 +75,34 @@ func TestReviewLeavesAStaleTextElsewhereOut(t *testing.T) {
 		t.Errorf("a STALE text the change did not touch is listed:\n%s", out)
 	}
 }
+
+// A change that edits a module's code and leaves the topology alone still
+// seeds review from the units anchored at the changed file.
+func TestReviewSeedsFromChangedCode(t *testing.T) {
+	p, _ := entriesProject(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.want(0, "", "sync")
+	text := p.file(t, "t.md", "### Overview\nIt charges.\n")
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "text")
+	base := rev(t, p.root)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { retry() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "none in the topology", "code changed under MOD-0001", "MOD-0001 billing: seed", "the text of MOD-0001 billing is STALE")
+}
+
+// A changed file whose name has a space still finds the unit anchored at it.
+func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
+	p, exe := bare(t)
+	p.code("pay ments/charge.go", "package pay")
+	p.extract(`{"units":[{"key":"pay","kind":"MOD","name":"payments","anchors":[{"path":"pay ments/charge.go","symbol":"Charge"}]}]}`)
+	p.setup(0, "synced", "--", exe)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "base")
+	base := rev(t, p.root)
+	p.code("pay ments/charge.go", "package pay\n\nfunc Charge() {}\n")
+	p.want(0, "", "sync")
+	contains(t, p.want(0, "", "review", "--base", base), "code changed under MOD-0001", "MOD-0001 payments: seed")
+}

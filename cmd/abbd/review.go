@@ -9,6 +9,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
 )
 
@@ -42,6 +43,14 @@ func (e env) review() error {
 	}
 	if len(d.Lines()) == 0 {
 		fmt.Fprintln(w, "  none in the topology")
+	}
+	codeChanged := e.anchoredAt(now, base)
+	if len(codeChanged) > 0 {
+		var ids []string
+		for _, id := range codeChanged {
+			ids = append(ids, string(id))
+		}
+		fmt.Fprintln(w, "  code changed under "+strings.Join(ids, ", "))
 	}
 
 	byID := map[model.ID]model.Unit{}
@@ -160,6 +169,9 @@ func (e env) review() error {
 			}
 		}
 	}
+	// Most changes edit code and leave the topology as it was, so the
+	// units anchored at a file changed since the base seed it too.
+	seeds = append(seeds, codeChanged...)
 	seeds = slices.DeleteFunc(seeds, func(id model.ID) bool { _, ok := byID[id]; return !ok })
 	slices.Sort(seeds)
 	seeds = slices.Compact(seeds)
@@ -249,4 +261,26 @@ func (e env) review() error {
 		fmt.Fprintln(w, "  nothing")
 	}
 	return nil
+}
+
+// anchoredAt lists the present units anchored at a file that changed
+// since base, the working tree included, in ID order.
+func (e env) anchoredAt(units []model.Unit, base string) []model.ID {
+	files, err := gitx.ChangedSince(e.root, base)
+	if err != nil {
+		fmt.Fprintln(e.stderr, "abbd: warning: could not list the files changed since the base:", err)
+		return nil
+	}
+	var out []model.ID
+	for _, u := range model.Present(units) {
+		if slices.ContainsFunc(u.Anchors, func(a model.Anchor) bool {
+			return slices.ContainsFunc(files, func(f string) bool {
+				return !strings.HasPrefix(f, store.Dir+"/") && (f == a.Path || strings.HasPrefix(f, strings.TrimSuffix(a.Path, "/")+"/"))
+			})
+		}) {
+			out = append(out, u.ID)
+		}
+	}
+	slices.Sort(out)
+	return out
 }
