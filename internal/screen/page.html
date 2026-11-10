@@ -60,6 +60,7 @@
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
+  {{with .Responsibility}}<p class="role"><strong>맡은 것</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}{{with .Purpose}}<p class="role"><strong>왜 있는가</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}
   <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
   {{template "legend" (legendFor "inside" .Drawing.Quiet)}}{{template "keys" .Drawing}}
@@ -81,7 +82,7 @@
   </div>
   {{if .Unwired}}<div class="chips"><span class="muted">맡은 단위가 기록되지 않은 계약</span>{{range .Unwired}}{{if .Head}}<span class="head">{{.Head}}</span>{{end}}{{range .Names}}<span class="chip">{{.}}</span>{{end}}{{end}}</div>{{end}}
   {{if .Flows}}<h3>이 모듈을 지나는 흐름</h3>
-  <ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">단계 {{range $i, $n := .Steps}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
+  <ul class="plain">{{range .Flows}}<li><a href="#{{.ID}}">{{.Question}}</a><ol class="runs">{{range .Steps}}<li value="{{.N}}">{{.Does}} <span class="muted">{{.Unit}}</span></li>{{end}}</ol></li>{{end}}</ul>{{end}}
   {{if .Stacks}}<h3>이 모듈이 놓인 층</h3>
   <ul class="plain">{{range .Stacks}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">층 {{range $i, $n := .Layers}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
   {{if .Tables}}<h3>이 모듈이 행으로 놓인 표</h3>
@@ -99,7 +100,7 @@
   <p class="muted" style="margin:0 0 6px">모듈 사이의 계약입니다. 이름을 누르면 그 계약을 가진 모듈의 안으로, 제공과 사용의 단위를 누르면 그 단위로 갑니다. 페이지 안 찾기(Ctrl+F)로 이름, ID, 시그니처를 찾습니다.</p>
   <table class="index">
   <tr><th>계약</th><th>가진 모듈</th><th>제공</th><th>사용</th></tr>{{$kind := ""}}
-  {{range .Contracts}}{{if ne .Kind $kind}}<tr class="kind"><th colspan="4">{{label .Kind}}</th></tr>{{$kind = .Kind}}{{end}}<tr id="k-{{.ID}}"><td>{{if .Owner}}<a href="{{.Owner.Href}}"><strong>{{.Name}}</strong></a>{{else}}<a href="#u-{{.ID}}"><strong>{{.Name}}</strong></a>{{end}} <span class="muted key">{{.ID}}</span>{{if .Signature}}<div class="key muted sig">{{.Signature}}</div>{{end}}</td><td>{{with .Owner}}<a href="{{.Href}}">{{.Name}}</a>{{else}}<span class="muted">최상위</span>{{end}}</td><td>{{range .Providers}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td><td>{{range .Users}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td></tr>
+  {{range .Contracts}}{{if ne .Kind $kind}}<tr class="kind"><th colspan="4">{{label .Kind}}</th></tr>{{$kind = .Kind}}{{end}}<tr id="k-{{.ID}}"><td>{{if .Owner}}<a href="{{.Owner.Href}}"><strong>{{.Name}}</strong></a>{{else}}<a href="#u-{{.ID}}"><strong>{{.Name}}</strong></a>{{end}} <span class="muted key">{{.ID}}</span>{{if .Signature}}<div class="key muted sig">{{.Signature}}</div>{{end}}{{with .Sentence}}<div>{{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></div>{{end}}</td><td>{{with .Owner}}<a href="{{.Href}}">{{.Name}}</a>{{else}}<span class="muted">최상위</span>{{end}}</td><td>{{range .Providers}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td><td>{{range .Users}}<a class="who" href="{{.Href}}" title="{{.ID}}">{{.Name}}</a>{{else}}<span class="muted">기록 없음</span>{{end}}</td></tr>
   {{end}}</table>
 </section>
 {{template "foot" .}}{{end}}

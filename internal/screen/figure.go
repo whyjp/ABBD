@@ -64,7 +64,7 @@ func (o *overview) linkFigures(m *Model) {
 			for _, l := range f.Lanes {
 				for _, s := range l.Steps {
 					if held[l.Unit] {
-						ref.Steps = append(ref.Steps, s.N)
+						ref.Steps = append(ref.Steps, StepRef{N: s.N, Unit: l.Name, Does: s.Does})
 					}
 				}
 			}
