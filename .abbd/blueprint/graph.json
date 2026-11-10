@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2780,6 +2780,13 @@
       "Phrase": "route between units",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd path\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0009",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record fact\""
     },
     {
       "From": "FEAT-0002",
@@ -6676,7 +6683,15 @@
                 "Code": true
               },
               {
-                "Text": " prints whether the state and the blueprint are current, and names a state a merge left with two syncs STALE until ",
+                "Text": " prints whether the state and the blueprint are current, names in its ",
+                "Code": false
+              },
+              {
+                "Text": "described:",
+                "Code": true
+              },
+              {
+                "Text": " line the present units that record neither a purpose nor a responsibility, and names a state a merge left with two syncs STALE until ",
                 "Code": false
               },
               {
@@ -8613,7 +8628,8 @@
             "Need": true,
             "Providers": true,
             "Users": true,
-            "Data": true
+            "Data": true,
+            "Notes": true
           }
         },
         {
@@ -8693,7 +8709,8 @@
             "Need": true,
             "Providers": true,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -8908,7 +8925,8 @@
             "Need": true,
             "Providers": true,
             "Users": true,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -9014,7 +9032,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9035,7 +9054,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9089,7 +9109,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9143,7 +9164,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": true
           }
         },
         {
@@ -9164,7 +9186,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9191,7 +9214,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9212,7 +9236,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9233,7 +9258,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9260,6 +9286,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -9273,6 +9304,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               }
@@ -9280,7 +9316,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9353,7 +9390,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9406,7 +9444,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9440,7 +9479,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9493,7 +9533,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9533,7 +9574,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9560,7 +9602,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9599,7 +9642,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9646,7 +9690,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9673,7 +9718,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9694,7 +9740,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9721,7 +9768,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9748,7 +9796,8 @@
             "Need": false,
             "Providers": false,
             "Users": false,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         },
         {
@@ -9826,7 +9875,8 @@
             "Need": false,
             "Providers": false,
             "Users": true,
-            "Data": false
+            "Data": false,
+            "Notes": false
           }
         }
       ],
@@ -13343,7 +13393,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         }
       ],
@@ -20471,7 +20522,31 @@
                 "Code": true
               },
               {
-                "Text": ", so a quiet view's key draws the bypass grey. ",
+                "Text": ", so a quiet view's key draws the bypass grey. The full legend and the reading intros sit once on ",
+                "Code": false
+              },
+              {
+                "Text": "legend.html",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "LegendFile",
+                "Code": true
+              },
+              {
+                "Text": "), linked from the site nav. Only the index draws a legend beside its drawing, and every other view keeps its short ",
+                "Code": false
+              },
+              {
+                "Text": "keys",
+                "Code": true
+              },
+              {
+                "Text": ". ",
                 "Code": false
               },
               {
@@ -22673,7 +22748,15 @@
                 "Code": true
               },
               {
-                "Text": " with the contract's ID and the entry's key, so two contracts with an entry of one key keep their own rows. A contract with entries shows in its home's inside even with no notes, and an entry's note shows on its row rather than among the contract's notes.",
+                "Text": " with the contract's ID and the entry's key, so two contracts with an entry of one key keep their own rows. A contract with entries shows in its home's inside even with no notes, and an entry's note shows on its row rather than among the contract's notes. ",
+                "Code": false
+              },
+              {
+                "Text": "Entries.Notes",
+                "Code": true
+              },
+              {
+                "Text": " says a row has a note: only then does the table carry a note column, and it starts open only when it also has 20 rows or fewer.",
                 "Code": false
               }
             ]
@@ -22815,7 +22898,7 @@
                 "Code": true
               },
               {
-                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its legend and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
+                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its keys and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
                 "Code": false
               },
               {
@@ -26895,7 +26978,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         },
         {
@@ -27528,7 +27612,8 @@
             "Need": true,
             "Providers": false,
             "Users": false,
-            "Data": true
+            "Data": true,
+            "Notes": false
           }
         }
       ],
