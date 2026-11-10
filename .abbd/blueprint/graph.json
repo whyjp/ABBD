@@ -5778,7 +5778,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -7417,7 +7417,15 @@
                 "Code": true
               },
               {
-                "Text": ", takes only live quotes through ",
+                "Text": ", keeps the reader ",
+                "Code": false
+              },
+              {
+                "Text": "--reader",
+                "Code": true
+              },
+              {
+                "Text": " names, takes only live quotes through ",
                 "Code": false
               },
               {
@@ -24741,7 +24749,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -25958,7 +25966,7 @@
                 "Code": true
               },
               {
-                "Text": " who wrote it, ",
+                "Text": " who wrote it (left out when none was named), ",
                 "Code": false
               },
               {
