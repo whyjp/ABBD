@@ -22,6 +22,7 @@ import (
 const (
 	ContractsFile = "contracts.html"
 	UnitsFile     = "units.html"
+	LegendFile    = "legend.html"
 )
 
 // page is one file and what its template draws. Current is the anchor of
@@ -127,7 +128,8 @@ func Pages(m Model) (map[string][]byte, error) {
 	}
 	pages = append(pages,
 		withPage(shared, ContractsFile, "계약 목록", "contracts", "contracts"),
-		withPage(shared, UnitsFile, "단위 목록", "units", "units"))
+		withPage(shared, UnitsFile, "단위 목록", "units", "units"),
+		withPage(shared, LegendFile, "범례", "legendpage", "legend"))
 	out := map[string][]byte{}
 	var order []string
 	for _, p := range pages {
