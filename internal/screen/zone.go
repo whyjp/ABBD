@@ -122,32 +122,57 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	}
 }
 
-// layered reads the stored stack that covers the most of d's boxes, when
-// two of its layers at least each hold two boxes that sit together. The
-// layout places boxes by their lines, not their layers, so a layer bands
-// the most of its boxes that sit together, and a layer with no two that
-// do, like a layer of one box, takes no band.
+// layered is the tiers of the stored stack that covers the most of d's
+// boxes, each the most of its boxes that sit together when that is two
+// boxes or more (stackOf).
 func (d *Drawing) layered(t tree, stacks []layering) []group {
-	box := d.shown(t)
+	var out []group
+	for _, g := range stackOf(stacks, d.shown(t), d.together) {
+		if len(g.ids) >= 2 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// tiers are s's layers as the boxes that show them, top down, leaving out
+// a layer no box shows. A box shown in two layers stays in the first.
+func (s layering) tiers(box func(model.ID) string) []group {
+	var out []group
+	seen := map[string]bool{}
+	for i, us := range s.units {
+		g := group{n: i + 1, title: s.names[i]}
+		for _, u := range us {
+			if b := box(u); b != "" && !seen[b] {
+				seen[b] = true
+				g.ids = append(g.ids, b)
+			}
+		}
+		if len(g.ids) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// stackOf is the tiers of the stored stack that covers the most boxes in
+// tiers of two boxes or more, when two of its tiers at least hold two, each
+// tier's boxes as fit keeps them. The layout keeps them all, and a band
+// only those that sit together.
+func stackOf(stacks []layering, box func(model.ID) string, fit func([]string) []string) []group {
 	var best []group
 	most := 0
 	for _, s := range stacks {
-		var gs []group
-		n := 0
-		for i, us := range s.units {
-			g := group{n: i + 1, title: s.names[i]}
-			for _, u := range us {
-				if b := box(u); b != "" && !slices.Contains(g.ids, b) {
-					g.ids = append(g.ids, b)
-				}
-			}
-			if g.ids = d.together(g.ids); len(g.ids) >= 2 {
-				gs = append(gs, g)
-				n += len(g.ids)
+		ts := s.tiers(box)
+		k, n := 0, 0
+		for i := range ts {
+			if ts[i].ids = fit(ts[i].ids); len(ts[i].ids) >= 2 {
+				k++
+				n += len(ts[i].ids)
 			}
 		}
-		if len(gs) >= 2 && n > most {
-			best, most = gs, n
+		if k >= 2 && n > most {
+			best, most = ts, n
 		}
 	}
 	return best

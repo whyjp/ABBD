@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"cmp"
 	"fmt"
 	"maps"
 	"slices"
@@ -1118,4 +1119,42 @@ func (g *layered) ring(focus string, budget int) (map[string]int, int) {
 		}
 	}
 	return out, width
+}
+
+// huddle keeps each tier's boxes in a row next to each other, where the
+// mean of their places stands, so a tier's band holds no other box. Every
+// other item keeps its place among the tiers.
+func (g *layered) huddle(tiers map[string]int) {
+	type run struct {
+		at  float64
+		ids []string
+	}
+	for r, row := range g.rows {
+		var runs []*run
+		of := map[int]*run{}
+		n := map[*run]int{}
+		for i, id := range row {
+			t := tiers[id]
+			if p := of[t]; t > 0 && p != nil {
+				p.at += float64(i)
+				p.ids = append(p.ids, id)
+				n[p]++
+				continue
+			}
+			p := &run{at: float64(i), ids: []string{id}}
+			n[p] = 1
+			if t > 0 {
+				of[t] = p
+			}
+			runs = append(runs, p)
+		}
+		for _, p := range runs {
+			p.at /= float64(n[p])
+		}
+		slices.SortStableFunc(runs, func(a, b *run) int { return cmp.Compare(a.at, b.at) })
+		g.rows[r] = g.rows[r][:0]
+		for _, p := range runs {
+			g.rows[r] = append(g.rows[r], p.ids...)
+		}
+	}
 }
