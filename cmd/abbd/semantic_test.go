@@ -283,4 +283,3 @@ func TestStatusSaysWhichModulesHaveAText(t *testing.T) {
 	p.want(0, "", "understand", "MOD-0001", text, "--reader", "abbd reader")
 	p.want(0, "coverage: 1 of 2 top-level module(s) and feature(s) have a text, read by abbd reader 1; none yet: MOD-0002\n", "status")
 }
-
