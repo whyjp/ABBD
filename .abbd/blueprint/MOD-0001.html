@@ -588,7 +588,7 @@ cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;
 cmd/abbd/screen.go &#34;files, err := screen.Files(screen.Build(in))&#34;
 cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><path class="w depends_on e7 e22 r22" d="M404 274 L404 350" data-net="20" data-h="4" marker-end="url(#m-dep-4)"><title>setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 건너는 것: supplement fold (판독) 1/1
-cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><text class="lab said e7 e22 r22" data-h="4" x="347" y="316" text-anchor="middle">supplement fold</text><path class="w consumes joins e1 e5 e6 e7 e10 e17 e21 e22 r1 r3 r14 r19 r22" d="M509 274 L496 274" data-h="n"><title>review commands consumes unit files (via data), 판독
+cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><text class="lab said e7 e22 r22" data-h="4" x="347" y="316" text-anchor="middle">supplement fold</text><path class="w depends_on joins e1 e5 e6 e7 e10 e17 e21 e22 r1 r3 r14 r19 r22" d="M509 274 L496 274" data-h="n"><title>review commands consumes unit files (via data), 판독
 review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
@@ -628,7 +628,7 @@ cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;
 cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;
-cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><path class="w depends_on joins e1 e3 e5 e7 e9 e10 e17 e22 r3 r7 r14 r20 r22" d="M619 274 L611 274" data-h="n"><title>review commands depends_on internal/evidence (via call), 판독
+cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&#34;</title></path><path class="w consumes joins e1 e3 e5 e7 e9 e10 e17 e22 r3 r7 r14 r20 r22" d="M619 274 L611 274" data-h="n"><title>review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 sync pipeline consumes extraction JSON (via data), 판독
@@ -688,7 +688,7 @@ cmd/abbd/main.go &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
 cmd/abbd/main.go &#34;identity.Reconcile(&#34;
-cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><path class="w depends_on joins e3 e5 e10 e18 r10 r14" d="M875 274 L859 274" data-h="n"><title>sync pipeline depends_on internal/evidence (via call), 판독
+cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><path class="w consumes joins e3 e5 e10 e18 r10 r14" d="M875 274 L859 274" data-h="n"><title>sync pipeline depends_on internal/evidence (via call), 판독
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
 record writers consumes unit files (via data), 판독
@@ -803,7 +803,7 @@ abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
 건너는 것: /abbd pointer (판독) 1/3, git query (판독) 1/3, query first (판독) 1/3, supplement fold (판독) 1/3, sync then diff (판독) 1/3</title></path><path class="w bypass e2 e6 r10" d="M501 220 L501 240" data-net="6" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
-건너는 것: git query (판독) 5/5</title></path><path class="w contract joins e0 e2 e3 e5 e6 r1 r7 r8 r10" d="M506 220 L592 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
+건너는 것: git query (판독) 5/5</title></path><path class="w bypass joins e0 e2 e3 e5 e6 r1 r7 r8 r10" d="M506 220 L592 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
@@ -821,7 +821,7 @@ abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 건너는 것: ID reconcile (판독) 1/4, blueprint freshness (판독) 1/4, claims setup owns (판독) 1/4, dir grouping (판독) 1/4, quote check (판독) 1/4, render pages (판독) 1/4</title></path><path class="w bypass e2 e13 r15" d="M896 220 L1112 220 L1112 240" data-net="7" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
 건너는 것: long-section check (판독) 1/1</title></path><text class="lab said e2 e13 r15" data-h="0" x="1004" y="216" text-anchor="middle">long-section check</text><path class="w bypass e2 e11 r13" d="M896 220 L896 240" data-net="8" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4</title></path><path class="w contract e2 e5 r1" d="M330 316 L141 316 L141 336" data-net="9" data-h="0" marker-end="url(#m-use-0)"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
-건너는 것: script stdout (판독) 4/4</title></path><text class="lab said e2 e5 r1" data-h="0" x="235" y="312" text-anchor="middle">script stdout</text><path class="w contract joins e2 e5 e7 r1 r11" d="M592 316 L330 316" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
+건너는 것: script stdout (판독) 4/4</title></path><text class="lab said e2 e5 r1" data-h="0" x="235" y="312" text-anchor="middle">script stdout</text><path class="w bypass joins e2 e5 e7 r1 r11" d="M592 316 L330 316" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 건너는 것: ID reconcile (판독) 1/2, claims setup owns (판독) 1/2, script stdout (판독) 1/2</title></path><text class="lab said e2 e5 e7 r1 r11" data-h="0" x="461" y="312" text-anchor="middle">ID reconcile 등</text><path class="w bypass e2 e7 r11" d="M330 316 L330 336" data-net="10" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 건너는 것: ID reconcile (판독) 2/3, claims setup owns (판독) 1/3</title></path><path class="w bypass joins e2 e7 r11" d="M790 316 L592 316" data-net="3" data-h="0"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
