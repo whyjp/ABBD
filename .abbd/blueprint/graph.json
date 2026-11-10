@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -311,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -522,8 +522,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"It never judges, blocks or asks.\"",
-        "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by its weakest origin.\""
+        "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by whether its evidence still holds\""
       ]
     },
     {
@@ -4248,7 +4247,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/screen.go \"return \\\"stated\\\"\""
+      "Quote": "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
     },
     {
       "From": "MOD-0034",
@@ -4456,7 +4455,7 @@
       "Via": "data",
       "Phrase": "text digest",
       "PhraseOrigin": "INFERRED",
-      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -5503,6 +5502,7 @@
             "cmd/abbd/query.go resolve"
           ],
           "Understanding": {
+            "Reader": "abbd reader",
             "Stale": false,
             "Blocks": [
               {
@@ -7735,7 +7735,31 @@
                 "Code": true
               },
               {
-                "Text": " shows it with its reader as CURRENT or STALE. ",
+                "Text": " shows it with its reader as CURRENT or STALE. Under each reader's coupling, ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": " prints ",
+                "Code": false
+              },
+              {
+                "Text": "recorded in",
+                "Code": true
+              },
+              {
+                "Text": " with the commit and pull request that first wrote its first quote into the From unit's file (",
+                "Code": false
+              },
+              {
+                "Text": "gitx.Recorded",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -10997,7 +11021,8 @@
           "Quotes": [
             "cmd/abbd/main.go \"return exitUsage\"",
             "cmd/abbd/main.go \"return exitError\""
-          ]
+          ],
+          "Drifted": true
         },
         {
           "From": "argv parsing and dispatch",
@@ -15200,6 +15225,44 @@
               },
               {
                 "Text": " reads it to date the oldest committed text in its coverage line.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Recorded",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the first commit whose diff adds or removes a quote in the given files (",
+                "Code": false
+              },
+              {
+                "Text": "git log --reverse -S",
+                "Code": true
+              },
+              {
+                "Text": "), with its date and subject, and the pull request of the first merge after it on the ancestry path. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd explain",
+                "Code": true
+              },
+              {
+                "Text": " reads it under each reader's coupling, searching only the coupling's unit file.",
                 "Code": false
               }
             ]
@@ -24598,7 +24661,47 @@
                 "Code": true
               },
               {
-                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. ",
+                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. A person's statement reads 사람, never a confirmation tier. Each reader's ",
+                "Code": false
+              },
+              {
+                "Text": "Coupling",
+                "Code": true
+              },
+              {
+                "Text": " carries ",
+                "Code": false
+              },
+              {
+                "Text": "Drifted",
+                "Code": true
+              },
+              {
+                "Text": " when a quote it rests on no longer holds as quoted, and its page says 근거 유지 or 근거 어긋남. A text's ",
+                "Code": false
+              },
+              {
+                "Text": "Understanding",
+                "Code": true
+              },
+              {
+                "Text": " and a ",
+                "Code": false
+              },
+              {
+                "Text": "Note",
+                "Code": true
+              },
+              {
+                "Text": " carry the ",
+                "Code": false
+              },
+              {
+                "Text": "Reader",
+                "Code": true
+              },
+              {
+                "Text": " that wrote them, which the page names beside 판독. ",
                 "Code": false
               },
               {
@@ -25415,8 +25518,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go \"return \\\"stated\\\"\"",
-            "internal/screen/page.go \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -25454,7 +25556,8 @@
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
             "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
-          ]
+          ],
+          "Drifted": true
         },
         {
           "From": "internal/screen",
@@ -25483,7 +25586,8 @@
           "Quotes": [
             "internal/screen/inside.go \"if slices.Contains(o.providers[c], m) {\"",
             "internal/screen/screen.go \"ins := o.inside(id, in.Units)\""
-          ]
+          ],
+          "Drifted": true
         },
         {
           "From": "overview plan",
@@ -25535,7 +25639,8 @@
             "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
             "internal/screen/screen.go \"return \\\"#m-\\\" + string(id)\"",
             "internal/screen/page.html \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
-          ]
+          ],
+          "Drifted": true
         },
         {
           "From": "page template",
@@ -25592,7 +25697,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -28930,7 +29035,8 @@
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
             "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
-          ]
+          ],
+          "Drifted": true
         },
         {
           "From": "internal/screen",
