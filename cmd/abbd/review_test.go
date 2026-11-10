@@ -92,3 +92,17 @@ func TestReviewSeedsFromChangedCode(t *testing.T) {
 	out := p.want(0, "", "review", "--base", base)
 	contains(t, out, "none in the topology", "code changed under MOD-0001", "MOD-0001 billing: seed", "the text of MOD-0001 billing is STALE")
 }
+
+// A changed file whose name has a space still finds the unit anchored at it.
+func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
+	p, exe := bare(t)
+	p.code("pay ments/charge.go", "package pay")
+	p.extract(`{"units":[{"key":"pay","kind":"MOD","name":"payments","anchors":[{"path":"pay ments/charge.go","symbol":"Charge"}]}]}`)
+	p.setup(0, "synced", "--", exe)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "base")
+	base := rev(t, p.root)
+	p.code("pay ments/charge.go", "package pay\n\nfunc Charge() {}\n")
+	p.want(0, "", "sync")
+	contains(t, p.want(0, "", "review", "--base", base), "code changed under MOD-0001", "MOD-0001 payments: seed")
+}
