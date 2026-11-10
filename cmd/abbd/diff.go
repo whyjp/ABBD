@@ -106,16 +106,18 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 		return "", err
 	}
 	read := func(f string) ([]byte, error) { return gitx.Show(e.root, base, f) }
-	files, err := gitx.Files(e.root, base, store.Dir+"/blueprint")
+	var files []string
+	var err error
 	if base == prev {
 		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
-		read = func(f string) ([]byte, error) { return os.ReadFile(filepath.Join(kept, filepath.Base(f))) }
+		read = func(f string) ([]byte, error) { return os.ReadFile(filepath.Join(kept, f)) }
 		var es []os.DirEntry
 		es, err = os.ReadDir(kept)
-		files = nil
 		for _, en := range es {
 			files = append(files, en.Name())
 		}
+	} else {
+		files, err = gitx.Files(e.root, base, store.Dir+"/blueprint")
 	}
 	if err != nil {
 		return "", err
@@ -170,7 +172,7 @@ func (e env) unitsAt(base string) ([]model.Unit, error) {
 	if base != prev {
 		return e.st.UnitsAt(base)
 	}
-	if _, err := os.Stat(e.st.PreviousDir()); err != nil {
+	if _, err := os.Stat(filepath.Join(e.st.PreviousDir(), "HEAD")); err != nil {
 		return nil, fmt.Errorf("no previous blueprint is kept yet; a write such as abbd sync keeps one before its first change since the last commit")
 	}
 	return store.Open(e.st.PreviousDir()).LoadUnits()

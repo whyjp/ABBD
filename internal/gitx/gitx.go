@@ -351,3 +351,17 @@ func Gitlinks(dir string) map[string]string {
 	}
 	return out
 }
+
+// ChangedSince lists the tracked files that differ between rev and the
+// working tree, and the untracked ones git does not ignore.
+func ChangedSince(dir, rev string) ([]string, error) {
+	out, err := run(dir, nil, "diff", "--name-only", rev, "--")
+	if err != nil {
+		return nil, err
+	}
+	extra, err := run(dir, nil, "ls-files", "--others", "--exclude-standard")
+	if err != nil {
+		return nil, err
+	}
+	return strings.Fields(out + " " + extra), nil
+}

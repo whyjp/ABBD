@@ -631,10 +631,13 @@ func (s Store) KeepPrevious(head string) error {
 	if _, err := os.Stat(s.path("blueprint")); err != nil {
 		return nil
 	}
-	if err := os.RemoveAll(dir); err != nil {
+	// The copy is built aside and renamed into place, so a copy that
+	// stopped halfway is never read as the previous blueprint.
+	tmp := dir + ".tmp"
+	if err := os.RemoveAll(tmp); err != nil {
 		return err
 	}
-	to := filepath.Join(dir, Dir)
+	to := filepath.Join(tmp, Dir)
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -658,5 +661,11 @@ func (s Store) KeepPrevious(head string) error {
 	if err := writeFile(filepath.Join(s.CompareDir(), ".gitignore"), []byte("*\n")); err != nil {
 		return err
 	}
-	return writeFile(mark, []byte(head+"\n"))
+	if err := writeFile(filepath.Join(tmp, "HEAD"), []byte(head+"\n")); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(dir); err != nil {
+		return err
+	}
+	return os.Rename(tmp, dir)
 }
