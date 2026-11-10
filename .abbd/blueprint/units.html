@@ -283,7 +283,7 @@ svg [data-h="n"] { --c: var(--hn); }
 </header>
 
 <section id="units">
-  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">126개, ID 순</span></h2>
+  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">125개, ID 순</span></h2>
   <p class="muted" style="margin:0 0 6px">모든 단위와 그 코드의 앵커입니다. 페이지 안 찾기(Ctrl+F)로 ID, 이름, 파일 경로, 심볼을 찾습니다.</p>
   <table><tr id="u-CFG-0001"><td class="id key">CFG-0001</td><td><strong>plugin and marketplace manifest</strong> <span class="muted">설정</span>
     <div>Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin&#39;s version and its requirements (pstack 0.15.36 and the abbd CLI on PATH). <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
@@ -411,10 +411,7 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/references/reader.md &#34;and pstack `swarm` to fan out setup&#39;s slices&#34;</q></div></details></td></tr><tr id="u-FEAT-0023"><td class="id key">FEAT-0023</td><td><strong>abbd reader</strong> <span class="muted">기능</span> <span class="muted">· <a href="FEAT-0001.html" title="FEAT-0001">/abbd</a> 안</span>
     <div>ABBD&#39;s own recipe for reading a module and storing what it found; it needs only the abbd CLI and uses pstack as an optional engine when installed. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">plugins/abbd/skills/abbd/references/reader.md</div>
-    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/references/reader.md &#34;ABBD reads code with this reader.&#34;</q></div></details></td></tr><tr id="u-FEAT-0024"><td class="id key">FEAT-0024</td><td><strong>/abbd read the code with the reader</strong> <span class="muted">기능</span> <span class="muted">· <a href="FEAT-0001.html" title="FEAT-0001">/abbd</a> 안</span>
-    <div>When the topology is not enough, reads the code with the bundled reader, starting from the units the queries named. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
-    <div class="key muted anchors">plugins/abbd/skills/abbd/SKILL.md</div>
-    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/SKILL.md &#34;read it per `references/reader.md`&#34;</q></div></details></td></tr><tr id="u-FEAT-0025"><td class="id key">FEAT-0025</td><td><strong>/abbd-setup store a reader&#39;s text per module</strong> <span class="muted">기능</span> <span class="muted">· <a href="FEAT-0002.html" title="FEAT-0002">/abbd-setup</a> 안</span>
+    <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/references/reader.md &#34;ABBD reads code with this reader.&#34;</q></div></details></td></tr><tr id="u-FEAT-0025"><td class="id key">FEAT-0025</td><td><strong>/abbd-setup store a reader&#39;s text per module</strong> <span class="muted">기능</span> <span class="muted">· <a href="FEAT-0002.html" title="FEAT-0002">/abbd-setup</a> 안</span>
     <div>For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader&#39;s name. <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div>
     <div class="key muted anchors">plugins/abbd/skills/abbd-setup/SKILL.md</div>
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd-setup/SKILL.md &#34;For each top-level module, read it per the reader&#34;</q></div></details></td></tr><tr id="u-FEAT-0026"><td class="id key">FEAT-0026</td><td><strong>/abbd-setup stance</strong> <span class="muted">기능</span> <span class="muted">· <a href="FEAT-0002.html" title="FEAT-0002">/abbd-setup</a> 안</span>

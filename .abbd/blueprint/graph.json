@@ -784,24 +784,6 @@
       ]
     },
     {
-      "ID": "FEAT-0024",
-      "Kind": "FEAT",
-      "Name": "/abbd read the code with the reader",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": {
-        "Value": "When the topology is not enough, reads the code with the bundled reader, starting from the units the queries named.",
-        "Badge": "inferred"
-      },
-      "Anchors": [
-        "plugins/abbd/skills/abbd/SKILL.md"
-      ],
-      "Parent": "FEAT-0001",
-      "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
-      ]
-    },
-    {
       "ID": "FEAT-0025",
       "Kind": "FEAT",
       "Name": "/abbd-setup store a reader's text per module",
@@ -2872,7 +2854,7 @@
     },
     {
       "From": "FEAT-0006",
-      "To": "FEAT-0024",
+      "To": "FEAT-0023",
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
@@ -3114,6 +3096,14 @@
     },
     {
       "From": "FEAT-0023",
+      "To": "FEAT-0004",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "data",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
+    },
+    {
+      "From": "FEAT-0023",
       "To": "FEAT-0018",
       "Kind": "depends_on",
       "Origin": "INFERRED",
@@ -3131,24 +3121,6 @@
       "Phrase": "optional swarm",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
-    },
-    {
-      "From": "FEAT-0024",
-      "To": "FEAT-0004",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
-    },
-    {
-      "From": "FEAT-0024",
-      "To": "FEAT-0023",
-      "Kind": "depends_on",
-      "Origin": "INFERRED",
-      "Via": "call",
-      "Phrase": "reader.md",
-      "PhraseOrigin": "INFERRED",
-      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
     },
     {
       "From": "FEAT-0025",
@@ -3169,6 +3141,16 @@
       "Phrase": "module text",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with\""
+    },
+    {
+      "From": "FEAT-0026",
+      "To": "MOD-0055",
+      "Kind": "depends_on",
+      "Origin": "INFERRED",
+      "Via": "config",
+      "Phrase": "optional engine",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"it says when pstack may serve as an optional engine.\""
     },
     {
       "From": "MOD-0001",
@@ -4824,17 +4806,6 @@
             "plugins/abbd/skills/abbd/references/reader.md"
           ],
           "Understanding": null
-        },
-        {
-          "ID": "FEAT-0024",
-          "Name": "/abbd read the code with the reader",
-          "Kind": "기능",
-          "Sentence": "When the topology is not enough, reads the code with the bundled reader, starting from the units the queries named.",
-          "Guess": true,
-          "Anchors": [
-            "plugins/abbd/skills/abbd/SKILL.md"
-          ],
-          "Understanding": null
         }
       ],
       "Understanding": null,
@@ -4932,7 +4903,7 @@
         },
         {
           "From": "/abbd record what a reader found",
-          "To": "/abbd read the code with the reader",
+          "To": "abbd reader",
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
@@ -5058,6 +5029,15 @@
         },
         {
           "From": "abbd reader",
+          "To": "/abbd ask the blueprint before the code",
+          "Kind": "depends_on",
+          "Via": "data",
+          "Quotes": [
+            "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
+          ]
+        },
+        {
+          "From": "abbd reader",
           "To": "pstack /how",
           "Kind": "depends_on",
           "Via": "call",
@@ -5072,24 +5052,6 @@
           "Via": "call",
           "Quotes": [
             "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
-          ]
-        },
-        {
-          "From": "/abbd read the code with the reader",
-          "To": "/abbd ask the blueprint before the code",
-          "Kind": "depends_on",
-          "Via": "data",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"Start from the units the queries named.\""
-          ]
-        },
-        {
-          "From": "/abbd read the code with the reader",
-          "To": "abbd reader",
-          "Kind": "depends_on",
-          "Via": "call",
-          "Quotes": [
-            "plugins/abbd/skills/abbd/SKILL.md \"read it per `references/reader.md`\""
           ]
         },
         {
@@ -5379,6 +5341,15 @@
           "Via": "call",
           "Quotes": [
             "plugins/abbd/skills/abbd-setup/SKILL.md \"store its Overview and Key Concepts with\""
+          ]
+        },
+        {
+          "From": "/abbd-setup stance",
+          "To": "pstack (external)",
+          "Kind": "depends_on",
+          "Via": "config",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"it says when pstack may serve as an optional engine.\""
           ]
         }
       ]
@@ -5807,7 +5778,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -24770,7 +24741,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -29740,6 +29711,15 @@
           "Via": "call",
           "Quotes": [
             "plugins/abbd/skills/abbd/references/reader.md \"and pstack `swarm` to fan out setup's slices\""
+          ]
+        },
+        {
+          "From": "/abbd-setup stance",
+          "To": "pstack (external)",
+          "Kind": "depends_on",
+          "Via": "config",
+          "Quotes": [
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"it says when pstack may serve as an optional engine.\""
           ]
         }
       ]
