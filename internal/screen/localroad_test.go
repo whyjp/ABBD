@@ -74,3 +74,27 @@ func sharedRun(a, b, c, d fpt) float64 {
 	}
 	return 0
 }
+
+// A piece of road wears the kind most of its riders are: no other kind
+// among the lines it carries outnumbers its own, in every view of every
+// fixture.
+func TestARoadPieceWearsItsRidersMajorityKind(t *testing.T) {
+	for _, name := range fixtures {
+		for _, v := range views(fixture(t, name)) {
+			if !v.d.roads {
+				continue
+			}
+			for _, w := range v.d.Wires {
+				count := map[string]int{}
+				for _, k := range classNumbers(w.Lit, "r") {
+					count[v.d.Routes[k].Kind]++
+				}
+				for kind, n := range count {
+					if n > count[w.Kind] {
+						t.Errorf("%s %s: a %s piece carries %d %s lines and %d of its own: %s", name, v.name, w.Kind, n, kind, count[w.Kind], w.Lit)
+					}
+				}
+			}
+		}
+	}
+}
