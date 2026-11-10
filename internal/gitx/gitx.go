@@ -397,15 +397,27 @@ func Recorded(dir, needle string, paths ...string) string {
 		return ""
 	}
 	hash, _, _ := strings.Cut(first, " ")
-	merges, err := run(dir, nil, "log", "--merges", "--ancestry-path", "--reverse", "--format=%s", hash+"..HEAD")
+	merges, err := run(dir, nil, "log", "--merges", "--ancestry-path", "--reverse", "--format=%P%x09%s", hash+"..HEAD")
 	if err != nil {
 		return first
 	}
-	for _, m := range strings.Split(merges, "\n") {
-		if pr, ok := strings.CutPrefix(m, "Merge pull request "); ok {
+	// The merge that brought the commit in is the first whose first parent
+	// does not hold it yet. A commit made on that line itself came in by no
+	// merge, so it names no pull request.
+	for _, m := range strings.Split(strings.TrimSpace(merges), "\n") {
+		parents, subject, ok := strings.Cut(m, "\t")
+		mainline, _, _ := strings.Cut(parents, " ")
+		if !ok || mainline == "" {
+			continue
+		}
+		if _, err := run(dir, nil, "merge-base", "--is-ancestor", hash, mainline); err == nil {
+			continue
+		}
+		if pr, ok := strings.CutPrefix(subject, "Merge pull request "); ok {
 			pr, _, _ = strings.Cut(pr, " ")
 			return first + " (" + pr + ")"
 		}
+		return first
 	}
 	return first
 }
