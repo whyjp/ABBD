@@ -60,7 +60,7 @@ rows:
           symbol: recordRelation
           quote: u.PutNote(note)
         - path: cmd/abbd/understand.go
-          lines: "83"
+          lines: "86"
           symbol: understand
           quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id'
       writer: reader
@@ -70,21 +70,21 @@ rows:
         cmd/abbd/understand.go#quote-e0b4fa19: 747a51ddc1079f48
     - unit: MOD-0005
       cells:
-        module texts: reads a reader's text and says whether the module's code moved since
+        module texts: prints a text with its reader, and whether its code moved since
         unit files: reads every unit to resolve and answer a query
       evidence:
         - path: cmd/abbd/query.go
-          lines: "252"
+          lines: "261"
           symbol: explainHow
           quote: texts, err := e.st.LoadUnderstandings()
         - path: cmd/abbd/query.go
-          lines: "262"
+          lines: "271"
           symbol: explainHow
           quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
       writer: reader
       code:
         cmd/abbd/query.go#quote-1a68db9a: 68d6b606e038c5c4
-        cmd/abbd/query.go#quote-0793a015: a7577b4f52f97404
+        cmd/abbd/query.go#quote-0793a015: ec9cd2bd2fda6b40
     - unit: MOD-0007
       cells:
         blueprint: writes every page and graph.json
@@ -256,6 +256,22 @@ retired:
       code:
         cmd/abbd/query.go#quote-1a68db9a: 68d6b606e038c5c4
         cmd/abbd/query.go#quote-0793a015: f3107515b0fe8519
+    - unit: MOD-0005
+      cells:
+        module texts: reads a reader's text and says whether the module's code moved since
+        unit files: reads every unit to resolve and answer a query
+      evidence:
+        - path: cmd/abbd/query.go
+          lines: "252"
+          symbol: explainHow
+          quote: texts, err := e.st.LoadUnderstandings()
+        - path: cmd/abbd/query.go
+          lines: "262"
+          symbol: explainHow
+          quote: if t.Digest != e.st.ModuleDigest(units, u.ID) {
+      code:
+        cmd/abbd/query.go#quote-1a68db9a: 68d6b606e038c5c4
+        cmd/abbd/query.go#quote-0793a015: a7577b4f52f97404
 ---
 
 Each row is one part of the CLI and each column one file under `.abbd/`. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.

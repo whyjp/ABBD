@@ -5662,7 +5662,7 @@
                     "Code": true
                   },
                   {
-                    "Text": "): prints each known note of a unit that holds notes, marked CURRENT or STALE with the places that changed, plus its why, reread and cited evidence.",
+                    "Text": "): prints each known note of a unit that holds notes, with its reader, marked CURRENT or STALE with the places that changed, plus its why, reread and cited evidence.",
                     "Code": false
                   }
                 ]
@@ -7689,7 +7689,7 @@
                 "Code": true
               },
               {
-                "Text": " prints each note with its state and who reread it. ",
+                "Text": " prints each note with its reader, its state and who reread it. ",
                 "Code": false
               },
               {
@@ -22894,7 +22894,7 @@
                 "Code": true
               },
               {
-                "Text": " and ",
+                "Text": ", which marks it a reader's account, and ",
                 "Code": false
               },
               {
@@ -31110,7 +31110,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "reads a reader's text and says whether the module's code moved since",
+              "Says": "prints a text with its reader, and whether its code moved since",
               "Verb": "사용"
             },
             {
