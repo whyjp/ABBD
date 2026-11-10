@@ -15,8 +15,9 @@ import (
 // answer for one part before reading a line. It is a background and never
 // a box: it holds no line, takes no pointer and moves nothing. The
 // groupings come from the state alone, never from the drawing. A stored
-// stack's layers of two boxes or more come first, numbered from the top
-// among the bands drawn, so the numbers run without a gap. Without such a
+// stack's layers come first, each around the most of its boxes that sit
+// together when that is two boxes or more, numbered from the top among the
+// bands drawn, so the numbers run without a gap. Without such a
 // stack, boxes whose code sits in one directory share that directory's
 // band. Contracts
 // with systems outside, drawn as boxes because nothing in the repository
@@ -122,8 +123,10 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 }
 
 // layered reads the stored stack that covers the most of d's boxes, when
-// two of its layers at least each hold two boxes. A layer of one box says
-// nothing its box does not, so it takes no band.
+// two of its layers at least each hold two boxes that sit together. The
+// layout places boxes by their lines, not their layers, so a layer bands
+// the most of its boxes that sit together, and a layer with no two that
+// do, like a layer of one box, takes no band.
 func (d *Drawing) layered(t tree, stacks []layering) []group {
 	box := d.shown(t)
 	var best []group
@@ -138,7 +141,7 @@ func (d *Drawing) layered(t tree, stacks []layering) []group {
 					g.ids = append(g.ids, b)
 				}
 			}
-			if len(g.ids) >= 2 {
+			if g.ids = d.together(g.ids); len(g.ids) >= 2 {
 				gs = append(gs, g)
 				n += len(g.ids)
 			}
@@ -148,6 +151,50 @@ func (d *Drawing) layered(t tree, stacks []layering) []group {
 		}
 	}
 	return best
+}
+
+// together is the largest run of ids whose band, at its narrowest, holds
+// no other box: taken in reading order, each box joins the run before it
+// when the band around both stays clear, and starts a run when it does not.
+func (d *Drawing) together(ids []string) []string {
+	var bs []Box
+	for _, b := range d.Boxes {
+		if slices.Contains(ids, b.ID) {
+			bs = append(bs, b)
+		}
+	}
+	slices.SortStableFunc(bs, func(a, b Box) int {
+		if a.Y != b.Y {
+			return a.Y - b.Y
+		}
+		return a.X - b.X
+	})
+	var best, run []Box
+	for _, b := range bs {
+		if run = append(run, b); !d.sitTogether(run) {
+			run = []Box{b}
+		}
+		if len(run) > len(best) {
+			best = slices.Clone(run)
+		}
+	}
+	var out []string
+	for _, b := range best {
+		out = append(out, b.ID)
+	}
+	return out
+}
+
+// sitTogether says a band around bs, with no room for a title yet, stands
+// clear of every other box.
+func (d *Drawing) sitTogether(bs []Box) bool {
+	in := map[string]bool{}
+	lo, hi := pt{1 << 30, 1 << 30}, pt{-1 << 30, -1 << 30}
+	for _, b := range bs {
+		in[b.ID] = true
+		lo, hi = pt{min(lo.x, b.X), min(lo.y, b.Y)}, pt{max(hi.x, b.X+b.W), max(hi.y, b.Y+b.H)}
+	}
+	return d.clear(Zone{X: lo.x - zoneSide, Y: lo.y - zoneFoot, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + 2*zoneFoot}, in)
 }
 
 // folders groups d's boxes by the directory that holds each one's own
