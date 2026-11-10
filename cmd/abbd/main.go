@@ -60,7 +60,7 @@ abbd migrate [--supplement FILE] [--root DIR]
                                      convert an old-format state once, telling the supplement's
                                      claims from a reader's by the supplement (default
                                      .abbd/extractor/supplement.json)
-abbd understand MOD-ID FILE|- [--root DIR]
+abbd understand MOD-ID|FEAT-ID FILE|- [--root DIR]
                                      store pstack how's Overview and Key Concepts for a module,
                                      stamped with the module's code: every file of the module and
                                      the units under it, a submodule by its recorded commit (so

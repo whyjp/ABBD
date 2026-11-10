@@ -128,6 +128,12 @@ func TestAFeatureHoldsItsParts(t *testing.T) {
 	p.setup(0, "synced", "--", exe)
 	contains(t, p.want(0, "", "explain", "1. Run cli run"), "inside FEAT-0002 /go\n", "evidence: skills/go/SKILL.md:7 \"1. Run\"")
 	contains(t, p.want(0, "", "path", "/go", "cli run"), "contains", "2 hop(s)")
+	if html := p.blueprint(); !strings.Contains(html, "이 기능의 설명은 아직 없습니다") {
+		t.Fatalf("a feature's page should name the missing text a feature's")
+	}
+	text := p.file(t, "go.md", "### Overview\n/go runs the cli.\n")
+	p.want(0, "understood FEAT-0002 /go", "understand", "FEAT-0002", text)
+	contains(t, p.blueprint(), "/go runs the cli.")
 
 	p.extract(strings.Replace(parts, `"parent":"skill"`, `"parent":"run"`, 1))
 	p.want(1, "is not the key of another module or feature", "sync")
