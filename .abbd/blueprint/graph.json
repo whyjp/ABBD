@@ -7952,7 +7952,7 @@
                 "Code": true
               },
               {
-                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, as taking a stair the long way round took two excess turns and two steps off src/, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
+                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
                 "Code": false
               }
             ]
@@ -19251,6 +19251,15 @@
         "Stale": false,
         "Blocks": [
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0034 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -21521,23 +21530,23 @@
                 "Code": true
               },
               {
-                "Text": "), a straight run of a line moves onto a parallel run within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; where a box keeps a stair's two runs apart, ",
+                "Text": "), a straight run of a line moves onto a parallel run within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; a line's end runs slide only along their edge span. The moves run twice, stairs first, so a line that could drop straight does before a road bends it onto its track, and merges first, since straightened stairs can shut out the merges that put parallel tracks on one road, and the view keeps the roads whose crossings, turns and road beside road (",
                 "Code": false
               },
               {
-                "Text": "wide",
+                "Text": "roadBeside",
                 "Code": true
               },
               {
-                "Text": " takes that one line's stair another way round, its step at another height and its far run further out, kept where it reads better or frees a whole-run move that does, and ",
+                "Text": ", 200px a crossing) weigh less (",
                 "Code": false
               },
               {
-                "Text": "farSplits",
+                "Text": "roadCost.weight",
                 "Code": true
               },
               {
-                "Text": " counts no split where lines arrive from two sides, a merge J1 does not hold; a line's end runs slide only along their edge span. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
+                "Text": "). A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
                 "Code": false
               },
               {
@@ -21545,7 +21554,15 @@
                 "Code": true
               },
               {
-                "Text": "). A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. ",
+                "Text": "). A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, no line's end comes to lie beside a line of another kind, dotting or end shape wherever on the track it lands (",
+                "Code": false
+              },
+              {
+                "Text": "endMixes",
+                "Code": true
+              },
+              {
+                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. ",
                 "Code": false
               },
               {
@@ -21561,7 +21578,23 @@
                 "Code": true
               },
               {
-                "Text": "), and each wire knows its riders, which pointing at it lights. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
+                "Text": "), and each wire knows its riders, which pointing at it lights. A move slides one straight run and stretches its neighbours, so no route turns more than it was routed, which ",
+                "Code": false
+              },
+              {
+                "Text": "TestARoadAddsNoTurnToARoute",
+                "Code": true
+              },
+              {
+                "Text": " holds on every fixture, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestARoadPieceWearsItsRidersMajorityKind",
+                "Code": true
+              },
+              {
+                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
                 "Code": false
               }
             ]
@@ -21749,7 +21782,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave; where they differ, a road wears the colour of its rider that runs furthest on roads, so a highway keeps one colour piece to piece, and other mixed ink a neutral grey; and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
                 "Code": false
               },
               {
