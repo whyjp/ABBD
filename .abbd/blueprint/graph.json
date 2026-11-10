@@ -3265,7 +3265,7 @@
       "Kind": "consumes",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind == model.Module\""
+      "Quote": "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind.Holds()\""
     },
     {
       "From": "MOD-0001",
@@ -6910,7 +6910,15 @@
                 "Code": true
               },
               {
-                "Text": "): how's text for any module, at any depth, stored INFERRED with the digest, ",
+                "Text": "): how's text for any module or feature (the usage names ",
+                "Code": false
+              },
+              {
+                "Text": "MOD-ID|FEAT-ID",
+                "Code": true
+              },
+              {
+                "Text": "), at any depth, stored INFERRED with the digest, ",
                 "Code": false
               },
               {
@@ -6934,7 +6942,7 @@
                 "Code": true
               },
               {
-                "Text": " decides which modules take a text, for ",
+                "Text": " decides which units take a text, for ",
                 "Code": false
               },
               {
@@ -6958,7 +6966,7 @@
                 "Code": true
               },
               {
-                "Text": ": any present module. A module's digest reads its whole subtree, so a text on a module inside another describes that module's code, and the text of the module above it describes it too. ",
+                "Text": ": any present module or feature. A module's digest reads its whole subtree, so a text on a module inside another describes that module's code, and the text of the module above it describes it too. ",
                 "Code": false
               },
               {
@@ -9897,8 +9905,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind.Holds()\""
           ]
         },
         {
@@ -22830,7 +22837,23 @@
                 "Code": true
               },
               {
-                "Text": ". A module page and a focus view's page carry a ",
+                "Text": ". ",
+                "Code": false
+              },
+              {
+                "Text": "Inside.Feature",
+                "Code": true
+              },
+              {
+                "Text": " marks a feature's page, so a page without a text names the missing text a feature's (기능) rather than a module's, beside the ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand",
+                "Code": true
+              },
+              {
+                "Text": " command for the page's own ID. A module page and a focus view's page carry a ",
                 "Code": false
               },
               {
@@ -25534,7 +25557,7 @@
                 "Code": true
               },
               {
-                "Text": "): pstack how's Overview and Key Concepts for one module, with ",
+                "Text": "): pstack how's Overview and Key Concepts for one module or feature, with ",
                 "Code": false
               },
               {
@@ -25582,7 +25605,7 @@
                 "Code": true
               },
               {
-                "Text": " writes it as INFERRED, and only for a top-level module. ",
+                "Text": " writes it as INFERRED, for a module or a feature at any depth. ",
                 "Code": false
               },
               {
@@ -28885,8 +28908,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind == model.Module\"",
-            "cmd/abbd/query.go \"if _, ok := textModule(units, u.ID); !ok {\""
+            "cmd/abbd/understand.go \"return u, ok \u0026\u0026 u.Kind.Holds()\""
           ]
         },
         {
