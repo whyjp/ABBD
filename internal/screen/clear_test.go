@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"math"
 	"path/filepath"
 	"slices"
 	"testing"
@@ -120,4 +121,61 @@ func clearModels(t *testing.T) map[string]*Model {
 	m := Build(in)
 	out["repository"] = &m
 	return out
+}
+
+// A lead's numbers stand badgeApart from each other on every fixture and
+// this repository's own overview, whose lead doubles back through
+// internal/store and once stacked three numbers within 95x25px.
+func TestALeadsNumbersStandApart(t *testing.T) {
+	pairs := 0
+	for name, m := range clearModels(t) {
+		for _, d := range m.drawings() {
+			if d.Lead == nil {
+				continue
+			}
+			hs := d.Lead.Hops
+			for i := range hs {
+				for j := i + 1; j < len(hs); j++ {
+					pairs++
+					if gap := math.Hypot(float64(hs[i].X-hs[j].X), float64(hs[i].Y-hs[j].Y)); gap < badgeApart {
+						t.Errorf("%s: numbers %d and %d stand %.0fpx apart, under %d", name, hs[i].N, hs[j].N, gap, badgeApart)
+					}
+				}
+			}
+		}
+	}
+	if pairs == 0 {
+		t.Error("no view draws two numbers")
+	}
+}
+
+// Every band holds two boxes at least, but the outside contracts' band,
+// which names a lone outside box as outside, and stored layers' bands are
+// numbered 1, 2, 3 in the order they are drawn.
+func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
+	for name, m := range clearModels(t) {
+		for _, d := range m.drawings() {
+			n := 0
+			for _, z := range d.Zones {
+				if z.N > 0 {
+					n++
+					if z.N != n {
+						t.Errorf("%s: band %q is numbered %d, want %d", name, z.Title, z.N, n)
+					}
+				}
+				if z.Title == "외부 계약" {
+					continue
+				}
+				held := 0
+				for _, b := range d.Boxes {
+					if b.X >= z.X && b.Y >= z.Y && b.X+b.W <= z.X+z.W && b.Y+b.H <= z.Y+z.H {
+						held++
+					}
+				}
+				if held < 2 {
+					t.Errorf("%s: band %q holds %d box", name, z.Label(), held)
+				}
+			}
+		}
+	}
 }

@@ -273,3 +273,13 @@ func TestStatusReportsUndescribedUnits(t *testing.T) {
 	p.want(0, "", "record", "fact", "MOD-0001.responsibility", "--value", "writes each charge", "--source", "pr 1")
 	p.want(0, "described: 2 unit(s) without a purpose or responsibility: DATA-0001, MOD-0002\n", "status")
 }
+
+// status says how many top-level modules carry a text, who read them, and
+// which carry none.
+func TestStatusSaysWhichModulesHaveAText(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "coverage: 0 of 2 top-level module(s) and feature(s) have a text; none yet: MOD-0001, MOD-0002\n", "status")
+	text := p.file(t, "how.md", "### Overview\nbilling charges.\n")
+	p.want(0, "", "understand", "MOD-0001", text, "--reader", "abbd reader")
+	p.want(0, "coverage: 1 of 2 top-level module(s) and feature(s) have a text, read by abbd reader 1; none yet: MOD-0002\n", "status")
+}

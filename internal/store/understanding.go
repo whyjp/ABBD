@@ -40,6 +40,11 @@ type Understanding struct {
 	Text   string            `yaml:"-"`
 }
 
+// UnderstandingFile is where a unit's text sits, from the project root.
+func (s Store) UnderstandingFile(id model.ID) string {
+	return Dir + "/understanding/" + string(id) + ".md"
+}
+
 func (s Store) understandingPath(id model.ID) string {
 	return s.path("understanding", string(id)+".md")
 }

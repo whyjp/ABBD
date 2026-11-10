@@ -67,35 +67,40 @@ func TestAFlowStopsWhereNoLineJoinsIt(t *testing.T) {
 	}
 }
 
-// A stored stack's layers band the boxes they name, numbered from the
-// top, and a band is drawn only where it holds no other box.
+// A stored stack's layers band the boxes they name, numbered from the top
+// among the bands drawn, with no gap. A layer of one box takes no band, and
+// a band is drawn only where it holds no other box.
 func TestAStackBandsItsLayers(t *testing.T) {
-	layers := map[string][]model.ID{"commands": {"MOD-0001"}, "store": {"MOD-0041", "MOD-0017"}}
-	m := withFigures(t, nil, layers, []string{"commands", "store"})
+	order := []string{"commands", "store", "vocabulary"}
+	layers := map[string][]model.ID{"commands": {"MOD-0001"}, "store": {"MOD-0041", "MOD-0017"}, "vocabulary": {"MOD-0030", "MOD-0013"}}
+	m := withFigures(t, nil, layers, order)
 	d := m.Overview
-	groups := d.layered(newTreeFor(t), []layering{{names: []string{"commands", "store"}, units: [][]model.ID{layers["commands"], layers["store"]}}})
-	if len(groups) != 2 || groups[0].n != 1 || groups[1].n != 2 || !slices.Equal(groups[0].ids, []string{"MOD-0001"}) {
-		t.Fatalf("layered gives %+v", groups)
+	var l layering
+	for _, name := range order {
+		l.names, l.units = append(l.names, name), append(l.units, layers[name])
 	}
-	if len(d.Zones) == 0 {
-		t.Fatal("no layer is banded")
+	groups := d.layered(newTreeFor(t), []layering{l})
+	if len(groups) != 2 || groups[0].title != "store" || groups[1].title != "vocabulary" {
+		t.Fatalf("layered gives %+v, want store and vocabulary, not the one-box commands", groups)
 	}
+	var drawn []string
 	for _, z := range d.Zones {
 		if z.N == 0 && z.Title == "외부 계약" {
 			continue
 		}
-		if z.N < 1 || z.N > len(groups) {
-			t.Fatalf("band %q is numbered %d, not one of the %d stored layers", z.Title, z.N, len(groups))
+		if z.N != len(drawn)+1 {
+			t.Errorf("band %q is numbered %d, want %d", z.Title, z.N, len(drawn)+1)
 		}
-		g := groups[z.N-1]
-		if z.Title != []string{"commands", "store"}[z.N-1] {
-			t.Errorf("band %d is titled %q", z.N, z.Title)
-		}
+		drawn = append(drawn, z.Title)
+		g := groups[slices.IndexFunc(groups, func(g group) bool { return g.title == z.Title })]
 		for _, b := range d.Boxes {
 			if !slices.Contains(g.ids, b.ID) && hit(box{z.X, z.Y, z.W, z.H}, box{b.X, b.Y, b.W, b.H}) {
 				t.Errorf("band %q holds %s, which its layer does not name", z.Title, b.ID)
 			}
 		}
+	}
+	if len(drawn) == 0 {
+		t.Fatal("no layer is banded")
 	}
 }
 

@@ -245,7 +245,7 @@ func inferred(boxes []Box, uses []use) []use {
 
 // badge is where a hop's number sits: halfway along its way, or failing
 // that the nearest point to it, by fortieths, off every box, label and
-// count, clear of the numbers already set and inkGap from every other
+// count, badgeApart from the numbers already set and inkGap from every other
 // line, arrowhead, dot and chip; failing that, set up to its radius to one
 // side; failing that, the same at the small radius.
 // number sets each hop's number once the view's boxes carry their last
@@ -310,10 +310,8 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
 				return false
 			}
 		}
-		for _, q := range taken {
-			if abs(p.x-q.x) < 3*r && abs(p.y-q.y) < 3*r {
-				return false
-			}
+		if crowded(p, taken) {
+			return false
 		}
 		return d.badgeClear(p, r, way)
 	}
@@ -341,7 +339,7 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
 				// along sets the point off the run at that end, across
 				// that run, whichever way it runs.
 				p := along(f, side)
-				if d.badgeClear(p, r, way) && !d.onWords(p, r) && !slices.ContainsFunc(taken, func(q pt) bool { return abs(p.x-q.x) < 3*r && abs(p.y-q.y) < 3*r }) {
+				if d.badgeClear(p, r, way) && !d.onWords(p, r) && !crowded(p, taken) {
 					return p, r
 				}
 			}
@@ -349,6 +347,18 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
 	}
 	return along(.5, 0), badgeR
 }
+
+// crowded says a number at p stands within badgeApart of one already set.
+func crowded(p pt, taken []pt) bool {
+	return slices.ContainsFunc(taken, func(q pt) bool {
+		return math.Hypot(float64(p.x-q.x), float64(p.y-q.y)) < badgeApart
+	})
+}
+
+// badgeApart is the least distance between two numbers' centres, so each
+// reads as its own hop's and a lead that doubles back does not stack its
+// numbers into one cluster.
+const badgeApart = 48
 
 // badgeR is the radius of a hop's number, and badgeSmall the radius it
 // takes where its line has no room for it. A badge may stand off its line
