@@ -7129,7 +7129,15 @@
                 "Code": true
               },
               {
-                "Text": " seeded from the units the change added, changed or touched, or ",
+                "Text": " seeded from the units the change added, changed or touched and the units an added or removed relation really joins (",
+                "Code": false
+              },
+              {
+                "Text": "topology.RelationEnds",
+                "Code": true
+              },
+              {
+                "Text": "), or ",
                 "Code": false
               },
               {
@@ -7145,7 +7153,7 @@
                 "Code": true
               },
               {
-                "Text": "; then what is worth a look: a reader's coupling the change added, a STALE text or note, a decision note with no why, skipping the orphaned notes status skips, and drifted evidence from ",
+                "Text": "; then what is worth a look in, above or under those seeds: a reader's coupling the change added, a STALE text or note, a decision note with no why, skipping the orphaned notes status skips, and drifted evidence from ",
                 "Code": false
               },
               {
@@ -29819,7 +29827,15 @@
                 "Code": true
               },
               {
-                "Text": " gives that set for one module or feature in either state, so a unit that moved in or out still counts.",
+                "Text": " gives that set for one module or feature in either state, so a unit that moved in or out still counts. ",
+                "Code": false
+              },
+              {
+                "Text": "RelationEnds",
+                "Code": true
+              },
+              {
+                "Text": " turns a lifted relation back into the units that really join it.",
                 "Code": false
               }
             ]
