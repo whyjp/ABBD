@@ -144,6 +144,7 @@ func (e env) status() error {
 		}
 	}
 	fmt.Fprintln(e.stdout, "units:", strings.Join(ks, ", "))
+	fmt.Fprintln(e.stdout, described(in.Units))
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
@@ -260,3 +261,24 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 	}
 	return stale
 }
+
+// described reports the present units that record neither a purpose nor a
+// responsibility, whose pages and rows can say nothing of what they are for.
+func described(units []model.Unit) string {
+	var bare []string
+	for _, u := range model.Present(units) {
+		if !hasValue(u.Purpose) && !hasValue(u.Responsibility) {
+			bare = append(bare, string(u.ID))
+		}
+	}
+	line := fmt.Sprintf("described: %d unit(s) without a purpose or responsibility", len(bare))
+	if len(bare) > 10 {
+		bare = append(bare[:10], "...")
+	}
+	if len(bare) > 0 {
+		line += ": " + strings.Join(bare, ", ")
+	}
+	return line
+}
+
+func hasValue(f *model.Fact) bool { return f != nil && f.Value != "" }

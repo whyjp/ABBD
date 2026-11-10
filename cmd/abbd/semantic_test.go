@@ -249,3 +249,9 @@ func TestRestampingTheSameTextWithAByteOrderMarkIsRefused(t *testing.T) {
 	p.resync()
 	p.want(1, "code changed since this text was written", "understand", "MOD-0001", p.file(t, "bom.md", "\uFEFF"+words))
 }
+
+// status names the units that say nothing of what they are for.
+func TestStatusReportsUndescribedUnits(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "unit(s) without a purpose or responsibility", "status")
+}
