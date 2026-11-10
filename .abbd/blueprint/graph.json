@@ -7099,7 +7099,31 @@
                 "Code": true
               },
               {
-                "Text": " reads the units and the blueprint from that copy.",
+                "Text": " reads the units and the blueprint from that copy. The tests' ",
+                "Code": false
+              },
+              {
+                "Text": "snapshot",
+                "Code": true
+              },
+              {
+                "Text": " of ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " leaves ",
+                "Code": false
+              },
+              {
+                "Text": "compare/",
+                "Code": true
+              },
+              {
+                "Text": " out, since nothing there is committed.",
                 "Code": false
               }
             ]
