@@ -45,6 +45,9 @@ func (e env) understand(ref string, args []string) error {
 	if err != nil {
 		return err
 	}
+	if e.restamp && e.reader != "" {
+		return fmt.Errorf("--restamp keeps the stored text and its reader; pass --reader only with a new text")
+	}
 	if e.restamp != (len(args) == 0) {
 		return fmt.Errorf("pass a FILE with the text, or --restamp without one")
 	}
@@ -114,6 +117,8 @@ func (e env) note(r model.NoteRef, args []string) error {
 	switch {
 	case e.restamp:
 		return fmt.Errorf("a note describes only the code it cites, so moving units never stales it; store it again with abbd understand %s FILE --evidence PATH:LINES:QUOTE", r)
+	case e.rereadBy != "" && e.reader != "":
+		return fmt.Errorf("--reread-by names who read the cited code again; --reader is for a new note")
 	case e.rereadBy != "":
 		return e.reread(r, args)
 	case len(args) == 0:

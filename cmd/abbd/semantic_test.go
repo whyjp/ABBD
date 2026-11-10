@@ -200,7 +200,7 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 	}
 }
 
-// A module's text comes from pstack's how. The blueprint shows it beside the
+// A module's text comes from a reader. The blueprint shows it beside the
 // module's inside and marks it STALE once the module's code moves on.
 func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	p := semanticProject(t)
@@ -208,7 +208,7 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 	p.want(1, "is not a module", "understand", "DATA-0001", text)
 	p.want(0, "understood MOD-0001 billing, INFERRED", "understand", "MOD-0001", text)
 	html := p.blueprint()
-	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `pstack how가 쓴 설명`} {
+	for _, want := range []string{`id="m-MOD-0001"`, `href="#m-MOD-0001"`, `billing writes each <code>charge</code> to the charges table.`, `리더가 쓴 설명`} {
 		if !strings.Contains(html, want) {
 			t.Fatalf("the module's inside should carry how's text; missing %s", want)
 		}
@@ -235,6 +235,7 @@ func TestTheReaderOfAModuleTextIsKeptAndExplained(t *testing.T) {
 		t.Fatalf("the stored text should name its reader: %v\n%s", err, stored)
 	}
 	p.want(0, "how (INFERRED by abbd reader, CURRENT):", "explain", "MOD-0001")
+	p.want(1, "pass --reader only with a new text", "understand", "MOD-0001", "--restamp", "--reader", "abbd reader")
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
 	p.want(0, "how (INFERRED, CURRENT):", "explain", "MOD-0001")
 }

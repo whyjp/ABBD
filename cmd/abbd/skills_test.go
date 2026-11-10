@@ -139,6 +139,9 @@ func TestSkillsReferenceTheBundledReader(t *testing.T) {
 		if regexp.MustCompile(`<pstack>|(?i)install pstack`).MatchString(skill) {
 			t.Errorf("%s still needs pstack; it must work with the bundled reader alone", path)
 		}
+		if loc := regexp.MustCompile(`\bhow(?:'s| reads?)\b`).FindStringIndex(skill); loc != nil {
+			t.Errorf("%s still sends reading to pstack how: %q", path, skill[loc[0]:loc[1]])
+		}
 	}
 	reader := readPlugin(t, "skills", "abbd", "references", "reader.md")
 	var mentions []string

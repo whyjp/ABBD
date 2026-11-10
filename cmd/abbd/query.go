@@ -215,7 +215,7 @@ func (e env) explainNotes(u model.Unit) error {
 		if n.Stale() {
 			state = "STALE, the code it cites changed: " + strings.Join(n.Changed, ", ")
 		}
-		fmt.Fprintf(e.stdout, "%s (%s, %s):\n", n.Ref.Name(), n.Origin, state)
+		fmt.Fprintf(e.stdout, "%s (%s%s, %s):\n", n.Ref.Name(), n.Origin, readBy(n.Reader), state)
 		for _, l := range strings.Split(n.Text, "\n") {
 			fmt.Fprintln(e.stdout, strings.TrimRight("  "+l, " "))
 		}
@@ -243,6 +243,15 @@ func mark(ev model.Evidence) string {
 	return ""
 }
 
+// readBy names the reader after an origin, or nothing for a text stored
+// without one.
+func readBy(reader string) string {
+	if reader == "" {
+		return ""
+	}
+	return " by " + reader
+}
+
 // explainHow prints a reader's text for a module, marked STALE
 // when the module's code moved since it was written.
 func (e env) explainHow(units []model.Unit, u model.Unit) error {
@@ -262,11 +271,7 @@ func (e env) explainHow(units []model.Unit, u model.Unit) error {
 	if t.Digest != e.st.ModuleDigest(units, u.ID) {
 		state = "STALE, the code changed since it was written"
 	}
-	by := ""
-	if t.Reader != "" {
-		by = " by " + t.Reader
-	}
-	fmt.Fprintf(e.stdout, "how (%s%s, %s):\n", t.Origin, by, state)
+	fmt.Fprintf(e.stdout, "how (%s%s, %s):\n", t.Origin, readBy(t.Reader), state)
 	for _, l := range strings.Split(t.Text, "\n") {
 		fmt.Fprintln(e.stdout, strings.TrimRight("  "+l, " "))
 	}

@@ -22,7 +22,7 @@ type Inside struct {
 	Drawing Drawing `json:"-"`
 	// Units lists the inside units with the one sentence each is responsible for.
 	Units []InsideUnit
-	// Understanding is what pstack's how wrote about the module.
+	// Understanding is what a reader wrote about the module.
 	Understanding *Understanding
 	// Notes are the module's slots; Contracts the notes of each contract
 	// whose home is this module.
@@ -73,7 +73,7 @@ type InsideUnit struct {
 	// Guess is true when only a reader vouches for the sentence.
 	Guess   bool
 	Anchors []string
-	// Understanding is pstack how's text for a module that holds no units,
+	// Understanding is a reader's text for a module that holds no units,
 	// which has no inside to show it beside, and Notes are its slots.
 	Understanding *Understanding
 	Notes         []Note `json:",omitempty"`

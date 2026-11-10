@@ -122,7 +122,7 @@ abbd table KEY FILE|- [--source REF] [--root DIR]
                                      do not bear out
 abbd table KEY [--root DIR]          print the stored table as a draft to edit and store again
 abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
-                                     units, a reader's couplings with their quotes, how's text;
+                                     units, a reader's couplings with their quotes, a reader's text;
                                      QUERY is a unit ID or name, a file or directory path, a
                                      symbol, or a phrase, and a QUERY that is no unit lists
                                      the units it matches, best first, and explains the best

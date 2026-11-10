@@ -1,4 +1,4 @@
-// Package bootstrap folds the semantic supplement, what pstack's readers
+// Package bootstrap folds the semantic supplement, what readers
 // found with evidence, onto the result of the project extraction script.
 package bootstrap
 

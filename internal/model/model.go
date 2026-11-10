@@ -14,7 +14,7 @@ type Origin string
 const (
 	// Extracted facts come from the project's deterministic script.
 	Extracted Origin = "EXTRACTED"
-	// Inferred facts come from a pstack reader and rest on evidence.
+	// Inferred facts come from a reader and rest on evidence.
 	Inferred Origin = "INFERRED"
 	// UserStated facts are what a human said.
 	UserStated Origin = "USER_STATED"
