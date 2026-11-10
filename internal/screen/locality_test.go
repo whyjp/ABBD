@@ -77,7 +77,7 @@ func sampleModules(us []model.Unit) [][3]model.ID {
 }
 
 // A change confined to one module rewrites that module's page and the data
-// file, and no other page, and a unit added there the unit index too. An edit that only moves the lines a quote sits on
+// file, and no other page but that of a unit whose standing it changed, and a unit added there the unit index too. An edit that only moves the lines a quote sits on
 // rewrites nothing. So a pull request's blueprint diff stays where its code
 // diff is.
 func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
@@ -109,8 +109,10 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
 				got := rewritten(t, base, joined)
+				// a's own page, when it has one, counts the dependency it gained.
+				may := append(slices.Clone(own), string(a)+".html")
 				for _, f := range got {
-					if !slices.Contains(own, f) {
+					if !slices.Contains(may, f) {
 						t.Errorf("a relation between two units of %s rewrote %s", mod, f)
 					}
 				}
