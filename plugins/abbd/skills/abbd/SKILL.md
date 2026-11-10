@@ -12,7 +12,7 @@ argument-hint: "[unit or question]"
 
 This skill works under whatever mode is active. It adds the blueprint to the work and leaves analysis, design, decisions and implementation to that mode and the skills it uses.
 
-Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER_STATED` (a human said it, with where), `INFERRED` (a reader found it, with a verbatim quote that keeps it alive). Weigh an answer by whether its evidence still holds: the script reads an extracted fact again at every sync, a reader's claim stands only on its quotes, and a text or note goes STALE when the code under it changes. `abbd explain` names the commit, and the pull request, that recorded each reader's coupling. A reader's quote is live, drifted (its file no longer holds it as quoted; the claim still counts and is flagged drifted) or dead (its file is gone, or it stayed drifted past one revision).
+Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER_STATED` (a human said it, with where), `INFERRED` (a reader found it, with a verbatim quote that keeps it alive). Weigh an answer by whether its evidence still holds: the script reads an extracted fact again at every sync, a reader's claim stands only on its quotes, and a text or note goes STALE when the code under it changes. `abbd explain <ID>` names the commit, and the pull request, that recorded each reader's coupling. A reader's quote is live, drifted (its file no longer holds it as quoted; the claim still counts and is flagged drifted) or dead (its file is gone, or it stayed drifted past one revision).
 
 ## Before work
 
