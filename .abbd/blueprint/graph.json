@@ -7693,6 +7693,22 @@
                 "Code": false
               },
               {
+                "Text": "skills_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds both skills to the bundled reader and to commands ",
+                "Code": false
+              },
+              {
+                "Text": "parse",
+                "Code": true
+              },
+              {
+                "Text": " accepts. ",
+                "Code": false
+              },
+              {
                 "Text": "notes_test.go",
                 "Code": true
               },
