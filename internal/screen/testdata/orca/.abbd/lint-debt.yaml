@@ -22,3 +22,12 @@ debt:
         R: 1
     MOD-0081 shared types and schemas:
         R: 2
+pages:
+    MOD-0072 desktop renderer UI:
+        abreast: 154
+        colour_switches: 33
+        parallel_ink: 647
+    MOD-0098 src/:
+        abreast: 204
+        colour_switches: 45
+        parallel_ink: 254

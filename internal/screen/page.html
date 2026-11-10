@@ -69,7 +69,7 @@
       {{with .Understanding}}
       <div>{{template "howhead" .}}</div>
       {{template "howtext" .}}
-      {{else}}<p class="muted">이 모듈의 설명은 아직 없습니다. <code>abbd understand {{.ID}} FILE</code>로 채웁니다.</p>{{end}}
+      {{else}}<p class="muted">이 {{if .Feature}}기능{{else}}모듈{{end}}의 설명은 아직 없습니다. <code>abbd understand {{.ID}} FILE</code>로 채웁니다.</p>{{end}}
       {{template "notes" .Notes}}
       {{if .ContractNotes}}<h3>내놓는 계약의 설명</h3>{{range .Contracts}}{{if .Notes}}<div id="c-{{.ID}}"><h4>{{.Name}} <span class="muted key">{{.ID}}</span></h4>{{template "notes" .Notes}}</div>{{end}}{{end}}{{end}}
     </div>

@@ -11,3 +11,8 @@ ceilings:
     placement: 48
     tees: 0
     weighed: 506
+pages:
+    overview:
+        abreast: 0
+        colour_switches: 55
+        parallel_ink: 0

@@ -13,6 +13,8 @@ import (
 // implements or uses each one out to it.
 type Inside struct {
 	ID, Name string
+	// Feature says the view is a feature's, which the page names 기능.
+	Feature bool `json:"-"`
 	// Drawing is what the module's page draws. graph.json leaves it out.
 	Drawing Drawing `json:"-"`
 	// Units lists the inside units with the one sentence each is responsible for.
@@ -109,7 +111,7 @@ func (ln line) String() string {
 // child, the children it meets, and only its own lines.
 func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat map[string]int, by tactic, read *cost) (Inside, bool) {
 	t := o.tree
-	ins := Inside{ID: string(m), Name: o.name(m), Up: "#overview"}
+	ins := Inside{ID: string(m), Name: o.name(m), Feature: t.units[m].Kind == model.Feature, Up: "#overview"}
 	if p := t.units[m].Parent; p != "" {
 		ins.Up = "#m-" + string(p)
 	}

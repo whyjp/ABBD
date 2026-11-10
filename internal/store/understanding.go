@@ -22,9 +22,9 @@ import (
 // a text stored then.
 const CodeFormat = 3
 
-// Understanding is what a reader wrote about one module for a human to
-// read beside its drawing: its Overview and Key Concepts. It is a reader's
-// account, so its origin is INFERRED, and Digest is the module's code as it
+// Understanding is what a reader wrote about one module or feature for a
+// human to read beside its drawing: its Overview and Key Concepts. It is a
+// reader's account, so its origin is INFERRED, and Digest is the unit's code as it
 // was when the text was written. Code is that code by what read it, an
 // anchor or a quote, which lets a restamp prove on any clone that the
 // module's code has not changed since. An older ABBD recorded no Code.

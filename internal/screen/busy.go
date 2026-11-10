@@ -43,26 +43,34 @@ func inkStretches(s sheet) []inkStretch {
 	return out
 }
 
-// parallelInk is how far, in px, stretches of two different drawn paths
-// run along each other the same way, flat or upright, no more than
-// besideGap apart: lines a hand drawing would merge into one bus, or keep
-// apart. Each pair of stretches counts once.
-func parallelInk(s sheet) int {
-	type run struct {
-		path       int
-		at, lo, hi float64
-	}
-	var flat, upright []run
+// axisRun is a flat or upright stretch of a drawn path: it stands at at
+// across the way it runs, from lo to hi along it.
+type axisRun struct {
+	path       int
+	at, lo, hi float64
+}
+
+// axisRuns are the flat and the upright stretches of s's drawn paths.
+func axisRuns(s sheet) (flat, upright []axisRun) {
 	for _, p := range inkStretches(s) {
 		switch {
 		case p.a.y == p.b.y:
-			flat = append(flat, run{p.path, p.a.y, math.Min(p.a.x, p.b.x), math.Max(p.a.x, p.b.x)})
+			flat = append(flat, axisRun{p.path, p.a.y, math.Min(p.a.x, p.b.x), math.Max(p.a.x, p.b.x)})
 		case p.a.x == p.b.x:
-			upright = append(upright, run{p.path, p.a.x, math.Min(p.a.y, p.b.y), math.Max(p.a.y, p.b.y)})
+			upright = append(upright, axisRun{p.path, p.a.x, math.Min(p.a.y, p.b.y), math.Max(p.a.y, p.b.y)})
 		}
 	}
+	return flat, upright
+}
+
+// parallelInk is how far, in px, stretches of two different drawn paths
+// run along each other the same way, flat or upright, no more than
+// besideGap apart: lines doubled side by side, which a hand drawing would
+// merge into one bus, or keep apart. Each pair of stretches counts once.
+func parallelInk(s sheet) int {
+	flat, upright := axisRuns(s)
 	total := 0.0
-	for _, rs := range [][]run{flat, upright} {
+	for _, rs := range [][]axisRun{flat, upright} {
 		sort.Slice(rs, func(i, j int) bool { return rs[i].at < rs[j].at })
 		for i, r := range rs {
 			for _, q := range rs[i+1:] {
@@ -71,6 +79,50 @@ func parallelInk(s sheet) int {
 				}
 				if q.path != r.path {
 					total += math.Max(0, math.Min(r.hi, q.hi)-math.Max(r.lo, q.lo))
+				}
+			}
+		}
+	}
+	return int(math.Round(total))
+}
+
+// abreastGap is the width, in px, across which three or more drawn paths
+// running the same way read as lines abreast that a hand drawing would
+// draw as one.
+const abreastGap = 30.0
+
+// abreastInk is how far, in px, three or more different drawn paths run
+// the same way, flat or upright, within abreastGap across: each stretch of
+// the way counts once for every separate group of such paths.
+func abreastInk(s sheet) int {
+	flat, upright := axisRuns(s)
+	total := 0.0
+	for _, rs := range [][]axisRun{flat, upright} {
+		var cuts []float64
+		for _, r := range rs {
+			cuts = append(cuts, r.lo, r.hi)
+		}
+		slices.Sort(cuts)
+		cuts = slices.Compact(cuts)
+		for k := 1; k < len(cuts); k++ {
+			lo, hi := cuts[k-1], cuts[k]
+			var on []axisRun
+			for _, r := range rs {
+				if r.lo <= lo && r.hi >= hi {
+					on = append(on, r)
+				}
+			}
+			sort.Slice(on, func(i, j int) bool { return on[i].at < on[j].at })
+			for i := 0; i < len(on); {
+				paths, j := map[int]bool{}, i
+				for ; j < len(on) && on[j].at-on[i].at <= abreastGap; j++ {
+					paths[on[j].path] = true
+				}
+				if len(paths) >= 3 {
+					total += hi - lo
+					i = j
+				} else {
+					i++
 				}
 			}
 		}

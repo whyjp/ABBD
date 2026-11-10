@@ -386,11 +386,13 @@ func (s Store) SaveState(st State) error { return writeYAML(s.path("state.yaml")
 // in .abbd/lint-debt.yaml for abbd lint. Ceilings bound the totals over
 // every view, by the names abbd lint gives them, and Views records each
 // view's hard breaches by criterion, which may fall and may not rise.
-// Levels says, by view, why the repository keeps a view at a level abbd
-// lint would change.
+// Pages bounds, by view, the totals of each page a reader looks at, which
+// may fall and may not rise. Levels says, by view, why the repository keeps
+// a view at a level abbd lint would change.
 type LintDebt struct {
 	Ceilings map[string]int            `yaml:"ceilings,omitempty"`
 	Views    map[string]map[string]int `yaml:"debt,omitempty"`
+	Pages    map[string]map[string]int `yaml:"pages,omitempty"`
 	Levels   map[string]string         `yaml:"levels,omitempty"`
 }
 
