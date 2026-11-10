@@ -1,4 +1,4 @@
-// Package extract parses the topology a project's extraction script prints.
+// Package extract parses the topology that pstack extracts from code.
 // It is the boundary where untrusted model output becomes typed units.
 package extract
 
