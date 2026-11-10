@@ -22441,7 +22441,31 @@
                 "Code": true
               },
               {
-                "Text": " takes a stair the long way round: a line that comes down the middle, crosses a crowded row and swings round the box under it steps across higher, where nothing runs, and comes down beside that box, and a move that costs nothing is kept where a move of a whole run then reads better. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
+                "Text": " takes a stair the long way round: a line that comes down the middle, crosses a crowded row and swings round the box under it steps across higher, where nothing runs, and comes down beside that box, and a move that costs nothing is kept where a move of a whole run then reads better. A comb's stub, the end run of a line that leaves or reaches a box's top or bottom near a stub of the same place, kind, dotting and way, moves onto that stub (",
+                "Code": false
+              },
+              {
+                "Text": "combed",
+                "Code": true
+              },
+              {
+                "Text": "), so the lines leave as one stem and split at their track; ",
+                "Code": false
+              },
+              {
+                "Text": "roadCost.combs",
+                "Code": true
+              },
+              {
+                "Text": " counts the teeth the way lint's ",
+                "Code": false
+              },
+              {
+                "Text": "combs",
+                "Code": true
+              },
+              {
+                "Text": " does, and a move may not add one. A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
                 "Code": false
               },
               {
@@ -22757,7 +22781,7 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It first keeps 10px from both ends of the stretch, then, for a line still unlabelled, only 2px from an end where the line runs straight on along other lines' ink, a join rather than a turn, so a road that shortens a line's own stretch keeps its word. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
                 "Code": false
               },
               {
@@ -24691,7 +24715,23 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink and its ink abreast may not rise, and ",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs and its doglegs may not rise, a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
+                "Code": false
+              },
+              {
+                "Text": "doglegs",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "trace.go",
+                "Code": true
+              },
+              {
+                "Text": ", which reads no turn at a repeated point), and ",
                 "Code": false
               },
               {
@@ -24716,6 +24756,38 @@
               },
               {
                 "Text": " measures how busy a drawing reads at rest: the parallel ink, where a straight piece of one wire runs within 10px of another wire's in the same direction (lines doubled), the ink abreast, how far three or more wires run the same way within 30px across, the straight pieces drawn, the traced lines, and the fork levels, the flat-track heights a fork into one row takes past its first. ",
+                "Code": false
+              },
+              {
+                "Text": "combs",
+                "Code": true
+              },
+              {
+                "Text": " counts the teeth of each comb: stubs by which lines of one kind, source colour and dashing leave or reach one place the same way, standing within ",
+                "Code": false
+              },
+              {
+                "Text": "combGap",
+                "Code": true
+              },
+              {
+                "Text": " (50px) of the next, where a hand drawing brings them out as one stem. The trace keeps each route's own kind, source colour (",
+                "Code": false
+              },
+              {
+                "Text": "data-h",
+                "Code": true
+              },
+              {
+                "Text": ") and dashing for it as ",
+                "Code": false
+              },
+              {
+                "Text": "tracedWay.line",
+                "Code": true
+              },
+              {
+                "Text": ", since a mutual line wears the bypass colour. ",
                 "Code": false
               },
               {
