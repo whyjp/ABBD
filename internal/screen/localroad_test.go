@@ -1,51 +1,65 @@
 package screen
 
 import (
-	"bytes"
+	"math"
+	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/store"
 )
 
 // Where a line leaves or arrives it rides a local road: every piece of
 // road along a route's first or last run carries lines of that route's
-// kind only, so each line keeps its own look at its ends, in every view
-// of every fixture.
+// kind only, and is dotted just when the route's relations all arise in
+// design, unless it is too short to dot (planMin), so each line keeps its
+// own look at its ends, in every view of every fixture.
 func TestARouteEndRidesOnlyItsKind(t *testing.T) {
-	route := regexp.MustCompile(`<g class="route (\S+)[^"]*\br(\d+)\b[^"]*"[^>]*><path class="way" d="([^"]*)"`)
-	piece := regexp.MustCompile(`<path class="w ([^"]*)" d="([^"]*)"`)
-	rider := regexp.MustCompile(`\br(\d+)\b`)
-	for _, name := range []string{"orca", "pstack", "ripgrep", "self"} {
+	for _, name := range fixtures {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		tr := newTree(units)
 		for _, v := range views(fixture(t, name)) {
 			if !v.d.roads {
 				continue
 			}
-			var b bytes.Buffer
-			if err := site.ExecuteTemplate(&b, "drawing", v.d); err != nil {
-				t.Fatal(err)
-			}
-			kinds, ends := map[string]string{}, map[string][][2]fpt{}
-			for _, m := range route.FindAllStringSubmatch(b.String(), -1) {
-				p := svgPoints(m[3])
-				kinds[m[2]] = m[1]
-				ends[m[2]] = [][2]fpt{{p[0], p[1]}, {p[len(p)-2], p[len(p)-1]}}
-			}
-			for _, m := range piece.FindAllStringSubmatch(b.String(), -1) {
-				rs := rider.FindAllStringSubmatch(m[1], -1)
-				seen := map[string]bool{}
-				for _, r := range rs {
-					seen[kinds[r[1]]] = true
+			for _, w := range v.d.Wires {
+				ks := classNumbers(w.Lit, "r")
+				kinds := map[string]bool{}
+				for _, k := range ks {
+					kinds[v.d.Routes[k].Kind] = true
 				}
-				if len(seen) < 2 {
-					continue
+				p := svgPoints(w.D)
+				long := 0.0
+				for i := 1; i < len(p); i++ {
+					long += math.Abs(p[i].x-p[i-1].x) + math.Abs(p[i].y-p[i-1].y)
 				}
-				p := svgPoints(m[2])
-				for _, r := range rs {
-					for _, e := range ends[r[1]] {
-						for k := 1; k < len(p); k++ {
-							if sharedRun(p[k-1], p[k], e[0], e[1]) > 0 {
-								t.Errorf("%s %s: r%s's end %v rides a piece of %d kinds: %s", name, v.name, r[1], e, len(seen), m[1])
-							}
+				for _, k := range ks {
+					r := v.d.Routes[k]
+					q := svgPoints(r.D)
+					for _, e := range [][2]fpt{{q[0], q[1]}, {q[len(q)-2], q[len(q)-1]}} {
+						rides := false
+						for i := 1; i < len(p); i++ {
+							rides = rides || sharedRun(p[i-1], p[i], e[0], e[1]) > 0
+						}
+						if !rides {
+							continue
+						}
+						if len(kinds) > 1 {
+							t.Errorf("%s %s: r%d's end %v rides a piece of %d kinds: %s", name, v.name, k, e, len(kinds), w.Lit)
+						}
+						// Lines between the same two places read as one line,
+						// dotted only where all of them are (dress).
+						plan, own := tr.planOnly(r.rels), true
+						for _, o := range ks {
+							own = own && (tr.planOnly(v.d.Routes[o].rels) == plan || slices.Equal(v.d.Routes[o].ends, r.ends))
+						}
+						if w.Plan != plan && (w.Plan || long >= planMin) && !own {
+							t.Errorf("%s %s: r%d's end %v, dotted %v, rides a %.0fpx piece dotted %v: %s", name, v.name, k, e, plan, long, w.Plan, w.Lit)
 						}
 					}
 				}

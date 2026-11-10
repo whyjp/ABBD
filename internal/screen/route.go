@@ -552,8 +552,8 @@ func (l *layout) lay(reqs []wireReq, shared, apart bool, bent map[int]bool, twea
 		if r.to.node != "" {
 			ak.key = "node|" + r.to.node
 		}
-		dk.key += "|" + r.kind
-		ak.key += "|" + r.kind
+		dk.key += "|" + r.kind + fmt.Sprint(r.plan)
+		ak.key += "|" + r.kind + fmt.Sprint(r.plan)
 		// A line between two modules that use each other reads both ways,
 		// so apart keeps it off the buses of other pairs' lines (rule 18).
 		if apart && r.kind == "mutual" {
