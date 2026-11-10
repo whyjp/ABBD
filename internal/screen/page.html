@@ -17,19 +17,19 @@
     <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
     <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a></li>
     <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a></li>
+    <li><a href="#legend"{{if eq .Current "legend"}} aria-current="page"{{end}}>범례</a></li>
   </ul>
   {{if .Nav}}<h3>모듈</h3>
   <ul class="plain tree">{{range .Nav}}{{if not .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>
   <h3>기능</h3>
   <ul class="plain tree">{{range .Nav}}{{if .Feature}}<li class="d{{.Depth}}"><a href="#m-{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>
   {{else if .Trail}}<h3>이 모듈이 놓인 곳</h3>
-  <ul class="plain tree">{{range $i, $t := .Trail}}<li class="d{{$i}}">{{if index $.Paged .ID}}<a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a>{{else}}<strong>{{.Name}}</strong>{{end}}</li>{{end}}</ul>
-  <p class="muted">모듈의 전체 목록은 <a href="#overview">모듈과 계약</a>에 있습니다.</p>{{end}}
+  <ul class="plain tree">{{range $i, $t := .Trail}}<li class="d{{$i}}">{{if index $.Paged .ID}}<a href="#m-{{.ID}}"{{if eq (print "m-" .ID) $.Current}} aria-current="page"{{end}}>{{.Name}}</a>{{else}}<strong>{{.Name}}</strong>{{end}}</li>{{end}}</ul>{{end}}
 </nav>
 <main>
 <header>
   <p class="crumbs"><a href="#overview">청사진</a>{{range .Trail}} › {{if index $.Paged .ID}}<a href="#m-{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}{{end}}{{if and (ne .Current "overview") (not .Trail)}} › {{.Title}}{{end}}</p>
-  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+  {{if eq .Current "overview" "legend"}}<p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>{{end}}
 </header>
 {{end}}
 {{define "foot"}}<p class="muted">추출 <code>{{join .Extract " "}}</code></p>
@@ -61,9 +61,8 @@
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
   {{with .Responsibility}}<p class="role"><strong>맡은 것</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}{{with .Purpose}}<p class="role"><strong>왜 있는가</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}
-  <p class="muted" style="margin:0">테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
-  {{template "legend" (legendFor "inside" .Drawing.Quiet)}}{{template "keys" .Drawing}}
+  {{template "keys" .Drawing}}
   {{template "picker" .Focus}}
   <div class="text">
     <div class="about">
@@ -76,7 +75,7 @@
     </div>
     <div class="units">
       {{if .Units}}<h3>안의 단위</h3>
-      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
+      <ul class="plain units-list">{{range .Units}}<li id="i-{{.ID}}">{{if index $p.Paged .ID}}<a href="#m-{{.ID}}"><strong>{{.Name}}</strong></a>{{else}}<strong>{{.Name}}</strong>{{end}} <span class="muted">{{.Kind}}</span>{{if .Sentence}}<div>{{.Sentence}}{{if .Guess}} <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span>{{end}}</div>{{end}}<details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">{{.ID}}</span> <span class="key muted">{{join .Anchors ", "}}</span></details>{{with .Understanding}}<details class="how"><summary style="font-weight:400">{{template "howhead" .}}</summary>{{template "howtext" .}}</details>{{end}}{{if .Notes}}<details class="how"><summary style="font-weight:400">설명 {{len .Notes}}개</summary>{{template "notes" .Notes}}</details>{{end}}</li>{{end}}</ul>
       {{else}}<p class="muted">안의 단위가 아직 없습니다.</p>{{end}}
     </div>
   </div>
@@ -88,11 +87,28 @@
   {{if .Tables}}<h3>이 모듈이 행으로 놓인 표</h3>
   <ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">행 {{range $i, $n := .Rows}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
   {{if .Inferred}}<h3>판독한 결합</h3>
-  <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
+  <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
   {{range .Contracts}}{{$c := .}}{{with .Entries}}<div class="entries" id="t-{{$c.ID}}"><h3>{{$c.Name}} <span class="muted key">{{$c.ID}}</span></h3>{{template "entries" .}}</div>{{end}}{{end}}
 </section>
 {{with $p.Around}}{{template "focus" .}}{{end}}
 {{range .Focus}}{{template "focus" .}}{{end}}{{end}}
+{{template "foot" .}}{{end}}
+{{define "legendpage"}}{{template "head" .}}
+<section id="legend">
+  <h2>범례</h2>
+  <p class="muted" style="margin:0 0 6px">모든 그림이 같은 기호를 씁니다. 그림마다 되풀이하지 않고 여기에 한 번 둡니다.</p>
+  <div class="legend"><span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span></div>
+  <p>주 흐름은 굵은 색 선과 번호입니다. 다른 선은 직접 의존까지 가늘고 회색이며, 가리키면 제 색으로 켜집니다. 채운 상자는 진입점, 주 흐름이 시작하는 상자이거나, 허브, 다른 어느 상자보다 선이 1.5배 넘게 닿는 상자입니다. 허브의 선만 그 색이고 다른 선은 회색이며, 상자를 가리키면 제 색으로 켜집니다. 점선은 실행 중 호출이나 데이터 없이 설계로만 이어진 관계입니다 (관례, 임포트, 트레이트, 매크로, 빌드 기능). 옅은 띠는 프로젝트가 보여 주는 묶음입니다 (저장된 층, 같은 디렉터리, 외부 계약). 그 상자들이 붙어 있을 때만 그립니다.</p>
+  <h3>모듈과 계약</h3>
+  {{template "legend" (legendFor "overview" false)}}
+  <p>주 흐름이 있는 그림에서는 직접 의존도 회색으로 그립니다:</p>
+  {{template "legend" (legendFor "overview" true)}}
+  <h3>모듈의 안</h3>
+  <p>테두리의 칸은 이 모듈의 계약입니다. 채운 칸은 내놓는 계약, 빈 칸은 쓰는 계약이고, 맡은 단위에 가까운 변에 놓입니다. 점선 칸은 계약 없이 닿는 다른 모듈입니다.</p>
+  {{template "legend" (legendFor "inside" false)}}
+  <h3>한 상자의 둘레</h3>
+  <p>굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+</section>
 {{template "foot" .}}{{end}}
 {{define "contracts"}}{{template "head" .}}
 <section id="contracts">
@@ -127,27 +143,25 @@
 {{range .Ports}}{{if .Href}}<a href="{{.Href}}">{{end}}<g class="port {{.Class}} {{if .Exit}}exit{{else}}entry{{end}}{{if .OnFill}} onfill{{end}}{{with .Lit}} {{.}}{{end}}"{{with .Keys}} data-id="{{join . " "}}"{{end}}{{with .Hue}} data-h="{{.}}"{{end}}><title>{{.Title}}</title><rect x="{{.X}}" y="{{.RectY}}" width="{{.W}}" height="{{.H}}" rx="3"/>{{$p := .}}{{range $i, $l := .Lines}}<text class="chip" x="{{$p.X}}" dx="4" y="{{$p.LineY $i}}" dy="12.5">{{$l}}</text>{{end}}</g>{{if .Href}}</a>{{end}}{{end}}
 {{with .Card}}<g class="card"><rect class="card" x="{{.X}}" y="{{.Y}}" width="{{.W}}" height="{{.H}}" rx="6"/><text class="ct" x="{{plus .X 10}}" y="{{plus .Y 15}}">범례</text>{{range .Items}}<g class="ci"{{with .Hue}} data-h="{{.}}"{{end}}>{{if eq .Kind "lead"}}<path d="M{{.SX}} {{plus .Y -4}} h28" style="stroke:var(--c);stroke-width:3;fill:none"/><circle cx="{{plus .SX 12}}" cy="{{plus .Y -4}}" r="6" style="fill:var(--c)"/><text x="{{plus .SX 12}}" y="{{plus .Y -1}}" text-anchor="middle" style="font-size:8.5px;font-weight:700;fill:var(--lead-ink)">1</text>{{else if eq .Kind "fill"}}<rect x="{{.SX}}" y="{{plus .Y -10}}" width="28" height="12" rx="3" style="fill:var(--c)"/>{{else if eq .Kind "bypass"}}<path d="M{{.SX}} {{plus .Y -4}} h24 m-6 -4 l6 4 l-6 4" style="stroke:var(--hn);stroke-width:1.5;fill:none"/>{{else if eq .Kind "plan"}}<path d="M{{.SX}} {{plus .Y -4}} h28" style="stroke:var(--hn);stroke-width:2;stroke-dasharray:0.5 3.5;stroke-linecap:round;fill:none"/>{{else}}<path d="M{{.SX}} {{plus .Y -4}} h28" style="stroke:color-mix(in srgb, var(--hn) 70%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4;fill:none"/>{{end}}<text x="{{.TX}}" y="{{.Y}}">{{.Text}}</text></g>{{end}}</g>{{end}}
 </svg>{{end}}
-{{define "howhead"}}<span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">pstack how가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}{{end}}
+{{define "howhead"}}<span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">리더가 쓴 설명</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 모듈의 코드가 바뀌었습니다">STALE</span>{{end}}{{end}}
 {{define "howtext"}}{{template "blocks" .Blocks}}{{end}}
 {{define "spans"}}{{range .}}{{if .Code}}<code>{{.Text}}</code>{{else if .Bold}}<strong>{{.Text}}</strong>{{else}}{{.Text}}{{end}}{{end}}{{end}}
 {{define "blocks"}}{{range .}}{{if eq .Kind "h"}}<h4>{{template "spans" .Parts}}</h4>{{else if eq .Kind "li"}}<ul><li>{{template "spans" .Parts}}</li></ul>{{else if eq .Kind "table"}}<table>{{range $i, $r := .Rows}}<tr>{{range $r}}{{if eq $i 0}}<th>{{template "spans" .}}</th>{{else}}<td>{{template "spans" .}}</td>{{end}}{{end}}</tr>{{end}}</table>{{else if eq .Kind "pre"}}<pre>{{.Code}}</pre>{{else}}<p>{{template "spans" .Parts}}</p>{{end}}{{end}}{{end}}
-{{define "notes"}}{{range .}}{{$n := .}}<div class="note" id="n-{{.Ref}}"><h3>{{.Title}}{{if .Key}} <span class="muted key">{{.Key}}</span>{{end}} <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드가 바뀌면 이 설명만 STALE이 됨">판독</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}</h3>{{template "blocks" .Blocks}}{{with .Why}}<p><span class="pill stated" title="{{tip "stated"}}">{{label "stated"}}</span> 이유: {{.Value}} <span class="muted">출처 {{$n.Source}}</span></p>{{end}}{{with .RereadBy}}<p class="muted">인용한 코드가 바뀐 뒤 {{.}}이(가) {{$n.RereadOn}}에 다시 읽고 그대로 맞다고 확인함</p>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></div>{{end}}{{end}}
-{{define "entries"}}<details class="entries" open><summary class="muted" style="font-weight:400">항목 {{len .Rows}}개</summary><table><tr><th>항목</th><th>{{.Shape}}</th>{{if .Need}}<th>필수</th>{{end}}{{if .Providers}}<th>{{if .Data}}쓰는 단위{{else}}제공{{end}}</th>{{end}}{{if .Users}}<th>{{if .Data}}읽는 단위{{else}}쓰는 단위{{end}}</th>{{end}}<th>설명</th></tr>{{$t := .}}{{range .Rows}}<tr id="e-{{$t.ID}}.{{.Key}}"><td class="name"><code>{{.Name}}</code></td><td>{{if .Shape}}<code>{{.Shape}}</code>{{end}}</td>{{if $t.Need}}<td>{{.Need}}</td>{{end}}{{if $t.Providers}}<td>{{range .Providers}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Users}}<td>{{range .Users}}{{template "who" .}}{{end}}</td>{{end}}<td class="note">{{with .Note}}{{template "blocks" .Blocks}}{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details>{{else}}<span class="muted">설명 없음</span>{{end}}</td></tr>{{end}}</table></details>{{end}}
+{{define "notes"}}{{range .}}{{$n := .}}<div class="note" id="n-{{.Ref}}"><h3>{{.Title}}{{if .Key}} <span class="muted key">{{.Key}}</span>{{end}} <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드가 바뀌면 이 설명만 STALE이 됨">판독</span>{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}</h3>{{template "blocks" .Blocks}}{{with .Why}}<p><span class="pill stated" title="{{tip "stated"}}">{{label "stated"}}</span> 이유: {{.Value}} <span class="muted">출처 {{$n.Source}}</span></p>{{end}}{{with .RereadBy}}<p class="muted">인용한 코드가 바뀐 뒤 {{.}}이(가) {{$n.RereadOn}}에 다시 읽고 그대로 맞다고 확인함</p>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details></div>{{end}}{{end}}
+{{define "entries"}}<details class="entries"{{if and .Notes (le (len .Rows) 20)}} open{{end}}><summary class="muted" style="font-weight:400">항목 {{len .Rows}}개</summary><table><tr><th>항목</th><th>{{.Shape}}</th>{{if .Need}}<th>필수</th>{{end}}{{if .Providers}}<th>{{if .Data}}쓰는 단위{{else}}제공{{end}}</th>{{end}}{{if .Users}}<th>{{if .Data}}읽는 단위{{else}}쓰는 단위{{end}}</th>{{end}}{{if .Notes}}<th>설명</th>{{end}}</tr>{{$t := .}}{{range .Rows}}<tr id="e-{{$t.ID}}.{{.Key}}"><td class="name"><code>{{.Name}}</code></td><td>{{if .Shape}}<code>{{.Shape}}</code>{{end}}</td>{{if $t.Need}}<td>{{.Need}}</td>{{end}}{{if $t.Providers}}<td>{{range .Providers}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Users}}<td>{{range .Users}}{{template "who" .}}{{end}}</td>{{end}}{{if $t.Notes}}<td class="note">{{with .Note}}{{template "blocks" .Blocks}}{{if .Stale}} <span class="pill STALE" title="이 설명을 쓴 뒤 인용한 코드가 바뀌었습니다: {{join .Changed ", "}}">STALE</span>{{end}}<details><summary class="muted" style="font-weight:400">근거 {{len .Quotes}}개</summary>{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</details>{{end}}</td>{{end}}</tr>{{end}}</table></details>{{end}}
 {{define "who"}}<span class="who" title="{{.ID}}">{{.Name}}{{if ne .Badge "extracted"}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span>{{end}}</span>{{end}}
 {{define "picker"}}{{if .}}<div class="chips picker"><span class="muted">선이 많아 한 상자씩 봅니다. 상자를 고르면 그 상자와 닿는 상자, 그 사이의 선만 그립니다:</span>{{range .}} <a class="chip" href="#{{.ID}}" title="닿는 상자 {{.Ring}}개">{{.Name}}</a>{{end}}</div>{{end}}{{end}}
 {{define "focus"}}<section class="inside" id="{{.ID}}">
   <div class="drawhead"><h2>{{.Name}} 둘레 <span class="muted key">{{.Unit}}</span></h2><div class="views"><span class="muted">{{.OfName}}에서 고른 상자</span> <a href="{{.Of}}">전체 그림으로</a>{{if .In}} <a href="{{.In}}">{{.Name}}의 안으로</a>{{end}}</div></div>
-  <p class="muted" style="margin:0">굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
-  {{if eq .Of "#overview"}}{{template "legend" (legendFor "overview" .Drawing.Quiet)}}{{else}}{{template "legend" (legendFor "inside" .Drawing.Quiet)}}{{end}}{{template "keys" .Drawing}}
+  {{template "keys" .Drawing}}
 </section>
 {{end}}
 {{define "keys"}}<div class="legend keys">
-{{with .Lead}}<span><svg width="44" height="18"><g data-h="{{.Hue}}"><path d="M0 9 H34" style="stroke:var(--c);stroke-width:3.2"/><path d="M33 4 L43 9 L33 14 z" style="fill:var(--c)"/><circle cx="15" cy="9" r="8" style="fill:var(--c)"/><text x="15" y="12.7" text-anchor="middle" style="font-size:10.5px;font-weight:700;fill:var(--lead-ink)">1</text></g></svg>{{if .Key}}주 흐름: 저장된 흐름 {{.Key}}의 단계 순서 ({{.Title}}){{else}}주 흐름 (추정): 아무 상자도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감{{end}}. 다른 선은 직접 의존까지 가늘고 회색이며, 가리키면 제 색으로 켜집니다</span>{{end}}
-{{with .Filled}}<span><svg width="30" height="14"><rect data-h="{{.Hue}}" x="1" y="1" width="28" height="12" rx="3" style="fill:var(--c)"/></svg>채운 상자: {{if eq (role .) "허브"}}허브, 다른 어느 상자보다 선이 1.5배 넘게 닿는 상자. 허브의 선만 그 색이고 다른 선은 회색이며, 상자를 가리키면 제 색으로 켜집니다{{else}}진입점, 주 흐름이 시작하는 상자{{end}}</span>{{end}}
-{{if .Planned}}<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 실행 중 호출이나 데이터 없이 설계로만 이어진 관계 (관례, 임포트, 트레이트, 매크로, 빌드 기능)</span>{{end}}
-{{if .Zones}}<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="4" style="fill:color-mix(in srgb, var(--h0) 10%, transparent);stroke:color-mix(in srgb, var(--h0) 30%, transparent)"/></svg>옅은 띠: 프로젝트가 보여 주는 묶음 (저장된 층, 같은 디렉터리, 외부 계약). 그 상자들이 붙어 있을 때만 그립니다</span>{{end}}
-<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="3" style="fill:color-mix(in srgb, var(--h0) 5%, var(--panel));stroke:var(--h0);stroke-width:1.5"/></svg>상자 테두리와 옅은 바탕: 그 상자의 색. 상자 아래 작은 글자: 종류, 그리고 역할 (진입점, 허브, 외부)</span>
+{{with .Lead}}<span><svg width="44" height="18"><g data-h="{{.Hue}}"><path d="M0 9 H34" style="stroke:var(--c);stroke-width:3.2"/><path d="M33 4 L43 9 L33 14 z" style="fill:var(--c)"/><circle cx="15" cy="9" r="8" style="fill:var(--c)"/><text x="15" y="12.7" text-anchor="middle" style="font-size:10.5px;font-weight:700;fill:var(--lead-ink)">1</text></g></svg>{{if .Key}}주 흐름: 저장된 흐름 {{.Key}}의 단계 순서 ({{.Title}}){{else}}주 흐름 (추정): 아무 상자도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감{{end}}</span>{{end}}
+{{with .Filled}}<span><svg width="30" height="14"><rect data-h="{{.Hue}}" x="1" y="1" width="28" height="12" rx="3" style="fill:var(--c)"/></svg>채운 상자: {{if eq (role .) "허브"}}허브{{else}}진입점, 주 흐름이 시작하는 상자{{end}}</span>{{end}}
+{{if .Planned}}<span><svg width="34" height="8"><path d="M1 4 H33" style="stroke:var(--hn);stroke-width:1.5;stroke-dasharray:0.5 3.5;stroke-linecap:round;stroke-width:2"/></svg>점선: 설계로만 이어진 관계</span>{{end}}
+{{if .Zones}}<span><svg width="30" height="14"><rect x="1" y="1" width="28" height="12" rx="4" style="fill:color-mix(in srgb, var(--h0) 10%, transparent);stroke:color-mix(in srgb, var(--h0) 30%, transparent)"/></svg>옅은 띠: 프로젝트가 보여 주는 묶음</span>{{end}}
 </div>{{end}}
 {{define "legend"}}<div class="legend">{{if eq .Kind "overview"}}
 <span><svg width="30" height="12"><rect x="1" y="1" width="28" height="10" rx="2" style="fill:color-mix(in srgb, var(--h2) 15%, var(--panel));stroke:var(--h2)"/></svg>제공하는 계약 (출구), 상자의 색</span>
@@ -166,7 +180,7 @@
 <span><svg width="34" height="12"><path d="M0 6 H13 M21 6 H34" style="stroke:var(--hn);stroke-width:1.5"/><path d="M17 0 V12" style="stroke:var(--hn);stroke-width:1.5"/></svg>끊긴 선: 다른 선 아래로 지나감. 점은 만나는 곳</span>
 <span><svg width="34" height="16"><path d="M0 14 H34" style="stroke:var(--hn);stroke-width:1.5"/><text x="17" y="10" text-anchor="middle" style="font-size:11px;fill:var(--hn)">호출</text></svg>선 위의 낱말: 건너는 것(phrase), 없으면 관계가 생기는 방식(via)</span>
 <span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:color-mix(in srgb, var(--hn) 70%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4"/></svg>옅은 점선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로). 상자에 마우스를 올리면 그 상자의 선만 남습니다</span>
-<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: pstack 리더가 읽은 관계</span>
+<span title="{{tip "inferred"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: 리더가 읽은 관계</span>
 <span title="{{tip "stated"}}"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>확인: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
 <span><b class="muted">×N</b> 한곳으로 모이는 선 N개</span>{{end}}

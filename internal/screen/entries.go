@@ -19,6 +19,9 @@ type Entries struct {
 	Need, Providers, Users bool
 	// Data words the use columns as writers and readers.
 	Data bool
+	// Notes says a row has a note, so the table carries a note column and
+	// opens when it is short.
+	Notes bool
 }
 
 // EntryRow is one entry: the code's name and shape, the units that provide
@@ -72,6 +75,7 @@ func entries(in Input, u model.Unit) *Entries {
 		t.Need = t.Need || row.Need != ""
 		t.Providers = t.Providers || len(row.Providers) > 0
 		t.Users = t.Users || len(row.Users) > 0
+		t.Notes = t.Notes || row.Note != nil
 		t.Rows = append(t.Rows, row)
 	}
 	return t

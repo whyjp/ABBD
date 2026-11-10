@@ -276,16 +276,17 @@ svg [data-h="n"] { --c: var(--hn); }
     <li><a href="index.html">모듈과 계약</a></li>
     <li><a href="contracts.html">계약 목록</a></li>
     <li><a href="units.html">단위 목록</a></li>
+    <li><a href="legend.html">범례</a></li>
   </ul>
   
 </nav>
 <main>
 <header>
   <p class="crumbs"><a href="index.html">청사진</a> › What does abbd sync do, in order?</p>
-  <p class="fresh muted">이 청사진이 지금 코드와 맞는지는 <code>abbd status</code>가 알려 줍니다.</p>
+  
 </header>
 <div class="solo"><section class="inside flow" id="flow-sync">
-  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="pstack 리더가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">번호는 실행 순서입니다. 왼쪽 상자는 그 단계를 실행하는 단위이고, 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. → 칸은 단계가 닿는 단위로, 저장된 관계가 있는 것만 그립니다.</p>
   <div class="caption text"><p>What one <code>abbd sync</code> does, from the registered script to the rendered blueprint. Everything after the extraction runs inside <code>syncActual</code>, and publishing runs in <code>run</code> after any command that writes.</p></div>
   

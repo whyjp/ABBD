@@ -15,10 +15,13 @@ import (
 )
 
 var (
-	fence      = regexp.MustCompile("(?s)```[a-z]*\n(.*?)```")
-	inline     = regexp.MustCompile("`(abbd [^`]+)`")
-	argument   = regexp.MustCompile(`"[^"]*"|'[^']*'|\S+`)
-	pstackPath = regexp.MustCompile("`<pstack>/([^`]+)`")
+	fence    = regexp.MustCompile("(?s)```[a-z]*\n(.*?)```")
+	inline   = regexp.MustCompile("`(abbd [^`]+)`")
+	argument = regexp.MustCompile(`"[^"]*"|'[^']*'|\S+`)
+
+	readerPath   = regexp.MustCompile("`((?:\\.\\./abbd/)?references/reader\\.md)`")
+	needsPstack  = regexp.MustCompile(`<pstack>|(?i)install pstack`)
+	pstackHowHop = regexp.MustCompile(`\b(?:how(?:'s| reads?)|run how)\b`)
 )
 
 func readRepo(t *testing.T, rel ...string) string {
@@ -101,6 +104,7 @@ func TestSkillCommandsAreRealCLICommands(t *testing.T) {
 		}
 		texts[path] = string(b)
 	}
+	texts["the reader"] = readPlugin(t, "skills", "abbd", "references", "reader.md")
 	seen := 0
 	for where, text := range texts {
 		for _, line := range commandLines(text) {
@@ -121,33 +125,37 @@ func TestSkillCommandsAreRealCLICommands(t *testing.T) {
 	}
 }
 
-// The skills reference the pinned pstack by path instead of copying it, so
-// every path must exist in that version.
-func TestSkillsReferenceThePinnedPstack(t *testing.T) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		t.Fatal(err)
-	}
-	pstack := filepath.Join(home, ".claude", "plugins", "cache", "cursor-plugins", "pstack", "0.15.36")
-	if _, err := os.Stat(filepath.Join(pstack, "skills", "how", "SKILL.md")); err != nil {
-		t.Skip("pstack 0.15.36 is not installed")
-	}
-	refs := 0
+// ABBD works without pstack: both skills read code with the bundled reader,
+// and pstack appears only in the reader's paragraph that checks whether it is
+// installed before using it as an optional engine.
+func TestSkillsReferenceTheBundledReader(t *testing.T) {
 	for _, path := range skills(t) {
 		b, _ := os.ReadFile(path)
-		for _, m := range pstackPath.FindAllStringSubmatch(string(b), -1) {
-			ref := strings.TrimSuffix(m[1], "/")
-			if strings.ContainsAny(ref, "<*") {
-				continue
-			}
-			refs++
-			if _, err := os.Stat(filepath.Join(pstack, ref)); err != nil {
-				t.Errorf("%s references <pstack>/%s, which pstack 0.15.36 does not have", path, m[1])
-			}
+		skill := string(b)
+		m := readerPath.FindStringSubmatch(skill)
+		if m == nil {
+			t.Errorf("%s must name the bundled reader, references/reader.md", path)
+			continue
+		}
+		if _, err := os.Stat(filepath.Join(filepath.Dir(path), m[1])); err != nil {
+			t.Errorf("%s names %s, which the plugin does not ship", path, m[1])
+		}
+		if needsPstack.MatchString(skill) {
+			t.Errorf("%s still needs pstack; it must work with the bundled reader alone", path)
+		}
+		if loc := pstackHowHop.FindStringIndex(skill); loc != nil {
+			t.Errorf("%s still sends reading to pstack how: %q", path, skill[loc[0]:loc[1]])
 		}
 	}
-	if refs < 6 {
-		t.Fatalf("found only %d pstack references; the skills should point at pstack rather than inline it", refs)
+	reader := readPlugin(t, "skills", "abbd", "references", "reader.md")
+	var mentions []string
+	for _, para := range strings.Split(reader, "\n\n") {
+		if strings.Contains(para, "pstack") {
+			mentions = append(mentions, para)
+		}
+	}
+	if len(mentions) != 1 || !strings.Contains(mentions[0], "exists") || !strings.Contains(mentions[0], "Glob") {
+		t.Fatalf("the reader must name pstack in one paragraph that checks with Glob whether it exists, found %d: %q", len(mentions), mentions)
 	}
 }
 
@@ -182,7 +190,7 @@ func TestAbbdQueriesFirstEndsWithTheDiffAndRoutesNothing(t *testing.T) {
 			last = i
 		}
 	}
-	inOrder("Before work", ".abbd/blueprint/index.html", "abbd explain", "abbd path", "abbd impact", "`<pstack>/skills/how/SKILL.md`", "`<pstack>/skills/blast-radius/SKILL.md`", "abbd record relation", "abbd record unit")
+	inOrder("Before work", ".abbd/blueprint/index.html", "abbd explain", "abbd path", "abbd impact", "`references/reader.md`", "abbd record relation", "abbd record unit")
 	inOrder("What the human states", "abbd record fact", "--source", "abbd record relation")
 	inOrder("After work", "abbd sync", "abbd diff", "PR description", "Commit `.abbd/`")
 	for _, routing := range []string{`(?i)\bplaybooks?\b`, `(?i)\bautonomy\b`, `AskQuestion`, `(?i)ask the (human|user)`, `(?i)when to ask`, `(?i)\broute\b`, `-mode/SKILL\.md`} {
@@ -197,12 +205,12 @@ func TestAbbdQueriesFirstEndsWithTheDiffAndRoutesNothing(t *testing.T) {
 	}
 }
 
-// Setup follows swarm and how unchanged and adds only ABBD's result format,
+// Setup reads with the bundled reader and adds ABBD's result format,
 // which carries what makes a semantic coupling checkable. It has no
 // alignment, and it ends by installing the always-on block.
 func TestAbbdSetupAsksForCheckableCouplingsAndNoAlignment(t *testing.T) {
 	skill := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
-	for _, want := range []string{"`<pstack>/skills/swarm/SKILL.md`", "`<pstack>/skills/how/references/explorer-prompt.md`", `"evidence"`, `"via"`, `"parent"`, "verbatim", "abbd understand", "`abbd install`"} {
+	for _, want := range []string{"`../abbd/references/reader.md`", `"evidence"`, `"via"`, `"parent"`, "verbatim", "abbd understand", "`abbd install`"} {
 		if !strings.Contains(skill, want) {
 			t.Errorf("abbd-setup must name %s", want)
 		}

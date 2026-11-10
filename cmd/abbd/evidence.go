@@ -144,6 +144,7 @@ func (e env) status() error {
 		}
 	}
 	fmt.Fprintln(e.stdout, "units:", strings.Join(ks, ", "))
+	fmt.Fprintln(e.stdout, described(in.Units))
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
 	stale := 0
@@ -165,7 +166,7 @@ func (e env) status() error {
 		fmt.Fprintf(e.stdout, "orphaned: %s is not a module or feature now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
 	}
 	if stale > 0 {
-		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, run pstack how and abbd understand", stale))
+		behind = append(behind, fmt.Sprintf("%d module text(s) STALE, read each again with the /abbd skill's reader and store it with abbd understand", stale))
 	}
 	if n := e.statusNotes(in.Units, in.Notes, in.Strays, texts); n > 0 {
 		behind = append(behind, fmt.Sprintf("%d note(s) STALE, read the code each cites again and store it with abbd understand ID.SLOT FILE --evidence, or with abbd understand ID.SLOT --reread-by WHO when it still holds as written, or drop it with abbd forget ID.SLOT", n))
@@ -260,3 +261,24 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 	}
 	return stale
 }
+
+// described reports the present units that record neither a purpose nor a
+// responsibility, whose pages and rows can say nothing of what they are for.
+func described(units []model.Unit) string {
+	var bare []string
+	for _, u := range model.Present(units) {
+		if !hasValue(u.Purpose) && !hasValue(u.Responsibility) {
+			bare = append(bare, string(u.ID))
+		}
+	}
+	line := fmt.Sprintf("described: %d unit(s) without a purpose or responsibility", len(bare))
+	if len(bare) > 10 {
+		bare = append(bare[:10], "...")
+	}
+	if len(bare) > 0 {
+		line += ": " + strings.Join(bare, ", ")
+	}
+	return line
+}
+
+func hasValue(f *model.Fact) bool { return f != nil && f.Value != "" }
