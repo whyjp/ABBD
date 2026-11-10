@@ -19953,6 +19953,15 @@
             "Kind": "p",
             "Parts": [
               {
+                "Text": "unit: MOD-0034",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
                 "Text": "--- unit: MOD-0034 ---",
                 "Code": false
               }
@@ -22617,7 +22626,23 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It first keeps 10px from both ends of the stretch, then, for a line still unlabelled, only 2px from an end where the line runs straight on along other lines' ink, a join rather than a turn, so a road that shortens a line's own stretch keeps its word. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It first keeps 10px from both ends of the stretch, then, for a line still unlabelled, only 2px from an end where the line runs straight on along other lines' ink, a join rather than a turn, so a road that shortens a line's own stretch keeps its word. Each pass first keeps the word more than ",
+                "Code": false
+              },
+              {
+                "Text": "repeatNear",
+                "Code": true
+              },
+              {
+                "Text": " (200px) from the same word already set, then lets it stand near one on other lines, and drops it where a line whose ink touches its own, one leaving the same place or either leaving several, already says it nearby (",
+                "Code": false
+              },
+              {
+                "Text": "touching",
+                "Code": true
+              },
+              {
+                "Text": "): there the word reads for both and the tooltip still names the line, so a fan or a road says its via word once. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
                 "Code": false
               },
               {
@@ -24551,7 +24576,7 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs and its doglegs may not rise, a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
                 "Code": false
               },
               {
@@ -24607,7 +24632,39 @@
                 "Code": true
               },
               {
-                "Text": " (50px) of the next, where a hand drawing brings them out as one stem. The trace keeps each route's own kind, source colour (",
+                "Text": " (50px) of the next, where a hand drawing brings them out as one stem. ",
+                "Code": false
+              },
+              {
+                "Text": "labelRepeats",
+                "Code": true
+              },
+              {
+                "Text": " counts the labels that say a word another label of that word says within ",
+                "Code": false
+              },
+              {
+                "Text": "repeatNear",
+                "Code": true
+              },
+              {
+                "Text": ", chained one to the next, and ",
+                "Code": false
+              },
+              {
+                "Text": "labelled",
+                "Code": true
+              },
+              {
+                "Text": " the routes a labelled wire rides or carries a relation of, reported beside ",
+                "Code": false
+              },
+              {
+                "Text": "routes",
+                "Code": true
+              },
+              {
+                "Text": " as the labels' coverage. The trace keeps each route's own kind, source colour (",
                 "Code": false
               },
               {

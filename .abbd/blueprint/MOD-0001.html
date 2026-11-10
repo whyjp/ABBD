@@ -609,7 +609,7 @@ cmd/abbd/setup.go &#34;if ex, f, err = bootstrap.Overlay(ex, doc); err != nil {&
 record writers consumes unit files (via data), 판독
 건너는 것: unit .md (판독) 2/2
 cmd/abbd/diff.go &#34;was, err := e.st.UnitsAt(base)&#34;
-cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><text class="count e1 e5 e10 r1 r14" x="501" y="334">×2</text><text class="lab said e1 e5 e10 r1 r14" data-h="0" x="529" y="316" text-anchor="middle">unit .md</text><path class="w consumes joins e1 e5 e7 e10 e17 e22 r1 r3 r14 r22" d="M603 274 L509 274" data-h="1"><title>review commands consumes unit files (via data), 판독
+cmd/abbd/record.go &#34;return e.st.SaveUnits([]model.Unit{u})&#34;</title></path><text class="count e1 e5 e10 r1 r14" x="501" y="334">×2</text><path class="w consumes joins e1 e5 e7 e10 e17 e22 r1 r3 r14 r22" d="M603 274 L509 274" data-h="1"><title>review commands consumes unit files (via data), 판독
 review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
@@ -681,7 +681,7 @@ sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
-cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab said e3 e18 r10" data-h="3" x="833" y="316" text-anchor="middle">ID reconcile 외 2</text><path class="w consumes joins e3 e5 e9 e10 e18 r7 r10 r14" d="M859 274 L787 274" data-h="0"><title>sync pipeline consumes extraction JSON (via data), 판독
+cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab said e3 e18 r10" data-h="3" x="705" y="304" text-anchor="middle">ID reconcile 외 2</text><path class="w consumes joins e3 e5 e9 e10 e18 r7 r10 r14" d="M859 274 L787 274" data-h="0"><title>sync pipeline consumes extraction JSON (via data), 판독
 sync pipeline depends_on internal/evidence (via call), 판독
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
@@ -707,7 +707,7 @@ cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><text class="lab said e5 e13 r16" data-h="0" x="930" y="316" text-anchor="middle">edge key</text><path class="w consumes e4 e5 e15 r11 r15" d="M1079 274 L1079 350" data-net="25" data-h="0" marker-end="url(#m-use-0)"><title>query commands consumes module understanding (via data), 판독
 record writers consumes module understanding (via data), 판독
 cmd/abbd/query.go &#34;texts, err := e.st.LoadUnderstandings()&#34;
-cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&#34;</title></path><text class="count e4 e5 e15 r11 r15" x="1084" y="334">×2</text><text class="lab e4 e5 e15 r11 r15" data-h="0" x="1101" y="316" text-anchor="middle">데이터</text><path class="w consumes back e3 e8 r6" d="M883 58 L883 38" data-net="26" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes project.yaml (via config), 판독
+cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&#34;</title></path><text class="count e4 e5 e15 r11 r15" x="1084" y="334">×2</text><path class="w consumes back e3 e8 r6" d="M883 58 L883 38" data-net="26" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes project.yaml (via config), 판독
 건너는 것: extract argv (판독) 1/1
 cmd/abbd/main.go &#34;if len(p.Extract) == 0 {&#34;</title></path><path class="w consumes back e3 e14 r8" d="M883 58 L953 58 L953 38" data-net="27" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path><text class="lab e3 e14 r8" data-h="3" x="918" y="54" text-anchor="middle">데이터</text><path class="w consumes joins back e3 e8 e14 r6 r8" d="M883 86 L883 58" data-origin="inferred" data-net="28" data-h="3"><title>sync pipeline consumes project.yaml (via config), 판독
@@ -960,7 +960,7 @@ sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
-cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab said e0 e5 r4" data-h="3" x="361" y="306" text-anchor="middle">ID reconcile 외 2</text><path class="w consumes e0 e4 r2" d="M288 310 L288 330" data-net="7" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
+cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><path class="w consumes e0 e4 r2" d="M288 310 L288 330" data-net="7" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path>
 <circle class="junction road e0 e2 e3" data-h="3" cx="182" cy="310" r="3"/><circle class="junction road e0 e2 e3 e4" data-h="3" cx="248" cy="310" r="3"/><circle class="junction road e0 e4 e5" data-h="3" cx="264" cy="310" r="3"/><circle class="junction road e0 e4 e5" data-h="3" cx="288" cy="310" r="3"/>
 
@@ -1028,7 +1028,7 @@ record writers depends_on internal/evidence (via call), 판독
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;
 cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><path class="w depends_on e1 e5 r4" d="M306 214 L401 214 L401 234" data-net="6" data-h="0" marker-end="url(#m-dep-0)"><title>record writers depends_on internal/evidence (via call), 판독
 건너는 것: quote check (판독) 1/1
-cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><text class="lab said e1 e5 r4" data-h="0" x="353" y="226" text-anchor="middle">quote check</text><path class="w consumes e1 e3 r3" d="M306 214 L306 234" data-net="7" data-h="0" marker-end="url(#m-use-0)"><title>record writers consumes relation key (via convention), 판독
+cmd/abbd/record.go &#34;c := evidence.New(e.root)&#34;</title></path><path class="w consumes e1 e3 r3" d="M306 214 L306 234" data-net="7" data-h="0" marker-end="url(#m-use-0)"><title>record writers consumes relation key (via convention), 판독
 건너는 것: edge key (판독) 1/1
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path>
 <circle class="junction road e1 e2 e3 e4" data-h="0" cx="196" cy="214" r="3"/><circle class="junction road e1 e3 e5" data-h="0" cx="258" cy="214" r="3"/><circle class="junction road e1 e3 e5" data-h="0" cx="306" cy="214" r="3"/>
