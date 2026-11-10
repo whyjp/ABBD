@@ -115,8 +115,12 @@ func sign(v int) int {
 // junctions are the points where ink of one colour leaves in all four
 // directions: there two pieces cross, and only the dot says they join, as
 // where a line crosses onto a trunk that runs on past it. Where ink leaves
-// in three, a T, its shape says the line joins and it takes no dot.
-func junctions(ps []piece, joins []join) []Dot {
+// in three, a T, its shape says the line joins and it takes no dot, but
+// where a gap cuts its line close by (marks.go).
+func junctions(ps []piece, joins []join) []Dot { return ways(ps, joins, 4) }
+
+// ways are the points where ink of one colour leaves in n directions.
+func ways(ps []piece, joins []join, n int) []Dot {
 	arms := map[string]map[pt]bool{}
 	where := map[string]Dot{}
 	arm := func(k string, p, to pt) {
@@ -152,7 +156,7 @@ func junctions(ps []piece, joins []join) []Dot {
 	}
 	var out []Dot
 	for key, a := range arms {
-		if len(a) == 4 {
+		if len(a) == n {
 			out = append(out, where[key])
 		}
 	}

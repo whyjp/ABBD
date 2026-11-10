@@ -177,7 +177,7 @@ var criteria = []Criterion{
 	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
 	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
-	{ID: "J2", Hard: true, Says: "every four-way join carries a dot (rule 17)", check: (*look).dotted},
+	{ID: "J2", Hard: true, Says: "every four-way join, and every T a gap cuts close by, carries a dot (rule 17)", check: (*look).dotted},
 	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
 	{ID: "H1", Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
 	{ID: "H2", Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
@@ -1137,6 +1137,13 @@ func (l *look) dotted() []Breach {
 	var out []Breach
 	for _, p := range l.trace.Unmarked {
 		out = append(out, Breach{Got: 1, Allowed: 0, Text: fmt.Sprintf("ink goes four ways at %g,%g without a dot", p.x, p.y)})
+	}
+	for _, j := range l.trace.Splits {
+		p := pt{int(math.Round(j.at.x)), int(math.Round(j.at.y))}
+		if slices.Contains(l.trace.Unmarked, j.at) || !l.v.d.nearCut(p, "") || slices.ContainsFunc(l.s.junctions, func(o junction) bool { return o.kind == j.kind && dist(j.at, o.at) < 3 }) {
+			continue
+		}
+		out = append(out, Breach{Got: 1, Allowed: 0, Text: fmt.Sprintf("a gap cuts the line within %dpx of the T at %g,%g, which has no dot", gapJoin, j.at.x, j.at.y)})
 	}
 	return out
 }

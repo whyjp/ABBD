@@ -110,6 +110,7 @@ func (d *Drawing) mark(paths []drawn, reqs []wireReq, t tree) {
 	}
 	segs := segsOf(paths)
 	d.gaps(segs)
+	d.dotCutTees(paths)
 	d.labels(segs, heads(paths), t)
 }
 
@@ -294,6 +295,35 @@ func (d *Drawing) gaps(segs []seg) {
 		fmt.Fprint(f, d.Width, d.Height, w.D, w.Gaps)
 		w.Mask = fmt.Sprintf("x%x", f.Sum64())
 	}
+}
+
+// dotCutTees dots each T a gap cuts its line close by (rule 17).
+func (d *Drawing) dotCutTees(paths []drawn) {
+	var tees []Dot
+	for _, t := range ways(pieces(paths), joinPoints(paths), 3) {
+		if d.nearCut(pt{t.X, t.Y}, t.Kind) {
+			tees = append(tees, t)
+		}
+	}
+	d.Dots = append(d.Dots, faint(tees, paths)...)
+}
+
+// nearCut says a gap cuts a line of ink kind through p, or of any kind
+// when kind is empty, closer to p than gapJoin. A T there keeps its dot:
+// with its arm cut short, it would read as a corner and the line beyond
+// the gap as starting from nothing.
+func (d *Drawing) nearCut(p pt, kind string) bool {
+	for _, w := range d.Wires {
+		if kind != "" && w.inkKey() != kind {
+			continue
+		}
+		for _, g := range w.Gaps {
+			if g.Y == p.y && g.X0-gapJoin < p.x && p.x < g.X1+gapJoin && through(w.D, p) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // heads are where the arrowheads stand. A marker sits at the last point of
