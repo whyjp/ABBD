@@ -22,7 +22,7 @@ import (
 // bend the grid forced (re-implemented, no code copied). A route's first
 // and last run move only along the edge span its line may meet. A move is
 // kept only where no route then passes through a box, turns back, folds
-// onto itself, gains a jog or turns more than it was routed, no route's first or last run comes to lie on
+// onto itself or gains a jog, no route's first or last run comes to lie on
 // a line of another kind or dotting wherever it lands (a local road), and
 // the view gains no crossing, turn, fork height or split far from the
 // places it splits toward (J1), and loses one, or runs less ink beside
@@ -268,8 +268,6 @@ type roadView struct {
 	from, to []string
 	dest     []int
 	position func(y int) int
-	// turns are each route's turns as routed: no move gives a route more.
-	turns []int
 }
 
 func (v roadView) cost(ways [][]pt) roadCost {
@@ -571,12 +569,11 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for i, q := range reqs {
 		ends[i] = [2]end{q.from, q.to}
 	}
-	ways, turns := make([][]pt, len(r.ways)), make([]int, len(r.ways))
+	ways := make([][]pt, len(r.ways))
 	for i, w := range r.ways {
 		ways[i] = straight(w)
-		turns[i] = len(ways[i]) - 2
 	}
-	v := roadView{ink, plan, kinds, ends, from, to, dest, position, turns}
+	v := roadView{ink, plan, kinds, ends, from, to, dest, position}
 	settle := func(stairsFirst bool) ([][]pt, roadCost) {
 		ways, cost := ways, v.cost(ways)
 		for n := 0; n < roadMoves; n++ {
@@ -689,13 +686,12 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost, stairsFirst bool)
 		if !ok {
 			continue
 		}
-		gains, touched := false, map[int]bool{}
+		touched := map[int]bool{}
 		for _, s := range rs[m.run].segs {
 			next[s[0]] = straight(next[s[0]])
-			gains = gains || len(next[s[0]])-2 > v.turns[s[0]]
 			touched[s[0]] = true
 		}
-		if !gains && v.endMixes(next, touched) <= v.endMixes(ways, touched) && v.cost(next).better(cost) {
+		if v.endMixes(next, touched) <= v.endMixes(ways, touched) && v.cost(next).better(cost) {
 			return next, true
 		}
 	}

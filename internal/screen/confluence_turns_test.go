@@ -9,14 +9,10 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// A road never bends a route to board it: every route of every pstack
-// view turns no more once on the roads than as it was routed, so a line
-// that could drop straight still does.
+// A road never bends a route to board it: every route of every view of
+// every fixture turns no more once on the roads than as it was routed, so
+// a line that could drop straight still does.
 func TestARoadAddsNoTurnToARoute(t *testing.T) {
-	units, err := store.Open(filepath.Join("testdata", "pstack")).LoadUnits()
-	if err != nil {
-		t.Fatal(err)
-	}
 	var mu sync.Mutex
 	views, gained := 0, 0
 	roadsDrawn = func(routed, ways [][]pt) {
@@ -31,7 +27,13 @@ func TestARoadAddsNoTurnToARoute(t *testing.T) {
 		}
 	}
 	defer func() { roadsDrawn = nil }()
-	Build(Input{Units: units})
+	for _, name := range fixtures {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		Build(Input{Units: units})
+	}
 	if views == 0 {
 		t.Fatal("no view was drawn on roads")
 	}
