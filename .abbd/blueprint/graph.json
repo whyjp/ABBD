@@ -23883,7 +23883,23 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink and its ink abreast may not rise, and ",
+                "Text": ": its colour switches, its parallel ink, its ink abreast and its doglegs may not rise, a dogleg being a stretch under 30px between two turns of a traced line or between a turn and its end (",
+                "Code": false
+              },
+              {
+                "Text": "doglegs",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "trace.go",
+                "Code": true
+              },
+              {
+                "Text": "), and ",
                 "Code": false
               },
               {
