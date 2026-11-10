@@ -372,3 +372,13 @@ func ChangedSince(dir, rev string) ([]string, error) {
 	}
 	return files, nil
 }
+
+// LastCommitted is the date, as YYYY-MM-DD, of the last commit that touched
+// path, or "" when none did.
+func LastCommitted(dir, path string) string {
+	out, err := run(dir, nil, "log", "-1", "--format=%cs", "--", path)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(out)
+}

@@ -60,6 +60,7 @@
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
+{{with .Standing}}<p class="muted standing">제공 {{.Provides}} · 사용 {{.Uses}} · 계약 없는 직접 의존 {{.Direct}}{{if .TextStale}} · <span class="pill STALE">설명 STALE</span>{{end}}{{if .StaleNotes}} · STALE 설명 {{.StaleNotes}}개{{end}}{{if .Dead}} · 죽은 근거 {{.Dead}}개{{end}}</p>{{end}}
   {{with .Responsibility}}<p class="role"><strong>맡은 것</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}{{with .Purpose}}<p class="role"><strong>왜 있는가</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
   {{template "keys" .Drawing}}
