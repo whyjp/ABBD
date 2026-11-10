@@ -22617,7 +22617,7 @@
                 "Code": true
               },
               {
-                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
+                "Text": " gives a line upright in 11px text beside one straight stretch of its own ink, horizontal stretches first, clear of boxes, chips, counts, dots, origin marks, arrowheads, other labels and other lines. It first keeps 10px from both ends of the stretch, then, for a line still unlabelled, only 2px from an end where the line runs straight on along other lines' ink, a join rather than a turn, so a road that shortens a line's own stretch keeps its word. It keeps more than twice its offset from a line parallel to its stretch, and from a crossing flat line ",
                 "Code": false
               },
               {
@@ -24567,7 +24567,7 @@
                 "Code": true
               },
               {
-                "Text": "), and ",
+                "Text": ", which reads no turn at a repeated point), and ",
                 "Code": false
               },
               {
