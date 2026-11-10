@@ -191,7 +191,8 @@ func weighed(read *cost, r routing, reqs []wireReq) {
 // moved as only one step.
 const laneMoves = 1
 
-// choose draws a view with every tactic and keeps the first, the one the
+// choose draws a view with every tactic, its lines on roads, so each is
+// weighed as it would be drawn, and keeps the first, the one the
 // plain tactic orders on the whole width, unless a later one beats the best
 // so far. draw leaves what each routing costs in its read, and says false
 // for a tactic that has nothing to draw differently in this view. judge
@@ -244,6 +245,7 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	var bc cost
 	b := newGates()
 	for i, t := range ts {
+		t.roads = true
 		var c cost
 		v, ok := draw(t, &c)
 		if !ok {
@@ -272,9 +274,9 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 	// count would get it, and that is kept if the checks above pass it and
 	// it reads no worse. Only the kept drawing's roomy is read, and it was
 	// drawn without counted.
-	best, bt := vs[k], kept[k]
+	best := vs[k]
 	if cs[k].roomy {
-		t := bt
+		t := kept[k]
 		t.counted = true
 		var c cost
 		if v, ok := draw(t, &c); ok {
@@ -284,15 +286,9 @@ func choose[T any](ts []tactic, draw func(t tactic, read *cost) (T, bool), judge
 				pass = b.admit(t, c)
 			}
 			if pass && !cs[k].beats(c) {
-				best, bt = v, t
+				best = v
 			}
 		}
-	}
-	// The kept drawing is drawn once more with its lines on roads.
-	bt.roads = true
-	var c cost
-	if v, ok := draw(bt, &c); ok {
-		best = v
 	}
 	return best
 }
