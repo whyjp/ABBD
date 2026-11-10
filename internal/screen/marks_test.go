@@ -503,26 +503,28 @@ func inkTouches(d Drawing) func(i, j int) bool {
 	return func(i, j int) bool { return touch[i*n+j] }
 }
 
-// readsFor says a word on wire b reads for wire a too: both leave one
-// place, or either leaves several.
+// readsFor says a word on wire b reads for wire a too: paint gives both
+// one colour.
 func readsFor(a, b Wire) bool {
-	from := func(w Wire) model.ID {
-		var one model.ID
-		for _, n := range w.srcs {
-			if b := base(model.ID(n)); one == "" {
-				one = b
-			} else if b != one {
-				return ""
-			}
+	return a.Hue == b.Hue
+}
+
+// oneSource says wires a and b each leave one place, the same.
+func oneSource(a, b Wire) bool {
+	var one model.ID
+	for _, n := range append(slices.Clone(a.srcs), b.srcs...) {
+		if b := base(model.ID(n)); one == "" {
+			one = b
+		} else if b != one {
+			return false
 		}
-		return one
 	}
-	return from(a) == from(b) || from(a) == "" || from(b) == ""
+	return one != ""
 }
 
 // A word is said once where lines whose ink touches carry it: no two labels
-// of one word stand within repeatNear on lines whose ink touches, when they
-// leave one place or one of them leaves several, as the five 호출 on one fan
+// of one word stand within repeatNear on lines that leave one place and
+// whose ink touches, as the five 호출 on one fan
 // of self's FEAT-0001 did.
 func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
 	for _, name := range fixtures {
@@ -535,7 +537,7 @@ func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
 						continue
 					}
 					dx, dy := a.Label.X-b.Label.X, a.Label.Y-b.Label.Y
-					if dx*dx+dy*dy <= repeatNear*repeatNear && readsFor(a, b) {
+					if dx*dx+dy*dy <= repeatNear*repeatNear && oneSource(a, b) {
 						t.Errorf("%s %s: %q said at %d,%d and again at %d,%d on touching ink", name, v.name, a.Label.S, b.Label.X, b.Label.Y, a.Label.X, a.Label.Y)
 					}
 				}
@@ -578,4 +580,24 @@ func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
 			}
 		}
 	}
+}
+
+// The green line from internal/screen into store staleness hashes on self's
+// MOD-0041 keeps its 호출 though the cyan line from the abbd CLI it touches
+// says 호출 beside it: the two wear different colours.
+func TestAWordStaysBesideALineOfAnotherColour(t *testing.T) {
+	for _, v := range views(fixture(t, "self")) {
+		if v.name != "MOD-0041 internal/store" {
+			continue
+		}
+		at := slices.IndexFunc(v.d.Wires, func(w Wire) bool { return w.D == "M556 98 L710 98" })
+		if at < 0 {
+			t.Fatal("MOD-0041 draws no line M556 98 L710 98")
+		}
+		if l := v.d.Wires[at].Label; l == nil || l.S != "호출" {
+			t.Errorf("the line from internal/screen on MOD-0041 says %v, want 호출", l)
+		}
+		return
+	}
+	t.Fatal("self draws no MOD-0041 internal/store")
 }

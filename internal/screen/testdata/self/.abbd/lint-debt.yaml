@@ -28,8 +28,8 @@ pages:
         colour_switches: 8
         combs: 0
         doglegs: 8
-        label_repeats: 6
-        labelled: 10
+        label_repeats: 7
+        labelled: 11
         parallel_ink: 0
     overview:
         abreast: 0

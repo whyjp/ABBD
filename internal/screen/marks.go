@@ -127,6 +127,17 @@ var shapes = map[string]string{
 // leaves, like any other, and its open head marks it.
 func warns(kind string) bool { return kind == "bypass" || kind == "mutual" }
 
+// onRoad is how far each route runs on roads, by route number.
+func (d *Drawing) onRoad() map[int]int {
+	n := map[int]int{}
+	for _, w := range d.Wires {
+		for _, k := range w.rides {
+			n[k] += runLength(w.D)
+		}
+	}
+	return n
+}
+
 // paint colours each box by its unit, each line by the boxes its lines
 // leave, and each dot by the lines through it (rule 11). A line that
 // leaves a frame's chip takes the colour of the box it reaches. Ink whose
@@ -145,13 +156,7 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		}
 	}
 	used := map[string]bool{}
-	// onRoad is how far each route runs on roads, by route number.
-	onRoad := map[int]int{}
-	for _, w := range d.Wires {
-		for _, k := range w.rides {
-			onRoad[k] += runLength(w.D)
-		}
-	}
+	onRoad := d.onRoad()
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Hue = ""
@@ -547,15 +552,24 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
-	// ink is the colour paint will give a wire, as far as labels need it:
-	// its one source's, or neutral for several.
+	// ink is the unit whose colour paint will give a wire, as far as labels
+	// need it: its one source, or for a road whose lines leave several, the
+	// source of its rider that runs furthest on roads, or none.
+	onRoad := d.onRoad()
 	ink := func(w Wire) string {
 		var one model.ID
 		for _, n := range w.srcs {
 			if b := base(model.ID(n)); one == "" {
 				one = b
 			} else if b != one {
-				return ""
+				var rider model.ID
+				far := -1
+				for _, k := range w.rides {
+					if k < len(d.Routes) && onRoad[k] > far {
+						far, rider = onRoad[k], base(model.ID(d.Routes[k].src))
+					}
+				}
+				return string(rider)
 			}
 		}
 		return string(one)
@@ -569,13 +583,12 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	var placed []set
 	// repeats says a label at l would say a word already set within
-	// repeatNear of it. With touch, only a word on a line whose ink l's
-	// line touches counts, when both leave one place or either leaves
-	// several, so the word reads for both.
+	// repeatNear of it. With touch, only a word on a line of the same
+	// colour whose ink l's line touches counts, so the word reads for both.
 	repeats := func(i int, l Label, touch bool) bool {
 		return slices.ContainsFunc(placed, func(p set) bool {
 			dx, dy := p.l.X-l.X, p.l.Y-l.Y
-			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && (kin(i, p.wire) || ink(d.Wires[i]) == "" || ink(d.Wires[p.wire]) == ""))
+			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
 		})
 	}
 	done := map[int]bool{}
