@@ -18,12 +18,15 @@ pages:
     FEAT-0001 /abbd:
         abreast: 0
         colour_switches: 0
+        doglegs: 14
         parallel_ink: 0
     MOD-0041 internal/store:
         abreast: 0
         colour_switches: 8
+        doglegs: 8
         parallel_ink: 0
     overview:
         abreast: 0
         colour_switches: 26
+        doglegs: 31
         parallel_ink: 667

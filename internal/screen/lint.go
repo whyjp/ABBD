@@ -66,7 +66,11 @@ type Totals struct {
 	Placement   int `json:"placement"`
 	Steps       int `json:"steps"`
 	Jogs        int `json:"jogs"`
-	Crossings   int `json:"crossings"`
+	// Doglegs are the stretches under doglegLen between two turns of a
+	// line or between a turn and its end (trace.go); a page the debt file
+	// names may not raise them (gate.go).
+	Doglegs   int `json:"doglegs"`
+	Crossings int `json:"crossings"`
 	// Tees are the points where a line's straight drop crosses a flat
 	// stretch of another line from the same place, with no junction dot:
 	// a T a reader takes for a branch. Each is one of the crossings.
@@ -117,7 +121,7 @@ func Sum(views []ViewLint) Totals {
 		t.Height += o.Height
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
-		t.ColourSwitches += o.ColourSwitches
+		t.ColourSwitches, t.Doglegs = t.ColourSwitches+o.ColourSwitches, t.Doglegs+o.Doglegs
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -300,6 +304,9 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.Steps, vl.Totals.Jogs, vl.Totals.Crossings = steps(t), sum(t.Jogs), l.metrics.Crossings+vl.Totals.Tees
 	vl.Totals.Phantoms, vl.Totals.PathsOver2, vl.Totals.TracedBends, vl.Totals.Back = t.Phantom, over2(t.Bends), sum(t.Bends), l.metrics.Back
 	vl.Totals.ExcessTurns = vl.Totals.Jogs
+	for _, w := range t.Ways {
+		vl.Totals.Doglegs += doglegs(w.pts)
+	}
 	for _, ln := range l.lines() {
 		vl.Totals.ExcessTurns += max(0, ln.turns-ln.allowed)
 	}
