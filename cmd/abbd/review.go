@@ -96,7 +96,9 @@ func (e env) review() error {
 					}
 				}
 			} else {
-				key := entry
+				// A removed entry is no longer listed, so its key is
+				// the one its name would take.
+				key := model.EntryKey(entry)
 				for _, en := range c.Entries {
 					if en.Name == entry {
 						key = en.Key
@@ -107,6 +109,11 @@ func (e env) review() error {
 						continue
 					}
 					users = append(users, fmt.Sprintf("%s %s %s (%s%s)", u.From, name[u.From], u.Kind, u.Origin, feature(u.From)))
+				}
+				for _, l := range links {
+					if l.To == id && l.Kind != model.Provides && len(l.Entries) == 0 {
+						users = append(users, fmt.Sprintf("%s %s %s the whole contract (%s%s)", l.From, name[l.From], l.Kind, l.Origin, feature(l.From)))
+					}
 				}
 			}
 			what := fmt.Sprintf("%s %s", id, c.Name.Value)
@@ -162,22 +169,27 @@ func (e env) review() error {
 		}
 	}
 	for _, id := range slices.Sorted(maps.Keys(in.Notes)) {
+		u, present := presentUnit(now, id)
 		for _, n := range in.Notes[id] {
+			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) {
+				continue
+			}
 			ref := string(id) + "." + n.Slot
 			if n.Stale() {
 				look = append(look, fmt.Sprintf("the note %s is STALE: the code it cites changed", ref))
 			}
-			if strings.HasPrefix(n.Slot, "decisions") && (n.Why == nil || n.Why.Value == "") {
+			if n.Ref.Slot.Name == "decisions" && (n.Why == nil || n.Why.Value == "") {
 				look = append(look, fmt.Sprintf("the decision %s records no why from a human", ref))
 			}
 		}
 	}
 	var ev bytes.Buffer
-	if err := (env{opts: e.opts, stdout: &ev, st: e.st}).checkEvidence(); err == nil {
-		for _, l := range strings.Split(ev.String(), "\n") {
-			if strings.HasPrefix(l, "drifted") {
-				look = append(look, "evidence "+l)
-			}
+	if err := (env{opts: e.opts, stdout: &ev, st: e.st}).checkEvidence(); err != nil {
+		look = append(look, "the evidence could not be checked: "+err.Error())
+	}
+	for _, l := range strings.Split(ev.String(), "\n") {
+		if strings.HasPrefix(l, "drifted") {
+			look = append(look, "evidence "+l)
 		}
 	}
 	for _, l := range look {
@@ -187,14 +199,4 @@ func (e env) review() error {
 		fmt.Fprintln(w, "  nothing")
 	}
 	return nil
-}
-
-func mapsKeys[K comparable, V any](m map[K]V) func(func(K) bool) {
-	return func(yield func(K) bool) {
-		for k := range m {
-			if !yield(k) {
-				return
-			}
-		}
-	}
 }
