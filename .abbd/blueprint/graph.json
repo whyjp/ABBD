@@ -3589,7 +3589,7 @@
       "Via": "call",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED",
-      "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+      "Quote": "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
     },
     {
       "From": "MOD-0001",
@@ -3643,7 +3643,7 @@
       "Via": "data",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED",
-      "Quote": "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+      "Quote": "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
     },
     {
       "From": "MOD-0002",
@@ -7075,7 +7075,31 @@
                 "Code": true
               },
               {
-                "Text": " names its path on stderr so stdout stays JSON.",
+                "Text": " names its path on stderr so stdout stays JSON. Before a writing command runs, ",
+                "Code": false
+              },
+              {
+                "Text": "keepPrevious",
+                "Code": true
+              },
+              {
+                "Text": " has the store keep ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " as it was before the first write since the last commit, and ",
+                "Code": false
+              },
+              {
+                "Text": "--base prev",
+                "Code": true
+              },
+              {
+                "Text": " reads the units and the blueprint from that copy.",
                 "Code": false
               }
             ]
@@ -10783,7 +10807,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -10811,7 +10835,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -26433,7 +26457,39 @@
                 "Code": true
               },
               {
-                "Text": " writes), ",
+                "Text": " writes, and ",
+                "Code": false
+              },
+              {
+                "Text": "PreviousDir",
+                "Code": true
+              },
+              {
+                "Text": " inside it, where ",
+                "Code": false
+              },
+              {
+                "Text": "KeepPrevious",
+                "Code": true
+              },
+              {
+                "Text": " copies ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " before the first write since the commit it records in a ",
+                "Code": false
+              },
+              {
+                "Text": "HEAD",
+                "Code": true
+              },
+              {
+                "Text": " file), ",
                 "Code": false
               },
               {
@@ -28490,7 +28546,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\""
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\""
           ]
         },
         {
@@ -31816,7 +31872,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "compares the stored units with the base revision's",
+              "Says": "compares the stored units with the base revision's, or with the copy a write kept before a session's edits",
               "Verb": "사용"
             },
             {
@@ -31843,7 +31899,7 @@
             }
           ],
           "Quotes": [
-            "cmd/abbd/diff.go \"was, err := e.st.UnitsAt(base)\"",
+            "cmd/abbd/diff.go \"return e.st.UnitsAt(base)\"",
             "cmd/abbd/evidence.go \"case in.Synced.Fingerprint == \\\"\\\":\"",
             "cmd/abbd/evidence.go \"switch in.BlueprintFreshness() {\""
           ]
