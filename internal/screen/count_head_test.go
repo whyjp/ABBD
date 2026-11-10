@@ -80,9 +80,8 @@ func countsByHeads(svg string) []string {
 // so its entry goes.
 func TestCountsKeepOffArrowheads(t *testing.T) {
 	left := map[string][]string{
-		"self": {"overview: ×2 at {550 200}"},
 		"orca": {"MOD-0072 desktop renderer UI: ×5 at {661 214}"},
-		"pstack": {"overview: ×2 at {41 104}", "overview: ×2 at {320 104}", "overview: ×5 at {607 104}",
+		"pstack": {"overview: ×2 at {41 104}", "overview: ×2 at {294 104}", "overview: ×5 at {591 104}",
 			"overview: ×2 at {451 280}", "overview: ×3 at {179 456}"},
 	}
 	for _, name := range fixtures {

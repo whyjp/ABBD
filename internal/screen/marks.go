@@ -188,7 +188,7 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 	for i, dot := range d.Dots {
 		p, got := pt{dot.X, dot.Y}, ""
 		for _, w := range d.Wires {
-			if hue(w.Kind) != dot.Kind || !through(w.D, p) {
+			if w.inkKey() != dot.Kind || !through(w.D, p) {
 				continue
 			}
 			if got == "" {
@@ -225,11 +225,11 @@ func (d *Drawing) gaps(segs []seg) {
 	inside := func(v, lo, hi, room int) bool { return lo+room <= v && v <= hi-room }
 	for _, h := range hs {
 		var xs []int
-		y, hk := h.a.y, hue(d.Wires[h.wire].Kind)
+		y, hk := h.a.y, d.Wires[h.wire].inkKey()
 		for _, v := range vs {
 			x := v.a.x
 			lo, hi := h.room()
-			if v.wire == h.wire || hk == hue(d.Wires[v.wire].Kind) && dot[fmt.Sprint(hk, pt{x, y})] || x < h.lo()+lo || x > h.hi()-hi || !inside(y, v.lo(), v.hi(), gapEnd) {
+			if v.wire == h.wire || hk == d.Wires[v.wire].inkKey() && dot[fmt.Sprint(hk, pt{x, y})] || x < h.lo()+lo || x > h.hi()-hi || !inside(y, v.lo(), v.hi(), gapEnd) {
 				continue
 			}
 			// The hole would cut the horizontal line's own vertical ink.

@@ -29,7 +29,7 @@ func faint(dots []Dot, out []drawn) []Dot {
 	for i, d := range dots {
 		p, any, all := pt{d.X, d.Y}, false, true
 		for _, w := range out {
-			if hue(w.kind) != d.Kind {
+			if inkOf(w.kind, w.road) != d.Kind {
 				continue
 			}
 			for _, part := range w.parts {
@@ -56,6 +56,23 @@ type piece struct {
 	kind string
 }
 
+// inkKey is the ink the wire joins (inkOf), its kind's hue by default.
+func (w Wire) inkKey() string {
+	if w.ink != "" {
+		return w.ink
+	}
+	return hue(w.Kind)
+}
+
+// inkOf is the ink a path joins: on a road every kind's (road), else its
+// kind's hue.
+func inkOf(kind string, road bool) string {
+	if road {
+		return "road"
+	}
+	return hue(kind)
+}
+
 // hue is the ink a kind joins: two modules that use each other are joined
 // as a direct dependency.
 func hue(kind string) string {
@@ -68,7 +85,7 @@ func hue(kind string) string {
 func pieces(out []drawn) []piece {
 	var ps []piece
 	for _, d := range out {
-		k := hue(d.kind)
+		k := inkOf(d.kind, d.road)
 		for _, part := range d.parts {
 			for i := 1; i < len(part); i++ {
 				if part[i] != part[i-1] {

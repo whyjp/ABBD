@@ -22,7 +22,10 @@ func TestTheGateWeighsAViewAsTheChooserRanksIt(t *testing.T) {
 		weighed, hard, moved int
 	}
 	var all []drawn
+	// Roads come after the choice (tactic.roads), so the gate is held to
+	// the drawing the chooser ranked, before its lines ride roads.
 	kept := choose(tactics, func(by tactic, read *cost) (Inside, bool) {
+		by.roads = false
 		return o.inside("MOD-0006", units, "", nil, by, read)
 	}, func(ins Inside, read *cost) {
 		read.judge(ins.Drawing)

@@ -7952,7 +7952,7 @@
                 "Code": true
               },
               {
-                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there.",
+                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
                 "Code": false
               }
             ]
@@ -19251,6 +19251,15 @@
         "Stale": false,
         "Blocks": [
           {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "--- unit: MOD-0034 ---",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "h",
             "Parts": [
               {
@@ -21521,7 +21530,39 @@
                 "Code": true
               },
               {
-                "Text": "), a straight run of a line moves onto a parallel run of its kind within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; a line's end runs slide only along their edge span. A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, and the view gains no crossing, turn, fork height, tee, far split (J1) or dotted line left without 30px of ink of its own. ",
+                "Text": "), a straight run of a line moves onto a parallel run within 12px it runs beside for 16px, a fork's branch onto its siblings' track, and a run before a stair onto the run past it; a line's end runs slide only along their edge span. The moves run twice, stairs first, so a line that could drop straight does before a road bends it onto its track, and merges first, since straightened stairs can shut out the merges that put parallel tracks on one road, and the view keeps the roads whose crossings, turns and road beside road (",
+                "Code": false
+              },
+              {
+                "Text": "roadBeside",
+                "Code": true
+              },
+              {
+                "Text": ", 200px a crossing) weigh less (",
+                "Code": false
+              },
+              {
+                "Text": "roadCost.weight",
+                "Code": true
+              },
+              {
+                "Text": "). A run that holds a line's end is a local road, shared only by lines of one kind, dotting and end shape; in the middle a run is a highway any kinds ride (",
+                "Code": false
+              },
+              {
+                "Text": "joins",
+                "Code": true
+              },
+              {
+                "Text": "). A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, no line's end comes to lie beside a line of another kind, dotting or end shape wherever on the track it lands (",
+                "Code": false
+              },
+              {
+                "Text": "endMixes",
+                "Code": true
+              },
+              {
+                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. ",
                 "Code": false
               },
               {
@@ -21529,23 +21570,31 @@
                 "Code": true
               },
               {
-                "Text": " then draws the ink from the routes, one path per stretch the same routes ride, so each route lights whole and exactly (",
+                "Text": " then draws the ink from the routes, one path per stretch the same routes ride, wearing the kind most riders have, its ink joining every kind's (",
                 "Code": false
               },
               {
-                "Text": "hover",
+                "Text": "inkOf",
                 "Code": true
               },
               {
-                "Text": " lights a piece's own kind only). ",
+                "Text": "), and each wire knows its riders, which pointing at it lights. A move slides one straight run and stretches its neighbours, so no route turns more than it was routed, which ",
                 "Code": false
               },
               {
-                "Text": "Drawing.roads",
+                "Text": "TestARoadAddsNoTurnToARoute",
                 "Code": true
               },
               {
-                "Text": " exempts such a drawing from J3 where a phantom way runs wholly on routes, and J1 reads its splits off the routes.",
+                "Text": " holds on every fixture, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestARoadPieceWearsItsRidersMajorityKind",
+                "Code": true
+              },
+              {
+                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
                 "Code": false
               }
             ]

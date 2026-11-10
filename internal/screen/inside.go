@@ -719,8 +719,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 			}
 		}
 		w.carry(p, func(i int) []string { return lines[i].rels })
-		ln := lines[p.reqs[0]]
-		w.D, w.Kind, w.Title = p.D, string(ln.kind), strings.Join(titles, "\n")
+		w.D, w.Kind, w.Title = p.D, p.kind, strings.Join(titles, "\n")
 		if len(origins) > 1 {
 			w.Origin = "mixed"
 		}
@@ -732,6 +731,10 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 		}
 		w.Net, w.Joins, w.Back = p.net, p.joins, p.back
 		w.ends = endsOf(reqs, p.reqs)
+		if l.roads {
+			w.rides = p.reqs
+		}
+		w.ink = inkOf(w.Kind, p.road)
 		d.Wires = append(d.Wires, w)
 	}
 	d.route(routed, reqs, func(i int) []string { return lines[i].rels })

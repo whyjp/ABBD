@@ -36,6 +36,15 @@ func keyOf(colour string, p fpt) inkKey {
 	return inkKey{colour, int(math.Round(p.x * 2)), int(math.Round(p.y * 2))}
 }
 
+// inkColour is the ink a stroke joins: on roads every kind's, since a
+// highway carries several (confluence.go), else its colour.
+func (s sheet) inkColour(class string) string {
+	if s.roads {
+		return "road"
+	}
+	return colour(class)
+}
+
 // colour is the kind a stroke's colour shows; a line between two modules
 // that use each other is drawn in the direct-dependency colour.
 func colour(class string) string {
@@ -82,7 +91,7 @@ func inkGraph(s sheet) ink {
 	}
 	var raws []raw
 	for _, w := range s.strokes {
-		c := colour(w.class)
+		c := s.inkColour(w.class)
 		both := strings.Contains(" "+w.class+" ", " mutual ")
 		for i := 1; i < len(w.pts); i++ {
 			a, b := w.pts[i-1], w.pts[i]
@@ -289,7 +298,7 @@ func trace(s sheet, rels [][2]string) Trace {
 		if len(w.pts) < 2 {
 			continue
 		}
-		c := colour(w.class)
+		c := s.inkColour(w.class)
 		first, last := w.pts[0], w.pts[len(w.pts)-1]
 		both := strings.Contains(" "+w.class+" ", " mutual ")
 		if id := shapeOf(s, first); id >= 0 {
@@ -433,6 +442,44 @@ func trace(s sheet, rels [][2]string) Trace {
 			t.Crossings = append(t.Crossings, pathCrossings(s, g, b.path))
 		}
 	}
+	// Where the drawing holds its routes, each line's route is the line: a
+	// road joins places no one line does and carries kinds the ink's
+	// colours keep apart, and a bus's track is no one line's either, so a
+	// way traced through the ink may take another line's turn. The routes
+	// say each relation's way, its bends, jogs and crossings, so a drawing
+	// on roads and one off them are weighed alike.
+	if s.roads && s.routed {
+		traced = map[[2]string]bool{}
+		t.Bends, t.Jogs, t.Crossings, t.Ways = nil, nil, nil, nil
+		for _, r := range s.routes {
+			if len(r.pts) < 2 {
+				continue
+			}
+			f, to := shapeOf(s, r.pts[0]), shapeOf(s, r.pts[len(r.pts)-1])
+			if f < 0 || to < 0 {
+				continue
+			}
+			both := strings.Contains(" "+r.class+" ", " mutual ")
+			joined := false
+			for _, fi := range strings.Fields(s.shapes[f].id) {
+				for _, ti := range strings.Fields(s.shapes[to].id) {
+					for _, pair := range [][2]string{{fi, ti}, {ti, fi}} {
+						if want[pair] && (pair[0] == fi || both) {
+							traced[pair], joined = true, true
+						}
+					}
+				}
+			}
+			if !joined {
+				continue
+			}
+			way := turns(r.pts)
+			t.Bends = append(t.Bends, len(way)-2)
+			t.Jogs = append(t.Jogs, jogs(way))
+			t.Ways = append(t.Ways, tracedWay{s.shapes[f].id, s.shapes[to].id, way, colour(strings.TrimPrefix(r.class, "route "))})
+			t.Crossings = append(t.Crossings, routeCrossings(s, way))
+		}
+	}
 	// A relation with an end the drawing has no shape for is lost too.
 	t.Relations = len(want)
 	for r := range want {
@@ -513,6 +560,36 @@ func pathCrossings(s sheet, g ink, path []int) int {
 		for _, w := range s.strokes {
 			for k := 1; k < len(w.pts); k++ {
 				c, d := w.pts[k-1], w.pts[k]
+				p, ok := cross(a, b, c, d)
+				if !ok || dist(p, c) < 1 || dist(p, d) < 1 || dist(p, a) < 1 || dist(p, b) < 1 {
+					continue
+				}
+				near := false
+				for _, e := range ends {
+					near = near || dist(p, e) < 10
+				}
+				for _, q := range seen {
+					near = near || dist(p, q) < 6
+				}
+				if !near {
+					seen = append(seen, p)
+				}
+			}
+		}
+	}
+	return len(seen)
+}
+
+// routeCrossings counts the drawn lines a route crosses, away from its
+// two ends: where its own road is crossed by other ink.
+func routeCrossings(s sheet, way []fpt) int {
+	ends := []fpt{way[0], way[len(way)-1]}
+	var seen []fpt
+	for k := 1; k < len(way); k++ {
+		a, b := way[k-1], way[k]
+		for _, w := range s.strokes {
+			for m := 1; m < len(w.pts); m++ {
+				c, d := w.pts[m-1], w.pts[m]
 				p, ok := cross(a, b, c, d)
 				if !ok || dist(p, c) < 1 || dist(p, d) < 1 || dist(p, a) < 1 || dist(p, b) < 1 {
 					continue

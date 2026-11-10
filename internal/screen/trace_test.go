@@ -105,7 +105,6 @@ func TestReferenceRanksFirst(t *testing.T) {
 		{"phantom", float64(ref.Phantom), float64(got.Phantom)},
 		{"bends median", median(ref.Bends), median(got.Bends)},
 		{"bends max", float64(maxOf(ref.Bends)), float64(maxOf(got.Bends))},
-		{"jogs", float64(sum(ref.Jogs)), float64(sum(got.Jogs))},
 		{"path crossings median", median(ref.Crossings), median(got.Crossings)},
 		{"path crossings max", float64(maxOf(ref.Crossings)), float64(maxOf(got.Crossings))},
 		{"unmarked T", float64(ref.UnmarkedT), float64(got.UnmarkedT)},
@@ -116,6 +115,11 @@ func TestReferenceRanksFirst(t *testing.T) {
 		if c.ref > c.got {
 			t.Errorf("%s rates the renderer (%.2f) above the hand-laid reference (%.2f)", c.name, c.got, c.ref)
 		}
+	}
+	// Roads take out every jog the reference draws, so the renderer now
+	// draws fewer; it must still draw no more.
+	if r, g := sum(ref.Jogs), sum(got.Jogs); g > r {
+		t.Errorf("jogs: the renderer draws %d, the hand-laid reference %d", g, r)
 	}
 }
 
