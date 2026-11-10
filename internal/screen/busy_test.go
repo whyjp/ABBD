@@ -28,6 +28,31 @@ func TestParallelInkCountsLinesSideBySide(t *testing.T) {
 	}
 }
 
+// Three drawn lines that drop side by side within 30px are lines abreast
+// for as far as all three run together; two lines, or three spread wider,
+// are not, and two groups of three apart count twice.
+func TestAbreastInkCountsThreeLinesSideBySide(t *testing.T) {
+	boxes := []string{"A 40 0 160 20", "B 0 140 40 20", "C 100 140 40 20", "D 200 140 40 20"}
+	rels := [][2]string{{"A", "B"}, {"A", "C"}, {"A", "D"}}
+	drop := func(x, to, bend int) string {
+		return fmt.Sprintf(`<path class="w contract" d="M%d 20 V%d H%d V140"/>`, x, bend, to)
+	}
+	for _, c := range []struct {
+		name, body string
+		want       int
+	}{
+		{"three within 30px", drop(70, 20, 80) + drop(80, 120, 100) + drop(96, 220, 80), 60},
+		{"two", drop(70, 20, 80) + drop(80, 120, 100), 0},
+		{"three across 40px", drop(60, 20, 80) + drop(80, 120, 100) + drop(100, 220, 80), 0},
+		{"two groups", drop(60, 60, 80) + drop(70, 70, 80) + drop(80, 80, 80) + drop(150, 150, 80) + drop(160, 160, 80) + drop(170, 170, 80), 240},
+	} {
+		l := lookAt(t, boxes, c.body, rels)
+		if got := abreastInk(l.s); got != c.want {
+			t.Errorf("%s: abreast ink %d, want %d", c.name, got, c.want)
+		}
+	}
+}
+
 // A fork from A into B and D of the row below splits off one track; its
 // branches turning onto two tracks are one fork level too many.
 func TestForkLevelsCountTracksPastTheFirst(t *testing.T) {

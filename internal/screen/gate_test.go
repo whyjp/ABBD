@@ -1,7 +1,10 @@
 package screen
 
 import (
+	"maps"
+	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -66,5 +69,51 @@ func TestTheGateRefusesBendsTheWeighedSumWouldBuy(t *testing.T) {
 	fails := Gate(views, debt, true)
 	if len(fails) != 1 || !strings.HasPrefix(fails[0], "excess_turns ") {
 		t.Errorf("two more excess turns for three crossings fails the gate with %q, want only the excess turns past their ceiling", fails)
+	}
+}
+
+// Each page a reader looks at keeps its colour switches, doubled lines and
+// lines abreast at what the debt file records for it, whatever a sum over
+// every view would trade, and recording a rise never raises its ceiling.
+// The fixture's debt file is what abbd lint --record writes.
+func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
+	views, err := Lint(fixture(t, "orca"), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	debt, err := store.Open(filepath.Join("testdata", "orca")).LoadLintDebt()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fails := Gate(views, debt, true); len(fails) > 0 {
+		t.Fatalf("orca breaks the gate as drawn: %v", fails)
+	}
+	tmp := t.TempDir()
+	if err := store.Open(tmp).SaveLintDebt(Record(views, debt)); err != nil {
+		t.Fatal(err)
+	}
+	want, _ := os.ReadFile(filepath.Join("testdata", "orca", ".abbd", "lint-debt.yaml"))
+	if got, _ := os.ReadFile(filepath.Join(tmp, ".abbd", "lint-debt.yaml")); string(got) != strings.ReplaceAll(string(want), "\r\n", "\n") {
+		t.Errorf("abbd lint --record writes orca's debt file as\n%s\nnot as recorded\n%s", got, want)
+	}
+	const page = "MOD-0072 desktop renderer UI"
+	at := slices.IndexFunc(views, func(v ViewLint) bool { return v.View == page })
+	if at < 0 || debt.Pages[page] == nil {
+		t.Fatalf("orca draws no page %q the debt file bounds", page)
+	}
+	for _, rise := range []func(*Totals){
+		func(t *Totals) { t.ColourSwitches++ },
+		func(t *Totals) { t.ParallelInk++ },
+		func(t *Totals) { t.Abreast++ },
+	} {
+		risen := slices.Clone(views)
+		rise(&risen[at].Totals)
+		fails := Gate(risen, debt, true)
+		if len(fails) != 1 || !strings.HasPrefix(fails[0], page+": ") {
+			t.Errorf("one more on %s fails the gate with %q, want only that page past its ceiling", page, fails)
+		}
+		if got := Record(risen, debt).Pages[page]; !maps.Equal(got, debt.Pages[page]) {
+			t.Errorf("recording a rise on %s sets its ceilings %v, want them kept at %v", page, got, debt.Pages[page])
+		}
 	}
 }

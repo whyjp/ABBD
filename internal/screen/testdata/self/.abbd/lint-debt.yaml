@@ -14,3 +14,16 @@ ceilings:
 debt:
     MOD-0030 internal/model:
         R: 1
+pages:
+    FEAT-0001 /abbd:
+        abreast: 0
+        colour_switches: 0
+        parallel_ink: 0
+    MOD-0041 internal/store:
+        abreast: 0
+        colour_switches: 8
+        parallel_ink: 0
+    overview:
+        abreast: 0
+        colour_switches: 26
+        parallel_ink: 667

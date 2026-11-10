@@ -23747,7 +23747,31 @@
                 "Code": true
               },
               {
-                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. ",
+                "Text": " totals are the weighed sum, the tees, which count once in the weighed sum though a T reads as a branch that is not there, so they may not rise, the excess turns, which the weighed sum prices at one crossing each, so a change could buy crossings with bends, and which may not rise either, the placement debt, which may pass its ceiling by 2% of it, the overflow, the views past one screen (S), and the detours, none of which may pass theirs. The ",
+                "Code": false
+              },
+              {
+                "Text": "paged",
+                "Code": true
+              },
+              {
+                "Text": " totals bound each page the debt file names under ",
+                "Code": false
+              },
+              {
+                "Text": "pages",
+                "Code": true
+              },
+              {
+                "Text": ": its colour switches, its parallel ink and its ink abreast may not rise, and ",
+                "Code": false
+              },
+              {
+                "Text": "Gate",
+                "Code": true
+              },
+              {
+                "Text": " fails a named page no view draws, so the user's pages are not traded against views no one looks at. ",
                 "Code": false
               },
               {
@@ -23755,7 +23779,7 @@
                 "Code": true
               },
               {
-                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy. ",
+                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals. ",
                 "Code": false
               },
               {
@@ -23763,7 +23787,7 @@
                 "Code": true
               },
               {
-                "Text": " measures, ungated, how busy a drawing reads at rest: the parallel ink, where a straight piece of one wire runs within 10px of another wire's in the same direction, the straight pieces drawn, the traced lines, and the fork levels, the flat-track heights a fork into one row takes past its first. ",
+                "Text": " measures how busy a drawing reads at rest: the parallel ink, where a straight piece of one wire runs within 10px of another wire's in the same direction (lines doubled), the ink abreast, how far three or more wires run the same way within 30px across, the straight pieces drawn, the traced lines, and the fork levels, the flat-track heights a fork into one row takes past its first. ",
                 "Code": false
               },
               {
@@ -26335,7 +26359,15 @@
                 "Code": true
               },
               {
-                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the tees, the excess turns, the placement debt and the detours, as the file's header says), and under ",
+                "Text": ", what the drawings owe the drawing criteria. It holds each view's hard breaches by criterion, the ceilings of the gated totals (the weighed sum, the tees, the excess turns, the placement debt and the detours, as the file's header says), under ",
+                "Code": false
+              },
+              {
+                "Text": "pages",
+                "Code": true
+              },
+              {
+                "Text": " the totals each page a reader looks at may not raise, and under ",
                 "Code": false
               },
               {
