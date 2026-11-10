@@ -6910,7 +6910,15 @@
                 "Code": true
               },
               {
-                "Text": "): how's text for any module or feature, at any depth, stored INFERRED with the digest, ",
+                "Text": "): how's text for any module or feature (the usage names ",
+                "Code": false
+              },
+              {
+                "Text": "MOD-ID|FEAT-ID",
+                "Code": true
+              },
+              {
+                "Text": "), at any depth, stored INFERRED with the digest, ",
                 "Code": false
               },
               {
@@ -25573,7 +25581,7 @@
                 "Code": true
               },
               {
-                "Text": " writes it as INFERRED, and only for a top-level module. ",
+                "Text": " writes it as INFERRED, for a module or a feature at any depth. ",
                 "Code": false
               },
               {
