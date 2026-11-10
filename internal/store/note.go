@@ -22,6 +22,7 @@ type Note struct {
 	Unit     model.ID          `yaml:"unit"`
 	Slot     string            `yaml:"slot"`
 	Origin   model.Origin      `yaml:"origin"`
+	Reader   string            `yaml:"reader,omitempty"`
 	Digest   string            `yaml:"digest"`
 	Format   int               `yaml:"format"`
 	Evidence []model.Evidence  `yaml:"evidence"`

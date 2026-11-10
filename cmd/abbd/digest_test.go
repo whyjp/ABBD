@@ -125,7 +125,7 @@ func TestRestampFollowsAnExtractionChangeButNotACodeChange(t *testing.T) {
 func TestSyncUpgradesATextWrittenAgainstTheOldDigest(t *testing.T) {
 	for _, c := range []struct{ id, digest, says, stale string }{
 		{"MOD-0004", "596dd225dceb4742", "it stays current", "0"},
-		{"MOD-0001", "73de2c949d70057d", "it is STALE until pstack how reads", "1"},
+		{"MOD-0001", "73de2c949d70057d", "it is STALE until a reader reads", "1"},
 		{"MOD-0001", "0123456789abcdef", "", "1"},
 	} {
 		p := deepProject(t)
@@ -388,7 +388,7 @@ func TestSyncUpgradesAFormat2TextOnlyWhenItReadEveryPlace(t *testing.T) {
 		project                   func(*testing.T) *project
 	}{
 		{"one place", "b59a0a674660efef", "it stays current", "0", deepProject},
-		{"two places", "2b10416f927695bf", "it is STALE until pstack how reads", "1", twiceProject},
+		{"two places", "2b10416f927695bf", "it is STALE until a reader reads", "1", twiceProject},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			p := c.project(t)
@@ -405,7 +405,7 @@ func TestSyncUpgradesAFormat2TextOnlyWhenItReadEveryPlace(t *testing.T) {
 func TestSyncLeavesAFormat1TextStaleWhenAQuoteIsCitedTwice(t *testing.T) {
 	p := twiceProject(t)
 	write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: 1912b5ee72f158bd\ncode:\n    app/main.go: 75d99e22087438b6\n---\n\nthe module.\n")
-	if out := p.resync(); !strings.Contains(out, "it is STALE until pstack how reads") {
+	if out := p.resync(); !strings.Contains(out, "it is STALE until a reader reads") {
 		t.Fatalf("sync should say the text is STALE:\n%s", out)
 	}
 	p.stale("1")

@@ -58,6 +58,14 @@ const (
 	statesQuote  = `billing/retry.go:25:var states = []string{"pending", "charged"}`
 )
 
+// A note names its reader too, and explain prints it.
+func TestANoteKeepsItsReader(t *testing.T) {
+	p := notesProject(t)
+	p.want(0, "understood MOD-0001.failure", "understand", "MOD-0001.failure", p.file(t, "note.md", "A charge is tried three times."), "--evidence", failureQuote, "--reader", "abbd reader")
+	p.want(0, "failure (INFERRED by abbd reader, CURRENT):", "explain", "MOD-0001")
+	p.want(1, "--reader is for a new note", "understand", "MOD-0001.failure", "--reread-by", "me", "--reader", "abbd reader")
+}
+
 // A note describes only the code it cites. An edit near one note's quote
 // stales that note and leaves the module's other notes, and the module's
 // own text, current; the check fails until a reader stores it again.
