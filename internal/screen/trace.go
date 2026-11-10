@@ -184,9 +184,12 @@ type Trace struct {
 	// ink between places that no relation joins.
 	Missing  [][2]string
 	Phantoms []tracedWay
-	// UnmarkedT counts the points where ink splits or merges without a
-	// junction dot, at the points Unmarked lists, and CountAmbiguity the ×N
-	// labels that sit beside no line or beside more than one.
+	// Splits are the points where ink of one colour goes three or more
+	// ways, dotted or not. UnmarkedT counts those of them where it goes
+	// four ways without a junction dot, at the points Unmarked lists, and
+	// CountAmbiguity the ×N labels that sit beside no line or beside more
+	// than one.
+	Splits                    []junction
 	UnmarkedT, CountAmbiguity int
 	Unmarked                  []fpt
 	// SizeSpread is the tallest box's height over the median box's, and
@@ -515,12 +518,17 @@ func trace(s sheet, rels [][2]string) Trace {
 		}
 	}
 	// A point where ink of one colour goes three or more ways is a split or
-	// a merge, and needs its dot.
+	// a merge. A T says so by its shape; where the ink goes four ways only
+	// a dot tells a join from a crossing, so it needs one.
 	for k, arms := range g.arms {
 		if len(arms) < 3 {
 			continue
 		}
 		p := g.pos[k]
+		t.Splits = append(t.Splits, junction{p, k.colour})
+		if len(arms) < 4 {
+			continue
+		}
 		dot := false
 		for _, j := range s.junctions {
 			dot = dot || j.kind == k.colour && dist(p, j.at) < 3
@@ -530,6 +538,16 @@ func trace(s sheet, rels [][2]string) Trace {
 			t.Unmarked = append(t.Unmarked, p)
 		}
 	}
+	sort.Slice(t.Splits, func(i, j int) bool {
+		a, b := t.Splits[i], t.Splits[j]
+		if a.at.y != b.at.y {
+			return a.at.y < b.at.y
+		}
+		if a.at.x != b.at.x {
+			return a.at.x < b.at.x
+		}
+		return a.kind < b.kind
+	})
 	t.CountAmbiguity = countAmbiguity(s, g)
 	// Rule 21 bounds height, not width: a box may be wide so the lines
 	// below it drop straight, but one made tall by its chips reads heavier
