@@ -26,7 +26,10 @@ import (
 // a line of another kind or dotting wherever it lands (a local road), and
 // the view gains no crossing, turn, fork height or split far from the
 // places it splits toward (J1), and loses one, or runs less ink beside
-// other ink. Then the road is drawn from the routes.
+// other ink. The moves run twice, stairs first and merges first, since
+// either order can shut out the other's best moves, and the view keeps the
+// roads that weigh less (roadCost.weight). Then the road is drawn from the
+// routes.
 
 const (
 	roadRoom = 12
@@ -38,6 +41,9 @@ const (
 	// moved run keeps off a box.
 	roadMoves = 400
 	roadClear = 2
+	// roadBeside is how far road running beside road weighs as much as a
+	// crossing or a turn, when two settled roads are weighed.
+	roadBeside = 200
 )
 
 // straightRun is a straight piece of road: the collinear runs of routes of
@@ -300,6 +306,10 @@ func (v roadView) cost(ways [][]pt) roadCost {
 	c.crossings = len(seen)
 	return c
 }
+
+// weight weighs settled roads against each other: a crossing, a turn and
+// roadBeside of road beside road weigh alike.
+func (c roadCost) weight() int { return c.crossings + c.turns + c.beside/roadBeside }
 
 func (c roadCost) better(o roadCost) bool {
 	if c.crossings > o.crossings || c.turns > o.turns || c.clash > o.clash || c.near > o.near || c.far > o.far || c.forks > o.forks || c.tees > o.tees || c.unseen > o.unseen {
@@ -567,17 +577,25 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 		turns[i] = len(ways[i]) - 2
 	}
 	v := roadView{ink, plan, kinds, ends, from, to, dest, position, turns}
-	cost := v.cost(ways)
-	for n := 0; n < roadMoves; n++ {
-		next, ok := r.step(ways, v, cost)
-		if !ok {
-			break
+	settle := func(stairsFirst bool) ([][]pt, roadCost) {
+		ways, cost := ways, v.cost(ways)
+		for n := 0; n < roadMoves; n++ {
+			next, ok := r.step(ways, v, cost, stairsFirst)
+			if !ok {
+				break
+			}
+			ways = next
+			for i := range ways {
+				ways[i] = straight(ways[i])
+			}
+			cost = v.cost(ways)
 		}
-		ways = next
-		for i := range ways {
-			ways[i] = straight(ways[i])
-		}
-		cost = v.cost(ways)
+		return ways, cost
+	}
+	stairs, sc := settle(true)
+	ways, mc := settle(false)
+	if sc.weight() <= mc.weight() {
+		ways = stairs
 	}
 	if roadsDrawn != nil {
 		roadsDrawn(r.ways, ways)
@@ -590,11 +608,12 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 // as the roads leave them.
 var roadsDrawn func(routed, ways [][]pt)
 
-// step finds the first move that reads better than cost, in order: stairs
-// straightened, so a route that could drop straight does before a road
-// bends it onto its track, then runs onto a neighbour beside them, longest
-// shared stretch first, then forks set on one track.
-func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
+// step finds the first move that reads better than cost, in order: runs
+// onto a neighbour beside them, longest shared stretch first, then forks
+// set on one track, with stairs straightened before both when stairsFirst,
+// so a route that could drop straight does before a road bends it onto its
+// track, and after both otherwise.
+func (r *routing) step(ways [][]pt, v roadView, cost roadCost, stairsFirst bool) ([][]pt, bool) {
 	rs := roadRuns(ways, v)
 	type move struct {
 		run, at, gain int
@@ -653,7 +672,11 @@ func (r *routing) step(ways [][]pt, v roadView, cost roadCost) ([][]pt, bool) {
 		}
 	}
 	sort.SliceStable(moves, func(i, j int) bool { return moves[i].gain > moves[j].gain })
-	moves = append(stairs, moves...)
+	if stairsFirst {
+		moves = append(stairs, moves...)
+	} else {
+		moves = append(moves, stairs...)
+	}
 	for _, m := range moves {
 		next := moved(ways, rs[m.run], m.at)
 		ok := true
