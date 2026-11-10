@@ -57,11 +57,12 @@ func TestReviewLeavesAStaleTextElsewhereOut(t *testing.T) {
 	text := p.file(t, "t.md", "### Overview\nIt runs.\n")
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
 	p.want(0, "understood FEAT-0001", "understand", "FEAT-0001", text)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
+	p.want(0, "", "sync")
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "texts")
 	base := rev(t, p.root)
 	p.code("web/charges.ts", "export function Charges() { refund() }\n")
-	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
 	p.code("web/refund.ts", "export function Refund() {}\n")
 	p.extract(strings.Replace(entriesBase, `
  {"key":"page"`, `

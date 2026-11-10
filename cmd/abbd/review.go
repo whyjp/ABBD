@@ -237,7 +237,7 @@ func (e env) review() error {
 			subject = f[3]
 		}
 		// A relation's subject is FROM.KIND.TO; either end counts.
-		ends := strings.Split(subject, ".")
+		ends := strings.Split(strings.TrimSuffix(subject, ":"), ".")
 		if related(model.ID(ends[0])) || len(ends) > 2 && related(model.ID(ends[2])) {
 			look = append(look, "evidence "+l)
 		}
