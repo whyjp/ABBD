@@ -16,6 +16,8 @@ type Inside struct {
 	// Purpose and Responsibility say why the module is there and what it
 	// is responsible for, as its unit records them.
 	Purpose, Responsibility *Fact `json:",omitempty"`
+	// Standing is the module as it is now, counted over its subtree.
+	Standing *Standing `json:",omitempty"`
 	// Feature says the view is a feature's, which the page names 기능.
 	Feature bool `json:"-"`
 	// Drawing is what the module's page draws. graph.json leaves it out.

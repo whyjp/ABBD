@@ -213,6 +213,7 @@ func Build(in Input) Model {
 		}, func(ins Inside, read *cost) { read.judge(ins.Drawing) })
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
+		ins.Standing = o.standing(id, in)
 		for i, iu := range ins.Units {
 			if viewOf(o.tree, model.ID(iu.ID)) == "" {
 				ins.Units[i].Understanding = text(model.ID(iu.ID))

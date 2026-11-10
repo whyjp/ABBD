@@ -162,6 +162,7 @@ func (e env) status() error {
 	}
 	slices.Sort(orphans)
 	fmt.Fprintf(e.stdout, "understanding: %d module text(s), %d STALE, %d orphaned\n", len(in.Understandings), stale, len(orphans))
+	fmt.Fprintln(e.stdout, e.coverage(in.Units, in.Understandings))
 	for _, id := range orphans {
 		fmt.Fprintf(e.stdout, "orphaned: %s is not a module or feature now, so no command restamps its text and the check skips it; delete %s/understanding/%s.md to drop it\n", id, store.Dir, id)
 	}
@@ -282,3 +283,54 @@ func described(units []model.Unit) string {
 }
 
 func hasValue(f *model.Fact) bool { return f != nil && f.Value != "" }
+
+// coverage says how many top-level modules and features carry a reader's
+// text, who read them, when the oldest was committed, and which carry none.
+func (e env) coverage(units []model.Unit, texts map[model.ID]store.Understanding) string {
+	var tops, bare []model.ID
+	for _, u := range model.Present(units) {
+		if u.Parent == "" && u.Kind.Holds() {
+			tops = append(tops, u.ID)
+		}
+	}
+	slices.Sort(tops)
+	readers := map[string]int{}
+	oldest := ""
+	for _, id := range tops {
+		t, ok := texts[id]
+		if !ok {
+			bare = append(bare, id)
+			continue
+		}
+		who := t.Reader
+		if who == "" {
+			who = "an unnamed reader"
+		}
+		readers[who]++
+		if d := gitx.LastCommitted(e.root, e.st.UnderstandingFile(id)); d != "" && (oldest == "" || d < oldest) {
+			oldest = d
+		}
+	}
+	line := fmt.Sprintf("coverage: %d of %d top-level module(s) and feature(s) have a text", len(tops)-len(bare), len(tops))
+	var by []string
+	for _, r := range slices.Sorted(maps.Keys(readers)) {
+		by = append(by, fmt.Sprintf("%s %d", r, readers[r]))
+	}
+	if len(by) > 0 {
+		line += ", read by " + strings.Join(by, ", ")
+	}
+	if oldest != "" {
+		line += ", the oldest committed " + oldest
+	}
+	if len(bare) > 0 {
+		var ids []string
+		for _, id := range bare[:min(len(bare), 10)] {
+			ids = append(ids, string(id))
+		}
+		if len(bare) > 10 {
+			ids = append(ids, "...")
+		}
+		line += "; none yet: " + strings.Join(ids, ", ")
+	}
+	return line
+}
