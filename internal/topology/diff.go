@@ -579,6 +579,29 @@ func keep[T any](xs []T, ok func(T) bool) []T {
 	return out
 }
 
+// RelationEnds lists the units a relation of rs really joins in units:
+// the ends of each counted relation that lifts onto one of rs.
+func RelationEnds(units []model.Unit, rs []Relation) []model.ID {
+	want := map[string]bool{}
+	for _, r := range rs {
+		want[model.Edge{From: r.From, To: r.To, Kind: r.Kind}.String()] = true
+	}
+	m := byID(units)
+	var out []model.ID
+	for _, u := range m {
+		for _, r := range u.Relations {
+			if _, ok := m[r.To]; !ok || !r.Counts() {
+				continue
+			}
+			if want[model.Edge{From: top(m, u.ID), To: top(m, r.To), Kind: r.Kind}.String()] {
+				out = append(out, u.ID, r.To)
+			}
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
 // Subtree says whether a unit is id or sits under it, in either state, so
 // a unit that moved in or out still counts.
 func Subtree(id model.ID, states ...[]model.Unit) func(model.ID) bool {

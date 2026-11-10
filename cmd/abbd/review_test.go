@@ -28,6 +28,22 @@ func TestReviewNamesTheUsersOfANewEntry(t *testing.T) {
 		"IF-0001 http api PUT /charges/{id}: FEAT-0001 charges page consumes (EXTRACTED); FEAT-0002 refund button consumes (EXTRACTED, in FEAT-0001 charges page); MOD-0002 cli consumes the whole contract (EXTRACTED)",
 		"IF-0001 http api POST /refunds: MOD-0002 cli consumes the whole contract (EXTRACTED)",
 		"what the change reaches directly:",
-		"worth a look:\n  a reader's coupling no human stated: MOD-0001 depends_on FEAT-0001",
+		"worth a look in what the change touched:\n  a reader's coupling no human stated: MOD-0001 depends_on FEAT-0001",
 	)
+}
+
+// review seeds what the change reaches from the units a new relation really
+// joins, and lists a STALE text only in what the change touched.
+func TestReviewKeepsToWhatTheChangeTouched(t *testing.T) {
+	p, base := diffProject(t)
+	p.code("billing/charger.go", "package billing\n\nfunc Run() {}\n")
+	p.code("api/http.go", "package api\n\nfunc Serve() {}\n")
+	text := p.file(t, "t.md", "### Overview\nIt runs.\n")
+	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text)
+	p.want(0, "understood MOD-0004", "understand", "MOD-0004", text)
+	p.code("billing/charger.go", "package billing\n\nfunc Run() { send() }\n")
+	p.code("notify/mail.go", "package notify\n\nfunc Send() { api.Serve(); log() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "MOD-0003 charger: seed", "the text of MOD-0001 billing is STALE", "the text of MOD-0004 notify is STALE")
 }

@@ -141,9 +141,10 @@ func (e env) review() error {
 		seeds = append(seeds, c.ID)
 	}
 	seeds = append(seeds, slices.Collect(maps.Keys(touched))...)
-	for _, r := range append(slices.Clone(d.RelationsAdded), d.RelationsRemoved...) {
-		seeds = append(seeds, r.From, r.To)
-	}
+	// A relation counts at its top-level ends in the diff; the units it
+	// really joins seed the impact, so a module's whole inside does not.
+	seeds = append(seeds, topology.RelationEnds(now, d.RelationsAdded)...)
+	seeds = append(seeds, topology.RelationEnds(was, d.RelationsRemoved)...)
 	seeds = slices.DeleteFunc(seeds, func(id model.ID) bool { _, ok := byID[id]; return !ok })
 	slices.Sort(seeds)
 	seeds = slices.Compact(seeds)
@@ -158,20 +159,40 @@ func (e env) review() error {
 		}
 	}
 
-	fmt.Fprintln(w, "\nworth a look:")
+	// What is worth a look is what sits in, above or under what the change
+	// touched, so a STALE text elsewhere in the repository stays out.
+	family := map[model.ID]bool{}
+	for _, id := range seeds {
+		seen := map[model.ID]bool{}
+		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
+			seen[p] = true
+			family[p] = true
+		}
+	}
+	related := func(id model.ID) bool {
+		seen := map[model.ID]bool{}
+		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
+			seen[p] = true
+			if family[p] {
+				return true
+			}
+		}
+		return false
+	}
+	fmt.Fprintln(w, "\nworth a look in what the change touched:")
 	var look []string
 	for _, c := range d.InferredAdded {
 		look = append(look, fmt.Sprintf("a reader's coupling no human stated: %s %s %s (%s %s %s)", c.From, c.Kind, c.To, c.FromName, c.Kind, c.ToName))
 	}
 	for _, id := range slices.Sorted(maps.Keys(in.Understandings)) {
-		if _, ok := textModule(now, id); ok && in.Understandings[id].Digest != in.Digests[id] {
+		if _, ok := textModule(now, id); ok && related(id) && in.Understandings[id].Digest != in.Digests[id] {
 			look = append(look, fmt.Sprintf("the text of %s %s is STALE: its code changed since it was read", id, name[id]))
 		}
 	}
 	for _, id := range slices.Sorted(maps.Keys(in.Notes)) {
 		u, present := presentUnit(now, id)
 		for _, n := range in.Notes[id] {
-			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) {
+			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) || !related(id) {
 				continue
 			}
 			ref := string(id) + "." + n.Slot
@@ -188,7 +209,15 @@ func (e env) review() error {
 		look = append(look, "the evidence could not be checked: "+err.Error())
 	}
 	for _, l := range strings.Split(ev.String(), "\n") {
-		if strings.HasPrefix(l, "drifted") {
+		f := strings.Fields(l)
+		if len(f) < 2 || f[0] != "drifted" {
+			continue
+		}
+		subject := f[1]
+		if subject == "since" && len(f) > 3 {
+			subject = f[3]
+		}
+		if related(model.ID(strings.SplitN(subject, ".", 2)[0])) {
 			look = append(look, "evidence "+l)
 		}
 	}
