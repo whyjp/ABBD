@@ -166,6 +166,10 @@ func Compare(base, now []model.Unit) Diff {
 	}
 	died := deadInferred(n)
 	for _, k := range keys(died) {
+		// Another reader's coupling on the same edge may still be live.
+		if _, live := cur[k]; live {
+			continue
+		}
 		if _, ok := old[k]; ok {
 			d.InferredDead = append(d.InferredDead, died[k])
 		}
@@ -187,7 +191,7 @@ func (d *Diff) fields(old, u model.Unit) {
 	nr, ro := val(u.Responsibility)
 	for _, c := range []Changed{
 		{Field: "name", Old: old.Name.Value, New: u.Name.Value, Origin: u.Name.Origin},
-		{Field: "parent", Old: string(old.Parent), New: string(u.Parent)},
+		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
 	} {
@@ -400,9 +404,9 @@ func (d Diff) Lines() []string {
 	for _, c := range d.Changed {
 		switch c.Field {
 		case "name":
-			out = append(out, fmt.Sprintf("~ renamed %s %q -> %q", c.ID, c.Old, c.New))
+			out = append(out, fmt.Sprintf("~ renamed %s %q -> %q%s", c.ID, c.Old, c.New, by(c.Origin)))
 		case "parent":
-			out = append(out, fmt.Sprintf("~ moved %s %s: %s -> %s", c.ID, c.Name, orTop(c.Old), orTop(c.New)))
+			out = append(out, fmt.Sprintf("~ moved %s %s: %s -> %s%s", c.ID, c.Name, orTop(c.Old), orTop(c.New), by(c.Origin)))
 		default:
 			out = append(out, fmt.Sprintf("~ %s %s %s: %q -> %q%s", c.Field, c.ID, c.Name, c.Old, c.New, by(c.Origin)))
 		}
@@ -573,6 +577,29 @@ func keep[T any](xs []T, ok func(T) bool) []T {
 		}
 	}
 	return out
+}
+
+// RelationEnds lists the units a relation of rs really joins in units:
+// the ends of each counted relation that lifts onto one of rs.
+func RelationEnds(units []model.Unit, rs []Relation) []model.ID {
+	want := map[string]bool{}
+	for _, r := range rs {
+		want[model.Edge{From: r.From, To: r.To, Kind: r.Kind}.String()] = true
+	}
+	m := byID(units)
+	var out []model.ID
+	for _, u := range m {
+		for _, r := range u.Relations {
+			if _, ok := m[r.To]; !ok || !r.Counts() {
+				continue
+			}
+			if want[model.Edge{From: top(m, u.ID), To: top(m, r.To), Kind: r.Kind}.String()] {
+				out = append(out, u.ID, r.To)
+			}
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
 }
 
 // Subtree says whether a unit is id or sits under it, in either state, so
