@@ -11021,8 +11021,7 @@
           "Quotes": [
             "cmd/abbd/main.go \"return exitUsage\"",
             "cmd/abbd/main.go \"return exitError\""
-          ],
-          "Drifted": true
+          ]
         },
         {
           "From": "argv parsing and dispatch",
@@ -15254,7 +15253,7 @@
                 "Code": true
               },
               {
-                "Text": "), with its date and subject, and the pull request of the first merge after it on the ancestry path. ",
+                "Text": "), with its date and subject, and the pull request of the first merge on the ancestry path whose first parent does not hold it yet, so a commit made on the main line itself names none. ",
                 "Code": false
               },
               {
@@ -24677,7 +24676,15 @@
                 "Code": true
               },
               {
-                "Text": " when a quote it rests on no longer holds as quoted, and its page says 근거 유지 or 근거 어긋남. A text's ",
+                "Text": " when it counts on drifted evidence only, as ",
+                "Code": false
+              },
+              {
+                "Text": "Relation.Drifted",
+                "Code": true
+              },
+              {
+                "Text": " says, and its page says 근거 유지 or 근거 어긋남. A text's ",
                 "Code": false
               },
               {
@@ -25556,8 +25563,7 @@
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
             "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
-          ],
-          "Drifted": true
+          ]
         },
         {
           "From": "internal/screen",
@@ -25586,8 +25592,7 @@
           "Quotes": [
             "internal/screen/inside.go \"if slices.Contains(o.providers[c], m) {\"",
             "internal/screen/screen.go \"ins := o.inside(id, in.Units)\""
-          ],
-          "Drifted": true
+          ]
         },
         {
           "From": "overview plan",
@@ -25639,8 +25644,7 @@
             "internal/screen/overview.go \"specs = append(specs, wireSpec{kind: \\\"bypass\\\"\"",
             "internal/screen/screen.go \"return \\\"#m-\\\" + string(id)\"",
             "internal/screen/page.html \"\u003csection class=\\\"inside\\\" id=\\\"m-{{.ID}}\\\"\u003e\""
-          ],
-          "Drifted": true
+          ]
         },
         {
           "From": "page template",
@@ -29035,8 +29039,7 @@
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
             "internal/screen/screen.go \"case *in.Rendered != in.Current():\""
-          ],
-          "Drifted": true
+          ]
         },
         {
           "From": "internal/screen",
