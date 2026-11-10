@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -162,4 +164,30 @@ func TestDiffCheckFailsOnANewContractButNotOnACodeChange(t *testing.T) {
  {"from":"billing","to":"ledger","kind":"depends_on"}`, "", 1))
 	p.want(0, "", "sync")
 	p.want(1, "- relation MOD-0001 depends_on MOD-0002", "diff", "--base", base, "--check")
+}
+
+// --unit keeps one module's share of the change, and --page writes the
+// blueprint at the base beside the current one outside blueprint/, which
+// stays the current state alone.
+func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
+	p, base := diffProject(t)
+	before := p.blueprint()
+	out := p.want(0, "topology inside MOD-0004 since "+base[:12], "diff", "--base", base, "--unit", "MOD-0004", "--page")
+	contains(t, out, "+ unit MOD-0004 notify", "+ relation MOD-0001 depends_on MOD-0004", "compare view:")
+	if strings.Contains(out, "MOD-0002") || strings.Contains(out, "IF-0001 http api signature") {
+		t.Errorf("a change outside MOD-0004 is listed:\n%s", out)
+	}
+	page, err := os.ReadFile(filepath.Join(p.root, ".abbd", "compare", "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	contains(t, string(page), `src="../blueprint/MOD-0004.html"`, "unit MOD-0004 notify")
+	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "compare", "base", "index.html")); err != nil {
+		t.Errorf("the base's blueprint is not kept: %v", err)
+	}
+	if p.blueprint() != before {
+		t.Errorf("the compare view changed the blueprint")
+	}
+	p.want(0, "blueprint: CURRENT", "status")
+	p.want(1, "is in neither", "diff", "--unit", "MOD-0099")
 }

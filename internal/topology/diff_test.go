@@ -24,7 +24,7 @@ func TestCompareNamesWhatChangedBesideTheTopology(t *testing.T) {
 	now[4].Absent, now[4].AbsentReason = true, model.Retracted
 	want := []string{
 		"- unit MOD-0005 MOD-0005 (retracted)",
-		`~ renamed MOD-0002 "MOD-0002" -> "store"`,
+		`~ renamed MOD-0002 "MOD-0002" -> "store", EXTRACTED`,
 		`~ purpose MOD-0002 store: "" -> "keeps the state", USER_STATED`,
 		"~ moved MOD-0004 MOD-0004: MOD-0001 -> MOD-0002",
 		"- inferred dead MOD-0004 depends_on MOD-0003 (MOD-0004 depends_on MOD-0003)",

@@ -422,8 +422,8 @@ func (s Store) SaveLintDebt(d LintDebt) error {
 
 // InputsHash fingerprints every file under .abbd that a page can render, so
 // the blueprint is STALE whenever any of them changed. Neither the blueprint
-// nor the state, which records this hash, is an input, and nor is the lint
-// debt, which no page draws.
+// nor the state, which records this hash, is an input, and nor are the lint
+// debt, which no page draws, and the compare view abbd diff --page writes.
 func (s Store) InputsHash() (string, error) {
 	var files []string
 	err := filepath.WalkDir(s.root, func(p string, d os.DirEntry, err error) error {
@@ -431,6 +431,8 @@ func (s Store) InputsHash() (string, error) {
 		case err != nil:
 			return err
 		case d.IsDir() && p == s.path("blueprint"):
+			return filepath.SkipDir
+		case d.IsDir() && p == s.CompareDir():
 			return filepath.SkipDir
 		case p == s.path("state.yaml"), p == s.path("lint-debt.yaml"):
 			return nil
@@ -557,6 +559,11 @@ func (s Store) SaveBlueprint(files map[string][]byte) error {
 	}
 	return nil
 }
+
+// CompareDir is where abbd diff --page writes its compare view: the
+// blueprint as committed at a base beside a list of what changed. It is
+// never committed and never an input.
+func (s Store) CompareDir() string { return s.path("compare") }
 
 // BlueprintHash is the HashRender of the blueprint's files as they are now,
 // and "" when there are none.
