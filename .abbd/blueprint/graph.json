@@ -7163,7 +7163,7 @@
                 "Code": true
               },
               {
-                "Text": ") and seeds from them, since most changes edit code and leave the topology alone.",
+                "Text": ", a file name with a space included) and seeds from them, since most changes edit code and leave the topology alone.",
                 "Code": false
               }
             ]
@@ -15062,11 +15062,11 @@
                 "Code": false
               },
               {
-                "Text": "git diff --name-only REV --",
+                "Text": "git diff -z --name-only --no-renames --relative REV --",
                 "Code": true
               },
               {
-                "Text": ", and the untracked files git does not ignore. ",
+                "Text": ", and the untracked files git does not ignore, all NUL-separated and relative to the root, a renamed file under both names. ",
                 "Code": false
               },
               {
