@@ -22676,7 +22676,15 @@
                 "Code": true
               },
               {
-                "Text": " wherever ink of one colour goes three or more ways, and where a line crosses onto a trunk of its own kind that runs past it. ",
+                "Text": " only where ink of one colour goes four ways, as where a line crosses onto a trunk of its own kind that runs past it: there only the dot tells a join from a crossing. A T says by its shape that one line ends on the other and takes none, as in the exemplars. The checker reads every point where ink goes three ways or more as a split (",
+                "Code": false
+              },
+              {
+                "Text": "Splits",
+                "Code": true
+              },
+              {
+                "Text": "), dotted or not, so J1 still holds each split, and J2 asks a dot only at a four-way point. ",
                 "Code": false
               },
               {
@@ -24848,7 +24856,7 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs, its ×N, its junction dots and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
                 "Code": false
               },
               {
