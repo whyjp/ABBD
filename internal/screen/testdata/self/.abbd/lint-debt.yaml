@@ -20,19 +20,22 @@ pages:
         colour_switches: 0
         combs: 0
         doglegs: 14
-        label_repeats: 4
+        label_repeats: 6
+        labelled: 17
         parallel_ink: 0
     MOD-0041 internal/store:
         abreast: 0
         colour_switches: 8
         combs: 0
         doglegs: 8
-        label_repeats: 3
+        label_repeats: 6
+        labelled: 10
         parallel_ink: 0
     overview:
         abreast: 0
         colour_switches: 26
         combs: 0
         doglegs: 31
-        label_repeats: 0
+        label_repeats: 1
+        labelled: 5
         parallel_ink: 667

@@ -44,26 +44,39 @@ var gated = []struct {
 
 // paged are the totals of one page the debt file may bound, by the names it
 // gives them: what a reader sees at rest on that page, which a sum over
-// every view would trade against views no one looks at.
+// every view would trade against views no one looks at. Each bound is a
+// ceiling the total may not pass, or for a floor, one it may not fall under.
 var paged = []struct {
 	name  string
 	total func(Totals) int
+	floor bool
 }{
-	{"colour_switches", func(t Totals) int { return t.ColourSwitches }},
-	{"parallel_ink", func(t Totals) int { return t.ParallelInk }},
-	{"abreast", func(t Totals) int { return t.Abreast }},
+	{"colour_switches", func(t Totals) int { return t.ColourSwitches }, false},
+	{"parallel_ink", func(t Totals) int { return t.ParallelInk }, false},
+	{"abreast", func(t Totals) int { return t.Abreast }, false},
 	// combs are stubs a box's lines of one kind leave or reach it by side
 	// by side, where a hand drawing draws one stem.
-	{"combs", func(t Totals) int { return t.Combs }},
-	{"doglegs", func(t Totals) int { return t.Doglegs }},
+	{"combs", func(t Totals) int { return t.Combs }, false},
+	{"doglegs", func(t Totals) int { return t.Doglegs }, false},
 	// label repeats are words said again beside the same lines, where a
 	// hand drawing says each once.
-	{"label_repeats", func(t Totals) int { return t.LabelRepeats }},
+	{"label_repeats", func(t Totals) int { return t.LabelRepeats }, false},
+	// labelled routes are the ones a reader finds a word on at rest, which
+	// saying a word once must not take from the page.
+	{"labelled", func(t Totals) int { return t.Labelled }, true},
+}
+
+// past says a page total got breaks its bound c.
+func past(floor bool, got, c int) bool {
+	if floor {
+		return got < c
+	}
+	return got > c
 }
 
 // Gate marks each hard breach the view owes as debt, and lists every way
 // views break the gate: a view with more hard breaches of a criterion than
-// it owes, a page total past its ceiling, and, when views are every
+// it owes, a page total past its bound, and, when views are every
 // drawing, a page the debt file names that no view draws and a total past
 // its ceiling.
 func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
@@ -73,8 +86,8 @@ func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
 		v := &views[vi]
 		drawn[v.View] = true
 		for _, g := range paged {
-			if c, ok := d.Pages[v.View][g.name]; ok && g.total(v.Totals) > c {
-				fails = append(fails, fmt.Sprintf("%s: %s %d, past its page ceiling %d", v.View, g.name, g.total(v.Totals), c))
+			if c, ok := d.Pages[v.View][g.name]; ok && past(g.floor, g.total(v.Totals), c) {
+				fails = append(fails, fmt.Sprintf("%s: %s %d, past its page bound %d", v.View, g.name, g.total(v.Totals), c))
 			}
 		}
 		owed := d.Views[v.View]
@@ -113,7 +126,7 @@ func Gate(views []ViewLint, d store.LintDebt, every bool) []string {
 }
 
 // Lowerable lists what the debt file records above what views measure: a debt
-// a view no longer owes in full, a page ceiling above the page's total, and,
+// a view no longer owes in full, a page bound looser than the page's total, and,
 // when views are every drawing, a ceiling above its total. Each may be
 // lowered.
 func Lowerable(views []ViewLint, d store.LintDebt, every bool) []string {
@@ -122,8 +135,8 @@ func Lowerable(views []ViewLint, d store.LintDebt, every bool) []string {
 	for _, v := range views {
 		measured[v.View] = v.Totals.Criteria
 		for _, g := range paged {
-			if c, ok := d.Pages[v.View][g.name]; ok && g.total(v.Totals) < c {
-				out = append(out, fmt.Sprintf("%s: page ceiling %s %d, %d measured", v.View, g.name, c, g.total(v.Totals)))
+			if c, ok := d.Pages[v.View][g.name]; ok && past(!g.floor, g.total(v.Totals), c) {
+				out = append(out, fmt.Sprintf("%s: page bound %s %d, %d measured", v.View, g.name, c, g.total(v.Totals)))
 			}
 		}
 	}
@@ -165,7 +178,7 @@ func Record(views []ViewLint, prior store.LintDebt) store.LintDebt {
 			d.Pages[v.View] = map[string]int{}
 			for _, g := range paged {
 				n := g.total(v.Totals)
-				if c, ok := was[g.name]; ok && c < n {
+				if c, ok := was[g.name]; ok && past(g.floor, n, c) {
 					n = c
 				}
 				d.Pages[v.View][g.name] = n

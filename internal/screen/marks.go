@@ -561,7 +561,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		return string(one)
 	}
 	kin := func(i, j int) bool { return ink(d.Wires[i]) == ink(d.Wires[j]) }
-	joined := touching(segs, len(d.Wires))
+	touches := touching(segs, len(d.Wires))
 	// placed are the labels set so far, so a word is not said twice nearby.
 	type set struct {
 		l    Label
@@ -575,7 +575,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	repeats := func(i int, l Label, touch bool) bool {
 		return slices.ContainsFunc(placed, func(p set) bool {
 			dx, dy := p.l.X-l.X, p.l.Y-l.Y
-			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || joined(i, p.wire) && (kin(i, p.wire) || ink(d.Wires[i]) == "" || ink(d.Wires[p.wire]) == ""))
+			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && (kin(i, p.wire) || ink(d.Wires[i]) == "" || ink(d.Wires[p.wire]) == ""))
 		})
 	}
 	done := map[int]bool{}
@@ -724,27 +724,21 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 }
 
-// touching says, of two wires, whether their ink is one: one wire's ink
-// reaches the other's through pieces that end on each other, as a branch
-// ends on its trunk, and not where they only cross.
+// sayOnce turns the drop on; a test turns it off to see which lines have
+// room for their word.
+var sayOnce = true
+
+// touching says, of two wires, whether their ink touches: a piece of one
+// ends on a piece of the other, as a branch ends on its trunk, and not where
+// they only cross or meet through a third wire.
 func touching(segs []seg, n int) func(i, j int) bool {
-	group := make([]int, n)
-	for i := range group {
-		group[i] = i
-	}
-	var root func(int) int
-	root = func(i int) int {
-		if group[i] != i {
-			group[i] = root(group[i])
-		}
-		return group[i]
-	}
+	touch := make([]bool, n*n)
 	for _, a := range segs {
 		for _, b := range segs {
 			if a.wire != b.wire && (on(a.a, b.a, b.b) || on(a.b, b.a, b.b)) {
-				group[root(a.wire)] = root(b.wire)
+				touch[a.wire*n+b.wire], touch[b.wire*n+a.wire] = true, true
 			}
 		}
 	}
-	return func(i, j int) bool { return root(i) == root(j) }
+	return func(i, j int) bool { return touch[i*n+j] }
 }

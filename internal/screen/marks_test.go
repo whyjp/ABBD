@@ -481,43 +481,99 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 	}
 }
 
-// A word is said once where lines whose ink is one carry it: no two labels
-// of one word stand within repeatNear on touching ink of lines that leave
-// one place, or where one of them leaves several, as the five 호출 on one
-// fan of self's FEAT-0001 did.
+// inkTouches says, of two wires of d, whether a straight run of one ends
+// on a run of the other, read off the paths as drawn.
+func inkTouches(d Drawing) func(i, j int) bool {
+	var rs [][2]pt
+	var of []int
+	for i, w := range d.Wires {
+		for _, r := range runs(w.D) {
+			rs, of = append(rs, r), append(of, i)
+		}
+	}
+	n := len(d.Wires)
+	touch := make([]bool, n*n)
+	for x, a := range rs {
+		for y, b := range rs {
+			if of[x] != of[y] && (on(a[0], b[0], b[1]) || on(a[1], b[0], b[1])) {
+				touch[of[x]*n+of[y]], touch[of[y]*n+of[x]] = true, true
+			}
+		}
+	}
+	return func(i, j int) bool { return touch[i*n+j] }
+}
+
+// readsFor says a word on wire b reads for wire a too: both leave one
+// place, or either leaves several.
+func readsFor(a, b Wire) bool {
+	from := func(w Wire) model.ID {
+		var one model.ID
+		for _, n := range w.srcs {
+			if b := base(model.ID(n)); one == "" {
+				one = b
+			} else if b != one {
+				return ""
+			}
+		}
+		return one
+	}
+	return from(a) == from(b) || from(a) == "" || from(b) == ""
+}
+
+// A word is said once where lines whose ink touches carry it: no two labels
+// of one word stand within repeatNear on lines whose ink touches, when they
+// leave one place or one of them leaves several, as the five 호출 on one fan
+// of self's FEAT-0001 did.
 func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			d := v.d
-			var paths []drawn
-			for _, w := range d.Wires {
-				var p drawn
-				for _, r := range runs(w.D) {
-					p.parts = append(p.parts, []pt{r[0], r[1]})
-				}
-				paths = append(paths, p)
-			}
-			joined := touching(segsOf(paths), len(d.Wires))
-			from := func(w Wire) model.ID {
-				var one model.ID
-				for _, n := range w.srcs {
-					if b := base(model.ID(n)); one == "" {
-						one = b
-					} else if b != one {
-						return ""
-					}
-				}
-				return one
-			}
+			touches := inkTouches(d)
 			for i, a := range d.Wires {
 				for j, b := range d.Wires[:i] {
-					if a.Label == nil || b.Label == nil || a.Label.S != b.Label.S || !joined(i, j) {
+					if a.Label == nil || b.Label == nil || a.Label.S != b.Label.S || !touches(i, j) {
 						continue
 					}
 					dx, dy := a.Label.X-b.Label.X, a.Label.Y-b.Label.Y
-					if dx*dx+dy*dy <= repeatNear*repeatNear && (from(a) == from(b) || from(a) == "" || from(b) == "") {
+					if dx*dx+dy*dy <= repeatNear*repeatNear && readsFor(a, b) {
 						t.Errorf("%s %s: %q said at %d,%d and again at %d,%d on touching ink", name, v.name, a.Label.S, b.Label.X, b.Label.Y, a.Label.X, a.Label.Y)
 					}
+				}
+			}
+		}
+	}
+}
+
+// A line with room for its word loses it only to a line whose ink touches
+// its own and says the word within repeatNear, and not to one it reaches
+// only through other lines. Room is where the word stands when no word is
+// dropped.
+func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
+	for _, name := range fixtures {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		sayOnce = false
+		all := views(Build(Input{Units: units}))
+		sayOnce = true
+		for k, v := range views(fixture(t, name)) {
+			d, room := v.d, all[k].d
+			touches := inkTouches(d)
+			for i, w := range d.Wires {
+				r := room.Wires[i].Label
+				if w.Label != nil || r == nil {
+					continue
+				}
+				said := false
+				for j, o := range d.Wires {
+					if o.Label != nil && o.Label.S == r.S && touches(i, j) && readsFor(w, o) {
+						dx, dy := o.Label.X-r.X, o.Label.Y-r.Y
+						said = said || dx*dx+dy*dy <= repeatNear*repeatNear
+					}
+				}
+				if !said {
+					t.Errorf("%s %s: wire %d lost %q at %d,%d with no touching line saying it nearby", name, v.name, i, r.S, r.X, r.Y)
 				}
 			}
 		}

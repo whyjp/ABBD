@@ -108,15 +108,16 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		func(t *Totals) { t.Combs++ },
 		func(t *Totals) { t.Doglegs++ },
 		func(t *Totals) { t.LabelRepeats++ },
+		func(t *Totals) { t.Labelled-- },
 	} {
 		risen := slices.Clone(views)
 		rise(&risen[at].Totals)
 		fails := Gate(risen, debt, true)
 		if len(fails) != 1 || !strings.HasPrefix(fails[0], page+": ") {
-			t.Errorf("one more on %s fails the gate with %q, want only that page past its ceiling", page, fails)
+			t.Errorf("one more on %s fails the gate with %q, want only that page past its bound", page, fails)
 		}
 		if got := Record(risen, debt).Pages[page]; !maps.Equal(got, debt.Pages[page]) {
-			t.Errorf("recording a rise on %s sets its ceilings %v, want them kept at %v", page, got, debt.Pages[page])
+			t.Errorf("recording a rise on %s sets its bounds %v, want them kept at %v", page, got, debt.Pages[page])
 		}
 	}
 }
