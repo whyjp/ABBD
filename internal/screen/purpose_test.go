@@ -47,3 +47,22 @@ func TestAModulePageSaysItsStanding(t *testing.T) {
 		t.Errorf("MOD-0003.html should say %s", want)
 	}
 }
+
+// A reader's coupling says whether its evidence still holds, and no page
+// offers a 확인 tier.
+func TestAReaderClaimSaysWhetherItsEvidenceHolds(t *testing.T) {
+	held := model.Relation{To: "MOD-0004", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call",
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: "held", Status: model.Live}}}
+	moved := model.Relation{To: "MOD-0005", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call",
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "2", Quote: "moved", Status: model.Drifted}}}
+	ps := pages(t, Build(Input{Units: append(ripgrep(), inside("MOD-0006", "MOD-0003", held, moved))}))
+	page := ps["MOD-0003.html"]
+	if !strings.Contains(page, `<span class="muted">근거 유지</span>`) || !strings.Contains(page, `근거 어긋남</span>`) {
+		t.Errorf("each reader's coupling should say whether its evidence holds")
+	}
+	for f, p := range ps {
+		if strings.Contains(p, "확인:") || strings.Contains(p, ">확인<") {
+			t.Errorf("%s still offers a 확인 tier", f)
+		}
+	}
+}

@@ -67,6 +67,9 @@ type Group struct {
 type Coupling struct {
 	From, To, Kind, Via string
 	Quotes              []string
+	// Drifted says a quote the coupling rests on is no longer in its file
+	// as quoted, so the reader sees whether the evidence still holds.
+	Drifted bool `json:",omitempty"`
 }
 
 type InsideUnit struct {
@@ -839,6 +842,7 @@ func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {
 			c := Coupling{From: o.name(u.ID), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
 			for _, e := range r.Evidence {
 				c.Quotes = append(c.Quotes, cite(e))
+				c.Drifted = c.Drifted || e.Status != model.Live
 			}
 			out = append(out, c)
 		}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
 )
 
@@ -187,6 +188,11 @@ func (e env) explain(s string) error {
 		}
 		for _, ev := range l.Evidence {
 			line += "\n    " + ev.String() + mark(ev)
+		}
+		if len(l.Evidence) > 0 {
+			if r := gitx.Recorded(e.root, l.Evidence[0].Quote, store.Dir+"/architecture/"+string(l.From)+".md", store.Dir+"/features/"+string(l.From)+".md"); r != "" {
+				line += "\n    recorded in " + r
+			}
 		}
 		guesses = append(guesses, line)
 	}

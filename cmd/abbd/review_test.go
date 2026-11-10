@@ -106,3 +106,12 @@ func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
 	p.want(0, "", "sync")
 	contains(t, p.want(0, "", "review", "--base", base), "code changed under MOD-0001", "MOD-0001 payments: seed")
 }
+
+// explain names the commit that recorded a reader's coupling.
+func TestExplainSaysWhoRecordedACoupling(t *testing.T) {
+	p, _ := entriesProject(t)
+	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "depends_on", "FEAT-0001", "--via", "call", "--evidence", `api/http.go:4:handle("GET /charges/{id}", charge)`)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "Record the page coupling")
+	contains(t, p.want(0, "", "explain", "MOD-0001"), "recorded in ", " Record the page coupling")
+}

@@ -203,7 +203,7 @@ func Build(in Input) Model {
 	slices.Sort(views)
 	text := func(id model.ID) *Understanding {
 		if u, ok := in.Understandings[id]; ok {
-			return &Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
+			return &Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
 		}
 		return nil
 	}
