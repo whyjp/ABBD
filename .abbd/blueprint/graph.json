@@ -21733,7 +21733,7 @@
                 "Code": true
               },
               {
-                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave, or a neutral grey when they differ, and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
+                "Text": " then gives each box its colour, drawn as a border in its colour over a faint tint of it, draws each line in the colour of the boxes its lines leave; where they differ, a road wears the colour of its rider that runs furthest on roads, so a highway keeps one colour piece to piece, and other mixed ink a neutral grey; and gives it an arrowhead whose shape says its kind. A direct dependency that skips the contract boundary wears the colour of the box it leaves too, and its open head marks it. ",
                 "Code": false
               },
               {
