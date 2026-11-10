@@ -130,13 +130,16 @@ abbd path A B [--root DIR]           the shortest path between two units, each h
                                      origin, and the path's weakest origin; A and B are QUERYs
 abbd impact QUERIES [--root DIR]     what a change to the comma-separated units reaches, in a
                                      direct and a far tier; read before the work
-abbd diff [--base REV] [--json] [--check] [--root DIR]
+abbd diff [--base REV] [--unit ID] [--page] [--json] [--check] [--root DIR]
                                      the topology difference since REV (default: the merge base
                                      with the default branch), for the PR; --check exits 1 when
                                      a contract's signature changed, a contract was added or
                                      removed, or a relation between top-level modules appeared
                                      or disappeared; a contract's code change under the same
-                                     signature is reported but does not fail it
+                                     signature is reported but does not fail it; --unit keeps
+                                     the changes inside one module or feature; --page writes
+                                     .abbd/compare/index.html, the blueprint committed at REV
+                                     beside the current one, never committed
 abbd evidence [--root DIR]           check every quote against the working tree: live, drifted or dead
 abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--root DIR]
                                      hold every drawing of the blueprint, or the views whose name
@@ -190,6 +193,8 @@ type opts struct {
 	value, src       string
 	reason           string
 	base             string
+	unit             string
+	page             bool
 	asJSON, check    bool
 	list, record     bool
 	features         bool
@@ -223,6 +228,12 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"base": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.base, "base", "", "the revision to compare with; default: the merge base with the default branch")
+	},
+	"unit": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.unit, "unit", "", "keep only the changes inside this module or feature")
+	},
+	"page": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.page, "page", false, "write a compare view to .abbd/compare: the blueprint at the base beside the current one")
 	},
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
 	"features": func(fs *flag.FlagSet, o *opts) {
@@ -290,7 +301,7 @@ var commands = map[string]command{
 	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
-	"diff":            {flags: []string{"root", "base", "json", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
+	"diff":            {flags: []string{"root", "base", "json", "check", "unit", "page"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
