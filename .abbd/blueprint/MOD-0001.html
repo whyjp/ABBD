@@ -682,7 +682,7 @@ sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
-cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab said e3 e18 r10" data-h="3" x="833" y="316" text-anchor="middle">ID reconcile 외 2</text><path class="w consumes joins e3 e5 e9 e10 e18 r7 r10 r14" d="M859 274 L787 274" data-h="0"><title>sync pipeline consumes extraction JSON (via data), 판독
+cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab said e3 e18 r10" data-h="3" x="705" y="304" text-anchor="middle">ID reconcile 외 2</text><path class="w consumes joins e3 e5 e9 e10 e18 r7 r10 r14" d="M859 274 L787 274" data-h="0"><title>sync pipeline consumes extraction JSON (via data), 판독
 sync pipeline depends_on internal/evidence (via call), 판독
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
@@ -708,7 +708,7 @@ cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&
 cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&#34;))&#34;</title></path><text class="lab said e5 e13 r16" data-h="0" x="930" y="316" text-anchor="middle">edge key</text><path class="w consumes e4 e5 e15 r11 r15" d="M1079 274 L1079 350" data-net="25" data-h="0" marker-end="url(#m-use-0)"><title>query commands consumes module understanding (via data), 판독
 record writers consumes module understanding (via data), 판독
 cmd/abbd/query.go &#34;texts, err := e.st.LoadUnderstandings()&#34;
-cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&#34;</title></path><text class="count e4 e5 e15 r11 r15" x="1084" y="334">×2</text><text class="lab e4 e5 e15 r11 r15" data-h="0" x="1101" y="316" text-anchor="middle">데이터</text><path class="w consumes back e3 e8 r6" d="M883 58 L883 38" data-net="26" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes project.yaml (via config), 판독
+cmd/abbd/understand.go &#34;e.st.SaveUnderstanding(store.Understanding{Unit: id&#34;</title></path><text class="count e4 e5 e15 r11 r15" x="1084" y="334">×2</text><path class="w consumes back e3 e8 r6" d="M883 58 L883 38" data-net="26" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes project.yaml (via config), 판독
 건너는 것: extract argv (판독) 1/1
 cmd/abbd/main.go &#34;if len(p.Extract) == 0 {&#34;</title></path><path class="w consumes back e3 e14 r8" d="M883 58 L953 58 L953 38" data-net="27" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path><text class="lab e3 e14 r8" data-h="3" x="918" y="54" text-anchor="middle">데이터</text><path class="w consumes joins back e3 e8 e14 r6 r8" d="M883 86 L883 58" data-origin="inferred" data-net="28" data-h="3"><title>sync pipeline consumes project.yaml (via config), 판독

@@ -127,6 +127,17 @@ var shapes = map[string]string{
 // leaves, like any other, and its open head marks it.
 func warns(kind string) bool { return kind == "bypass" || kind == "mutual" }
 
+// onRoad is how far each route runs on roads, by route number.
+func (d *Drawing) onRoad() map[int]int {
+	n := map[int]int{}
+	for _, w := range d.Wires {
+		for _, k := range w.rides {
+			n[k] += runLength(w.D)
+		}
+	}
+	return n
+}
+
 // paint colours each box by its unit, each line by the boxes its lines
 // leave, and each dot by the lines through it (rule 11). A line that
 // leaves a frame's chip takes the colour of the box it reaches. Ink whose
@@ -145,13 +156,7 @@ func (d *Drawing) paint(hues map[model.ID]int) {
 		}
 	}
 	used := map[string]bool{}
-	// onRoad is how far each route runs on roads, by route number.
-	onRoad := map[int]int{}
-	for _, w := range d.Wires {
-		for _, k := range w.rides {
-			onRoad[k] += runLength(w.D)
-		}
-	}
+	onRoad := d.onRoad()
 	for i := range d.Wires {
 		w := &d.Wires[i]
 		w.Hue = ""
@@ -519,7 +524,8 @@ func (d *Drawing) marked(heads []box) []box {
 // once, anywhere along it. Otherwise a line is labelled only where its ink
 // is its own, such as the drop into its box, since a word on a shared
 // trunk would name lines it does not stand for. A line with no room keeps
-// its word in its tooltip only.
+// its word in its tooltip only, and so does a line whose touching ink
+// already says its word nearby.
 func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	taken := d.marked(heads)
 	canvas := box{0, 0, d.Width, d.Height}
@@ -546,20 +552,45 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		n := d.Wires[i].Net
 		return i == j || n != 0 && whole[n] && d.Wires[j].Net == n
 	}
-	// ink is the colour paint will give a wire, as far as labels need it:
-	// its one source's, or neutral for several.
+	// ink is the unit whose colour paint will give a wire, as far as labels
+	// need it: its one source, or for a road whose lines leave several, the
+	// source of its rider that runs furthest on roads, or none.
+	onRoad := d.onRoad()
 	ink := func(w Wire) string {
 		var one model.ID
 		for _, n := range w.srcs {
 			if b := base(model.ID(n)); one == "" {
 				one = b
 			} else if b != one {
-				return ""
+				var rider model.ID
+				far := -1
+				for _, k := range w.rides {
+					if k < len(d.Routes) && onRoad[k] > far {
+						far, rider = onRoad[k], base(model.ID(d.Routes[k].src))
+					}
+				}
+				return string(rider)
 			}
 		}
 		return string(one)
 	}
 	kin := func(i, j int) bool { return ink(d.Wires[i]) == ink(d.Wires[j]) }
+	touches := touching(segs, len(d.Wires))
+	// placed are the labels set so far, so a word is not said twice nearby.
+	type set struct {
+		l    Label
+		wire int
+	}
+	var placed []set
+	// repeats says a label at l would say a word already set within
+	// repeatNear of it. With touch, only a word on a line of the same
+	// colour whose ink l's line touches counts, so the word reads for both.
+	repeats := func(i int, l Label, touch bool) bool {
+		return slices.ContainsFunc(placed, func(p set) bool {
+			dx, dy := p.l.X-l.X, p.l.Y-l.Y
+			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
+		})
+	}
 	done := map[int]bool{}
 	for i := range d.Wires {
 		s, n := words[i], d.Wires[i].Net
@@ -643,12 +674,17 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			return a, b
 		}
 		var got *Label
-		// The first pass keeps labelPad from both ends of each stretch. The
-		// second lets a word come within labelRoom of an end where the line
-		// runs straight on along other lines' ink, a join and not a turn, so
-		// a road that shortens a line's own stretch does not lose its word.
+		// The first passes keep the word away from the same word said nearby.
+		// The last lets it stand near one said on other lines, and drops it
+		// where touching ink says it already (see repeats): there the word
+		// reads for this line too, and the tooltip names the line. Within
+		// each, the first pass keeps labelPad from both ends of each stretch;
+		// the second lets a word come within labelRoom of an end where the
+		// line runs straight on along other lines' ink, a join and not a turn,
+		// so a road that shortens a line's own stretch does not lose its word.
 	search:
-		for _, joined := range []bool{false, true} {
+		for _, pass := range [][2]bool{{false, false}, {false, true}, {true, false}, {true, true}} {
+			near, joined := pass[0], pass[1]
 			for _, g := range mine {
 				half := tw / 2
 				if !g.flat() {
@@ -680,7 +716,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 							opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
 						}
 						for _, l := range opts {
-							if clear(g, l, c-half, c+half) {
+							if !repeats(i, l, near) && clear(g, l, c-half, c+half) {
 								got = &l
 								break search
 							}
@@ -693,9 +729,29 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			continue
 		}
 		d.Wires[i].Label = got
+		placed = append(placed, set{*got, i})
 		taken = append(taken, got.area())
 		if n != 0 && whole[n] {
 			done[n] = true
 		}
 	}
+}
+
+// sayOnce turns the drop on; a test turns it off to see which lines have
+// room for their word.
+var sayOnce = true
+
+// touching says, of two wires, whether their ink touches: a piece of one
+// ends on a piece of the other, as a branch ends on its trunk, and not where
+// they only cross or meet through a third wire.
+func touching(segs []seg, n int) func(i, j int) bool {
+	touch := make([]bool, n*n)
+	for _, a := range segs {
+		for _, b := range segs {
+			if a.wire != b.wire && (on(a.a, b.a, b.b) || on(a.b, b.a, b.b)) {
+				touch[a.wire*n+b.wire], touch[b.wire*n+a.wire] = true, true
+			}
+		}
+	}
+	return func(i, j int) bool { return touch[i*n+j] }
 }

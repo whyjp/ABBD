@@ -28,10 +28,14 @@ pages:
         colour_switches: 33
         combs: 0
         doglegs: 5
+        label_repeats: 1
+        labelled: 8
         parallel_ink: 647
     MOD-0098 src/:
         abreast: 204
         colour_switches: 45
         combs: 0
         doglegs: 21
+        label_repeats: 0
+        labelled: 5
         parallel_ink: 254
