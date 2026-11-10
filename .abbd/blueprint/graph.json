@@ -14357,7 +14357,6 @@
         "Provides": 0,
         "Uses": 1,
         "Direct": 0,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14397,7 +14396,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -15200,7 +15199,7 @@
                 "Code": true
               },
               {
-                "Text": " reads it for the oldest committed text.",
+                "Text": " reads it to date the oldest committed text in its coverage line.",
                 "Code": false
               }
             ]
