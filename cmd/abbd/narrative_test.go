@@ -48,7 +48,7 @@ func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
 	limit := fmt.Sprintf("%d,%03d characters", narrative.MaxSection/1000, narrative.MaxSection%1000)
 	for _, skill := range []string{"abbd", "abbd-setup"} {
 		text := readPlugin(t, "skills", skill, "SKILL.md")
-		for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither refuses the text or fails the check"} {
+		for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither fails the check", "refuses only a text whose first section"} {
 			if !strings.Contains(text, want) {
 				t.Errorf("%s must say %q", skill, want)
 			}
@@ -71,11 +71,11 @@ func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
 // Without --verbose, status folds its long: lines into one count.
 func TestStatusFoldsItsDetailLines(t *testing.T) {
 	p := semanticProject(t)
-	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
+	text := p.file(t, "how.md", "### Overview\nbilling charges cards.\n### Detail\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
 	p.want(0, "", "understand", "MOD-0001", text)
 	out := p.want(0, "long: 1 line(s); abbd status --verbose lists them", "status")
 	if strings.Contains(out, `long: MOD-0001`) {
 		t.Errorf("status without --verbose listed a long: line:\n%s", out)
 	}
-	p.want(0, `long: MOD-0001 "Overview"`, "status", "--verbose")
+	p.want(0, `long: MOD-0001 "Detail"`, "status", "--verbose")
 }

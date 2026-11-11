@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"path"
 	"regexp"
 	"strings"
 
@@ -14,6 +15,71 @@ type Understanding struct {
 	Reader string `json:",omitempty"`
 	Stale  bool
 	Blocks []Block
+	// Lead is the text's first section, which the page shows first, and
+	// Rest the sections after it, which it folds.
+	Lead []Block `json:"-"`
+	Rest []Block `json:"-"`
+}
+
+// split cuts blocks where narrative.Sections ends the first section: at
+// the first heading when prose comes before it, else at the second. That
+// is the summary a reader meets first, the one abbd understand holds to the
+// section limit, and the rest.
+func split(bs []Block) (lead, rest []Block) {
+	heads := 0
+	if len(bs) > 0 && bs[0].Kind != "h" {
+		heads = 1
+	}
+	for i, b := range bs {
+		if b.Kind == "h" {
+			if heads++; heads == 2 {
+				return bs[:i], bs[i:]
+			}
+		}
+	}
+	return bs, nil
+}
+
+// concepts maps each list item of a text to the inside units it names: a
+// code span equal to the base name of a file the unit is anchored at, or to
+// the unit's ID. So a Key Concept stands by the box it describes.
+func concepts(bs []Block, units []InsideUnit) map[string][]Block {
+	out := map[string][]Block{}
+	for _, b := range bs {
+		if b.Kind != "li" {
+			continue
+		}
+		// A file name several units share, such as mod.rs, names none of
+		// them for certain, so the item stays in the text alone.
+		var hits []string
+		for _, u := range units {
+			if namesUnit(b, u) {
+				hits = append(hits, u.ID)
+			}
+		}
+		if len(hits) == 1 {
+			out[hits[0]] = append(out[hits[0]], b)
+		}
+	}
+	return out
+}
+
+func namesUnit(b Block, u InsideUnit) bool {
+	for _, s := range b.Parts {
+		if !s.Code {
+			continue
+		}
+		if s.Text == u.ID {
+			return true
+		}
+		for _, a := range u.Anchors {
+			file, _, _ := strings.Cut(a, " ")
+			if file != "" && s.Text == path.Base(file) && strings.Contains(path.Base(file), ".") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 type Block struct {

@@ -11,6 +11,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/evidence"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/narrative"
 	"github.com/whyjp/abbd/internal/store"
 )
 
@@ -80,6 +81,11 @@ func (e env) understand(ref string, args []string) error {
 	text, err := e.readInput(args[0], "pass the reader's Overview and Key Concepts")
 	if err != nil {
 		return err
+	}
+	// The first section is the summary the page shows before it folds the
+	// rest, so it has to be short enough to read there.
+	if ss := narrative.Sections(text); len(ss) > 0 && ss[0].Chars > narrative.MaxSection {
+		return fmt.Errorf("the first section %q holds %d characters, over %d; the page shows it first, so keep it a short summary and move the rest under ### headings", ss[0].Heading, ss[0].Chars, narrative.MaxSection)
 	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.

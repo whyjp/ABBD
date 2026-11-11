@@ -1,6 +1,6 @@
 // Package narrative reads a module's text as a human would: in sections,
-// and for what the code is now. It reports and never refuses, because a
-// pattern that reads as history can be a version number or a name.
+// and for what the code is now. It reports what reads as history and never
+// refuses it, because such a pattern can be a version number or a name.
 package narrative
 
 import (
@@ -11,7 +11,9 @@ import (
 )
 
 // MaxSection is how many characters of prose a section holds before a
-// reader loses its thread. It is a report threshold, never a gate.
+// reader loses its thread. Status reports each section over it, and abbd
+// understand refuses a text only when its first section, the summary a
+// page shows first, runs over it.
 const MaxSection = 2000
 
 // Section is the prose under one heading, up to the next heading of any

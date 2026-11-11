@@ -69,3 +69,41 @@ func TestAReaderClaimSaysWhetherItsEvidenceHolds(t *testing.T) {
 		}
 	}
 }
+
+// A module's text shows its first section and folds the rest, and a Key
+// Concept that names a unit's file stands by that unit's entry.
+func TestATextLeadsWithItsSummaryAndTiesConceptsToBoxes(t *testing.T) {
+	units := append(ripgrep(), inside("MOD-0006", "MOD-0003"))
+	for i := range units {
+		if units[i].ID == "MOD-0006" {
+			units[i].Anchors = []model.Anchor{{Path: "crates/searcher/sink.rs"}}
+		}
+	}
+	text := "## Overview\nThe searcher runs one search.\n\n## Key Concepts\n- **Sink** (`sink.rs`): takes each match.\n- **Other** (`none.rs`): names no box.\n"
+	in := Input{Units: units, Understandings: map[model.ID]store.Understanding{"MOD-0003": {Unit: "MOD-0003", Digest: "d", Text: text}}, Digests: map[model.ID]string{"MOD-0003": "d"}}
+	page := pages(t, Build(in))["MOD-0003.html"]
+	lead, rest, ok := strings.Cut(page, `<details class="more">`)
+	if !ok || !strings.Contains(lead, "The searcher runs one search.") || !strings.Contains(rest, "takes each match.") {
+		t.Fatalf("the summary should come first and the Key Concepts fold")
+	}
+	if !strings.Contains(page, "핵심 개념 1개") {
+		t.Errorf("the concept naming sink.rs should stand by MOD-0006's entry")
+	}
+}
+
+// The lead ends where the first section ends: at the first heading when
+// prose comes before it. A file name two units share ties a concept to
+// neither.
+func TestALeadEndsWithTheFirstSection(t *testing.T) {
+	lead, rest := split(blocks("Intro prose.\n\n## Overview\nMore.\n"))
+	if len(lead) != 1 || len(rest) != 2 {
+		t.Errorf("an intro before the first heading is the whole lead: %d, %d", len(lead), len(rest))
+	}
+	if lead, rest := split(blocks("No heading at all.\n")); len(lead) != 1 || rest != nil {
+		t.Errorf("a text with no heading is all lead")
+	}
+	units := []InsideUnit{{ID: "MOD-0001", Anchors: []string{"a/mod.rs"}}, {ID: "MOD-0002", Anchors: []string{"b/mod.rs"}}}
+	if got := concepts(blocks("- **Mod** (`mod.rs`): shared.\n"), units); len(got) != 0 {
+		t.Errorf("a shared file name tied a concept: %v", got)
+	}
+}
