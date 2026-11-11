@@ -27,6 +27,9 @@ func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
 // drawing and mark it STALE once the code moves on. With --restamp it stamps
 // the stored text again instead, when only what the module holds moved.
 func (e env) understand(ref string, args []string) error {
+	if e.sentence != "" && (strings.Contains(ref, ".") || e.restamp) {
+		return fmt.Errorf("--sentence goes with a module's or feature's new text, not with a note or --restamp")
+	}
 	if strings.Contains(ref, ".") {
 		r, err := model.ParseNoteRef(ref)
 		if err != nil {
@@ -90,7 +93,12 @@ func (e env) understand(ref string, args []string) error {
 	readText(e.stdout, string(id), text)
 	if s := strings.TrimSpace(e.sentence); s != "" {
 		// The reader who read the module again says its one line too,
-		// stamped with the same code as the text.
+		// stamped with the same code as the text. A person's line outranks
+		// a reader's, so it stays.
+		if u.Responsibility != nil && u.Responsibility.Writer == model.Human {
+			fmt.Fprintf(e.stdout, "responsibility of %s stays as a person stated it; the reader's line is not stored\n", id)
+			return nil
+		}
 		f := model.Said(model.Reader, s)
 		f.Digest = digest
 		u.Responsibility = &f

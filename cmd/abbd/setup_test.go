@@ -206,3 +206,18 @@ func TestAReaderRewritesTheSentenceWithTheText(t *testing.T) {
 		t.Errorf("the rewritten sentence should read fresh: %s", role)
 	}
 }
+
+// A person's responsibility outranks a reader's, so --sentence leaves it.
+func TestASentenceLeavesAPersonsLine(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.extract(codeOnly)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "", "record", "fact", "MOD-0001.responsibility", "--value", "charges cards", "--source", "pr 3")
+	text := p.file(t, "t.md", "### Overview\nbilling charges.\n")
+	p.want(0, "stays as a person stated it", "understand", "MOD-0001", text, "--sentence", "takes money")
+	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "charges cards") || strings.Contains(md, "takes money") {
+		t.Errorf("the person's line should stay:\n%s", md)
+	}
+	p.want(1, "--sentence goes with", "understand", "MOD-0001", "--restamp", "--sentence", "x")
+}
