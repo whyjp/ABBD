@@ -630,8 +630,7 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Lists unit candidates from the layout and fans the reading out to a pstack swarm of how-explorer workers that report in the extraction format.",
-        "Badge": "inferred",
-        "Stale": true
+        "Badge": "inferred"
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -820,7 +819,7 @@
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
+        "Value": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
         "Badge": "inferred"
       },
       "Anchors": [
@@ -828,7 +827,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 7), and only when a human is in the conversation.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup never asks the human anything.\""
       ]
     },
     {
@@ -5458,35 +5457,12 @@
           "ID": "FEAT-0026",
           "Name": "/abbd-setup stance",
           "Kind": "기능",
-          "Sentence": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
+          "Sentence": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": {
-            "Reader": "concept-orch (Claude Opus 5.5)",
-            "Stale": false,
-            "Blocks": [
-              {
-                "Kind": "h",
-                "Parts": [
-                  {
-                    "Text": "Overview",
-                    "Code": false
-                  }
-                ]
-              },
-              {
-                "Kind": "p",
-                "Parts": [
-                  {
-                    "Text": "The stance at the top of the /abbd-setup skill: setup asks the human one thing only, how dense the overview should be, and only when a human is in the conversation. The first state it commits is the baseline, which the human reads in the blueprint and the PR, and setup needs nothing but the abbd CLI and the reader, with pstack as an optional engine.",
-                    "Code": false
-                  }
-                ]
-              }
-            ]
-          }
+          "Understanding": null
         }
       ],
       "Understanding": null,
@@ -8712,11 +8688,6 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
-                    "Badge": "extracted"
-                  },
-                  {
-                    "ID": "FEAT-0002",
-                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
@@ -23732,11 +23703,11 @@
                 "Code": false
               },
               {
-                "Text": "store.Project.Cut",
+                "Text": "store.Project.OverviewCut",
                 "Code": true
               },
               {
-                "Text": ") and off until the human chooses: with it off, ",
+                "Text": ") and off by default, and this repository and every fixture switch it on: with it off, ",
                 "Code": false
               },
               {
@@ -25357,7 +25328,15 @@
                 "Code": true
               },
               {
-                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them. ",
+                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them, each with a ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " that switches the overview's cut on. ",
                 "Code": false
               },
               {
@@ -25365,7 +25344,31 @@
                 "Code": true
               },
               {
-                "Text": " builds each once for every test that reads it, and those tests run in parallel; the two that turn a package switch (",
+                "Text": " builds each as its ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " sets once for every test that reads it, and ",
+                "Code": false
+              },
+              {
+                "Text": "drawAll",
+                "Code": true
+              },
+              {
+                "Text": " builds it with the cut off, the layout every repo that leaves the cut off still gets, for a test of a line the cut overview counts on a pill: ",
+                "Code": false
+              },
+              {
+                "Text": "gitx_knot_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the six lines into internal/gitx to one turn back each on both the uncut overview and internal/gitx's focus view. Those tests run in parallel; the two that turn a package switch (",
                 "Code": false
               },
               {
@@ -26625,14 +26628,6 @@
                 "Code": false
               },
               {
-                "Text": "OverviewCut",
-                "Code": true
-              },
-              {
-                "Text": ", nil until the human chooses how dense the overview is, so a chosen false survives a save, and ",
-                "Code": false
-              },
-              {
                 "Text": "ProjectDir",
                 "Code": true
               },
@@ -27173,13 +27168,20 @@
               {
                 "Key": "overview-cut",
                 "Name": "overview_cut",
-                "Shape": "*bool",
-                "Need": "선택"
+                "Shape": "bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": true,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": true,
             "Notes": false
           }
@@ -28034,7 +28036,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice"
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut"
             },
             {
               "N": 4,
@@ -30542,7 +30544,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice",
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",

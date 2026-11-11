@@ -31,11 +31,11 @@ func TestADenseOverviewCountsWhatItDoesNotDraw(t *testing.T) {
 	for _, name := range []string{"pstack", "self"} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			plain := fixture(t, name).Overview
+			plain := drawAll(t, name).Overview
 			if slices.ContainsFunc(plain.Boxes, func(b Box) bool { return b.More > 0 }) {
 				t.Error("the overview counts lines with the cut switched off")
 			}
-			m := cutOn(t, name, nil)
+			m := fixture(t, name)
 			d := m.Overview
 			if 10*len(d.ways) > sparse*len(d.Boxes) || len(d.ways) >= len(plain.ways) {
 				t.Errorf("the overview draws %d lines over %d boxes, against %d uncut, past %d tenths a box", len(d.ways), len(d.Boxes), len(plain.ways), sparse)
@@ -88,7 +88,7 @@ func TestAMarkedRelationIsDrawn(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	plain := cutOn(t, "pstack", nil).Overview
+	plain := fixture(t, "pstack").Overview
 	drawn := func(d Drawing, a, b string) bool {
 		return slices.ContainsFunc(d.ways, func(r Route) bool {
 			return slices.Contains(r.ends, a) && slices.Contains(r.ends, b)
@@ -119,4 +119,84 @@ func TestAMarkedRelationIsDrawn(t *testing.T) {
 		}
 	}
 	t.Fatal("the pstack overview draws every top-level dependency")
+}
+
+// With the cut switched on, every relation the overview stops drawing is
+// counted on the pill of a box at one of its ends, and the focus view each
+// such pill opens draws it.
+func TestACountedRelationIsDrawnWhereItsPillLeads(t *testing.T) {
+	t.Parallel()
+	rels := func(d Drawing) map[string]bool {
+		out := map[string]bool{}
+		for _, w := range d.Wires {
+			for _, r := range w.Rels {
+				out[r] = true
+			}
+		}
+		for _, p := range d.Ports {
+			for _, r := range p.Rels {
+				out[r] = true
+			}
+		}
+		return out
+	}
+	for _, name := range fixtures {
+		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+		if err != nil {
+			t.Fatal(err)
+		}
+		parent := map[model.ID]model.ID{}
+		for _, u := range units {
+			parent[u.ID] = u.Parent
+		}
+		top := func(id model.ID) string {
+			for parent[id] != "" {
+				id = parent[id]
+			}
+			return string(id)
+		}
+		ends := map[string][2]string{}
+		for _, u := range units {
+			for _, r := range u.Relations {
+				ends[key(u.ID, r.Kind, r.To)] = [2]string{top(u.ID), top(r.To)}
+			}
+		}
+		m := fixture(t, name)
+		drawn := rels(m.Overview)
+		pill := map[string]string{}
+		for _, b := range m.Overview.Boxes {
+			if b.More > 0 {
+				pill[b.ID] = b.MoreHref
+			}
+		}
+		focus := map[string]map[string]bool{}
+		for _, f := range m.Focus {
+			focus["#"+f.ID] = rels(f.Drawing)
+		}
+		counted := 0
+		for r := range rels(drawAll(t, name).Overview) {
+			if drawn[r] {
+				continue
+			}
+			counted++
+			led := false
+			for _, e := range ends[r] {
+				href, ok := pill[e]
+				if !ok {
+					continue
+				}
+				led = true
+				if !focus[href][r] {
+					t.Errorf("%s: %s is counted on %s's pill, and %s does not draw it", name, r, e, href)
+				}
+			}
+			if !led {
+				t.Errorf("%s: the overview neither draws %s nor counts it on a pill at %v", name, r, ends[r])
+			}
+		}
+		if (counted > 0) != (len(pill) > 0) {
+			t.Errorf("%s: the overview leaves %d relations undrawn and %d boxes count some", name, counted, len(pill))
+		}
+		t.Logf("%s: %d relations counted on pills", name, counted)
+	}
 }
