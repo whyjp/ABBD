@@ -7,7 +7,6 @@ import (
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
-	"github.com/whyjp/abbd/internal/owners"
 	"github.com/whyjp/abbd/internal/store"
 )
 
@@ -62,7 +61,7 @@ func Load(st store.Store) (Input, error) {
 	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
 		return in, err
 	}
-	in.Owners = OwnersOf(owners.Read(st.ProjectDir()), in.Units)
+	in.Owners = OwnersOf(store.ReadOwners(st.ProjectDir()), in.Units)
 	if in.Figures, err = st.LoadFigures(); err != nil {
 		return in, err
 	}
@@ -329,7 +328,7 @@ func anchors(u model.Unit) []string {
 
 // OwnersOf names the owners of each present unit's anchors, in the order
 // CODEOWNERS gives them, each once.
-func OwnersOf(o owners.Owners, units []model.Unit) map[model.ID][]string {
+func OwnersOf(o store.Owners, units []model.Unit) map[model.ID][]string {
 	out := map[model.ID][]string{}
 	for _, u := range model.Present(units) {
 		var names []string

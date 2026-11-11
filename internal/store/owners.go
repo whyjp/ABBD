@@ -1,7 +1,8 @@
-// Package owners reads who owns which code from a repository's CODEOWNERS,
-// as GitHub and GitLab do: the last pattern a path matches names its owners.
-// It is a fact the repository states, read as it stands, never inferred.
-package owners
+package store
+
+// Owners is who owns which code by a repository's CODEOWNERS, as GitHub
+// and GitLab read it: the last pattern a path matches names its owners. It
+// is a fact the repository states, read as it stands, never inferred.
 
 import (
 	"os"
@@ -10,30 +11,29 @@ import (
 	"strings"
 )
 
-// Owners is a CODEOWNERS file's rules in the order they appear.
 type Owners struct {
-	rules []rule
+	rules []ownerRule
 }
 
-type rule struct {
+type ownerRule struct {
 	re     *regexp.Regexp
 	owners []string
 }
 
-// Read finds CODEOWNERS where GitHub looks for it, under root, and parses
+// ReadOwners finds CODEOWNERS where GitHub looks for it, under root, and parses
 // it; with none, every path has no owner.
-func Read(root string) Owners {
+func ReadOwners(root string) Owners {
 	for _, p := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
 		if b, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(p))); err == nil {
-			return Parse(string(b))
+			return ParseOwners(string(b))
 		}
 	}
 	return Owners{}
 }
 
-// Parse reads CODEOWNERS text: a pattern and its owners per line, # for a
+// ParseOwners reads CODEOWNERS text: a pattern and its owners per line, # for a
 // comment.
-func Parse(text string) Owners {
+func ParseOwners(text string) Owners {
 	var o Owners
 	for _, line := range strings.Split(text, "\n") {
 		if i := strings.Index(line, "#"); i >= 0 {
@@ -43,7 +43,7 @@ func Parse(text string) Owners {
 		if len(f) == 0 {
 			continue
 		}
-		o.rules = append(o.rules, rule{re: compile(f[0]), owners: f[1:]})
+		o.rules = append(o.rules, ownerRule{re: ownerPattern(f[0]), owners: f[1:]})
 	}
 	return o
 }
@@ -60,11 +60,11 @@ func (o Owners) For(path string) []string {
 	return nil
 }
 
-// compile turns a CODEOWNERS pattern into a regexp over a path: "/" at the
+// ownerPattern turns a CODEOWNERS pattern into a regexp over a path: "/" at the
 // start anchors it at the root, else it matches at any depth; a trailing "/"
 // or a plain name matches everything under it; "*" stays within a segment
 // and "**" crosses them.
-func compile(p string) *regexp.Regexp {
+func ownerPattern(p string) *regexp.Regexp {
 	anchored := strings.HasPrefix(p, "/") || strings.Contains(strings.TrimSuffix(p, "/"), "/")
 	p = strings.TrimPrefix(p, "/")
 	var b strings.Builder
