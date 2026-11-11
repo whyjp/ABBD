@@ -21,23 +21,23 @@ rows:
         unit files: rewrites every unit file from the reconciled extraction, a module's sentences stamped with its code
       evidence:
         - path: cmd/abbd/main.go
-          lines: "539"
+          lines: "544"
           symbol: syncActual
           quote: if err := st.SaveUnits(res.Units); err != nil {
         - path: cmd/abbd/main.go
-          lines: "509"
+          lines: "514"
           symbol: syncActual
           quote: state, err := st.LoadState()
         - path: cmd/abbd/main.go
-          lines: "556"
+          lines: "561"
           symbol: syncActual
           quote: return res, st.SaveState(state)
         - path: cmd/abbd/main.go
-          lines: "545"
+          lines: "550"
           symbol: syncActual
           quote: current, widened, err := st.UpgradeUnderstandings(res.Units)
         - path: cmd/abbd/main.go
-          lines: "428"
+          lines: "433"
           quote: p, err := e.st.LoadProject()
       writer: reader
       code:
@@ -60,7 +60,7 @@ rows:
           symbol: recordRelation
           quote: u.PutNote(note)
         - path: cmd/abbd/understand.go
-          lines: "86"
+          lines: "95"
           symbol: understand
           quote: 'if err := e.st.SaveUnderstanding(store.Understanding{Unit: id'
       writer: reader
@@ -112,12 +112,12 @@ rows:
         cmd/abbd/screen.go#quote-061a5173: 91f35d6e30a925d0
     - unit: MOD-0002
       cells:
-        blueprint: says whether its files are the ones the state rendered
+        blueprint: says whether its files are the ones the state rendered, or none are drawn
         state.yaml: reads the fingerprint to say whether the state is CURRENT
         unit files: compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit
       evidence:
         - path: cmd/abbd/diff.go
-          lines: "236"
+          lines: "250"
           symbol: unitsAt
           quote: return e.st.UnitsAt(base)
         - path: cmd/abbd/evidence.go
@@ -132,7 +132,7 @@ rows:
       code:
         cmd/abbd/diff.go#quote-d7133fe3: c0c3ba779b5a8e28
         cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
-        cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
+        cmd/abbd/evidence.go#quote-c6625aef: 7c62d689ab4b0f60
 retired:
     - unit: MOD-0006
       cells:
@@ -369,6 +369,28 @@ retired:
         cmd/abbd/record.go#quote-96b34390: cea44e852e7a7e92
         cmd/abbd/record.go#quote-5614cda7: dec0a70e1688a95f
         cmd/abbd/understand.go#quote-e0b4fa19: 747a51ddc1079f48
+    - unit: MOD-0002
+      cells:
+        blueprint: says whether its files are the ones the state rendered
+        state.yaml: reads the fingerprint to say whether the state is CURRENT
+        unit files: compares the stored units with the base revision's, or with the copy a write kept before the edits since the last commit
+      evidence:
+        - path: cmd/abbd/diff.go
+          lines: "236"
+          symbol: unitsAt
+          quote: return e.st.UnitsAt(base)
+        - path: cmd/abbd/evidence.go
+          lines: "143"
+          symbol: status
+          quote: 'case in.Synced.Fingerprint == "":'
+        - path: cmd/abbd/evidence.go
+          lines: "146"
+          symbol: status
+          quote: switch in.BlueprintFreshness() {
+      code:
+        cmd/abbd/diff.go#quote-d7133fe3: c0c3ba779b5a8e28
+        cmd/abbd/evidence.go#quote-30c3c1df: 474a69039651a4f6
+        cmd/abbd/evidence.go#quote-c6625aef: fd9b8c605a722cdf
 ---
 
 Each row is one part of the CLI and each column one file under `.abbd/`. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read.
