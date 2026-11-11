@@ -6661,7 +6661,7 @@
                 "Code": true
               },
               {
-                "Text": ". Lint also names each pair of overview boxes whose lines carry no phrase (",
+                "Text": ". Lint also names each drawn overview line whose relations carry no live phrase (",
                 "Code": false
               },
               {
@@ -6669,7 +6669,7 @@
                 "Code": true
               },
               {
-                "Text": "), a contract counted on its provider's box. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "), by its end boxes, a contract counted on its provider's box. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
