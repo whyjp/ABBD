@@ -248,7 +248,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.supplement, "supplement", "", "semantic supplement from the setup readers")
 	},
 	"via": func(fs *flag.FlagSet, o *opts) {
-		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention or call")
+		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention, call, load or spawn")
 	},
 	"phrase": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
