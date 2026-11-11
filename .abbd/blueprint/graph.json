@@ -6496,7 +6496,7 @@
                 "Code": true
               },
               {
-                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner. A human's why goes only on a decision; ",
+                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -26057,7 +26057,15 @@
                 "Code": true
               },
               {
-                "Text": " gives a path the owners of the last rule it matches), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " gives a path, or a directory anchor, the owners of the last rule it matches; ",
+                "Code": false
+              },
+              {
+                "Text": "InputsHash",
+                "Code": true
+              },
+              {
+                "Text": " counts that CODEOWNERS as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
