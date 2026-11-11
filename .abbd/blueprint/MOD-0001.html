@@ -383,15 +383,19 @@ svg:has(.w.r23:hover) .r23:not(.w){opacity:1}
 <rect class="frame" x="6" y="18" width="1307" height="352" rx="8"/>
 
 <path class="w consumes plan e0 e23 r23" d="M259 38 L259 190" data-origin="inferred" data-net="1" data-h="1" marker-end="url(#m-use-1)"><title>/abbd-setup verify, install and hand over consumes CLAUDE.md abbd block (via convention), 판독</title></path><circle class="origin inferred e0 e23 r23" cx="259" cy="38" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e23 r23" data-h="1" x="243" y="118" text-anchor="middle">관례</text><path class="w provides e2 e12 r4" d="M385 86 L385 38" data-origin="inferred" data-net="2" data-h="2" marker-end="url(#m-impl-2)"><title>argv parsing and dispatch provides abbd exit codes (via call), 판독
-cmd/abbd/main.go &#34;return exitUsage&#34;</title></path><circle class="origin inferred e2 e12 r4" cx="385" cy="86" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e2 e12 r4" data-h="2" x="401" y="66" text-anchor="middle">호출</text><path class="w provides e6 e11 r18" d="M511 190 L511 38" data-origin="inferred" data-net="3" data-h="0" marker-end="url(#m-impl-0)"><title>blueprint publish provides blueprint files (via data), 판독
+via 호출
+cmd/abbd/main.go &#34;return exitUsage&#34;</title></path><circle class="origin inferred e2 e12 r4" cx="385" cy="86" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w provides e6 e11 r18" d="M511 190 L511 38" data-origin="inferred" data-net="3" data-h="0" marker-end="url(#m-impl-0)"><title>blueprint publish provides blueprint files (via data), 판독
 cmd/abbd/screen.go &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e6 e11 r18" cx="511" cy="190" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e6 e11 r18" data-h="0" x="533" y="142" text-anchor="middle">데이터</text><path class="w depends_on e2 e6 r5" d="M439 130 L439 190" data-origin="inferred" data-net="4" data-h="2" marker-end="url(#m-dep-2)"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
-cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e2 e6 r5" cx="439" cy="130" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e2 e6 r5" data-h="2" x="583" y="164" text-anchor="middle">호출</text><path class="w depends_on e1 e6 r2" d="M567 130 L567 190" data-origin="inferred" data-net="4" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on blueprint publish (via call), 판독
+via 호출
+cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e2 e6 r5" cx="439" cy="130" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e1 e6 r2" d="M567 130 L567 190" data-origin="inferred" data-net="4" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on blueprint publish (via call), 판독
+via 호출
 cmd/abbd/evidence.go &#34;in, err := e.screenInput()&#34;</title></path><circle class="origin inferred e1 e6 r2" cx="567" cy="130" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes joins e1 e10 r1" d="M603 130 L603 274" data-origin="inferred" data-net="5" data-h="1"><title>review commands consumes unit files (via data), 판독
 건너는 것: unit .md (판독) 1/1
 cmd/abbd/diff.go &#34;return e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e1 e10 r1" cx="603" cy="130" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e1 e10 r1" data-h="1" x="570" y="246" text-anchor="middle">unit .md</text><path class="w depends_on joins e1 e17 r3" d="M619 130 L619 274" data-origin="inferred" data-net="4" data-h="1"><title>review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 건너는 것: Compare revisions (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;</title></path><circle class="origin inferred e1 e17 r3" cx="619" cy="130" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes joins e3 e9 r7" d="M859 130 L859 274" data-origin="inferred" data-net="6" data-h="3"><title>sync pipeline consumes extraction JSON (via data), 판독
@@ -413,9 +417,10 @@ cmd/abbd/main.go &#34;project.yaml names no extraction script; run abbd setup --
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
-cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab e3 e18 r10" data-h="3" x="891" y="222" text-anchor="middle">호출</text><path class="w depends_on joins e0 e16 r0" d="M259 234 L259 274" data-origin="inferred" data-net="11" data-h="1"><title>CLAUDE.md abbd block depends_on /abbd (via call), 판독
+cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><path class="w depends_on joins e0 e16 r0" d="M259 234 L259 274" data-origin="inferred" data-net="11" data-h="1"><title>CLAUDE.md abbd block depends_on /abbd (via call), 판독
 건너는 것: /abbd pointer (판독) 1/3, query first (판독) 1/3, sync then diff (판독) 1/3
 cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the topology.&#34;
 cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the topology.&#34;
@@ -451,6 +456,7 @@ review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 blueprint publish depends_on internal/screen (via call), 판독
 건너는 것: /abbd pointer (판독) 1/3, Compare revisions (판독) 1/3, git query (판독) 1/3, query first (판독) 1/3, quote check (판독) 1/3, render pages (판독) 1/3, sync then diff (판독) 1/3
+via 호출
 cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the topology.&#34;
 cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the topology.&#34;
 cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the topology.&#34;
@@ -461,9 +467,10 @@ cmd/abbd/screen.go &#34;files, err := screen.Files(screen.Build(in))&#34;</title
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 건너는 것: Compare revisions (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
-cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;</title></path><text class="lab e1 e17 r3" data-h="1" x="269" y="316" text-anchor="middle">호출</text><path class="w depends_on joins e1 e6 e17 e21 r3 r19" d="M404 274 L259 274" data-h="1"><title>review commands depends_on internal/evidence (via call), 판독
+cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;</title></path><path class="w depends_on joins e1 e6 e17 e21 r3 r19" d="M404 274 L259 274" data-h="1"><title>review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 blueprint publish depends_on internal/screen (via call), 판독
@@ -477,6 +484,7 @@ review commands depends_on internal/topology (via call), 판독
 blueprint publish depends_on internal/screen (via call), 판독
 setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 건너는 것: Compare revisions (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3, render pages (판독) 1/3, supplement fold (판독) 1/3
+via 호출
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;
@@ -491,6 +499,7 @@ record writers consumes unit files (via data), 판독
 blueprint publish depends_on internal/screen (via call), 판독
 setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 건너는 것: Compare revisions (판독) 1/5, git query (판독) 1/5, quote check (판독) 1/5, render pages (판독) 1/5, supplement fold (판독) 1/5, unit .md (판독) 2/5
+via 호출
 cmd/abbd/diff.go &#34;return e.st.UnitsAt(base)&#34;
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
@@ -519,6 +528,7 @@ review commands depends_on internal/topology (via call), 판독
 record writers consumes unit files (via data), 판독
 setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 건너는 것: Compare revisions (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3, supplement fold (판독) 1/3, unit .md (판독) 1/3
+via 호출
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;
@@ -571,6 +581,7 @@ cmd/abbd/setup.go &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</titl
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
 cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><path class="w consumes joins e3 e5 e9 e10 e18 r7 r10 r14" d="M859 274 L787 274" data-h="0"><title>sync pipeline consumes extraction JSON (via data), 판독
@@ -607,7 +618,8 @@ sync pipeline consumes sync state (via data), 판독
 건너는 것: extract argv (판독) 1/2
 cmd/abbd/main.go &#34;if len(p.Extract) == 0 {&#34;
 cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path><circle class="origin inferred e3 e8 e14 r6 r8" cx="883" cy="86" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><circle class="origin inferred e3 e8 e14 r6 r8" cx="883" cy="86" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on back e3 e7 r21" d="M823 182 L823 130" data-origin="inferred" data-net="29" data-h="4" marker-end="url(#m-dep-4)"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
-cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e3 e7 r21" cx="823" cy="182" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e3 e7 r21" data-h="4" x="807" y="160" text-anchor="middle">호출</text>
+via 호출
+cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e3 e7 r21" cx="823" cy="182" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
 <circle class="junction road e5 e10 e13 e15" data-h="0" cx="962" cy="274" r="3"/>
 
 <g class="route depends_on e0 e16 r0" data-h="1" style="--k0:var(--h1);--k16:var(--h1)"><path class="way" d="M259 234 L259 274 L43 274 L43 350"/><use href="#t-dep" transform="translate(43 350) rotate(90)"/></g><g class="route consumes e1 e10 r1" data-h="1" style="--k1:var(--h1);--k10:var(--h1)"><path class="way" d="M603 130 L603 274 L496 274 L496 350"/><use href="#t-use" transform="translate(496 350) rotate(90)"/></g><g class="route depends_on e1 e6 r2" data-h="1" style="--k1:var(--h1);--k6:var(--h0)"><path class="way" d="M567 130 L567 190"/><use href="#t-dep" transform="translate(567 190) rotate(90)"/></g><g class="route depends_on e1 e17 r3" data-h="1" style="--k1:var(--h1);--k17:var(--h1)"><path class="way" d="M619 130 L619 274 L253 274 L253 350"/><use href="#t-dep" transform="translate(253 350) rotate(90)"/></g><g class="route provides e2 e12 r4" data-h="2" style="--k2:var(--h2);--k12:var(--h2)"><path class="way" d="M385 86 L385 38"/><use href="#t-impl" transform="translate(385 38) rotate(-90)"/></g><g class="route depends_on e2 e6 r5" data-h="2" style="--k2:var(--h2);--k6:var(--h0)"><path class="way" d="M439 130 L439 190"/><use href="#t-dep" transform="translate(439 190) rotate(90)"/></g><g class="route consumes back e3 e8 r6" data-h="3" style="--k3:var(--h3);--k8:var(--h3)"><path class="way" d="M883 86 L883 38"/><use href="#t-use" transform="translate(883 38) rotate(-90)"/></g><g class="route consumes e3 e9 r7" data-h="3" style="--k3:var(--h3);--k9:var(--h3)"><path class="way" d="M859 130 L859 274 L611 274 L611 350"/><use href="#t-use" transform="translate(611 350) rotate(90)"/></g><g class="route consumes back e3 e14 r8" data-h="3" style="--k3:var(--h3);--k14:var(--h3)"><path class="way" d="M883 86 L883 58 L953 58 L953 38"/><use href="#t-use" transform="translate(953 38) rotate(-90)"/></g><g class="route depends_on e3 e7 r9" data-h="3" style="--k3:var(--h3);--k7:var(--h4)"><path class="way" d="M875 130 L875 162 L835 162 L835 182"/><use href="#t-dep" transform="translate(835 182) rotate(90)"/></g><g class="route depends_on e3 e18 r10" data-h="3" style="--k3:var(--h3);--k18:var(--h3)"><path class="way" d="M875 130 L875 274 L769 274 L769 350"/><use href="#t-dep" transform="translate(769 350) rotate(90)"/></g><g class="route consumes e4 e15 r11" data-h="5" style="--k4:var(--h5);--k15:var(--h5)"><path class="way" d="M1079 130 L1079 350"/><use href="#t-use" transform="translate(1079 350) rotate(90)"/></g><g class="route depends_on e4 e5 r12" data-h="5" style="--k4:var(--h5);--k5:var(--h0)"><path class="way" d="M1045 130 L1045 190"/><use href="#t-dep" transform="translate(1045 190) rotate(90)"/></g><g class="route depends_on e4 e19 r13" data-h="5" style="--k4:var(--h5);--k19:var(--h5)"><path class="way" d="M1095 130 L1095 266 L1265 266 L1265 350"/><use href="#t-dep" transform="translate(1265 350) rotate(90)"/></g><g class="route consumes e5 e10 r14" data-h="0" style="--k5:var(--h0);--k10:var(--h0)"><path class="way" d="M962 234 L962 274 L496 274 L496 350"/><use href="#t-use" transform="translate(496 350) rotate(90)"/></g><g class="route consumes e5 e15 r15" data-h="0" style="--k5:var(--h0);--k15:var(--h0)"><path class="way" d="M962 234 L962 274 L1079 274 L1079 350"/><use href="#t-use" transform="translate(1079 350) rotate(90)"/></g><g class="route consumes e5 e13 r16" data-h="0" style="--k5:var(--h0);--k13:var(--h0)"><path class="way" d="M962 234 L962 350"/><use href="#t-use" transform="translate(962 350) rotate(90)"/></g><g class="route depends_on e5 e20 r17" data-h="0" style="--k5:var(--h0);--k20:var(--h0)"><path class="way" d="M1024 234 L1024 350"/><use href="#t-dep" transform="translate(1024 350) rotate(90)"/></g><g class="route provides e6 e11 r18" data-h="0" style="--k6:var(--h0);--k11:var(--h0)"><path class="way" d="M511 190 L511 38"/><use href="#t-impl" transform="translate(511 38) rotate(-90)"/></g><g class="route depends_on e6 e21 r19" data-h="0" style="--k6:var(--h0);--k21:var(--h0)"><path class="way" d="M509 234 L509 274 L113 274 L113 350"/><use href="#t-dep" transform="translate(113 350) rotate(90)"/></g><g class="route consumes e7 e9 r20" data-h="4" style="--k7:var(--h4);--k9:var(--h4)"><path class="way" d="M787 242 L787 274 L611 274 L611 350"/><use href="#t-use" transform="translate(611 350) rotate(90)"/></g><g class="route depends_on back e3 e7 r21" data-h="4" style="--k3:var(--h3);--k7:var(--h4)"><path class="way" d="M823 182 L823 130"/><use href="#t-dep" transform="translate(823 130) rotate(-90)"/></g><g class="route depends_on e7 e22 r22" data-h="4" style="--k7:var(--h4);--k22:var(--h4)"><path class="way" d="M691 242 L691 274 L404 274 L404 350"/><use href="#t-dep" transform="translate(404 350) rotate(90)"/></g><g class="route consumes e0 e23 r23" data-h="1" style="--k0:var(--h1);--k23:var(--h1)"><path class="way" d="M259 38 L259 190"/><use href="#t-use" transform="translate(259 190) rotate(90)"/></g>
@@ -661,8 +673,10 @@ high_water:
 
 
 <path class="w contract e0 e2 r4" d="M347 92 L347 100 L462 100 L462 128" data-origin="extracted" data-net="1" data-h="1" marker-end="url(#m-use-1)"><title>/abbd → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record unit 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd retract 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd forget 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd stack 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd table 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd lint 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd review 계약을 거쳐 씁니다; /abbd → abbd CLI: abbd scope 계약을 거쳐 씁니다
-건너는 것: blast radius (판독) 1/36, coupling and phrase (판독) 1/36, coupling chain (판독) 1/36, diff --check (판독) 2/36, exit code (판독) 2/36, file grid (판독) 1/36, flow steps (판독) 1/36, found coupling (판독) 1/36, fresh quotes (판독) 1/36, how&#39;s text (판독) 1/36, human&#39;s own words (판독) 1/36, module text (판독) 1/36, quote listing (판독) 1/36, route between units (판독) 1/36, stack layers (판독) 1/36, stale note (판독) 1/36, state freshness (판독) 1/36, stated coupling (판독) 1/36, stated purpose (판독) 1/36, status --check (판독) 1/36, sync then diff (판독) 2/36, unit account (판독) 1/36, unit the script misses (판독) 1/36, unit&#39;s couplings (판독) 1/36, units a change hits (판독) 1/36, unseen unit (판독) 1/36, wrong claim (판독) 1/36</title></path><text class="lab e0 e2 r4" data-h="1" x="404" y="96" text-anchor="middle">호출</text><path class="w contract e1 e2 r5" d="M535 92 L535 128" data-origin="extracted" data-net="1" data-h="3" marker-end="url(#m-use-3)"><title>/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd lint 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd brief 계약을 거쳐 씁니다
-건너는 것: CLAUDE.md block (판독) 1/23, blast radius (판독) 1/23, fresh quotes (판독) 1/23, module text (판독) 2/23, parent placement (판독) 1/23, reader claims stay (판독) 1/23, reader supplement (판독) 1/23, route between units (판독) 1/23, setup refusals (판독) 1/23, unit account (판독) 1/23, unit&#39;s parent (판독) 1/23</title></path><path class="w contract e2 e7 r2" d="M627 92 L627 128" data-origin="inferred" data-net="1" data-h="5" marker-end="url(#m-use-5)"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독
+건너는 것: blast radius (판독) 1/36, coupling and phrase (판독) 1/36, coupling chain (판독) 1/36, diff --check (판독) 2/36, exit code (판독) 2/36, file grid (판독) 1/36, flow steps (판독) 1/36, found coupling (판독) 1/36, fresh quotes (판독) 1/36, how&#39;s text (판독) 1/36, human&#39;s own words (판독) 1/36, module text (판독) 1/36, quote listing (판독) 1/36, route between units (판독) 1/36, stack layers (판독) 1/36, stale note (판독) 1/36, state freshness (판독) 1/36, stated coupling (판독) 1/36, stated purpose (판독) 1/36, status --check (판독) 1/36, sync then diff (판독) 2/36, unit account (판독) 1/36, unit the script misses (판독) 1/36, unit&#39;s couplings (판독) 1/36, units a change hits (판독) 1/36, unseen unit (판독) 1/36, wrong claim (판독) 1/36
+via 호출</title></path><path class="w contract e1 e2 r5" d="M535 92 L535 128" data-origin="extracted" data-net="1" data-h="3" marker-end="url(#m-use-3)"><title>/abbd-setup → abbd CLI: abbd diff 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd status 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd impact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd install 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd sync 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd explain 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd path 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record fact 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record relation 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd setup 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd understand 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd exit codes 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record parent 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd migrate 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd record evidence 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd flow 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd lint 계약을 거쳐 씁니다; /abbd-setup → abbd CLI: abbd brief 계약을 거쳐 씁니다
+건너는 것: CLAUDE.md block (판독) 1/23, blast radius (판독) 1/23, fresh quotes (판독) 1/23, module text (판독) 2/23, parent placement (판독) 1/23, reader claims stay (판독) 1/23, reader supplement (판독) 1/23, route between units (판독) 1/23, setup refusals (판독) 1/23, unit account (판독) 1/23, unit&#39;s parent (판독) 1/23
+via 호출</title></path><path class="w contract e2 e7 r2" d="M627 92 L627 128" data-origin="inferred" data-net="1" data-h="5" marker-end="url(#m-use-5)"><title>internal/identity → abbd CLI: sync state 계약을 거쳐 씁니다, 판독
 건너는 것: ID high-water (판독) 1/1</title></path><circle class="origin inferred e2 e7 r2" cx="627" cy="92" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w contract e2 e9 r3" d="M859 92 L859 100 L691 100 L691 128" data-origin="extracted" data-net="1" data-h="2" marker-end="url(#m-use-2)"><title>internal/screen → abbd CLI: sync state 계약을 거쳐 씁니다; internal/screen → abbd CLI: module understanding 계약을 거쳐 씁니다; internal/screen → abbd CLI: slot notes 계약을 거쳐 씁니다
 건너는 것: LoadNotes (판독) 1/5, LoadState (판독) 1/5, LoadUnderstandings (판독) 1/5, freshness check (판독) 1/5, text digest (판독) 1/5</title></path><text class="lab e2 e9 r3" data-h="2" x="775" y="112" text-anchor="middle">데이터</text><path class="w contract joins e2 e5 r1" d="M490 188 L490 220" data-origin="extracted" data-net="2" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 건너는 것: script stdout (판독) 4/4</title></path><text class="lab said e2 e5 r1" data-h="0" x="441" y="208" text-anchor="middle">script stdout</text><path class="w bypass joins e0 e2 e3 e4 e6 e7 e9 e11 e12 e13 r7 r8 r9 r10 r11 r12 r13 r14 r15" d="M593 188 L593 220" data-origin="mixed" data-net="3" data-h="0"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
@@ -674,7 +688,8 @@ abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: /abbd pointer (판독) 1/9, Compare revisions (판독) 1/9, Explain unit (판독) 1/9, ID reconcile (판독) 1/9, ImpactOf seeds (판독) 1/9, blueprint freshness (판독) 1/9, claims setup owns (판독) 1/9, diff boundary check (판독) 1/9, dir grouping (판독) 1/9, git query (판독) 1/9, long-section check (판독) 1/9, query first (판독) 1/9, quote check (판독) 1/9, render pages (판독) 1/9, supplement fold (판독) 1/9, sync then diff (판독) 1/9</title></path><circle class="origin inferred e0 e2 e3 e4 e6 e7 e9 e11 e12 e13 r7 r8 r9 r10 r11 r12 r13 r14 r15" cx="593" cy="188" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="count e0 e2 e3 e4 e6 e7 e9 e11 e12 e13 r7 r8 r9 r10 r11 r12 r13 r14 r15" x="572" y="200">×9</text><path class="w contract joins e2 e8 r6" d="M606 188 L606 220" data-origin="extracted" data-net="2" data-h="0"><title>abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
+건너는 것: /abbd pointer (판독) 1/9, Compare revisions (판독) 1/9, Explain unit (판독) 1/9, ID reconcile (판독) 1/9, ImpactOf seeds (판독) 1/9, blueprint freshness (판독) 1/9, claims setup owns (판독) 1/9, diff boundary check (판독) 1/9, dir grouping (판독) 1/9, git query (판독) 1/9, long-section check (판독) 1/9, query first (판독) 1/9, quote check (판독) 1/9, render pages (판독) 1/9, supplement fold (판독) 1/9, sync then diff (판독) 1/9
+via 호출</title></path><circle class="origin inferred e0 e2 e3 e4 e6 e7 e9 e11 e12 e13 r7 r8 r9 r10 r11 r12 r13 r14 r15" cx="593" cy="188" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="count e0 e2 e3 e4 e6 e7 e9 e11 e12 e13 r7 r8 r9 r10 r11 r12 r13 r14 r15" x="572" y="200">×9</text><path class="w contract joins e2 e8 r6" d="M606 188 L606 220" data-origin="extracted" data-net="2" data-h="0"><title>abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
 건너는 것: Edge.Joins (판독) 1/4, Unit, Writer, Evidence (판독) 1/4, edge key (판독) 2/4</title></path><text class="lab said e2 e8 r6" data-h="0" x="638" y="208" text-anchor="middle">edge key</text><path class="w contract joins e2 e10 r0" d="M752 188 L752 220" data-origin="extracted" data-net="2" data-h="0"><title>abbd CLI → internal/store: project.yaml 계약을 거쳐 씁니다; abbd CLI → internal/store: unit files 계약을 거쳐 씁니다
 건너는 것: extract argv (판독) 2/9, module digest (판독) 1/9, next ID (판독) 1/9, unit .md (판독) 5/9</title></path><text class="lab said e2 e10 r0" data-h="0" x="785" y="208" text-anchor="middle">unit .md</text><path class="w bypass e0 e2 r7" d="M308 220 L99 220 L99 240" data-net="4" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 건너는 것: /abbd pointer (판독) 1/3, query first (판독) 1/3, sync then diff (판독) 1/3</title></path><text class="lab e0 e2 r7" data-h="0" x="203" y="216" text-anchor="middle">관례</text><path class="w bypass joins e0 e2 e3 r7 r8" d="M410 220 L308 220" data-net="3" data-h="0"><title>abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
@@ -686,18 +701,21 @@ abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: /abbd pointer (판독) 1/6, Compare revisions (판독) 1/6, Explain unit (판독) 1/6, ImpactOf seeds (판독) 1/6, diff boundary check (판독) 1/6, dir grouping (판독) 1/6, git query (판독) 1/6, long-section check (판독) 1/6, query first (판독) 1/6, supplement fold (판독) 1/6, sync then diff (판독) 1/6</title></path><path class="w bypass joins e2 e6 e11 e12 e13 r10 r13 r14 r15" d="M410 220 L410 316" data-net="3" data-h="0"><title>abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
+건너는 것: /abbd pointer (판독) 1/6, Compare revisions (판독) 1/6, Explain unit (판독) 1/6, ImpactOf seeds (판독) 1/6, diff boundary check (판독) 1/6, dir grouping (판독) 1/6, git query (판독) 1/6, long-section check (판독) 1/6, query first (판독) 1/6, supplement fold (판독) 1/6, sync then diff (판독) 1/6
+via 호출</title></path><path class="w bypass joins e2 e6 e11 e12 e13 r10 r13 r14 r15" d="M410 220 L410 316" data-net="3" data-h="0"><title>abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4, dir grouping (판독) 1/4, git query (판독) 1/4, long-section check (판독) 1/4</title></path><path class="w bypass joins e0 e2 e3 e5 e6 e11 e12 e13 r1 r7 r8 r10 r13 r14 r15" d="M490 220 L508 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
+건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4, dir grouping (판독) 1/4, git query (판독) 1/4, long-section check (판독) 1/4
+via 호출</title></path><path class="w bypass joins e0 e2 e3 e5 e6 e11 e12 e13 r1 r7 r8 r10 r13 r14 r15" d="M490 220 L508 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: /abbd pointer (판독) 1/7, Compare revisions (판독) 1/7, Explain unit (판독) 1/7, ImpactOf seeds (판독) 1/7, diff boundary check (판독) 1/7, dir grouping (판독) 1/7, git query (판독) 1/7, long-section check (판독) 1/7, query first (판독) 1/7, script stdout (판독) 1/7, supplement fold (판독) 1/7, sync then diff (판독) 1/7</title></path><path class="w bypass joins e0 e2 e3 e5 e6 e7 e11 e12 e13 r1 r7 r8 r10 r11 r13 r14 r15" d="M508 220 L593 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
+건너는 것: /abbd pointer (판독) 1/7, Compare revisions (판독) 1/7, Explain unit (판독) 1/7, ImpactOf seeds (판독) 1/7, diff boundary check (판독) 1/7, dir grouping (판독) 1/7, git query (판독) 1/7, long-section check (판독) 1/7, query first (판독) 1/7, script stdout (판독) 1/7, supplement fold (판독) 1/7, sync then diff (판독) 1/7
+via 호출</title></path><path class="w bypass joins e0 e2 e3 e5 e6 e7 e11 e12 e13 r1 r7 r8 r10 r11 r13 r14 r15" d="M508 220 L593 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → /abbd: 계약을 거치지 않는 직접 의존, 판독
 abbd CLI → internal/bootstrap: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
@@ -705,11 +723,13 @@ abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: /abbd pointer (판독) 1/8, Compare revisions (판독) 1/8, Explain unit (판독) 1/8, ID reconcile (판독) 1/8, ImpactOf seeds (판독) 1/8, claims setup owns (판독) 1/8, diff boundary check (판독) 1/8, dir grouping (판독) 1/8, git query (판독) 1/8, long-section check (판독) 1/8, query first (판독) 1/8, script stdout (판독) 1/8, supplement fold (판독) 1/8, sync then diff (판독) 1/8</title></path><text class="lab e0 e2 e3 e5 e6 e7 e11 e12 e13 r1 r7 r8 r10 r11 r13 r14 r15" data-h="0" x="554" y="232" text-anchor="middle">호출</text><path class="w bypass e2 e7 r11" d="M508 220 L508 240" data-net="6" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
+건너는 것: /abbd pointer (판독) 1/8, Compare revisions (판독) 1/8, Explain unit (판독) 1/8, ID reconcile (판독) 1/8, ImpactOf seeds (판독) 1/8, claims setup owns (판독) 1/8, diff boundary check (판독) 1/8, dir grouping (판독) 1/8, git query (판독) 1/8, long-section check (판독) 1/8, query first (판독) 1/8, script stdout (판독) 1/8, supplement fold (판독) 1/8, sync then diff (판독) 1/8
+via 호출</title></path><path class="w bypass e2 e7 r11" d="M508 220 L508 240" data-net="6" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/identity: 계약을 거치지 않는 직접 의존
 건너는 것: ID reconcile (판독) 2/3, claims setup owns (판독) 1/3</title></path><path class="w bypass joins e2 e4 e5 e9 r1 r9 r12" d="M593 220 L606 220" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존
-건너는 것: blueprint freshness (판독) 1/3, quote check (판독) 1/3, render pages (판독) 1/3, script stdout (판독) 1/3</title></path><path class="w bypass joins e2 e4 e9 r9 r12" d="M606 220 L713 220" data-net="3" data-h="0"><title>abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존
+건너는 것: blueprint freshness (판독) 1/3, quote check (판독) 1/3, render pages (판독) 1/3, script stdout (판독) 1/3
+via 호출</title></path><path class="w bypass joins e2 e4 e9 r9 r12" d="M606 220 L713 220" data-net="3" data-h="0"><title>abbd CLI → internal/evidence: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/screen: 계약을 거치지 않는 직접 의존
 건너는 것: blueprint freshness (판독) 1/2, quote check (판독) 1/2, render pages (판독) 1/2</title></path><text class="lab said e2 e4 e9 r9 r12" data-h="0" x="659" y="232" text-anchor="middle">quote check</text><path class="w contract joins e2 e5 e8 r1 r6" d="M606 220 L606 316" data-net="2" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
@@ -727,19 +747,23 @@ abbd CLI → internal/gitx: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4, dir grouping (판독) 1/4, long-section check (판독) 1/4, script stdout (판독) 1/4</title></path><path class="w bypass joins e2 e5 e8 e11 e12 e13 r1 r6 r13 r14 r15" d="M606 316 L516 316" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
+건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4, dir grouping (판독) 1/4, long-section check (판독) 1/4, script stdout (판독) 1/4
+via 호출</title></path><path class="w bypass joins e2 e5 e8 e11 e12 e13 r1 r6 r13 r14 r15" d="M606 316 L516 316" data-net="3" data-h="0"><title>abbd CLI → internal/extract: extraction JSON 계약을 거쳐 씁니다
 abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
 abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/5, Edge.Joins (판독) 1/5, Explain unit (판독) 1/5, ImpactOf seeds (판독) 1/5, Unit, Writer, Evidence (판독) 1/5, diff boundary check (판독) 1/5, dir grouping (판독) 1/5, edge key (판독) 1/5, long-section check (판독) 1/5, script stdout (판독) 1/5</title></path><path class="w contract e2 e8 r6" d="M516 316 L516 336" data-net="12" data-h="0" marker-end="url(#m-use-0)"><title>abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
+건너는 것: Compare revisions (판독) 1/5, Edge.Joins (판독) 1/5, Explain unit (판독) 1/5, ImpactOf seeds (판독) 1/5, Unit, Writer, Evidence (판독) 1/5, diff boundary check (판독) 1/5, dir grouping (판독) 1/5, edge key (판독) 1/5, long-section check (판독) 1/5, script stdout (판독) 1/5
+via 호출</title></path><path class="w contract e2 e8 r6" d="M516 316 L516 336" data-net="12" data-h="0" marker-end="url(#m-use-0)"><title>abbd CLI → internal/model: relation key 계약을 거쳐 씁니다
 건너는 것: Edge.Joins (판독) 1/4, Unit, Writer, Evidence (판독) 1/4, edge key (판독) 2/4</title></path><path class="w bypass joins e2 e11 e12 e13 r13 r14 r15" d="M606 316 L690 316" data-net="3" data-h="0"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/3, Explain unit (판독) 1/3, ImpactOf seeds (판독) 1/3, diff boundary check (판독) 1/3, dir grouping (판독) 1/3, long-section check (판독) 1/3</title></path><path class="w bypass joins e2 e12 e13 r14 r15" d="M690 316 L887 316" data-net="3" data-h="0"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
+건너는 것: Compare revisions (판독) 1/3, Explain unit (판독) 1/3, ImpactOf seeds (판독) 1/3, diff boundary check (판독) 1/3, dir grouping (판독) 1/3, long-section check (판독) 1/3
+via 호출</title></path><path class="w bypass joins e2 e12 e13 r14 r15" d="M690 316 L887 316" data-net="3" data-h="0"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
 건너는 것: dir grouping (판독) 1/2, long-section check (판독) 1/2</title></path><text class="lab said e2 e12 e13 r14 r15" data-h="0" x="788" y="312" text-anchor="middle">dir grouping</text><path class="w bypass e2 e11 r13" d="M690 316 L690 336" data-net="13" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/topology: 계약을 거치지 않는 직접 의존
-건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4</title></path><path class="w bypass e2 e13 r15" d="M887 316 L1088 316 L1088 336" data-net="14" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
+건너는 것: Compare revisions (판독) 1/4, Explain unit (판독) 1/4, ImpactOf seeds (판독) 1/4, diff boundary check (판독) 1/4
+via 호출</title></path><path class="w bypass e2 e13 r15" d="M887 316 L1088 316 L1088 336" data-net="14" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/narrative: 계약을 거치지 않는 직접 의존
 건너는 것: long-section check (판독) 1/1</title></path><text class="lab said e2 e13 r15" data-h="0" x="987" y="312" text-anchor="middle">long-section check</text><path class="w bypass e2 e12 r14" d="M887 316 L887 336" data-net="15" data-h="0" marker-end="url(#m-dep-0)"><title>abbd CLI → internal/group: 계약을 거치지 않는 직접 의존
 건너는 것: dir grouping (판독) 1/1</title></path>
 <circle class="junction road e2 e4 e5 e8 e9" data-h="0" cx="606" cy="220" r="3"/>
@@ -792,12 +816,14 @@ cmd/abbd/install.go &#34;The /abbd skill says how to read, query and record the 
 <rect class="frame" x="6" y="18" width="396" height="212" rx="8"/>
 
 <path class="w depends_on e0 e1 r1" d="M160 106 L160 138" data-origin="inferred" data-net="1" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on blueprint publish (via call), 판독
-cmd/abbd/evidence.go &#34;in, err := e.screenInput()&#34;</title></path><circle class="origin inferred e0 e1 r1" cx="160" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r1" data-h="1" x="176" y="126" text-anchor="middle">호출</text><path class="w consumes e0 e2 r0" d="M196 106 L196 190 L154 190 L154 210" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-use-1)"><title>review commands consumes unit files (via data), 판독
+via 호출
+cmd/abbd/evidence.go &#34;in, err := e.screenInput()&#34;</title></path><circle class="origin inferred e0 e1 r1" cx="160" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes e0 e2 r0" d="M196 106 L196 190 L154 190 L154 210" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-use-1)"><title>review commands consumes unit files (via data), 판독
 건너는 것: unit .md (판독) 1/1
 cmd/abbd/diff.go &#34;return e.st.UnitsAt(base)&#34;</title></path><circle class="origin inferred e0 e2 r0" cx="196" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e0 e3 r2" d="M212 106 L212 210" data-origin="inferred" data-net="1" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on internal/evidence (via call), 판독
 review commands depends_on internal/gitx (via call), 판독
 review commands depends_on internal/topology (via call), 판독
 건너는 것: Compare revisions (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/evidence.go &#34;c := evidence.New(e.root)&#34;
 cmd/abbd/diff.go &#34;if base, err = gitx.MergeBase(e.root); err != nil {&#34;
 cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;</title></path><circle class="origin inferred e0 e3 r2" cx="212" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
@@ -822,8 +848,10 @@ cmd/abbd/diff.go &#34;d := topology.Compare(was, now)&#34;</title></path><circle
 <rect class="frame" x="6" y="18" width="348" height="188" rx="8"/>
 
 <path class="w provides e0 e2 r0" d="M180 62 L180 38" data-origin="inferred" data-net="1" data-h="2" marker-end="url(#m-impl-2)"><title>argv parsing and dispatch provides abbd exit codes (via call), 판독
+via 호출
 cmd/abbd/main.go &#34;return exitUsage&#34;</title></path><circle class="origin inferred e0 e2 r0" cx="180" cy="62" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e0 e1 r1" d="M180 106 L180 138" data-origin="inferred" data-net="2" data-h="2" marker-end="url(#m-dep-2)"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
-cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e0 e1 r1" cx="180" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r1" data-h="2" x="196" y="126" text-anchor="middle">호출</text>
+via 호출
+cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e0 e1 r1" cx="180" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
 
 
 <g class="route provides e0 e2 r0" data-h="2" style="--k0:var(--h2);--k2:var(--h2)"><path class="way" d="M180 62 L180 38"/><use href="#t-impl" transform="translate(180 38) rotate(-90)"/></g><g class="route depends_on e0 e1 r1" data-h="2" style="--k0:var(--h2);--k1:var(--h0)"><path class="way" d="M180 106 L180 138"/><use href="#t-dep" transform="translate(180 138) rotate(90)"/></g>
@@ -845,7 +873,8 @@ cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><ci
 <rect class="frame" x="6" y="18" width="532" height="332" rx="8"/>
 
 <path class="w depends_on e0 e1 r5" d="M272 122 L272 154" data-origin="inferred" data-net="1" data-h="4" marker-end="url(#m-dep-4)"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
-cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e0 e1 r5" cx="272" cy="122" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r5" data-h="4" x="288" y="142" text-anchor="middle">호출</text><path class="w depends_on e0 e1 r3" d="M224 198 L224 234" data-origin="inferred" data-net="2" data-h="3" marker-end="url(#m-dep-3)"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
+via 호출
+cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e0 e1 r5" cx="272" cy="122" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e0 e1 r3" d="M224 198 L224 234" data-origin="inferred" data-net="2" data-h="3" marker-end="url(#m-dep-3)"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
 cmd/abbd/main.go &#34;project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first&#34;</title></path><circle class="origin inferred e0 e1 r3" cx="224" cy="198" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r3" data-h="3" x="208" y="220" text-anchor="middle">설정</text><path class="w consumes joins e0 e2 e3 e4 r0 r1 r2" d="M248 198 L248 310" data-origin="inferred" data-net="3" data-h="3"><title>sync pipeline consumes project.yaml (via config), 판독
 sync pipeline consumes extraction JSON (via data), 판독
 sync pipeline consumes sync state (via data), 판독
@@ -856,6 +885,7 @@ cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, High
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
 cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><circle class="origin inferred e0 e5 r4" cx="264" cy="198" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes e0 e2 r0" d="M182 310 L67 310 L67 330" data-net="4" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes project.yaml (via config), 판독
@@ -879,9 +909,10 @@ cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><path class="w depe
 sync pipeline depends_on internal/gitx (via call), 판독
 sync pipeline depends_on internal/identity (via call), 판독
 건너는 것: ID reconcile (판독) 1/3, git query (판독) 1/3, quote check (판독) 1/3
+via 호출
 cmd/abbd/main.go &#34;res.Units = evidence.New(e.root).Apply(res.Units, rev)&#34;
 cmd/abbd/main.go &#34;renames, ok, err := gitx.Renames(e.root, state.Fingerprint, tree)&#34;
-cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><text class="lab e0 e5 r4" data-h="3" x="377" y="322" text-anchor="middle">호출</text><path class="w consumes e0 e4 r2" d="M288 310 L288 330" data-net="7" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
+cmd/abbd/main.go &#34;identity.Reconcile(&#34;</title></path><path class="w consumes e0 e4 r2" d="M288 310 L288 330" data-net="7" data-h="3" marker-end="url(#m-use-3)"><title>sync pipeline consumes sync state (via data), 판독
 cmd/abbd/main.go &#34;state = store.State{Revision: rev, Fingerprint: tree, HighWater: res.HighWater}&#34;</title></path>
 
 
@@ -974,7 +1005,9 @@ cmd/abbd/record.go &#34;edge, err := model.ParseEdge(strings.Join(pos, \&#34;.\&
 
 <path class="w provides e2 e3 r2" d="M260 138 L260 38" data-origin="inferred" data-net="1" data-h="0" marker-end="url(#m-impl-0)"><title>blueprint publish provides blueprint files (via data), 판독
 cmd/abbd/screen.go &#34;if err := e.st.SaveBlueprint(files); err != nil {&#34;</title></path><circle class="origin inferred e2 e3 r2" cx="260" cy="138" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e2 e3 r2" data-h="0" x="282" y="120" text-anchor="middle">데이터</text><path class="w depends_on e1 e2 r1" d="M190 106 L190 138" data-origin="inferred" data-net="2" data-h="2" marker-end="url(#m-dep-2)"><title>argv parsing and dispatch depends_on blueprint publish (via call), 판독
-cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e1 e2 r1" cx="190" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e1 e2 r1" data-h="2" x="206" y="126" text-anchor="middle">호출</text><path class="w depends_on e0 e2 r0" d="M330 106 L330 138" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on blueprint publish (via call), 판독
+via 호출
+cmd/abbd/main.go &#34;if err := e.publish(); err != nil {&#34;</title></path><circle class="origin inferred e1 e2 r1" cx="190" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e0 e2 r0" d="M330 106 L330 138" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-dep-1)"><title>review commands depends_on blueprint publish (via call), 판독
+via 호출
 cmd/abbd/evidence.go &#34;in, err := e.screenInput()&#34;</title></path><circle class="origin inferred e0 e2 r0" cx="330" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e2 e4 r3" d="M260 182 L260 206" data-origin="inferred" data-net="3" data-h="0" marker-end="url(#m-dep-0)"><title>blueprint publish depends_on internal/screen (via call), 판독
 건너는 것: render pages (판독) 1/1
 cmd/abbd/screen.go &#34;files, err := screen.Files(screen.Build(in))&#34;</title></path><circle class="origin inferred e2 e4 r3" cx="260" cy="182" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
@@ -1000,7 +1033,8 @@ cmd/abbd/screen.go &#34;files, err := screen.Files(screen.Build(in))&#34;</title
 
 <path class="w depends_on e0 e1 r0" d="M188 106 L188 138" data-origin="inferred" data-net="1" data-h="3" marker-end="url(#m-dep-3)"><title>sync pipeline depends_on setup determinism proof and supplement fold (via config), 판독
 cmd/abbd/main.go &#34;project.yaml names no extraction script; run abbd setup -- EXTRACT-ARGV first&#34;</title></path><circle class="origin inferred e0 e1 r0" cx="188" cy="106" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r0" data-h="3" x="204" y="126" text-anchor="middle">설정</text><path class="w depends_on e0 e1 r2" d="M94 198 L94 230" data-origin="inferred" data-net="2" data-h="4" marker-end="url(#m-dep-4)"><title>setup determinism proof and supplement fold depends_on sync pipeline (via call), 판독
-cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e0 e1 r2" cx="94" cy="198" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab e0 e1 r2" data-h="4" x="110" y="218" text-anchor="middle">호출</text><path class="w consumes e1 e2 r1" d="M180 198 L180 302" data-origin="inferred" data-net="3" data-h="4" marker-end="url(#m-use-4)"><title>setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
+via 호출
+cmd/abbd/setup.go &#34;res, err := e.syncActual(ex, identity.Setup)&#34;</title></path><circle class="origin inferred e0 e1 r2" cx="94" cy="198" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w consumes e1 e2 r1" d="M180 198 L180 302" data-origin="inferred" data-net="3" data-h="4" marker-end="url(#m-use-4)"><title>setup determinism proof and supplement fold consumes extraction JSON (via data), 판독
 건너는 것: script stdout (판독) 1/1
 cmd/abbd/setup.go &#34;ex, err := extract.Parse(bytes.NewReader(out))&#34;</title></path><circle class="origin inferred e1 e2 r1" cx="180" cy="198" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e1 e2 r1" data-h="4" x="131" y="286" text-anchor="middle">script stdout</text><path class="w depends_on e1 e3 r3" d="M196 198 L196 282 L294 282 L294 302" data-origin="inferred" data-net="2" data-h="4" marker-end="url(#m-dep-4)"><title>setup determinism proof and supplement fold depends_on internal/bootstrap (via call), 판독
 건너는 것: supplement fold (판독) 1/1
