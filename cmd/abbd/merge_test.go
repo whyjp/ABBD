@@ -91,9 +91,8 @@ func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
 	p.want(0, "blueprint: CURRENT", "status", "--check")
 }
 
-// Git keeps the state and not its pages, so a checkout without them, such
-// as a fresh clone, passes the check while the state is current; the pages
-// are drawn by the next sync.
+// A checkout without the pages passes the check while the state is
+// current; the pages are drawn by the next sync.
 func TestABlueprintNotDrawnHereStillPassesTheCheck(t *testing.T) {
 	t.Parallel()
 	p := semanticProject(t)

@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/gitx"
 )
 
 const diffBase = `{"units":[
@@ -192,9 +190,6 @@ func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
 	contains(t, string(page), `href="../blueprint/MOD-0004.html"`, "unit MOD-0004 notify", "단위 추가 1", "<svg")
 	if strings.Contains(string(page), "<iframe") {
 		t.Errorf("the compare view should show the two drawings, not whole pages")
-	}
-	if kept, err := gitx.Files(p.root, base, ".abbd/blueprint"); err != nil || len(kept) > 0 {
-		t.Errorf("git keeps the drawn pages: %v %v", kept, err)
 	}
 	if then, err := os.ReadFile(filepath.Join(p.root, ".abbd", "compare", "base", "index.html")); err != nil || !strings.Contains(string(then), "ledger") {
 		t.Errorf("the base's blueprint is not drawn from the state committed there: %v", err)

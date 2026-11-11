@@ -565,33 +565,43 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
-// blueprintIgnore keeps the blueprint out of git. It is drawn from the
-// committed state on each sync, so committing it only repeats the state.
+// blueprintIgnore is a .gitignore the blueprint may hold, which no render
+// writes and BlueprintHash skips. An earlier abbd wrote one of "*" to keep
+// the pages out of git, and SaveBlueprint removes that one, since the pages
+// are committed.
 const blueprintIgnore = ".gitignore"
 
 // SaveBlueprint writes the rendered files and removes every other one, so the
-// blueprint holds exactly what HashRender(files) records.
+// blueprint holds exactly what HashRender(files) records. A .gitignore an
+// earlier abbd did not write stays.
 func (s Store) SaveBlueprint(files map[string][]byte) error {
 	for name, b := range files {
 		if err := writeFile(s.path("blueprint", name), b); err != nil {
 			return err
 		}
 	}
-	if err := writeFile(s.path("blueprint", blueprintIgnore), []byte("*\n")); err != nil {
-		return err
-	}
 	old, err := os.ReadDir(s.path("blueprint"))
 	if err != nil {
 		return err
 	}
 	for _, e := range old {
-		if _, keep := files[e.Name()]; !keep && e.Name() != blueprintIgnore {
+		if _, keep := files[e.Name()]; !keep && !s.foreignIgnore(e.Name()) {
 			if err := os.RemoveAll(s.path("blueprint", e.Name())); err != nil {
 				return err
 			}
 		}
 	}
 	return nil
+}
+
+// foreignIgnore says name is a blueprint .gitignore other than the "*" an
+// earlier abbd wrote.
+func (s Store) foreignIgnore(name string) bool {
+	if name != blueprintIgnore {
+		return false
+	}
+	b, err := os.ReadFile(s.path("blueprint", name))
+	return err != nil || strings.TrimSpace(string(b)) != "*"
 }
 
 // CompareDir is where abbd diff --page writes its compare view: the
