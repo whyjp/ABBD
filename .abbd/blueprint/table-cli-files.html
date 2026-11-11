@@ -69,6 +69,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
@@ -255,6 +260,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -287,7 +293,7 @@ svg [data-h="n"] { --c: var(--hn); }
   
 </header>
 <div class="solo"><section class="inside matrix" id="table-cli-files">
-  <div class="drawhead"><h2>Which part of the abbd CLI reads and writes which .abbd file? <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="pill breach" title="저장된 관계 없이 쓴다고 말하는 칸">관계 없는 칸 9</span></h2><div class="views"><span class="muted">5행 × 5열</span> <a href="index.html">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>Which part of the abbd CLI reads and writes which .abbd file? <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> <span class="pill breach" title="저장된 관계 없이 쓴다고 말하는 칸">관계 없는 칸 9</span></h2><div class="views"><span class="muted">5행 × 5열</span> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">행마다 한 단위입니다. 행 머리를 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. 열이 단위를 가리키면 그 열의 칸을 저장된 관계와 맞춰 봅니다. 점선 칸은 저장된 관계 없이 쓴다고 말하는 칸이고, ◦ 칸은 저장된 관계가 있는데 비어 있는 칸입니다.</p>
   <div class="caption text"><p>Each row is one part of the CLI and each column one file under <code>.abbd/</code>. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read. cells: 9 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation; abbd status lists them</p></div>
   

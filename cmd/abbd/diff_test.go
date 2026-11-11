@@ -181,7 +181,10 @@ func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	contains(t, string(page), `src="../blueprint/MOD-0004.html"`, "unit MOD-0004 notify")
+	contains(t, string(page), `href="../blueprint/MOD-0004.html"`, "unit MOD-0004 notify", "단위 추가 1", "<svg")
+	if strings.Contains(string(page), "<iframe") {
+		t.Errorf("the compare view should show the two drawings, not whole pages")
+	}
 	if _, err := os.Stat(filepath.Join(p.root, ".abbd", "compare", "base", "index.html")); err != nil {
 		t.Errorf("the base's blueprint is not kept: %v", err)
 	}

@@ -69,6 +69,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
@@ -255,6 +260,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -486,15 +492,15 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 <section class="inside page" id="m-MOD-0055">
   <div class="drawhead"><h2>pstack (external)의 안 <span class="muted key">MOD-0055</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
-<p class="muted standing">제공 0 · 사용 0 · 계약 없는 직접 의존 0</p>
-  <p class="role"><strong>맡은 것</strong> The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository. <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></p>
+<p class="muted standing">내놓는 계약 없이 쓰는 계약은 없습니다. 계약 없이 닿는 곳은 없습니다.</p>
+  <p class="role"><strong>맡은 것</strong> The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" data-roads="1" width="368" height="148" viewBox="0 0 368 148" role="img" aria-label="모듈의 안">
 <defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
 <rect class="frame" x="6" y="18" width="356" height="112" rx="8"/>
 
 <path class="w depends_on e0 e2 r0" d="M94 38 L94 62" data-origin="inferred" data-net="1" data-h="0" marker-end="url(#m-dep-0)"><title>abbd reader depends_on pstack /how (via call), 판독
-건너는 것: optional how (판독) 1/1</title></path><circle class="origin inferred e0 e2 r0" cx="94" cy="38" r="3.5"><title>판독: 리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><path class="w depends_on e1 e3 r1" d="M274 38 L274 62" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-dep-1)"><title>abbd reader depends_on pstack /swarm (via call), 판독
-건너는 것: optional swarm (판독) 1/1</title></path><circle class="origin inferred e1 e3 r1" cx="274" cy="38" r="3.5"><title>판독: 리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle>
+건너는 것: optional how (판독) 1/1</title></path><circle class="origin inferred e0 e2 r0" cx="94" cy="38" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><path class="w depends_on e1 e3 r1" d="M274 38 L274 62" data-origin="inferred" data-net="2" data-h="1" marker-end="url(#m-dep-1)"><title>abbd reader depends_on pstack /swarm (via call), 판독
+건너는 것: optional swarm (판독) 1/1</title></path><circle class="origin inferred e1 e3 r1" cx="274" cy="38" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle>
 
 
 <g class="route depends_on e0 e2 r0" data-h="0" style="--k0:var(--h0);--k2:var(--h0)"><path class="way" d="M94 38 L94 62"/><use href="#t-dep" transform="translate(94 62) rotate(90)"/></g><g class="route depends_on e1 e3 r1" data-h="1" style="--k1:var(--h1);--k3:var(--h1)"><path class="way" d="M274 38 L274 62"/><use href="#t-dep" transform="translate(274 62) rotate(90)"/></g>
@@ -516,8 +522,8 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
       
     </div>
     <div class="units">
-      <h3>안의 단위</h3>
-      <ul class="plain units-list"><li id="i-FEAT-0018"><strong>pstack /how</strong> <span class="muted">기능</span><div>pstack&#39;s subsystem walkthrough; ABBD uses it to read code and to write each module&#39;s text. <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0018</span> <span class="key muted">plugins/abbd/skills/abbd-setup/SKILL.md, plugins/abbd/skills/abbd/SKILL.md, plugins/abbd/skills/abbd/references/reader.md</span></details></li><li id="i-FEAT-0020"><strong>pstack /swarm</strong> <span class="muted">기능</span><div>pstack&#39;s parallel fan-out; ABBD setup reads the code and asks for the grouping through it. <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0020</span> <span class="key muted">plugins/abbd/skills/abbd-setup/SKILL.md, plugins/abbd/skills/abbd/references/reader.md</span></details></li></ul>
+      <h3>안의 단위</h3><p class="muted">기울인 문장은 리더가 읽은 것입니다(판독). 가리키면 어떻게 검사하는지 봅니다.</p>
+      <ul class="plain units-list"><li id="i-FEAT-0018"><strong>pstack /how</strong> <span class="muted">기능</span><div class="read" title="판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">pstack&#39;s subsystem walkthrough; ABBD uses it to read code and to write each module&#39;s text.</div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0018</span> <span class="key muted">plugins/abbd/skills/abbd-setup/SKILL.md, plugins/abbd/skills/abbd/SKILL.md, plugins/abbd/skills/abbd/references/reader.md</span></details></li><li id="i-FEAT-0020"><strong>pstack /swarm</strong> <span class="muted">기능</span><div class="read" title="판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">pstack&#39;s parallel fan-out; ABBD setup reads the code and asks for the grouping through it.</div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">FEAT-0020</span> <span class="key muted">plugins/abbd/skills/abbd-setup/SKILL.md, plugins/abbd/skills/abbd/references/reader.md</span></details></li></ul>
       
     </div>
   </div>
@@ -526,7 +532,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
   
   
   <h3>판독한 결합</h3>
-  <ul class="plain"><li><span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> abbd reader → pstack /how <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/references/reader.md &#34;you may use pstack `how` to explore a module this reader calls complex&#34;</q></div></li><li><span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> abbd reader → pstack /swarm <span class="muted">(depends_on, via call)</span><div class="quote"><q>plugins/abbd/skills/abbd/references/reader.md &#34;and pstack `swarm` to fan out setup&#39;s slices&#34;</q></div></li><li><span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> /abbd-setup stance → pstack (external) <span class="muted">(depends_on, via config)</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md &#34;it says when pstack may serve as an optional engine.&#34;</q></div></li></ul>
+  <ul class="plain"><li><span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> abbd reader → pstack /how <span class="muted">(depends_on, via call)</span> <span class="muted">근거 유지</span><div class="quote"><q>plugins/abbd/skills/abbd/references/reader.md &#34;you may use pstack `how` to explore a module this reader calls complex&#34;</q></div></li><li><span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> abbd reader → pstack /swarm <span class="muted">(depends_on, via call)</span> <span class="muted">근거 유지</span><div class="quote"><q>plugins/abbd/skills/abbd/references/reader.md &#34;and pstack `swarm` to fan out setup&#39;s slices&#34;</q></div></li><li><span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> /abbd-setup stance → pstack (external) <span class="muted">(depends_on, via config)</span> <span class="muted">근거 유지</span><div class="quote"><q>plugins/abbd/skills/abbd-setup/SKILL.md &#34;it says when pstack may serve as an optional engine.&#34;</q></div></li></ul>
   
 </section>
 <section class="inside" id="f-overview--MOD-0055">
@@ -536,8 +542,8 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 
 <path class="w bypass e0 e2 r0" d="M122 92 L122 128" data-origin="inferred" data-net="1" data-h="1" marker-end="url(#m-dep-1)"><title>/abbd → pstack (external): 계약을 거치지 않는 직접 의존, 판독
-건너는 것: optional how (판독) 1/2, optional swarm (판독) 1/2</title></path><circle class="origin inferred e0 e2 r0" cx="122" cy="92" r="3.5"><title>판독: 리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e0 e2 r0" data-h="1" x="178" y="114" text-anchor="middle">optional how 등</text><path class="w bypass e1 e2 r1" d="M266 92 L266 128" data-origin="inferred" data-net="1" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독
-건너는 것: optional engine (판독) 1/1</title></path><circle class="origin inferred e1 e2 r1" cx="266" cy="92" r="3.5"><title>판독: 리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음</title></circle><text class="lab said e1 e2 r1" data-h="3" x="322" y="114" text-anchor="middle">optional engine</text>
+건너는 것: optional how (판독) 1/2, optional swarm (판독) 1/2</title></path><circle class="origin inferred e0 e2 r0" cx="122" cy="92" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e0 e2 r0" data-h="1" x="178" y="114" text-anchor="middle">optional how 등</text><path class="w bypass e1 e2 r1" d="M266 92 L266 128" data-origin="inferred" data-net="1" data-h="3" marker-end="url(#m-dep-3)"><title>/abbd-setup → pstack (external): 계약을 거치지 않는 직접 의존, 판독
+건너는 것: optional engine (판독) 1/1</title></path><circle class="origin inferred e1 e2 r1" cx="266" cy="92" r="3.5"><title>판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함</title></circle><text class="lab said e1 e2 r1" data-h="3" x="322" y="114" text-anchor="middle">optional engine</text>
 
 
 <g class="route bypass e0 e2 r0" data-h="1" style="--k0:var(--h1);--k2:var(--h0)"><path class="way" d="M122 92 L122 128"/><use href="#t-dep" transform="translate(122 128) rotate(90)"/></g><g class="route bypass e1 e2 r1" data-h="3" style="--k1:var(--h3);--k2:var(--h0)"><path class="way" d="M266 92 L266 128"/><use href="#t-dep" transform="translate(266 128) rotate(90)"/></g>

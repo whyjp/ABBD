@@ -19,6 +19,8 @@ func TestPagesSayWhatEachModuleIsFor(t *testing.T) {
 			units[i].Purpose = &model.Fact{Value: "keeps reading apart from matching", Origin: model.Inferred}
 		case "IF-0002":
 			units[i].Responsibility = &model.Fact{Value: "carries matches to a sink", Origin: model.Inferred}
+		case "MOD-0006":
+			units[i].Responsibility = &model.Fact{Value: "writes one match", Origin: model.Inferred}
 		}
 	}
 	ps := pages(t, Build(Input{Units: units}))
@@ -32,6 +34,7 @@ func TestPagesSayWhatEachModuleIsFor(t *testing.T) {
 	}
 	contains("MOD-0003.html", "<strong>맡은 것</strong> runs one search over a file", "<strong>왜 있는가</strong> keeps reading apart from matching")
 	contains("index.html", "<title>MOD-0003 grep-searcher: runs one search over a file")
+	contains("MOD-0003.html", `class="read" title="판독: `, "기울인 문장은 리더가 읽은 것입니다")
 	contains("contracts.html", "carries matches to a sink")
 }
 
@@ -43,7 +46,26 @@ func TestAModulePageSaysItsStanding(t *testing.T) {
 	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", rel("IF-0002", model.Consumes), gone))
 	in := Input{Units: units, Understandings: map[model.ID]store.Understanding{"MOD-0003": {Unit: "MOD-0003", Digest: "old", Text: "### Overview\nIt searches.\n"}}, Digests: map[model.ID]string{"MOD-0003": "new"}}
 	ps := pages(t, Build(in))
-	if want := `<p class="muted standing">제공 1 · 사용 2 · 계약 없는 직접 의존 1 · <span class="pill STALE">설명 STALE</span> · 죽은 근거 1개</p>`; !strings.Contains(ps["MOD-0003.html"], want) {
+	if want := `<p class="muted standing">계약 1개를 내놓고 2개를 씁니다. 계약 없이 1곳에 직접 의존합니다. 설명은 코드가 바뀐 뒤 다시 읽히지 않았습니다 <span class="pill STALE">STALE</span>. 근거 1개가 코드에서 사라졌습니다.</p>`; !strings.Contains(ps["MOD-0003.html"], want) {
 		t.Errorf("MOD-0003.html should say %s", want)
+	}
+}
+
+// A reader's coupling says whether its evidence still holds, and no page
+// offers a 확인 tier.
+func TestAReaderClaimSaysWhetherItsEvidenceHolds(t *testing.T) {
+	held := model.Relation{To: "MOD-0004", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call",
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: "held", Status: model.Live}}}
+	moved := model.Relation{To: "MOD-0005", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call",
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "2", Quote: "moved", Status: model.Drifted}}}
+	ps := pages(t, Build(Input{Units: append(ripgrep(), inside("MOD-0006", "MOD-0003", held, moved))}))
+	page := ps["MOD-0003.html"]
+	if !strings.Contains(page, `<span class="muted">근거 유지</span>`) || !strings.Contains(page, `근거 어긋남</span>`) {
+		t.Errorf("each reader's coupling should say whether its evidence holds")
+	}
+	for f, p := range ps {
+		if strings.Contains(p, "확인:") || strings.Contains(p, ">확인<") {
+			t.Errorf("%s still offers a 확인 tier", f)
+		}
 	}
 }

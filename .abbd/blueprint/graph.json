@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -311,7 +311,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/page.go \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+        "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
       ]
     },
     {
@@ -522,8 +522,7 @@
       ],
       "Parent": "FEAT-0001",
       "Evidence": [
-        "plugins/abbd/skills/abbd/SKILL.md \"It never judges, blocks or asks.\"",
-        "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by its weakest origin.\""
+        "plugins/abbd/skills/abbd/SKILL.md \"Weigh an answer by whether its evidence still holds\""
       ]
     },
     {
@@ -4455,7 +4454,7 @@
       "Via": "data",
       "Phrase": "text digest",
       "PhraseOrigin": "INFERRED",
-      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
     },
     {
       "From": "MOD-0040",
@@ -5502,6 +5501,7 @@
             "cmd/abbd/query.go resolve"
           ],
           "Understanding": {
+            "Reader": "abbd reader",
             "Stale": false,
             "Blocks": [
               {
@@ -7080,7 +7080,23 @@
                 "Code": true
               },
               {
-                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state. With ",
+                "Text": ", which opens with a one-line ",
+                "Code": false
+              },
+              {
+                "Text": "summary",
+                "Code": true
+              },
+              {
+                "Text": " of the counts, sets the unit's drawing then and now side by side (",
+                "Code": false
+              },
+              {
+                "Text": "drawing",
+                "Code": true
+              },
+              {
+                "Text": " cuts each SVG and the page style out of the two pages, falling back to a page's first drawing when the unit's page is a focus view), and folds the change lines below. The blueprint itself stays the current state. With ",
                 "Code": false
               },
               {
@@ -7270,7 +7286,15 @@
                 "Code": true
               },
               {
-                "Text": ", or a line saying the evidence could not be checked. It always exits 0.",
+                "Text": ", or a line saying the evidence could not be checked. It opens with a one-line headline of its counts, lists of what the change reaches only the units past the seeds, the first 15 (",
+                "Code": false
+              },
+              {
+                "Text": "reachShown",
+                "Code": true
+              },
+              {
+                "Text": "), and always exits 0.",
                 "Code": false
               }
             ]
@@ -7316,7 +7340,39 @@
                 "Code": true
               },
               {
-                "Text": " prints whether the state and the blueprint are current, prints a ",
+                "Text": " prints whether the state and the blueprint are current, folds its ",
+                "Code": false
+              },
+              {
+                "Text": "long:",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "unbacked:",
+                "Code": true
+              },
+              {
+                "Text": " lines into one count each unless ",
+                "Code": false
+              },
+              {
+                "Text": "--verbose",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "statusLines",
+                "Code": true
+              },
+              {
+                "Text": " prints them all, and the usage says so), prints a ",
                 "Code": false
               },
               {
@@ -7734,7 +7790,39 @@
                 "Code": true
               },
               {
-                "Text": " shows it with its reader as CURRENT or STALE. ",
+                "Text": " shows it with its reader as CURRENT or STALE. With ",
+                "Code": false
+              },
+              {
+                "Text": "--history",
+                "Code": true
+              },
+              {
+                "Text": ", under each reader's coupling, ",
+                "Code": false
+              },
+              {
+                "Text": "explain",
+                "Code": true
+              },
+              {
+                "Text": " prints ",
+                "Code": false
+              },
+              {
+                "Text": "recorded in",
+                "Code": true
+              },
+              {
+                "Text": " with the commit and pull request that first wrote its first quote into the From unit's file (",
+                "Code": false
+              },
+              {
+                "Text": "gitx.Recorded",
+                "Code": true
+              },
+              {
+                "Text": "). ",
                 "Code": false
               },
               {
@@ -9877,6 +9965,12 @@
                     "cmd/abbd/evidence.go \"if e.check \u0026\u0026 len(behind) \u003e 0 {\""
                   ]
                 }
+              },
+              {
+                "Key": "verbose",
+                "Name": "--verbose",
+                "Shape": "bool",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -10003,6 +10097,12 @@
                 "Key": "root",
                 "Name": "--root",
                 "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "history",
+                "Name": "--history",
+                "Shape": "bool",
                 "Need": ""
               }
             ],
@@ -15199,6 +15299,44 @@
               },
               {
                 "Text": " reads it to date the oldest committed text in its coverage line.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Recorded",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "gitx.go",
+                "Code": true
+              },
+              {
+                "Text": "): the first commit whose diff adds or removes a quote in the given files (",
+                "Code": false
+              },
+              {
+                "Text": "git log --reverse -S",
+                "Code": true
+              },
+              {
+                "Text": "), with its date and subject, and the pull request of the first merge on the ancestry path whose first parent does not hold it yet, so a commit made on the main line itself names none. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd explain",
+                "Code": true
+              },
+              {
+                "Text": " reads it under each reader's coupling, searching only the coupling's unit file.",
                 "Code": false
               }
             ]
@@ -21525,7 +21663,31 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page says them as sentences under the heading, naming the contracts it uses even when it provides none. An inside unit's sentence that only a reader vouches for is set in italics with the 판독 source on hover, and ",
+                "Code": false
+              },
+              {
+                "Text": "Inside.Guessed",
+                "Code": true
+              },
+              {
+                "Text": " puts one note above the list instead of a badge on each. ",
+                "Code": false
+              },
+              {
+                "Text": "legend.html",
+                "Code": true
+              },
+              {
+                "Text": " gives each key once: the overview legend with its shared keys, a sentence for the quiet colours, and only the inside legend's own keys (",
+                "Code": false
+              },
+              {
+                "Text": "legendFor \"inside-keys\"",
+                "Code": true
+              },
+              {
+                "Text": "); a dot means four lines meet. The full legend and the reading intros sit once on ",
                 "Code": false
               },
               {
@@ -24005,7 +24167,15 @@
                 "Code": true
               },
               {
-                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its keys and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
+                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1248px wide in a 1500px window, so from a 1300px window up ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " shrinks a drawing wider than its box to fit, by at most 0.8, and below that the box scrolls. A module's page sets its text panel, the description and the list of its units, right after the drawing, its keys and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
                 "Code": false
               },
               {
@@ -24693,7 +24863,55 @@
                 "Code": true
               },
               {
-                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. ",
+                "Text": " sends a click to the unit's own inside, else to the inside of the nearest unit holding it, else for a contract to its note home's inside. A person's statement reads 사람, never a confirmation tier. Each reader's ",
+                "Code": false
+              },
+              {
+                "Text": "Coupling",
+                "Code": true
+              },
+              {
+                "Text": " carries ",
+                "Code": false
+              },
+              {
+                "Text": "Drifted",
+                "Code": true
+              },
+              {
+                "Text": " when it counts on drifted evidence only, as ",
+                "Code": false
+              },
+              {
+                "Text": "Relation.Drifted",
+                "Code": true
+              },
+              {
+                "Text": " says, and its page says 근거 유지 or 근거 어긋남. A text's ",
+                "Code": false
+              },
+              {
+                "Text": "Understanding",
+                "Code": true
+              },
+              {
+                "Text": " and a ",
+                "Code": false
+              },
+              {
+                "Text": "Note",
+                "Code": true
+              },
+              {
+                "Text": " carry the ",
+                "Code": false
+              },
+              {
+                "Text": "Reader",
+                "Code": true
+              },
+              {
+                "Text": " that wrote them, which the page names beside 판독 after 리더가 쓴 설명, so a person reading the page knows whose account it is. ",
                 "Code": false
               },
               {
@@ -25511,7 +25729,7 @@
           "Via": "data",
           "Quotes": [
             "internal/screen/screen.go \"return \\\"stated\\\"\"",
-            "internal/screen/page.go \"\\\"stated\\\": \\\"확인\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+            "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
         {
@@ -25687,7 +25905,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go \"return \u0026Understanding{Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
           ]
         },
         {
@@ -30399,7 +30617,39 @@
                 "Code": true
               },
               {
-                "Text": " turns a lifted relation back into the units that really join it.",
+                "Text": " turns a lifted relation back into the units that really join it. A signature change longer than ",
+                "Code": false
+              },
+              {
+                "Text": "longSignature",
+                "Code": true
+              },
+              {
+                "Text": " (200 characters) reads in ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": " as the words it gained and lost (",
+                "Code": false
+              },
+              {
+                "Text": "sigDelta",
+                "Code": true
+              },
+              {
+                "Text": ", splitting on brackets, separators and line breaks), and ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " keeps both texts.",
                 "Code": false
               }
             ]

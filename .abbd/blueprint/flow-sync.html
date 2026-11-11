@@ -69,6 +69,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
@@ -255,6 +260,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -287,7 +293,7 @@ svg [data-h="n"] { --c: var(--hn); }
   
 </header>
 <div class="solo"><section class="inside flow" id="flow-sync">
-  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>What does abbd sync do, in order? <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></h2><div class="views"><span class="muted">13단계</span> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">번호는 실행 순서입니다. 왼쪽 상자는 그 단계를 실행하는 단위이고, 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. → 칸은 단계가 닿는 단위로, 저장된 관계가 있는 것만 그립니다.</p>
   <div class="caption text"><p>What one <code>abbd sync</code> does, from the registered script to the rendered blueprint. Everything after the extraction runs inside <code>syncActual</code>, and publishing runs in <code>run</code> after any command that writes.</p></div>
   

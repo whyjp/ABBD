@@ -69,6 +69,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
@@ -255,6 +260,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -486,7 +492,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 <section class="inside page" id="m-MOD-0056">
   <div class="drawhead"><h2>internal/narrative의 안 <span class="muted key">MOD-0056</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
-<p class="muted standing">제공 0 · 사용 0 · 계약 없는 직접 의존 0</p>
+<p class="muted standing">내놓는 계약 없이 쓰는 계약은 없습니다. 계약 없이 닿는 곳은 없습니다.</p>
   
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" data-roads="1" width="360" height="116" viewBox="0 0 360 116" role="img" aria-label="모듈의 안">
 <defs></defs>
@@ -510,7 +516,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
   <div class="text">
     <div class="about">
       
-      <div><span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="muted">리더가 쓴 설명</span></div>
+      <div><span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> <span class="muted">리더가 쓴 설명</span></div>
       <h4>Overview</h4><p><code>internal/narrative</code> reads a module&#39;s text the way a human reader meets it on the blueprint: as sections, each describing the code as it is now. It has two checks. <code>Long</code> finds a section whose prose runs past <code>MaxSection</code>, 2000 characters. <code>History</code> finds a phrase that reads as the code&#39;s history rather than its present: a date, an issue or PR number, or a tag such as <code>migrated from</code>. The package only reads text and returns what it found. <code>Lines</code> is how both checks and the blueprint read a text line by line, so they split it at the same headings and treat the same lines as code. The abbd CLI prints the findings when <code>abbd understand</code> stores a text and when <code>abbd status</code> runs, and neither command refuses a text or fails a check on them, because a version number or a name can read as history.</p><h4>Key Concepts</h4><ul><li><code>Lines</code><strong> (</strong><code>narrative.go</code>): each line of a text with its <code>LineKind</code>: <code>Prose</code>, <code>Heading</code>, <code>Fence</code> or <code>Code</code>. A line starting with three or more backticks or tildes is a <code>Fence</code> that opens a code block, and a line of only as many or more of the same closes it. After a run of backticks the rest of the line may hold no backtick, as CommonMark has it, so a line that starts with an inline code span stays <code>Prose</code>. An unclosed block runs to the text&#39;s end. Every line inside is <code>Code</code>, kept with its indentation, so a <code># comment</code> or <code>#include</code> there is no heading. Outside a block, a line that starts with <code>#</code> is a <code>Heading</code>, holding the heading&#39;s words. <code>screen.blocks</code> reads the same <code>Lines</code>.</li></ul><ul><li><strong>Section</strong> (<code>narrative.go</code>): the lines under one heading, up to the next heading of any level. A heading is a <code>Heading</code> line from <code>Lines</code>, the same rule the blueprint uses to draw one, so <code>###</code> subsections split a long section for the counter and the reader alike. Prose before the first heading forms a section with an empty heading. <code>Chars</code> counts the runes of the section&#39;s non-blank lines, code and fences included, without the heading.</li></ul><ul><li><strong>Long</strong> (<code>narrative.go</code>): each section over <code>MaxSection</code>. The threshold is a report line for the agent who writes the text, never a gate.</li></ul><ul><li><strong>History marks</strong> (<code>narrative.go</code>): <code>History</code> runs an ordered table of patterns over each <code>Prose</code> line, so a code block is never read. Dates come first, then history tags, then issue and PR references from the most specific (<code>PR #12</code>, <code>owner/repo#12</code>) to a bare <code>#12</code>. <code>quoted</code> marks each <code>code</code> span and each URL, a scheme followed by <code>://</code> up to the next blank, and <code>History</code> skips them, so a fragment such as <code>https://x.com/a#12</code> is not an issue number. A span one pattern reports is taken, so a later pattern never reports it again. A <code>Mark</code> names its section, what it reads as, and the phrase. Version numbers, identifiers, anchors such as <code>#overview</code>, and words such as &#34;no longer&#34; or &#34;old format&#34; describe code as it is, and no pattern matches them.</li></ul>
       
       

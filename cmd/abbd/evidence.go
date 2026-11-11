@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"maps"
 	"slices"
@@ -81,6 +82,39 @@ func (e env) checkEvidence() error {
 // UNKNOWN fails too: the check cannot vouch for what it could not compare.
 // An orphan text does not fail, because no command can restamp it.
 func (e env) status() error {
+	if e.verbose {
+		return e.statusLines()
+	}
+	// Without --verbose the long: and unbacked: lines fold into one count
+	// each, where the first of them stood, so the verdict stays in view.
+	var out bytes.Buffer
+	full := e
+	full.stdout = &out
+	err := full.statusLines()
+	counts := map[string]int{}
+	var lines []string
+	for _, l := range strings.SplitAfter(out.String(), "\n") {
+		kind, _, _ := strings.Cut(l, ": ")
+		if kind != "long" && kind != "unbacked" {
+			lines = append(lines, l)
+			continue
+		}
+		if counts[kind] == 0 {
+			lines = append(lines, "\x00"+kind)
+		}
+		counts[kind]++
+	}
+	for _, l := range lines {
+		if kind, ok := strings.CutPrefix(l, "\x00"); ok {
+			l = fmt.Sprintf("%s: %d line(s); abbd status --verbose lists them\n", kind, counts[kind])
+		}
+		fmt.Fprint(e.stdout, l)
+	}
+	return err
+}
+
+// statusLines prints the whole status, every line of it.
+func (e env) statusLines() error {
 	in, err := e.screenInput()
 	if err != nil {
 		return err

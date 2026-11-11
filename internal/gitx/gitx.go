@@ -382,3 +382,42 @@ func LastCommitted(dir, path string) string {
 	}
 	return strings.TrimSpace(out)
 }
+
+// Recorded says which commit first wrote needle in paths, with its date
+// and subject, and the pull request whose merge brought it in when there is
+// one: who recorded a reader's claim, and when. It is "" when git finds
+// none.
+func Recorded(dir, needle string, paths ...string) string {
+	out, err := run(dir, nil, append([]string{"log", "--reverse", "--format=%h %cs %s", "-S", needle, "--"}, paths...)...)
+	if err != nil {
+		return ""
+	}
+	first, _, _ := strings.Cut(strings.TrimSpace(out), "\n")
+	if first == "" {
+		return ""
+	}
+	hash, _, _ := strings.Cut(first, " ")
+	merges, err := run(dir, nil, "log", "--merges", "--ancestry-path", "--reverse", "--format=%P%x09%s", hash+"..HEAD")
+	if err != nil {
+		return first
+	}
+	// The merge that brought the commit in is the first whose first parent
+	// does not hold it yet. A commit made on that line itself came in by no
+	// merge, so it names no pull request.
+	for _, m := range strings.Split(strings.TrimSpace(merges), "\n") {
+		parents, subject, ok := strings.Cut(m, "\t")
+		mainline, _, _ := strings.Cut(parents, " ")
+		if !ok || mainline == "" {
+			continue
+		}
+		if _, err := run(dir, nil, "merge-base", "--is-ancestor", hash, mainline); err == nil {
+			continue
+		}
+		if pr, ok := strings.CutPrefix(subject, "Merge pull request "); ok {
+			pr, _, _ = strings.Cut(pr, " ")
+			return first + " (" + pr + ")"
+		}
+		return first
+	}
+	return first
+}
