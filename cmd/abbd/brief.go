@@ -79,6 +79,7 @@ func (e env) brief(ref string) error {
 		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
 	}
 	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
+	list(w, "Run-time binding sites: record the tie each makes as a coupling with its quote, via load, spawn, trait, callback or config, and a registry as a contract its members provide", bindingSites(e.root, files))
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {

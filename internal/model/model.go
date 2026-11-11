@@ -635,12 +635,13 @@ type Via string
 var vias = map[Via]bool{
 	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
 	"build-feature": true, "data": true, "convention": true, "call": true,
+	"load": true, "spawn": true,
 }
 
 var viaWords = map[Via]string{
 	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
 	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
-	"build-feature": "빌드 기능",
+	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행",
 }
 
 // Word is the via in the blueprint's words, or "" for none.
@@ -648,7 +649,7 @@ func (v Via) Word() string { return viaWords[v] }
 
 func (v Via) Validate() error {
 	if v != "" && !vias[v] {
-		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention or call", v)
+		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load or spawn", v)
 	}
 	return nil
 }
