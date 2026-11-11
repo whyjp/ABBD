@@ -702,6 +702,12 @@ func (r *routing) confluent(reqs []wireReq, position func(y int) int, rows int) 
 	for n, cost := 0, v.cost(ways); n < roadMoves; n++ {
 		next, ok := r.shift(ways, v, cost, false, true)
 		if !ok {
+			// A long merge may open a nearer one it had shut out: a run
+			// that split from a road short of where the others turned now
+			// turns with them.
+			next, ok = r.step(ways, v, cost, false)
+		}
+		if !ok {
 			break
 		}
 		ways = next

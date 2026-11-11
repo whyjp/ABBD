@@ -630,7 +630,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Lists unit candidates from the layout and fans the reading out to a pstack swarm of how-explorer workers that report in the extraction format.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -723,7 +724,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Defines the JSON contract shared by swarm workers, the extractor script and the supplement: unit kinds, relation kinds, via values, evidence and parent rules.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -819,7 +821,7 @@
       "Signature": "",
       "Purpose": null,
       "Responsibility": {
-        "Value": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
+        "Value": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
         "Badge": "inferred"
       },
       "Anchors": [
@@ -827,7 +829,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup never asks the human anything.\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"Setup asks the human one thing only, how dense the overview should be (step 7), and only when a human is in the conversation.\""
       ]
     },
     {
@@ -1308,8 +1310,10 @@
       },
       "Anchors": [
         "cmd/abbd",
+        "cmd/abbd/binding.go",
         "cmd/abbd/brief.go",
         "cmd/abbd/diff.go",
+        "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
@@ -1320,7 +1324,6 @@
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
-        "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
         "cmd/abbd/review.go",
@@ -1969,11 +1972,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package decides the same way which units and relations are a reader's guess and which are drawn as the topology",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "A unit is semantic when its name is INFERRED; a relation counts as topology only when it is live and EXTRACTED or USER_STATED, and is a guess when INFERRED.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go Counts",
@@ -1991,11 +1996,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every relation, extracted, read or stated, has a meaning ABBD can draw",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go ends",
@@ -2014,11 +2021,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so everyone can tell a code fact from a reader's guess from a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines the EXTRACTED, INFERRED and USER_STATED origins and enforces that a why-field is never EXTRACTED and that exactly the USER_STATED facts carry a source.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go sourced",
@@ -2894,14 +2903,6 @@
     },
     {
       "From": "FEAT-0002",
-      "To": "IF-0010",
-      "Kind": "consumes",
-      "Origin": "EXTRACTED",
-      "Via": "call",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record relation\""
-    },
-    {
-      "From": "FEAT-0002",
       "To": "IF-0012",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
@@ -2970,6 +2971,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
       "From": "FEAT-0003",
@@ -4795,9 +4804,7 @@
       "To": "MOD-0057",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call",
-      "Phrase": "CODEOWNERS path",
-      "PhraseOrigin": "INFERRED"
+      "Via": "call"
     },
     {
       "From": "MOD-0042",
@@ -5468,12 +5475,35 @@
           "ID": "FEAT-0026",
           "Name": "/abbd-setup stance",
           "Kind": "기능",
-          "Sentence": "Fixes that setup never asks the human: the first committed state is the baseline. It needs no pstack.",
+          "Sentence": "Fixes that setup asks the human only how dense the overview should be, and only when one is present; the first committed state is the baseline.",
           "Guess": true,
           "Anchors": [
             "plugins/abbd/skills/abbd-setup/SKILL.md"
           ],
-          "Understanding": null
+          "Understanding": {
+            "Reader": "concept-orch (Claude Opus 5.5)",
+            "Stale": false,
+            "Blocks": [
+              {
+                "Kind": "h",
+                "Parts": [
+                  {
+                    "Text": "Overview",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "p",
+                "Parts": [
+                  {
+                    "Text": "The stance at the top of the /abbd-setup skill: setup asks the human one thing only, how dense the overview should be, and only when a human is in the conversation. The first state it commits is the baseline, which the human reads in the blueprint and the PR, and setup needs nothing but the abbd CLI and the reader, with pstack as an optional engine.",
+                    "Code": false
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
       "Understanding": null,
@@ -5487,12 +5517,12 @@
             "sync",
             "explain",
             "path",
-            "record relation",
             "exit codes",
             "migrate",
             "record evidence",
             "flow",
-            "lint"
+            "lint",
+            "brief"
           ]
         }
       ],
@@ -6661,15 +6691,23 @@
                 "Code": true
               },
               {
-                "Text": ". Lint also names each drawn overview line whose relations carry no live phrase (",
+                "Text": ". Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
-                "Text": "phrases.go",
+                "Text": "binding.go",
                 "Code": true
               },
               {
-                "Text": "), by its end boxes, a contract counted on its provider's box. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
+                "Code": false
+              },
+              {
+                "Text": "draft.go",
+                "Code": true
+              },
+              {
+                "Text": "), never from code, a README, a licence or a generated mark,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -8193,11 +8231,6 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
-                  },
-                  {
-                    "ID": "FEAT-0002",
-                    "Name": "/abbd-setup",
-                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8211,11 +8244,6 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
-                  },
-                  {
-                    "ID": "FEAT-0002",
-                    "Name": "/abbd-setup",
-                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8228,11 +8256,6 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
-                    "Badge": "extracted"
-                  },
-                  {
-                    "ID": "FEAT-0002",
-                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
@@ -8420,7 +8443,14 @@
                 "Key": "sentence",
                 "Name": "--sentence",
                 "Shape": "string",
-                "Need": ""
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": false,
@@ -8723,6 +8753,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
@@ -17178,7 +17213,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17186,7 +17221,23 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "load",
+                "Code": true
+              },
+              {
+                "Text": " for a library loaded by name or ",
+                "Code": false
+              },
+              {
+                "Text": "spawn",
+                "Code": true
+              },
+              {
+                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
                 "Code": false
               },
               {
@@ -19989,6 +20040,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -22944,7 +22996,7 @@
                 "Code": true
               },
               {
-                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway. Where no run moves, ",
+                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway, and after each such merge the nearer moves run again, since a run the long merge has moved can open a near merge it had shut out as a far split. Where no run moves, ",
                 "Code": false
               },
               {
@@ -23738,11 +23790,11 @@
                 "Code": false
               },
               {
-                "Text": "store.Project.OverviewCut",
+                "Text": "store.Project.Cut",
                 "Code": true
               },
               {
-                "Text": ") and off by default, and this repository and every fixture switch it on: with it off, ",
+                "Text": ", nil until the human chooses) and off by default, and this repository and every fixture switch it on: with it off, ",
                 "Code": false
               },
               {
@@ -26663,6 +26715,14 @@
                 "Code": false
               },
               {
+                "Text": "OverviewCut",
+                "Code": true
+              },
+              {
+                "Text": ", nil until the human chooses how dense the overview is, so a chosen false survives a save, and ",
+                "Code": false
+              },
+              {
                 "Text": "ProjectDir",
                 "Code": true
               },
@@ -27203,20 +27263,13 @@
               {
                 "Key": "overview-cut",
                 "Name": "overview_cut",
-                "Shape": "bool",
-                "Need": "선택",
-                "Users": [
-                  {
-                    "ID": "MOD-0034",
-                    "Name": "internal/screen",
-                    "Badge": "extracted"
-                  }
-                ]
+                "Shape": "*bool",
+                "Need": "선택"
               }
             ],
             "Need": true,
             "Providers": false,
-            "Users": true,
+            "Users": false,
             "Data": true,
             "Notes": false
           }
@@ -28071,7 +28124,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut"
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice"
             },
             {
               "N": 4,
@@ -30579,7 +30632,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut",
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",

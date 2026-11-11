@@ -17,7 +17,8 @@ func cutOn(t *testing.T, name string, marked map[string]bool) Model {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return Build(Input{Units: units, Primary: marked, Project: store.Project{OverviewCut: true}})
+	on := true
+	return Build(Input{Units: units, Primary: marked, Project: store.Project{OverviewCut: &on}})
 }
 
 // With the cut switched on, a dense overview draws its primary links, about

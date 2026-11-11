@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/screen"
 	"github.com/whyjp/abbd/internal/store"
 )
@@ -31,6 +32,9 @@ type lintReport struct {
 	// Unphrased names the pairs of overview boxes whose lines carry no
 	// phrase, which say only a via word at rest.
 	Unphrased []string `json:"unphrased,omitempty"`
+	// Undescribed names the drawn boxes that say only their kind, since
+	// their units record neither a purpose nor a responsibility.
+	Undescribed []model.ID `json:"undescribed,omitempty"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -104,6 +108,7 @@ func (e env) lint(pos []string) error {
 	if every {
 		r.Ceilings = debt.Ceilings
 		r.Unphrased = unphrased(in.Units, m.Overview)
+		r.Undescribed = undescribed(in.Units)
 	}
 	if r.Failures == nil {
 		r.Failures = []string{}
@@ -167,6 +172,9 @@ func printLint(e env, r lintReport) {
 		if n > 10 {
 			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
 		}
+	}
+	if len(r.Undescribed) > 0 {
+		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {

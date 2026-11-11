@@ -13,11 +13,11 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
    - **Lifecycle**: how it starts, how it stops, how it aborts or shuts down, and what it frees.
    - **Core types and state**: the types the module's functions take and return most, and the state they share or guard.
    - **Threads and pools**: every thread, task, pool, timer or callback it starts or runs on, and what runs where.
-   - **Registration**: where the module learns its plugins, handlers or components at run time: a registry, a table, `dlopen`, a macro, a trait object, an injected bundle.
+   - **Run-time binding**: where the module learns its plugins, handlers or components at run time, and what it starts: a registry, a table, `dlopen` or another load by name, a macro, a trait-object factory, a backend picked by name, a process it spawns, an injected bundle. Start from the brief's `Run-time binding sites` and read each hit.
    - **Failure paths**: what it returns or raises when something fails, and what it retries.
    - **Key units**: the `Key units by fan-in` the brief lists. Name each in the text, or say in one line why it stays out.
    Note where the module stops, what is not obvious, open questions and the files you read.
-   The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the registration in Key Concepts, or say in one line that the module has none.
+   The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the run-time binding in Key Concepts, or say in one line that the module has none.
 4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
 ## Before you store: look for a counterexample
@@ -38,6 +38,8 @@ A role is a claim too. Before you write that a function loads, starts, frees or 
 - `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit, or say in one line why a key unit stays out. Name another unit's file by that unit instead.
 
 **A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill.
+
+No import shows a run-time binding, so record each one you found as a coupling with its quote: `--via load` for a library or plugin loaded by name, `--via spawn` for a process started, `--via config` for a backend picked by a name in settings, `--via trait` or `--via callback` for a factory or handler table. A registry that components add themselves to is a contract: give it a unit in the supplement with evidence, have each member provide it, and have the module that reads the registry consume it.
 
 **Order** (what one command does, a pipeline's stages): a flow, `abbd flow <KEY> <FILE>`.
 

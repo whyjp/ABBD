@@ -556,9 +556,13 @@ type Project struct {
 	Purpose string `yaml:"purpose,omitempty"`
 	// OverviewCut turns on the overview's density cut: a dense overview
 	// draws its primary links and counts the rest on a +N pill per box
-	// that opens the box's focus view. Off by default.
-	OverviewCut bool `yaml:"overview_cut,omitempty"`
+	// that opens the box's focus view. Off by default. Nil says the human
+	// has not chosen, so a false they chose survives a setup rerun.
+	OverviewCut *bool `yaml:"overview_cut,omitempty"`
 }
+
+// Cut says whether the overview draws its primary links only.
+func (p Project) Cut() bool { return p.OverviewCut != nil && *p.OverviewCut }
 
 func (s Store) LoadProject() (Project, error) {
 	var p Project
