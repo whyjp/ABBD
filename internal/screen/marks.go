@@ -517,6 +517,20 @@ func said(t tree, lines [][]string) []string {
 	return out
 }
 
+// conditions are the conditions the line's relations hold under, each
+// with how many of its relations it gates, so a feature that gates one
+// relation of ten does not pass for the line's.
+func conditions(t tree, lines [][]string) []string {
+	us := units(lines)
+	n := carried(us, func(r string) string { return t.whens[r] })
+	out := make([]string, 0, len(n))
+	for s, c := range n {
+		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(us)))
+	}
+	slices.Sort(out)
+	return out
+}
+
 func hit(a, b box) bool {
 	return a.x < b.x+b.w && b.x < a.x+a.w && a.y < b.y+b.h && b.y < a.y+a.h
 }
@@ -570,6 +584,9 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
+		}
+		if cs := conditions(t, w.lines); len(cs) > 0 {
+			d.Wires[i].Title += "\n조건: " + strings.Join(cs, ", ")
 		}
 	}
 	// whole says every path of a net says one word, so the net is labelled

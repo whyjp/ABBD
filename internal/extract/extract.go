@@ -40,6 +40,7 @@ type rawRelation struct {
 	Kind     model.RelationKind `json:"kind"`
 	Via      model.Via          `json:"via,omitempty"`
 	Phrase   string             `json:"phrase,omitempty"`
+	When     string             `json:"when,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
 }
@@ -75,6 +76,8 @@ type Relation struct {
 	Evidence []model.Evidence
 	// Entries are the keys of the entries of To the relation narrows to.
 	Entries []string
+	// When is the condition the relation holds under.
+	When string
 }
 
 // Placement is one writer's claim on the unit, by key, that contains another.
@@ -168,6 +171,9 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		if rr.Phrase != "" && !foreignParents {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s) carries a phrase; a phrase is a reader's words, so the supplement gives it and the script does not", i, rr.From, rr.To)
 		}
+		if err := model.ValidateWhen(rr.When); err != nil {
+			return res, fmt.Errorf("relation %d: %w", i, err)
+		}
 		if err := model.ValidatePhrase(rr.Phrase, rr.Via); err != nil {
 			return Result{}, fmt.Errorf("relation %d (%s -> %s): %w", i, rr.From, rr.To, err)
 		}
@@ -197,7 +203,7 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 			}
 			continue
 		}
-		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys})
+		res.Relations = append(res.Relations, Relation{From: rr.From, To: rr.To, Kind: rr.Kind, Writer: model.Script, Via: rr.Via, Evidence: evidence, Entries: keys, When: rr.When})
 	}
 	return res, nil
 }

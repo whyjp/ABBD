@@ -27,6 +27,8 @@ type Link struct {
 	// Drifted says the link counts on evidence the code no longer holds as
 	// quoted; a reader must refresh or retract it.
 	Drifted bool
+	// When is the condition the link holds under, empty when it always does.
+	When string
 }
 
 // Label says where the link comes from and how it arises, then what crosses
@@ -35,6 +37,9 @@ func (l Link) Label() string {
 	s := origins[l.Origin]
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
+	}
+	if l.When != "" {
+		s += ", when " + l.When
 	}
 	if l.Drifted {
 		s += ", drifted"
@@ -72,7 +77,7 @@ func Links(units []model.Unit) []Link {
 	for _, u := range model.Present(units) {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
-				l := Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()}
+				l := Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted(), When: r.When}
 				if n, ok := u.Note(r.Kind, r.To); ok {
 					l.Phrase = &n
 				}

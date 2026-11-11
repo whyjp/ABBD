@@ -631,6 +631,19 @@ func (k RelationKind) Joins(from, to Kind) error {
 	return nil
 }
 
+// MaxWhen bounds a relation's condition, which names a feature, a cfg or a
+// scope rather than restating the build file.
+const MaxWhen = 60
+
+// ValidateWhen refuses a condition that runs over MaxWhen characters or
+// over one line.
+func ValidateWhen(w string) error {
+	if strings.ContainsAny(w, "\r\n") || len([]rune(w)) > MaxWhen {
+		return fmt.Errorf("condition %q: one line of at most %d characters, such as feature = \"sinks-kafka\", cfg(unix) or PRIVATE", w, MaxWhen)
+	}
+	return nil
+}
+
 // Via says how a coupling arises, so a human sees why two units are tied.
 type Via string
 
@@ -750,6 +763,10 @@ type Relation struct {
 	Entries []string `yaml:"entries,omitempty"`
 	// Digest fingerprints the lines that hold the live evidence.
 	Digest string `yaml:"digest,omitempty"`
+	// When is the condition the relation holds under, as the build says it:
+	// a feature, a cfg, a dev or build dependency, or a link scope such as
+	// PRIVATE. Empty means it always holds.
+	When string `yaml:"when,omitempty"`
 	// Origin and Dead are derived by Resolve. Dead marks a claim whose
 	// evidence is all dead.
 	Origin Origin `yaml:"-"`

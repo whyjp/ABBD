@@ -151,7 +151,7 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 			if len(r.Evidence) == 0 {
 				return base, f, fmt.Errorf("supplement relation %s -%s-> %s cites no evidence; a reader's coupling rests on the code it quotes", r.From, r.Kind, r.To)
 			}
-			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence})
+			out.Relations = append(out.Relations, extract.Relation{From: e.from, To: e.to, Kind: r.Kind, Writer: model.Supplement, Via: r.Via, Evidence: r.Evidence, When: r.When})
 		}
 		// A phrase only names what crosses the edge, so on an edge the script
 		// reads it is all the supplement adds.
