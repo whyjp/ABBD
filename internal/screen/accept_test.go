@@ -16,6 +16,7 @@ import (
 // and each place's x,y,w,h. eval/lint/accept.py reads its geometry measures
 // from it.
 func TestAcceptWays(t *testing.T) {
+	t.Parallel()
 	f := os.Getenv("ABBD_ACCEPT_WAYS")
 	if f == "" {
 		t.Skip("ABBD_ACCEPT_WAYS is not set")

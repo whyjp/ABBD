@@ -58,6 +58,7 @@ func (p *project) stale(n string) {
 // A module's text describes all of its code: what its packages two levels
 // down hold, and every file under a directory it is anchored at.
 func TestATextGoesStaleWhenAnyCodeUnderItsModuleChanges(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	n := 0
 	text := func() string {
@@ -85,6 +86,7 @@ func TestATextGoesStaleWhenAnyCodeUnderItsModuleChanges(t *testing.T) {
 // A file the module only quotes counts by the lines around the quote, so an
 // edit elsewhere in a shared file such as CLAUDE.md leaves the text current.
 func TestAQuotedFileCountsOnlyAroundTheQuote(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app follows the repo rules.\n"))
 	p.code("CLAUDE.md", "# added at the top\n"+claudeLines("keep it small")+"line added far below\n")
@@ -99,6 +101,7 @@ func TestAQuotedFileCountsOnlyAroundTheQuote(t *testing.T) {
 // text explicitly; abbd allows it only while none of the module's code
 // changed since the text was written.
 func TestRestampFollowsAnExtractionChangeButNotACodeChange(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
 	p.want(1, "is current", "understand", "MOD-0001", "--restamp")
@@ -123,6 +126,7 @@ func TestRestampFollowsAnExtractionChangeButNotACodeChange(t *testing.T) {
 // stays current. app's old digest never read the files under app/web, so
 // its text goes STALE. A text that was STALE stays STALE.
 func TestSyncUpgradesATextWrittenAgainstTheOldDigest(t *testing.T) {
+	t.Parallel()
 	for _, c := range []struct{ id, digest, says, stale string }{
 		{"MOD-0004", "596dd225dceb4742", "it stays current", "0"},
 		{"MOD-0001", "73de2c949d70057d", "it is STALE until a reader reads", "1"},
@@ -141,6 +145,7 @@ func TestSyncUpgradesATextWrittenAgainstTheOldDigest(t *testing.T) {
 // A restamp sees a file the module lost because it was deleted, under a
 // directory anchor or as the only anchor of a unit that went absent.
 func TestRestampIsRefusedWhenTheModuleLostAFile(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
 	if err := os.Remove(filepath.Join(p.root, "app", "web", "page.tsx")); err != nil {
@@ -155,6 +160,7 @@ func TestRestampIsRefusedWhenTheModuleLostAFile(t *testing.T) {
 // module later gains a deeper unit stays STALE even when the old digest,
 // which never saw that unit, still matches.
 func TestSyncDoesNotUpgradeATextStoredNow(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("app/main.go", "package app\n\nfunc Main() {}\n")
 	p.code("app/web/page.go", "package web\n\nfunc Page() {}\n")
@@ -202,6 +208,7 @@ const vendorTopo = `{"units":[
 // A restamp compares the files the digest reads, so an edit inside a
 // submodule or under an ignored directory blocks it like any other.
 func TestRestampSeesCodeInASubmoduleAndInAnIgnoredFile(t *testing.T) {
+	t.Parallel()
 	for _, edit := range []string{"vendor/lib/lib.go", "gen/api.go"} {
 		p := vendorProject(t, vendorTopo+"]}")
 		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app wraps lib.\n"))
@@ -218,6 +225,7 @@ func TestRestampSeesCodeInASubmoduleAndInAnIgnoredFile(t *testing.T) {
 // A directory anchored at a submodule stands for the commit the
 // superproject records for it, so a new pin stales the text.
 func TestADirectoryAnchorOnASubmoduleCountsItsPin(t *testing.T) {
+	t.Parallel()
 	p := vendorProject(t, `{"units":[
  {"key":"lib","kind":"MOD","name":"lib","anchors":[{"path":"vendor/lib"}]}]}`)
 	out := p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "lib is vendored.\n"))
@@ -236,6 +244,7 @@ func TestADirectoryAnchorOnASubmoduleCountsItsPin(t *testing.T) {
 // the wider digest sees code the old one never covered, sync cannot show
 // the text still describes it, so the text goes STALE and sync says why.
 func TestSyncLeavesAnOldTextStaleWhenTheWiderScopeSeesNewCode(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: \"73de2c949d70057d\"\n---\n\napp serves pages.\n")
 	p.code("app/web/games/board.tsx", "export function Board() { return 1 }\n")
@@ -249,6 +258,7 @@ func TestSyncLeavesAnOldTextStaleWhenTheWiderScopeSeesNewCode(t *testing.T) {
 // Outside git a directory anchor still stands for the files under it, so a
 // module with code never gets the empty digest.
 func TestADirectoryAnchorCountsItsFilesOutsideGit(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	os.RemoveAll(filepath.Join(p.root, ".git"))
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app serves pages.\n"))
@@ -260,6 +270,7 @@ func TestADirectoryAnchorCountsItsFilesOutsideGit(t *testing.T) {
 // a submodule it is that submodule's pin, and an ignored directory is its
 // files on disk. Neither may leave a text current after its code moved.
 func TestADirectoryAnchorGitListsNothingUnderStillStalesItsText(t *testing.T) {
+	t.Parallel()
 	t.Run("inside a submodule", func(t *testing.T) {
 		p := vendorProject(t, `{"units":[{"key":"pkg","kind":"MOD","name":"pkg","anchors":[{"path":"vendor/lib/pkg"}]}]}`)
 		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "pkg is vendored.\n"))
@@ -281,6 +292,7 @@ func TestADirectoryAnchorGitListsNothingUnderStillStalesItsText(t *testing.T) {
 // A restamp compares what the digest reads, so an edit to a quoted file far
 // from the quote, which leaves the digest alone, does not block it.
 func TestRestampIgnoresAnEditTheDigestIgnores(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app follows the repo rules.\n"))
 	p.code("CLAUDE.md", claudeLines("keep it small")+"line added far below\n")
@@ -295,6 +307,7 @@ func TestRestampIgnoresAnEditTheDigestIgnores(t *testing.T) {
 // current across the upgrade when its digest still matches the code, and
 // is stored again in the current format.
 func TestSyncUpgradesAFormat1Text(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	write(t, p.root+"/.abbd/understanding/MOD-0004.md", "---\nunit: MOD-0004\norigin: INFERRED\ndigest: 596dd225dceb4742\ncode:\n    other/x.go: 1ec0203f385af158\n---\n\nthe module.\n")
 	if out := p.resync(); !strings.Contains(out, "it stays current") {
@@ -309,6 +322,7 @@ func TestSyncUpgradesAFormat1Text(t *testing.T) {
 // A gitfile marks a worktree or a submodule checkout; the files beside it
 // are still code under an ignored directory anchor.
 func TestAGitfileUnderAnIgnoredAnchorHidesNoCode(t *testing.T) {
+	t.Parallel()
 	p := vendorProject(t, `{"units":[{"key":"gen","kind":"MOD","name":"gen","anchors":[{"path":"gen"}]}]}`)
 	p.code("gen/dep/.git", "gitdir: ../../.git/modules/dep\n")
 	p.code("gen/dep/src/a.go", "package src\n")
@@ -320,6 +334,7 @@ func TestAGitfileUnderAnIgnoredAnchorHidesNoCode(t *testing.T) {
 // git lists an untracked repository inside the project as one directory;
 // its files on disk are still the code of a module anchored there.
 func TestAnUntrackedNestedRepositoryCountsItsFiles(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("app/main.go", "package app\n")
 	p.code("nested/a.go", "package nested\n")
@@ -369,6 +384,7 @@ func twiceProject(t *testing.T) *project {
 // Two units quoting the same words at two places in one file each count
 // by the lines around their own quote.
 func TestTheSameQuoteCitedTwiceCountsAtBothPlaces(t *testing.T) {
+	t.Parallel()
 	for _, edit := range []int{8, 24} {
 		p := twiceProject(t)
 		p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
@@ -383,6 +399,7 @@ func TestTheSameQuoteCitedTwiceCountsAtBothPlaces(t *testing.T) {
 // cannot show the other place unchanged and says the text is STALE. The
 // digests are what ABBD stored in format 2 for these projects.
 func TestSyncUpgradesAFormat2TextOnlyWhenItReadEveryPlace(t *testing.T) {
+	t.Parallel()
 	for _, c := range []struct {
 		name, digest, says, stale string
 		project                   func(*testing.T) *project
@@ -403,6 +420,7 @@ func TestSyncUpgradesAFormat2TextOnlyWhenItReadEveryPlace(t *testing.T) {
 
 // Format 1 read one place of a quote cited at several too.
 func TestSyncLeavesAFormat1TextStaleWhenAQuoteIsCitedTwice(t *testing.T) {
+	t.Parallel()
 	p := twiceProject(t)
 	write(t, p.root+"/.abbd/understanding/MOD-0001.md", "---\nunit: MOD-0001\norigin: INFERRED\ndigest: 1912b5ee72f158bd\ncode:\n    app/main.go: 75d99e22087438b6\n---\n\nthe module.\n")
 	if out := p.resync(); !strings.Contains(out, "it is STALE until a reader reads") {
@@ -414,6 +432,7 @@ func TestSyncLeavesAFormat1TextStaleWhenAQuoteIsCitedTwice(t *testing.T) {
 // A module inside another takes a text of its own, describing its own
 // subtree. The text of the module that holds it describes that code too.
 func TestANestedModuleTakesATextScopedToItsSubtree(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	texts := func(stale string) {
 		t.Helper()
@@ -437,6 +456,7 @@ func TestANestedModuleTakesATextScopedToItsSubtree(t *testing.T) {
 // it holds units, and under its entry in its parent's inside when it holds
 // none, since it has no view of its own.
 func TestTheBlueprintShowsANestedModulesText(t *testing.T) {
+	t.Parallel()
 	p := deepProject(t)
 	p.want(0, "understood", "understand", "MOD-0002", p.file(t, "web.md", "web serves every page.\n"))
 	p.want(0, "understood", "understand", "MOD-0003", p.file(t, "games.md", "games draws the board.\n"))

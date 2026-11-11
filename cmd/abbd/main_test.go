@@ -35,7 +35,6 @@ func syncWith(t *testing.T, root, extraction string) (code int, stdout, stderr s
 	t.Helper()
 	src := root + ".extraction.json"
 	write(t, src, extraction)
-	t.Setenv("ABBD_FAKE_EXTRACT", src)
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -94,6 +93,7 @@ const extraction = `{"units":[
 ]}`
 
 func TestRerunPreservesIDsAndBytes(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	first := ingestOK(t, root, extraction)
 	if !strings.Contains(first, "MOD-0001 new") || !strings.Contains(first, "IF-0001 new") {
@@ -121,6 +121,7 @@ func TestRerunPreservesIDsAndBytes(t *testing.T) {
 }
 
 func TestExternalFileMoveKeepsIDs(t *testing.T) {
+	t.Parallel()
 	for _, commit := range []bool{false, true} {
 		name := "staged"
 		if commit {
@@ -156,6 +157,7 @@ func TestExternalFileMoveKeepsIDs(t *testing.T) {
 }
 
 func TestSingleSharedAnchorBecomesCandidate(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	split := `{"units":[
@@ -173,6 +175,7 @@ func TestSingleSharedAnchorBecomesCandidate(t *testing.T) {
 }
 
 func TestReservedDomainKindIsRejected(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	if code, _, errOut := syncWith(t, root, `{"units":[{"kind":"STATE","name":"s","anchors":[{"path":"a.go"}]}]}`); code == 0 || !strings.Contains(errOut, "reserved") {
 		t.Fatalf("STATE kind should be rejected as reserved, exit %d: %s", code, errOut)
@@ -209,6 +212,7 @@ func unitsByName(t *testing.T, root string) map[string]string {
 }
 
 func TestReorderedInputSharingFirstAnchorKeepsIDs(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	big := `{"kind":"MOD","name":"big","anchors":[{"path":"billing/charge.go","symbol":"Charge"},{"path":"billing/charge.go","symbol":"Refund"},{"path":"billing/charge.go","symbol":"Void"}]}`
 	small := `{"kind":"MOD","name":"small","anchors":[{"path":"billing/charge.go","symbol":"Charge"},{"path":"billing/charge.go","symbol":"Refund"}]}`
@@ -222,6 +226,7 @@ func TestReorderedInputSharingFirstAnchorKeepsIDs(t *testing.T) {
 }
 
 func TestSecondMoveAfterUncommittedFirstMoveKeepsID(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	git(t, root, "mv", "billing", "payments")
@@ -236,6 +241,7 @@ func TestSecondMoveAfterUncommittedFirstMoveKeepsID(t *testing.T) {
 }
 
 func TestPlainMoveWithoutGitKeepsID(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	if err := os.Rename(filepath.Join(root, "billing"), filepath.Join(root, "payments")); err != nil {
@@ -248,6 +254,7 @@ func TestPlainMoveWithoutGitKeepsID(t *testing.T) {
 }
 
 func TestStatedPurposeAndNotesSurviveReingest(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	p := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
@@ -263,6 +270,7 @@ func TestStatedPurposeAndNotesSurviveReingest(t *testing.T) {
 }
 
 func TestDeletedIDIsNeverReused(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	split := strings.Replace(extraction, `"symbol":"Refund"`, `"symbol":"Void"`, 1)
@@ -277,6 +285,7 @@ func TestDeletedIDIsNeverReused(t *testing.T) {
 }
 
 func TestLostSnapshotWarnsAndContinues(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	p := filepath.Join(root, ".abbd", "state.yaml")
@@ -295,6 +304,7 @@ func TestLostSnapshotWarnsAndContinues(t *testing.T) {
 }
 
 func TestEquivalentPathSpellingsMatch(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	odd := strings.Replace(extraction, `"billing/charge.go","symbol":"Charge"`, `"billing\\charge.go","symbol":"Charge"`, 1)
@@ -306,6 +316,7 @@ func TestEquivalentPathSpellingsMatch(t *testing.T) {
 }
 
 func TestSplitLeftoverBecomesCandidate(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, `{"units":[{"kind":"MOD","name":"all","anchors":[{"path":"a.go","symbol":"A"},{"path":"a.go","symbol":"B"},{"path":"a.go","symbol":"C"},{"path":"a.go","symbol":"D"}]}]}`)
 	out := ingestOK(t, root, `{"units":[{"kind":"MOD","name":"ab","anchors":[{"path":"a.go","symbol":"A"},{"path":"a.go","symbol":"B"}]},{"kind":"MOD","name":"cd","anchors":[{"path":"a.go","symbol":"C"},{"path":"a.go","symbol":"D"}]}]}`)
@@ -315,6 +326,7 @@ func TestSplitLeftoverBecomesCandidate(t *testing.T) {
 }
 
 func TestUnitInWrongFolderIsRejected(t *testing.T) {
+	t.Parallel()
 	root := newRepo(t)
 	ingestOK(t, root, extraction)
 	a := filepath.Join(root, ".abbd", "architecture", "MOD-0001.md")
@@ -329,6 +341,7 @@ func TestUnitInWrongFolderIsRejected(t *testing.T) {
 // checkout that moves a submodule, or a clone that never checks it out, still
 // reads the synced commit as current.
 func TestSubmoduleCheckoutLeavesTheStateCurrent(t *testing.T) {
+	t.Parallel()
 	lib := t.TempDir()
 	git(t, lib, "init", "-q")
 	write(t, filepath.Join(lib, "lib.go"), "package lib\n")

@@ -8,6 +8,7 @@ import (
 // A module the extraction script does not know is a manifest no unit
 // anchors code under. Sync names it, so a hand-kept list cannot hide it.
 func TestSyncNamesAManifestNoUnitCovers(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.code("billing/go.mod", "module billing\n")
@@ -34,6 +35,7 @@ func TestSyncNamesAManifestNoUnitCovers(t *testing.T) {
 // A manifest nested inside a module a unit anchors by its directory, such
 // as an Android build under a mobile module, belongs to that module.
 func TestSyncKeepsQuietOnAManifestUnderADirectoryAnchor(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("mobile/codec/index.ts", "export const codec = 1\n")
 	p.code("mobile/codec/package.json", "{}\n")

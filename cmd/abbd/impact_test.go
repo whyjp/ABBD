@@ -8,6 +8,7 @@ import (
 // The impact follows a reader's coupling while its evidence lives, and only
 // reads: it writes nothing.
 func TestImpactFollowsLiveCouplingsAndWritesNothing(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	before := snapshot(t, p.root)
 	out := p.want(0, "direct MOD-0001 billing: seed", "impact", "MOD-0001")
@@ -37,6 +38,7 @@ func TestImpactFollowsLiveCouplingsAndWritesNothing(t *testing.T) {
 // A file a module and a unit inside it both anchor seeds them both, so the
 // impact reaches what the module depends on, however the two rank.
 func TestImpactFromAFileSeedsEveryUnitAnchoredThere(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")

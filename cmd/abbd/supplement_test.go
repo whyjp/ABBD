@@ -36,6 +36,7 @@ func (p *project) setupCode(out string) int {
 // A reader's unit may sit inside a module only the script reports, named by
 // the script's key, without restating that module in the supplement.
 func TestSupplementUnitTakesAScriptModuleAsItsParent(t *testing.T) {
+	t.Parallel()
 	p, out := nestedProject(t, `{"units":[
  {"key":"charges","kind":"DATA","name":"charges table","parent":"app/sub",
   "evidence":[{"path":"app/sub/x.py","lines":"1","quote":"INSERT INTO charges"}]}]}`)
@@ -48,6 +49,7 @@ func TestSupplementUnitTakesAScriptModuleAsItsParent(t *testing.T) {
 // Restating a script module by one anchor its parent also holds names the
 // inner module, the one the anchor is most specific to.
 func TestSupplementMatchesTheInnermostModuleOnATie(t *testing.T) {
+	t.Parallel()
 	p, out := nestedProject(t, `{"units":[
  {"key":"s","kind":"MOD","name":"app/sub","anchors":[{"path":"app/sub"}],"responsibility":"Writes charges."}]}`)
 	if p.setupCode(out) != 0 {
@@ -62,6 +64,7 @@ func TestSupplementMatchesTheInnermostModuleOnATie(t *testing.T) {
 // Two unrelated modules that share the anchor stay ambiguous, and the error
 // names both.
 func TestSupplementTieBetweenUnrelatedModulesNamesThem(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("lib/a.py", "a\n")
 	p.extract(`{"units":[
@@ -75,6 +78,7 @@ func TestSupplementTieBetweenUnrelatedModulesNamesThem(t *testing.T) {
 // directory and files, so its quote sits on one of the parent's anchors. It
 // names that parent, so it is code inside the parent, not the parent itself.
 func TestSupplementInsideModuleUnderADirectoryAnchoredParent(t *testing.T) {
+	t.Parallel()
 	for _, symbol := range []string{"", `"symbol":"serve",`} {
 		p, out := nestedProject(t, `{"units":[
  {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]},
@@ -97,6 +101,7 @@ func TestSupplementInsideModuleUnderADirectoryAnchoredParent(t *testing.T) {
 // When the parent's anchors are exactly the unit's, nothing tells the two
 // apart, so the unit is still refused.
 func TestSupplementInsideModuleNeedsAnAnchorItsParentLacks(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("app/main.py", "def serve():\n    return 'GET /x'\n")
 	p.extract(`{"units":[{"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]}]}`)
@@ -108,6 +113,7 @@ func TestSupplementInsideModuleNeedsAnAnchorItsParentLacks(t *testing.T) {
 // A contract only a reader found has no signature in the code, so the one
 // the reader documents is the only one there is. It stays, INFERRED.
 func TestReaderFoundContractKeepsItsSignature(t *testing.T) {
+	t.Parallel()
 	p, out := nestedProject(t, `{"units":[
  {"key":"app","kind":"MOD","name":"app","anchors":[{"path":"app/main.py"}]},
  {"key":"api","kind":"IF","name":"http api","parent":"app","signature":"GET /x",
@@ -124,6 +130,7 @@ func TestReaderFoundContractKeepsItsSignature(t *testing.T) {
 // signature the script does read still wins, and a different one the
 // supplement documents is a conflict.
 func TestScriptContractWithoutSignatureTakesTheReaders(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	sup := strings.Replace(supplement, `"name":"http api",`, `"name":"http api","signature":"GET /charges?all",`, 1)

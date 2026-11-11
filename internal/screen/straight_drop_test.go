@@ -11,6 +11,7 @@ import (
 // over blueprint publish; its line into it used to leave on the bus of its
 // lines and turn twice.
 func TestAFullViewLineDropsStraightIntoTheRowBelow(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "MOD-0001 abbd CLI" {
 			continue

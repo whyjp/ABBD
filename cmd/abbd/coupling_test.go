@@ -17,6 +17,7 @@ func couplingProject(t *testing.T) (*project, string) {
 // A coupling the script cannot see may join two units only the script
 // reports, by their refs, without restating either in the supplement.
 func TestASupplementCouplingNamesScriptUnitsByTheirRefs(t *testing.T) {
+	t.Parallel()
 	p, exe := couplingProject(t)
 	sup := `{"units":[],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"call",
   "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
@@ -25,6 +26,7 @@ func TestASupplementCouplingNamesScriptUnitsByTheirRefs(t *testing.T) {
 }
 
 func TestASupplementCouplingStillChecksItsEnds(t *testing.T) {
+	t.Parallel()
 	p, exe := couplingProject(t)
 	unknown := `{"units":[],"relations":[{"from":"ledger","to":"nowhere","kind":"depends_on","via":"call",
   "evidence":[{"path":"ledger/book.go","lines":"3","quote":"billing.Charge()"}]}]}`
@@ -37,6 +39,7 @@ func TestASupplementCouplingStillChecksItsEnds(t *testing.T) {
 // The supplement may restate a script unit under a ref of its own. A
 // coupling from that ref to the script's ref is the unit to itself.
 func TestASupplementCouplingMayNotJoinAUnitToItself(t *testing.T) {
+	t.Parallel()
 	p, exe := couplingProject(t)
 	self := `{"units":[{"ref":"l","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}],
   "relations":[{"from":"l","to":"ledger","kind":"depends_on","via":"call",
@@ -47,6 +50,7 @@ func TestASupplementCouplingMayNotJoinAUnitToItself(t *testing.T) {
 // A supplement ref that names another unit than the script's same ref
 // changes what every coupling by that ref joins, so setup says so.
 func TestSetupWarnsWhenASupplementRefShadowsAScriptRef(t *testing.T) {
+	t.Parallel()
 	p, exe := couplingProject(t)
 	shadow := `{"units":[{"ref":"billing","kind":"MOD","name":"ledger","anchors":[{"path":"ledger/book.go","symbol":"Post"}]}]}`
 	out := p.setup(0, "synced: 2 unit(s)", "--supplement", p.file(t, "shadow.json", shadow), "--", exe)

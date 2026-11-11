@@ -29,6 +29,7 @@ func traced(t *testing.T, d Drawing) Trace {
 // ABBD_METRICS set to a file, the path measures of every view go there as a
 // table.
 func TestTraceEveryRealDrawing(t *testing.T) {
+	t.Parallel()
 	var rows []string
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -83,6 +84,7 @@ func logJogs(t *testing.T, got Trace) {
 // the way a person would in draw.io. The path measures must rate it at
 // least as well as the renderer does, or they measure the wrong thing.
 func TestReferenceRanksFirst(t *testing.T) {
+	t.Parallel()
 	b, err := os.ReadFile(filepath.Join("..", "..", "eval", "render-r1", "reference-self.svg"))
 	if err != nil {
 		t.Fatal(err)
@@ -243,6 +245,7 @@ func TestExpectedRelationsDoNotComeFromTheWires(t *testing.T) {
 // Every place a view's relations join is a shape on its drawing, a frame
 // port that shares its chip with others included.
 func TestEveryRelationEndIsDrawn(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			var b bytes.Buffer

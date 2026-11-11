@@ -9,6 +9,7 @@ import (
 // a call that merely looks the same elsewhere cannot keep it alive. A reader
 // refreshes it where it is now, and the refresh is idempotent.
 func TestAMovedQuoteDriftsUntilAReaderRefreshesIt(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	const call = "billing.Charge(ctx, order.Amount, order.Currency)"
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
@@ -41,6 +42,7 @@ func TestAMovedQuoteDriftsUntilAReaderRefreshesIt(t *testing.T) {
 // Refreshing a supplement claim puts a reader's claim above it. The
 // supplement's stays stored, so a re-run of setup keeps the reader's in front.
 func TestRefreshingASupplementCouplingPutsTheReadersAboveIt(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount, currency\n    FROM charges`\n\nfunc Post() {}\n")
 	p.resync()

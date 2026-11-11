@@ -9,10 +9,19 @@ import (
 	"testing"
 )
 
-// The test binary doubles as the project extraction script: with
-// ABBD_FAKE_EXTRACT set it prints that file.
+// The test binary doubles as the project extraction script: run with no
+// arguments, as a repository's extract command, it prints ROOT.extraction.json
+// beside the repository it runs in. go test always passes -test flags, and
+// the file lives outside the repository, so tests can run in parallel
+// without sharing an environment variable.
 func TestMain(m *testing.M) {
-	if p := os.Getenv("ABBD_FAKE_EXTRACT"); p != "" {
+	if len(os.Args) == 1 {
+		wd, err := os.Getwd()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		p := wd + ".extraction.json"
 		b, err := os.ReadFile(p)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -42,8 +51,8 @@ type project struct {
 // fake extraction script.
 func bare(t *testing.T) (*project, string) {
 	t.Helper()
-	p := &project{t: t, root: newRepo(t), extraction: filepath.Join(t.TempDir(), "extraction.json")}
-	t.Setenv("ABBD_FAKE_EXTRACT", p.extraction)
+	root := newRepo(t)
+	p := &project{t: t, root: root, extraction: root + ".extraction.json"}
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)

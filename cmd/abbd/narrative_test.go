@@ -12,6 +12,7 @@ import (
 // A text that reads as history or runs long is still stored: understand
 // says what to fix, and status reports it without failing the check.
 func TestLongAndHistoricalTextsAreReportedNeverRefused(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	text := "## Overview\n\nbilling inserts charges, migrated from the old service in PR #12.\n\n## Key Concepts\n\n" + strings.Repeat("charges are rows. ", 120) + "\n"
 	out := p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", text))
@@ -34,6 +35,7 @@ func TestLongAndHistoricalTextsAreReportedNeverRefused(t *testing.T) {
 }
 
 func TestAPresentStateTextOfShortSectionsReportsNothing(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	out := p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling 2.1 inserts charges.\n"))
 	if strings.Contains(out, "long:") || strings.Contains(out, "history:") {
@@ -45,6 +47,7 @@ func TestAPresentStateTextOfShortSectionsReportsNothing(t *testing.T) {
 // Both skills that store a text tell the agent what the report checks, at
 // the threshold the report uses.
 func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
+	t.Parallel()
 	limit := fmt.Sprintf("%d,%03d characters", narrative.MaxSection/1000, narrative.MaxSection%1000)
 	for _, skill := range []string{"abbd", "abbd-setup"} {
 		text := readPlugin(t, "skills", skill, "SKILL.md")
@@ -59,6 +62,7 @@ func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
 // An orphan text shows beside no module and the check skips it, so the
 // readability report skips it too.
 func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling inserts charges.\n"))
 	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0099.md"), "---\nunit: MOD-0099\norigin: INFERRED\ndigest: 0123456789abcdef\nformat: 3\n---\n\n## Overview\n\nmigrated from the old service in PR #12.\n")
@@ -70,6 +74,7 @@ func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
 
 // Without --verbose, status folds its long: lines into one count.
 func TestStatusFoldsItsDetailLines(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	text := p.file(t, "how.md", "### Overview\nbilling charges cards.\n### Detail\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
 	p.want(0, "", "understand", "MOD-0001", text)

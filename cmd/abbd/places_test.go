@@ -44,6 +44,7 @@ func placesProject(t *testing.T, a, b int) *project {
 // Two places within each other's slack each keep to their own lines, so an
 // edit only the second place's lines reach stales the text.
 func TestNearbyPlacesOfOneQuoteCountApart(t *testing.T) {
+	t.Parallel()
 	p := placesProject(t, 10, 12)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	p.resync()
@@ -57,6 +58,7 @@ func TestNearbyPlacesOfOneQuoteCountApart(t *testing.T) {
 // first place's key. Its hashes alone cannot show the code it read is
 // unchanged, so the restamp is refused and a fresh text clears it.
 func TestAFreshTextClearsTheStaleAfterTheFirstPlaceLeaves(t *testing.T) {
+	t.Parallel()
 	p := placesProject(t, 7, 25)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	p.want(0, "retracted", "retract", "CFG-0001", "--reason", "not an exit")
@@ -71,6 +73,7 @@ func TestAFreshTextClearsTheStaleAfterTheFirstPlaceLeaves(t *testing.T) {
 // the quote's only occurrence, so both units cite the second place. The
 // code the first unit cited is gone, so the restamp is refused.
 func TestRestampIsRefusedWhenTheFirstPlaceIsEditedAway(t *testing.T) {
+	t.Parallel()
 	p := placesProject(t, 7, 25)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	p.code("lib/util.go", quotedAt(7, 7, 25))
@@ -84,6 +87,7 @@ func TestRestampIsRefusedWhenTheFirstPlaceIsEditedAway(t *testing.T) {
 // Each place's code reads as the other's did before. Every cited line
 // changed, so the restamp is refused.
 func TestRestampIsRefusedWhenTwoPlacesSwapTheirCode(t *testing.T) {
+	t.Parallel()
 	p := placesProject(t, 7, 25)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	was := strings.Split(quotedAt(0, 7, 25), "\n")
@@ -100,6 +104,7 @@ func TestRestampIsRefusedWhenTwoPlacesSwapTheirCode(t *testing.T) {
 
 // The place left still has to read as it did: edited, it refuses a restamp.
 func TestRestampIsRefusedWhenThePlaceLeftChanged(t *testing.T) {
+	t.Parallel()
 	p := placesProject(t, 7, 25)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "app exits early.\n"))
 	p.want(0, "retracted", "retract", "CFG-0001", "--reason", "not an exit")

@@ -10,6 +10,7 @@ import (
 // units the script stopped reporting, and merge candidates. --verbose lists
 // every unit.
 func TestSyncSummarizesAndListsOnlyWhatNeedsAttention(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	if out := p.resync(); out != "synced: 3 unit(s), 2 matched, 0 new, 0 unmatched\n" {
 		t.Fatalf("an unchanged sync is one line of counts:\n%s", out)
@@ -28,6 +29,7 @@ func TestSyncSummarizesAndListsOnlyWhatNeedsAttention(t *testing.T) {
 // sync converges: run on the same tree it rewrites nothing, and after the
 // state is committed with the code it leaves the commit clean.
 func TestSyncIsIdempotent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "code and state")
@@ -46,6 +48,7 @@ func TestSyncIsIdempotent(t *testing.T) {
 }
 
 func TestSyncNeedsARegisteredScript(t *testing.T) {
+	t.Parallel()
 	p, _ := bare(t)
 	p.want(1, "run abbd setup", "sync")
 }
@@ -53,6 +56,7 @@ func TestSyncNeedsARegisteredScript(t *testing.T) {
 // A reader's coupling enters only with a live quote; a human's coupling
 // enters with where they said it, and a reader's finding never replaces it.
 func TestRecordRelationNeedsEvidenceOrASource(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(1, "cite at least one --evidence", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call")
 	p.want(1, "the code does not hold", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Refund()")
@@ -75,6 +79,7 @@ func TestRecordRelationNeedsEvidenceOrASource(t *testing.T) {
 }
 
 func TestRecordUnitNeedsLiveEvidence(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(1, "cite at least one --evidence", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002")
 	p.want(1, "is not a module", "record", "unit", "DATA", "ledger query", "--parent", "DATA-0001", "--evidence", "ledger/book.go:3:SELECT amount")
@@ -92,6 +97,7 @@ func TestRecordUnitNeedsLiveEvidence(t *testing.T) {
 // placement is the reader's: it outlives the script taking the unit over
 // without a parent of its own, as any reader's parent does.
 func TestARecordedUnitsParentIsTheReaders(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "recorded DATA-0002", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `,
@@ -104,6 +110,7 @@ func TestARecordedUnitsParentIsTheReaders(t *testing.T) {
 // What a human states needs where they said it, and outlives a later setup
 // whose supplement guesses otherwise.
 func TestRecordFactNeedsASourceAndOutlivesTheSupplement(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "synced", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
@@ -124,6 +131,7 @@ func TestRecordFactNeedsASourceAndOutlivesTheSupplement(t *testing.T) {
 // An inside unit a reader found shared one anchor with a script unit and was
 // folded into it: the reader's unit vanished and setup exited 0.
 func TestSetupRefusesASupplementUnitThatWouldMergeIntoAScriptUnit(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.extract(`{"units":[

@@ -62,6 +62,7 @@ func diffProject(t *testing.T) (*project, string) {
 }
 
 func TestDiffNamesEveryCategorySinceTheBase(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	out := p.want(0, "topology since "+base[:12], "diff", "--base", base)
 	for _, want := range []string{
@@ -103,6 +104,7 @@ func TestDiffNamesEveryCategorySinceTheBase(t *testing.T) {
 // contract was added or removed, or a relation between top-level units
 // appeared or disappeared, 0 when the change stays inside modules.
 func TestDiffCheckFlagsOnlyBoundaryChanges(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	p.want(1, "reaches the boundary", "diff", "--base", base, "--check")
 	git(t, p.root, "add", "-A")
@@ -119,6 +121,7 @@ func TestDiffCheckFlagsOnlyBoundaryChanges(t *testing.T) {
 }
 
 func TestDiffAgainstARevisionWithoutState(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	first := rev(t, p.root)
 	p.extract(diffBase)
@@ -132,6 +135,7 @@ func TestDiffAgainstARevisionWithoutState(t *testing.T) {
 // A CI checkout such as actions/checkout leaves origin/main but no origin/HEAD
 // and no local main; the default base still finds the merge base.
 func TestDiffDefaultBaseFindsOriginMainWithoutOriginHead(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(diffBase)
 	p.setup(0, "synced", "--", exe)
@@ -146,6 +150,7 @@ func TestDiffDefaultBaseFindsOriginMainWithoutOriginHead(t *testing.T) {
 // --check at 0, or CI would flag every edit to an interface file. A new
 // contract and a vanished relation between modules each fail it.
 func TestDiffCheckFailsOnANewContractButNotOnACodeChange(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(diffBase)
 	p.setup(0, "synced", "--", exe)
@@ -172,6 +177,7 @@ func TestDiffCheckFailsOnANewContractButNotOnACodeChange(t *testing.T) {
 // blueprint at the base beside the current one outside blueprint/, which
 // stays the current state alone.
 func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	before := p.blueprint()
 	out := p.want(0, "topology inside MOD-0004 since "+base[:12], "diff", "--base", base, "--unit", "MOD-0004", "--page")
@@ -203,6 +209,7 @@ func TestDiffComparesOneModuleOutsideTheBlueprint(t *testing.T) {
 // A write keeps .abbd as it was before its first change since the last
 // commit, and diff --base prev compares against that copy.
 func TestAWriteKeepsThePreviousBlueprint(t *testing.T) {
+	t.Parallel()
 	p, _ := diffProject(t)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "work")

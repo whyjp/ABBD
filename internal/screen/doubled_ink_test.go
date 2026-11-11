@@ -9,6 +9,7 @@ import "testing"
 // kind whose own parts run the same way share one path, which names them
 // all.
 func TestTwoLinesOnOneTrackShareOnePath(t *testing.T) {
+	t.Parallel()
 	for _, ins := range fixture(t, "orca").Insides {
 		if ins.ID != "MOD-0098" {
 			continue

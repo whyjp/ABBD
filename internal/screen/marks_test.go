@@ -281,6 +281,7 @@ func (r rendered) gapFaults() (faults []string, holes, crossings int) {
 // A line that passes over another breaks the one beneath, and nowhere else
 // (rule 24), in every drawing of every real state.
 func TestEveryCrossingIsAGap(t *testing.T) {
+	t.Parallel()
 	holes, crossings := 0, 0
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
@@ -380,6 +381,7 @@ func (r rendered) lineOf(w lettered, i int) bool {
 // With ABBD_LABEL_ROOT set to a project root, it reads that project's
 // .abbd too, such as this repository's own, whose couplings carry phrases.
 func TestLabelsReadAlongTheirLine(t *testing.T) {
+	t.Parallel()
 	type tally struct{ rels, worded, shown, phrased, named, views, labelled, total, beside int }
 	roots := map[string]string{}
 	names := slices.Clone(fixtures)
@@ -394,7 +396,7 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		m := Build(Input{Units: units})
+		m := rootModel(t, name, roots[name], units)
 		tr := newTree(units)
 		var n tally
 		for _, v := range views(m) {
@@ -565,6 +567,7 @@ func oneSource(a, b Wire) bool {
 // whose ink touches, as the five 호출 on one fan
 // of self's FEAT-0001 did.
 func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			d := v.d
@@ -589,15 +592,14 @@ func TestAWordIsSaidOnceOnInkThatTouches(t *testing.T) {
 // only through other lines. Room is where the word stands when no word is
 // dropped.
 func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
+	t.Cleanup(func() { sayOnce = true })
+	sayOnce = false
+	room := buildEach(t, fresh)
+	sayOnce = true
+	drawn := buildEach(t, cached)
 	for _, name := range fixtures {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		if err != nil {
-			t.Fatal(err)
-		}
-		sayOnce = false
-		all := views(Build(Input{Units: units}))
-		sayOnce = true
-		for k, v := range views(fixture(t, name)) {
+		all := views(room[name])
+		for k, v := range views(drawn[name]) {
 			d, room := v.d, all[k].d
 			touches := inkTouches(d)
 			for i, w := range d.Wires {
@@ -624,6 +626,7 @@ func TestAWordIsDroppedOnlyBesideALineThatSaysIt(t *testing.T) {
 // MOD-0041 keeps its 호출 though the cyan line from the abbd CLI it touches
 // says 호출 beside it: the two wear different colours.
 func TestAWordStaysBesideALineOfAnotherColour(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "MOD-0041 internal/store" {
 			continue

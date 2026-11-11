@@ -10,6 +10,7 @@ import "testing"
 // down, while ← group's line passes the chip row on its own and joins on
 // the track. Neither line jogs onto the drop.
 func TestASteppingLineLeadsItsDrop(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "MOD-0041 internal/store" {
 			continue

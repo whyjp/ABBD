@@ -11,6 +11,7 @@ import (
 // nothing, a re-run of setup with the same claim keeps it hidden, and a claim
 // whose content changed shows again.
 func TestRetractIsOneIdempotentStepBoundToTheClaimsContent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	edge := "MOD-0002.consumes.DATA-0001"
 	p.want(1, "--reason", "retract", edge)
@@ -48,6 +49,7 @@ func TestRetractIsOneIdempotentStepBoundToTheClaimsContent(t *testing.T) {
 // Idempotence across the writers: sync, setup, sync, setup mints no ID after
 // the first pair, and the second pair changes no byte.
 func TestSyncAndSetupTwiceMintNoIDsAndChangeNothing(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
 	sup := p.file(t, "sup.json", chargesTable)
@@ -147,6 +149,7 @@ evidence:
 // supplement's, one it does not make is a reader's, and the graph is the
 // same after as before.
 func TestMigrateTellsAReadersClaimsFromTheSupplements(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
@@ -182,6 +185,7 @@ func TestMigrateTellsAReadersClaimsFromTheSupplements(t *testing.T) {
 // Retracting your own claim converges: once it is gone, retracting it again
 // says so and succeeds, for an edge and for a parent.
 func TestRetractingYourOwnClaimTwiceSucceeds(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
 	p.want(0, "", "record", "parent", "MOD-0002", "MOD-0001", "--evidence", "ledger/book.go:6:func Post()")
@@ -206,6 +210,7 @@ const ownedTable = `{"units":[
 // Re-running setup restates the supplement's claims. An item that died
 // stays dead, so the parent it held up does not come back.
 func TestSetupAgainKeepsADeadSupplementParentDead(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("billing/owner.go", "package billing\n// owns the charges table\n")
@@ -230,6 +235,7 @@ func TestSetupAgainKeepsADeadSupplementParentDead(t *testing.T) {
 // An item is the same code whatever symbol the supplement names with it, so
 // a supplement that adds a symbol to a dead quote keeps it dead.
 func TestSetupWithASymbolAddedKeepsADeadItemDead(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
 	p.resync()
@@ -256,6 +262,7 @@ func oldState(t *testing.T, p *project, exe string, files map[string]string) {
 // the same parent. A reader's parent elsewhere stays the reader's, so setup
 // does not replace it.
 func TestMigrateKeepsAReadersParentTheSupplementDoesNotMake(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
@@ -291,6 +298,7 @@ anchors:
 // Migrate takes it from the extraction, so the first sync after it reports
 // no conflict the human never had.
 func TestMigrateRecordsWhatAHumanParentOverrode(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
@@ -321,6 +329,7 @@ func TestMigrateRecordsWhatAHumanParentOverrode(t *testing.T) {
 // claim with an item the claim did not hold but the unit already stores
 // dead, the item comes in dead, not as a fresh drift.
 func TestSetupTakesAnItemsStatusFromTheUnitThatStoresIt(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")

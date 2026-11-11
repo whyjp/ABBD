@@ -10,6 +10,7 @@ import (
 // relations it carries, no more and no fewer, however many places and
 // kinds merge onto it.
 func TestEveryRoadLightsExactlyItsRiders(t *testing.T) {
+	t.Parallel()
 	shared := 0
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {

@@ -11,6 +11,7 @@ import (
 // chain ran down the row below at the box's middle, so the line left there
 // and turned twice into the chip.
 func TestAChainStandsOverWhereItsLineDrops(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "MOD-0034 internal/screen" {
 			continue
@@ -41,6 +42,7 @@ func TestAChainStandsOverWhereItsLineDrops(t *testing.T) {
 // after work's and evidence's lines into abbd diff's track shrank to 16px
 // jogs, the drawing turned no less, and the line stayed bent.
 func TestAStraightenedLineLeavesTheTracksBelowInPlace(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "FEAT-0001 /abbd" {
 			continue

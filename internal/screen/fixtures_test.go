@@ -29,16 +29,54 @@ type builtModel struct {
 
 func fixture(t *testing.T, name string) Model {
 	t.Helper()
+	m, err := cached(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return m
+}
+
+func cached(name string) (Model, error) {
 	v, _ := built.LoadOrStore(name, &builtModel{})
 	b := v.(*builtModel)
-	b.once.Do(func() {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		b.m, b.err = Build(Input{Units: units}), err
-	})
-	if b.err != nil {
-		t.Fatal(b.err)
+	b.once.Do(func() { b.m, b.err = fresh(name) })
+	return b.m, b.err
+}
+
+func fresh(name string) (Model, error) {
+	units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
+	return Build(Input{Units: units}), err
+}
+
+// buildEach builds every fixture with build, all at once, for a test that
+// builds them under a package switch it turned.
+func buildEach(t *testing.T, build func(string) (Model, error)) map[string]Model {
+	t.Helper()
+	out := make([]Model, len(fixtures))
+	errs := make([]error, len(fixtures))
+	var wg sync.WaitGroup
+	for i, name := range fixtures {
+		wg.Go(func() { out[i], errs[i] = build(name) })
 	}
-	return b.m
+	wg.Wait()
+	ms := map[string]Model{}
+	for i, name := range fixtures {
+		if errs[i] != nil {
+			t.Fatal(errs[i])
+		}
+		ms[name] = out[i]
+	}
+	return ms
+}
+
+// rootModel is the model of the state at root, the shared one when root is
+// the fixture name's own.
+func rootModel(t *testing.T, name, root string, units []model.Unit) Model {
+	t.Helper()
+	if root == filepath.Join("testdata", name) {
+		return fixture(t, name)
+	}
+	return Build(Input{Units: units})
 }
 
 func measured(t *testing.T, d Drawing) Metrics {
@@ -58,6 +96,7 @@ func measured(t *testing.T, d Drawing) Metrics {
 // With ABBD_BLUEPRINTS set to a directory, it also writes each fixture's page
 // there, one folder of pages per fixture, for a person to look at.
 func TestEveryRealDrawingIsLegible(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		if dir := os.Getenv("ABBD_BLUEPRINTS"); dir != "" {
@@ -169,12 +208,13 @@ func (m Metrics) over(d Metrics) []string {
 // drawn in some view, as a line, a bundle or a contract chip, or listed as
 // a reader's coupling where the overview leaves it out.
 func TestEveryRelationIsInSomeView(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
 		if err != nil {
 			t.Fatal(err)
 		}
-		m := Build(Input{Units: units})
+		m := fixture(t, name)
 		shown := map[string]bool{}
 		for _, v := range views(m) {
 			for _, w := range v.d.Wires {
