@@ -1,6 +1,9 @@
 package main
 
 import (
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,17 +16,24 @@ import (
 // draftMax bounds a drafted responsibility to one line of a box.
 const draftMax = 160
 
-// draft is a one-line responsibility for a unit that records none, taken
-// from the comment at its first anchor that carries one, with the file it
-// came from. A reader keeps or rewrites it; nothing stores it unread.
+// draft is a one-line responsibility for a unit that records none, with the
+// file it came from. It comes from the Go doc comment of a symbol the unit
+// is anchored on, else from the package doc or header comment of an anchored
+// file or of a directory's entry files. A unit with neither gets no draft:
+// a missing draft costs the reader a read, a misleading one a wrong box. A
+// reader keeps or rewrites it; nothing stores it unread.
 func (e env) draft(u model.Unit) (string, string) {
 	for _, a := range u.Anchors {
+		if a.Symbol == "" || filepath.Ext(a.Path) != ".go" {
+			continue
+		}
+		if s := firstSentence(goSymbolDoc(e.read(a.Path), a.Symbol)); s != "" {
+			return s, a.Path
+		}
+	}
+	for _, a := range u.Anchors {
 		for _, f := range e.anchorFiles(a.Path) {
-			b, err := os.ReadFile(filepath.Join(e.root, filepath.FromSlash(f)))
-			if err != nil {
-				continue
-			}
-			if s := firstSentence(docComment(string(b), a.Symbol, filepath.Ext(f) == ".md")); s != "" {
+			if s := firstSentence(header(e.read(f), filepath.Ext(f) == ".go")); s != "" {
 				return s, f
 			}
 		}
@@ -31,8 +41,17 @@ func (e env) draft(u model.Unit) (string, string) {
 	return "", ""
 }
 
-// anchorFiles is the anchor's file, or for a directory its entry files,
-// code first, where a package says what it is.
+func (e env) read(f string) string {
+	b, err := os.ReadFile(filepath.Join(e.root, filepath.FromSlash(f)))
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}
+
+// anchorFiles is the anchor's file, or for a directory its entry files of
+// code, where a package says what it is. Prose such as a README is left
+// out: its opening paragraph says what the project is, not the unit.
 func (e env) anchorFiles(p string) []string {
 	fi, err := os.Stat(filepath.Join(e.root, filepath.FromSlash(p)))
 	if err != nil {
@@ -48,40 +67,93 @@ func (e env) anchorFiles(p string) []string {
 	var out []string
 	for _, d := range ents {
 		f := strings.TrimSuffix(p, "/") + "/" + d.Name()
-		if !d.IsDir() && entryRank(f) == 0 {
+		if !d.IsDir() && entryRank(f) == 0 && filepath.Ext(f) != ".md" {
 			out = append(out, f)
 		}
 	}
-	slices.SortFunc(out, func(a, b string) int {
-		if am, bm := filepath.Ext(a) == ".md", filepath.Ext(b) == ".md"; am != bm {
-			if am {
-				return 1
-			}
-			return -1
-		}
-		return strings.Compare(a, b)
-	})
+	slices.Sort(out)
 	return out
 }
 
-// declares matches a line that declares symbol: after a keyword in the
-// common languages, a Go method's receiver included, or as a C, C++, Java
-// or C# function or method that a body follows.
-func declares(symbol string) *regexp.Regexp {
-	q := regexp.QuoteMeta(symbol)
-	return regexp.MustCompile(`^\s*(((export|pub(\([^)]*\))?|async|static|public|private|protected|default|abstract|final|unsafe)\s+)*(func|def|fn|class|type|struct|enum|trait|interface|const|var|let|function|impl|mod|record|object)\s+(\([^)]*\)\s*)?\*?` + q + `\b|([\w:<>\[\],*&]+\s+)+[*&]?` + q + `\s*\([^;]*$)`)
+// goSymbolDoc is the doc comment Go attaches to symbol's declaration: a
+// function or method of that name, or a type, constant or variable.
+func goSymbolDoc(src, symbol string) string {
+	f, err := parser.ParseFile(token.NewFileSet(), "", src, parser.ParseComments|parser.SkipObjectResolution)
+	if err != nil {
+		return ""
+	}
+	for _, d := range f.Decls {
+		switch d := d.(type) {
+		case *ast.FuncDecl:
+			if d.Name.Name == symbol {
+				return d.Doc.Text()
+			}
+		case *ast.GenDecl:
+			for _, s := range d.Specs {
+				var names []*ast.Ident
+				var spec *ast.CommentGroup
+				switch s := s.(type) {
+				case *ast.TypeSpec:
+					names, spec = []*ast.Ident{s.Name}, s.Doc
+				case *ast.ValueSpec:
+					names, spec = s.Names, s.Doc
+				}
+				if slices.ContainsFunc(names, func(n *ast.Ident) bool { return n.Name == symbol }) {
+					if spec != nil {
+						return spec.Text()
+					}
+					return d.Doc.Text()
+				}
+			}
+		}
+	}
+	return ""
 }
 
-// preprocessor are C lines that start with # and are code, not comments.
+// header is what a file says of itself: a Go file's package doc, or for
+// another language its first comment before any code that is no licence,
+// generated-file mark or pragma.
+func header(src string, goFile bool) string {
+	if goFile {
+		f, err := parser.ParseFile(token.NewFileSet(), "", src, parser.PackageClauseOnly|parser.ParseComments)
+		if err != nil || f.Doc == nil {
+			return ""
+		}
+		return f.Doc.Text()
+	}
+	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
+	isC := comments(lines)
+	for i := 0; i < len(lines); i++ {
+		t := strings.TrimSpace(lines[i])
+		if !isC[i] {
+			if t == "" || strings.HasPrefix(t, "#!") {
+				continue
+			}
+			return ""
+		}
+		j := i
+		for j < len(lines) && isC[j] {
+			j++
+		}
+		if block := joinComment(lines[i:j]); block != "" && !boilerplate(block) {
+			return block
+		}
+		i = j - 1
+	}
+	return ""
+}
+
+// preprocessor are lines that start with # and are code, not comments.
 var preprocessor = regexp.MustCompile(`^#\s*(include|define|undef|if|ifdef|ifndef|elif|else|endif|pragma|import|error|line)\b|^#\[|^#!`)
 
 // lineMark is a comment's opening on one line; blockOpen and blockClose a
 // comment that runs over lines, or a Python docstring.
 var (
-	lineMark   = regexp.MustCompile(`^(///?!?|#|-- )\s?`)
+	lineMark   = regexp.MustCompile(`^(///?!?|#)\s?`)
 	blockOpen  = regexp.MustCompile(`^(/\*\*?|"""|''')\s?`)
 	blockClose = regexp.MustCompile(`\s*(\*/|"""|''')\s*$`)
 	blockInner = regexp.MustCompile(`^\*\s?`)
+	pragma     = regexp.MustCompile(`-\*-|\bvim?:|^#\s*(coding|encoding)[:=]`)
 )
 
 // comments marks each line that is a comment, tracking the comments that
@@ -114,74 +186,11 @@ func comments(lines []string) []bool {
 	return out
 }
 
-// docComment is the comment that documents symbol: the block above the line
-// that declares it, past attributes and decorators, or the docstring below
-// it. With no symbol it is the file's header comment, before any code, that
-// is no licence and no generated-file mark. A Markdown file gives its first
-// paragraph of prose instead.
-func docComment(text, symbol string, md bool) string {
-	lines := strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
-	if md {
-		return firstParagraph(lines)
-	}
-	isC := comments(lines)
-	if symbol == "" {
-		for i := 0; i < len(lines) && (isC[i] || strings.TrimSpace(lines[i]) == "" || strings.HasPrefix(lines[i], "#!")); i++ {
-			if !isC[i] {
-				continue
-			}
-			j := i
-			for j < len(lines) && isC[j] {
-				j++
-			}
-			if block := joinComment(lines[i:j]); block != "" && !boilerplate(block) {
-				return block
-			}
-			i = j - 1
-		}
-		return ""
-	}
-	decl := declares(symbol)
-	for i, l := range lines {
-		if isC[i] || !decl.MatchString(l) {
-			continue
-		}
-		j := i
-		for j > 0 && attribute(lines[j-1]) {
-			j--
-		}
-		k := j
-		for k > 0 && isC[k-1] {
-			k--
-		}
-		if k < j {
-			return joinComment(lines[k:j])
-		}
-		// A Python docstring sits below what it documents.
-		k = i + 1
-		for k < len(lines) && k-i <= 20 && isC[k] {
-			k++
-		}
-		if k > i+1 && blockOpen.MatchString(strings.TrimSpace(lines[i+1])) {
-			return joinComment(lines[i+1 : k])
-		}
-		return ""
-	}
-	return ""
-}
-
-// attribute is a line between a doc comment and what it documents: a Rust
-// attribute, a decorator or an annotation.
-func attribute(l string) bool {
-	t := strings.TrimSpace(l)
-	return strings.HasPrefix(t, "#[") || strings.HasPrefix(t, "@")
-}
-
 // boilerplate is a header comment that says nothing of the code: a licence
 // or a generated-file mark.
 func boilerplate(block string) bool {
 	low := strings.ToLower(block)
-	for _, w := range []string{"copyright", "spdx-license", "licensed under", "license, version", "code generated", "do not edit", "auto-generated", "autogenerated", "go:build", "+build"} {
+	for _, w := range []string{"copyright", "spdx-license", "licensed under", "license, version", "code generated", "do not edit", "auto-generated", "autogenerated"} {
 		if strings.Contains(low, w) {
 			return true
 		}
@@ -193,6 +202,9 @@ func joinComment(lines []string) string {
 	var words []string
 	for _, l := range lines {
 		t := strings.TrimSpace(l)
+		if pragma.MatchString(t) {
+			continue
+		}
 		t = blockOpen.ReplaceAllString(t, "")
 		t = blockClose.ReplaceAllString(t, "")
 		t = lineMark.ReplaceAllString(t, "")
@@ -204,42 +216,13 @@ func joinComment(lines []string) string {
 	return strings.Join(words, " ")
 }
 
-// firstParagraph is a Markdown file's first paragraph of prose, past its
-// frontmatter, headings, badges, HTML, images, tables and fenced code.
-func firstParagraph(lines []string) string {
-	var para []string
-	front := len(lines) > 0 && strings.TrimSpace(lines[0]) == "---"
-	fence := false
-	for i, l := range lines {
-		t := strings.TrimSpace(l)
-		if front {
-			if i > 0 && t == "---" {
-				front = false
-			}
-			continue
-		}
-		if strings.HasPrefix(t, "```") || strings.HasPrefix(t, "~~~") {
-			fence = !fence
-			continue
-		}
-		switch {
-		case fence:
-			continue
-		case t == "" && len(para) > 0:
-			return strings.Join(para, " ")
-		case t == "", strings.HasPrefix(t, "#"), strings.HasPrefix(t, "<"), strings.HasPrefix(t, "!["), strings.HasPrefix(t, "[!["), strings.HasPrefix(t, "|"):
-			continue
-		}
-		para = append(para, t)
-	}
-	return strings.Join(para, " ")
-}
-
 // abbreviations end in a period that ends no sentence.
 var abbreviations = []string{"e.g.", "i.e.", "etc.", "vs.", "cf."}
 
-// firstSentence cuts a comment to its first sentence, within draftMax.
+// firstSentence cuts a comment to its first sentence on one line, within
+// draftMax.
 func firstSentence(s string) string {
+	s = strings.Join(strings.Fields(s), " ")
 	for from := 0; ; {
 		i := strings.Index(s[from:], ". ")
 		if i < 0 {
