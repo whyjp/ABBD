@@ -9,7 +9,7 @@ func TestBriefIsTheSkeletonAndReadingListOfAModule(t *testing.T) {
 	p := semanticProject(t)
 	before := snapshot(t, p.root)
 	out := p.want(0, "## Read first", "brief", "MOD-0001")
-	for _, want := range []string{"## Overview\n", "## Key Concepts\n", "- TODO **charges table**", "DATA-0001", "### Files, entry first", "- `billing/charge.go` ("} {
+	for _, want := range []string{"## Overview\n", "## Key Concepts\n", "- TODO **charges table**", "DATA-0001", "### Files, entry first", "- `billing/charge.go` (", "### Boxes that say only their kind"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("brief does not hold %q:\n%s", want, out)
 		}
@@ -62,4 +62,16 @@ func TestUnderstandReportsUnnamedInsideUnitsAndOtherUnitsFiles(t *testing.T) {
 	if !strings.Contains(p.read("understanding/MOD-0001.md"), "reader: abbd reader\n") {
 		t.Errorf("--reader was not stored trimmed:\n%s", p.read("understanding/MOD-0001.md"))
 	}
+}
+
+// Lint and the brief name the boxes that say only their kind, and the
+// brief drafts each one's responsibility from the comment at its anchors.
+func TestLintAndBriefNameTheBoxesThatSayOnlyTheirKind(t *testing.T) {
+	p := semanticProject(t)
+	p.want(0, "lint: described: ", "lint")
+	p.want(0, `"undescribed": [`, "lint", "--json")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { _ = 0 }\n")
+	p.want(0, "MOD-0001 billing: no comment at its anchors says what it is for; read `billing/charge.go`", "brief", "MOD-0001")
+	p.code("billing/charge.go", "package billing\n\n// Charge bills a card once. It never retries.\nfunc Charge() { _ = 1 }\n")
+	p.want(0, "\"Charge bills a card once.\" (from `billing/charge.go`)", "brief", "MOD-0001")
 }
