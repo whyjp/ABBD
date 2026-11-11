@@ -135,7 +135,11 @@ func TestReviewDrawsAUseThroughAContract(t *testing.T) {
 	p.code("web/charges.ts", "export function Charges() { refund() }\n")
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
 	p.want(0, "", "sync")
-	contains(t, p.want(0, "", "review", "--base", base, "--markdown"), "FEAT_0001 -->|http api| MOD_0001")
+	out := p.want(0, "", "review", "--base", base, "--markdown")
+	contains(t, out, "FEAT_0001 -->|http api| MOD_0001")
+	if n := strings.Count(out, "FEAT_0001 -->"); n != 1 {
+		t.Errorf("one pair of modules is one line, not %d", n)
+	}
 }
 
 // A change that edits a module outside the scope an agent declared names

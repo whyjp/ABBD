@@ -368,16 +368,15 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 				}
 			}
 		}
-		drawn := map[string]bool{}
+		// One line per pair of modules, whatever runs between them, so the
+		// drawing reads at rest; its label names what crosses.
+		pairs := map[[2]model.ID][]string{}
 		draw := func(from, to model.ID, label string) {
-			if to == from || !slices.Contains(tops, to) {
+			k := [2]model.ID{from, to}
+			if to == from || !slices.Contains(tops, to) || slices.Contains(pairs[k], label) {
 				return
 			}
-			edge := fmt.Sprintf("  %s -->|%s| %s", mermaidID(from), mermaidText(label), mermaidID(to))
-			if !drawn[edge] {
-				drawn[edge] = true
-				fmt.Fprintln(w, edge)
-			}
+			pairs[k] = append(pairs[k], label)
 		}
 		for _, u := range model.Present(now) {
 			from := top(u.ID)
@@ -397,13 +396,19 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 				draw(from, top(r.To), string(r.Kind))
 			}
 		}
+		keys := slices.SortedFunc(maps.Keys(pairs), func(a, b [2]model.ID) int {
+			return strings.Compare(string(a[0])+string(a[1]), string(b[0])+string(b[1]))
+		})
+		for _, k := range keys {
+			fmt.Fprintf(w, "  %s -->|%s| %s\n", mermaidID(k[0]), mermaidText(edgeLabel(pairs[k])), mermaidID(k[1]))
+		}
 		fmt.Fprintln(w, "```")
 		fmt.Fprintln(w)
 	}
 	if len(look) > 0 {
 		fmt.Fprintln(w, "**Worth a look**")
 		for _, l := range look {
-			fmt.Fprintf(w, "- %s\n", strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`).Replace(l))
+			fmt.Fprintf(w, "- %s\n", strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`, "`", "\\`", "[", `\[`).Replace(l))
 		}
 		fmt.Fprintln(w)
 	}
@@ -520,4 +525,14 @@ func (e env) scope(list string) error {
 	}
 	fmt.Fprintf(e.stdout, "scope declared: %s; abbd review sets the change beside it\n", joinIDs(ids))
 	return nil
+}
+
+// edgeLabel names what crosses between two modules: up to two names in
+// order, then how many more.
+func edgeLabel(names []string) string {
+	slices.Sort(names)
+	if len(names) <= 2 {
+		return strings.Join(names, ", ")
+	}
+	return fmt.Sprintf("%s, %s +%d", names[0], names[1], len(names)-2)
 }
