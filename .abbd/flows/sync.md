@@ -9,13 +9,13 @@ steps:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "514"
+          lines: "523"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "382"
+          lines: "428"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "386"
+          lines: "432"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "389"
+          lines: "435"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "514"
+          lines: "561"
           symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "110"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "393"
+          lines: "439"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -71,7 +71,7 @@ steps:
           lines: "308"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "455"
+          lines: "501"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "467"
+          lines: "513"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -101,7 +101,7 @@ steps:
           lines: "294"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "476"
+          lines: "522"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "486"
+          lines: "532"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "480"
+          lines: "526"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -139,30 +139,31 @@ steps:
         internal/identity/identity.go#quote-215518d5: ffa9923d84229d05
     - unit: MOD-0013
       does: Apply(units, rev) → every quote live, drifted or dead
-      note: a drifted quote dies at the first sync of a later revision
+      note: a drifted quote dies at the first sync of a later revision, and only then does a crowded level fall back to directories
       evidence:
         - path: internal/evidence/evidence.go
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "490"
+          lines: "536"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
-        cmd/abbd/main.go#quote-46d5e4b3: 078d5df8a2df1ea6
+        cmd/abbd/main.go#quote-46d5e4b3: f362c61d73a69f5d
         internal/evidence/evidence.go#quote-b16aa3be: b7eeba037dd92cf2
     - unit: MOD-0054
       does: Fallback(units) → a crowded level placed in the directories its code lives in
+      note: then each module sentence no stamp covers is stamped with its code, before the units are saved
       evidence:
         - path: internal/group/group.go
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "491"
+          lines: "537"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
-        cmd/abbd/main.go#quote-752e5b50: 34b797b724d0cb4a
+        cmd/abbd/main.go#quote-752e5b50: abe058985fc558c4
         internal/group/group.go#quote-f1fc9398: 7665af6fd8209a95
     - unit: MOD-0041
       does: SaveUnits(), SaveCandidates() → the unit files and candidates.yaml
@@ -185,7 +186,7 @@ steps:
         - DATA-0006
       evidence:
         - path: internal/store/understanding.go
-          lines: "524"
+          lines: "532"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
           lines: "383"
@@ -201,7 +202,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "353"
+          lines: "399"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
@@ -252,6 +253,31 @@ retired:
       code:
         internal/store/store.go#quote-7d54ae9a: 81704cd8150204d2
         internal/store/understanding.go#quote-4f816bc6: d2d35eb41237bf09
+    - unit: MOD-0013
+      does: Apply(units, rev) → every quote live, drifted or dead
+      note: a drifted quote dies at the first sync of a later revision
+      evidence:
+        - path: internal/evidence/evidence.go
+          lines: "227"
+          quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
+        - path: cmd/abbd/main.go
+          lines: "490"
+          quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
+      code:
+        cmd/abbd/main.go#quote-46d5e4b3: 078d5df8a2df1ea6
+        internal/evidence/evidence.go#quote-b16aa3be: b7eeba037dd92cf2
+    - unit: MOD-0054
+      does: Fallback(units) → a crowded level placed in the directories its code lives in
+      evidence:
+        - path: internal/group/group.go
+          lines: "36"
+          quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
+        - path: cmd/abbd/main.go
+          lines: "491"
+          quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
+      code:
+        cmd/abbd/main.go#quote-752e5b50: 34b797b724d0cb4a
+        internal/group/group.go#quote-f1fc9398: 7665af6fd8209a95
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
