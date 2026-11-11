@@ -425,12 +425,16 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 
 // A hub's view whose own lines are under half its ink stays in colour:
 // it is not quiet, and each line keeps its box's colour, so it reads at
-// rest. The self overview and orca's desktop main are such views.
+// rest. The self overview drawn whole and orca's desktop main are such
+// views; cut, the self overview's hub owns most of what is left.
 func TestABusyHubViewStaysInColour(t *testing.T) {
 	t.Parallel()
 	cases := map[string]string{"self": "", "orca": "MOD-0042"}
 	for name, inside := range cases {
 		m := fixture(t, name)
+		if inside == "" {
+			m = drawAll(t, name)
+		}
 		d := &m.Overview
 		if inside != "" {
 			for i := range m.Insides {
