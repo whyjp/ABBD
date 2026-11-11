@@ -434,6 +434,6 @@ func Recorded(dir, needle string, paths ...string) string {
 
 // ignored reports whether .gitignore ignores path, relative to dir.
 func ignored(dir, path string) bool {
-	_, err := run(dir, nil, "check-ignore", "-q", "--", path)
+	_, err := run(dir, nil, "check-ignore", "-q", "--no-index", "--", path)
 	return err == nil
 }

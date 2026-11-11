@@ -210,4 +210,10 @@ func TestASnapshotTakesAWhitelistGitignore(t *testing.T) {
 	if got := git(t, root, "ls-tree", "-r", "--name-only", tree); !strings.Contains(got, "src/a.go") || strings.Contains(got, ".abbd") {
 		t.Errorf("the snapshot should hold src and leave .abbd out:\n%s", got)
 	}
+	// Committing .abbd past the whitelist, as a project does, must not
+	// bring the failure back: the scratch index tracks nothing.
+	git(t, root, "add", "-f", ".abbd/state.yaml")
+	if tree, err := Snapshot(root, ".abbd"); err != nil || tree == "" {
+		t.Fatalf("the snapshot failed once .abbd was tracked: %v", err)
+	}
 }
