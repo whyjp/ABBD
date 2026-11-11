@@ -82,6 +82,8 @@ type InsideUnit struct {
 	// which has no inside to show it beside, and Notes are its slots.
 	Understanding *Understanding
 	Notes         []Note `json:",omitempty"`
+	// Concepts are the items of its module's text that name it.
+	Concepts []Block `json:",omitempty"`
 }
 
 const (

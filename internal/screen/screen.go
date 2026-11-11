@@ -212,7 +212,9 @@ func Build(in Input) Model {
 	slices.Sort(views)
 	text := func(id model.ID) *Understanding {
 		if u, ok := in.Understandings[id]; ok {
-			return &Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}
+			bs := blocks(u.Text)
+			lead, rest := split(bs)
+			return &Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: bs, Lead: lead, Rest: rest}
 		}
 		return nil
 	}
@@ -225,10 +227,15 @@ func Build(in Input) Model {
 		ins.Standing = o.standing(id, in)
 		u := o.units[id]
 		ins.Purpose, ins.Responsibility = sentenceOf(u.Purpose, in.Digests[id]), sentenceOf(u.Responsibility, in.Digests[id])
+		var tied map[string][]Block
+		if ins.Understanding != nil {
+			tied = concepts(ins.Understanding.Blocks, ins.Units)
+		}
 		for i, iu := range ins.Units {
 			if viewOf(o.tree, model.ID(iu.ID)) == "" {
 				ins.Units[i].Understanding = text(model.ID(iu.ID))
 			}
+			ins.Units[i].Concepts = tied[iu.ID]
 		}
 		m.Insides = append(m.Insides, ins)
 	}

@@ -283,3 +283,11 @@ func TestStatusSaysWhichModulesHaveAText(t *testing.T) {
 	p.want(0, "", "understand", "MOD-0001", text, "--reader", "abbd reader")
 	p.want(0, "coverage: 1 of 2 top-level module(s) and feature(s) have a text, read by abbd reader 1; none yet: MOD-0002\n", "status")
 }
+
+// abbd understand refuses a text whose first section, the summary a page
+// shows first, runs over the section limit.
+func TestUnderstandRefusesALongSummary(t *testing.T) {
+	p := semanticProject(t)
+	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
+	p.want(1, "the page shows it first", "understand", "MOD-0001", text)
+}

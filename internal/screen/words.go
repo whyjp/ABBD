@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"path"
 	"regexp"
 	"strings"
 
@@ -14,6 +15,61 @@ type Understanding struct {
 	Reader string `json:",omitempty"`
 	Stale  bool
 	Blocks []Block
+	// Lead is the text's first section, which the page shows first, and
+	// Rest the sections after it, which it folds.
+	Lead []Block `json:"-"`
+	Rest []Block `json:"-"`
+}
+
+// split cuts blocks at the second heading: the first section, the
+// summary a reader meets first, and the rest. A text with no second
+// heading is all lead.
+func split(bs []Block) (lead, rest []Block) {
+	heads := 0
+	for i, b := range bs {
+		if b.Kind == "h" {
+			if heads++; heads == 2 {
+				return bs[:i], bs[i:]
+			}
+		}
+	}
+	return bs, nil
+}
+
+// concepts maps each list item of a text to the inside units it names: a
+// code span equal to the base name of a file the unit is anchored at, or to
+// the unit's ID. So a Key Concept stands by the box it describes.
+func concepts(bs []Block, units []InsideUnit) map[string][]Block {
+	out := map[string][]Block{}
+	for _, b := range bs {
+		if b.Kind != "li" {
+			continue
+		}
+		for _, u := range units {
+			if namesUnit(b, u) {
+				out[u.ID] = append(out[u.ID], b)
+			}
+		}
+	}
+	return out
+}
+
+func namesUnit(b Block, u InsideUnit) bool {
+	for _, s := range b.Parts {
+		if !s.Code {
+			continue
+		}
+		if s.Text == u.ID {
+			return true
+		}
+		for _, a := range u.Anchors {
+			file, _, _ := strings.Cut(a, " ")
+			if file != "" && s.Text == path.Base(file) && strings.Contains(path.Base(file), ".") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 type Block struct {

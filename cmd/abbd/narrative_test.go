@@ -71,11 +71,11 @@ func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
 // Without --verbose, status folds its long: lines into one count.
 func TestStatusFoldsItsDetailLines(t *testing.T) {
 	p := semanticProject(t)
-	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
+	text := p.file(t, "how.md", "### Overview\nbilling charges cards.\n### Detail\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
 	p.want(0, "", "understand", "MOD-0001", text)
 	out := p.want(0, "long: 1 line(s); abbd status --verbose lists them", "status")
 	if strings.Contains(out, `long: MOD-0001`) {
 		t.Errorf("status without --verbose listed a long: line:\n%s", out)
 	}
-	p.want(0, `long: MOD-0001 "Overview"`, "status", "--verbose")
+	p.want(0, `long: MOD-0001 "Detail"`, "status", "--verbose")
 }
