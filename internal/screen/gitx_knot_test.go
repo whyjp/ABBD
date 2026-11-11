@@ -7,13 +7,19 @@ import "testing"
 // trunk used to be refused the chain right under where the departure trunk
 // ended, so it passed the next row in the middle of the open space and came
 // back: the line ran left, right, left and right again, and screen's line
-// on the same trunk with it (user-05's knot).
+// on the same trunk with it (user-05's knot). The cut overview counts most
+// of those lines on a pill, so all six are read where they are drawn,
+// internal/gitx's focus view, and any the overview still draws keeps the
+// same bound.
 func TestALineIntoGitxTurnsBackAtMostOnce(t *testing.T) {
 	t.Parallel()
+	focused := false
 	for _, v := range views(fixture(t, "self")) {
-		if v.name != "overview" {
+		whole := v.name == "overview focus MOD-0022 internal/gitx"
+		if v.name != "overview" && !whole {
 			continue
 		}
+		focused = focused || whole
 		s, err := sheetOf(v.d)
 		if err != nil {
 			t.Fatal(err)
@@ -41,13 +47,14 @@ func TestALineIntoGitxTurnsBackAtMostOnce(t *testing.T) {
 				dir = h
 			}
 			if flips > 1 {
-				t.Errorf("%s reaches internal/gitx along %v, turning back %d times", l.shapeName(w.from), w.pts, flips)
+				t.Errorf("%s: %s reaches internal/gitx along %v, turning back %d times", v.name, l.shapeName(w.from), w.pts, flips)
 			}
 		}
-		if seen != 6 {
-			t.Fatalf("want 6 lines into internal/gitx, got %d", seen)
+		if whole && seen != 6 {
+			t.Fatalf("%s: want 6 lines into internal/gitx, got %d", v.name, seen)
 		}
-		return
 	}
-	t.Fatal("self has no overview")
+	if !focused {
+		t.Fatal("self has no focus view of internal/gitx")
+	}
 }
