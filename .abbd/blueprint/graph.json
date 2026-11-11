@@ -7022,7 +7022,15 @@
                 "Code": true
               },
               {
-                "Text": " stores a reader's new responsibility stamped with the text's digest.",
+                "Text": " stores a reader's new responsibility stamped with the text's digest, unless a person stated the responsibility, which outranks it and stays; it is refused with a note or ",
+                "Code": false
+              },
+              {
+                "Text": "--restamp",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
