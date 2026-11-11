@@ -304,7 +304,15 @@ func (d *Drawing) name() {
 			continue
 		}
 		w := textWidth(h.Word, wordPx)
-		for _, a := range []box{{h.X + h.R + 3, h.Y - 7, w, 13}, {h.X - h.R - 3 - w, h.Y - 7, w, 13}, {h.X + 2, h.Y - h.R - 15, w, 13}, {h.X + 2, h.Y + h.R + 2, w, 13}, {h.X - 2 - w, h.Y - h.R - 15, w, 13}, {h.X - 2 - w, h.Y + h.R + 2, w, 13}} {
+		spots := []box{{h.X + h.R + 3, h.Y - 7, w, 13}, {h.X - h.R - 3 - w, h.Y - 7, w, 13}, {h.X + 2, h.Y - h.R - 15, w, 13}, {h.X + 2, h.Y + h.R + 2, w, 13}, {h.X - 2 - w, h.Y - h.R - 15, w, 13}, {h.X - 2 - w, h.Y + h.R + 2, w, 13}}
+		// Failing those, the word sits right over or under its number,
+		// slid along from centred until it is clear.
+		for s := 0; s <= w/2; s += 2 {
+			for _, x := range []int{h.X - w/2 - s, h.X - w/2 + s} {
+				spots = append(spots, box{x, h.Y - h.R - 15, w, 13}, box{x, h.Y + h.R + 2, w, 13})
+			}
+		}
+		for _, a := range spots {
 			if d.wordClear(a, words) {
 				h.WX, h.WY = a.x, a.y+11
 				words = append(words, a)
