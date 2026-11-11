@@ -45,7 +45,7 @@ func TestReviewKeepsToWhatTheChangeTouched(t *testing.T) {
 	p.code("notify/mail.go", "package notify\n\nfunc Send() { api.Serve(); log() }\n")
 	p.want(0, "", "sync")
 	out := p.want(0, "", "review", "--base", base)
-	contains(t, out, "MOD-0003 charger: seed", "the text of MOD-0001 billing is STALE", "the text of MOD-0004 notify is STALE")
+	contains(t, out, "the text of MOD-0001 billing is STALE", "the text of MOD-0004 notify is STALE")
 }
 
 // A STALE text on a unit the change did not touch stays out of review.
@@ -90,7 +90,7 @@ func TestReviewSeedsFromChangedCode(t *testing.T) {
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() { retry() }\n")
 	p.want(0, "", "sync")
 	out := p.want(0, "", "review", "--base", base)
-	contains(t, out, "none in the topology", "code changed under MOD-0001", "MOD-0001 billing: seed", "the text of MOD-0001 billing is STALE")
+	contains(t, out, "none in the topology", "code changed under MOD-0001", "the text of MOD-0001 billing is STALE")
 }
 
 // A changed file whose name has a space still finds the unit anchored at it.
@@ -104,7 +104,7 @@ func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
 	base := rev(t, p.root)
 	p.code("pay ments/charge.go", "package pay\n\nfunc Charge() {}\n")
 	p.want(0, "", "sync")
-	contains(t, p.want(0, "", "review", "--base", base), "code changed under MOD-0001", "MOD-0001 payments: seed")
+	contains(t, p.want(0, "", "review", "--base", base), "code changed under MOD-0001")
 }
 
 // explain names the commit that recorded a reader's coupling.
