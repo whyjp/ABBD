@@ -65,6 +65,12 @@ func Load(st store.Store) (Input, error) {
 	for id := range in.Understandings {
 		in.Digests[id] = st.ModuleDigest(in.Units, id)
 	}
+	// A stamped sentence reads STALE against its unit's code as it is now.
+	for _, u := range model.Present(in.Units) {
+		if _, ok := in.Digests[u.ID]; !ok && (stamped(u.Purpose) || stamped(u.Responsibility)) {
+			in.Digests[u.ID] = st.ModuleDigest(in.Units, u.ID)
+		}
+	}
 	in.Rendered, err = st.BlueprintHash()
 	return in, err
 }
@@ -103,6 +109,8 @@ func (in Input) ActualFreshness() Freshness {
 
 type Fact struct {
 	Value, Badge string
+	// Stale says the unit's code changed since the sentence was stamped.
+	Stale bool `json:",omitempty"`
 }
 
 type UnitRow struct {
@@ -148,7 +156,7 @@ func Build(in Input) Model {
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
-			Purpose: fact(u.Purpose), Responsibility: fact(u.Responsibility), Anchors: anchors(u),
+			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u),
 			Parent: string(u.Parent),
 		}
 		for _, e := range u.Evidence {
@@ -215,6 +223,8 @@ func Build(in Input) Model {
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
 		ins.Standing = o.standing(id, in)
+		u := o.units[id]
+		ins.Purpose, ins.Responsibility = sentenceOf(u.Purpose, in.Digests[id]), sentenceOf(u.Responsibility, in.Digests[id])
 		for i, iu := range ins.Units {
 			if viewOf(o.tree, model.ID(iu.ID)) == "" {
 				ins.Units[i].Understanding = text(model.ID(iu.ID))
@@ -264,6 +274,18 @@ func fact(f *model.Fact) *Fact {
 		return nil
 	}
 	return &Fact{Value: f.Value, Badge: Badge(f.Origin)}
+}
+
+func stamped(f *model.Fact) bool { return f != nil && f.Digest != "" }
+
+// sentence is a unit's purpose or responsibility as the page shows it,
+// STALE when the code it was stamped against has moved on.
+func sentenceOf(f *model.Fact, now string) *Fact {
+	v := fact(f)
+	if v != nil && stamped(f) && f.Digest != now {
+		v.Stale = true
+	}
+	return v
 }
 
 func value(f *model.Fact) string {

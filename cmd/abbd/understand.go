@@ -88,6 +88,17 @@ func (e env) understand(ref string, args []string) error {
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
 	readText(e.stdout, string(id), text)
+	if s := strings.TrimSpace(e.sentence); s != "" {
+		// The reader who read the module again says its one line too,
+		// stamped with the same code as the text.
+		f := model.Said(model.Reader, s)
+		f.Digest = digest
+		u.Responsibility = &f
+		if err := e.st.SaveUnits([]model.Unit{u}); err != nil {
+			return err
+		}
+		fmt.Fprintf(e.stdout, "responsibility of %s is now %q, INFERRED, against code %s\n", id, s, digest)
+	}
 	return nil
 }
 
@@ -329,4 +340,36 @@ func (e env) mayRestamp(units []model.Unit, prev store.Understanding, had bool, 
 		changed = append(changed[:5], fmt.Sprintf("and %d more", len(changed)-5))
 	}
 	return fmt.Errorf("%s's code changed since this text was written (%s); read the module again with the /abbd skill's reader and store the new text", id, strings.Join(changed, ", "))
+}
+
+// stampSentences keeps the stamp each purpose and responsibility of a
+// module or feature carried while its words stay the same, and stamps a
+// sentence no stamp covers yet against its code as it is now. A human's
+// sentence is never stamped: a person said it, and no code bears it out.
+func stampSentences(st store.Store, stored, units []model.Unit) {
+	was := map[model.ID]model.Unit{}
+	for _, u := range stored {
+		was[u.ID] = u
+	}
+	for i := range units {
+		u := &units[i]
+		if u.Absent || !u.Kind.Holds() {
+			continue
+		}
+		old := was[u.ID]
+		digest := ""
+		for _, f := range []struct{ now, then *model.Fact }{{u.Purpose, old.Purpose}, {u.Responsibility, old.Responsibility}} {
+			if f.now == nil || f.now.Value == "" || f.now.Writer == model.Human {
+				continue
+			}
+			if f.then != nil && f.then.Value == f.now.Value && f.then.Digest != "" {
+				f.now.Digest = f.then.Digest
+				continue
+			}
+			if digest == "" {
+				digest = st.ModuleDigest(units, u.ID)
+			}
+			f.now.Digest = digest
+		}
+	}
 }

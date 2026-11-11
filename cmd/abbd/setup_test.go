@@ -166,3 +166,43 @@ func TestSetupKeepsReaderFindingsAndAUnitAHumanStatedAbout(t *testing.T) {
 	}
 	contains(t, p.want(0, "", "explain", "DATA-0001"), "purpose: the books read it (USER_STATED, "+src+")")
 }
+
+// A script's or a reader's sentence about a module is stamped with the
+// module's code, and its page marks it STALE once that code changes.
+func TestASentenceGoesStaleWithItsCode(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.extract(codeOnly)
+	p.setup(0, "synced", "--", exe)
+	if md := p.read("architecture/MOD-0001.md"); !strings.Contains(md, "takes payments\n    writer: supplement\n    digest: ") {
+		t.Fatalf("the purpose should be stamped with its module's code:\n%s", md)
+	}
+	stale := `왜 있는가</strong> takes payments <span class="pill`
+	if page := p.read("blueprint/MOD-0001.html"); !strings.Contains(page, stale) || strings.Contains(page, "이 문장을 쓴 뒤") {
+		t.Fatalf("a fresh sentence reads without STALE")
+	}
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { retry() }\n")
+	p.want(0, "", "sync")
+	if page := p.read("blueprint/MOD-0001.html"); !strings.Contains(page, "이 문장을 쓴 뒤 이 단위의 코드가 바뀌었습니다") {
+		t.Errorf("a sentence whose module's code changed should read STALE")
+	}
+}
+
+// A reader who reads a module again says its one line with the text, and
+// the line reads fresh against the code it was read with.
+func TestAReaderRewritesTheSentenceWithTheText(t *testing.T) {
+	p, exe := bare(t)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.extract(codeOnly)
+	p.setup(0, "synced", "--", exe)
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { retry() }\n")
+	p.want(0, "", "sync")
+	text := p.file(t, "t.md", "### Overview\nbilling charges cards and retries.\n")
+	p.want(0, `responsibility of MOD-0001 is now "charges cards, retrying a failure"`, "understand", "MOD-0001", text, "--sentence", "charges cards, retrying a failure")
+	p.want(0, "", "sync")
+	_, role, _ := strings.Cut(p.read("blueprint/MOD-0001.html"), "<strong>맡은 것</strong>")
+	role, _, _ = strings.Cut(role, "</p>")
+	if !strings.Contains(role, "charges cards, retrying a failure") || strings.Contains(role, "STALE") {
+		t.Errorf("the rewritten sentence should read fresh: %s", role)
+	}
+}
