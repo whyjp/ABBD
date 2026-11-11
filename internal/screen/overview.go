@@ -215,7 +215,12 @@ type Wire struct {
 	// path that shows a bus's count, the lines it counts, else the path's
 	// own.
 	lines [][]string
+	// owed is the count a bus gave up for the word wire by's label says
+	// for it, put back if that label is dropped later (unlabelKin).
+	owed *owed
 }
+
+type owed struct{ count, lx, ly, by int }
 
 // carry gives w the relations of the lines its path p draws and of those
 // its count counts, each relation once, however many requests merged it.

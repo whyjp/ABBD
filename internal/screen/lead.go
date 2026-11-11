@@ -805,5 +805,18 @@ func (d *Drawing) unlabelKin() {
 				}
 			}
 		}
+		if d.Wires[i].Label == nil {
+			d.payBack(i)
+		}
+	}
+}
+
+// payBack puts back the counts of the buses whose word only wire i's
+// label said, now that it is dropped.
+func (d *Drawing) payBack(i int) {
+	for k := range d.Wires {
+		if o := d.Wires[k].owed; o != nil && o.by == i {
+			d.Wires[k].Count, d.Wires[k].LX, d.Wires[k].LY, d.Wires[k].owed = o.count, o.lx, o.ly, nil
+		}
 	}
 }
