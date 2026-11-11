@@ -1266,6 +1266,18 @@
       ]
     },
     {
+      "ID": "IF-0028",
+      "Kind": "IF",
+      "Name": "abbd scope",
+      "Signature": "abbd scope pos{1}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/review.go scope"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -2200,11 +2212,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store",
@@ -2222,11 +2236,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so derived views can tell cheaply whether what they rendered still matches the stored files",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/store/store.go",
@@ -2732,6 +2748,13 @@
       "Kind": "consumes",
       "Origin": "EXTRACTED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd review\""
+    },
+    {
+      "From": "FEAT-0001",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd scope\""
     },
     {
       "From": "FEAT-0002",
@@ -3463,6 +3486,12 @@
     {
       "From": "MOD-0001",
       "To": "IF-0027",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0028",
       "Kind": "provides",
       "Origin": "EXTRACTED"
     },
@@ -4803,7 +4832,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 21,
+        "Uses": 22,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -4900,7 +4929,8 @@
             "stack",
             "table",
             "lint",
-            "review"
+            "review",
+            "scope"
           ]
         }
       ],
@@ -5466,7 +5496,7 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 28,
+        "Provides": 29,
         "Uses": 13,
         "Direct": 12,
         "StaleNotes": 0,
@@ -8813,7 +8843,23 @@
                 "Code": true
               },
               {
-                "Text": "), and always exits 0. With ",
+                "Text": "), and always exits 0. When ",
+                "Code": false
+              },
+              {
+                "Text": "abbd scope IDS --why TEXT",
+                "Code": true
+              },
+              {
+                "Text": " declared the task's scope, review adds ",
+                "Code": false
+              },
+              {
+                "Text": "scopeLines",
+                "Code": true
+              },
+              {
+                "Text": ": each touched top-level unit outside every declared unit, and each declared unit the change left alone. With ",
                 "Code": false
               },
               {
@@ -12528,6 +12574,41 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0028",
+          "Name": "abbd scope",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0028",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "why",
+                "Name": "--why",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -12556,7 +12637,8 @@
             "stack",
             "table",
             "lint",
-            "review"
+            "review",
+            "scope"
           ]
         },
         {
@@ -29472,11 +29554,13 @@
       "Name": "internal/store",
       "Purpose": {
         "Value": "so every command reads and writes the .abbd directory through one place that keeps its files stable and diffable",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 5,
@@ -31165,7 +31249,47 @@
                 "Code": true
               },
               {
-                "Text": " writes, and ",
+                "Text": " writes, ",
+                "Code": false
+              },
+              {
+                "Text": "Scope",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "scope.yaml",
+                "Code": true
+              },
+              {
+                "Text": " there, which ",
+                "Code": false
+              },
+              {
+                "Text": "LoadScope",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "SaveScope",
+                "Code": true
+              },
+              {
+                "Text": " read and write for ",
+                "Code": false
+              },
+              {
+                "Text": "abbd scope",
+                "Code": true
+              },
+              {
+                "Text": ", and ",
                 "Code": false
               },
               {
