@@ -123,7 +123,7 @@ func TestBuildFoldsAChainOnlyWhenItRunsPastTheScreen(t *testing.T) {
 		return us
 	}
 	plainly := func(us []model.Unit) Drawing {
-		return planOverview(us, "", nil, tactic{}).draw(func(model.ID) string { return "" })
+		return planOverview(us, "", nil, tactic{}, nil).draw(func(model.ID) string { return "" })
 	}
 	short := chain(8)
 	if p, got := plainly(short), build(short).Overview; p.Height > screenH || got.Height != p.Height {
@@ -139,7 +139,7 @@ func TestBuildFoldsAChainOnlyWhenItRunsPastTheScreen(t *testing.T) {
 // breaks it there: the box they use stands first of the cycle, not the
 // one the plain pick takes by its edges alone.
 func TestEntryBreaksACycleWhereItIsEntered(t *testing.T) {
-	nodes := []lnode{{"a", 100, 60}, {"b", 100, 60}, {"c", 100, 60}, {"s", 100, 60}}
+	nodes := []lnode{{id: "a", w: 100, h: 60}, {id: "b", w: 100, h: 60}, {id: "c", w: 100, h: 60}, {id: "s", w: 100, h: 60}}
 	edges := []ledge{{"s", "b"}, {"a", "b"}, {"b", "c"}, {"c", "a"}}
 	plain := arrange(slices.Clone(nodes), edges, overviewBudget, nil, tactic{})
 	entry := arrange(slices.Clone(nodes), edges, overviewBudget, nil, tactic{entry: true})

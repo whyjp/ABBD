@@ -15,8 +15,9 @@ import (
 // answer for one part before reading a line. It is a background and never
 // a box: it holds no line, takes no pointer and moves nothing. The
 // groupings come from the state alone, never from the drawing. A stored
-// stack's layers of two boxes or more come first, numbered from the top
-// among the bands drawn, so the numbers run without a gap. Without such a
+// stack's layers come first, each around the most of its boxes that sit
+// together when that is two boxes or more, numbered from the top among the
+// bands drawn, so the numbers run without a gap. Without such a
 // stack, boxes whose code sits in one directory share that directory's
 // band. Contracts
 // with systems outside, drawn as boxes because nothing in the repository
@@ -121,33 +122,104 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	}
 }
 
-// layered reads the stored stack that covers the most of d's boxes, when
-// two of its layers at least each hold two boxes. A layer of one box says
-// nothing its box does not, so it takes no band.
+// layered is the tiers of the stored stack that covers the most of d's
+// boxes, each the most of its boxes that sit together when that is two
+// boxes or more (stackOf).
 func (d *Drawing) layered(t tree, stacks []layering) []group {
-	box := d.shown(t)
+	var out []group
+	for _, g := range stackOf(stacks, d.shown(t), d.together) {
+		if len(g.ids) >= 2 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// tiers are s's layers as the boxes that show them, top down, leaving out
+// a layer no box shows. A box shown in two layers stays in the first.
+func (s layering) tiers(box func(model.ID) string) []group {
+	var out []group
+	seen := map[string]bool{}
+	for i, us := range s.units {
+		g := group{n: i + 1, title: s.names[i]}
+		for _, u := range us {
+			if b := box(u); b != "" && !seen[b] {
+				seen[b] = true
+				g.ids = append(g.ids, b)
+			}
+		}
+		if len(g.ids) > 0 {
+			out = append(out, g)
+		}
+	}
+	return out
+}
+
+// stackOf is the tiers of the stored stack that covers the most boxes in
+// tiers of two boxes or more, when two of its tiers at least hold two, each
+// tier's boxes as fit keeps them. The layout keeps them all, and a band
+// only those that sit together.
+func stackOf(stacks []layering, box func(model.ID) string, fit func([]string) []string) []group {
 	var best []group
 	most := 0
 	for _, s := range stacks {
-		var gs []group
-		n := 0
-		for i, us := range s.units {
-			g := group{n: i + 1, title: s.names[i]}
-			for _, u := range us {
-				if b := box(u); b != "" && !slices.Contains(g.ids, b) {
-					g.ids = append(g.ids, b)
-				}
-			}
-			if len(g.ids) >= 2 {
-				gs = append(gs, g)
-				n += len(g.ids)
+		ts := s.tiers(box)
+		k, n := 0, 0
+		for i := range ts {
+			if ts[i].ids = fit(ts[i].ids); len(ts[i].ids) >= 2 {
+				k++
+				n += len(ts[i].ids)
 			}
 		}
-		if len(gs) >= 2 && n > most {
-			best, most = gs, n
+		if k >= 2 && n > most {
+			best, most = ts, n
 		}
 	}
 	return best
+}
+
+// together is the largest run of ids whose band, at its narrowest, holds
+// no other box: taken in reading order, each box joins the run before it
+// when the band around both stays clear, and starts a run when it does not.
+func (d *Drawing) together(ids []string) []string {
+	var bs []Box
+	for _, b := range d.Boxes {
+		if slices.Contains(ids, b.ID) {
+			bs = append(bs, b)
+		}
+	}
+	slices.SortStableFunc(bs, func(a, b Box) int {
+		if a.Y != b.Y {
+			return a.Y - b.Y
+		}
+		return a.X - b.X
+	})
+	var best, run []Box
+	for _, b := range bs {
+		if run = append(run, b); !d.sitTogether(run) {
+			run = []Box{b}
+		}
+		if len(run) > len(best) {
+			best = slices.Clone(run)
+		}
+	}
+	var out []string
+	for _, b := range best {
+		out = append(out, b.ID)
+	}
+	return out
+}
+
+// sitTogether says a band around bs, with no room for a title yet, stands
+// clear of every other box.
+func (d *Drawing) sitTogether(bs []Box) bool {
+	in := map[string]bool{}
+	lo, hi := pt{1 << 30, 1 << 30}, pt{-1 << 30, -1 << 30}
+	for _, b := range bs {
+		in[b.ID] = true
+		lo, hi = pt{min(lo.x, b.X), min(lo.y, b.Y)}, pt{max(hi.x, b.X+b.W), max(hi.y, b.Y+b.H)}
+	}
+	return d.clear(Zone{X: lo.x - zoneSide, Y: lo.y - zoneFoot, W: hi.x - lo.x + 2*zoneSide, H: hi.y - lo.y + 2*zoneFoot}, in)
 }
 
 // folders groups d's boxes by the directory that holds each one's own

@@ -151,7 +151,9 @@ func TestALeadsNumbersStandApart(t *testing.T) {
 
 // Every band holds two boxes at least, but the outside contracts' band,
 // which names a lone outside box as outside, and stored layers' bands are
-// numbered 1, 2, 3 in the order they are drawn.
+// numbered 1, 2, 3 in the order they are drawn. This repository's own
+// overview, whose layers each name boxes the layout sets apart, keeps two
+// numbered bands at least.
 func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 	for name, m := range clearModels(t) {
 		for _, d := range m.drawings() {
@@ -175,6 +177,9 @@ func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
 				if held < 2 {
 					t.Errorf("%s: band %q holds %d box", name, z.Label(), held)
 				}
+			}
+			if name == "repository" && d == &m.Overview && n < 2 {
+				t.Errorf("this repository's overview numbers %d bands, want 2 at least", n)
 			}
 		}
 	}

@@ -2098,8 +2098,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic) *overview {\"",
-        "internal/screen/overview.go \"o.layout = arrange(nodes, edges, overviewBudget, seatOf(focus, at), t)\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering) *overview {\""
       ]
     },
     {
@@ -4247,7 +4246,7 @@
       "Kind": "provides",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
+      "Quote": "internal/screen/screen.go \"return \\\"stated\\\"\""
     },
     {
       "From": "MOD-0034",
@@ -21706,7 +21705,31 @@
                 "Code": true
               },
               {
-                "Text": "): the layered layout. It orders nodes to leave few edges pointing back (Eades, Lin and Smyth), ranks without those edges, and sets each node above what it uses. A node nothing uses sits just above the highest thing it uses, and nodes with no line gather on a bottom layer. Each pair of places more than a row apart gets a ",
+                "Text": "): the layered layout. It orders nodes to leave few edges pointing back (Eades, Lin and Smyth), ranks without those edges, and sets each node above what it uses. A node nothing uses sits just above the highest thing it uses, and nodes with no line gather on a bottom layer. On the overview, a stored stack with two layers of two boxes or more (",
+                "Code": false
+              },
+              {
+                "Text": "stackOf",
+                "Code": true
+              },
+              {
+                "Text": ") ranks the boxes it names by ",
+                "Code": false
+              },
+              {
+                "Text": "tier",
+                "Code": true
+              },
+              {
+                "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. ",
+                "Code": false
+              },
+              {
+                "Text": "huddle",
+                "Code": true
+              },
+              {
+                "Text": " keeps a layer's boxes next to each other in their row after every ordering, so each layer's band holds no other box. Each pair of places more than a row apart gets a ",
                 "Code": false
               },
               {
@@ -24716,7 +24739,7 @@
                 "Code": true
               },
               {
-                "Text": " that wrote them, which the page names beside 판독 after 리더가 쓴 설명. ",
+                "Text": " that wrote them, which the page names beside 판독 after 리더가 쓴 설명, so a reader of the page knows whose account it is. ",
                 "Code": false
               },
               {
@@ -25533,6 +25556,7 @@
           "Kind": "provides",
           "Via": "data",
           "Quotes": [
+            "internal/screen/screen.go \"return \\\"stated\\\"\"",
             "internal/screen/page.go \"\\\"stated\\\": \\\"사람\\\", \\\"inferred\\\": \\\"판독\\\", \\\"extracted\\\": \\\"추출\\\",\""
           ]
         },
