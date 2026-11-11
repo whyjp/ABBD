@@ -206,6 +206,36 @@ func (e env) review() error {
 			fmt.Fprintf(w, "  and %d more; abbd impact lists them all\n", reached-reachShown)
 		}
 	}
+	if len(in.Owners) > 0 && len(seeds) > 0 {
+		// Who to ask: the owners CODEOWNERS names for the top-level units
+		// the change touched or reaches directly.
+		var reach []model.ID
+		for _, it := range topology.ImpactOf(now, seeds).Direct {
+			reach = append(reach, it.Unit)
+		}
+		byOwner := map[string][]model.ID{}
+		for _, id := range reach {
+			t := id
+			for seen := map[model.ID]bool{}; byID[t].Parent != "" && !seen[t]; t = byID[t].Parent {
+				seen[t] = true
+			}
+			for _, o := range in.Owners[t] {
+				if !slices.Contains(byOwner[o], t) {
+					byOwner[o] = append(byOwner[o], t)
+				}
+			}
+		}
+		fmt.Fprintln(w, "\nwho owns what the change touches or reaches (CODEOWNERS):")
+		for _, o := range slices.Sorted(maps.Keys(byOwner)) {
+			ids := byOwner[o]
+			slices.Sort(ids)
+			var named []string
+			for _, id := range ids {
+				named = append(named, fmt.Sprintf("%s %s", id, name[id]))
+			}
+			fmt.Fprintf(w, "  %s: %s\n", o, strings.Join(named, ", "))
+		}
+	}
 
 	// What is worth a look is what sits in, above or under what the change
 	// touched, so a STALE text elsewhere in the repository stays out.
