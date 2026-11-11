@@ -1324,6 +1324,7 @@
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
+        "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
         "cmd/abbd/review.go",
@@ -2900,6 +2901,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record fact\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0010",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record relation\""
     },
     {
       "From": "FEAT-0002",
@@ -4804,7 +4813,9 @@
       "To": "MOD-0057",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call"
+      "Via": "call",
+      "Phrase": "CODEOWNERS path",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0042",
@@ -5388,7 +5399,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 18,
+        "Uses": 19,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5517,6 +5528,7 @@
             "sync",
             "explain",
             "path",
+            "record relation",
             "exit codes",
             "migrate",
             "record evidence",
@@ -6699,7 +6711,15 @@
                 "Code": true
               },
               {
-                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
+                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. Lint also names each drawn overview line whose relations carry no live phrase (",
+                "Code": false
+              },
+              {
+                "Text": "phrases.go",
+                "Code": true
+              },
+              {
+                "Text": "), by its end boxes, a contract counted on its provider's box. For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
                 "Code": false
               },
               {
@@ -8231,6 +8251,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8244,6 +8269,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8256,6 +8286,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
