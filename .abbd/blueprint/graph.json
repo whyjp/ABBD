@@ -6665,7 +6665,7 @@
                 "Code": true
               },
               {
-                "Text": "): a load by name, a process started, a registry, a compiled-in bundle. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -17183,7 +17183,7 @@
                 "Code": true
               },
               {
-                "Text": " for a process started. ",
+                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
                 "Code": false
               },
               {
