@@ -549,6 +549,11 @@ type Project struct {
 	// Extract is the argv of the project extraction script setup generated.
 	// It prints an extraction result on stdout.
 	Extract []string `yaml:"extract,omitempty"`
+	// Name and Purpose say what the project is, in a name and one
+	// paragraph, so the overview opens with them. A person or the setup
+	// reader writes them here; with no name the blueprint says ABBD.
+	Name    string `yaml:"name,omitempty"`
+	Purpose string `yaml:"purpose,omitempty"`
 }
 
 func (s Store) LoadProject() (Project, error) {

@@ -133,3 +133,36 @@ func TestARelationSaysWhyAndDecisionsHaveAnIndex(t *testing.T) {
 		t.Errorf("decisions.html should list the decision and link it:\n%s", d)
 	}
 }
+
+// The overview opens with the project's name and purpose and its main
+// parts, top-level modules then every feature, and every title names the
+// project.
+func TestTheOverviewOpensWithTheProject(t *testing.T) {
+	units := append(ripgrep(), unit("FEAT-0001"), unit("FEAT-0002"))
+	for i := range units {
+		if units[i].ID == "FEAT-0002" {
+			units[i].Purpose = &model.Fact{Value: "searches compressed files", Origin: model.Inferred}
+		}
+	}
+	in := Input{Units: units, Project: store.Project{Name: "ripgrep", Purpose: "ripgrep searches directories for a regex."}}
+	ps := pages(t, Build(in))
+	contains := func(file string, wants ...string) {
+		t.Helper()
+		for _, w := range wants {
+			if !strings.Contains(ps[file], w) {
+				t.Errorf("%s should hold %q", file, w)
+			}
+		}
+	}
+	contains("index.html", "<h1>ripgrep</h1>", "ripgrep searches directories for a regex.", "주요 부분", ">FEAT-0001</a>", "searches compressed files")
+	contains("MOD-0003.html", "<title>grep-searcher · ripgrep 청사진</title>")
+}
+
+// With no name written, every page says ABBD, never the checkout's folder,
+// and the overview says where to write the purpose.
+func TestAnUnnamedProjectSaysABBD(t *testing.T) {
+	ps := pages(t, Build(Input{Units: ripgrep(), Project: store.Project{Name: "ABBD"}}))
+	if !strings.Contains(ps["index.html"], "<h1>ABBD</h1>") || !strings.Contains(ps["index.html"], "<code>purpose</code>에 한 문단으로") {
+		t.Errorf("an unnamed project's overview should say ABBD and where its purpose goes")
+	}
+}

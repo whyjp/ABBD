@@ -3,25 +3,25 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() reads project.yaml → the registered extraction argv
+      does: LoadProject() reads project.yaml → the extraction argv, and the project name and purpose
       fails: stops when project.yaml names no script; run abbd setup first
       calls:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "523"
+          lines: "562"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
-          lines: "428"
+          lines: "456"
           quote: p, err := e.st.LoadProject()
         - path: cmd/abbd/main.go
-          lines: "432"
+          lines: "460"
           quote: if len(p.Extract) == 0 {
       writer: reader
       code:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
-        internal/store/store.go#quote-ac7ade60: 5d4ca50e7b137b28
+        internal/store/store.go#quote-ac7ade60: b76daadf56ef2bcd
     - unit: MOD-0004
       does: runScript(argv) → the script's stdout, run in the project root
       fails: stops when the script exits non-zero, and prints its stderr
@@ -29,10 +29,10 @@ steps:
         - DATA-0002
       evidence:
         - path: cmd/abbd/main.go
-          lines: "435"
+          lines: "463"
           quote: out, err := e.runScript(p.Extract)
         - path: cmd/abbd/main.go
-          lines: "561"
+          lines: "589"
           symbol: runScript
           quote: cmd := exec.Command(argv[0], argv[1:]...)
       writer: reader
@@ -48,7 +48,7 @@ steps:
           lines: "110"
           quote: func Parse(r io.Reader) (Result, error) { return parse(r, false) }
         - path: cmd/abbd/main.go
-          lines: "439"
+          lines: "467"
           quote: ex, err := extract.Parse(bytes.NewReader(out))
       writer: reader
       code:
@@ -62,16 +62,16 @@ steps:
         - DATA-0006
       evidence:
         - path: internal/store/store.go
-          lines: "85"
+          lines: "86"
           quote: return nil, ErrOldFormat
         - path: internal/store/store.go
-          lines: "293"
+          lines: "321"
           quote: func (s Store) LoadCandidates() ([]identity.Candidate, error) {
         - path: internal/store/store.go
-          lines: "308"
+          lines: "336"
           quote: func (s Store) LoadState() (State, error) {
         - path: cmd/abbd/main.go
-          lines: "501"
+          lines: "529"
           quote: stored, err := st.Writable()
       writer: reader
       code:
@@ -87,7 +87,7 @@ steps:
           lines: "95"
           quote: func Snapshot(dir, exclude string) (string, error) {
         - path: cmd/abbd/main.go
-          lines: "513"
+          lines: "541"
           quote: tree, err := gitx.Snapshot(e.root, store.Dir)
       writer: reader
       code:
@@ -98,10 +98,10 @@ steps:
       fails: warns and finds no moves when the last snapshot is gone
       evidence:
         - path: internal/gitx/gitx.go
-          lines: "294"
+          lines: "304"
           quote: func Renames(dir, oldTree, newTree string)
         - path: cmd/abbd/main.go
-          lines: "522"
+          lines: "550"
           quote: last sync snapshot %s is gone
       writer: reader
       code:
@@ -115,7 +115,7 @@ steps:
           lines: "31"
           quote: func Head(dir string) string {
         - path: cmd/abbd/main.go
-          lines: "532"
+          lines: "560"
           quote: if state.Fingerprint != tree || rev == "" {
       writer: reader
       code:
@@ -131,7 +131,7 @@ steps:
           lines: "73"
           quote: func Reconcile(stored []model.Unit
         - path: cmd/abbd/main.go
-          lines: "526"
+          lines: "554"
           quote: the extraction reported no units; refusing to mark every unit absent
       writer: reader
       code:
@@ -145,7 +145,7 @@ steps:
           lines: "227"
           quote: func (c *Checker) Apply(units []model.Unit, rev string) []model.Unit {
         - path: cmd/abbd/main.go
-          lines: "536"
+          lines: "564"
           quote: res.Units = evidence.New(e.root).Apply(res.Units, rev)
       writer: reader
       code:
@@ -159,7 +159,7 @@ steps:
           lines: "36"
           quote: func Fallback(units []model.Unit, hw map[model.Kind]int)
         - path: cmd/abbd/main.go
-          lines: "537"
+          lines: "565"
           quote: res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
       writer: reader
       code:
@@ -171,10 +171,10 @@ steps:
         - DATA-0004
       evidence:
         - path: internal/store/store.go
-          lines: "273"
+          lines: "301"
           quote: func (s Store) SaveUnits(units []model.Unit) error {
         - path: internal/store/store.go
-          lines: "298"
+          lines: "326"
           quote: func (s Store) SaveCandidates(cs []identity.Candidate) error {
       writer: reader
       code:
@@ -186,10 +186,10 @@ steps:
         - DATA-0006
       evidence:
         - path: internal/store/understanding.go
-          lines: "532"
+          lines: "541"
           quote: func (s Store) UpgradeUnderstandings(units []model.Unit)
         - path: internal/store/store.go
-          lines: "383"
+          lines: "411"
           quote: func (s Store) SaveState(st State) error {
       writer: reader
       code:
@@ -202,7 +202,7 @@ steps:
         - DATA-0005
       evidence:
         - path: cmd/abbd/main.go
-          lines: "399"
+          lines: "427"
           quote: if err := e.publish(); err != nil {
         - path: cmd/abbd/screen.go
           lines: "27"
@@ -278,6 +278,23 @@ retired:
       code:
         cmd/abbd/main.go#quote-752e5b50: 34b797b724d0cb4a
         internal/group/group.go#quote-f1fc9398: 7665af6fd8209a95
+    - unit: MOD-0041
+      does: LoadProject() reads project.yaml → the registered extraction argv
+      fails: stops when project.yaml names no script; run abbd setup first
+      evidence:
+        - path: internal/store/store.go
+          lines: "523"
+          quote: return p, readYAML(s.path("project.yaml"), &p)
+        - path: cmd/abbd/main.go
+          lines: "428"
+          quote: p, err := e.st.LoadProject()
+        - path: cmd/abbd/main.go
+          lines: "432"
+          quote: if len(p.Extract) == 0 {
+      code:
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
+        internal/store/store.go#quote-ac7ade60: 5d4ca50e7b137b28
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.
