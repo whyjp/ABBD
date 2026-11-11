@@ -19319,7 +19319,47 @@
                   "Code": true
                 },
                 {
-                  "Text": "), which a module's page names as 담당. A reader's ",
+                  "Text": "), which a module's page names as 담당. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": " fills the project's name from its directory when project.yaml names none, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model.Name",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Purpose",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Parts",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "parts",
+                  "Code": true
+                },
+                {
+                  "Text": ": top-level modules, then every feature, each with its one line) open the overview and title every page. A reader's ",
                   "Code": false
                 },
                 {
@@ -20286,7 +20326,47 @@
                 "Code": true
               },
               {
-                "Text": "), which a module's page names as 담당. A reader's ",
+                "Text": "), which a module's page names as 담당. ",
+                "Code": false
+              },
+              {
+                "Text": "Load",
+                "Code": true
+              },
+              {
+                "Text": " fills the project's name from its directory when project.yaml names none, and ",
+                "Code": false
+              },
+              {
+                "Text": "Model.Name",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "Purpose",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Parts",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "parts",
+                "Code": true
+              },
+              {
+                "Text": ": top-level modules, then every feature, each with its one line) open the overview and title every page. A reader's ",
                 "Code": false
               },
               {
@@ -26258,7 +26338,31 @@
                 "Code": true
               },
               {
-                "Text": " directory (and ",
+                "Text": " directory (",
+                "Code": false
+              },
+              {
+                "Text": "Project",
+                "Code": true
+              },
+              {
+                "Text": " also holds the project's ",
+                "Code": false
+              },
+              {
+                "Text": "Name",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "Purpose",
+                "Code": true
+              },
+              {
+                "Text": " from project.yaml, and ",
                 "Code": false
               },
               {
@@ -26777,6 +26881,18 @@
                 "Key": "extract",
                 "Name": "extract",
                 "Shape": "[]string",
+                "Need": "선택"
+              },
+              {
+                "Key": "name",
+                "Name": "name",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "purpose",
+                "Name": "purpose",
+                "Shape": "string",
                 "Need": "선택"
               }
             ],
@@ -27637,7 +27753,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → the registered extraction argv"
+              "Does": "LoadProject() reads project.yaml → the extraction argv, and the project name and purpose"
             },
             {
               "N": 4,
@@ -30145,7 +30261,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → the registered extraction argv",
+              "Does": "LoadProject() reads project.yaml → the extraction argv, and the project name and purpose",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",
