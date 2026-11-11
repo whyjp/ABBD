@@ -81,6 +81,9 @@ const (
 	Fresh   Freshness = "CURRENT"
 	Stale   Freshness = "STALE"
 	Unknown Freshness = "UNKNOWN"
+	// Undrawn says no pages are drawn in this checkout, as in a fresh clone:
+	// git does not keep them, and the state they are drawn from is current.
+	Undrawn Freshness = "NOT DRAWN"
 )
 
 // BlueprintFreshness compares the inputs the state says the blueprint was
@@ -88,9 +91,13 @@ const (
 // the files there now.
 func (in Input) BlueprintFreshness() Freshness {
 	switch {
-	case in.Rendered == "" || in.Synced.Blueprint == "" || in.Synced.Rendered == "":
+	case in.Synced.Blueprint == "" || in.Synced.Rendered == "":
 		return Unknown
-	case in.Synced.Merged || in.Synced.Blueprint != in.Inputs || in.Synced.Rendered != in.Rendered:
+	case in.Synced.Merged || in.Synced.Blueprint != in.Inputs:
+		return Stale
+	case in.Rendered == "":
+		return Undrawn
+	case in.Synced.Rendered != in.Rendered:
 		return Stale
 	}
 	return Fresh

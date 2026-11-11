@@ -147,7 +147,7 @@ func (e env) statusLines() error {
 	case screen.Stale:
 		behind = append(behind, "the blueprint is STALE, run abbd sync")
 	case screen.Unknown:
-		behind = append(behind, "the blueprint is UNKNOWN: blueprint/ holds no files or the state does not say what was rendered, run abbd sync")
+		behind = append(behind, "the blueprint is UNKNOWN: the state does not say what was rendered, run abbd sync")
 	}
 	switch {
 	case in.Synced.Merged:
@@ -157,7 +157,11 @@ func (e env) statusLines() error {
 	default:
 		fmt.Fprintf(e.stdout, "state: %s, synced at %s\n", in.ActualFreshness(), in.Synced.Revision)
 	}
-	fmt.Fprintln(e.stdout, "blueprint:", in.BlueprintFreshness())
+	if bp := in.BlueprintFreshness(); bp == screen.Undrawn {
+		fmt.Fprintln(e.stdout, "blueprint: NOT DRAWN here, git keeps only the state it is drawn from; abbd sync draws it")
+	} else {
+		fmt.Fprintln(e.stdout, "blueprint:", bp)
+	}
 	kinds := map[model.Kind]int{}
 	origins := map[model.Origin]int{}
 	dead := 0
