@@ -5955,6 +5955,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -6195,7 +6196,23 @@
                 "Code": true
               },
               {
-                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file.",
+                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file. The block says the blueprint is drawn at ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/blueprint/index.html",
+                "Code": true
+              },
+              {
+                "Text": " and that ",
+                "Code": false
+              },
+              {
+                "Text": "abbd sync",
+                "Code": true
+              },
+              {
+                "Text": " keeps it current, since the pages are committed.",
                 "Code": false
               }
             ]
@@ -22273,7 +22290,23 @@
                 "Code": true
               },
               {
-                "Text": "). Where no run moves, ",
+                "Text": "). Then a last pass merges long runs, ",
+                "Code": false
+              },
+              {
+                "Text": "roadLong",
+                "Code": true
+              },
+              {
+                "Text": " (96px) or more side by side, of one kind and dotting from up to ",
+                "Code": false
+              },
+              {
+                "Text": "roadReach",
+                "Code": true
+              },
+              {
+                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway. Where no run moves, ",
                 "Code": false
               },
               {

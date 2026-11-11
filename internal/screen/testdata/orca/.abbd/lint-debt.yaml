@@ -5,12 +5,12 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
-    detours: 42
+    detours: 39
     excess_turns: 495
     overflow: 6
     placement: 122
     tees: 14
-    weighed: 1254
+    weighed: 1236
 debt:
     MOD-0007 mobile app (Expo):
         R: 1
@@ -24,15 +24,15 @@ debt:
         R: 2
 pages:
     MOD-0072 desktop renderer UI:
-        abreast: 154
-        colour_switches: 33
+        abreast: 0
+        colour_switches: 31
         combs: 0
         counts: 21
         doglegs: 5
         dots: 8
         label_repeats: 1
         labelled: 8
-        parallel_ink: 647
+        parallel_ink: 493
     MOD-0098 src/:
         abreast: 204
         colour_switches: 45
