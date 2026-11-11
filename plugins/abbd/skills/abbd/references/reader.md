@@ -8,8 +8,23 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
 
 1. Start from the brief. Run `abbd brief <MOD-ID>` and save its output as the file you will store. It holds the two sections with a TODO bullet per inside unit and per contract the module provides, then a `## Read first` section: the files the text is stamped against, entry files first, the module's contracts and neighbours, the couplings readers already recorded with their quotes, the notes and figures that cite it, and, for a stored text, what moved since it was written.
 2. Read every file the brief lists, entry files first, then the files the most stored relations point at, then the rest. Leave them only to follow a contract one hop.
-3. Keep working notes while you read, never stored: the units you find, the order things happen in, where the module stops, what is not obvious, open questions and the files you read.
+3. Explore before you write. Keep working notes, never stored, and fill each of these before you draft a line:
+   - **Entry points**: what calls into the module from outside, by name and file.
+   - **Lifecycle**: how it starts, how it stops, how it aborts or shuts down, and what it frees.
+   - **Core types and state**: the types the module's functions take and return most, and the state they share or guard.
+   - **Threads and pools**: every thread, task, pool, timer or callback it starts or runs on, and what runs where.
+   - **Registration**: where the module learns its plugins, handlers or components at run time: a registry, a table, `dlopen`, a macro, a trait object, an injected bundle.
+   - **Failure paths**: what it returns or raises when something fails, and what it retries.
+   - **Key units**: the `Key units by fan-in` the brief lists. Name each in the text, or say in one line why it stays out.
+   Note where the module stops, what is not obvious, open questions and the files you read.
+   The text covers every one of these lists: name the lifecycle, the threads, the failure paths and the registration in Key Concepts, or say in one line that the module has none.
 4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
+
+## Before you store: look for a counterexample
+
+A universal or exclusive claim is the easiest one to get wrong. Before you keep a sentence that says "never", "always", "only", "each", "every", "all", "no", "none" or "cannot", search the module for a case that breaks it, with grep for the names involved and a read of each hit. Keep the sentence only when no counterexample turns up. When one does, narrow the claim to what holds, such as "on the main thread" or "except when", or drop it. A claim you could not check is worded as what you read, not as a law.
+
+A role is a claim too. Before you write that a function loads, starts, frees or dispatches something, open its body: an empty or stub function, or one that only forwards, does not do it, so name the one that does. Before you write that a part goes where (a combinator before sinks, a dock a plugin adds), when something happens (while building, at startup, once ready), or that a function writes rather than only reads, find the line that shows it.
 
 ## What you store
 

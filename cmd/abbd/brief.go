@@ -74,6 +74,11 @@ func (e env) brief(ref string) error {
 	for _, l := range ex.In {
 		contracts = append(contracts, fmt.Sprintf("used by %s %s, %s%s", l.From, name[l.From], l.Kind, l.Label()))
 	}
+	var keys []string
+	for _, k := range e.keyUnitsOf(units, id, keyShown) {
+		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
+	}
+	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {
@@ -177,3 +182,7 @@ func cited[C model.Claim[C]](kind string, figs []store.Figure[C], own map[model.
 	}
 	return out
 }
+
+// keyShown is how many key units the brief lists and the text check holds
+// the text to.
+const keyShown = 8

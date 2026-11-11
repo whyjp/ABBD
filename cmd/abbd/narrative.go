@@ -74,6 +74,9 @@ func (e env) checkText(w io.Writer, units []model.Unit, id model.ID, text string
 			fmt.Fprintf(w, "unmentioned: %s's text never names %s %s, which sits inside it; name it in a Key Concepts bullet, with the units it works with\n", id, r.ID, r.Name)
 		}
 	}
+	for _, k := range unnamed(text, e.keyUnitsOf(units, id, keyShown)) {
+		fmt.Fprintf(w, "unmentioned: %s's text never names %s, a key unit of %s named %d times elsewhere; name it, or say in one line why it stays out\n", id, k.Name, k.File, k.Uses)
+	}
 	files, quotes := e.st.Read(units, id)
 	for _, q := range quotes {
 		files = append(files, q.Path)
