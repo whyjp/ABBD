@@ -2178,11 +2178,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "turns the model into the one page a human opens",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/page.go",
@@ -20075,7 +20077,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -21085,7 +21086,7 @@
                 "Code": true
               },
               {
-                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The fixed ",
+                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The ",
                 "Code": false
               },
               {
@@ -21109,23 +21110,7 @@
                 "Code": true
               },
               {
-                "Text": "). A drawing with more than ",
-                "Code": false
-              },
-              {
-                "Text": "hoverMax",
-                "Code": true
-              },
-              {
-                "Text": " shapes or ",
-                "Code": false
-              },
-              {
-                "Text": "routeMax",
-                "Code": true
-              },
-              {
-                "Text": " routes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": "). No drawing is too large to take part, so a drawing on roads always keeps its routes and no join its roads draw reads as a J3 false join, and a page carries the rules for its own shapes and routes only. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
@@ -23161,7 +23146,15 @@
                 "Code": true
               },
               {
-                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
+                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes. The lint gate bounds J3 per page as ",
+                "Code": false
+              },
+              {
+                "Text": "false_joins",
+                "Code": true
+              },
+              {
+                "Text": " on every page the debt file bounds, so a record cannot take a false join on as debt.",
                 "Code": false
               }
             ]
@@ -23272,15 +23265,7 @@
                 "Code": true
               },
               {
-                "Text": " then drops the ×N of a bus of two lines, and of a bus whose every line says one word once that word is drawn on its ink, its net's or its track within ",
-                "Code": false
-              },
-              {
-                "Text": "repeatNear",
-                "Code": true
-              },
-              {
-                "Text": "; it keeps that spot for the bus's own word, keeps a word said again off a freed count spot, and ",
+                "Text": " then drops the ×N of a bus of two lines, and of a bus whose every line says one word once that word is drawn on its ink or its net's, never for a word nearby on its track, which may sit on a sibling branch or the trunk; it keeps that spot for the bus's own word, keeps a word said again off a freed count spot, and ",
                 "Code": false
               },
               {

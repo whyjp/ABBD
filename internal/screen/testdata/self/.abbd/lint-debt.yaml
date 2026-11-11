@@ -23,6 +23,7 @@ pages:
         density: 28
         doglegs: 14
         dots: 3
+        false_joins: 0
         label_repeats: 6
         labelled: 17
         parallel_ink: 0
@@ -34,6 +35,7 @@ pages:
         density: 15
         doglegs: 8
         dots: 0
+        false_joins: 0
         label_repeats: 7
         labelled: 11
         parallel_ink: 0
@@ -45,6 +47,7 @@ pages:
         density: 12
         doglegs: 18
         dots: 3
+        false_joins: 0
         label_repeats: 0
         labelled: 1
         parallel_ink: 227

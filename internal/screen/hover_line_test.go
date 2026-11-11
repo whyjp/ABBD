@@ -495,16 +495,13 @@ func TestARouteHeadWearsItsRoutesColour(t *testing.T) {
 	}
 }
 
-// Every real drawing holds few enough shapes and lines to take part.
+// Every real drawing with lines routes them, so pointing lights them.
 func TestEveryRealDrawingTakesPart(t *testing.T) {
 	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			if len(v.d.Wires) > 0 && len(v.d.Routes) == 0 {
 				t.Errorf("%s %s: has lines but routes none of them, so pointing lights nothing", name, v.name)
-			}
-			if len(v.d.Routes) > routeMax {
-				t.Errorf("%s %s: routes %d lines, more than %d", name, v.name, len(v.d.Routes), routeMax)
 			}
 			for _, p := range v.d.Ports {
 				if len(v.d.Routes) > 0 && p.Lit == "" {
