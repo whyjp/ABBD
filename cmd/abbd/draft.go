@@ -116,7 +116,7 @@ func goSymbolDoc(src, symbol string) string {
 func header(src string, goFile bool) string {
 	if goFile {
 		f, err := parser.ParseFile(token.NewFileSet(), "", src, parser.PackageClauseOnly|parser.ParseComments)
-		if err != nil || f.Doc == nil {
+		if err != nil || f.Doc == nil || boilerplate(f.Doc.Text()) {
 			return ""
 		}
 		return f.Doc.Text()
