@@ -737,3 +737,6 @@ func (s Store) SaveScope(sc Scope) error {
 	}
 	return writeYAML(s.scopePath(), sc)
 }
+
+// ProjectDir is the project root the store sits in.
+func (s Store) ProjectDir() string { return filepath.Dir(s.root) }
