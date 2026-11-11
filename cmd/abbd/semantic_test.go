@@ -303,3 +303,10 @@ func TestUnderstandRefusesALongSummary(t *testing.T) {
 	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
 	p.want(1, "the page shows it first", "understand", "MOD-0001", text)
 }
+
+// status counts the relations that say no via, which the drawing reads as
+// run-time.
+func TestStatusCountsRelationsWithoutAVia(t *testing.T) {
+	p, _ := diffProject(t)
+	p.want(0, "via: 2 relation(s) say no via", "status")
+}
