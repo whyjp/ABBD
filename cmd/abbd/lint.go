@@ -28,6 +28,9 @@ type lintReport struct {
 	Levels []screen.Level `json:"levels"`
 	// Lowerable is what the debt file records above what lint measures.
 	Lowerable []string `json:"lowerable,omitempty"`
+	// Unphrased names the pairs of overview boxes whose lines carry no
+	// phrase, which say only a via word at rest.
+	Unphrased []string `json:"unphrased,omitempty"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -100,6 +103,7 @@ func (e env) lint(pos []string) error {
 	}
 	if every {
 		r.Ceilings = debt.Ceilings
+		r.Unphrased = unphrased(in.Units, m.Overview)
 	}
 	if r.Failures == nil {
 		r.Failures = []string{}
@@ -154,6 +158,15 @@ func printLint(e env, r lintReport) {
 	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
 	if len(r.Ceilings) > 0 {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
+	}
+	if n := len(r.Unphrased); n > 0 {
+		fmt.Fprintf(e.stdout, "lint: phrases: %s between overview boxes with no phrase on any relation, so each says only how it arises; give one relation of each a phrase:\n", plural(n, "line"))
+		for _, p := range r.Unphrased[:min(n, 10)] {
+			fmt.Fprintf(e.stdout, "  %s\n", p)
+		}
+		if n > 10 {
+			fmt.Fprintf(e.stdout, "  and %d more; abbd lint --json lists them\n", n-10)
+		}
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
