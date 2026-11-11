@@ -9,3 +9,5 @@
 *.patch -text
 *.png binary
 .abbd/state.yaml merge=union
+.abbd/blueprint/** linguist-generated=true
+.abbd/graph.json linguist-generated=true

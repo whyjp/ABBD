@@ -20,4 +20,4 @@ code:
     internal/screen/screen.go#quote-68a3e03c: 9d30b4fd53175aa0
 ---
 
-The hash of the files the last render wrote under `blueprint/`, read with CRLF as LF. status compares it with the hash of the files there now, so a page missing, added, edited by hand or checked out from an older render reads STALE even when `blueprint` still matches the inputs. With no files there at all, the blueprint is NOT DRAWN rather than STALE, since git keeps the state and not the pages.
+The hash of the files the last render wrote under `blueprint/`, read with CRLF as LF. status compares it with the hash of the files there now, so a page missing, added, edited by hand or checked out from an older render reads STALE even when `blueprint` still matches the inputs. With no files there at all, as in a checkout that lacks the committed pages, the blueprint is NOT DRAWN rather than STALE.

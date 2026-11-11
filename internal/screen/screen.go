@@ -81,8 +81,8 @@ const (
 	Fresh   Freshness = "CURRENT"
 	Stale   Freshness = "STALE"
 	Unknown Freshness = "UNKNOWN"
-	// Undrawn says no pages are drawn in this checkout, as in a fresh clone:
-	// git does not keep them, and the state they are drawn from is current.
+	// Undrawn says no pages are drawn in this checkout while the state they
+	// are drawn from is current, as in a checkout that lacks them.
 	Undrawn Freshness = "NOT DRAWN"
 )
 
