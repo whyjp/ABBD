@@ -6,20 +6,21 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
 
 ## Reading one module
 
-1. Start from the blueprint. Run `abbd explain <MOD-ID>` for the module's units inside, its contracts, its neighbours and the couplings readers already recorded. Its anchors are in `.abbd/architecture/<MOD-ID>.md` under `anchors:`, and each inside unit's under its own ID. The stored text is stamped against every file of those anchors, so those files are what you read.
-2. Read the anchors entry first: `main.*`, `index.*`, `mod.rs`, `lib.rs`, `__init__.py` or the package's doc file, then the files the most stored relations point at, then the rest. Leave the module's anchors only to follow a contract one hop.
+1. Start from the brief. Run `abbd brief <MOD-ID>` and save its output as the file you will store. It holds the two sections with a TODO bullet per inside unit and per contract the module provides, then a `## Read first` section: the files the text is stamped against, entry files first, the module's contracts and neighbours, the couplings readers already recorded with their quotes, the notes and figures that cite it, and, for a stored text, what moved since it was written.
+2. Read every file the brief lists, entry files first, then the files the most stored relations point at, then the rest. Leave them only to follow a contract one hop.
 3. Keep working notes while you read, never stored: the units you find, the order things happen in, where the module stops, what is not obvious, open questions and the files you read.
-4. Simple or complex. A module with at most 12 anchor files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
+4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
 ## What you store
 
 **The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
 
-- Exactly two sections, `## Overview` then `## Key Concepts`. Split a long one under `###` headings inside it. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
+- Exactly two sections, `## Overview` then `## Key Concepts`. Each section, and each `###` part inside one, holds under 2,000 characters. Key Concepts runs over first, so count it before you store, and split it under `###` headings when it does. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
 - Overview: one or two paragraphs, under 2,000 characters, in the present tense, with no dates, PR or issue numbers. It names what the module is responsible for, the contracts it provides and uses by their stored names, and one thing it does not do.
-- Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file or symbol, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet.
+- Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file or symbol, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet. When a module holds more than ten, one bullet names the units that work together, so the count stays at ten.
+- Rewrite every TODO the brief left and delete its `## Read first` section. `abbd understand <MOD-ID> <FILE>` refuses a text with a TODO line or a section other than the two.
 - Inline marks are `code` spans and `**bold**` only. No links, images, HTML or mermaid. A fence holds code only.
-- `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters and each phrase that reads as history. Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay.
+- `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit. Name another unit's file by that unit instead.
 
 **A coupling** the layout does not show: `abbd record relation <FROM> <KIND> <TO> --via <VIA> --phrase "<PHRASE>" --evidence <PATH:LINES:QUOTE>`, with the phrase rules of the /abbd skill.
 

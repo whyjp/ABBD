@@ -1,0 +1,179 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"maps"
+	"os"
+	"path"
+	"path/filepath"
+	"slices"
+	"strings"
+
+	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/store"
+	"github.com/whyjp/abbd/internal/topology"
+)
+
+// entryStems name the files a reader opens first: where a package starts or
+// says what it is.
+var entryStems = []string{"main", "index", "mod", "lib", "__init__", "doc", "readme"}
+
+// brief prints the reading brief for a module's text: the skeleton the text
+// fills, then what to read, which the reader deletes before storing. It
+// reads only.
+func (e env) brief(ref string) error {
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	id := model.ID(ref)
+	_, ok := textModule(units, id)
+	if !ok {
+		return fmt.Errorf("%s is not a module or feature; abbd explain QUERY finds its ID", ref)
+	}
+	name := names(units)
+	ex := topology.Explain(units, id)
+	w := e.stdout
+	fmt.Fprint(w, "## Overview\n\nTODO what the module is responsible for, the contracts it provides and uses by name, and one thing it does not do.\n\n## Key Concepts\n\n")
+	byID := map[model.ID]model.Unit{}
+	for _, v := range units {
+		byID[v.ID] = v
+	}
+	for _, r := range ex.Inside {
+		v := byID[r.ID]
+		at := ""
+		if len(v.Anchors) > 0 {
+			at = " (`" + v.Anchors[0].Path + "`)"
+		}
+		fmt.Fprintf(w, "- TODO **%s**%s: %s %s%s\n", r.Name, at, r.Kind, r.ID, stored(v))
+	}
+	for _, l := range ex.Out {
+		if l.Kind == model.Provides {
+			fmt.Fprintf(w, "- TODO **%s**: provided contract %s%s\n", name[l.To], l.To, stored(byID[l.To]))
+		}
+	}
+
+	fmt.Fprintf(w, "\n## Read first\n\nRead what this section lists, rewrite every TODO above, delete this section, then store the text with abbd understand %s FILE --reader WHO.\n\n### Files, entry first\n\n", id)
+	files, quotes := e.st.Read(units, id)
+	slices.SortStableFunc(files, func(a, b string) int { return entryRank(a) - entryRank(b) })
+	for _, f := range files {
+		size := "gone"
+		if fi, err := os.Stat(filepath.Join(e.root, filepath.FromSlash(f))); err == nil {
+			size = fmt.Sprintf("%d bytes", fi.Size())
+		}
+		fmt.Fprintf(w, "- `%s` (%s)\n", f, size)
+	}
+	for _, q := range quotes {
+		fmt.Fprintf(w, "- the lines around %s\n", q)
+	}
+	var contracts []string
+	for _, l := range ex.Out {
+		contracts = append(contracts, fmt.Sprintf("%s %s %s%s", l.Kind, l.To, name[l.To], l.Label()))
+	}
+	for _, l := range ex.In {
+		contracts = append(contracts, fmt.Sprintf("used by %s %s, %s%s", l.From, name[l.From], l.Kind, l.Label()))
+	}
+	list(w, "Contracts and neighbours", contracts)
+	var couplings []string
+	for _, l := range ex.Inferred {
+		s := fmt.Sprintf("%s %s %s %s %s", l.From, name[l.From], l.Kind, l.To, name[l.To])
+		if p := l.PhraseLabel(); p != "" {
+			s += "; " + p
+		}
+		for _, ev := range l.Evidence {
+			s += "\n  " + ev.String()
+		}
+		couplings = append(couplings, s)
+	}
+	list(w, "Couplings readers recorded", couplings)
+	cites, err := e.citing(units, id)
+	if err != nil {
+		return err
+	}
+	list(w, "What cites it", cites)
+	texts, err := e.st.LoadUnderstandings()
+	if err != nil {
+		return err
+	}
+	if t, had := texts[id]; had {
+		moved := e.st.Changed(units, id, t.Code)
+		if len(moved) == 0 {
+			moved = []string{"nothing: the stored text is CURRENT"}
+		}
+		list(w, "Moved since the stored text", moved)
+	}
+	return nil
+}
+
+// stored is a unit's stored sentence with its origin, for a TODO to rewrite.
+func stored(u model.Unit) string {
+	for _, f := range []*model.Fact{u.Responsibility, u.Purpose, u.Signature} {
+		if f != nil && f.Value != "" {
+			return fmt.Sprintf("; stored: %s (%s)", f.Value, f.Origin)
+		}
+	}
+	return ""
+}
+
+func entryRank(p string) int {
+	stem := strings.ToLower(path.Base(p))
+	stem = strings.TrimSuffix(stem, path.Ext(stem))
+	if slices.Contains(entryStems, stem) {
+		return 0
+	}
+	return 1
+}
+
+func list(w io.Writer, title string, lines []string) {
+	if len(lines) == 0 {
+		return
+	}
+	fmt.Fprintf(w, "\n### %s\n\n", title)
+	for _, l := range lines {
+		fmt.Fprintf(w, "- %s\n", l)
+	}
+}
+
+// citing names the notes, flows, stacks and tables that name the module or
+// a unit inside it.
+func (e env) citing(units []model.Unit, id model.ID) ([]string, error) {
+	own := map[model.ID]bool{id: true}
+	for grew := true; grew; {
+		grew = false
+		for _, u := range model.Present(units) {
+			if !own[u.ID] && own[u.Parent] {
+				own[u.ID], grew = true, true
+			}
+		}
+	}
+	var out []string
+	notes, _, err := e.st.LoadNotes()
+	if err != nil {
+		return nil, err
+	}
+	for _, u := range slices.Sorted(maps.Keys(own)) {
+		for _, n := range notes[u] {
+			out = append(out, "note "+n.Ref.String())
+		}
+	}
+	fs, err := e.st.LoadFigures()
+	if err != nil {
+		return nil, err
+	}
+	out = append(out, cited("flow", fs.Flows, own)...)
+	out = append(out, cited("stack", fs.Stacks, own)...)
+	return append(out, cited("table", fs.Tables, own)...), nil
+}
+
+func cited[C model.Claim[C]](kind string, figs []store.Figure[C], own map[model.ID]bool) []string {
+	var out []string
+	for _, f := range figs {
+		for _, p := range f.Parts {
+			if slices.ContainsFunc(p.Claim.Names(), func(id model.ID) bool { return own[id] }) {
+				out = append(out, fmt.Sprintf("%s %s: %s", kind, f.Key, p.Claim.Label()))
+			}
+		}
+	}
+	return out
+}
