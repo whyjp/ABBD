@@ -79,6 +79,7 @@ func (e env) brief(ref string) error {
 		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
 	}
 	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
+	list(w, "Boxes that say only their kind: each draft comes from a Go doc comment or a file's header comment; keep it only where the code bears it out, and store the line in the supplement, or a module's or feature's with abbd understand --sentence", e.drafts(byID, name, drawnWith(id, ex)))
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {
@@ -186,3 +187,41 @@ func cited[C model.Claim[C]](kind string, figs []store.Figure[C], own map[model.
 // keyShown is how many key units the brief lists and the text check holds
 // the text to.
 const keyShown = 8
+
+// drawnWith is the module, the units its page draws inside it, and the
+// contracts it provides.
+func drawnWith(id model.ID, ex topology.Explanation) []model.ID {
+	out := []model.ID{id}
+	for _, r := range ex.Inside {
+		out = append(out, r.ID)
+	}
+	for _, l := range ex.Out {
+		if l.Kind == model.Provides {
+			out = append(out, l.To)
+		}
+	}
+	return out
+}
+
+// drafts is, for each of ids that records neither a purpose nor a
+// responsibility, a draft drawn from its anchors and the file it came from.
+func (e env) drafts(byID map[model.ID]model.Unit, name map[model.ID]string, ids []model.ID) []string {
+	var out []string
+	for _, id := range ids {
+		u, ok := byID[id]
+		if !ok || hasValue(u.Purpose) || hasValue(u.Responsibility) {
+			continue
+		}
+		s, from := e.draft(u)
+		if s == "" {
+			at := "its code"
+			if len(u.Anchors) > 0 {
+				at = "`" + u.Anchors[0].Path + "`"
+			}
+			out = append(out, fmt.Sprintf("%s %s: no comment at its anchors says what it is for; read %s", id, name[id], at))
+			continue
+		}
+		out = append(out, fmt.Sprintf("%s %s: %q (from `%s`)", id, name[id], s, from))
+	}
+	return out
+}
