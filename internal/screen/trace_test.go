@@ -82,7 +82,9 @@ func logJogs(t *testing.T, got Trace) {
 // The hand-laid reference drawing of this repository's overview,
 // eval/render-r1/reference-self.svg, lays out the same boxes and relations
 // the way a person would in draw.io. The path measures must rate it at
-// least as well as the renderer does, or they measure the wrong thing.
+// least as well as the renderer does, or they measure the wrong thing. The
+// reference draws every relation, so it is held to the overview drawn
+// whole, not the cut one that counts some on pills.
 func TestReferenceRanksFirst(t *testing.T) {
 	t.Parallel()
 	b, err := os.ReadFile(filepath.Join("..", "..", "eval", "render-r1", "reference-self.svg"))
@@ -93,7 +95,7 @@ func TestReferenceRanksFirst(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	m := fixture(t, "self")
+	m := drawAll(t, "self")
 	ref, got := trace(s, m.Overview.Relations), traced(t, m.Overview)
 	t.Logf("reference: %s", ref)
 	t.Logf("renderer:  %s", got)

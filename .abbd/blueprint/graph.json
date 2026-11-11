@@ -23707,7 +23707,7 @@
                 "Code": true
               },
               {
-                "Text": ") and off by default: with it off, ",
+                "Text": ") and off by default, and this repository and every fixture switch it on: with it off, ",
                 "Code": false
               },
               {
@@ -25328,7 +25328,15 @@
                 "Code": true
               },
               {
-                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them. ",
+                "Text": "): the unit files of four real stores, this repository, ripgrep, Orca and pstack, as sync left them, each with a ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " that switches the overview's cut on. ",
                 "Code": false
               },
               {
@@ -25336,7 +25344,31 @@
                 "Code": true
               },
               {
-                "Text": " builds each once for every test that reads it, and those tests run in parallel; the two that turn a package switch (",
+                "Text": " builds each as its ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " sets once for every test that reads it, and ",
+                "Code": false
+              },
+              {
+                "Text": "drawAll",
+                "Code": true
+              },
+              {
+                "Text": " builds it with the cut off, the layout every repo that leaves the cut off still gets, for a test of a line the cut overview counts on a pill: ",
+                "Code": false
+              },
+              {
+                "Text": "gitx_knot_test.go",
+                "Code": true
+              },
+              {
+                "Text": " holds the six lines into internal/gitx to one turn back each on both the uncut overview and internal/gitx's focus view. Those tests run in parallel; the two that turn a package switch (",
                 "Code": false
               },
               {

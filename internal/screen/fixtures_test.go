@@ -43,9 +43,33 @@ func cached(name string) (Model, error) {
 	return b.m, b.err
 }
 
+// fresh builds a fixture as its .abbd/project.yaml configures it, as abbd
+// sync builds a repository.
 func fresh(name string) (Model, error) {
-	units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-	return Build(Input{Units: units}), err
+	st := store.Open(filepath.Join("testdata", name))
+	units, err := st.LoadUnits()
+	if err != nil {
+		return Model{}, err
+	}
+	p, err := st.LoadProject()
+	return Build(Input{Units: units, Project: p}), err
+}
+
+// drawAll is a fixture's model with the overview's density cut switched
+// off, for a test of a line the cut overview counts on a pill instead.
+func drawAll(t *testing.T, name string) Model {
+	t.Helper()
+	v, _ := built.LoadOrStore(name+" uncut", &builtModel{})
+	b := v.(*builtModel)
+	b.once.Do(func() {
+		var units []model.Unit
+		units, b.err = store.Open(filepath.Join("testdata", name)).LoadUnits()
+		b.m = Build(Input{Units: units})
+	})
+	if b.err != nil {
+		t.Fatal(b.err)
+	}
+	return b.m
 }
 
 // buildEach builds every fixture with build, all at once, for a test that
@@ -76,7 +100,11 @@ func rootModel(t *testing.T, name, root string, units []model.Unit) Model {
 	if root == filepath.Join("testdata", name) {
 		return fixture(t, name)
 	}
-	return Build(Input{Units: units})
+	p, err := store.Open(root).LoadProject()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return Build(Input{Units: units, Project: p})
 }
 
 func measured(t *testing.T, d Drawing) Metrics {
