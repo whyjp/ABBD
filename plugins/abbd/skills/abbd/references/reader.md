@@ -9,7 +9,7 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
 1. Start from the brief. Run `abbd brief <MOD-ID>` and save its output as the file you will store. It holds the two sections with a TODO bullet per inside unit and per contract the module provides, then a `## Read first` section: the files the text is stamped against, entry files first, the module's contracts and neighbours, the couplings readers already recorded with their quotes, the notes and figures that cite it, and, for a stored text, what moved since it was written.
 2. Read every file the brief lists, entry files first, then the files the most stored relations point at, then the rest. Leave them only to follow a contract one hop.
 3. Keep working notes while you read, never stored: the units you find, the order things happen in, where the module stops, what is not obvious, open questions and the files you read.
-4. Simple or complex. A module with at most 12 anchor files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
+4. Simple or complex. Count the files and the inside units the brief lists, of every kind. A module with at most 12 files and 6 inside units is read in one pass by you. Past that, split it by inside units into 2 to 4 slices, give each slice to an `Explore` subagent with this file and the slice's anchors, tell it not to edit files, and write the result from their reports.
 
 ## What you store
 
