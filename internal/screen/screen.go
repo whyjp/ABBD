@@ -234,10 +234,11 @@ func Build(in Input) Model {
 		d.dress(o.tree)
 	}
 	// Numbers and band titles keep off every word, so they are set once
-	// dress has given each box its last line.
+	// dress has given each box its last line; step words keep off both.
 	for _, d := range leads {
 		d.number()
 		d.zone(o.tree, ls)
+		d.name()
 		d.card()
 	}
 	o.placeNotes(in, &m)

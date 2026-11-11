@@ -214,3 +214,19 @@ func TestACardsWordsFitIt(t *testing.T) {
 		}
 	}
 }
+
+// A step's word reads as its own, not as the end of a band's title it would
+// run on from.
+func TestAStepWordKeepsOffABandsTitle(t *testing.T) {
+	z := Zone{N: 2, Title: "READERS", X: 420, Y: 730, W: 300, H: 120, TX: 436, TY: 746}
+	d := Drawing{Zones: []Zone{z}, Lead: &Lead{Hops: []Hop{{N: 1, X: 500, Y: 750, R: badgeR, Word: "Snapshot"}}}}
+	d.name()
+	h := d.Lead.Hops[0]
+	if h.Word == "" {
+		t.Fatal("the word was dropped though it has room clear of the title")
+	}
+	word := box{h.WX, h.WY - 11, textWidth(h.Word, wordPx), 13}
+	if hit(word, grow(z.titleArea(), inkGap)) {
+		t.Errorf("word %+v stands within %dpx of the title %+v", word, inkGap, z.titleArea())
+	}
+}

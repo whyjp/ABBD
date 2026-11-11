@@ -268,11 +268,6 @@ func inferred(boxes []Box, uses []use) []use {
 	}
 }
 
-// badge is where a hop's number sits: halfway along its way, or failing
-// that the nearest point to it, by fortieths, off every box, label and
-// count, badgeApart from the numbers already set and inkGap from every other
-// line, arrowhead, dot and chip; failing that, set up to its radius to one
-// side; failing that, the same at the small radius.
 // number sets each hop's number once the view's boxes carry their last
 // lines (dress), so a number keeps off the words they end with. A number
 // first takes a place on ink no other hop runs along, so a trunk two hops
@@ -293,6 +288,14 @@ func (d *Drawing) number() {
 		at, rad := d.badge(runs(h.D), others, taken, d.Lead.Key != "")
 		taken = append(taken, at)
 		h.X, h.Y, h.R = at.x, at.y, rad
+	}
+}
+
+// name sets each hop's step word beside its number, once the bands carry
+// their titles, so a word keeps off them; a word with no room is dropped.
+func (d *Drawing) name() {
+	if d.Lead == nil {
+		return
 	}
 	var words []box
 	for i := range d.Lead.Hops {
@@ -318,10 +321,16 @@ func (d *Drawing) number() {
 const wordPx = 10
 
 // wordClear says a step's word set over area meets no box, line, label,
-// number or other step's word: ink, labels and counts by clearOfInk.
+// number or other step's word, and stands inkGap off every band's title:
+// ink, labels and counts by clearOfInk.
 func (d *Drawing) wordClear(area box, words []box) bool {
 	for _, b := range d.Boxes {
 		if hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+			return false
+		}
+	}
+	for _, z := range d.Zones {
+		if hit(area, grow(z.titleArea(), inkGap)) {
 			return false
 		}
 	}
@@ -333,6 +342,12 @@ func (d *Drawing) wordClear(area box, words []box) bool {
 	return d.clearOfInk(area, nil) && !d.onBadge(area)
 }
 
+// badge is where a hop's number sits: halfway along its way, or on a lead
+// that follows a stored flow (arrive) just short of where its way ends, or
+// failing that the nearest point to it, by fortieths, off every box, label
+// and count, badgeApart from the numbers already set and inkGap from every
+// other line, arrowhead, dot and chip; failing that, set up to its radius to
+// one side; failing that, the same at the small radius.
 func (d *Drawing) badge(way, others [][2]pt, taken []pt, arrive bool) (pt, int) {
 	total := 0
 	for _, r := range way {
