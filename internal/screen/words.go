@@ -10,6 +10,8 @@ import (
 // Understanding is a module's text from a reader, split into blocks the
 // page renders without trusting any markup in it.
 type Understanding struct {
+	// Reader names who read the code and wrote the text, when it was named.
+	Reader string `json:",omitempty"`
 	Stale  bool
 	Blocks []Block
 }

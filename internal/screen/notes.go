@@ -11,12 +11,14 @@ import (
 // reason a human stated and where.
 type Note struct {
 	Ref, Title, Key string
-	Stale           bool
-	Changed         []string `json:",omitempty"`
-	Blocks          []Block
-	Quotes          []string
-	Why             *Fact  `json:",omitempty"`
-	Source          string `json:",omitempty"`
+	// Reader names who read the code and wrote the note, when it was named.
+	Reader  string `json:",omitempty"`
+	Stale   bool
+	Changed []string `json:",omitempty"`
+	Blocks  []Block
+	Quotes  []string
+	Why     *Fact  `json:",omitempty"`
+	Source  string `json:",omitempty"`
 	// RereadBy and RereadOn say who read the cited code again
 	// after it moved and kept the note as written, and when.
 	RereadBy, RereadOn string `json:",omitempty"`
@@ -47,7 +49,7 @@ func notes(in Input, u model.Unit) []Note {
 		if n.Ref.Unheld(u) {
 			continue
 		}
-		v := Note{Ref: n.Ref.String(), Title: n.Ref.Slot.Title, Key: n.Ref.Key, Stale: n.Stale(), Changed: n.Changed, Blocks: blocks(n.Text), slot: n.Ref.Slot.Name}
+		v := Note{Ref: n.Ref.String(), Reader: n.Reader, Title: n.Ref.Slot.Title, Key: n.Ref.Key, Stale: n.Stale(), Changed: n.Changed, Blocks: blocks(n.Text), slot: n.Ref.Slot.Name}
 		for _, e := range n.Evidence {
 			v.Quotes = append(v.Quotes, cite(e))
 		}

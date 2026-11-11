@@ -162,3 +162,35 @@ func TestANestedRepositorySnapshotKeepsANewlineName(t *testing.T) {
 		t.Errorf("snapshot = %q, want %q", got, want)
 	}
 }
+
+// Recorded names the pull request whose merge brought a quote in, and none
+// for a quote committed on the main line before an unrelated merge.
+func TestRecordedNamesThePullRequestThatBroughtAQuoteIn(t *testing.T) {
+	root := t.TempDir()
+	git(t, root, "init", "-q", "-b", "main")
+	write(t, filepath.Join(root, "u.md"), "start\n")
+	git(t, root, "add", "-A")
+	git(t, root, "commit", "-qm", "start")
+
+	git(t, root, "checkout", "-qb", "pr")
+	write(t, filepath.Join(root, "u.md"), "start\nbranch quote\n")
+	git(t, root, "commit", "-qam", "Record the branch quote")
+	git(t, root, "checkout", "-q", "main")
+	git(t, root, "merge", "-q", "--no-ff", "pr", "-m", "Merge pull request #7 from x/pr")
+
+	write(t, filepath.Join(root, "u.md"), "start\nbranch quote\nmain quote\n")
+	git(t, root, "commit", "-qam", "Record the main quote")
+	git(t, root, "checkout", "-qb", "other")
+	write(t, filepath.Join(root, "v.md"), "other\n")
+	git(t, root, "add", "-A")
+	git(t, root, "commit", "-qm", "Other work")
+	git(t, root, "checkout", "-q", "main")
+	git(t, root, "merge", "-q", "--no-ff", "other", "-m", "Merge pull request #8 from x/other")
+
+	if got := Recorded(root, "branch quote", "u.md"); !strings.HasSuffix(got, "Record the branch quote (#7)") {
+		t.Errorf("the branch quote came in by #7: %q", got)
+	}
+	if got := Recorded(root, "main quote", "u.md"); !strings.HasSuffix(got, "Record the main quote") {
+		t.Errorf("the main quote came in by no merge: %q", got)
+	}
+}

@@ -52,14 +52,14 @@ var site = template.Must(template.New("site").Funcs(template.FuncMap{
 // labels are the Korean words the screen shows for an origin badge or a kind.
 // The English key stays the CSS class and the word the CLI prints.
 var labels = map[string]string{
-	"stated": "확인", "inferred": "판독", "extracted": "추출",
+	"stated": "사람", "inferred": "판독", "extracted": "추출",
 	"MOD": "모듈", "IF": "인터페이스", "EVT": "이벤트", "DATA": "데이터", "CFG": "설정", "FEAT": "기능",
 }
 
 // tips say what each origin word means; the page shows them on hover.
 var tips = map[string]string{
-	"inferred":  "리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음",
-	"stated":    "사람이 말함",
+	"inferred":  "에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함",
+	"stated":    "사람이 말한 것",
 	"extracted": "프로젝트의 추출 스크립트가 코드에서 읽음",
 }
 

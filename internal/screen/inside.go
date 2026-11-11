@@ -67,6 +67,9 @@ type Group struct {
 type Coupling struct {
 	From, To, Kind, Via string
 	Quotes              []string
+	// Drifted says the coupling counts on drifted evidence only, as
+	// Relation.Drifted does, so the reader sees whether its evidence holds.
+	Drifted bool `json:",omitempty"`
 }
 
 type InsideUnit struct {
@@ -840,6 +843,7 @@ func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {
 			for _, e := range r.Evidence {
 				c.Quotes = append(c.Quotes, cite(e))
 			}
+			c.Drifted = r.Drifted()
 			out = append(out, c)
 		}
 	}

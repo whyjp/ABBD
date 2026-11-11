@@ -286,7 +286,7 @@ svg [data-h="n"] { --c: var(--hn); }
   
 </header>
 <div class="solo"><section class="inside matrix" id="table-cli-files">
-  <div class="drawhead"><h2>Which part of the abbd CLI reads and writes which .abbd file? <span class="pill inferred" title="리더(에이전트)가 읽음. 인용한 코드는 sync마다 확인됨. 사람이 확인하지 않음">판독</span> <span class="pill breach" title="저장된 관계 없이 쓴다고 말하는 칸">관계 없는 칸 9</span></h2><div class="views"><span class="muted">5행 × 5열</span> <a href="index.html">모듈과 계약으로</a></div></div>
+  <div class="drawhead"><h2>Which part of the abbd CLI reads and writes which .abbd file? <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span> <span class="pill breach" title="저장된 관계 없이 쓴다고 말하는 칸">관계 없는 칸 9</span></h2><div class="views"><span class="muted">5행 × 5열</span> <a href="index.html">모듈과 계약으로</a></div></div>
   <p class="muted" style="margin:0">행마다 한 단위입니다. 행 머리를 누르면 그 단위를 보여 주는 모듈의 안으로 갑니다. 열이 단위를 가리키면 그 열의 칸을 저장된 관계와 맞춰 봅니다. 점선 칸은 저장된 관계 없이 쓴다고 말하는 칸이고, ◦ 칸은 저장된 관계가 있는데 비어 있는 칸입니다.</p>
   <div class="caption text"><p>Each row is one part of the CLI and each column one file under <code>.abbd/</code>. Only sync and the record writers write the topology. Every command that writes renders the blueprint after it, so blueprint publish reads every input and writes the blueprint and the state. The query and review commands only read. cells: 9 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation; abbd status lists them</p></div>
   

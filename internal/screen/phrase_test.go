@@ -67,7 +67,7 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 			t.Fatalf("four phrases carried once each say %q, want the first by name, \"alpha 외 3\"", got)
 		}
 	}
-	if got := said(tr, [][]string{{"c", "a", "b", "d", "x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/5", "schema fetch (확인) 1/5"}) {
+	if got := said(tr, [][]string{{"c", "a", "b", "d", "x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/5", "schema fetch (사람) 1/5"}) {
 		t.Errorf("the tooltip lists %v, want each phrase once with whose words it is and its share of the line", got)
 	}
 	for _, tc := range []struct {
@@ -83,7 +83,7 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 			t.Errorf("a bus of %v says %q, want %q, whose lines add up to its ×%d", tc.lines, got, tc.want, len(tc.lines))
 		}
 	}
-	if got := said(tr, [][]string{{"a", "c"}, {"b"}, {"x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/3", "schema fetch (확인) 1/3"}) {
+	if got := said(tr, [][]string{{"a", "c"}, {"b"}, {"x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/3", "schema fetch (사람) 1/3"}) {
 		t.Errorf("a bus's tooltip lists %v, want each phrase's share of its lines", got)
 	}
 }
