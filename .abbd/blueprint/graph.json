@@ -2404,11 +2404,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/topology",
@@ -6151,11 +6153,11 @@
                     "Code": true
                   },
                   {
-                    "Text": "): explain prints a module's build artifact, such as ",
+                    "Text": "): explain prints a module's build artifact with whoever said it, such as ",
                     "Code": false
                   },
                   {
-                    "Text": "static (정적 라이브러리)",
+                    "Text": "static (정적 라이브러리; EXTRACTED)",
                     "Code": true
                   },
                   {
@@ -6754,7 +6756,7 @@
                 "Code": true
               },
               {
-                "Text": ". Explain also names a module's build artifact. Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's build artifact and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -10176,7 +10178,7 @@
                 "Code": true
               },
               {
-                "Text": " fills a matched script unit's only when the script read none, so the build's own reading wins.",
+                "Text": " fills a matched script unit's only when the script read none, written by the supplement, so the build's own reading wins and a sync keeps it.",
                 "Code": false
               }
             ]
@@ -12383,7 +12385,7 @@
                 "Code": true
               },
               {
-                "Text": " on a unit says what the build makes of it, ",
+                "Text": " on a unit, a script fact, says what the build makes of it, ",
                 "Code": false
               },
               {
@@ -15178,7 +15180,7 @@
                 "Code": true
               },
               {
-                "Text": " with its anchors and digest, as code facts the script reads.",
+                "Text": " as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
                 "Code": false
               }
             ]
@@ -18812,7 +18814,15 @@
                 "Code": true
               },
               {
-                "Text": "): what the build makes of a module, with ",
+                "Text": "): what the build makes of a module, a fact with its writer that ",
+                "Code": false
+              },
+              {
+                "Text": "Built",
+                "Code": true
+              },
+              {
+                "Text": " reads and ",
                 "Code": false
               },
               {
@@ -18820,7 +18830,7 @@
                 "Code": true
               },
               {
-                "Text": " giving it in the blueprint's words, such as 공유 라이브러리; ",
+                "Text": " gives in the blueprint's words, such as 공유 라이브러리; ",
                 "Code": false
               },
               {
@@ -26580,7 +26590,15 @@
                 "Code": true
               },
               {
-                "Text": " puts a module's build artifact before its hub or entry part on the box's last line, and its title says it in brackets.",
+                "Text": " puts a module's build artifact before its hub or entry part on the box's last line, and its title says it in brackets; ",
+                "Code": false
+              },
+              {
+                "Text": "link",
+                "Code": true
+              },
+              {
+                "Text": " draws dotted with the other build-time vias.",
                 "Code": false
               }
             ]
@@ -27922,7 +27940,31 @@
               {
                 "Key": "artifact",
                 "Name": "artifact",
-                "Shape": "Artifact",
+                "Shape": "*Fact",
+                "Need": "선택"
+              },
+              {
+                "Key": "artifact-value",
+                "Name": "artifact.value",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "artifact-writer",
+                "Name": "artifact.writer",
+                "Shape": "Writer",
+                "Need": "필수"
+              },
+              {
+                "Key": "artifact-source",
+                "Name": "artifact.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "artifact-digest",
+                "Name": "artifact.digest",
+                "Shape": "string",
                 "Need": "선택"
               },
               {
@@ -28484,11 +28526,13 @@
       "Name": "internal/topology",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -29937,6 +29981,44 @@
               },
               {
                 "Text": " is true for a changed signature, a changed entry or entry list, an added or removed contract, or an added or removed drawn relation. A code-only change, a new use of an entry on a relation already there, a non-contract unit and an inferred coupling never set it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Artifact change",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "diff.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "fields",
+                "Code": true
+              },
+              {
+                "Text": " notes a module whose build artifact changed, appeared or cleared, printed as ",
+                "Code": false
+              },
+              {
+                "Text": "~ artifact",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
