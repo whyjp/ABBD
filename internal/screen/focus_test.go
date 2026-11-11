@@ -64,6 +64,15 @@ func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
 			}
 			seen++
 			whole := drawnIn(v.d)
+			// What the view counts on its boxes instead of drawing, its
+			// focus views draw.
+			counted := map[string]bool{}
+			for _, r := range v.d.Counted {
+				counted[r[0]+" -> "+r[1]] = true
+			}
+			for _, r := range v.d.countedRels {
+				counted[r] = true
+			}
 			union := marks{map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}}
 			for _, f := range v.focus {
 				part := drawnIn(f.Drawing)
@@ -78,7 +87,7 @@ func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
 				} {
 					for k := range c.part {
 						c.u[k] = true
-						if !c.w[k] {
+						if !c.w[k] && !counted[k] {
 							t.Errorf("%s: %s draws %s %s, which the view does not", v.name, f.ID, c.what, k)
 						}
 					}

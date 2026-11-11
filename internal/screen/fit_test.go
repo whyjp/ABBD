@@ -123,7 +123,7 @@ func TestBuildFoldsAChainOnlyWhenItRunsPastTheScreen(t *testing.T) {
 		return us
 	}
 	plainly := func(us []model.Unit) Drawing {
-		return planOverview(us, "", nil, tactic{}, nil, nil).draw(func(model.ID) string { return "" })
+		return planOverview(us, "", nil, tactic{}, nil, nil, nil).draw(func(model.ID) string { return "" })
 	}
 	short := chain(8)
 	if p, got := plainly(short), build(short).Overview; p.Height > screenH || got.Height != p.Height {

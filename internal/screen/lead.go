@@ -36,16 +36,18 @@ type Lead struct {
 }
 
 // Stay numbers the steps a stored flow runs on one box of the overview
-// after its last hop, or all of them where it never leaves that box: the
-// flow's own numbers, first to last, set at X, Y in a pill W wide beside
-// the box, clear of every other mark.
+// after its last hop, or all of them where it never leaves that box, in a
+// pill W wide set at X, Y beside the box, clear of every other mark. First
+// and Last go on from the hops' numbers, one to a step, and Title names the
+// flow and the steps' own numbers in it.
 type Stay struct {
 	Box         string
 	First, Last int
+	Title       string
 	X, Y, W     int
 }
 
-// Text is the pill's words: the first and last step it numbers.
+// Text is the pill's words: the first and last number it carries.
 func (s Stay) Text() string {
 	if s.First == s.Last {
 		return strconv.Itoa(s.First)
@@ -56,33 +58,41 @@ func (s Stay) Text() string {
 // stayH is how tall a stay's pill is.
 const stayH = 16
 
-// stayed is the steps of f that run on the lead's last box once hops end,
-// or, with no hop, on the box of its first step the view shows, up to the
-// first step on another box; nil where that is one step after no hop.
+// stayed is the steps of f that run on the box its last hop reached, from
+// that step, or, with no hop, on the box of its first step the view shows,
+// up to the first step on another box; nil where that is one step after no
+// hop.
 func (d *Drawing) stayed(t tree, f flowWalk, hops []use) *Stay {
 	box := d.shown(t)
-	at, i := "", 0
-	for ; i < len(f.units) && at == ""; i++ {
-		at = box(f.units[i])
+	i := 0
+	if len(hops) > 0 {
+		i = hops[len(hops)-1].step
 	}
-	if at == "" {
+	for i < len(f.units) && box(f.units[i]) == "" {
+		i++
+	}
+	if i == len(f.units) {
 		return nil
 	}
-	i--
-	if len(hops) > 0 {
-		at = hops[len(hops)-1].to
-		for i < len(f.units) && box(f.units[i]) != at {
-			i++
+	at, k := box(f.units[i]), i+1
+	for k < len(f.units) && box(f.units[k]) == at {
+		k++
+	}
+	if len(hops) == 0 && k-i == 1 {
+		return nil
+	}
+	name := at
+	for _, b := range d.Boxes {
+		if b.ID == at && b.Name != "" {
+			name = b.Name
 		}
 	}
-	s := &Stay{Box: at, First: i + 1, Last: i + 1}
-	for k := i + 1; k < len(f.units) && box(f.units[k]) == at; k++ {
-		s.Last = k + 1
+	n := len(hops) + 1
+	steps := strconv.Itoa(i + 1)
+	if k-i > 1 {
+		steps += "–" + strconv.Itoa(k)
 	}
-	if len(hops) == 0 && s.Last == s.First {
-		return nil
-	}
-	return s
+	return &Stay{Box: at, First: n, Last: n + k - i - 1, Title: f.question + ": " + steps + "단계가 " + name + " 안에서 이어짐"}
 }
 
 // pin sets the stay's pill beside its box: right of its top corner, else
@@ -167,8 +177,10 @@ type use struct {
 	from, to string
 	way      int
 	weight   int
-	// word names the stored step at to, on a lead that follows a flow.
+	// word names the stored step at to, on a lead that follows a flow, and
+	// step is that step's place in the flow, from 0.
 	word string
+	step int
 }
 
 func (d *Drawing) uses() []use {
@@ -308,7 +320,7 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 			break
 		}
 		h := uses[j]
-		h.word = said[h.to]
+		h.word, h.step = said[h.to], i
 		hops = append(hops, h)
 		on = append(on, b)
 	}

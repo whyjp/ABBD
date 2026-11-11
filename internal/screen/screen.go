@@ -37,6 +37,11 @@ type Input struct {
 	// the ordered walks, with the markdown files beside them that are no
 	// figures, and why.
 	Figures store.Figures
+	// Primary are the stored relations, by relation key (model.Edge's
+	// String), the overview must draw whatever else it counts instead
+	// (primary.go) when Project.OverviewCut is on. Nil leaves the choice to
+	// the stored flows and stacks.
+	Primary map[string]bool
 }
 
 // Load reads the store. It leaves Tree empty: snapshotting the working tree
@@ -201,22 +206,16 @@ func Build(in Input) Model {
 	// what it joins (choose). The screen it fits is what the page leaves
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
-	o := planOverview(in.Units, "", nil, tactic{}, ls, fs)
+	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
+	var c *cut
+	if in.Project.OverviewCut {
+		c = o.primary(in.Primary, ls, fs)
+	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
-	// Where the overview derives groups to stand together (derive), it is
-	// drawn with them, and without them only as another ranking is: kept
-	// where it has fewer hard breaches or fits the screen where they do not.
-	ts := overviewTactics
-	if o.derived != nil {
-		for _, t := range overviewTactics {
-			t.plain = true
-			ts = append(slices.Clone(ts), t)
-		}
-	}
-	m.Overview = choose(ts, func(t tactic, read *cost) (Drawing, bool) {
-		p := planOverview(in.Units, "", nil, t, ls, fs)
+	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+		p := planOverview(in.Units, "", nil, t, ls, fs, c)
 		if p.layout.idle {
 			return Drawing{}, false
 		}
@@ -227,7 +226,7 @@ func Build(in Input) Model {
 		read.judge(d)
 		read.over = pastScreen(d, room)
 	})
-	m.Focus = o.overviewFocus(in.Units, m.Overview)
+	m.Focus = o.overviewFocus(in.Units, m.Overview, c.hides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {
@@ -294,17 +293,9 @@ func Build(in Input) Model {
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.
-	zs := ls
-	if o.derived != nil {
-		zs = append(slices.Clone(ls), *o.derived)
-	}
-	for i, d := range leads {
+	for _, d := range leads {
 		d.number()
-		if i == 0 {
-			d.zone(o.tree, zs)
-		} else {
-			d.zone(o.tree, ls)
-		}
+		d.zone(o.tree, ls)
 		d.pin()
 		d.name()
 		d.card()

@@ -74,13 +74,9 @@ const (
 )
 
 // layering is a stored stack as zones read it: each layer's units, top down.
-// A derived one is the overview's own grouping where no stored stack lays
-// it out (derive), which stands as a stack does with one group of two
-// boxes or more.
 type layering struct {
-	names   []string
-	units   [][]model.ID
-	derived bool
+	names []string
+	units [][]model.ID
 }
 
 func layerings(in Input) []layering {
@@ -123,28 +119,15 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 	if len(outside) >= 1 && len(outside) < len(d.Boxes) {
 		groups = append(groups, group{title: "외부 계약", ids: outside})
 	}
-	var numbered []int
+	n := 0
 	for _, g := range groups {
 		if z, ok := d.band(g); ok {
 			if z.N > 0 {
-				numbered = append(numbered, len(d.Zones))
+				n++
+				z.N = n
 			}
 			d.Zones = append(d.Zones, z)
 		}
-	}
-	var bands []Zone
-	for _, k := range numbered {
-		bands = append(bands, d.Zones[k])
-	}
-	slices.SortStableFunc(bands, func(a, b Zone) int {
-		if a.Y != b.Y {
-			return a.Y - b.Y
-		}
-		return a.X - b.X
-	})
-	for i, k := range numbered {
-		d.Zones[k] = bands[i]
-		d.Zones[k].N = i + 1
 	}
 }
 
@@ -182,8 +165,7 @@ func (s layering) tiers(box func(model.ID) string) []group {
 }
 
 // stackOf is the tiers of the stored stack that covers the most boxes in
-// tiers of two boxes or more, when two of its tiers at least hold two (one,
-// for a derived grouping, whose groups fit keeps whole or not at all), each
+// tiers of two boxes or more, when two of its tiers at least hold two, each
 // tier's boxes as fit keeps them. The layout keeps them all, and a band
 // only those that sit together.
 func stackOf(stacks []layering, box func(model.ID) string, fit func([]string) []string) []group {
@@ -193,20 +175,12 @@ func stackOf(stacks []layering, box func(model.ID) string, fit func([]string) []
 		ts := s.tiers(box)
 		k, n := 0, 0
 		for i := range ts {
-			kept := fit(ts[i].ids)
-			if s.derived && len(kept) < len(ts[i].ids) {
-				kept = nil
-			}
-			if ts[i].ids = kept; len(ts[i].ids) >= 2 {
+			if ts[i].ids = fit(ts[i].ids); len(ts[i].ids) >= 2 {
 				k++
 				n += len(ts[i].ids)
 			}
 		}
-		least := 2
-		if s.derived {
-			least = 1
-		}
-		if k >= least && n > most {
+		if k >= 2 && n > most {
 			best, most = ts, n
 		}
 	}
@@ -214,8 +188,7 @@ func stackOf(stacks []layering, box func(model.ID) string, fit func([]string) []
 }
 
 // together is the largest run of ids whose band, at its narrowest, holds
-// no other box: all of them where their band does, as a group that wraps
-// onto a second row may; else, taken in reading order, each box joins the run before it
+// no other box: taken in reading order, each box joins the run before it
 // when the band around both stays clear, and starts a run when it does not.
 func (d *Drawing) together(ids []string) []string {
 	var bs []Box
@@ -230,9 +203,6 @@ func (d *Drawing) together(ids []string) []string {
 		}
 		return a.X - b.X
 	})
-	if len(bs) > 1 && d.sitTogether(bs) {
-		return ids
-	}
 	var best, run []Box
 	for _, b := range bs {
 		if run = append(run, b); !d.sitTogether(run) {
@@ -291,107 +261,6 @@ func (d *Drawing) folders(t tree) []group {
 		}
 	}
 	return out
-}
-
-// zonesMost is how many groups a derived grouping keeps, its largest.
-const zonesMost = 6
-
-// derive is the overview's grouping where no stored stack lays it out:
-// its modules by the top directory their code sits in, where two modules
-// or more share one and not every module does. Where every module shares
-// one, it reads the directory below. Directories whose names share a stem
-// before a hyphen or underscore, as libobs and libobs-winrt do, are one
-// group, titled by the stem. A module whose code spans directories of
-// different stems, or sits at the root, stands in none. The groups stand
-// with those that use the others most above them.
-func (o *overview) derive(edges []ledge) (layering, bool) {
-	var at map[string][]model.ID
-	var keys []string
-	whole := map[string]string{}
-	for depth := 0; depth < 4; depth++ {
-		at, keys = map[string][]model.ID{}, nil
-		for _, m := range o.modules {
-			k, w := topDir(o.units[m], depth)
-			if k == "" {
-				continue
-			}
-			if _, seen := at[k]; !seen {
-				keys = append(keys, k)
-				whole[k] = w
-			} else if whole[k] != w {
-				whole[k] = ""
-			}
-			at[k] = append(at[k], m)
-		}
-		if len(keys) != 1 || len(at[keys[0]]) < len(o.modules) {
-			break
-		}
-	}
-	keys = slices.DeleteFunc(keys, func(k string) bool { return len(at[k]) < 2 || len(at[k]) == len(o.modules) })
-	if len(keys) == 0 {
-		return layering{}, false
-	}
-	slices.SortStableFunc(keys, func(a, b string) int { return len(at[b]) - len(at[a]) })
-	keys = keys[:min(len(keys), zonesMost)]
-	of := map[string]string{}
-	for _, k := range keys {
-		for _, m := range at[k] {
-			of[string(m)] = k
-		}
-	}
-	lean := map[string]int{}
-	for _, e := range edges {
-		if a, b := of[e.from], of[e.to]; a != "" && b != "" && a != b {
-			lean[a]++
-			lean[b]--
-		}
-	}
-	slices.SortStableFunc(keys, func(a, b string) int {
-		if lean[a] != lean[b] {
-			return lean[b] - lean[a]
-		}
-		return strings.Compare(a, b)
-	})
-	l := layering{derived: true}
-	for _, k := range keys {
-		title := k + "*"
-		if whole[k] != "" {
-			title = whole[k] + "/"
-		}
-		l.names = append(l.names, title)
-		l.units = append(l.units, at[k])
-	}
-	return l, true
-}
-
-// topDir is the directory at depth below the root that holds all of u's
-// code, cut at the first hyphen or underscore of its last name, and that
-// directory whole where every anchor sits in the same one; "" when they
-// differ or one sits above it.
-func topDir(u model.Unit, depth int) (key, whole string) {
-	for i, a := range u.Anchors {
-		p := strings.TrimSuffix(a.Path, "/")
-		if path.Ext(p) != "" || strings.Contains(path.Base(p), ".") {
-			p = path.Dir(p)
-		}
-		parts := strings.Split(p, "/")
-		if p == "." || len(parts) <= depth {
-			return "", ""
-		}
-		stem := parts[depth]
-		if j := strings.IndexAny(stem, "-_"); j > 0 {
-			stem = stem[:j]
-		}
-		k, w := strings.Join(append(slices.Clone(parts[:depth]), stem), "/"), strings.Join(parts[:depth+1], "/")
-		if i > 0 && k != key {
-			return "", ""
-		}
-		if i > 0 && w != whole {
-			w = ""
-		}
-		key, whole = k, w
-	}
-	return key, whole
 }
 
 // home is the directory a unit's code sits in: the deepest directory that

@@ -27,6 +27,11 @@ type Drawing struct {
 	// a relation the routing drops is lost; one the view never requests is
 	// not caught there.
 	Relations [][2]string `json:"-"`
+	// Counted are the pairs of places whose lines the view counts on their
+	// boxes instead of drawing (primary.go), and countedRels the stored
+	// relations those lines stand for.
+	Counted     [][2]string `json:"-"`
+	countedRels []string
 	// Heads are the markers the drawing's lines end in.
 	Heads []string `json:"-"`
 	// Routes are each line's whole way, one per line the view requests.
@@ -101,7 +106,19 @@ type Box struct {
 	// Role is "entry" for the box a view's lead starts from and "hub" for
 	// one most lines touch; either is drawn filled (dress.go).
 	Role string `json:",omitempty"`
+	// More is how many of its links the overview counts on the box instead
+	// of drawing, and MoreHref the focus view that draws them all.
+	More     int    `json:",omitempty"`
+	MoreHref string `json:",omitempty"`
 }
+
+// MoreW is how wide the pill counting a box's undrawn links is, MoreX and
+// MoreY where it starts, straddling the box's right edge halfway down, off
+// the chips on its top and bottom, and MoreMid its middle.
+func (b Box) MoreW() int   { return 14 + 7*len(fmt.Sprint(b.More)) }
+func (b Box) MoreX() int   { return b.X + b.W - b.MoreW()/2 }
+func (b Box) MoreY() int   { return b.Y + b.H/2 - 8 }
+func (b Box) MoreMid() int { return b.MoreX() + b.MoreW()/2 }
 
 // Text is one line of a label and where it starts; Mid centres it on X.
 type Text struct {
@@ -445,9 +462,12 @@ type overview struct {
 	origins map[string]model.Origin
 	// read is what the routing draw last made costs a reader (costOf).
 	read cost
-	// derived is the grouping the overview stands its tiers in where no
-	// stored stack lays it out (derive).
-	derived *layering
+	// more are the links each box counts instead of drawing (primary.go),
+	// counted the pairs of places they join and countedRels the stored
+	// relations they stand for.
+	more        map[model.ID]int
+	counted     [][2]string
+	countedRels []string
 }
 
 // top lists the top-level units, those with no parent, and the drawn
@@ -530,10 +550,9 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
 // A stored stack among stacks stands the boxes of each of its tiers together in
-// the stack's order (tier) on the whole overview, not on a focus view, or,
-// with none, the groups the overview derives (derive), and
+// the stack's order (tier) on the whole overview, not on a focus view, and
 // within a tier the boxes the stored flows run through in their steps' order.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk) *overview {
+func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -606,6 +625,27 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		for _, id := range o.modules {
 			isModule[id] = true
 		}
+	} else if c != nil {
+		o.pairs = slices.DeleteFunc(o.pairs, func(k [2]model.ID) bool {
+			if c.keep[pairOf(k[0], k[1])] {
+				return false
+			}
+			o.counted = append(o.counted, [2]string{string(k[0]), string(k[1])})
+			for _, ct := range o.carry[k] {
+				o.countedRels = append(o.countedRels, o.between(k[0], ct)...)
+				o.countedRels = append(o.countedRels, o.between(k[1], ct)...)
+			}
+			return true
+		})
+		o.relations = slices.DeleteFunc(slices.Clone(o.relations), func(e model.Edge) bool {
+			if e.Kind != model.DependsOn || !isModule[e.From] || !isModule[e.To] || c.keep[pairOf(e.From, e.To)] {
+				return false
+			}
+			o.counted = append(o.counted, [2]string{string(e.From), string(e.To)})
+			o.countedRels = append(o.countedRels, o.rels[e.String()]...)
+			return true
+		})
+		o.more = c.more
 	}
 	var edges []ledge
 	for _, k := range o.pairs {
@@ -651,15 +691,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 			return ""
 		}
-		all := func(ids []string) []string { return ids }
-		groups := stackOf(stacks, box, all)
-		if len(groups) == 0 && !t.plain {
-			if l, ok := o.derive(edges); ok {
-				o.derived = &l
-				groups = stackOf([]layering{l}, box, all)
-			}
-		}
-		for i, g := range groups {
+		for i, g := range stackOf(stacks, box, func(ids []string) []string { return ids }) {
 			for _, id := range g.ids {
 				tiers[id] = i + 1
 			}
@@ -680,7 +712,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], loose: o.derived != nil, step: steps[string(m)]})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
@@ -1054,7 +1086,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	paths := routed.drawn
 	at = chips()
 
-	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), roads: l.roads}
+	d := Drawing{Width: max(l.width, minWidth), Height: l.height + 4, Dots: faint(junctions(pieces(paths), joinPoints(paths)), paths), Relations: wanted(reqs), Counted: o.counted, countedRels: o.countedRels, roads: l.roads}
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
@@ -1068,6 +1100,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
+		}
+		if n := o.more[m]; n > 0 {
+			b.More, b.MoreHref = n, "#"+focusID("", m)
 		}
 		if base(m) != m {
 			b.Title += "\n" + twinNote

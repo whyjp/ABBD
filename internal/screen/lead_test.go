@@ -163,6 +163,7 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
 		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
+		"more":   regexp.MustCompile(`<g class="more">`),
 	}
 	climbs := regexp.MustCompile(`\bback\b`)
 	cards := 0
@@ -265,16 +266,28 @@ func TestAFlowInOneBoxIsNumberedOnIt(t *testing.T) {
 }
 
 // A stored flow that leaves its first box once draws that hop, numbered 1,
-// and numbers the steps it then runs on the box it reached.
+// and goes on numbering, one to a step, the steps it then runs on the box
+// it reached, whichever way that hop's line runs; the pill's title names
+// the steps' own numbers in the flow.
 func TestAFlowThatLeavesOnceNumbersTheRest(t *testing.T) {
 	t.Parallel()
 	cli, st := model.ID("MOD-0001"), model.ID("MOD-0041")
-	m := withFigures(t, []model.ID{cli, st, st, st}, nil, nil)
-	l := m.Overview.Lead
-	if l == nil || len(l.Hops) != 1 || l.Stay == nil {
-		t.Fatalf("lead %+v, want one hop and the rest numbered on %s", l, st)
-	}
-	if l.Hops[0].N != 1 || l.Stay.Box != string(st) || l.Stay.Text() != "2–4" {
-		t.Errorf("hop %d and stay %+v, want hop 1 and steps 2–4 on %s", l.Hops[0].N, *l.Stay, st)
+	for _, c := range []struct {
+		steps      []model.ID
+		box, text  string
+		titleSteps string
+	}{
+		{[]model.ID{cli, st, st, st}, string(st), "2–4", "2–4단계"},
+		{[]model.ID{cli, cli, st, st}, string(st), "2–3", "3–4단계"},
+		{[]model.ID{st, cli, cli}, string(cli), "2–3", "2–3단계"},
+	} {
+		l := withFigures(t, c.steps, nil, nil).Overview.Lead
+		if l == nil || len(l.Hops) != 1 || l.Stay == nil {
+			t.Fatalf("%v: lead %+v, want one hop and the rest numbered on %s", c.steps, l, c.box)
+		}
+		s := *l.Stay
+		if l.Hops[0].N != 1 || s.Box != c.box || s.Text() != c.text || !strings.Contains(s.Title, c.titleSteps) {
+			t.Errorf("%v: hop %d and stay %+v, want hop 1 and %s on %s titled with %s", c.steps, l.Hops[0].N, s, c.text, c.box, c.titleSteps)
+		}
 	}
 }

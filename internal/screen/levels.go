@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -102,7 +103,7 @@ func level(name string, d Drawing, at where) Level {
 	// two parts that use each other is one line.
 	lines := map[[2]string]bool{}
 	users := map[string]map[string]bool{}
-	for _, r := range d.Relations {
+	for _, r := range slices.Concat(d.Relations, d.Counted) {
 		from, to := r[0], r[1]
 		if !part[from] || !part[to] || from == to {
 			continue

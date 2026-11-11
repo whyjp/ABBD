@@ -25,9 +25,6 @@ type lnode struct {
 	// tier is the stored stack's tier the node stands in, from 1 at the
 	// top, 0 for none (tiers).
 	tier int
-	// loose says the tier is a group the overview derived, not a stored
-	// layer: its row is where the lines rank it, not the stack's order.
-	loose bool
 	// step is where the node first comes in a stored flow, from 1, 0 for
 	// none: a tier's boxes stand in its row in that order (huddle).
 	step int
@@ -376,7 +373,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		rank[v] = max(rank[v], low-1)
 	}
 	if seat == nil {
-		tier(nodes, order, out, keep, rank, budget-2*padX)
+		tier(nodes, order, out, keep, rank)
 	}
 	// The frame's edges leave the layering, and the layers they alone held
 	// close up.
@@ -986,100 +983,12 @@ func setName(name string, px, pad, minW, maxW int) ([]string, int) {
 	return []string{a, b}, max(minW, max(textWidth(a, px), textWidth(b, px))+pad)
 }
 
-// clump stands each derived group (lnode.loose) on one row where its
-// boxes fit one row and no line then climbs: at the highest row its boxes
-// have, else the lowest, with what it uses sinking below it. A line within
-// a group runs within its row. A group that does not fit, or that would
-// make a line climb, is no tier: its boxes keep the rows and places the
-// lines give them. The rows close up.
-func clump(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int, room int) {
-	of, wide := map[string]int{}, map[int]int{}
-	for _, n := range nodes {
-		if n.tier > 0 {
-			of[n.id] = n.tier
-			wide[n.tier] += n.w + gapX
-		}
-	}
-	held := map[int]bool{}
-	inside := func(v, w string) bool { return of[v] > 0 && of[v] == of[w] && held[of[v]] }
-	settle := func(r map[string]int, t int, low bool) bool {
-		for range len(order) + 1 {
-			at, set := 0, false
-			for _, v := range order {
-				if of[v] == t && (!set || low && r[v] > at || !low && r[v] < at) {
-					at, set = r[v], true
-				}
-			}
-			moved := false
-			for _, v := range order {
-				if of[v] == t && r[v] != at {
-					r[v], moved = at, true
-				}
-			}
-			for _, v := range order {
-				for _, w := range out[v] {
-					if keep[ledge{v, w}] && !inside(v, w) && r[w] < r[v]+1 {
-						r[w], moved = r[v]+1, true
-					}
-				}
-			}
-			if !moved {
-				break
-			}
-		}
-		for _, v := range order {
-			for _, w := range out[v] {
-				if keep[ledge{v, w}] && !inside(v, w) && r[w] <= r[v] {
-					return false
-				}
-			}
-		}
-		return true
-	}
-	r := maps.Clone(rank)
-	for _, t := range slices.Sorted(maps.Keys(wide)) {
-		if wide[t]-gapX > room {
-			continue
-		}
-		held[t] = true
-		ok := false
-		for _, low := range []bool{false, true} {
-			try := maps.Clone(r)
-			if ok = settle(try, t, low); ok {
-				r = try
-				break
-			}
-		}
-		held[t] = ok
-	}
-	for i, n := range nodes {
-		if n.tier > 0 && !held[n.tier] {
-			nodes[i].tier = 0
-		}
-	}
-	used := map[int]bool{}
-	for _, v := range order {
-		used[r[v]] = true
-	}
-	at := map[int]int{}
-	for i, k := range slices.Sorted(maps.Keys(used)) {
-		at[k] = i
-	}
-	for _, v := range order {
-		rank[v] = at[r[v]]
-	}
-}
-
 // tier ranks the boxes of a stored stack's tiers (lnode.tier) in the
 // stack's order, one row to a tier, so a tier's boxes stand together and
 // read top down as the stack does; a line between two boxes of one tier
 // runs within its row. Every other node sits below what uses it, or just
 // above what it uses when nothing uses it, and the rows close up.
-func tier(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int, room int) {
-	if slices.ContainsFunc(nodes, func(n lnode) bool { return n.loose }) {
-		clump(nodes, order, out, keep, rank, room)
-		return
-	}
+func tier(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int) {
 	of := map[string]int{}
 	for _, n := range nodes {
 		if n.tier > 0 {
