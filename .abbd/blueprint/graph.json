@@ -21208,7 +21208,23 @@
                 "Code": true
               },
               {
-                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts and ",
+                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none, except on the overview, where a stored flow that leaves its first box once or never draws that one hop and numbers the steps it then runs on the box it reached in a pill beside that box (",
+                "Code": false
+              },
+              {
+                "Text": "Stay",
+                "Code": true
+              },
+              {
+                "Text": ", set by ",
+                "Code": false
+              },
+              {
+                "Text": "pin",
+                "Code": true
+              },
+              {
+                "Text": "), going on from the hop's number one to a step, its title naming the flow and the steps' own numbers, and fills its entry. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts and ",
                 "Code": false
               },
               {

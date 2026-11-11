@@ -536,10 +536,13 @@ func zoneWidth(s string) int {
 	return int(math.Ceil(w))
 }
 
-// onBadge says area meets a number of the view's lead.
+// onBadge says area meets a number of the view's lead, or its stay.
 func (d *Drawing) onBadge(area box) bool {
 	if d.Lead == nil {
 		return false
+	}
+	if s := d.Lead.Stay; s != nil && s.W > 0 && hit(area, box{s.X, s.Y, s.W, stayH}) {
+		return true
 	}
 	for _, h := range d.Lead.Hops {
 		if hit(area, box{h.X - h.R, h.Y - h.R, 2 * h.R, 2 * h.R}) {
