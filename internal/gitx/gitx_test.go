@@ -194,3 +194,20 @@ func TestRecordedNamesThePullRequestThatBroughtAQuoteIn(t *testing.T) {
 		t.Errorf("the main quote came in by no merge: %q", got)
 	}
 }
+
+// A whitelist .gitignore such as "/*" ignores .abbd too, and the snapshot
+// still takes the tree instead of failing on the exclude.
+func TestASnapshotTakesAWhitelistGitignore(t *testing.T) {
+	root := t.TempDir()
+	git(t, root, "init", "-q")
+	write(t, filepath.Join(root, ".gitignore"), "/*\n!/.gitignore\n!/src/\n")
+	write(t, filepath.Join(root, "src", "a.go"), "package src\n")
+	write(t, filepath.Join(root, ".abbd", "state.yaml"), "x: 1\n")
+	tree, err := Snapshot(root, ".abbd")
+	if err != nil || tree == "" {
+		t.Fatalf("the snapshot failed on a whitelist .gitignore: %v", err)
+	}
+	if got := git(t, root, "ls-tree", "-r", "--name-only", tree); !strings.Contains(got, "src/a.go") || strings.Contains(got, ".abbd") {
+		t.Errorf("the snapshot should hold src and leave .abbd out:\n%s", got)
+	}
+}

@@ -107,12 +107,22 @@ func Snapshot(dir, exclude string) (string, error) {
 	defer os.RemoveAll(tmp)
 	env := []string{"GIT_INDEX_FILE=" + filepath.Join(tmp, "index")}
 	unborn := unbornRepos(dir)
-	add := []string{"add", "-A", "--", ".", ":(exclude)" + exclude}
+	// git refuses to add when a pathspec names a path .gitignore already
+	// ignores, as a whitelist .gitignore such as "/*" does for .abbd; such
+	// a path stays out of the snapshot anyway, so it needs no exclude.
+	add := []string{"add", "-A", "--", "."}
+	if !ignored(dir, exclude) {
+		add = append(add, ":(exclude)"+exclude)
+	}
 	for _, l := range links {
-		add = append(add, ":(exclude,literal)"+l.path)
+		if !ignored(dir, l.path) {
+			add = append(add, ":(exclude,literal)"+l.path)
+		}
 	}
 	for _, r := range unborn {
-		add = append(add, ":(exclude,literal)"+r)
+		if !ignored(dir, r) {
+			add = append(add, ":(exclude,literal)"+r)
+		}
 	}
 	if _, err := run(dir, env, add...); err != nil {
 		return "", err
@@ -420,4 +430,10 @@ func Recorded(dir, needle string, paths ...string) string {
 		return first
 	}
 	return first
+}
+
+// ignored reports whether .gitignore ignores path, relative to dir.
+func ignored(dir, path string) bool {
+	_, err := run(dir, nil, "check-ignore", "-q", "--", path)
+	return err == nil
 }
