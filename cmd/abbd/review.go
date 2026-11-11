@@ -283,8 +283,43 @@ func (e env) review() error {
 	}
 	headline := fmt.Sprintf("%d topology change(s), code changed under %d unit(s), %d touched contract(s) or entries with their users, %d unit(s) reached directly, %d thing(s) worth a look",
 		len(d.Lines()), len(codeChanged), touchedLines, reached, len(look))
+	sc, err := e.st.LoadScope()
+	if err != nil {
+		return err
+	}
+	changed := slices.Clone(codeChanged)
+	for _, r := range d.UnitsAdded {
+		changed = append(changed, r.ID)
+	}
+	for _, c := range d.Changed {
+		changed = append(changed, c.ID)
+	}
+	for _, s := range d.Signatures {
+		changed = append(changed, s.ID)
+	}
+	for _, en := range d.Entries {
+		changed = append(changed, en.ID)
+	}
+	for _, r := range d.Code {
+		changed = append(changed, r.ID)
+	}
+	scope := scopeLines(sc, byID, wasByID, changed, d.UnitsRemoved)
+	if len(sc.Units) > 0 {
+		fmt.Fprintf(w, "\nscope declared: %s", joinIDs(sc.Units))
+		if sc.Why != "" {
+			fmt.Fprintf(w, ", %s", sc.Why)
+		}
+		fmt.Fprintln(w)
+		for _, l := range scope {
+			fmt.Fprintln(w, "  "+l)
+		}
+		if len(scope) == 0 {
+			fmt.Fprintln(w, "  the change stays inside it and touches each declared unit")
+		}
+		headline += fmt.Sprintf(", %d line(s) on the declared scope", len(scope))
+	}
 	if e.markdown {
-		return e.reviewMarkdown(base, headline, d, now, seeds, look, body.String())
+		return e.reviewMarkdown(base, headline, d, now, seeds, sc, scope, look, body.String())
 	}
 	fmt.Fprintf(e.stdout, "review since %s: %s\n", short(base), headline)
 	_, err = e.stdout.Write(body.Bytes())
@@ -299,7 +334,7 @@ const reviewMarker = "<!-- abbd-review -->"
 // headline, a drawing of the touched top-level modules and the relations
 // between them, the changes folded, and what is worth a look. It draws the
 // current state of what the change touched, never a mark of change.
-func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.Unit, seeds []model.ID, look []string, body string) error {
+func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.Unit, seeds []model.ID, sc store.Scope, scope, look []string, body string) error {
 	byID := map[model.ID]model.Unit{}
 	for _, u := range model.Present(now) {
 		byID[u.ID] = u
@@ -349,16 +384,15 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 				}
 			}
 		}
-		drawn := map[string]bool{}
+		// One line per pair of modules, whatever runs between them, so the
+		// drawing reads at rest; its label names what crosses.
+		pairs := map[[2]model.ID][]string{}
 		draw := func(from, to model.ID, label string) {
-			if to == from || !slices.Contains(tops, to) {
+			k := [2]model.ID{from, to}
+			if to == from || !slices.Contains(tops, to) || slices.Contains(pairs[k], label) {
 				return
 			}
-			edge := fmt.Sprintf("  %s -->|%s| %s", mermaidID(from), mermaidText(label), mermaidID(to))
-			if !drawn[edge] {
-				drawn[edge] = true
-				fmt.Fprintln(w, edge)
-			}
+			pairs[k] = append(pairs[k], label)
 		}
 		for _, u := range model.Present(now) {
 			from := top(u.ID)
@@ -378,13 +412,34 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 				draw(from, top(r.To), string(r.Kind))
 			}
 		}
+		keys := slices.SortedFunc(maps.Keys(pairs), func(a, b [2]model.ID) int {
+			return strings.Compare(string(a[0])+string(a[1]), string(b[0])+string(b[1]))
+		})
+		for _, k := range keys {
+			fmt.Fprintf(w, "  %s -->|%s| %s\n", mermaidID(k[0]), mermaidText(edgeLabel(pairs[k])), mermaidID(k[1]))
+		}
 		fmt.Fprintln(w, "```")
+		fmt.Fprintln(w)
+	}
+	esc := strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`, "`", "\\`", "[", `\[`)
+	if len(sc.Units) > 0 {
+		fmt.Fprintf(w, "**Declared scope:** %s", joinIDs(sc.Units))
+		if sc.Why != "" {
+			fmt.Fprintf(w, ", %s", esc.Replace(sc.Why))
+		}
+		fmt.Fprintln(w)
+		for _, l := range scope {
+			fmt.Fprintf(w, "- %s\n", esc.Replace(l))
+		}
+		if len(scope) == 0 {
+			fmt.Fprintln(w, "- the change stays inside it and touches each declared unit")
+		}
 		fmt.Fprintln(w)
 	}
 	if len(look) > 0 {
 		fmt.Fprintln(w, "**Worth a look**")
 		for _, l := range look {
-			fmt.Fprintf(w, "- %s\n", strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`).Replace(l))
+			fmt.Fprintf(w, "- %s\n", esc.Replace(l))
 		}
 		fmt.Fprintln(w)
 	}
@@ -424,4 +479,122 @@ func (e env) anchoredAt(units []model.Unit, base string) []model.ID {
 	}
 	slices.Sort(out)
 	return out
+}
+
+// scopeLines sets what a change did beside the scope an agent declared.
+// Only what the change itself did counts: code changed under a unit, a
+// unit added, changed or removed. A far end the change only started to use
+// is not something it touched. Of a changed unit and a changed unit inside
+// it, the inner one stands for both, so a file both a module and its part
+// are anchored at counts as the part's. A changed unit is inside the scope
+// when it or a unit above it was declared; each one outside is named by its
+// top-level unit, and each declared unit nothing touched is named too. It
+// reports and never judges.
+func scopeLines(sc store.Scope, now, was map[model.ID]model.Unit, changed []model.ID, removed []topology.Ref) []string {
+	if len(sc.Units) == 0 {
+		return nil
+	}
+	declared := map[model.ID]bool{}
+	for _, id := range sc.Units {
+		declared[id] = true
+	}
+	chain := func(units map[model.ID]model.Unit, id model.ID) []model.ID {
+		var out []model.ID
+		seen := map[model.ID]bool{}
+		for p := id; p != "" && !seen[p]; p = units[p].Parent {
+			seen[p] = true
+			out = append(out, p)
+		}
+		return out
+	}
+	set := map[model.ID]bool{}
+	for _, id := range changed {
+		if _, ok := now[id]; ok {
+			set[id] = true
+		}
+	}
+	for id := range set {
+		for _, p := range chain(now, id)[1:] {
+			delete(set, p)
+		}
+	}
+	outside, hit := map[model.ID]string{}, map[model.ID]bool{}
+	place := func(units map[model.ID]model.Unit, id model.ID, how string) {
+		c := chain(units, id)
+		in := false
+		for _, p := range c {
+			if declared[p] {
+				in, hit[p] = true, true
+			}
+		}
+		if !in {
+			t := c[len(c)-1]
+			if _, ok := outside[t]; !ok || how != "" {
+				outside[t] = how
+			}
+		}
+	}
+	for _, id := range slices.Sorted(maps.Keys(set)) {
+		place(now, id, "")
+	}
+	for _, r := range removed {
+		place(was, r.ID, " (removed)")
+	}
+	name := func(id model.ID) string {
+		if u, ok := now[id]; ok {
+			return u.Name.Value
+		}
+		return was[id].Name.Value
+	}
+	var out []string
+	for _, id := range slices.Sorted(maps.Keys(outside)) {
+		out = append(out, fmt.Sprintf("outside the declared scope: %s %s%s", id, name(id), outside[id]))
+	}
+	for _, id := range sc.Units {
+		if !hit[id] {
+			out = append(out, strings.TrimSpace(fmt.Sprintf("declared but untouched: %s %s", id, name(id))))
+		}
+	}
+	return out
+}
+
+func joinIDs(ids []model.ID) string {
+	var s []string
+	for _, id := range ids {
+		s = append(s, string(id))
+	}
+	return strings.Join(s, ", ")
+}
+
+// scope declares the units the task at hand means to touch, and why, for
+// review to set the change beside. It writes only the never-committed
+// scope file.
+func (e env) scope(list string) error {
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	var ids []model.ID
+	for _, s := range strings.Split(list, ",") {
+		id := model.ID(strings.TrimSpace(s))
+		if _, ok := presentUnit(units, id); !ok {
+			return fmt.Errorf("%s is not a unit of the state", id)
+		}
+		ids = append(ids, id)
+	}
+	if err := e.st.SaveScope(store.Scope{Units: ids, Why: strings.TrimSpace(e.why)}); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "scope declared: %s; abbd review sets the change beside it\n", joinIDs(ids))
+	return nil
+}
+
+// edgeLabel names what crosses between two modules: up to two names in
+// order, then how many more.
+func edgeLabel(names []string) string {
+	slices.Sort(names)
+	if len(names) <= 2 {
+		return strings.Join(names, ", ")
+	}
+	return fmt.Sprintf("%s, %s +%d", names[0], names[1], len(names)-2)
 }

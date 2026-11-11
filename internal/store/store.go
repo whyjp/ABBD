@@ -713,3 +713,27 @@ func (s Store) KeepPrevious(head string) error {
 	}
 	return os.Rename(tmp, dir)
 }
+
+// Scope is the units an agent declared it means to touch in a task, and
+// why, so review can set the change beside it. It sits in CompareDir, which
+// git and the fingerprint ignore: it is the task's, not the repository's.
+type Scope struct {
+	Units []model.ID `yaml:"units"`
+	Why   string     `yaml:"why,omitempty"`
+}
+
+func (s Store) scopePath() string { return filepath.Join(s.CompareDir(), "scope.yaml") }
+
+// LoadScope reads the declared scope, empty when none was declared.
+func (s Store) LoadScope() (Scope, error) {
+	var sc Scope
+	return sc, readYAML(s.scopePath(), &sc)
+}
+
+// SaveScope declares the scope of the task at hand.
+func (s Store) SaveScope(sc Scope) error {
+	if err := writeFile(filepath.Join(s.CompareDir(), ".gitignore"), []byte("*\n")); err != nil {
+		return err
+	}
+	return writeYAML(s.scopePath(), sc)
+}
