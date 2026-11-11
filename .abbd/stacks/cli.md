@@ -8,10 +8,10 @@ layers:
         - MOD-0001
       evidence:
         - path: cmd/abbd/main.go
-          lines: "245"
+          lines: "307"
           quote: var commands = map[string]command{
         - path: cmd/abbd/main.go
-          lines: "334"
+          lines: "399"
           quote: if err := e.publish(); err != nil {
       writer: reader
       code:
@@ -66,7 +66,7 @@ layers:
         internal/identity/identity.go#quote-79789f59: 3aa5c56106c47baf
         internal/topology/impact.go#quote-aae46dc8: b632aab8d7ef2476
     - name: readers
-      role: read the extraction output, quoted code, git and module texts into facts
+      role: read the extraction output, quoted code, git and module texts into facts and section lengths
       units:
         - MOD-0017
         - MOD-0013
@@ -90,14 +90,14 @@ layers:
         internal/evidence/evidence.go#quote-e3dbd856: 887edccfe9ccaf83
         internal/extract/extract.go#quote-4b621c5c: ba7a321b50b9feb1
         internal/gitx/gitx.go#quote-57ce0d67: 2fb4c125587d4786
-        internal/narrative/narrative.go#quote-ed17a1ca: 22c9ad30bb9a8168
+        internal/narrative/narrative.go#quote-ed17a1ca: f268bee0dede8963
     - name: vocabulary
       role: names the units, relations, claims and figures every layer above passes around
       units:
         - MOD-0030
       evidence:
         - path: internal/model/model.go
-          lines: "176"
+          lines: "180"
           quote: type Unit struct {
       writer: reader
       code:
@@ -131,6 +131,31 @@ retired:
       code:
         cmd/abbd/main.go#quote-16c07118: 1684ffa51db59b44
         cmd/abbd/main.go#quote-e69b8656: 16fa2f8eb12c79c6
+    - name: readers
+      role: read the extraction output, quoted code, git and module texts into facts
+      units:
+        - MOD-0017
+        - MOD-0013
+        - MOD-0022
+        - MOD-0056
+      evidence:
+        - path: internal/extract/extract.go
+          lines: "2"
+          quote: // It is the boundary where untrusted model output becomes typed units.
+        - path: internal/evidence/evidence.go
+          lines: "1"
+          quote: // Package evidence checks, deterministically, that the code still holds the
+        - path: internal/gitx/gitx.go
+          lines: "1"
+          quote: // Package gitx reads the few git facts ABBD needs.
+        - path: internal/narrative/narrative.go
+          lines: "1"
+          quote: '// Package narrative reads a module''s text as a human would: in sections,'
+      code:
+        internal/evidence/evidence.go#quote-e3dbd856: 887edccfe9ccaf83
+        internal/extract/extract.go#quote-4b621c5c: ba7a321b50b9feb1
+        internal/gitx/gitx.go#quote-57ce0d67: 2fb4c125587d4786
+        internal/narrative/narrative.go#quote-ed17a1ca: 22c9ad30bb9a8168
 ---
 
 Each layer imports only the layers below it. The commands wire every layer together, and the vocabulary imports nothing of abbd's own.
