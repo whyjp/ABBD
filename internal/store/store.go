@@ -20,6 +20,7 @@ import (
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/identity"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/owners"
 )
 
 const Dir = ".abbd"
@@ -471,6 +472,11 @@ func (s Store) InputsHash() (string, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
+	// The pages name each module's owners from CODEOWNERS, so it is an
+	// input too.
+	if f := owners.File(s.ProjectDir()); f != "" {
+		files = append(files, f)
+	}
 	return s.hashTree(s.root, files)
 }
 
@@ -737,3 +743,6 @@ func (s Store) SaveScope(sc Scope) error {
 	}
 	return writeYAML(s.scopePath(), sc)
 }
+
+// ProjectDir is the project root the store sits in.
+func (s Store) ProjectDir() string { return filepath.Dir(s.root) }

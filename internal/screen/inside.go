@@ -18,6 +18,8 @@ type Inside struct {
 	Purpose, Responsibility *Fact `json:",omitempty"`
 	// Standing is the module as it is now, counted over its subtree.
 	Standing *Standing `json:",omitempty"`
+	// Owners are who owns the module's code, by CODEOWNERS.
+	Owners []string `json:",omitempty"`
 	// Feature says the view is a feature's, which the page names 기능.
 	Feature bool `json:"-"`
 	// Drawing is what the module's page draws. graph.json leaves it out.

@@ -832,6 +832,9 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 			next[s[0]] = straight(next[s[0]])
 			touched[s[0]] = true
 		}
+		if bendsMore(ways, next, touched, wide) {
+			continue
+		}
 		nc := v.cost(next)
 		if wide && nc.beside > cost.beside {
 			continue
@@ -841,6 +844,26 @@ func (r *routing) shift(ways [][]pt, v roadView, cost roadCost, stairsFirst, wid
 		}
 	}
 	return nil, false
+}
+
+// bendsMore says a move turns one of the routes it touches more often, or
+// gives it another dogleg. roadCost weighs a view's turns together, so
+// without this a move could bend one route to straighten another.
+func bendsMore(ways, next [][]pt, touched map[int]bool, legs bool) bool {
+	for i := range touched {
+		if len(straight(next[i])) > len(straight(ways[i])) || legs && doglegs(fpts(next[i])) > doglegs(fpts(ways[i])) {
+			return true
+		}
+	}
+	return false
+}
+
+func fpts(w []pt) []fpt {
+	out := make([]fpt, len(w))
+	for i, p := range w {
+		out[i] = fpt{float64(p.x), float64(p.y)}
+	}
+	return out
 }
 
 // wideStep is the step, and wideReach the farthest, that wide looks past a
@@ -878,6 +901,9 @@ func (r *routing) wide(ways [][]pt, v roadView, cost roadCost, stairsFirst bool)
 					}
 					next := slices.Clone(ways)
 					next[i] = nw
+					if bendsMore(ways, next, map[int]bool{i: true}, false) {
+						continue
+					}
 					nc := v.cost(next)
 					if nc.better(cost) {
 						return next, true
