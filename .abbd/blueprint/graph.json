@@ -2250,7 +2250,6 @@
         "internal/store/figure.go",
         "internal/store/legacy.go",
         "internal/store/note.go",
-        "internal/store/owners.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
       ]
@@ -2567,6 +2566,18 @@
       "Anchors": [
         "internal/narrative",
         "internal/narrative/narrative.go"
+      ]
+    },
+    {
+      "ID": "MOD-0057",
+      "Kind": "MOD",
+      "Name": "internal/owners",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/owners",
+        "internal/owners/owners.go"
       ]
     }
   ],
@@ -4543,6 +4554,13 @@
       "PhraseOrigin": "INFERRED"
     },
     {
+      "From": "MOD-0034",
+      "To": "MOD-0057",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
       "From": "MOD-0035",
       "To": "MOD-0036",
       "Kind": "depends_on",
@@ -4760,6 +4778,13 @@
       "Via": "call",
       "Phrase": "Unit, Evidence, Claim",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0041",
+      "To": "MOD-0057",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0042",
@@ -18582,7 +18607,7 @@
       "Standing": {
         "Provides": 1,
         "Uses": 12,
-        "Direct": 5,
+        "Direct": 6,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -19246,7 +19271,15 @@
                   "Code": true
                 },
                 {
-                  "Text": " reads, including each module's understanding and its code digest now, and the owners the store's CODEOWNERS reading gives each unit (",
+                  "Text": " reads, including each module's understanding and its code digest now, and the owners ",
+                  "Code": false
+                },
+                {
+                  "Text": "internal/owners",
+                  "Code": true
+                },
+                {
+                  "Text": " reads from CODEOWNERS for each unit (",
                   "Code": false
                 },
                 {
@@ -20133,7 +20166,15 @@
                 "Code": true
               },
               {
-                "Text": " reads, including each module's understanding and its code digest now, and the owners the store's CODEOWNERS reading gives each unit (",
+                "Text": " reads, including each module's understanding and its code digest now, and the owners ",
+                "Code": false
+              },
+              {
+                "Text": "internal/owners",
+                "Code": true
+              },
+              {
+                "Text": " reads from CODEOWNERS for each unit (",
                 "Code": false
               },
               {
@@ -25902,7 +25943,7 @@
       "Standing": {
         "Provides": 5,
         "Uses": 2,
-        "Direct": 4,
+        "Direct": 5,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -26033,31 +26074,7 @@
                 "Code": true
               },
               {
-                "Text": " names the project root it sits in, where ",
-                "Code": false
-              },
-              {
-                "Text": "ReadOwners",
-                "Code": true
-              },
-              {
-                "Text": " reads CODEOWNERS into ",
-                "Code": false
-              },
-              {
-                "Text": "Owners",
-                "Code": true
-              },
-              {
-                "Text": ", whose ",
-                "Code": false
-              },
-              {
-                "Text": "For",
-                "Code": true
-              },
-              {
-                "Text": " gives a path, or a directory anchor, the owners of the last rule it matches; ",
+                "Text": " names the project root it sits in; ",
                 "Code": false
               },
               {
@@ -26065,7 +26082,15 @@
                 "Code": true
               },
               {
-                "Text": " counts that CODEOWNERS as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " counts the CODEOWNERS ",
+                "Code": false
+              },
+              {
+                "Text": "owners.File",
+                "Code": true
+              },
+              {
+                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
@@ -29853,6 +29878,25 @@
           ]
         }
       ]
+    },
+    {
+      "ID": "MOD-0057",
+      "Name": "internal/owners",
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
+      "Units": null,
+      "Understanding": null,
+      "Unwired": null,
+      "Up": "#overview",
+      "Trail": [
+        "internal/owners"
+      ],
+      "Inferred": null
     }
   ],
   "flows": [

@@ -294,7 +294,7 @@ svg [data-h="n"] { --c: var(--hn); }
 </header>
 
 <section id="units">
-  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">128개, ID 순</span></h2>
+  <h2>단위 목록 <span class="muted" style="font-weight:400;font-size:13px">129개, ID 순</span></h2>
   <p class="muted" style="margin:0 0 6px">모든 단위와 그 코드의 앵커입니다. 페이지 안 찾기(Ctrl+F)로 ID, 이름, 파일 경로, 심볼을 찾습니다.</p>
   <table><tr id="u-CFG-0001"><td class="id key">CFG-0001</td><td><strong>plugin and marketplace manifest</strong> <span class="muted">설정</span>
     <div>Declares the abbd marketplace, points it at ./plugins/abbd, and names the plugin&#39;s version and its requirements (pstack 0.15.36 and the abbd CLI on PATH). <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
@@ -634,7 +634,7 @@ svg [data-h="n"] { --c: var(--hn); }
     <div class="key muted anchors">internal/screen/words.go blocks · internal/screen/words.go spans</div>
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>internal/screen/words.go &#34;func blocks(text string) []Block {&#34;</q></div><div class="quote">근거 <q>internal/screen/words.go &#34;func spans(s string) []Span {&#34;</q></div></details></td></tr><tr id="u-MOD-0041"><td class="id key">MOD-0041</td><td><a href="MOD-0041.html"><strong>internal/store</strong></a> <span class="muted">모듈</span>
     <div>Owns the on-disk layout of .abbd: unit Markdown files, candidates, state, project config, module understandings and blueprint files, plus the fingerprints that tell when derived views are stale. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
-    <div class="key muted anchors">internal/store · internal/store/figure.go · internal/store/legacy.go · internal/store/note.go · internal/store/owners.go · internal/store/store.go · internal/store/understanding.go</div>
+    <div class="key muted anchors">internal/store · internal/store/figure.go · internal/store/legacy.go · internal/store/note.go · internal/store/store.go · internal/store/understanding.go</div>
     </td></tr><tr id="u-MOD-0042"><td class="id key">MOD-0042</td><td><strong>store staleness hashes</strong> <span class="muted">모듈</span> <span class="muted">· <a href="MOD-0041.html" title="MOD-0041">internal/store</a> 안</span>
     <div>Hashes sorted file sets as relative path, length and bytes: MDHash over unit files for state, InputsHash over every .abbd file except the blueprint for the blueprint watermark. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div>
     <div class="key muted anchors">internal/store/store.go · internal/store/store.go InputsHash · internal/store/store.go hashFiles</div>
@@ -680,6 +680,9 @@ svg [data-h="n"] { --c: var(--hn); }
     <details><summary class="muted" style="font-weight:400">시그니처와 근거</summary><div class="quote">근거 <q>plugins/abbd/skills/abbd/references/reader.md &#34;pstack is an optional engine behind it.&#34;</q></div></details></td></tr><tr id="u-MOD-0056"><td class="id key">MOD-0056</td><td><a href="MOD-0056.html"><strong>internal/narrative</strong></a> <span class="muted">모듈</span>
     
     <div class="key muted anchors">internal/narrative · internal/narrative/narrative.go</div>
+    </td></tr><tr id="u-MOD-0057"><td class="id key">MOD-0057</td><td><a href="MOD-0057.html"><strong>internal/owners</strong></a> <span class="muted">모듈</span>
+    
+    <div class="key muted anchors">internal/owners · internal/owners/owners.go</div>
     </td></tr></table>
 </section>
 <p class="muted">추출 <code>go run .abbd/extractor/extract.go</code></p>

@@ -1,4 +1,5 @@
-package store
+// Package owners reads who owns which code from a repository's CODEOWNERS.
+package owners
 
 // Owners is who owns which code by a repository's CODEOWNERS, as GitHub
 // reads it: the last pattern a path matches names its owners. It
@@ -20,19 +21,19 @@ type ownerRule struct {
 	owners []string
 }
 
-// ReadOwners finds CODEOWNERS where GitHub looks for it, under root, and parses
+// Read finds CODEOWNERS where GitHub looks for it, under root, and parses
 // it; with none, every path has no owner.
-func ReadOwners(root string) Owners {
-	if f := ownersFile(root); f != "" {
+func Read(root string) Owners {
+	if f := File(root); f != "" {
 		if b, err := os.ReadFile(f); err == nil {
-			return ParseOwners(string(b))
+			return Parse(string(b))
 		}
 	}
 	return Owners{}
 }
 
-// ownersFile is the CODEOWNERS GitHub reads under root, "" when none.
-func ownersFile(root string) string {
+// File is the CODEOWNERS GitHub reads under root, "" when none.
+func File(root string) string {
 	for _, p := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
 		f := filepath.Join(root, filepath.FromSlash(p))
 		if _, err := os.Stat(f); err == nil {
@@ -42,9 +43,9 @@ func ownersFile(root string) string {
 	return ""
 }
 
-// ParseOwners reads CODEOWNERS text: a pattern and its owners per line, # for a
+// Parse reads CODEOWNERS text: a pattern and its owners per line, # for a
 // comment.
-func ParseOwners(text string) Owners {
+func Parse(text string) Owners {
 	var o Owners
 	for _, line := range strings.Split(text, "\n") {
 		if i := strings.Index(line, "#"); i >= 0 {
