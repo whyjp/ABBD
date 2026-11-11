@@ -157,3 +157,12 @@ func TestTheOverviewOpensWithTheProject(t *testing.T) {
 	contains("index.html", "<h1>ripgrep</h1>", "ripgrep searches directories for a regex.", "주요 부분", ">FEAT-0001</a>", "searches compressed files")
 	contains("MOD-0003.html", "<title>grep-searcher · ripgrep 청사진</title>")
 }
+
+// With no name written, every page says ABBD, never the checkout's folder,
+// and the overview says where to write the purpose.
+func TestAnUnnamedProjectSaysABBD(t *testing.T) {
+	ps := pages(t, Build(Input{Units: ripgrep(), Project: store.Project{Name: "ABBD"}}))
+	if !strings.Contains(ps["index.html"], "<h1>ABBD</h1>") || !strings.Contains(ps["index.html"], "<code>purpose</code>에 한 문단으로") {
+		t.Errorf("an unnamed project's overview should say ABBD and where its purpose goes")
+	}
+}

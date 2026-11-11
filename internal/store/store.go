@@ -551,8 +551,7 @@ type Project struct {
 	Extract []string `yaml:"extract,omitempty"`
 	// Name and Purpose say what the project is, in a name and one
 	// paragraph, so the overview opens with them. A person or the setup
-	// reader writes them here; with no name the blueprint takes the
-	// directory's.
+	// reader writes them here; with no name the blueprint says ABBD.
 	Name    string `yaml:"name,omitempty"`
 	Purpose string `yaml:"purpose,omitempty"`
 }

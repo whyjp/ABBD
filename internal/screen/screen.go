@@ -4,7 +4,6 @@
 package screen
 
 import (
-	"path/filepath"
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -51,9 +50,10 @@ func Load(st store.Store) (Input, error) {
 	if in.Project, err = st.LoadProject(); err != nil {
 		return in, err
 	}
+	// A name taken from the checkout's folder would differ per clone with
+	// no input changing, so with none written the blueprint is ABBD's.
 	if in.Project.Name == "" {
-		dir, _ := filepath.Abs(st.ProjectDir())
-		in.Project.Name = filepath.Base(dir)
+		in.Project.Name = "ABBD"
 	}
 	if in.Synced, err = st.LoadState(); err != nil {
 		return in, err
@@ -401,7 +401,6 @@ func decisions(in Input) []Decision {
 type Part struct {
 	ID, Name, Kind string
 	Sentence       string
-	Guess          bool
 }
 
 // parts lists the top-level modules, then every feature, each in ID order,
@@ -411,7 +410,7 @@ func parts(units []model.Unit) []Part {
 	for _, u := range model.Present(units) {
 		p := Part{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind)}
 		if f := sentence(u); f != nil {
-			p.Sentence, p.Guess = f.Value, f.Guess()
+			p.Sentence = f.Value
 		}
 		switch {
 		case u.Kind == model.Feature:
