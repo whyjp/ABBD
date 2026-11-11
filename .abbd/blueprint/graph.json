@@ -1320,6 +1320,7 @@
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
         "cmd/abbd/narrative.go",
+        "cmd/abbd/phrases.go",
         "cmd/abbd/query.go",
         "cmd/abbd/record.go",
         "cmd/abbd/review.go",
@@ -2890,6 +2891,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record fact\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0010",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record relation\""
     },
     {
       "From": "FEAT-0002",
@@ -4786,7 +4795,9 @@
       "To": "MOD-0057",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "call"
+      "Via": "call",
+      "Phrase": "CODEOWNERS path",
+      "PhraseOrigin": "INFERRED"
     },
     {
       "From": "MOD-0042",
@@ -5370,7 +5381,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 17,
+        "Uses": 18,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5476,6 +5487,7 @@
             "sync",
             "explain",
             "path",
+            "record relation",
             "exit codes",
             "migrate",
             "record evidence",
@@ -6649,7 +6661,15 @@
                 "Code": true
               },
               {
-                "Text": ". With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": ". Lint also names each pair of overview boxes whose lines carry no phrase (",
+                "Code": false
+              },
+              {
+                "Text": "phrases.go",
+                "Code": true
+              },
+              {
+                "Text": "), a contract counted on its provider's box. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -8173,6 +8193,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8186,6 +8211,11 @@
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
                     "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
                   }
                 ]
               },
@@ -8198,6 +8228,11 @@
                   {
                     "ID": "FEAT-0001",
                     "Name": "/abbd",
+                    "Badge": "extracted"
+                  },
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
                     "Badge": "extracted"
                   }
                 ]
