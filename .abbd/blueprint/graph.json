@@ -6495,7 +6495,15 @@
                 "Code": true
               },
               {
-                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. diff compares the units at a base with now, and ",
+                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. A human's why goes only on a decision; ",
+                "Code": false
+              },
+              {
+                "Text": "record fact",
+                "Code": true
+              },
+              {
+                "Text": " refuses one on any other keyed slot. diff compares the units at a base with now, and ",
                 "Code": false
               },
               {
@@ -16329,7 +16337,15 @@
                 "Code": true
               },
               {
-                "Text": " holds a constraint or invariant the code keeps, quoting the lines that keep it. A note in ",
+                "Text": " holds a constraint or invariant the code keeps, quoting the lines that keep it. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseNoteRef",
+                "Code": true
+              },
+              {
+                "Text": " names both kinds of address in its refusal. A note in ",
                 "Code": false
               },
               {
