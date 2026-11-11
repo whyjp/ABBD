@@ -28,6 +28,7 @@ func textModule(units []model.Unit, id model.ID) (model.Unit, bool) {
 // drawing and mark it STALE once the code moves on. With --restamp it stamps
 // the stored text again instead, when only what the module holds moved.
 func (e env) understand(ref string, args []string) error {
+	e.reader = strings.TrimSpace(e.reader)
 	if e.sentence != "" && (strings.Contains(ref, ".") || e.restamp) {
 		return fmt.Errorf("--sentence goes with a module's or feature's new text, not with a note or --restamp")
 	}
@@ -87,6 +88,9 @@ func (e env) understand(ref string, args []string) error {
 	if ss := narrative.Sections(text); len(ss) > 0 && ss[0].Chars > narrative.MaxSection {
 		return fmt.Errorf("the first section %q holds %d characters, over %d; the page shows it first, so keep it a short summary and move the rest under ### headings", ss[0].Heading, ss[0].Chars, narrative.MaxSection)
 	}
+	if err := unfinished(text); err != nil {
+		return err
+	}
 	// Restamping the same words onto newer code would mark a stale reading
 	// fresh without anyone reading the code again.
 	if had && prev.Digest != digest && sameWords(prev.Text, text) {
@@ -97,6 +101,7 @@ func (e env) understand(ref string, args []string) error {
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
 	readText(e.stdout, string(id), text)
+	e.checkText(e.stdout, units, id, text)
 	if s := strings.TrimSpace(e.sentence); s != "" {
 		// The reader who read the module again says its one line too,
 		// stamped with the same code as the text. A person's line outranks

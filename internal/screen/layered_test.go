@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"runtime"
 	"testing"
+	"time"
 )
 
 // A drawing too wide for its budget gives up chains, and the boxes it then
@@ -72,6 +73,7 @@ func randomGraph(seed int64, n, m int) ([]lnode, []ledge) {
 // tries, so the count is the same run to run and on a busy machine, where a
 // time limit was not. 6M is about what a second of laying out allocates; the
 // costliest case makes 5.1M.
+// Mallocs counts the whole process, so this test must never call t.Parallel.
 func TestALargeGraphLaysOutQuickly(t *testing.T) {
 	for _, c := range []struct {
 		seed         int64
@@ -80,10 +82,15 @@ func TestALargeGraphLaysOutQuickly(t *testing.T) {
 		nodes, edges := randomGraph(c.seed, c.n, c.m)
 		var before, after runtime.MemStats
 		runtime.ReadMemStats(&before)
+		start := time.Now()
 		arrange(nodes, edges, c.budget, nil, tactic{})
+		took := time.Since(start)
 		runtime.ReadMemStats(&after)
 		if n := after.Mallocs - before.Mallocs; n > 6_000_000 {
 			t.Errorf("%d boxes and %d lines at budget %d took %d allocations to lay out, past 6M", c.n, c.m, c.budget, n)
+		}
+		if took > 10*time.Second {
+			t.Errorf("%d boxes and %d lines at budget %d took %v to lay out, past 10s", c.n, c.m, c.budget, took)
 		}
 	}
 }

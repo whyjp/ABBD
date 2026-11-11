@@ -131,8 +131,18 @@ abbd explain QUERY [--history] [--root DIR]
                                      each reader's coupling
 abbd path A B [--root DIR]           the shortest path between two units, each hop with its
                                      origin, and the path's weakest origin; A and B are QUERYs
-abbd impact QUERIES [--root DIR]     what a change to the comma-separated units reaches, in a
-                                     direct and a far tier; read before the work
+abbd impact QUERIES [--features] [--root DIR]
+                                     what a change to the comma-separated units reaches, in a
+                                     direct and a far tier; read before the work; --features
+                                     groups it by the features it reaches, with the contracts
+                                     and entries each uses
+abbd brief MOD-ID|FEAT-ID [--root DIR]
+                                     the reading brief for a module's text: a skeleton of
+                                     Overview and Key Concepts with a TODO per inside unit and
+                                     provided contract, then a Read first list to delete before
+                                     storing: the files its text is stamped against, entry
+                                     files first, its contracts and couplings, what cites it,
+                                     and for a STALE text what moved
 abbd diff [--base REV] [--unit ID] [--page] [--json] [--check] [--root DIR]
                                      the topology difference since REV (default: the merge base
                                      with the default branch), for the PR; --check exits 1 when
@@ -180,8 +190,10 @@ abbd status [--check] [--verbose] [--root DIR]
                                      not fail it; dead evidence, an orphaned text, one whose module is gone or no longer
                                      top-level, a relation that runs up a stack, and a table's
                                      cell the stored relations do not bear out are reported but
-                                     do not fail it; long: and unbacked: lines fold into one count
-                                     each unless --verbose lists them`
+                                     do not fail it; long:, unbacked:, unmentioned: and names:
+                                     lines fold into one count each unless --verbose lists them;
+                                     unmentioned: is a unit inside a module its text never
+                                     names, names: a path its text names outside its code`
 
 const (
 	exitOK    = 0
@@ -326,6 +338,7 @@ var commands = map[string]command{
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
+	"brief":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.brief(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check", "unit", "page"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
