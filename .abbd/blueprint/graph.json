@@ -5689,7 +5689,6 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6115,7 +6114,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -6660,7 +6659,15 @@
                 "Code": true
               },
               {
-                "Text": ". With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": ". For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the comment at its anchors (",
+                "Code": false
+              },
+              {
+                "Text": "draft.go",
+                "Code": true
+              },
+              {
+                "Text": "), a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
