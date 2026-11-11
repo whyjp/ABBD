@@ -8891,7 +8891,15 @@
                 "Code": true
               },
               {
-                "Text": " touched top-level modules, the counted relations between them and each use of a contract drawn to its provider, what is worth a look, and the whole review folded.",
+                "Text": " touched top-level modules, the counted relations between them and each use of a contract drawn to its provider, one line per pair of modules labelled by ",
+                "Code": false
+              },
+              {
+                "Text": "edgeLabel",
+                "Code": true
+              },
+              {
+                "Text": " with up to two names and how many more, what is worth a look, and the whole review folded.",
                 "Code": false
               }
             ]
