@@ -206,6 +206,36 @@ func (e env) review() error {
 			fmt.Fprintf(w, "  and %d more; abbd impact lists them all\n", reached-reachShown)
 		}
 	}
+	if len(in.Owners) > 0 && len(seeds) > 0 {
+		// Who to ask: the owners CODEOWNERS names for the top-level units
+		// the change touched or reaches directly.
+		var reach []model.ID
+		for _, it := range topology.ImpactOf(now, seeds).Direct {
+			reach = append(reach, it.Unit)
+		}
+		byOwner := map[string][]model.ID{}
+		for _, id := range reach {
+			t := id
+			for seen := map[model.ID]bool{}; byID[t].Parent != "" && !seen[t]; t = byID[t].Parent {
+				seen[t] = true
+			}
+			for _, o := range in.Owners[t] {
+				if !slices.Contains(byOwner[o], t) {
+					byOwner[o] = append(byOwner[o], t)
+				}
+			}
+		}
+		fmt.Fprintln(w, "\nwho owns what the change touches or reaches (CODEOWNERS):")
+		for _, o := range slices.Sorted(maps.Keys(byOwner)) {
+			ids := byOwner[o]
+			slices.Sort(ids)
+			var named []string
+			for _, id := range ids {
+				named = append(named, fmt.Sprintf("%s %s", id, name[id]))
+			}
+			fmt.Fprintf(w, "  %s: %s\n", o, strings.Join(named, ", "))
+		}
+	}
 
 	// What is worth a look is what sits in, above or under what the change
 	// touched, so a STALE text elsewhere in the repository stays out.
@@ -241,14 +271,33 @@ func (e env) review() error {
 			look = append(look, fmt.Sprintf("the text of %s %s is STALE: its code changed since it was read", id, name[id]))
 		}
 	}
+	// A note counts when it sits in what the change touched, or when the
+	// change edited a file it cites, which no unit need be anchored at.
+	edited := map[string]bool{}
+	if files, err := gitx.ChangedSince(e.root, base); err == nil {
+		for _, f := range files {
+			edited[f] = true
+		}
+	}
+	cites := func(n store.Note) bool {
+		for _, ev := range n.Evidence {
+			if edited[ev.Path] {
+				return true
+			}
+		}
+		return false
+	}
 	for _, id := range slices.Sorted(maps.Keys(in.Notes)) {
 		u, present := presentUnit(now, id)
 		for _, n := range in.Notes[id] {
-			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) || !related(id) {
+			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) || !related(id) && !cites(n) {
 				continue
 			}
 			ref := string(id) + "." + n.Slot
-			if n.Stale() {
+			switch {
+			case n.Stale() && n.Ref.Slot.Name == "constraints":
+				look = append(look, fmt.Sprintf("the constraint %s is STALE: the code that keeps it changed, so read whether it still holds", ref))
+			case n.Stale():
 				look = append(look, fmt.Sprintf("the note %s is STALE: the code it cites changed", ref))
 			}
 			if n.Ref.Slot.Name == "decisions" && (n.Why == nil || n.Why.Value == "") {

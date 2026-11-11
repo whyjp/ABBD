@@ -1161,3 +1161,7 @@
   existing: MOD-0046
   shared:
     path: internal/store/understanding.go
+- new: MOD-0041
+  existing: MOD-0057
+  shared:
+    path: internal/store/owners.go

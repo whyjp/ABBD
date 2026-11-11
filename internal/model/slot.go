@@ -9,7 +9,8 @@ import (
 
 // Slot is one part of a unit's account that a reader writes on its own and
 // that goes STALE on its own: what the unit means, how it fails, its states,
-// a decision it embodies, a sample of what crosses it. Title is the heading
+// a decision it embodies, a constraint or invariant its code keeps, a sample
+// of what crosses it. Title is the heading
 // the blueprint gives it. A keyed slot holds one note per key, so each
 // decision carries its own evidence and its own why.
 type Slot struct {
@@ -23,6 +24,7 @@ var Slots = []Slot{
 	{Name: "failure", Title: "실패와 재시도"},
 	{Name: "states", Title: "상태"},
 	{Name: "decisions", Title: "결정", Keyed: true},
+	{Name: "constraints", Title: "제약과 불변식", Keyed: true},
 	{Name: "wire_sample", Title: "전송 예시"},
 	{Name: "entries", Title: "항목", Keyed: true},
 }
@@ -64,7 +66,7 @@ var noteKey = regexp.MustCompile(`^[a-z0-9][a-z0-9-]*$`)
 func ParseNoteRef(s string) (NoteRef, error) {
 	parts := strings.Split(s, ".")
 	if len(parts) < 2 || len(parts) > 3 {
-		return NoteRef{}, fmt.Errorf("%q is not ID.SLOT or ID.decisions.KEY", s)
+		return NoteRef{}, fmt.Errorf("%q is not ID.SLOT or ID.SLOT.KEY for a keyed slot such as decisions or constraints", s)
 	}
 	if _, _, err := ParseID(parts[0]); err != nil {
 		return NoteRef{}, err

@@ -7,12 +7,16 @@ import (
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/owners"
 	"github.com/whyjp/abbd/internal/store"
 )
 
 // Input is everything the screen reads.
 type Input struct {
-	Units   []model.Unit
+	Units []model.Unit
+	// Owners names who owns each unit's code, by the repository's
+	// CODEOWNERS; a unit no rule covers is left out.
+	Owners  map[model.ID][]string
 	Project store.Project
 	// Synced is the watermark of the last sync; Tree is the working tree now.
 	// Inputs is what the blueprint must be rendered from now, and Rendered
@@ -58,6 +62,7 @@ func Load(st store.Store) (Input, error) {
 	if in.Notes, in.Strays, err = st.LoadNotes(); err != nil {
 		return in, err
 	}
+	in.Owners = OwnersOf(owners.Read(st.ProjectDir()), in.Units)
 	if in.Figures, err = st.LoadFigures(); err != nil {
 		return in, err
 	}
@@ -232,6 +237,7 @@ func Build(in Input) Model {
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
 		ins.Standing = o.standing(id, in)
+		ins.Owners = in.Owners[id]
 		u := o.units[id]
 		ins.Purpose, ins.Responsibility = sentenceOf(u.Purpose, in.Digests[id]), sentenceOf(u.Responsibility, in.Digests[id])
 		var tied map[string][]Block
@@ -317,6 +323,26 @@ func anchors(u model.Unit) []string {
 			s += " " + a.Symbol
 		}
 		out = append(out, s)
+	}
+	return out
+}
+
+// OwnersOf names the owners of each present unit's anchors, in the order
+// CODEOWNERS gives them, each once.
+func OwnersOf(o owners.Owners, units []model.Unit) map[model.ID][]string {
+	out := map[model.ID][]string{}
+	for _, u := range model.Present(units) {
+		var names []string
+		for _, a := range u.Anchors {
+			for _, n := range o.For(a.Path) {
+				if !slices.Contains(names, n) {
+					names = append(names, n)
+				}
+			}
+		}
+		if len(names) > 0 {
+			out[u.ID] = names
+		}
 	}
 	return out
 }

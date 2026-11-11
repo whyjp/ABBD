@@ -36,6 +36,7 @@ Every fact carries its origin: `EXTRACTED` (the project's script read it), `USER
    - `failure`: how it fails, which failures it retries, and what a caller sees.
    - `states`: its states and what moves it between them, as a table with a header row (`| state | when | next |`).
    - `decisions`: one note per decision, as `<ID>.decisions.<KEY>`, saying what the code chose over what. When the human states why, record it with `abbd record fact <ID>.decisions.<KEY> --value "<why>" --source <REF>`. Storing the decision again on the same quotes keeps that why. Storing it on other quotes drops it, since the human did not speak about that code; ask again. Forgetting the decision removes its why with it.
+   - `constraints`: one note per constraint or invariant the code keeps, as `<ID>.constraints.<KEY>`, quoting the lines that keep it, such as an order a function relies on. It goes STALE when those lines change, and `abbd review` names it among what is worth a look.
    - `wire_sample`: a sample of what crosses the contract, in a fenced code block.
    - `entries`: one note per entry of a contract, as `<ID>.entries.<KEY>`, saying what the endpoint, method, flag or field is for and its caveats. `abbd explain <ID>` lists the keys. abbd refuses a key the contract does not list. The blueprint shows the note on the entry's row of the contract's table.
 

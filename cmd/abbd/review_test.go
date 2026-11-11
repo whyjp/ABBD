@@ -182,3 +182,20 @@ func TestReviewCountsAPartsChangeInsideItsScope(t *testing.T) {
 	}
 	contains(t, out, "outside the declared scope: MOD-0002 ledger (removed)", "outside the declared scope: IF-0001 http api")
 }
+
+// With a CODEOWNERS, review groups the modules the change touches or
+// reaches by owner, and a module page names its owners.
+func TestReviewGroupsWhatItReachesByOwner(t *testing.T) {
+	p, base := entriesProject(t)
+	p.code(".github/CODEOWNERS", "* @everyone\n/billing/ @payments\n/web/ @web\n")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "who owns what the change touches or reaches (CODEOWNERS):", "  @payments: MOD-0001 billing")
+	if strings.Contains(out, "@everyone: MOD-0001") {
+		t.Errorf("the catch-all owner should not own billing, which /billing/ covers:\n%s", out)
+	}
+	if !strings.Contains(p.blueprint(), "담당 @payments") {
+		t.Errorf("billing's page should name its owners")
+	}
+}

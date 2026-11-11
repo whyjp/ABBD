@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -648,7 +648,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes a deterministic script that prints the extraction JSON from the code alone, and reconciles it against the swarm result.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -666,7 +667,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Writes supplement.json with what only reading tells: purposes, units and couplings the script cannot see, and the grouping into parts.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -1938,11 +1940,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model",
@@ -2563,6 +2567,18 @@
         "internal/narrative",
         "internal/narrative/narrative.go"
       ]
+    },
+    {
+      "ID": "MOD-0057",
+      "Kind": "MOD",
+      "Name": "internal/owners",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/owners",
+        "internal/owners/owners.go"
+      ]
     }
   ],
   "edges": [
@@ -2601,6 +2617,7 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "diff --check",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd diff\""
@@ -2610,6 +2627,7 @@
       "To": "IF-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd evidence\""
     },
     {
@@ -2617,6 +2635,7 @@
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "status --check",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd status\""
@@ -2626,6 +2645,7 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "blast radius",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd impact\""
@@ -2635,6 +2655,7 @@
       "To": "IF-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd sync\""
     },
     {
@@ -2642,6 +2663,7 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "unit's couplings",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd explain\""
@@ -2651,6 +2673,7 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "route between units",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd path\""
@@ -2660,6 +2683,7 @@
       "To": "IF-0009",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "stated purpose",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record fact\""
@@ -2669,6 +2693,7 @@
       "To": "IF-0010",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "found coupling",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record relation\""
@@ -2678,6 +2703,7 @@
       "To": "IF-0011",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "unseen unit",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record unit\""
@@ -2687,6 +2713,7 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "module text",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd understand\""
@@ -2696,6 +2723,7 @@
       "To": "IF-0014",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "exit code",
       "PhraseOrigin": "INFERRED"
     },
@@ -2704,6 +2732,7 @@
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd migrate\""
     },
     {
@@ -2711,6 +2740,7 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd record evidence\""
@@ -2720,6 +2750,7 @@
       "To": "IF-0021",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "wrong claim",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd retract\""
@@ -2729,6 +2760,7 @@
       "To": "IF-0022",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "flow steps",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd flow\""
@@ -2738,6 +2770,7 @@
       "To": "IF-0023",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "stale note",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd forget\""
@@ -2747,6 +2780,7 @@
       "To": "IF-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "stack layers",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd stack\""
@@ -2756,6 +2790,7 @@
       "To": "IF-0025",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "file grid",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd table\""
@@ -2765,6 +2800,7 @@
       "To": "IF-0026",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd lint\""
     },
     {
@@ -2772,6 +2808,7 @@
       "To": "IF-0027",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd review\""
     },
     {
@@ -2779,6 +2816,7 @@
       "To": "IF-0029",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd scope\""
     },
     {
@@ -2786,6 +2824,7 @@
       "To": "IF-0001",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd diff\""
     },
     {
@@ -2793,6 +2832,7 @@
       "To": "IF-0003",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd status\""
     },
     {
@@ -2800,6 +2840,7 @@
       "To": "IF-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "blast radius",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd impact\""
@@ -2809,6 +2850,7 @@
       "To": "IF-0005",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd install\""
     },
     {
@@ -2816,6 +2858,7 @@
       "To": "IF-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd sync\""
     },
     {
@@ -2823,6 +2866,7 @@
       "To": "IF-0007",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "unit account",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd explain\""
@@ -2832,6 +2876,7 @@
       "To": "IF-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "route between units",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd path\""
@@ -2841,6 +2886,7 @@
       "To": "IF-0009",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record fact\""
     },
     {
@@ -2848,6 +2894,7 @@
       "To": "IF-0012",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "reader supplement",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd setup\""
@@ -2857,6 +2904,7 @@
       "To": "IF-0013",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "module text",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd understand\""
@@ -2865,13 +2913,15 @@
       "From": "FEAT-0002",
       "To": "IF-0014",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "FEAT-0002",
       "To": "IF-0018",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "unit's parent",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record parent\""
@@ -2881,6 +2931,7 @@
       "To": "IF-0019",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd migrate\""
     },
     {
@@ -2888,6 +2939,7 @@
       "To": "IF-0020",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
@@ -2897,6 +2949,7 @@
       "To": "IF-0022",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd flow\""
     },
     {
@@ -2904,6 +2957,7 @@
       "To": "IF-0026",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
     },
     {
@@ -3261,6 +3315,7 @@
       "To": "CFG-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "config",
       "Phrase": "extract argv",
       "PhraseOrigin": "INFERRED"
     },
@@ -3269,6 +3324,7 @@
       "To": "DATA-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "script stdout",
       "PhraseOrigin": "INFERRED"
     },
@@ -3277,6 +3333,7 @@
       "To": "DATA-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED"
     },
@@ -3284,31 +3341,36 @@
       "From": "MOD-0001",
       "To": "DATA-0005",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0006",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0006",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0008",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0008",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
@@ -3346,103 +3408,120 @@
       "From": "MOD-0001",
       "To": "DATA-0024",
       "Kind": "consumes",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "DATA-0024",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0001",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0002",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0003",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0004",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0005",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0006",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0007",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0008",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0009",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0010",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0011",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0012",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0013",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0014",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "edge key",
       "PhraseOrigin": "INFERRED"
     },
@@ -3458,79 +3537,92 @@
       "From": "MOD-0001",
       "To": "IF-0018",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0019",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0020",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0021",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0022",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0023",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0024",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0025",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0026",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0027",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0028",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "IF-0029",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "supplement fold",
       "PhraseOrigin": "INFERRED"
     },
@@ -3549,6 +3641,7 @@
       "To": "MOD-0013",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "quote check",
       "PhraseOrigin": "INFERRED"
     },
@@ -3567,6 +3660,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "script stdout",
       "PhraseOrigin": "INFERRED"
     },
@@ -3575,6 +3669,7 @@
       "To": "MOD-0022",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "git query",
       "PhraseOrigin": "INFERRED"
     },
@@ -3603,6 +3698,7 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "ID reconcile",
       "PhraseOrigin": "INFERRED"
     },
@@ -3621,6 +3717,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, Writer, Evidence",
       "PhraseOrigin": "INFERRED"
     },
@@ -3639,6 +3736,7 @@
       "To": "MOD-0034",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "render pages",
       "PhraseOrigin": "INFERRED"
     },
@@ -3657,6 +3755,7 @@
       "To": "MOD-0041",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "unit .md",
       "PhraseOrigin": "INFERRED"
     },
@@ -3695,6 +3794,7 @@
       "To": "MOD-0047",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "ImpactOf seeds",
       "PhraseOrigin": "INFERRED"
     },
@@ -3713,6 +3813,7 @@
       "To": "MOD-0054",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "dir grouping",
       "PhraseOrigin": "INFERRED"
     },
@@ -3721,6 +3822,7 @@
       "To": "MOD-0056",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
     },
@@ -3977,6 +4079,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -3985,6 +4088,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Supplement, Fact, Anchor",
       "PhraseOrigin": "INFERRED"
     },
@@ -4027,6 +4131,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Evidence, Status",
       "PhraseOrigin": "INFERRED"
     },
@@ -4068,13 +4173,15 @@
       "From": "MOD-0017",
       "To": "DATA-0002",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0017",
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Evidence, Entry, Fact",
       "PhraseOrigin": "INFERRED"
     },
@@ -4193,6 +4300,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4201,6 +4309,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, ID, Anchor",
       "PhraseOrigin": "INFERRED"
     },
@@ -4266,13 +4375,15 @@
       "From": "MOD-0030",
       "To": "IF-0015",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0034",
       "To": "CFG-0002",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "config",
       "Phrase": "LoadProject",
       "PhraseOrigin": "INFERRED"
     },
@@ -4281,6 +4392,7 @@
       "To": "DATA-0004",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "LoadUnits",
       "PhraseOrigin": "INFERRED"
     },
@@ -4288,13 +4400,15 @@
       "From": "MOD-0034",
       "To": "DATA-0005",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0034",
       "To": "DATA-0006",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "LoadState",
       "PhraseOrigin": "INFERRED"
     },
@@ -4303,6 +4417,7 @@
       "To": "DATA-0008",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "LoadUnderstandings",
       "PhraseOrigin": "INFERRED"
     },
@@ -4359,6 +4474,7 @@
       "To": "DATA-0024",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "data",
       "Phrase": "LoadNotes",
       "PhraseOrigin": "INFERRED"
     },
@@ -4367,6 +4483,7 @@
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "edge key",
       "PhraseOrigin": "INFERRED"
     },
@@ -4385,6 +4502,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, ID, DependsOn",
       "PhraseOrigin": "INFERRED"
     },
@@ -4393,6 +4511,7 @@
       "To": "MOD-0041",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "LoadFigures",
       "PhraseOrigin": "INFERRED"
     },
@@ -4421,6 +4540,7 @@
       "To": "MOD-0047",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "entry uses",
       "PhraseOrigin": "INFERRED"
     },
@@ -4429,8 +4549,16 @@
       "To": "MOD-0056",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "text lines",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0034",
+      "To": "MOD-0057",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0035",
@@ -4560,25 +4688,29 @@
       "From": "MOD-0041",
       "To": "CFG-0002",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "config"
     },
     {
       "From": "MOD-0041",
       "To": "DATA-0004",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0041",
       "To": "DATA-0006",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0041",
       "To": "DATA-0008",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0041",
@@ -4608,13 +4740,15 @@
       "From": "MOD-0041",
       "To": "DATA-0024",
       "Kind": "provides",
-      "Origin": "EXTRACTED"
+      "Origin": "EXTRACTED",
+      "Via": "data"
     },
     {
       "From": "MOD-0041",
       "To": "MOD-0013",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "quote lookup",
       "PhraseOrigin": "INFERRED"
     },
@@ -4623,6 +4757,7 @@
       "To": "MOD-0022",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "files at rev",
       "PhraseOrigin": "INFERRED"
     },
@@ -4631,6 +4766,7 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "merge candidates",
       "PhraseOrigin": "INFERRED"
     },
@@ -4639,8 +4775,16 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, Evidence, Claim",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0041",
+      "To": "MOD-0057",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0042",
@@ -4729,6 +4873,7 @@
       "To": "IF-0015",
       "Kind": "consumes",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "edge key",
       "PhraseOrigin": "INFERRED"
     },
@@ -4737,6 +4882,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, ID, Origin",
       "PhraseOrigin": "INFERRED"
     },
@@ -4843,6 +4989,7 @@
       "To": "MOD-0030",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
+      "Via": "call",
       "Phrase": "Unit, Kind, Module",
       "PhraseOrigin": "INFERRED"
     }
@@ -5955,7 +6102,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -5979,7 +6125,23 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. Its reading verbs are abbd install, abbd explain, abbd brief, abbd path, abbd impact, abbd diff, abbd review, abbd evidence, abbd status and abbd lint. Every verb keeps abbd exit codes: 0 on success, 1 when the command fails, 64 when the line does not parse.",
+                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " counts in its ",
+                "Code": false
+              },
+              {
+                "Text": "via:",
+                "Code": true
+              },
+              {
+                "Text": " line the live relations that name no via, which the drawing reads as run-time. Its reading verbs are abbd install, abbd explain, abbd brief, abbd path, abbd impact, abbd diff, abbd review, abbd evidence, abbd status and abbd lint. Every verb keeps abbd exit codes: 0 on success, 1 when the command fails, 64 when the line does not parse.",
                 "Code": false
               }
             ]
@@ -6351,7 +6513,23 @@
                 "Code": true
               },
               {
-                "Text": "). diff compares the units at a base with now, and ",
+                "Text": "). Review names a STALE ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
+                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Code": false
+              },
+              {
+                "Text": "record fact",
+                "Code": true
+              },
+              {
+                "Text": " refuses one on any other keyed slot. diff compares the units at a base with now, and ",
                 "Code": false
               },
               {
@@ -14714,11 +14892,13 @@
       "Name": "internal/model",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 2,
@@ -16159,6 +16339,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -16167,7 +16355,23 @@
                 "Code": true
               },
               {
-                "Text": " are keyed, so each holds one note per key. A note in ",
+                "Text": " are keyed, so each holds one note per key; ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
+                "Text": " holds a constraint or invariant the code keeps, quoting the lines that keep it. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseNoteRef",
+                "Code": true
+              },
+              {
+                "Text": " names both kinds of address in its refusal. A note in ",
                 "Code": false
               },
               {
@@ -18403,7 +18607,7 @@
       "Standing": {
         "Provides": 1,
         "Uses": 12,
-        "Direct": 5,
+        "Direct": 6,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -19067,7 +19271,23 @@
                   "Code": true
                 },
                 {
-                  "Text": " reads, including each module's understanding and its code digest now. ",
+                  "Text": " reads, including each module's understanding and its code digest now, and the owners ",
+                  "Code": false
+                },
+                {
+                  "Text": "internal/owners",
+                  "Code": true
+                },
+                {
+                  "Text": " reads from CODEOWNERS for each unit (",
+                  "Code": false
+                },
+                {
+                  "Text": "OwnersOf",
+                  "Code": true
+                },
+                {
+                  "Text": "), which a module's page names as 담당. ",
                   "Code": false
                 },
                 {
@@ -19478,6 +19698,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -19946,7 +20167,23 @@
                 "Code": true
               },
               {
-                "Text": " reads, including each module's understanding and its code digest now. ",
+                "Text": " reads, including each module's understanding and its code digest now, and the owners ",
+                "Code": false
+              },
+              {
+                "Text": "internal/owners",
+                "Code": true
+              },
+              {
+                "Text": " reads from CODEOWNERS for each unit (",
+                "Code": false
+              },
+              {
+                "Text": "OwnersOf",
+                "Code": true
+              },
+              {
+                "Text": "), which a module's page names as 담당. ",
                 "Code": false
               },
               {
@@ -25723,7 +25960,7 @@
       "Standing": {
         "Provides": 5,
         "Uses": 2,
-        "Direct": 4,
+        "Direct": 5,
         "StaleNotes": 0,
         "Dead": 1
       },
@@ -25846,7 +26083,31 @@
                 "Code": true
               },
               {
-                "Text": " directory, where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " directory (and ",
+                "Code": false
+              },
+              {
+                "Text": "ProjectDir",
+                "Code": true
+              },
+              {
+                "Text": " names the project root it sits in; ",
+                "Code": false
+              },
+              {
+                "Text": "InputsHash",
+                "Code": true
+              },
+              {
+                "Text": " counts the CODEOWNERS ",
+                "Code": false
+              },
+              {
+                "Text": "owners.File",
+                "Code": true
+              },
+              {
+                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
@@ -29634,6 +29895,25 @@
           ]
         }
       ]
+    },
+    {
+      "ID": "MOD-0057",
+      "Name": "internal/owners",
+      "Standing": {
+        "Provides": 0,
+        "Uses": 0,
+        "Direct": 0,
+        "StaleNotes": 0,
+        "Dead": 0
+      },
+      "Units": null,
+      "Understanding": null,
+      "Unwired": null,
+      "Up": "#overview",
+      "Trail": [
+        "internal/owners"
+      ],
+      "Inferred": null
     }
   ],
   "flows": [
