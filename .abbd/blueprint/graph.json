@@ -22846,15 +22846,39 @@
                 "Code": true
               },
               {
-                "Text": " only where ink of one colour goes four ways, as where a line crosses onto a trunk of its own kind that runs past it: there only the dot tells a join from a crossing. A T says by its shape that one line ends on the other and takes none, as in the exemplars. The checker reads every point where ink goes three ways or more as a split (",
+                "Text": " wherever ink of one colour goes four ways, as where a line crosses onto a trunk of its own kind that runs past it; a T takes none, its shape says the join. ",
                 "Code": false
               },
               {
-                "Text": "Splits",
+                "Text": "dotCutTees",
                 "Code": true
               },
               {
-                "Text": "), dotted or not, so J1 still holds each split, and J2 asks a dot only at a four-way point. ",
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "marks.go",
+                "Code": true
+              },
+              {
+                "Text": ") dots a T anyway where a gap cuts its line within ",
+                "Code": false
+              },
+              {
+                "Text": "gapJoin",
+                "Code": true
+              },
+              {
+                "Text": " of it (",
+                "Code": false
+              },
+              {
+                "Text": "nearCut",
+                "Code": true
+              },
+              {
+                "Text": "), since the cut stub reads as a corner, and lint's J2 reports such a T without its dot. ",
                 "Code": false
               },
               {
@@ -25026,7 +25050,7 @@
                 "Code": true
               },
               {
-                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs, its ×N, its junction dots and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
+                "Text": ": its colour switches, its parallel ink, its ink abreast, its combs, its doglegs and its label repeats may not rise, and its labelled routes may not fall (a floor, ",
                 "Code": false
               },
               {
