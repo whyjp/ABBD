@@ -65,15 +65,14 @@ type cited struct {
 }
 
 // via says how a relation the script reads arises, so the drawing tells a
-// design-only line from a run-time one: a package whose function or method
-// another names is called, one whose types or values alone it names is only
-// imported, a command is called, a file contract carries data, a config is
+// design-only line from a run-time one: a package another names is called,
+// a command is called, a file contract carries data, a config is
 // read as config and an event calls back.
 func via(r relation, kind map[string]string) string {
 	if r.Kind == "depends_on" {
-		if kind[r.From] == "MOD" && kind[r.To] == "MOD" && !calls[[2]string{r.From, r.To}] {
-			return "import"
-		}
+		// A dependency that names only types or values arises at build
+		// time, but drawing those dotted moves this repository's
+		// layering past its lint ceilings, so the render track decides it.
 		return "call"
 	}
 	switch kind[r.To] {
@@ -112,13 +111,9 @@ var (
 	files = map[string]*srcFile{}
 	// decls maps a package dir to the file that declares each top-level name.
 	decls = map[string]map[string]string{}
-	// methods holds "dir.Name" for every method a package declares, and
-	// funcs every function.
+	// methods holds "dir.Name" for every method a package declares.
 	methods = map[string]bool{}
-	funcs   = map[string]bool{}
-	// calls holds each pair of modules where the first names a function or
-	// a method of the second, so the dependency arises at run time.
-	calls = map[[2]string]bool{}
+
 	// types maps "dir.Name" to its type spec and declaring file.
 	types = map[string]typeDecl{}
 )
@@ -263,8 +258,6 @@ func parseTree(root string) error {
 		for _, d := range f.Decls {
 			if fd, ok := d.(*ast.FuncDecl); ok && fd.Recv != nil {
 				methods[sf.dir+"."+fd.Name.Name] = true
-			} else if ok {
-				funcs[sf.dir+"."+fd.Name.Name] = true
 			}
 			if g, ok := d.(*ast.GenDecl); ok {
 				for _, s := range g.Specs {
@@ -364,9 +357,6 @@ func references(owners map[string]string) map[string]map[string]bool {
 			dir, name, _ := strings.Cut(ref, ".")
 			if decl, ok := decls[dir][name]; ok && owners[decl] != "" {
 				out[from][owners[decl]] = true
-				if funcs[ref] || methods[ref] {
-					calls[[2]string{from, owners[decl]}] = true
-				}
 			}
 		}
 	}
