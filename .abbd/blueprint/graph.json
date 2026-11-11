@@ -20075,6 +20075,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -23271,7 +23272,23 @@
                 "Code": true
               },
               {
-                "Text": " then drops the ×N of a bus whose lines share a word, which the bus says instead, and of a bus of two lines, and keeps a word said again off a freed count spot. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
+                "Text": " then drops the ×N of a bus of two lines, and of a bus whose every line says one word once that word is drawn on its ink, its net's or its track within ",
+                "Code": false
+              },
+              {
+                "Text": "repeatNear",
+                "Code": true
+              },
+              {
+                "Text": "; it keeps that spot for the bus's own word, keeps a word said again off a freed count spot, and ",
+                "Code": false
+              },
+              {
+                "Text": "unlabelKin",
+                "Code": true
+              },
+              {
+                "Text": " gives the count back when it drops the word. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
                 "Code": false
               },
               {
