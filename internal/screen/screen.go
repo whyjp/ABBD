@@ -39,7 +39,8 @@ type Input struct {
 	Figures store.Figures
 	// Primary are the stored relations, by relation key (model.Edge's
 	// String), the overview must draw whatever else it counts instead
-	// (primary.go). Nil leaves the choice to the stored flows and stacks.
+	// (primary.go) when Project.OverviewCut is on. Nil leaves the choice to
+	// the stored flows and stacks.
 	Primary map[string]bool
 }
 
@@ -190,7 +191,10 @@ func Build(in Input) Model {
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
-	c := o.primary(in.Primary, ls, fs)
+	var c *cut
+	if in.Project.OverviewCut {
+		c = o.primary(in.Primary, ls, fs)
+	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
