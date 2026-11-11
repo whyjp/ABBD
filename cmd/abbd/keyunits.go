@@ -63,6 +63,9 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 	inside := map[string]int{}
 	var words []string
 	for _, f := range files {
+		if testFile(f) {
+			continue
+		}
 		file, err := os.Open(filepath.Join(root, filepath.FromSlash(f)))
 		if err != nil {
 			continue
@@ -170,4 +173,11 @@ func unnamed(text string, keys []keyUnit) []keyUnit {
 		}
 	}
 	return out
+}
+
+// testFile is a test, whose helpers are no unit of the module's design.
+func testFile(f string) bool {
+	base := strings.ToLower(filepath.Base(f))
+	return strings.Contains(base, "_test.") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") || strings.HasPrefix(base, "test_") ||
+		strings.Contains("/"+filepath.ToSlash(f), "/tests/") || strings.Contains("/"+filepath.ToSlash(f), "/test/")
 }
