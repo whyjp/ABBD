@@ -32,6 +32,9 @@ func TestUnphrasedNamesTheOverviewLinesWithNoLivePhrase(t *testing.T) {
 		{Rels: []string{"MOD-0002.provides.IF-0001"}},
 		{Rels: []string{"MOD-0003.depends_on.MOD-0001", "MOD-0001.depends_on.MOD-0003"}, Both: true},
 		{Rels: []string{"MOD-0007.depends_on.MOD-0001"}},
+		// A trunk shared by a phrased line and an unphrased one, whose
+		// relations its drops above draw again.
+		{Rels: []string{"MOD-0001.consumes.IF-0001", "MOD-0002.depends_on.MOD-0003", "MOD-0002.depends_on.MOD-0006"}},
 	}}
 	got := unphrased(units, d)
 	want := []string{
