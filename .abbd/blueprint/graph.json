@@ -4476,6 +4476,16 @@
     },
     {
       "From": "MOD-0040",
+      "To": "DATA-0008",
+      "Kind": "consumes",
+      "Origin": "INFERRED",
+      "Via": "data",
+      "Phrase": "text digest",
+      "PhraseOrigin": "INFERRED",
+      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: bs, Lead: lead, Rest: rest}\""
+    },
+    {
+      "From": "MOD-0040",
       "To": "MOD-0041",
       "Kind": "depends_on",
       "Origin": "INFERRED",
@@ -47258,7 +47268,7 @@
         "Uses": 12,
         "Direct": 5,
         "StaleNotes": 0,
-        "Dead": 12
+        "Dead": 11
       },
       "Units": [
         {
@@ -54451,7 +54461,6 @@
           "Names": [
             "project.yaml",
             "unit files",
-            "module understanding",
             "slot notes",
             "relation key",
             "drawn versus listed relation rule",
@@ -54688,6 +54697,15 @@
           "Quotes": [
             "internal/screen/screen.go \"if in.Inputs, err = st.InputsHash(); err != nil {\"",
             "internal/store/store.go \"case d.IsDir() \u0026\u0026 p == s.path(\\\"blueprint\\\"):\""
+          ]
+        },
+        {
+          "From": "understanding text",
+          "To": "module understanding",
+          "Kind": "consumes",
+          "Via": "data",
+          "Quotes": [
+            "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: bs, Lead: lead, Rest: rest}\""
           ]
         },
         {
