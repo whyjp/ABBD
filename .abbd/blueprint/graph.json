@@ -12396,11 +12396,11 @@
                 "Code": false
               },
               {
-                "Text": "git check-ignore",
+                "Text": "git check-ignore --no-index",
                 "Code": true
               },
               {
-                "Text": "), since git refuses such a pathspec and a whitelist .gitignore such as ",
+                "Text": ", so a tracked .abbd does not sway it), since git refuses such a pathspec and a whitelist .gitignore such as ",
                 "Code": false
               },
               {
