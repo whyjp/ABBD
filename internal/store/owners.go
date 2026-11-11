@@ -1,7 +1,7 @@
 package store
 
 // Owners is who owns which code by a repository's CODEOWNERS, as GitHub
-// and GitLab read it: the last pattern a path matches names its owners. It
+// reads it: the last pattern a path matches names its owners. It
 // is a fact the repository states, read as it stands, never inferred.
 
 import (
@@ -23,12 +23,23 @@ type ownerRule struct {
 // ReadOwners finds CODEOWNERS where GitHub looks for it, under root, and parses
 // it; with none, every path has no owner.
 func ReadOwners(root string) Owners {
-	for _, p := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
-		if b, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(p))); err == nil {
+	if f := ownersFile(root); f != "" {
+		if b, err := os.ReadFile(f); err == nil {
 			return ParseOwners(string(b))
 		}
 	}
 	return Owners{}
+}
+
+// ownersFile is the CODEOWNERS GitHub reads under root, "" when none.
+func ownersFile(root string) string {
+	for _, p := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
+		f := filepath.Join(root, filepath.FromSlash(p))
+		if _, err := os.Stat(f); err == nil {
+			return f
+		}
+	}
+	return ""
 }
 
 // ParseOwners reads CODEOWNERS text: a pattern and its owners per line, # for a
@@ -53,7 +64,9 @@ func ParseOwners(text string) Owners {
 func (o Owners) For(path string) []string {
 	path = strings.TrimPrefix(filepath.ToSlash(path), "./")
 	for i := len(o.rules) - 1; i >= 0; i-- {
-		if o.rules[i].re.MatchString(path) {
+		// An anchor may name a directory, which a rule for its files
+		// ("/billing/") covers as well.
+		if o.rules[i].re.MatchString(path) || o.rules[i].re.MatchString(path+"/") {
 			return o.rules[i].owners
 		}
 	}
@@ -75,6 +88,12 @@ func ownerPattern(p string) *regexp.Regexp {
 	}
 	for i := 0; i < len(p); i++ {
 		switch {
+		case i == 0 && strings.HasPrefix(p, "**/"):
+			b.WriteString("(.*/)?")
+			i += 2
+		case strings.HasPrefix(p[i:], "/**/"):
+			b.WriteString("/(.*/)?")
+			i += 3
 		case strings.HasPrefix(p[i:], "**"):
 			b.WriteString(".*")
 			i++
@@ -86,9 +105,13 @@ func ownerPattern(p string) *regexp.Regexp {
 			b.WriteString(regexp.QuoteMeta(string(p[i])))
 		}
 	}
-	if strings.HasSuffix(p, "/") {
+	last := p[strings.LastIndex(strings.TrimSuffix(p, "/"), "/")+1:]
+	switch {
+	case strings.HasSuffix(p, "/"):
 		b.WriteString(".*")
-	} else {
+	case strings.ContainsAny(last, "*?"):
+		// "docs/*" names the files in docs, not those under its folders.
+	default:
 		b.WriteString("(/.*)?")
 	}
 	b.WriteString("$")

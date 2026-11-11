@@ -192,6 +192,9 @@ func TestReviewGroupsWhatItReachesByOwner(t *testing.T) {
 	p.want(0, "", "sync")
 	out := p.want(0, "", "review", "--base", base)
 	contains(t, out, "who owns what the change touches or reaches (CODEOWNERS):", "  @payments: MOD-0001 billing")
+	if strings.Contains(out, "@everyone: MOD-0001") {
+		t.Errorf("the catch-all owner should not own billing, which /billing/ covers:\n%s", out)
+	}
 	if !strings.Contains(p.blueprint(), "담당 @payments") {
 		t.Errorf("billing's page should name its owners")
 	}

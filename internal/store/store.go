@@ -471,6 +471,11 @@ func (s Store) InputsHash() (string, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
+	// The pages name each module's owners from CODEOWNERS, so it is an
+	// input too.
+	if f := ownersFile(s.ProjectDir()); f != "" {
+		files = append(files, f)
+	}
 	return s.hashTree(s.root, files)
 }
 
