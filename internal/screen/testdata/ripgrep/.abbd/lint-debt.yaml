@@ -5,21 +5,21 @@
 # abbd lint --record writes this file from what the drawings measure now,
 # and levels from each --keep-level VIEW=REASON.
 ceilings:
-    detours: 1
-    excess_turns: 42
+    detours: 0
+    excess_turns: 28
     overflow: 0
-    placement: 8
-    tees: 0
-    weighed: 68
+    placement: 10
+    tees: 1
+    weighed: 37
 pages:
     overview:
         abreast: 0
-        colour_switches: 22
+        colour_switches: 2
         combs: 0
-        counts: 10
-        density: 20
+        counts: 2
+        density: 11
         doglegs: 20
-        dots: 4
+        dots: 1
         label_repeats: 0
-        labelled: 2
+        labelled: 6
         parallel_ink: 0

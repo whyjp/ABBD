@@ -11,10 +11,10 @@ import (
 )
 
 // rewritten names the files of the blueprint that differ from a's once the
-// state is after.
-func rewritten(t *testing.T, a map[string][]byte, after []model.Unit) []string {
+// state is after, under project p.
+func rewritten(t *testing.T, a map[string][]byte, p store.Project, after []model.Unit) []string {
 	t.Helper()
-	b, err := Files(Build(Input{Units: after}))
+	b, err := Files(Build(Input{Units: after, Project: p}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,6 +84,10 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		p, err := store.Open("testdata/" + name).LoadProject()
+		if err != nil {
+			t.Fatal(err)
+		}
 		files, err := Files(fixture(t, name))
 		if err != nil {
 			t.Fatal(err)
@@ -100,7 +104,7 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 					}
 				}
 			}
-			if got := rewritten(t, files, moved); len(got) > 0 {
+			if got := rewritten(t, files, p, moved); len(got) > 0 {
 				t.Errorf("moving every quote's lines rewrote %v", got)
 			}
 		})
@@ -112,7 +116,7 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				joined := clone(base)
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
-				got := rewritten(t, files, joined)
+				got := rewritten(t, files, p, joined)
 				// a's own page, when it has one, counts the dependency it gained.
 				may := append(slices.Clone(own), string(a)+".html")
 				for _, f := range got {
@@ -131,7 +135,7 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				grown := clone(base)
 				u := inside("MOD-9999", mod, model.Relation{To: a, Kind: model.DependsOn, Origin: model.Extracted})
 				grown = append(grown, u)
-				got := rewritten(t, files, grown)
+				got := rewritten(t, files, p, grown)
 				want := append(slices.Clone(own), UnitsFile)
 				for _, f := range got {
 					if !slices.Contains(want, f) {
