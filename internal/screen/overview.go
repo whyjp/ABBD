@@ -445,6 +445,9 @@ type overview struct {
 	origins map[string]model.Origin
 	// read is what the routing draw last made costs a reader (costOf).
 	read cost
+	// derived is the grouping the overview stands its tiers in where no
+	// stored stack lays it out (derive).
+	derived *layering
 }
 
 // top lists the top-level units, those with no parent, and the drawn
@@ -527,7 +530,8 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
 // A stored stack among stacks stands the boxes of each of its tiers together in
-// the stack's order (tier) on the whole overview, not on a focus view, and
+// the stack's order (tier) on the whole overview, not on a focus view, or,
+// with none, the groups the overview derives (derive), and
 // within a tier the boxes the stored flows run through in their steps' order.
 func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
@@ -647,7 +651,15 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			}
 			return ""
 		}
-		for i, g := range stackOf(stacks, box, func(ids []string) []string { return ids }) {
+		all := func(ids []string) []string { return ids }
+		groups := stackOf(stacks, box, all)
+		if len(groups) == 0 && !t.plain {
+			if l, ok := o.derive(edges); ok {
+				o.derived = &l
+				groups = stackOf([]layering{l}, box, all)
+			}
+		}
+		for i, g := range groups {
 			for _, id := range g.ids {
 				tiers[id] = i + 1
 			}
@@ -668,7 +680,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)]})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], loose: o.derived != nil, step: steps[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {

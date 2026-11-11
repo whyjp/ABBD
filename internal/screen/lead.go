@@ -5,6 +5,7 @@ import (
 	"maps"
 	"math"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -31,6 +32,80 @@ import (
 type Lead struct {
 	Key, Title, Entry, Hue string
 	Hops                   []Hop
+	Stay                   *Stay `json:",omitempty"`
+}
+
+// Stay numbers the steps a stored flow runs on one box of the overview
+// after its last hop, or all of them where it never leaves that box: the
+// flow's own numbers, first to last, set at X, Y in a pill W wide beside
+// the box, clear of every other mark.
+type Stay struct {
+	Box         string
+	First, Last int
+	X, Y, W     int
+}
+
+// Text is the pill's words: the first and last step it numbers.
+func (s Stay) Text() string {
+	if s.First == s.Last {
+		return strconv.Itoa(s.First)
+	}
+	return strconv.Itoa(s.First) + "–" + strconv.Itoa(s.Last)
+}
+
+// stayH is how tall a stay's pill is.
+const stayH = 16
+
+// stayed is the steps of f that run on the lead's last box once hops end,
+// or, with no hop, on the box of its first step the view shows, up to the
+// first step on another box; nil where that is one step after no hop.
+func (d *Drawing) stayed(t tree, f flowWalk, hops []use) *Stay {
+	box := d.shown(t)
+	at, i := "", 0
+	for ; i < len(f.units) && at == ""; i++ {
+		at = box(f.units[i])
+	}
+	if at == "" {
+		return nil
+	}
+	i--
+	if len(hops) > 0 {
+		at = hops[len(hops)-1].to
+		for i < len(f.units) && box(f.units[i]) != at {
+			i++
+		}
+	}
+	s := &Stay{Box: at, First: i + 1, Last: i + 1}
+	for k := i + 1; k < len(f.units) && box(f.units[k]) == at; k++ {
+		s.Last = k + 1
+	}
+	if len(hops) == 0 && s.Last == s.First {
+		return nil
+	}
+	return s
+}
+
+// pin sets the stay's pill beside its box: right of its top corner, else
+// over it at its right, then left of it, then under it, the first place
+// that keeps off every box, line, label, number, word and band title.
+func (d *Drawing) pin() {
+	if d.Lead == nil || d.Lead.Stay == nil {
+		return
+	}
+	s := d.Lead.Stay
+	s.W = textWidth(s.Text(), 10) + 12
+	for _, b := range d.Boxes {
+		if b.ID != s.Box {
+			continue
+		}
+		for _, a := range []box{{b.X + b.W + 5, b.Y + 4, s.W, stayH}, {b.X + b.W - s.W - 4, b.Y - stayH - 5, s.W, stayH}, {b.X + 4, b.Y - stayH - 5, s.W, stayH}, {b.X - s.W - 5, b.Y + 4, s.W, stayH}, {b.X + b.W - s.W - 4, b.Y + b.H + 5, s.W, stayH}, {b.X + 4, b.Y + b.H + 5, s.W, stayH}} {
+			if d.wordClear(grow(a, inkGap), nil) {
+				s.X, s.Y = a.x, a.y
+				return
+			}
+		}
+		s.X, s.Y = b.X+b.W-s.W-4, b.Y-stayH-5
+	}
 }
 
 // Hop is one numbered line of the lead: the route of a line the view draws,
@@ -116,25 +191,38 @@ func (d *Drawing) uses() []use {
 }
 
 // lead finds and draws the view's lead: a stored flow's where the state
-// holds any, else the one the lines show plainly.
-func (d *Drawing) lead(t tree, flows []flowWalk) {
+// holds any, else the one the lines show plainly. On the overview (whole)
+// a stored flow shows even where it leaves its first box once or never:
+// the steps it then runs on its last box are numbered on that box (Stay).
+func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	uses := d.uses()
 	var hops []use
 	var key, title string
+	var stay *Stay
 	if len(flows) > 0 {
-		for _, f := range flows {
-			if hs := d.followed(t, f, uses); len(hs) > len(hops) {
-				hops, key, title = hs, f.key, f.question
+		best := -1
+		for k, f := range flows {
+			if hs := d.followed(t, f, uses); best < 0 || len(hs) > len(hops) {
+				hops, key, title, best = hs, f.key, f.question, k
 			}
+		}
+		if whole && len(hops) < leadMin {
+			stay = d.stayed(t, flows[best], hops)
 		}
 	} else {
 		hops = inferred(d.Boxes, uses)
 		title = "주 흐름 (추정): 아무도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감"
 	}
-	if len(hops) < leadMin {
+	if len(hops) < leadMin && stay == nil {
 		return
 	}
-	l := &Lead{Key: key, Title: title, Entry: hops[0].from}
+	entry := ""
+	if len(hops) > 0 {
+		entry = hops[0].from
+	} else {
+		entry = stay.Box
+	}
+	l := &Lead{Key: key, Title: title, Entry: entry, Stay: stay}
 	for _, b := range d.Boxes {
 		if b.ID == l.Entry {
 			l.Hue = b.Hue
@@ -153,8 +241,9 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 	}
 	d.Lead = l
 	// A view past hover's caps has no routes to light, so resting its lines
-	// grey would leave no way to see their colours.
-	if len(d.Routes) > 0 {
+	// grey would leave no way to see their colours. A lead with no line
+	// leaves every line its colour.
+	if len(d.Routes) > 0 && len(hops) > 0 {
 		d.quiet()
 		d.unlabelKin()
 	}

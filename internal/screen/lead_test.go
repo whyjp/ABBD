@@ -141,7 +141,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	}
 	d := withFigures(t, []model.ID{cli, st, gitx}, nil, nil).Overview
 	d.Lead, d.Quiet, d.Routes = nil, false, nil
-	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}})
+	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}}, false)
 	if d.Lead == nil {
 		t.Fatal("a view past the caps draws no lead")
 	}
@@ -234,5 +234,47 @@ func TestAStepWordKeepsOffABandsTitle(t *testing.T) {
 	word := box{h.WX, h.WY - 11, textWidth(h.Word, wordPx), 13}
 	if hit(word, grow(z.titleArea(), inkGap)) {
 		t.Errorf("word %+v stands within %dpx of the title %+v", word, inkGap, z.titleArea())
+	}
+}
+
+// A stored flow that never leaves one box of the overview numbers its steps
+// on that box, which it fills, in a pill clear of every box; a module's
+// own view numbers none that way.
+func TestAFlowInOneBoxIsNumberedOnIt(t *testing.T) {
+	t.Parallel()
+	st := model.ID("MOD-0041")
+	m := withFigures(t, []model.ID{st, st, st}, nil, nil)
+	l := m.Overview.Lead
+	if l == nil || l.Stay == nil {
+		t.Fatalf("lead %+v, want the flow numbered on %s", l, st)
+	}
+	if s := *l.Stay; s.Box != string(st) || s.Text() != "1–3" || len(l.Hops) != 0 || l.Entry != string(st) {
+		t.Errorf("stay %+v with %d hops, want steps 1–3 on %s and no hop", s, len(l.Hops), st)
+	}
+	pill := box{l.Stay.X, l.Stay.Y, l.Stay.W, stayH}
+	for _, b := range m.Overview.Boxes {
+		if hit(pill, box{b.X, b.Y, b.W, b.H}) {
+			t.Errorf("the pill covers %s", b.ID)
+		}
+	}
+	for _, in := range m.Insides {
+		if l := in.Drawing.Lead; l != nil && l.Stay != nil {
+			t.Errorf("%s numbers the flow on a box", in.ID)
+		}
+	}
+}
+
+// A stored flow that leaves its first box once draws that hop, numbered 1,
+// and numbers the steps it then runs on the box it reached.
+func TestAFlowThatLeavesOnceNumbersTheRest(t *testing.T) {
+	t.Parallel()
+	cli, st := model.ID("MOD-0001"), model.ID("MOD-0041")
+	m := withFigures(t, []model.ID{cli, st, st, st}, nil, nil)
+	l := m.Overview.Lead
+	if l == nil || len(l.Hops) != 1 || l.Stay == nil {
+		t.Fatalf("lead %+v, want one hop and the rest numbered on %s", l, st)
+	}
+	if l.Hops[0].N != 1 || l.Stay.Box != string(st) || l.Stay.Text() != "2–4" {
+		t.Errorf("hop %d and stay %+v, want hop 1 and steps 2–4 on %s", l.Hops[0].N, *l.Stay, st)
 	}
 }

@@ -205,7 +205,17 @@ func Build(in Input) Model {
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
-	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
+	// Where the overview derives groups to stand together (derive), it is
+	// drawn with them and without, and keeps them only where they read no
+	// worse: tried first, they win every tie.
+	ts := overviewTactics
+	if o.derived != nil {
+		for _, t := range overviewTactics {
+			t.plain = true
+			ts = append(slices.Clone(ts), t)
+		}
+	}
+	m.Overview = choose(ts, func(t tactic, read *cost) (Drawing, bool) {
 		p := planOverview(in.Units, "", nil, t, ls, fs)
 		if p.layout.idle {
 			return Drawing{}, false
@@ -276,17 +286,26 @@ func Build(in Input) Model {
 		d.paint(hues)
 	}
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
-	for _, d := range leads {
-		d.lead(o.tree, fs)
+	for i, d := range leads {
+		d.lead(o.tree, fs, i == 0)
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)
 	}
 	// Numbers and band titles keep off every word, so they are set once
 	// dress has given each box its last line; step words keep off both.
-	for _, d := range leads {
+	zs := ls
+	if o.derived != nil {
+		zs = append(slices.Clone(ls), *o.derived)
+	}
+	for i, d := range leads {
 		d.number()
-		d.zone(o.tree, ls)
+		if i == 0 {
+			d.zone(o.tree, zs)
+		} else {
+			d.zone(o.tree, ls)
+		}
+		d.pin()
 		d.name()
 		d.card()
 	}
