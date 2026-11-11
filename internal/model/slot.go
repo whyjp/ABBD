@@ -25,6 +25,7 @@ var Slots = []Slot{
 	{Name: "states", Title: "상태"},
 	{Name: "decisions", Title: "결정", Keyed: true},
 	{Name: "constraints", Title: "제약과 불변식", Keyed: true},
+	{Name: "relations", Title: "관계의 까닭", Keyed: true},
 	{Name: "wire_sample", Title: "전송 예시"},
 	{Name: "entries", Title: "항목", Keyed: true},
 }
@@ -106,4 +107,10 @@ func slotNames() string {
 		names = append(names, s.Name)
 	}
 	return strings.Join(names, ", ")
+}
+
+// RelationKey is the key a relations note takes for the relation of kind to
+// a unit, such as depends-on-mod-0041, so a reader says why that one exists.
+func RelationKey(kind RelationKind, to ID) string {
+	return strings.ToLower(strings.ReplaceAll(string(kind), "_", "-") + "-" + string(to))
 }
