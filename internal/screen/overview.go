@@ -476,7 +476,9 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // overview, then keeps only that module's part of it and lays that out: the
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic) *overview {
+// A stored stack among stacks stands the boxes of each of its tiers together in
+// the stack's order (tier) on the whole overview, not on a focus view.
+func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -586,6 +588,20 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			edges = append(edges, ledge{string(e.From), string(e.To)})
 		}
 	}
+	tiers := map[string]int{}
+	if focus == "" {
+		box := func(u model.ID) string {
+			if c := o.tree.chain(u); len(c) > 0 && isModule[c[0]] {
+				return string(c[0])
+			}
+			return ""
+		}
+		for i, g := range stackOf(stacks, box, func(ids []string) []string { return ids }) {
+			for _, id := range g.ids {
+				tiers[id] = i + 1
+			}
+		}
+	}
 	var nodes []lnode
 	for _, m := range o.modules {
 		ls, w := setName(o.name(m), 13, 28, 150, boxMax)
@@ -594,7 +610,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
