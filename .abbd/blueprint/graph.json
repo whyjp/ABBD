@@ -1311,6 +1311,7 @@
         "cmd/abbd",
         "cmd/abbd/brief.go",
         "cmd/abbd/diff.go",
+        "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
@@ -2962,6 +2963,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
       "From": "FEAT-0003",
@@ -5371,7 +5380,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 17,
+        "Uses": 18,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5504,7 +5513,8 @@
             "migrate",
             "record evidence",
             "flow",
-            "lint"
+            "lint",
+            "brief"
           ]
         }
       ],
@@ -6673,7 +6683,15 @@
                 "Code": true
               },
               {
-                "Text": ". With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": ". For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
+                "Code": false
+              },
+              {
+                "Text": "draft.go",
+                "Code": true
+              },
+              {
+                "Text": "), never from code or a README,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -8409,7 +8427,14 @@
                 "Key": "sentence",
                 "Name": "--sentence",
                 "Shape": "string",
-                "Need": ""
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0002",
+                    "Name": "/abbd-setup",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": false,
