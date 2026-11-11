@@ -2069,6 +2069,7 @@
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
+        "internal/screen/primary.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
@@ -2155,7 +2156,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk) *overview {\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk, c *cut) *overview {\""
       ]
     },
     {
@@ -23014,7 +23015,7 @@
                 "Code": true
               },
               {
-                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. ",
+                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
                 "Code": false
               },
               {
@@ -23558,6 +23559,124 @@
             "Kind": "li",
             "Parts": [
               {
+                "Text": "primary",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": "primary.go",
+                "Code": true
+              },
+              {
+                "Text": "): the one ranking that decides how much the overview draws, switched on by ",
+                "Code": false
+              },
+              {
+                "Text": "overview_cut: true",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "store.Project.OverviewCut",
+                "Code": true
+              },
+              {
+                "Text": ") and off by default: with it off, ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": " never calls ",
+                "Code": false
+              },
+              {
+                "Text": "primary",
+                "Code": true
+              },
+              {
+                "Text": ", so an overview draws every link and counts none. With it on, an overview of more than ",
+                "Code": false
+              },
+              {
+                "Text": "sparse",
+                "Code": true
+              },
+              {
+                "Text": " (1.7) links a box draws only its primary links: those holding a relation in ",
+                "Code": false
+              },
+              {
+                "Text": "Input.Primary",
+                "Code": true
+              },
+              {
+                "Text": ", the hook a reader's or a human's marking fills, by relation key, the lines the lead of a drawing of every link would follow, from the stored flows or read from the lines, and those between neighbouring layers of a stored stack. Past those, links rank by the stored relations they carry, then a hub at one end, then a contract carrying them, and the best ones that join the drawing into one piece are kept, with a line into every box something uses, so the lead keeps its entry. That draws a little over one line a box, as the exemplars do. A pair of places is one link, so two lines that use each other stay together. ",
+                "Code": false
+              },
+              {
+                "Text": "planOverview",
+                "Code": true
+              },
+              {
+                "Text": " drops the rest before it lays out, so the overview is laid out for what it draws; each box counts its dropped links on a ",
+                "Code": false
+              },
+              {
+                "Text": "+N",
+                "Code": true
+              },
+              {
+                "Text": " pill on its right edge (",
+                "Code": false
+              },
+              {
+                "Text": "Box.More",
+                "Code": true
+              },
+              {
+                "Text": "), which opens its focus view, and the drawing keeps them as ",
+                "Code": false
+              },
+              {
+                "Text": "Counted",
+                "Code": true
+              },
+              {
+                "Text": " for ",
+                "Code": false
+              },
+              {
+                "Text": "Levels",
+                "Code": true
+              },
+              {
+                "Text": " and the focus check. Focus views are never cut.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
                 "Text": "Focus",
                 "Code": true
               },
@@ -23571,7 +23690,7 @@
                 "Code": true
               },
               {
-                "Text": "): a view cut from a dense one, which has more than two boxes and more than twice as many relations as boxes. Each module or feature box of a dense overview gets one, and each box of a dense inside. ",
+                "Text": "): a view cut from a dense one, which has more than two boxes and more than twice as many relations as boxes, or from an overview that counts links it does not draw. Each module or feature box of such an overview gets one, and each box of a dense inside. ",
                 "Code": false
               },
               {
@@ -23587,7 +23706,7 @@
                 "Code": true
               },
               {
-                "Text": " plans the full view and keeps only the lines with an end at the focus and the boxes at their other ends, so a focus view never draws a line the full view lacks. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
+                "Text": " plans the full view and keeps only the lines with an end at the focus and the boxes at their other ends, so a focus view never draws a line the full view neither draws nor counts. A unit that both uses the focus and is used by it is drawn a second time below as a twin, ID ",
                 "Code": false
               },
               {
@@ -25800,7 +25919,7 @@
                 "Code": true
               },
               {
-                "Text": " reads the overview and each module's inside as a level of abstraction, never a focus view, and counts its boxes and the lines between two of them, once whichever way a line runs. A feature's page has no level, since it draws the units the feature reaches. A loose contract on the overview is not a box, and lines to it or to a frame's chips do not count. ",
+                "Text": " reads the overview and each module's inside as a level of abstraction, never a focus view, and counts its boxes and the lines between two of them, those the overview counts on its boxes included, once whichever way a line runs. A feature's page has no level, since it draws the units the feature reaches. A loose contract on the overview is not a box, and lines to it or to a frame's chips do not count. ",
                 "Code": false
               },
               {
@@ -26386,7 +26505,15 @@
                 "Code": true
               },
               {
-                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv and the ",
+                "Code": false
+              },
+              {
+                "Text": "overview_cut",
+                "Code": true
+              },
+              {
+                "Text": " switch that turns on the overview's density cut, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
@@ -26894,11 +27021,24 @@
                 "Name": "purpose",
                 "Shape": "string",
                 "Need": "선택"
+              },
+              {
+                "Key": "overview-cut",
+                "Name": "overview_cut",
+                "Shape": "bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": true,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": true,
             "Notes": false
           }
@@ -27753,7 +27893,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → the extraction argv, and the project name and purpose"
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut"
             },
             {
               "N": 4,
@@ -30261,7 +30401,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → the extraction argv, and the project name and purpose",
+              "Does": "LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",
