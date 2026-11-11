@@ -85,7 +85,7 @@ func (e env) status() error {
 	if e.verbose {
 		return e.statusLines()
 	}
-	// Without --verbose the long: and unbacked: lines fold into one count
+	// Without --verbose the long:, unbacked:, unmentioned: and names: lines fold into one count
 	// each, where the first of them stood, so the verdict stays in view.
 	var out bytes.Buffer
 	full := e
@@ -95,7 +95,7 @@ func (e env) status() error {
 	var lines []string
 	for _, l := range strings.SplitAfter(out.String(), "\n") {
 		kind, _, _ := strings.Cut(l, ": ")
-		if kind != "long" && kind != "unbacked" {
+		if !slices.Contains([]string{"long", "unbacked", "unmentioned", "names"}, kind) {
 			lines = append(lines, l)
 			continue
 		}
@@ -216,6 +216,11 @@ func (e env) statusLines() error {
 	e.statusCells(in.Units, fs.Tables)
 	if len(texts) > 0 {
 		readTexts(e.stdout, texts)
+	}
+	for _, id := range slices.Sorted(maps.Keys(in.Understandings)) {
+		if _, ok := textModule(in.Units, id); ok {
+			e.checkText(e.stdout, in.Units, id, in.Understandings[id].Text)
+		}
 	}
 	ev := evidenceCounts(in.Units)
 	fmt.Fprintf(e.stdout, "evidence: %d drifted, %d dead\n", ev[model.Drifted], ev[model.Dead])
