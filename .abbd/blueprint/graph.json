@@ -20040,7 +20040,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -21090,7 +21089,7 @@
                 "Code": true
               },
               {
-                "Text": " routes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": " (160) routes takes no part, and only a page with a drawing carries the rules; such a drawing keeps its roads but no routes, so lint counts every join its roads draw as a J3 false join. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
@@ -23110,7 +23109,15 @@
                 "Code": true
               },
               {
-                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
+                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes. The lint gate bounds J3 per page as ",
+                "Code": false
+              },
+              {
+                "Text": "false_joins",
+                "Code": true
+              },
+              {
+                "Text": " on every page the debt file bounds, so a record cannot take a false join on as debt.",
                 "Code": false
               }
             ]
