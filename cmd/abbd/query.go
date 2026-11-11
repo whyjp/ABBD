@@ -103,6 +103,9 @@ func (e env) explain(s string) error {
 			fmt.Fprintf(w, "%s: %s (%s)\n", f.label, f.fact.Value, origin(f.fact))
 		}
 	}
+	if len(u.Artifacts) > 0 {
+		fmt.Fprintf(w, "builds: %s (%s)\n", strings.Join(artifactNames(u.Artifacts), ", "), model.Extracted)
+	}
 	if len(u.Entries) > 0 {
 		fmt.Fprintln(w, "entries:")
 		uses := topology.EntryUses(units, u.ID)
@@ -328,4 +331,12 @@ func (e env) path(a, b string) error {
 	}
 	fmt.Fprintf(e.stdout, "%d hop(s), weakest origin %s\n", len(hops), topology.Weakest(hops))
 	return nil
+}
+
+func artifactNames(as []model.Artifact) []string {
+	out := make([]string, len(as))
+	for i, a := range as {
+		out[i] = string(a)
+	}
+	return out
 }

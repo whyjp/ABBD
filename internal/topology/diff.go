@@ -194,12 +194,21 @@ func (d *Diff) fields(old, u model.Unit) {
 		{Field: "parent", Old: string(old.Parent), New: string(u.Parent), Origin: u.ParentOrigin},
 		{Field: "purpose", Old: op, New: np, Origin: no},
 		{Field: "responsibility", Old: or, New: nr, Origin: ro},
+		{Field: "artifacts", Old: artifacts(old), New: artifacts(u), Origin: model.Extracted},
 	} {
 		if c.Old != c.New {
 			c.Ref = ref(u)
 			d.Changed = append(d.Changed, c)
 		}
 	}
+}
+
+func artifacts(u model.Unit) string {
+	s := make([]string, len(u.Artifacts))
+	for i, a := range u.Artifacts {
+		s[i] = string(a)
+	}
+	return strings.Join(s, ", ")
 }
 
 // contract notes how one contract changed: its signature, its entries one

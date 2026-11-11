@@ -202,6 +202,10 @@ type Unit struct {
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest string `yaml:"digest,omitempty"`
+	// Artifacts are what the build makes from a module's code, such as a
+	// static and a shared library from one set of sources. Only the script
+	// reports them, read from the build system's own model.
+	Artifacts []Artifact `yaml:"artifacts,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -382,6 +386,9 @@ func (u Unit) Validate() error {
 	if len(u.Entries) > 0 && !u.Kind.IsContract() {
 		return fmt.Errorf("%s: only contracts carry entries", u.ID)
 	}
+	if err := ValidateArtifacts(u.Kind, u.Artifacts); err != nil {
+		return fmt.Errorf("%s: %w", u.ID, err)
+	}
 	if err := ValidateEntries(u.Entries); err != nil {
 		return fmt.Errorf("%s: %w", u.ID, err)
 	}
@@ -538,6 +545,7 @@ var viaSynonyms = map[Via][]string{
 	"convention":    {"conventions", "naming"},
 	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
 	"spawn":         {"spawns", "process", "subprocess", "exec"},
+	"link":          {"links", "linked", "linkage", "linking"},
 }
 
 // restates reports whether a phrase only says the via in other words.
@@ -634,26 +642,84 @@ func (k RelationKind) Joins(from, to Kind) error {
 // Via says how a coupling arises, so a human sees why two units are tied.
 type Via string
 
-var vias = map[Via]bool{
-	"import": true, "trait": true, "callback": true, "macro": true, "config": true,
-	"build-feature": true, "data": true, "convention": true, "call": true,
-	"load": true, "spawn": true,
-}
-
+// viaWords is the one list of vias, each with the blueprint's word for it.
 var viaWords = map[Via]string{
 	"call": "호출", "data": "데이터", "convention": "관례", "config": "설정",
 	"import": "임포트", "trait": "트레이트", "callback": "콜백", "macro": "매크로",
-	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행",
+	"build-feature": "빌드 기능", "load": "로드", "spawn": "실행", "link": "링크",
 }
+
+// ViaNames lists every via in the order the help and errors give them.
+var ViaNames = []Via{"import", "trait", "callback", "macro", "config", "build-feature", "data", "convention", "call", "load", "spawn", "link"}
 
 // Word is the via in the blueprint's words, or "" for none.
 func (v Via) Word() string { return viaWords[v] }
 
 func (v Via) Validate() error {
-	if v != "" && !vias[v] {
-		return fmt.Errorf("unknown via %q: use import, trait, callback, macro, config, build-feature, data, convention, call, load or spawn", v)
+	if _, ok := viaWords[v]; v != "" && !ok {
+		return fmt.Errorf("unknown via %q: use %s", v, orList(ViaNames))
 	}
 	return nil
+}
+
+// orList spells values as "a, b or c".
+func orList[T ~string](vs []T) string {
+	s := make([]string, len(vs))
+	for i, v := range vs {
+		s[i] = string(v)
+	}
+	if len(s) < 2 {
+		return strings.Join(s, "")
+	}
+	return strings.Join(s[:len(s)-1], ", ") + " or " + s[len(s)-1]
+}
+
+// ViaList spells every via for a help line.
+func ViaList() string { return orList(ViaNames) }
+
+// Artifact is one kind of thing a build makes from a module's code.
+type Artifact string
+
+// Artifacts lists every artifact kind, in the order a unit lists them.
+var Artifacts = []Artifact{"exe", "lib", "static", "shared", "module", "object", "interface"}
+
+// ValidateArtifacts checks that only a module lists artifacts, each a known
+// kind, once, in the order Artifacts gives.
+func ValidateArtifacts(k Kind, as []Artifact) error {
+	if len(as) == 0 {
+		return nil
+	}
+	if k != Module {
+		return fmt.Errorf("only modules list artifacts")
+	}
+	last := -1
+	for _, a := range as {
+		i := slices.Index(Artifacts, a)
+		if i < 0 {
+			return fmt.Errorf("unknown artifact %q: use %s", a, orList(Artifacts))
+		}
+		if i <= last {
+			return fmt.Errorf("artifacts %v are not each listed once in the order %s", as, orList(Artifacts))
+		}
+		last = i
+	}
+	return nil
+}
+
+// SortArtifacts puts artifacts in the order Artifacts gives, once each.
+func SortArtifacts(as []Artifact) []Artifact {
+	var out []Artifact
+	for _, a := range Artifacts {
+		if slices.Contains(as, a) {
+			out = append(out, a)
+		}
+	}
+	for _, a := range as {
+		if !slices.Contains(Artifacts, a) && !slices.Contains(out, a) {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 // Evidence is a short verbatim excerpt of the code a semantic fact rests on.

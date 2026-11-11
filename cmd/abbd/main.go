@@ -25,6 +25,12 @@ and renders the blueprint. It never judges, blocks, asks or records a decision.
 abbd setup [--supplement FILE] [--root DIR] [-- EXTRACT-ARGV...]
                                      register the extraction script, prove it deterministic,
                                      fold in the semantic supplement, and sync
+abbd extract FRONTEND[=DIR] [FRONTEND[=DIR]] [--root DIR]
+                                     print the extraction JSON a bundled front-end reads from the
+                                     build system's own model: cargo (Cargo.toml) or cmake
+                                     (CMakeLists.txt, configured in $ABBD_CACHE_DIR); DIR is
+                                     relative to the root, "." when left out; register it as
+                                     abbd setup -- abbd extract cargo, or extend its output
 abbd install [--root DIR]            write or replace the abbd block in the project's CLAUDE.md,
                                      which tells any assistant to ask the blueprint first
 abbd sync [--verbose] [--root DIR]   run the registered script, check every quote, keep the
@@ -248,7 +254,7 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 		fs.StringVar(&o.supplement, "supplement", "", "semantic supplement from the setup readers")
 	},
 	"via": func(fs *flag.FlagSet, o *opts) {
-		fs.StringVar(&o.via, "via", "", "how the coupling arises: import, trait, callback, macro, config, build-feature, data, convention, call, load or spawn")
+		fs.StringVar(&o.via, "via", "", "how the coupling arises: "+model.ViaList())
 	},
 	"phrase": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.phrase, "phrase", "", "what crosses the coupling in a few words, such as a route, a message or a query")
@@ -345,6 +351,7 @@ var commands = map[string]command{
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
+	"extract":         {flags: []string{"root"}, pos: []int{1, 2}, run: func(e env, pos []string) error { return e.extractBundled(pos) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
 	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"brief":           {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.brief(pos[0]) }},
@@ -586,7 +593,15 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 
 func (e env) runScript(argv []string, env ...string) ([]byte, error) {
 	var out, errb bytes.Buffer
-	cmd := exec.Command(argv[0], argv[1:]...)
+	name := argv[0]
+	// A registered abbd extract runs the abbd that syncs, never another one
+	// on the PATH whose front-ends read differently.
+	if name == "abbd" {
+		if self, err := os.Executable(); err == nil {
+			name = self
+		}
+	}
+	cmd := exec.Command(name, argv[1:]...)
 	cmd.Dir, cmd.Stdout, cmd.Stderr = e.root, &out, &errb
 	if len(env) > 0 {
 		cmd.Env = append(os.Environ(), env...)

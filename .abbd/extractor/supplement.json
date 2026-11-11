@@ -45,7 +45,7 @@
       "anchors": [
         {
           "path": "internal/extract/extract.go",
-          "symbol": "rawResult"
+          "symbol": "Doc"
         }
       ],
       "purpose": "so the project script, the swarm supplement and abbd agree on one format for units and relations",

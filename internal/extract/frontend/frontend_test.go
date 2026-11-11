@@ -1,0 +1,141 @@
+package frontend
+
+import (
+	"bytes"
+	"encoding/json"
+	"maps"
+	"os/exec"
+	"path/filepath"
+	"slices"
+	"testing"
+
+	"github.com/whyjp/abbd/internal/extract"
+	"github.com/whyjp/abbd/internal/model"
+)
+
+// run extracts a fixture with the named front-end, skipping when the build
+// tool is not installed, and checks setup would accept the output.
+func run(t *testing.T, tool, fixture string) extract.Doc {
+	t.Helper()
+	if _, err := exec.LookPath(tool); err != nil {
+		t.Skipf("%s is not installed", tool)
+	}
+	root, err := filepath.Abs(filepath.Join("testdata", fixture))
+	if err != nil {
+		t.Fatal(err)
+	}
+	spec, err := ParseSpec(tool)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cache := t.TempDir()
+	var outs [][]byte
+	for range 2 {
+		doc, err := Extract(root, cache, []Spec{spec})
+		if err != nil {
+			t.Fatal(err)
+		}
+		var b bytes.Buffer
+		if err := doc.Encode(&b); err != nil {
+			t.Fatal(err)
+		}
+		outs = append(outs, b.Bytes())
+	}
+	if !bytes.Equal(outs[0], outs[1]) {
+		t.Fatalf("two runs printed different output:\n%s\n---\n%s", outs[0], outs[1])
+	}
+	if _, err := extract.Parse(bytes.NewReader(outs[0])); err != nil {
+		t.Fatalf("setup would refuse the output: %v\n%s", err, outs[0])
+	}
+	var doc extract.Doc
+	if err := json.Unmarshal(outs[0], &doc); err != nil {
+		t.Fatal(err)
+	}
+	return doc
+}
+
+func unit(t *testing.T, d extract.Doc, ref string) extract.DocUnit {
+	t.Helper()
+	i := slices.IndexFunc(d.Units, func(u extract.DocUnit) bool { return u.Ref == ref })
+	if i < 0 {
+		t.Fatalf("no unit %s in %+v", ref, d.Units)
+	}
+	return d.Units[i]
+}
+
+func relations(d extract.Doc) map[string]model.Via {
+	out := map[string]model.Via{}
+	for _, r := range d.Relations {
+		out[r.From+" -> "+r.To] = r.Via
+	}
+	return out
+}
+
+func TestCargoWorkspaceMembersAreModulesAndTheirDependenciesRelations(t *testing.T) {
+	d := run(t, "cargo", "cargo")
+	for ref, want := range map[string][]model.Artifact{
+		"cargo:app":          {"exe"},
+		"cargo:fixture-core": {"lib", "shared"},
+		"cargo:macros":       {"module"},
+	} {
+		if got := model.SortArtifacts(unit(t, d, ref).Artifacts); !slices.Equal(got, want) {
+			t.Errorf("%s builds %v, want %v", ref, got, want)
+		}
+	}
+	if got := unit(t, d, "cargo:fixture-core").Anchors; !slices.Equal(got, []model.Anchor{{Path: "core/Cargo.toml"}, {Path: "core/src"}}) {
+		t.Errorf("fixture-core anchors %v, want its manifest and its source directory", got)
+	}
+	want := map[string]model.Via{
+		"cargo:app -> cargo:fixture-core":    "import",
+		"cargo:app -> cargo:macros":          "build-feature",
+		"cargo:fixture-core -> cargo:macros": "macro",
+	}
+	if got := relations(d); !maps.Equal(got, want) {
+		t.Errorf("relations %v, want %v; a dev-dependency is no relation", got, want)
+	}
+}
+
+func TestCMakeTargetsAreModulesCarryingTheirArtifactAndLinks(t *testing.T) {
+	d := run(t, "cmake", "cmake")
+	for ref, want := range map[string]model.Artifact{
+		"cmake:store": "static", "cmake:net": "shared", "cmake:plugin": "module", "cmake:tool": "exe",
+	} {
+		if got := unit(t, d, ref).Artifacts; !slices.Equal(got, []model.Artifact{want}) {
+			t.Errorf("%s builds %v, want %s", ref, got, want)
+		}
+	}
+	if len(d.Units) != 4 {
+		t.Errorf("want 4 units, the test target left out, got %+v", d.Units)
+	}
+	if got := unit(t, d, "cmake:tool").Anchors; !slices.Equal(got, []model.Anchor{{Path: "CMakeLists.txt", Symbol: "tool"}, {Path: "tool"}}) {
+		t.Errorf("tool anchors %v, want where it is defined and its source directory", got)
+	}
+	want := map[string]model.Via{
+		"cmake:tool -> cmake:store": "link",
+		"cmake:tool -> cmake:net":   "link",
+		"cmake:plugin -> cmake:net": "link",
+	}
+	if got := relations(d); !maps.Equal(got, want) {
+		t.Errorf("relations %v, want %v", got, want)
+	}
+}
+
+func TestBuildsOfOneSourceSetAreOneModule(t *testing.T) {
+	if got := commonName([]string{"libzstd_shared", "libzstd_static"}); got != "libzstd" {
+		t.Errorf("got %q, want libzstd", got)
+	}
+	if got := commonName([]string{"a_x", "a_y"}); got != "a_x" {
+		t.Errorf("a name shorter than 3 characters falls back to the first, got %q", got)
+	}
+}
+
+func TestASpecNamesABundledFrontEndAndADirectoryInsideTheRoot(t *testing.T) {
+	if s, err := ParseSpec("cmake=build/cmake"); err != nil || s != (Spec{"cmake", "build/cmake"}) {
+		t.Errorf("got %+v, %v", s, err)
+	}
+	for _, bad := range []string{"gradle", "cargo=../other"} {
+		if _, err := ParseSpec(bad); err == nil {
+			t.Errorf("%q: want an error", bad)
+		}
+	}
+}

@@ -15,7 +15,15 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-type rawUnit struct {
+// Doc is the extraction JSON: what every extraction script prints and Parse
+// reads. The bundled front-ends print it too, so this is its one definition.
+type Doc struct {
+	Units     []DocUnit     `json:"units"`
+	Relations []DocRelation `json:"relations,omitempty"`
+}
+
+// DocUnit is one unit of the extraction JSON.
+type DocUnit struct {
 	// Ref is the extraction's own name for the unit. Key is its older
 	// spelling, which gitleaks' generic-api-key rule reads as a secret when
 	// the value is a path with enough entropy; both stay accepted.
@@ -32,9 +40,11 @@ type rawUnit struct {
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
 	Entries        []model.Entry    `json:"entries,omitempty"`
+	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
 }
 
-type rawRelation struct {
+// DocRelation is one relation of the extraction JSON, naming units by ref.
+type DocRelation struct {
 	From     string             `json:"from"`
 	To       string             `json:"to"`
 	Kind     model.RelationKind `json:"kind"`
@@ -42,11 +52,6 @@ type rawRelation struct {
 	Phrase   string             `json:"phrase,omitempty"`
 	Evidence []model.Evidence   `json:"evidence,omitempty"`
 	Entries  []string           `json:"entries,omitempty"`
-}
-
-type rawResult struct {
-	Units     []rawUnit     `json:"units"`
-	Relations []rawRelation `json:"relations,omitempty"`
 }
 
 // Result is one extraction run. Relations name units by their extractor-local key.
@@ -95,6 +100,7 @@ type Unit struct {
 	Responsibility *model.Fact
 	Digest         string
 	Entries        []model.Entry
+	Artifacts      []model.Artifact
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
 	// parent is the script's claim; a supplement's becomes a Placement.
@@ -132,6 +138,9 @@ func parse(r io.Reader, foreignParents bool) (Result, error) {
 		}
 		if foreignParents && len(u.Entries) > 0 {
 			return Result{}, fmt.Errorf("supplement unit %q lists entries; entries are what the code spells, so the extraction script reports them", u.Name.Value)
+		}
+		if foreignParents && len(u.Artifacts) > 0 {
+			return Result{}, fmt.Errorf("supplement unit %q lists artifacts; the build system's model says what it makes, so the extraction script reports them", u.Name.Value)
 		}
 	}
 	for _, u := range units {
@@ -218,10 +227,10 @@ func NormalizeEvidence(es []model.Evidence) ([]model.Evidence, error) {
 	return out, nil
 }
 
-func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
+func parseUnits(r io.Reader) ([]Unit, Doc, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
-	var raw rawResult
+	var raw Doc
 	if err := dec.Decode(&raw); err != nil {
 		return nil, raw, fmt.Errorf("extraction result: %w", err)
 	}
@@ -271,8 +280,13 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
 		}
+		artifacts := model.SortArtifacts(ru.Artifacts)
+		if err := model.ValidateArtifacts(ru.Kind, artifacts); err != nil {
+			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+		}
 		out = append(out, Unit{
 			Key:            cmp.Or(ru.Ref, ru.Key),
+			Artifacts:      artifacts,
 			Entries:        es,
 			Signature:      sig,
 			Kind:           ru.Kind,
@@ -367,4 +381,21 @@ func parentCycle(units []Unit, key string) bool {
 		seen[k] = true
 	}
 	return false
+}
+
+// Encode prints the document in one canonical order, units by ref and
+// relations by their ends, so two runs on the same code print the same bytes.
+func (d Doc) Encode(w io.Writer) error {
+	slices.SortFunc(d.Units, func(a, b DocUnit) int { return cmp.Compare(cmp.Or(a.Ref, a.Key), cmp.Or(b.Ref, b.Key)) })
+	for i := range d.Units {
+		slices.SortFunc(d.Units[i].Anchors, func(a, b model.Anchor) int { return cmp.Compare(a.Key(), b.Key()) })
+		d.Units[i].Artifacts = model.SortArtifacts(d.Units[i].Artifacts)
+	}
+	slices.SortFunc(d.Relations, func(a, b DocRelation) int {
+		return cmp.Or(cmp.Compare(a.From, b.From), cmp.Compare(a.To, b.To), cmp.Compare(a.Kind, b.Kind), cmp.Compare(a.Via, b.Via))
+	})
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+	return enc.Encode(d)
 }
