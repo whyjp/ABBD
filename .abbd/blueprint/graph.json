@@ -6155,11 +6155,11 @@
                     "Code": true
                   },
                   {
-                    "Text": "): explain prints a module's build artifact with whoever said it, such as ",
+                    "Text": "): explain prints a module's set of build artifacts with whoever said it, such as ",
                     "Code": false
                   },
                   {
-                    "Text": "static (정적 라이브러리; EXTRACTED)",
+                    "Text": "artifacts: shared, static (공유 라이브러리 · 정적 라이브러리; EXTRACTED)",
                     "Code": true
                   },
                   {
@@ -6758,7 +6758,7 @@
                 "Code": true
               },
               {
-                "Text": ". Explain also names a module's build artifact and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's set of build artifacts and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -12383,11 +12383,11 @@
                 "Code": false
               },
               {
-                "Text": "artifact",
+                "Text": "artifacts",
                 "Code": true
               },
               {
-                "Text": " on a unit, a script fact, says what the build makes of it, ",
+                "Text": " on a unit, one script fact kept sorted, lists what the build makes of it, each ",
                 "Code": false
               },
               {
@@ -12427,7 +12427,7 @@
                 "Code": true
               },
               {
-                "Text": "; parse refuses it on anything but a ",
+                "Text": "; parse refuses them on anything but a ",
                 "Code": false
               },
               {
@@ -12435,7 +12435,7 @@
                 "Code": true
               },
               {
-                "Text": " and refuses a kind ABBD does not know.",
+                "Text": ", a kind ABBD does not know and a kind listed twice.",
                 "Code": false
               }
             ]
@@ -12524,9 +12524,9 @@
                 "Need": "선택"
               },
               {
-                "Key": "units-artifact",
-                "Name": "units.artifact",
-                "Shape": "model.Artifact",
+                "Key": "units-artifacts",
+                "Name": "units.artifacts",
+                "Shape": "[]model.Artifact",
                 "Need": "선택"
               },
               {
@@ -15182,7 +15182,7 @@
                 "Code": true
               },
               {
-                "Text": " as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
+                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
                 "Code": false
               }
             ]
@@ -18816,7 +18816,15 @@
                 "Code": true
               },
               {
-                "Text": "): what the build makes of a module, a fact with its writer that ",
+                "Text": "): the set of what the build makes of a module, one fact with its writer that ",
+                "Code": false
+              },
+              {
+                "Text": "ArtifactSet",
+                "Code": true
+              },
+              {
+                "Text": " writes sorted, ",
                 "Code": false
               },
               {
@@ -18828,7 +18836,7 @@
                 "Code": false
               },
               {
-                "Text": "Word",
+                "Text": "Words",
                 "Code": true
               },
               {
@@ -26584,7 +26592,7 @@
                 "Code": true
               },
               {
-                "Text": " puts a module's build artifact before its hub or entry part on the box's last line, and its title says it in brackets; ",
+                "Text": " puts a module's build artifacts, joined by a dot, before its hub or entry part on the box's last line, and its title says them in brackets; ",
                 "Code": false
               },
               {
