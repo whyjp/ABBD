@@ -174,7 +174,8 @@ func TestARelationBetweenModulesKeepsThePlainRanking(t *testing.T) {
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
 				m := Build(Input{Units: joined})
-				plain := planOverview(joined, "", nil, tactic{}, nil, nil, nil).draw(func(model.ID) string { return "" })
+				c := planOverview(joined, "", nil, tactic{}, nil, nil, nil).primary(nil, nil, nil)
+				plain := planOverview(joined, "", nil, tactic{}, nil, nil, c).draw(func(model.ID) string { return "" })
 				room := views(m)[0].room
 				hard := func(d Drawing) int {
 					vl, err := lintView(view{d: d, budget: overviewWidth, room: room})
