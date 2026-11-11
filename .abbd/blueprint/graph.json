@@ -6683,7 +6683,7 @@
                 "Code": true
               },
               {
-                "Text": ". For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the doc or header comment at its anchors (",
+                "Text": ". For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
                 "Code": false
               },
               {
@@ -6691,7 +6691,7 @@
                 "Code": true
               },
               {
-                "Text": "), never from code,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "), never from code or a README,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
