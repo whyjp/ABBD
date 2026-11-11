@@ -69,6 +69,9 @@ func TestUnderstandReportsUnnamedInsideUnitsAndOtherUnitsFiles(t *testing.T) {
 func TestLintAndBriefNameTheBoxesThatSayOnlyTheirKind(t *testing.T) {
 	p := semanticProject(t)
 	p.want(0, "lint: described: ", "lint")
+	p.want(0, `"undescribed": [`, "lint", "--json")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { _ = 0 }\n")
+	p.want(0, "MOD-0001 billing: no comment at its anchors says what it is for; read `billing/charge.go`", "brief", "MOD-0001")
 	p.code("billing/charge.go", "package billing\n\n// Charge bills a card once. It never retries.\nfunc Charge() { _ = 1 }\n")
 	p.want(0, "\"Charge bills a card once.\" (from `billing/charge.go`)", "brief", "MOD-0001")
 }

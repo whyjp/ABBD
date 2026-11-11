@@ -79,7 +79,7 @@ func (e env) brief(ref string) error {
 		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
 	}
 	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
-	list(w, "Boxes that say only their kind: give each a responsibility in the supplement, drafted from the comment at its anchors; keep a draft only where the code bears it out", e.drafts(byID, name, drawnWith(id, ex)))
+	list(w, "Boxes that say only their kind: each draft comes from the comment at its anchors; keep it only where the code bears it out, and store the line in the supplement, or a module's or feature's with abbd understand --sentence", e.drafts(byID, name, drawnWith(id, ex)))
 	list(w, "Contracts and neighbours", contracts)
 	var couplings []string
 	for _, l := range ex.Inferred {

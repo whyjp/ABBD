@@ -161,7 +161,7 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	if len(r.Undescribed) > 0 {
-		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for each box of a module\n", describedLine(r.Undescribed))
+		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for the module, its inside units and the contracts it provides\n", describedLine(r.Undescribed))
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
