@@ -414,7 +414,7 @@ func TestLabelsReadAlongTheirLine(t *testing.T) {
 					}
 					if tr.phrases[rel].text != "" {
 						phrased[rel] = true
-						if w.Label != nil && w.Label.Said && mentions(w.Label.S, tr.phrases[rel].text) {
+						if w.Label != nil && w.Label.Said && phraseNames(tr.phrases[rel].text)[0] == w.Label.S {
 							named[rel] = true
 						}
 					}

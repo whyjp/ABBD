@@ -26680,7 +26680,23 @@
             "Kind": "p",
             "Parts": [
               {
-                "Text": "The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
+                "Text": "The word is one name, never a list, 등 or 외 N: the first name of the phrase the most of the line's relations carry, the first by name among equals, among the phrases at least half of them carry (",
+                "Code": false
+              },
+              {
+                "Text": "sayings",
+                "Code": true
+              },
+              {
+                "Text": " lists them all, ",
+                "Code": false
+              },
+              {
+                "Text": "word",
+                "Code": true
+              },
+              {
+                "Text": " takes the first), else the ",
                 "Code": false
               },
               {
@@ -26688,7 +26704,7 @@
                 "Code": true
               },
               {
-                "Text": " word they all share (호출, 데이터, ...), which also stands in when the phrase, with 등, is wider than ",
+                "Text": " word they all share (호출, 데이터, ...), which also stands in when no first name fits ",
                 "Code": false
               },
               {
@@ -26696,7 +26712,39 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ". Where a phrase's word already stands within ",
+                "Code": false
+              },
+              {
+                "Text": "repeatNear",
+                "Code": true
+              },
+              {
+                "Text": ", or anywhere on the line's track (",
+                "Code": false
+              },
+              {
+                "Text": "tracks",
+                "Code": true
+              },
+              {
+                "Text": ": one bundle's paths, or touching ink that leaves a place in common), the line tries its next such phrase's first name, and a line that carries any phrase skips the near passes, so it keeps to its tooltip rather than repeat a word nearby. ",
+                "Code": false
+              },
+              {
+                "Text": "TestLabelAudit",
+                "Code": true
+              },
+              {
+                "Text": " fails on a phrase fewer than half the line's relations carry, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestAPhraseIsSaidOncePerTrack",
+                "Code": true
+              },
+              {
+                "Text": " on a phrase said twice along one track of this repository's own drawings. ",
                 "Code": false
               },
               {
