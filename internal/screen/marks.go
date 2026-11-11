@@ -438,14 +438,16 @@ func phraseNames(p string) []string {
 	return append(out, p[from:])
 }
 
-// sayings lists, each once, the first names of the phrases the lines a
-// wire's label speaks for (units) carry that fit labelMax: the phrase the
-// most units carry first, the first by name among equals.
+// sayings lists, each once, the first names of the phrases at least half
+// the lines a wire's label speaks for (units) carry that fit labelMax: the
+// phrase the most units carry first, the first by name among equals. A
+// phrase fewer carry would name the whole line for a few of its relations.
 func sayings(t tree, lines [][]string) []string {
-	n := carried(units(lines), func(r string) string { return t.phrases[r].text })
+	us := units(lines)
+	n := carried(us, func(r string) string { return t.phrases[r].text })
 	var out []string
 	for _, p := range slices.SortedFunc(maps.Keys(n), func(a, b string) int { return cmp.Or(n[b]-n[a], strings.Compare(a, b)) }) {
-		if s := phraseNames(p)[0]; textWidth(s, labelPx) <= labelMax && !slices.Contains(out, s) {
+		if s := phraseNames(p)[0]; 2*n[p] >= len(us) && textWidth(s, labelPx) <= labelMax && !slices.Contains(out, s) {
 			out = append(out, s)
 		}
 	}
@@ -456,8 +458,8 @@ func sayings(t tree, lines [][]string) []string {
 // and whether it is a phrase. It says one name, the first of sayings, so a
 // line reads one word as the exemplars' lines do, never a list or a count.
 // The phrase's other names, the other phrases and their shares stay in the
-// tooltip (see said). With no name it is the via word all the relations
-// share, else "".
+// tooltip (see said). With no name, as when no phrase is carried by half the
+// units, it is the via word all the relations share, else "".
 func word(t tree, lines [][]string) (string, bool) {
 	if ns := sayings(t, lines); len(ns) > 0 {
 		return ns[0], true
@@ -540,11 +542,12 @@ func (d *Drawing) marked(heads []box) []box {
 func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	taken := d.marked(heads)
 	canvas := box{0, 0, d.Width, d.Height}
-	words, saids := make([]string, len(d.Wires)), make([]bool, len(d.Wires))
+	words, saids, phrased := make([]string, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires))
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
 		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
+			phrased[i] = true
 		}
 	}
 	// whole says every path of a net says one word, so the net is labelled
@@ -587,6 +590,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	}
 	kin := func(i, j int) bool { return ink(d.Wires[i]) == ink(d.Wires[j]) }
 	touches := touching(segs, len(d.Wires))
+	track := tracks(d.Wires, touches)
 	// placed are the labels set so far, so a word is not said twice nearby.
 	type set struct {
 		l    Label
@@ -596,10 +600,14 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	// repeats says a label at l would say a word already set within
 	// repeatNear of it. With touch, only a word on a line of the same
 	// colour whose ink l's line touches counts, so the word reads for both.
+	// A phrase also repeats one set anywhere on its track, however far.
 	repeats := func(i int, l Label, touch bool) bool {
 		return slices.ContainsFunc(placed, func(p set) bool {
 			dx, dy := p.l.X-l.X, p.l.Y-l.Y
-			return p.l.S == l.S && dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
+			if p.l.S != l.S {
+				return false
+			}
+			return l.Said && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
 		})
 	}
 	done := map[int]bool{}
@@ -698,15 +706,16 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		// the second lets a word come within labelRoom of an end where the
 		// line runs straight on along other lines' ink, a join and not a turn,
 		// so a road that shortens a line's own stretch does not lose its word.
-		// The first passes try each of says in turn. A phrase skips the last
-		// passes, so it never stands near the same phrase and keeps to its
-		// tooltip instead. Only a via word, with no other word to try, takes
-		// them.
+		// The first passes try each of says in turn. A line whose relations
+		// carry a phrase skips the last passes, so neither its phrase nor the
+		// via word it falls back to stands near the same word, and it keeps
+		// to its tooltip instead. Only a via word on a line with no phrase,
+		// with no other word to try, takes them.
 	search:
 		for _, pass := range [][2]bool{{false, false}, {false, true}, {true, false}, {true, true}} {
 			near, joined := pass[0], pass[1]
 			for k, s := range says {
-				if near && (said || k > 0) {
+				if near && (phrased[i] || k > 0) {
 					break
 				}
 				tw := textWidth(s, labelPx)
@@ -761,6 +770,38 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			done[n] = true
 		}
 	}
+}
+
+// tracks says which track each wire's ink belongs to: wires join one track
+// when they are paths of one bundle, or when their ink touches and they
+// leave a place in common, so one track is one line a reader follows.
+func tracks(ws []Wire, touches func(i, j int) bool) func(i int) int {
+	root := make([]int, len(ws))
+	for i := range root {
+		root[i] = i
+	}
+	var find func(int) int
+	find = func(i int) int {
+		if root[i] != i {
+			root[i] = find(root[i])
+		}
+		return root[i]
+	}
+	from := func(w Wire) []model.ID {
+		out := make([]model.ID, len(w.srcs))
+		for k, n := range w.srcs {
+			out[k] = base(model.ID(n))
+		}
+		return out
+	}
+	for i, a := range ws {
+		for j, b := range ws[:i] {
+			if a.Net != 0 && a.Net == b.Net || touches(i, j) && slices.ContainsFunc(from(a), func(n model.ID) bool { return slices.Contains(from(b), n) }) {
+				root[find(i)] = find(j)
+			}
+		}
+	}
+	return find
 }
 
 // sayOnce turns the drop on; a test turns it off to see which lines have

@@ -17,25 +17,38 @@ var rest = regexp.MustCompile(` (등|외 \d+)$`)
 
 // misstated says what is wrong with label s, a phrase when phrase is set,
 // on wire w, or "" when s is true of the lines it speaks for:
-//   - "hidden": s is no phrase although one of them carries a phrase;
+//   - "hidden": s is no phrase although at least half of them carry one
+//     whose first name fits;
 //   - "listed": s gives more than one name, or adds 등 or 외 N;
-//   - "unknown": s is not the first name of a phrase any of them carries.
+//   - "unknown": s is not the first name of a phrase any of them carries;
+//   - "minority": s names a phrase fewer than half of them carry.
 func misstated(t tree, w Wire, s string, phrase bool) string {
-	n := carried(units(w.lines), func(r string) string { return t.phrases[r].text })
-	switch {
-	case !phrase && len(n) > 0:
-		return "hidden"
-	case !phrase:
+	us := units(w.lines)
+	n := carried(us, func(r string) string { return t.phrases[r].text })
+	if !phrase {
+		for p, c := range n {
+			if 2*c >= len(us) && textWidth(phraseNames(p)[0], labelPx) <= labelMax {
+				return "hidden"
+			}
+		}
 		return ""
-	case rest.MatchString(s) || len(phraseNames(s)) > 1:
+	}
+	if rest.MatchString(s) || len(phraseNames(s)) > 1 {
 		return "listed"
 	}
-	for p := range n {
+	c := -1
+	for p, k := range n {
 		if phraseNames(p)[0] == s {
-			return ""
+			c = max(c, k)
 		}
 	}
-	return "unknown"
+	switch {
+	case c < 0:
+		return "unknown"
+	case 2*c < len(us):
+		return "minority"
+	}
+	return ""
 }
 
 // TestLabelAudit checks, over every line of every view of each fixture, of
@@ -131,4 +144,29 @@ func TestLabelAudit(t *testing.T) {
 func wordOf(t tree, rels []string) string {
 	s, _ := word(t, [][]string{rels})
 	return s
+}
+
+// A phrase is said once along one track, however far its ink runs: on this
+// repository's overview no two labels of one phrase stand on wires of one
+// bundle or on touching ink that leaves a place in common, as the three
+// Compare revisions along one track did, each just past repeatNear.
+func TestAPhraseIsSaidOncePerTrack(t *testing.T) {
+	in, err := Load(store.Open(filepath.Join("..", "..")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range views(Build(in)) {
+		d := v.d
+		track := tracks(d.Wires, inkTouches(d))
+		at := map[[2]any]Label{}
+		for i, w := range d.Wires {
+			if l := w.Label; l != nil && l.Said {
+				k := [2]any{l.S, track(i)}
+				if o, ok := at[k]; ok {
+					t.Errorf("%s: %q said at %d,%d and again at %d,%d on one track", v.name, l.S, o.X, o.Y, l.X, l.Y)
+				}
+				at[k] = *l
+			}
+		}
+	}
 }
