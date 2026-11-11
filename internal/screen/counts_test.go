@@ -9,11 +9,12 @@ import (
 )
 
 // A bus says its word instead of its count only when every one of its lines
-// says that word, so the word hides no other meaning.
+// says that word, so the word hides no other meaning. A plain via word is
+// not said, so a bus whose lines share only it keeps its count.
 func TestOnlyAnUncontestedWordTakesACount(t *testing.T) {
 	tr := tree{
 		vias: map[string]model.Via{"w1": "call", "w2": "call", "e1": "call", "e2": "call", "l1": "call", "l2": "call",
-			"c1": "call", "c2": "call", "c3": "call", "d1": "data", "p1": "call"},
+			"c1": "call", "c2": "call", "c3": "call", "d1": "data", "d2": "data", "d3": "data", "p1": "call"},
 		phrases: map[string]phrase{"w1": {"write cache", model.Inferred}, "w2": {"write cache", model.Inferred},
 			"e1": {"evict cache", model.Inferred}, "e2": {"evict cache", model.Inferred},
 			"l1": {"load config", model.Inferred}, "l2": {"load config", model.Inferred}, "p1": {"ping", model.Inferred}},
@@ -25,7 +26,8 @@ func TestOnlyAnUncontestedWordTakesACount(t *testing.T) {
 		{[][]string{{"w1"}, {"w2"}, {"e1"}, {"e2"}}, false},
 		{[][]string{{"l1"}, {"l2"}, {"e1"}}, false},
 		{[][]string{{"c1"}, {"c2"}, {"d1"}, {"p1"}}, false},
-		{[][]string{{"c1"}, {"c2"}, {"c3"}}, true},
+		{[][]string{{"c1"}, {"c2"}, {"c3"}}, false},
+		{[][]string{{"d1"}, {"d2"}, {"d3"}}, true},
 		{[][]string{{"l1"}, {"l2"}, {"l1", "c1"}}, true},
 	} {
 		w, said := word(tr, tc.lines)
