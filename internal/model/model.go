@@ -536,6 +536,8 @@ var viaSynonyms = map[Via][]string{
 	"macro":         {"macros"},
 	"build-feature": {"build feature", "feature flag"},
 	"convention":    {"conventions", "naming"},
+	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
+	"spawn":         {"spawns", "process", "subprocess", "exec"},
 }
 
 // restates reports whether a phrase only says the via in other words.

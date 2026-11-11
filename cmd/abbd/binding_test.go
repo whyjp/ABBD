@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // The brief lists the lines that bind at run time, which no import shows,
@@ -40,6 +42,34 @@ func TestBindingSitesNameLoadsSpawnsAndRegistries(t *testing.T) {
 	for _, not := range []string{"run_test.go", "README.md", "nothing.go"} {
 		if strings.Contains(got, not) {
 			t.Errorf("binding sites list %s:\n%s", not, got)
+		}
+	}
+}
+
+// A long registration table does not crowd out the load beside it.
+func TestBindingSitesCapEachKind(t *testing.T) {
+	root := t.TempDir()
+	text := strings.Repeat("obs_register_source(&info);\n", 12) + "void *h = os_dlopen(path);\nunregister_all();\n"
+	if err := os.WriteFile(filepath.Join(root, "obs.c"), []byte(text), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "lib.so"), []byte("\x00ELF dlopen"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	got := bindingSites(root, []string{"obs.c", "lib.so"})
+	all := strings.Join(got, "\n")
+	if strings.Count(all, "(registry)") != bindingShown || !strings.Contains(all, "`obs.c:13`") || got[len(got)-1] != "and 7 more" {
+		t.Errorf("want %d registry sites, the load at line 13 and 7 more:\n%s", bindingShown, all)
+	}
+	if strings.Contains(all, "unregister") || strings.Contains(all, "lib.so") {
+		t.Errorf("listed an unregister call or a binary file:\n%s", all)
+	}
+}
+
+func TestLoadAndSpawnAreVias(t *testing.T) {
+	for v, word := range map[model.Via]string{"load": "로드", "spawn": "실행"} {
+		if err := v.Validate(); err != nil || v.Word() != word {
+			t.Errorf("via %s: %v, word %q", v, err, v.Word())
 		}
 	}
 }
