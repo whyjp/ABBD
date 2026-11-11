@@ -113,5 +113,8 @@ func TestExplainSaysWhoRecordedACoupling(t *testing.T) {
 	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "depends_on", "FEAT-0001", "--via", "call", "--evidence", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	git(t, p.root, "add", "-A")
 	git(t, p.root, "commit", "-qm", "Record the page coupling")
-	contains(t, p.want(0, "", "explain", "MOD-0001"), "recorded in ", " Record the page coupling")
+	contains(t, p.want(0, "", "explain", "MOD-0001", "--history"), "recorded in ", " Record the page coupling")
+	if strings.Contains(p.want(0, "", "explain", "MOD-0001"), "recorded in ") {
+		t.Errorf("explain names who recorded a coupling only with --history")
+	}
 }

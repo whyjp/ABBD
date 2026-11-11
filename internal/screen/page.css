@@ -246,3 +246,4 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }

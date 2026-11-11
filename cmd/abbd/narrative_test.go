@@ -27,7 +27,7 @@ func TestLongAndHistoricalTextsAreReportedNeverRefused(t *testing.T) {
 	if !strings.Contains(p.read("understanding/MOD-0001.md"), "migrated from") {
 		t.Error("understand did not store the text it warned on")
 	}
-	out = p.want(0, "readability: 1 section(s) over 2000 characters, 2 phrase(s) that read as history; a report, the check ignores it", "status", "--check")
+	out = p.want(0, "readability: 1 section(s) over 2000 characters, 2 phrase(s) that read as history; a report, the check ignores it", "status", "--check", "--verbose")
 	if !strings.Contains(out, `long: MOD-0001 "Key Concepts"`) || !strings.Contains(out, `history: MOD-0001 "Overview" says "PR #12"`) {
 		t.Errorf("status did not list what it counted:\n%s", out)
 	}
@@ -66,4 +66,16 @@ func TestTheReadabilityReportSkipsAnOrphanText(t *testing.T) {
 	if !strings.Contains(out, "0 phrase(s) that read as history") || strings.Contains(out, "MOD-0099 \"Overview\"") {
 		t.Fatalf("status linted the orphan text:\n%s", out)
 	}
+}
+
+// Without --verbose, status folds its long: lines into one count.
+func TestStatusFoldsItsDetailLines(t *testing.T) {
+	p := semanticProject(t)
+	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
+	p.want(0, "", "understand", "MOD-0001", text)
+	out := p.want(0, "long: 1 line(s); abbd status --verbose lists them", "status")
+	if strings.Contains(out, `long: MOD-0001`) {
+		t.Errorf("status without --verbose listed a long: line:\n%s", out)
+	}
+	p.want(0, `long: MOD-0001 "Overview"`, "status", "--verbose")
 }

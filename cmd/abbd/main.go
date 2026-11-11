@@ -203,6 +203,7 @@ type opts struct {
 	reason           string
 	base             string
 	unit             string
+	history          bool
 	page             bool
 	asJSON, check    bool
 	list, record     bool
@@ -247,6 +248,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
 	"features": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.features, "features", false, "group the result by the features it reaches, with the contracts and entries each uses")
+	},
+	"history": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.history, "history", false, "name the commit and pull request that recorded each reader's coupling")
 	},
 	"verbose": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.verbose, "verbose", false, "list every unit, not only what needs attention")
@@ -307,13 +311,13 @@ var commands = map[string]command{
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
 	"table":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.table(pos[0], pos[1:]) }},
 	"install":         {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.install() }},
-	"explain":         {flags: []string{"root"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
+	"explain":         {flags: []string{"root", "history"}, pos: []int{1}, run: func(e env, pos []string) error { return e.explain(pos[0]) }},
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check", "unit", "page"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
 	"review":          {flags: []string{"root", "base", "features"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
-	"status":          {flags: []string{"root", "check"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
+	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},
 }
 
