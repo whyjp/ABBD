@@ -2178,11 +2178,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "turns the model into the one page a human opens",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/page.go",
@@ -21084,7 +21086,7 @@
                 "Code": true
               },
               {
-                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The fixed ",
+                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The ",
                 "Code": false
               },
               {
@@ -21108,23 +21110,7 @@
                 "Code": true
               },
               {
-                "Text": "). A drawing with more than ",
-                "Code": false
-              },
-              {
-                "Text": "hoverMax",
-                "Code": true
-              },
-              {
-                "Text": " shapes or ",
-                "Code": false
-              },
-              {
-                "Text": "routeMax",
-                "Code": true
-              },
-              {
-                "Text": " (160) routes takes no part, and only a page with a drawing carries the rules; such a drawing keeps its roads but no routes, so lint counts every join its roads draw as a J3 false join. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": "). No drawing is too large to take part, so a drawing on roads always keeps its routes and no join its roads draw reads as a J3 false join, and a page carries the rules for its own shapes and routes only. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
