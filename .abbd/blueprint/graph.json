@@ -7348,7 +7348,7 @@
                 "Code": true
               },
               {
-                "Text": " prints them all), prints a ",
+                "Text": " prints them all, and the usage says so), prints a ",
                 "Code": false
               },
               {
@@ -21615,7 +21615,7 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page says them as sentences under the heading. An inside unit's sentence that only a reader vouches for is set in italics with the 판독 source on hover, and ",
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page says them as sentences under the heading, naming the contracts it uses even when it provides none. An inside unit's sentence that only a reader vouches for is set in italics with the 판독 source on hover, and ",
                 "Code": false
               },
               {
