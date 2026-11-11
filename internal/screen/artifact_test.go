@@ -3,14 +3,16 @@ package screen
 import (
 	"strings"
 	"testing"
+
+	"github.com/whyjp/abbd/internal/model"
 )
 
 // A module the build makes into an artifact says so on its box, after
 // what it does, and a module it is not leaves its box as it was.
 func TestABoxSaysTheBuildArtifactItsModuleIs(t *testing.T) {
 	units := ripgrep()
-	units[0].Artifact = "exe"
-	units[3].Artifact = "shared"
+	exe, shared := model.Said(model.Script, "exe"), model.Said(model.Script, "shared")
+	units[0].Artifact, units[3].Artifact = &exe, &shared
 	m := Build(Input{Units: units})
 	got := map[string]Box{}
 	for _, b := range m.Overview.Boxes {

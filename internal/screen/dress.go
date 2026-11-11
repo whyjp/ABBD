@@ -22,7 +22,7 @@ import (
 
 // planned are the ways a coupling arises without a call or data at run
 // time.
-var planned = map[model.Via]bool{"convention": true, "import": true, "trait": true, "macro": true, "build-feature": true}
+var planned = map[model.Via]bool{"convention": true, "import": true, "trait": true, "macro": true, "build-feature": true, "link": true}
 
 const (
 	// hubLines is the fewest lines that make a box a hub, and hubOver how

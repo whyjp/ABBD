@@ -673,7 +673,7 @@ func (o *overview) inside(m model.ID, units []model.Unit, focus model.ID, seat m
 	}
 	for _, u := range inner {
 		r := l.pos[string(u.ID)]
-		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), Artifact: u.Artifact.Word(), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
+		b := Box{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind), Artifact: u.Built().Word(), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "inner"}
 		if len(t.children[u.ID]) > 0 {
 			b.Href, b.Class = "#m-"+string(u.ID), "inner has"
 		}

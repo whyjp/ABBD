@@ -398,7 +398,6 @@ func items(u model.Unit) []model.Evidence {
 func merge(u *model.Unit, in extract.Unit, ws Writers) {
 	u.Anchors = in.Anchors
 	u.Digest = in.Digest
-	u.Artifact = in.Artifact
 	u.Entries = in.Entries
 	if in.SupplementRef != "" {
 		u.SupplementRef = in.SupplementRef
@@ -418,6 +417,7 @@ func merge(u *model.Unit, in extract.Unit, ws Writers) {
 		{model.PurposeField, &u.Purpose, in.Purpose},
 		{model.ResponsibilityField, &u.Responsibility, in.Responsibility},
 		{model.SignatureField, &u.Signature, in.Signature},
+		{model.ArtifactField, &u.Artifact, in.Artifact},
 	} {
 		held := *f.at
 		if held == nil || ws.own(held.Writer) || f.offers != nil && model.Outranks(f.field, f.offers.Writer, held.Writer) {

@@ -12,7 +12,7 @@ func TestOnlyAModuleIsABuildArtifact(t *testing.T) {
 		return `{"units":[{"ref":"z","kind":"` + kind + `","name":"libzstd","artifact":"` + artifact + `","anchors":[{"path":"lib"},{"path":"lib/zstd.h"}]}]}`
 	}
 	r, err := Parse(strings.NewReader(unit("MOD", "shared")))
-	if err != nil || r.Units[0].Artifact != "shared" {
+	if err != nil || r.Units[0].Artifact == nil || r.Units[0].Artifact.Value != "shared" {
 		t.Fatalf("a shared module: %v, %+v", err, r.Units)
 	}
 	for _, c := range [][2]string{{"IF", "shared"}, {"MOD", "dll"}} {

@@ -1092,7 +1092,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: u.Artifact.Word(), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: u.Built().Word(), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2

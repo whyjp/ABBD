@@ -81,8 +81,8 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		}
 		// A build artifact the script read stays; one only the supplement
 		// names, as when no script reads the build files, is added.
-		if u.Artifact == "" {
-			u.Artifact = d.Artifact
+		if u.Artifact == nil && d.Artifact != nil {
+			u.Artifact = supplemented(d.Artifact)
 		}
 	}
 	if len(gaps) > 0 {
@@ -182,6 +182,9 @@ func semantic(d extract.Unit, n int) extract.Unit {
 		d.Key = "supplement:" + d.SupplementRef
 	}
 	d.Name = model.Said(model.Supplement, d.Name.Value)
+	if d.Artifact != nil {
+		d.Artifact = supplemented(d.Artifact)
+	}
 	d.Signature, d.Digest, d.Parent, d.ParentEvidence = nil, "", "", nil
 	return d
 }

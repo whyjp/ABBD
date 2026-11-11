@@ -95,7 +95,7 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
-	Artifact       model.Artifact
+	Artifact       *model.Fact
 	Entries        []model.Entry
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
@@ -289,7 +289,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
-			Artifact:       ru.Artifact,
+			Artifact:       said(ru.Artifact),
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,
@@ -354,6 +354,15 @@ func normalizePath(p string) (string, error) {
 
 // Extraction reads code, so any statement of intent it makes is a guess, and
 // it ranks with the supplement's.
+// said is the build artifact the script read, or nil for none.
+func said(a model.Artifact) *model.Fact {
+	if a == "" {
+		return nil
+	}
+	f := model.Said(model.Script, string(a))
+	return &f
+}
+
 func inferred(v string) *model.Fact {
 	if v == "" {
 		return nil

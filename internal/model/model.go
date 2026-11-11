@@ -202,9 +202,10 @@ type Unit struct {
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest string `yaml:"digest,omitempty"`
-	// Artifact is what the build makes of a module, read from the build
-	// system, such as a shared library or a plugin module the host loads.
-	Artifact Artifact `yaml:"artifact,omitempty"`
+	// Artifact is what the build makes of a module, such as a shared library
+	// or a plugin module the host loads, with whoever said it: the script
+	// that reads the build, or the supplement where no script does.
+	Artifact *Fact `yaml:"artifact,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
 	Relations []Relation `yaml:"relations,omitempty"`
@@ -538,6 +539,7 @@ var viaSynonyms = map[Via][]string{
 	"callback":      {"callbacks", "hook"},
 	"macro":         {"macros"},
 	"build-feature": {"build feature", "feature flag"},
+	"link":          {"links", "linked", "linking", "link time"},
 	"convention":    {"conventions", "naming"},
 	"load":          {"loads", "dynamic load", "plugin load", "dlopen"},
 	"spawn":         {"spawns", "process", "subprocess", "exec"},
@@ -640,6 +642,14 @@ type Artifact string
 
 var artifactWords = map[Artifact]string{
 	"exe": "실행 파일", "static": "정적 라이브러리", "shared": "공유 라이브러리", "module": "로드 모듈", "cdylib": "cdylib",
+}
+
+// Built is the build artifact the unit is, or "" for none.
+func (u Unit) Built() Artifact {
+	if u.Artifact == nil {
+		return ""
+	}
+	return Artifact(u.Artifact.Value)
 }
 
 // Word is the artifact in the blueprint's words, or "" for none.
