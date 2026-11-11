@@ -156,6 +156,9 @@ type Model struct {
 	Flows  []FlowView
 	Stacks []StackView
 	Tables []TableView
+	// Decisions are every decision note, the unit it sits on first, for the
+	// decisions index.
+	Decisions []Decision `json:"-"`
 	// Edges are every live relation between present units, for graph.json.
 	Edges   []Line
 	Extract []string
@@ -177,6 +180,7 @@ func Build(in Input) Model {
 		m.Units = append(m.Units, row)
 	}
 	m.Edges = lines(in.Units)
+	m.Decisions = decisions(in)
 	// The overview is drawn in the plain order of its rows only. Every
 	// module's page holds a focus view seated by it, so an overview that took
 	// another order after a small change would redraw every page. It may
@@ -237,6 +241,9 @@ func Build(in Input) Model {
 		ins.Focus = o.insideFocus(id, in.Units, ins)
 		ins.Understanding = text(id)
 		ins.Standing = o.standing(id, in)
+		for i, c := range ins.Inferred {
+			ins.Inferred[i].Note = relationNote(in, o.units[model.ID(c.FromID)], model.RelationKind(c.Kind), model.ID(c.ToID))
+		}
 		ins.Owners = in.Owners[id]
 		u := o.units[id]
 		ins.Purpose, ins.Responsibility = sentenceOf(u.Purpose, in.Digests[id]), sentenceOf(u.Responsibility, in.Digests[id])
@@ -342,6 +349,36 @@ func OwnersOf(o owners.Owners, units []model.Unit) map[model.ID][]string {
 		}
 		if len(names) > 0 {
 			out[u.ID] = names
+		}
+	}
+	return out
+}
+
+// relationNote is a reader's note on why one relation of from exists.
+func relationNote(in Input, from model.Unit, kind model.RelationKind, to model.ID) *Note {
+	key := model.RelationKey(kind, to)
+	for _, n := range notes(in, from) {
+		if n.slot == "relations" && n.Key == key {
+			return &n
+		}
+	}
+	return nil
+}
+
+// Decision is one decision note as the index lists it, with its unit.
+type Decision struct {
+	Unit, Name string
+	Note       Note
+}
+
+// decisions lists every decision note of a present unit, in unit order.
+func decisions(in Input) []Decision {
+	var out []Decision
+	for _, u := range model.Present(in.Units) {
+		for _, n := range notes(in, u) {
+			if n.slot == "decisions" {
+				out = append(out, Decision{Unit: string(u.ID), Name: u.Name.Value, Note: n})
+			}
 		}
 	}
 	return out

@@ -122,7 +122,7 @@ func TestANoteNeedsLiveEvidenceAndASlotAbbdKnows(t *testing.T) {
 	}{
 		{"MOD-0001.failure", "cite at least one --evidence", nil},
 		{"MOD-0001.failure", "the code does not hold", []string{"billing/retry.go:3:const tries = 4"}},
-		{"MOD-0001.gotchas", `"gotchas" is no slot; the slots are semantics, failure, states, decisions, constraints, wire_sample`, []string{failureQuote}},
+		{"MOD-0001.gotchas", `"gotchas" is no slot; the slots are semantics, failure, states, decisions, constraints, relations, wire_sample`, []string{failureQuote}},
 		{"MOD-0001.decisions", "name it MOD-0001.decisions.KEY", []string{failureQuote}},
 		{"MOD-0001.semantics.main", "takes no key", []string{failureQuote}},
 		{"MOD-0001.decisions.Tries", "lower-case letters, digits and hyphens", []string{failureQuote}},

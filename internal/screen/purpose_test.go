@@ -107,3 +107,29 @@ func TestALeadEndsWithTheFirstSection(t *testing.T) {
 		t.Errorf("a shared file name tied a concept: %v", got)
 	}
 }
+
+// A reader's note on why a relation exists stands by that coupling, and
+// every decision note is listed on decisions.html.
+func TestARelationSaysWhyAndDecisionsHaveAnIndex(t *testing.T) {
+	coupled := model.Relation{To: "MOD-0004", Kind: model.DependsOn, Origin: model.Inferred, Writer: model.Reader, Via: "call",
+		Evidence: []model.Evidence{{Path: "src/a.rs", Lines: "1", Quote: "held", Status: model.Live}}}
+	units := append(ripgrep(), inside("MOD-0006", "MOD-0003", coupled))
+	note := func(ref, text string) store.Note {
+		r, err := model.ParseNoteRef(ref)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return store.Note{Ref: r, Known: true, Text: text, Slot: r.Name()}
+	}
+	in := Input{Units: units, Notes: map[model.ID][]store.Note{
+		"MOD-0006": {note("MOD-0006.relations."+model.RelationKey(model.DependsOn, "MOD-0004"), "The sink hands each match to the matcher.")},
+		"MOD-0003": {note("MOD-0003.decisions.mmap", "Searches read files through mmap rather than a buffer.")},
+	}}
+	ps := pages(t, Build(in))
+	if !strings.Contains(ps["MOD-0003.html"], `<div class="why">`) || !strings.Contains(ps["MOD-0003.html"], "The sink hands each match to the matcher.") {
+		t.Errorf("the coupling should carry the note on why it exists")
+	}
+	if d := ps[DecisionsFile]; !strings.Contains(d, "Searches read files through mmap rather than a buffer.") || !strings.Contains(d, `href="MOD-0003.html#n-MOD-0003.decisions.mmap"`) {
+		t.Errorf("decisions.html should list the decision and link it:\n%s", d)
+	}
+}

@@ -17,6 +17,7 @@
     <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
     <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a></li>
     <li><a href="#units"{{if eq .Current "units"}} aria-current="page"{{end}}>단위 목록</a></li>
+    <li><a href="#decisions"{{if eq .Current "decisions"}} aria-current="page"{{end}}>결정 목록</a></li>
     <li><a href="#legend"{{if eq .Current "legend"}} aria-current="page"{{end}}>범례</a></li>
   </ul>
   {{if .Nav}}<h3>모듈</h3>
@@ -88,7 +89,7 @@
   {{if .Tables}}<h3>이 모듈이 행으로 놓인 표</h3>
   <ul class="plain">{{range .Tables}}<li><a href="#{{.ID}}">{{.Question}}</a> <span class="muted">행 {{range $i, $n := .Rows}}{{if $i}}·{{end}}{{$n}}{{end}}</span></li>{{end}}</ul>{{end}}
   {{if .Inferred}}<h3>판독한 결합</h3>
-  <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="{{tip "inferred"}}">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span> {{if .Drifted}}<span class="pill STALE" title="인용한 코드가 그대로 있지 않음">근거 어긋남</span>{{else}}<span class="muted">근거 유지</span>{{end}}{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}</li>{{end}}</ul>{{end}}
+  <ul class="plain">{{range .Inferred}}<li><span class="pill inferred" title="{{tip "inferred"}}">판독</span> {{.From}} → {{.To}} <span class="muted">({{.Kind}}{{if .Via}}, via {{.Via}}{{end}})</span> {{if .Drifted}}<span class="pill STALE" title="인용한 코드가 그대로 있지 않음">근거 어긋남</span>{{else}}<span class="muted">근거 유지</span>{{end}}{{range .Quotes}}<div class="quote"><q>{{.}}</q></div>{{end}}{{with .Note}}<div class="why">{{template "blocks" .Blocks}}{{if .Stale}} <span class="pill STALE">STALE</span>{{end}}</div>{{end}}</li>{{end}}</ul>{{end}}
   {{range .Contracts}}{{$c := .}}{{with .Entries}}<div class="entries" id="t-{{$c.ID}}"><h3>{{$c.Name}} <span class="muted key">{{$c.ID}}</span></h3>{{template "entries" .}}</div>{{end}}{{end}}
 </section>
 {{with $p.Around}}{{template "focus" .}}{{end}}
@@ -108,6 +109,13 @@
   {{template "legend" (legendFor "inside-keys" false)}}
   <h3>한 상자의 둘레</h3>
   <p>굵은 테의 상자가 중심입니다. 위의 상자는 그것을 쓰고, 아래의 상자는 그것이 씁니다. 중심에 닿는 선만 그리고, 둘레의 상자끼리의 선은 그 상자를 중심으로 한 그림에 있습니다. 둘레의 상자를 누르면 그 상자가 중심이 됩니다.</p>
+</section>
+{{template "foot" .}}{{end}}
+{{define "decisionspage"}}{{template "head" .}}
+<section id="decisions">
+  <h2>결정 목록 <span class="muted" style="font-weight:400;font-size:13px">{{len .Decisions}}개</span></h2>
+  <p class="muted" style="margin:0 0 6px">리더가 읽은 결정입니다. 코드가 무엇을 무엇 대신 골랐는지, 사람이 말한 까닭이 있으면 그것과 함께 둡니다. 이름을 누르면 그 결정이 놓인 단위로 갑니다.</p>
+  {{range .Decisions}}<div class="decision"><h3><a href="#n-{{.Note.Ref}}">{{.Name}}</a> <span class="muted key">{{.Unit}} · {{.Note.Key}}</span>{{if .Note.Stale}} <span class="pill STALE">STALE</span>{{end}}</h3>{{template "blocks" .Note.Blocks}}{{with .Note.Why}}<p>까닭: {{.Value}} <span class="pill {{.Badge}}">{{label .Badge}}</span></p>{{end}}</div>{{else}}<p class="muted">아직 기록된 결정이 없습니다. 리더가 <code>abbd understand ID.decisions.KEY FILE --evidence ...</code>로 남깁니다.</p>{{end}}
 </section>
 {{template "foot" .}}{{end}}
 {{define "contracts"}}{{template "head" .}}
