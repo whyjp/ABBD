@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"fmt"
 	"maps"
 	"os"
 	"path/filepath"
@@ -122,5 +123,14 @@ func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
 		if got := Record(risen, debt).Pages[page]; !maps.Equal(got, debt.Pages[page]) {
 			t.Errorf("recording a rise on %s sets its bounds %v, want them kept at %v", page, got, debt.Pages[page])
 		}
+	}
+	risen := slices.Clone(views)
+	risen[at].Totals.Criteria = maps.Clone(risen[at].Totals.Criteria)
+	risen[at].Totals.Criteria["J3"]++
+	if fails := Gate(risen, debt, true); !slices.Contains(fails, fmt.Sprintf("%s: false_joins %d, past its page bound %d", page, risen[at].Totals.Criteria["J3"], debt.Pages[page]["false_joins"])) {
+		t.Errorf("a false join on %s fails the gate with %q, want its page past its false_joins bound", page, fails)
+	}
+	if got := Record(risen, debt).Pages[page]; !maps.Equal(got, debt.Pages[page]) {
+		t.Errorf("recording a false join on %s sets its bounds %v, want them kept at %v", page, got, debt.Pages[page])
 	}
 }
