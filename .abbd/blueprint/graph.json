@@ -22316,7 +22316,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 5,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -23367,7 +23366,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -26683,6 +26682,22 @@
               },
               {
                 "Text": ": one bundle's paths, or touching ink that leaves a place in common), the line tries its next such phrase's first name, and a line that carries any phrase skips the near passes, so it keeps to its tooltip rather than repeat a word nearby. ",
+                "Code": false
+              },
+              {
+                "Text": "TestLabelAudit",
+                "Code": true
+              },
+              {
+                "Text": " fails on a phrase fewer than half the line's relations carry, and ",
+                "Code": false
+              },
+              {
+                "Text": "TestAPhraseIsSaidOncePerTrack",
+                "Code": true
+              },
+              {
+                "Text": " on a phrase said twice along one track of this repository's own drawings. ",
                 "Code": false
               },
               {
