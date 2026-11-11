@@ -7080,7 +7080,23 @@
                 "Code": true
               },
               {
-                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state. With ",
+                "Text": ", which opens with a one-line ",
+                "Code": false
+              },
+              {
+                "Text": "summary",
+                "Code": true
+              },
+              {
+                "Text": " of the counts, sets the unit's drawing then and now side by side (",
+                "Code": false
+              },
+              {
+                "Text": "drawing",
+                "Code": true
+              },
+              {
+                "Text": " cuts each SVG and the page style out of the two pages), and folds the change lines below. The blueprint itself stays the current state. With ",
                 "Code": false
               },
               {
@@ -7270,7 +7286,15 @@
                 "Code": true
               },
               {
-                "Text": ", or a line saying the evidence could not be checked. It always exits 0.",
+                "Text": ", or a line saying the evidence could not be checked. It opens with a one-line headline of its counts, lists of what the change reaches only the units past the seeds, the first 15 (",
+                "Code": false
+              },
+              {
+                "Text": "reachShown",
+                "Code": true
+              },
+              {
+                "Text": "), and always exits 0.",
                 "Code": false
               }
             ]
@@ -21563,7 +21587,23 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. ",
+                "Code": false
+              },
+              {
+                "Text": "legend.html",
+                "Code": true
+              },
+              {
+                "Text": " gives each key once: the overview legend with its shared keys, a sentence for the quiet colours, and only the inside legend's own keys (",
+                "Code": false
+              },
+              {
+                "Text": "legendFor \"inside-keys\"",
+                "Code": true
+              },
+              {
+                "Text": "); a dot means four lines meet. The full legend and the reading intros sit once on ",
                 "Code": false
               },
               {
@@ -30477,7 +30517,39 @@
                 "Code": true
               },
               {
-                "Text": " turns a lifted relation back into the units that really join it.",
+                "Text": " turns a lifted relation back into the units that really join it. A signature change longer than ",
+                "Code": false
+              },
+              {
+                "Text": "longSignature",
+                "Code": true
+              },
+              {
+                "Text": " (200 characters) reads in ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": " as the words it gained and lost (",
+                "Code": false
+              },
+              {
+                "Text": "sigDelta",
+                "Code": true
+              },
+              {
+                "Text": "), and ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " keeps both texts.",
                 "Code": false
               }
             ]
