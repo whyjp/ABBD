@@ -146,7 +146,7 @@ abbd diff [--base REV] [--unit ID] [--page] [--json] [--check] [--root DIR]
                                      committed at REV beside the current one, never committed
                                      REV prev is the copy of .abbd a write keeps from before its
                                      first change since the last commit
-abbd review [--base REV] [--features] [--root DIR]
+abbd review [--base REV] [--features] [--markdown] [--root DIR]
                                      one surface for a reviewer: the change since REV, who uses
                                      each contract or entry it touched with origin and feature,
                                      what it reaches directly, and what is worth a look (a
@@ -209,6 +209,7 @@ type opts struct {
 	base             string
 	unit             string
 	history          bool
+	markdown         bool
 	sentence         string
 	page             bool
 	asJSON, check    bool
@@ -254,6 +255,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"json": func(fs *flag.FlagSet, o *opts) { fs.BoolVar(&o.asJSON, "json", false, "print JSON") },
 	"features": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.features, "features", false, "group the result by the features it reaches, with the contracts and entries each uses")
+	},
+	"markdown": func(fs *flag.FlagSet, o *opts) {
+		fs.BoolVar(&o.markdown, "markdown", false, "print the review as one pull request comment in markdown, with a drawing of the touched modules")
 	},
 	"history": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.history, "history", false, "name the commit and pull request that recorded each reader's coupling")
@@ -324,7 +328,7 @@ var commands = map[string]command{
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check", "unit", "page"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
-	"review":          {flags: []string{"root", "base", "features"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
+	"review":          {flags: []string{"root", "base", "features", "markdown"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},
 	"lint":            {flags: []string{"root", "json", "list", "record", "keep-level"}, pos: []int{0, 1}, run: func(e env, pos []string) error { return e.lint(pos) }},

@@ -592,7 +592,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Syncs the state to the changed code, reports the topology diff in plain words in the reply and the PR, and commits .abbd/ with the code.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -610,7 +611,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Describes the checking surface: which quotes still hold, and the diff --check exit code a CI job uses to label a PR.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd/SKILL.md"
@@ -8811,7 +8813,39 @@
                 "Code": true
               },
               {
-                "Text": "), and always exits 0.",
+                "Text": "), and always exits 0. With ",
+                "Code": false
+              },
+              {
+                "Text": "--markdown",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "reviewMarkdown",
+                "Code": true
+              },
+              {
+                "Text": ") it writes one pull request comment opened by ",
+                "Code": false
+              },
+              {
+                "Text": "reviewMarker",
+                "Code": true
+              },
+              {
+                "Text": ": the headline, a mermaid drawing of up to ",
+                "Code": false
+              },
+              {
+                "Text": "maxDrawn",
+                "Code": true
+              },
+              {
+                "Text": " touched top-level modules, the counted relations between them and each use of a contract drawn to its provider, what is worth a look, and the whole review folded.",
                 "Code": false
               }
             ]
@@ -12473,11 +12507,24 @@
                 "Name": "--features",
                 "Shape": "bool",
                 "Need": ""
+              },
+              {
+                "Key": "markdown",
+                "Name": "--markdown",
+                "Shape": "bool",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": false,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": false,
             "Notes": false
           }
