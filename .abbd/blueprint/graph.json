@@ -7096,7 +7096,7 @@
                 "Code": true
               },
               {
-                "Text": " cuts each SVG and the page style out of the two pages), and folds the change lines below. The blueprint itself stays the current state. With ",
+                "Text": " cuts each SVG and the page style out of the two pages, falling back to a page's first drawing when the unit's page is a focus view), and folds the change lines below. The blueprint itself stays the current state. With ",
                 "Code": false
               },
               {
@@ -30541,7 +30541,7 @@
                 "Code": true
               },
               {
-                "Text": "), and ",
+                "Text": ", splitting on brackets, separators and line breaks), and ",
                 "Code": false
               },
               {
