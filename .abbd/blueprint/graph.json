@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -498,11 +498,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup",
@@ -698,7 +700,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Checks the blueprint against the swarm's account, installs the CLAUDE.md block, commits, and hands ongoing work to the abbd skill.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -756,7 +759,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's parallel fan-out; ABBD setup reads the code and asks for the grouping through it.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -793,7 +797,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "For each top-level module, reads it with the bundled reader and stores its Overview and Key Concepts with the reader's name.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -2047,11 +2052,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows what inside a module meets each of its contracts and the other modules",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "draws a module's child units inside a frame whose ports are its contracts and the other modules it touches without one, marks ports no inside unit is wired to as unwired, and lists the inferred couplings touching the module with their quotes",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/inside.go",
@@ -2834,6 +2841,13 @@
       "Phrase": "fresh quotes",
       "PhraseOrigin": "INFERRED",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd record evidence\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0022",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd flow\""
     },
     {
       "From": "FEAT-0002",
@@ -4468,7 +4482,7 @@
       "Via": "data",
       "Phrase": "text digest",
       "PhraseOrigin": "INFERRED",
-      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+      "Quote": "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: bs, Lead: lead, Rest: rest}\""
     },
     {
       "From": "MOD-0040",
@@ -5134,15 +5148,17 @@
       "Name": "/abbd-setup",
       "Purpose": {
         "Value": "so a repository without .abbd gets its first topology baseline with no human alignment step",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Drives the one-time setup: a pstack swarm reads the code, a deterministic extraction script plus a supplement of readers' findings feed abbd setup, how's text is stored per module, and abbd install writes the CLAUDE.md block.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 16,
+        "Uses": 17,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5251,6 +5267,7 @@
             "exit codes",
             "migrate",
             "record evidence",
+            "flow",
             "lint"
           ]
         }
@@ -5465,7 +5482,71 @@
             "cmd/abbd/install.go install",
             "cmd/abbd/install.go markers"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Fingerprint",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "install.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): a git tree object of the working tree minus ",
+                  "Code": false
+                },
+                {
+                  "Text": ".abbd/",
+                  "Code": true
+                },
+                {
+                  "Text": ", saved in the state at sync. A nested repository with no commit yet counts by its files on disk that neither repository ignores, as an untracked directory does. ",
+                  "Code": false
+                },
+                {
+                  "Text": "status",
+                  "Code": true
+                },
+                {
+                  "Text": " reports STALE when it no longer matches the tree. ",
+                  "Code": false
+                },
+                {
+                  "Text": "keepingCurrent",
+                  "Code": true
+                },
+                {
+                  "Text": " moves it along when ",
+                  "Code": false
+                },
+                {
+                  "Text": "install",
+                  "Code": true
+                },
+                {
+                  "Text": " edits ",
+                  "Code": false
+                },
+                {
+                  "Text": "CLAUDE.md",
+                  "Code": true
+                },
+                {
+                  "Text": " while the state is current, and leaves a merged state for sync.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0002",
@@ -5480,7 +5561,603 @@
             "cmd/abbd/evidence.go checkEvidence",
             "cmd/abbd/evidence.go status"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Diff",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "diff.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd diff",
+                  "Code": true
+                },
+                {
+                  "Text": " compares the units committed at a base, the merge base by default, with the state now through ",
+                  "Code": false
+                },
+                {
+                  "Text": "topology.Compare",
+                  "Code": true
+                },
+                {
+                  "Text": ". ",
+                  "Code": false
+                },
+                {
+                  "Text": "--unit ID",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps the changes inside one module or feature through ",
+                  "Code": false
+                },
+                {
+                  "Text": "Diff.Within",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "topology.Subtree",
+                  "Code": true
+                },
+                {
+                  "Text": ". ",
+                  "Code": false
+                },
+                {
+                  "Text": "--page",
+                  "Code": true
+                },
+                {
+                  "Text": " writes ",
+                  "Code": false
+                },
+                {
+                  "Text": ".abbd/compare/",
+                  "Code": true
+                },
+                {
+                  "Text": ": the blueprint files committed at the base under ",
+                  "Code": false
+                },
+                {
+                  "Text": "base/",
+                  "Code": true
+                },
+                {
+                  "Text": ", a ",
+                  "Code": false
+                },
+                {
+                  "Text": ".gitignore",
+                  "Code": true
+                },
+                {
+                  "Text": " of ",
+                  "Code": false
+                },
+                {
+                  "Text": "*",
+                  "Code": true
+                },
+                {
+                  "Text": ", and ",
+                  "Code": false
+                },
+                {
+                  "Text": "index.html",
+                  "Code": true
+                },
+                {
+                  "Text": ", which opens with a one-line ",
+                  "Code": false
+                },
+                {
+                  "Text": "summary",
+                  "Code": true
+                },
+                {
+                  "Text": " of the counts, sets the unit's drawing then and now side by side (",
+                  "Code": false
+                },
+                {
+                  "Text": "drawing",
+                  "Code": true
+                },
+                {
+                  "Text": " cuts each SVG and the page style out of the two pages, falling back to a page's first drawing when the unit's page is a focus view), and folds the change lines below. The blueprint itself stays the current state. With ",
+                  "Code": false
+                },
+                {
+                  "Text": "--json",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "--page",
+                  "Code": true
+                },
+                {
+                  "Text": " names its path on stderr so stdout stays JSON. Before a writing command runs, ",
+                  "Code": false
+                },
+                {
+                  "Text": "keepPrevious",
+                  "Code": true
+                },
+                {
+                  "Text": " has the store keep ",
+                  "Code": false
+                },
+                {
+                  "Text": ".abbd",
+                  "Code": true
+                },
+                {
+                  "Text": " as it was before the first write since the last commit, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "--base prev",
+                  "Code": true
+                },
+                {
+                  "Text": " reads the units and the blueprint from that copy. The tests' ",
+                  "Code": false
+                },
+                {
+                  "Text": "snapshot",
+                  "Code": true
+                },
+                {
+                  "Text": " of ",
+                  "Code": false
+                },
+                {
+                  "Text": ".abbd",
+                  "Code": true
+                },
+                {
+                  "Text": " leaves ",
+                  "Code": false
+                },
+                {
+                  "Text": "compare/",
+                  "Code": true
+                },
+                {
+                  "Text": " out, since nothing there is committed. ",
+                  "Code": false
+                },
+                {
+                  "Text": "--base prev",
+                  "Code": true
+                },
+                {
+                  "Text": " needs the copy's ",
+                  "Code": false
+                },
+                {
+                  "Text": "HEAD",
+                  "Code": true
+                },
+                {
+                  "Text": " mark. ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd review",
+                  "Code": true
+                },
+                {
+                  "Text": " also lists the units anchored at a file changed since the base (",
+                  "Code": false
+                },
+                {
+                  "Text": "anchoredAt",
+                  "Code": true
+                },
+                {
+                  "Text": ", through ",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.ChangedSince",
+                  "Code": true
+                },
+                {
+                  "Text": ", a file name with a space included) and seeds from them, since most changes edit code and leave the topology alone.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Evidence and status",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "evidence.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd evidence",
+                  "Code": true
+                },
+                {
+                  "Text": " checks the items of the claims that show, the parent's through ",
+                  "Code": false
+                },
+                {
+                  "Text": "Unit.ShownParent",
+                  "Code": true
+                },
+                {
+                  "Text": ", and prints each as live, drifted or dead. It never writes, so a drifted item stays drifted. ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd status",
+                  "Code": true
+                },
+                {
+                  "Text": " prints whether the state and the blueprint are current, folds its ",
+                  "Code": false
+                },
+                {
+                  "Text": "long:",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "unbacked:",
+                  "Code": true
+                },
+                {
+                  "Text": " lines into one count each unless ",
+                  "Code": false
+                },
+                {
+                  "Text": "--verbose",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "statusLines",
+                  "Code": true
+                },
+                {
+                  "Text": " prints them all, and the usage says so), prints a ",
+                  "Code": false
+                },
+                {
+                  "Text": "coverage:",
+                  "Code": true
+                },
+                {
+                  "Text": " line (",
+                  "Code": false
+                },
+                {
+                  "Text": "coverage",
+                  "Code": true
+                },
+                {
+                  "Text": ", through ",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.LastCommitted",
+                  "Code": true
+                },
+                {
+                  "Text": ": how many top-level modules and features carry a text, who read them, the oldest commit date of one, and which carry none), names in its ",
+                  "Code": false
+                },
+                {
+                  "Text": "described:",
+                  "Code": true
+                },
+                {
+                  "Text": " line the present units that record neither a purpose nor a responsibility (",
+                  "Code": false
+                },
+                {
+                  "Text": "TestStatusReportsUndescribedUnits",
+                  "Code": true
+                },
+                {
+                  "Text": " holds its count and the IDs it names), and names a state a merge left with two syncs STALE until ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd sync",
+                  "Code": true
+                },
+                {
+                  "Text": " on the merged tree. It prints the unit, relation and module-text counts, the drifted and dead items, every mask and every parent conflict. Each dangling phrase gets the retract command its writer needs, with ",
+                  "Code": false
+                },
+                {
+                  "Text": "--source REF",
+                  "Code": true
+                },
+                {
+                  "Text": " for a human's note. With ",
+                  "Code": false
+                },
+                {
+                  "Text": "--check",
+                  "Code": true
+                },
+                {
+                  "Text": " it returns an error naming each thing that is behind: a STALE state, blueprint or module text, or drifted evidence. An UNKNOWN state or blueprint fails it too, and the error names the cause: no git work tree, a git error, or a ",
+                  "Code": false
+                },
+                {
+                  "Text": "blueprint/",
+                  "Code": true
+                },
+                {
+                  "Text": " with no files or a state that does not say what was rendered. Dead evidence and orphaned texts, whose module ",
+                  "Code": false
+                },
+                {
+                  "Text": "textModule",
+                  "Code": true
+                },
+                {
+                  "Text": " no longer accepts, are reported and never fail it. ",
+                  "Code": false
+                },
+                {
+                  "Text": "readTexts",
+                  "Code": true
+                },
+                {
+                  "Text": " reports the readability of the texts that show beside a module, and skips the orphans.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Figures",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "figure.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "flow.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "table.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "evidence.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd flow KEY FILE",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd stack KEY FILE",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd table KEY FILE",
+                  "Code": true
+                },
+                {
+                  "Text": " store a figure from a draft, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd flow KEY",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd stack KEY",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd table KEY",
+                  "Code": true
+                },
+                {
+                  "Text": " print the stored one as a draft. Their handlers, ",
+                  "Code": false
+                },
+                {
+                  "Text": "flow",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "stack",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "table",
+                  "Code": true
+                },
+                {
+                  "Text": ", each run ",
+                  "Code": false
+                },
+                {
+                  "Text": "figure[C]",
+                  "Code": true
+                },
+                {
+                  "Text": ", for a flow's steps, a stack's layers or a table's rows, so every rule here holds for every kind and its messages take the kind's nouns. ",
+                  "Code": false
+                },
+                {
+                  "Text": "checkFigure",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a draft without one question on one line, with fewer or more parts or columns than the kind allows, with a column ",
+                  "Code": false
+                },
+                {
+                  "Text": "model.ValidateColumns",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses, with a quote the code does not hold exactly once, with a part whose ",
+                  "Code": false
+                },
+                {
+                  "Text": "Gaps",
+                  "Code": true
+                },
+                {
+                  "Text": " the state shows, or with parts the kind's whole check refuses, such as a unit two layers hold. It moves each quote's lines to where the quote sits now. A quote's ",
+                  "Code": false
+                },
+                {
+                  "Text": "symbol",
+                  "Code": true
+                },
+                {
+                  "Text": " is not checked. Each part records its writer: with ",
+                  "Code": false
+                },
+                {
+                  "Text": "--source",
+                  "Code": true
+                },
+                {
+                  "Text": " it is a human's, USER_STATED, else a reader's. ",
+                  "Code": false
+                },
+                {
+                  "Text": "retire",
+                  "Code": true
+                },
+                {
+                  "Text": " carries the stored figure's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Retired",
+                  "Code": true
+                },
+                {
+                  "Text": " parts forward with each stored part that is STALE. It keeps each one as its claim's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Retire",
+                  "Code": true
+                },
+                {
+                  "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part. For a table the cells compare by text whatever column holds them, so renaming a column does not make a retired row new. The refusal holds however many stores ago the part left the figure.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0003",
@@ -5831,7 +6508,127 @@
                 ]
               }
             ]
-          }
+          },
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Query resolution",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "query.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "find",
+                  "Code": true
+                },
+                {
+                  "Text": " takes a unit ID, a name, a file, a directory, a symbol or a phrase through ",
+                  "Code": false
+                },
+                {
+                  "Text": "topology.Find",
+                  "Code": true
+                },
+                {
+                  "Text": ". A match that is not exact prints the best five with reasons. ",
+                  "Code": false
+                },
+                {
+                  "Text": "explain",
+                  "Code": true
+                },
+                {
+                  "Text": " lists every parent claim when a unit has more than one, and marks each drifted or dead item. For a contract with entries it prints each entry's key, name, shape and need, with the units whose relations use it. ",
+                  "Code": false
+                },
+                {
+                  "Text": "entries_test.go",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "fields_test.go",
+                  "Code": true
+                },
+                {
+                  "Text": " drive entries through ",
+                  "Code": false
+                },
+                {
+                  "Text": "run",
+                  "Code": true
+                },
+                {
+                  "Text": " on a scratch repository, the second for a table's fields with their types, need, writers and readers: how sync stores them, the diff lines and the ",
+                  "Code": false
+                },
+                {
+                  "Text": "--check",
+                  "Code": true
+                },
+                {
+                  "Text": " verdict for each kind of entry change, an entry's note and its row on the page, and the extraction's refusals. ",
+                  "Code": false
+                },
+                {
+                  "Text": "impact",
+                  "Code": true
+                },
+                {
+                  "Text": " also seeds every other unit anchored at a queried path, and with ",
+                  "Code": false
+                },
+                {
+                  "Text": "--features",
+                  "Code": true
+                },
+                {
+                  "Text": " prints ",
+                  "Code": false
+                },
+                {
+                  "Text": "topology.ByFeature",
+                  "Code": true
+                },
+                {
+                  "Text": ": each feature the change reaches, what it holds that is reached, and the reached contracts it uses with the entries it names, then what no feature holds. ",
+                  "Code": false
+                },
+                {
+                  "Text": "explain",
+                  "Code": true
+                },
+                {
+                  "Text": " names the entries each drawn link it lists uses, so a page's contracts read with the endpoints it calls; ",
+                  "Code": false
+                },
+                {
+                  "Text": "byfeature_test.go",
+                  "Code": true
+                },
+                {
+                  "Text": " drives both, including a part of a page whose whole use of a contract keeps the page's use whole.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0006",
@@ -5845,7 +6642,527 @@
             "cmd/abbd/record.go statedFields",
             "cmd/abbd/understand.go understand"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Record writer",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "record.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "writer",
+                  "Code": true
+                },
+                {
+                  "Text": " is ",
+                  "Code": false
+                },
+                {
+                  "Text": "human",
+                  "Code": true
+                },
+                {
+                  "Text": " when ",
+                  "Code": false
+                },
+                {
+                  "Text": "--source",
+                  "Code": true
+                },
+                {
+                  "Text": " is given and ",
+                  "Code": false
+                },
+                {
+                  "Text": "reader",
+                  "Code": true
+                },
+                {
+                  "Text": " otherwise. Each writer's claim on an edge or a parent sits beside the others. ",
+                  "Code": false
+                },
+                {
+                  "Text": "recordRelation",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a reader's claim on an edge a human stated, and one on an edge the script already claims. With ",
+                  "Code": false
+                },
+                {
+                  "Text": "--phrase",
+                  "Code": true
+                },
+                {
+                  "Text": " on an edge that already shows, whoever's claim shows there, it stores only the writer's phrase note, which labels the line and is never a claim, and leaves every claim's evidence, via and origin as they were. On an edge that does not show yet it records the claim and the note. It refuses a reader's note that a human's mask hides, and a reader's claim on an edge a human's mask stands on, whatever its via, through ",
+                  "Code": false
+                },
+                {
+                  "Text": "Unit.RelationMasked",
+                  "Code": true
+                },
+                {
+                  "Text": ", so neither a phrase nor a new via brings back a retracted coupling. It checks the phrase against the via of every claim on the edge, so a phrase on the script's edge cannot restate the script's via. ",
+                  "Code": false
+                },
+                {
+                  "Text": "model.ValidatePhrase",
+                  "Code": true
+                },
+                {
+                  "Text": " checks the phrase at the command line. ",
+                  "Code": false
+                },
+                {
+                  "Text": "recordParent",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a directory group that sync made and a placement that makes a unit its own ancestor. A human's parent stores the script's parent as ",
+                  "Code": false
+                },
+                {
+                  "Text": "over",
+                  "Code": true
+                },
+                {
+                  "Text": ". When a higher claim still wins, ",
+                  "Code": false
+                },
+                {
+                  "Text": "recordParent",
+                  "Code": true
+                },
+                {
+                  "Text": " prints where the unit stays.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Live citation",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "record.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "citations",
+                  "Code": true
+                },
+                {
+                  "Text": " parses each ",
+                  "Code": false
+                },
+                {
+                  "Text": "PATH:LINES:QUOTE",
+                  "Code": true
+                },
+                {
+                  "Text": ", normalizes it with ",
+                  "Code": false
+                },
+                {
+                  "Text": "extract.NormalizeEvidence",
+                  "Code": true
+                },
+                {
+                  "Text": ", and refuses a quote the file it names does not hold now. A unit from ",
+                  "Code": false
+                },
+                {
+                  "Text": "record unit",
+                  "Code": true
+                },
+                {
+                  "Text": " has a reader's name and stays present until its evidence is dead. Its ",
+                  "Code": false
+                },
+                {
+                  "Text": "--parent",
+                  "Code": true
+                },
+                {
+                  "Text": " must be a present module or feature, and becomes the reader's parent claim on the unit's own evidence.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Refresh and retract",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "record.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "refresh",
+                  "Code": true
+                },
+                {
+                  "Text": " serves ",
+                  "Code": false
+                },
+                {
+                  "Text": "record evidence",
+                  "Code": true
+                },
+                {
+                  "Text": " on a unit, ",
+                  "Code": false
+                },
+                {
+                  "Text": "ID.parent",
+                  "Code": true
+                },
+                {
+                  "Text": " or an edge. It replaces the evidence of the reader's claim there. When only the supplement's claim is there, it adds a reader's claim above it, and a supplement unit becomes the reader's. A refreshed unit that is absent comes back unless it was retracted. ",
+                  "Code": false
+                },
+                {
+                  "Text": "retract",
+                  "Code": true
+                },
+                {
+                  "Text": " removes the writer's own claim on the target and masks each lower INFERRED claim on it, bound to that claim's content. On an edge that still shows after it, because the script's or a higher writer's claim holds it, it saves what it took, returns a ",
+                  "Code": false
+                },
+                {
+                  "Text": "partial",
+                  "Code": true
+                },
+                {
+                  "Text": " error that says so, as in ",
+                  "Code": false
+                },
+                {
+                  "Text": "retracted the phrase on X. The edge is the script's and stays",
+                  "Code": true
+                },
+                {
+                  "Text": ", and exits 1, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "run",
+                  "Code": true
+                },
+                {
+                  "Text": " still renders the blueprint for a ",
+                  "Code": false
+                },
+                {
+                  "Text": "partial",
+                  "Code": true
+                },
+                {
+                  "Text": ". A run that can change nothing, including one on a target with no claim left, says the target is already retracted and succeeds. It fails only when the claim left is one it may not hide, such as the script's.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Sentences",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "understand.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "stampSentences",
+                  "Code": true
+                },
+                {
+                  "Text": " runs in the shared sync path before the units are saved. It keeps the stamp a module's or feature's purpose and responsibility carried while their words stay the same, and stamps a sentence no stamp covers against the code as it is now, never a human's. ",
+                  "Code": false
+                },
+                {
+                  "Text": "understand ID FILE --sentence TEXT",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a text whose first section, by ",
+                  "Code": false
+                },
+                {
+                  "Text": "narrative.Sections",
+                  "Code": true
+                },
+                {
+                  "Text": ", runs over ",
+                  "Code": false
+                },
+                {
+                  "Text": "narrative.MaxSection",
+                  "Code": true
+                },
+                {
+                  "Text": ", and stores a reader's new responsibility stamped with the text's digest, unless a person stated the responsibility, which outranks it and stays; it is refused with a note or ",
+                  "Code": false
+                },
+                {
+                  "Text": "--restamp",
+                  "Code": true
+                },
+                {
+                  "Text": ".",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Understanding",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "understand.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): a reader's text for any module or feature (the usage names ",
+                  "Code": false
+                },
+                {
+                  "Text": "MOD-ID|FEAT-ID",
+                  "Code": true
+                },
+                {
+                  "Text": "), at any depth, stored INFERRED with the reader ",
+                  "Code": false
+                },
+                {
+                  "Text": "--reader",
+                  "Code": true
+                },
+                {
+                  "Text": " names, such as ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd reader",
+                  "Code": true
+                },
+                {
+                  "Text": " or ",
+                  "Code": false
+                },
+                {
+                  "Text": "pstack how 0.15.36",
+                  "Code": true
+                },
+                {
+                  "Text": ", the digest, ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.CodeFormat",
+                  "Code": true
+                },
+                {
+                  "Text": " and the per-anchor and per-quote hashes of ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.Stamp",
+                  "Code": true
+                },
+                {
+                  "Text": ". ",
+                  "Code": false
+                },
+                {
+                  "Text": "textModule",
+                  "Code": true
+                },
+                {
+                  "Text": " decides which units take a text, for ",
+                  "Code": false
+                },
+                {
+                  "Text": "understand",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "explainHow",
+                  "Code": true
+                },
+                {
+                  "Text": " and the orphan count in ",
+                  "Code": false
+                },
+                {
+                  "Text": "status",
+                  "Code": true
+                },
+                {
+                  "Text": ": any present module or feature. A module's digest reads its whole subtree, so a text on a module inside another describes that module's code, and the text of the module above it describes it too. ",
+                  "Code": false
+                },
+                {
+                  "Text": "understand",
+                  "Code": true
+                },
+                {
+                  "Text": " cleans the text with ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.CleanText",
+                  "Code": true
+                },
+                {
+                  "Text": " first, so a byte order mark, line endings and trailing blanks do not count, and refuses to store the same text again on changed code. After it stores a text, ",
+                  "Code": false
+                },
+                {
+                  "Text": "readText",
+                  "Code": true
+                },
+                {
+                  "Text": " prints each section over ",
+                  "Code": false
+                },
+                {
+                  "Text": "narrative.MaxSection",
+                  "Code": true
+                },
+                {
+                  "Text": " characters and each phrase that reads as history, and never refuses the text for them. ",
+                  "Code": false
+                },
+                {
+                  "Text": "explainHow",
+                  "Code": true
+                },
+                {
+                  "Text": " shows it with its reader as CURRENT or STALE. With ",
+                  "Code": false
+                },
+                {
+                  "Text": "--history",
+                  "Code": true
+                },
+                {
+                  "Text": ", under each reader's coupling, ",
+                  "Code": false
+                },
+                {
+                  "Text": "explain",
+                  "Code": true
+                },
+                {
+                  "Text": " prints ",
+                  "Code": false
+                },
+                {
+                  "Text": "recorded in",
+                  "Code": true
+                },
+                {
+                  "Text": " with the commit and pull request that first wrote its first quote into the From unit's file (",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.Recorded",
+                  "Code": true
+                },
+                {
+                  "Text": "). ",
+                  "Code": false
+                },
+                {
+                  "Text": "--restamp",
+                  "Code": true
+                },
+                {
+                  "Text": " stamps the stored text again without a new one, after the extraction moved what the module holds. ",
+                  "Code": false
+                },
+                {
+                  "Text": "mayRestamp",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a text stored in an older format, and otherwise allows a restamp only when ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.Changed",
+                  "Code": true
+                },
+                {
+                  "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0007",
@@ -5871,7 +7188,55 @@
             "cmd/abbd/setup.go readExtraction",
             "cmd/abbd/setup.go reseeded"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Determinism proof",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "setup.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "deterministic",
+                  "Code": true
+                },
+                {
+                  "Text": " runs the script three times and demands identical output. The third run sets new ",
+                  "Code": false
+                },
+                {
+                  "Text": "PYTHONHASHSEED",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "PERL_HASH_SEED",
+                  "Code": true
+                },
+                {
+                  "Text": " values. A mismatch reports the first differing line, and nothing is saved.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -5975,6 +7340,15 @@
               },
               {
                 "Text": " only exits 1 when the state, the blueprint, a module text, a note, a flow's step, a stack's layer or a table's row is STALE or a quote drifted.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The package is glue. The logic",
                 "Code": false
               }
             ]
@@ -6494,6 +7868,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Determinism proof",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -6650,6 +8033,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Live citation",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -6798,6 +8190,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Migrate",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -6871,6 +8272,15 @@
               },
               {
                 "Text": ". It writes nothing when the present units, their parents, or the shown relations with their origins would change.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Query resolution",
                 "Code": false
               }
             ]
@@ -6994,6 +8404,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Sentences",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -7026,7 +8445,23 @@
                 "Code": true
               },
               {
-                "Text": " stores a reader's new responsibility stamped with the text's digest, unless a person stated the responsibility, which outranks it and stays; it is refused with a note or ",
+                "Text": " refuses a text whose first section, by ",
+                "Code": false
+              },
+              {
+                "Text": "narrative.Sections",
+                "Code": true
+              },
+              {
+                "Text": ", runs over ",
+                "Code": false
+              },
+              {
+                "Text": "narrative.MaxSection",
+                "Code": true
+              },
+              {
+                "Text": ", and stores a reader's new responsibility stamped with the text's digest, unless a person stated the responsibility, which outranks it and stays; it is refused with a note or ",
                 "Code": false
               },
               {
@@ -7035,6 +8470,15 @@
               },
               {
                 "Text": ".",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Diff",
                 "Code": false
               }
             ]
@@ -7270,6 +8714,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Review",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -7359,6 +8812,15 @@
               },
               {
                 "Text": "), and always exits 0.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Evidence and status",
                 "Code": false
               }
             ]
@@ -7525,6 +8987,15 @@
               },
               {
                 "Text": " reports the readability of the texts that show beside a module, and skips the orphans.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Uncovered modules",
                 "Code": false
               }
             ]
@@ -7713,6 +9184,15 @@
               },
               {
                 "Text": " while the state is current, and leaves a merged state for sync.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Understanding",
                 "Code": false
               }
             ]
@@ -7910,7 +9390,25 @@
                 "Code": true
               },
               {
-                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone. A retract that moves a place of a quote up a rank changes that place's hash, so it blocks a restamp until a fresh text is stored. A refusal names up to five of them. A restamp keeps the text's hashes. ",
+                "Text": " finds nothing: every anchor and quote of the module now is one the text was written against, its code unchanged, and none of those is gone.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Understanding (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A retract that moves a place of a quote up a rank changes that place's hash, so it blocks a restamp until a fresh text is stored. A refusal names up to five of them. A restamp keeps the text's hashes. ",
                 "Code": false
               },
               {
@@ -7927,6 +9425,15 @@
               },
               {
                 "Text": " after it saves the units, and prints each old text that stays current and each one that goes STALE because the new digest reads code the old one never read, such as the second place of a quote cited twice in one file.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Notes",
                 "Code": false
               }
             ]
@@ -8132,9 +9639,23 @@
                 "Code": true
               },
               {
-                "Text": " holds the check, shared with storing a note, that the unit takes notes and lists the entry. ",
+                "Text": " holds the check, shared with storing a note, that the unit takes notes and lists the entry.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Notes (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "forget ID.SLOT[.KEY]",
                 "Code": true
@@ -8301,6 +9822,15 @@
               },
               {
                 "Text": " runs setup with a supplement whose coupling joins two script units by their refs, refuses one whose two refs name the same unit, and warns when a supplement ref shadows the script's.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures",
                 "Code": false
               }
             ]
@@ -8498,7 +10028,25 @@
                 "Code": true
               },
               {
-                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part. For a table the cells compare by text whatever column holds them, so renaming a column does not make a retired row new. The refusal holds however many stores ago the part left the figure. A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question, the column head and the caption must come back as written (",
+                "Text": " gives it, so a retired step keeps no calls. It forgets one whose code is back as written, one of whose own units left the state, or whose files are all gone. It refuses a reader's draft part that says a retired part's words, in any case or spacing and on any unit, and cites a file whose code changed under that part. For a table the cells compare by text whatever column holds them, so renaming a column does not make a retired row new. The refusal holds however many stores ago the part left the figure.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A human's store is not refused and clears the retired parts it says again. It cannot tell a reworded part from a re-read one. A human replaces any part. A reader may change a figure with a human's parts only once one is open, which means STALE on its own or named by a gap of the whole figure, such as two layers that hold one unit after it moved under another. Each other human part must come back as written and in its order, so it keeps the human's word. An open part that comes back as written keeps it too, and the question, the column head and the caption must come back as written (",
                 "Code": false
               },
               {
@@ -8571,6 +10119,15 @@
               },
               {
                 "Text": " lists each with its row, its ends and the relation's origin. Neither fails the check, since only a reader of the code can say whether the cell or the graph is wrong.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint",
                 "Code": false
               }
             ]
@@ -8744,7 +10301,25 @@
                 "Code": true
               },
               {
-                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures. On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures. The report also carries ",
+                "Text": " fixture with a debt file written for each case, and checks which gate fails by its message, not by the sums it measures.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "On Orca's src/ it checks that lint names the circled spot that still turns, the mobile/ line into the Orca runtime, that the top native/ and preload bridge lines and orca CLI's line to the bottom RPC methods chip, now straight, break nothing, and that the bottom edge's lines from desktop main to the connector contract and to native/, which main drops straight, still read as they do, so a change to them shows. Each named breach must name the box at its line's box end by unit ID, the last item of a line into a box and the first of a line out of one. It also checks the excess turns and steps that view measures. The report also carries ",
                 "Code": false
               },
               {
@@ -8864,7 +10439,25 @@
                 "Code": true
               },
               {
-                "Text": " leaves features' pages out. It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
+                "Text": " leaves features' pages out.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "It also holds orca src/'s report to the staircases it names and to the totals that view measures, so a routing change that moves them shows there, and since a road drawing is traced along its routes, a change to how lines are traced shows there too.",
                 "Code": false
               }
             ]
@@ -11830,6 +13423,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Supplement parent",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -12195,6 +13797,15 @@
               },
               {
                 "Text": " that names a path, an optional line range and a verbatim quote. This package only finds that text again and gives the item a status: live, drifted or dead. It never judges whether the coupling is real and never writes a file. The same tree always gets the same answer.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The package is one file, evidence.go",
                 "Code": false
               }
             ]
@@ -12737,6 +14348,15 @@
               },
               {
                 "Text": " returns a dead item unchecked, so dead is terminal. With no revision, a drifted item stays drifted.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Script evidence",
                 "Code": false
               }
             ]
@@ -13797,6 +15417,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Relation checks",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -13996,6 +15625,15 @@
               },
               {
                 "Text": " refuses entries outright: they are what the code spells, so only the script reports them.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Path normalization",
                 "Code": false
               }
             ]
@@ -14944,6 +16582,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Snapshot",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -15169,6 +16816,15 @@
               },
               {
                 "Text": " temp directory that is removed afterwards. Outside a repository it returns an empty string and no error.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Renames",
                 "Code": false
               }
             ]
@@ -15417,6 +17073,15 @@
               },
               {
                 "Text": " reads it under each reader's coupling, searching only the coupling's unit file.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "MergeBase",
                 "Code": false
               }
             ]
@@ -15950,6 +17615,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The package has one source file",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "p",
             "Parts": [
               {
@@ -16374,6 +18048,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "merge",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -16539,6 +18222,15 @@
               },
               {
                 "Text": ", the keys of the entries of its target it uses, onto the claim it makes, and a new unit takes the extraction's entries as they come. An entry has no identity apart from its contract and its key, so a renamed entry is one entry gone and one added.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "carry",
                 "Code": false
               }
             ]
@@ -17250,6 +18942,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The package exists to keep provenance",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "p",
             "Parts": [
               {
@@ -17934,6 +19635,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Fact",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -18304,6 +20014,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Slot and NoteRef",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -18401,6 +20120,15 @@
               },
               {
                 "Text": " and refuses an unknown slot, a keyed slot without a key, a key on any other slot, and a key outside lower-case letters, digits and hyphens.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Relation",
                 "Code": false
               }
             ]
@@ -18695,6 +20423,15 @@
               },
               {
                 "Text": " orders claims by end and then kind.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Entry",
                 "Code": false
               }
             ]
@@ -19062,6 +20799,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Precedence",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -19189,6 +20935,15 @@
               },
               {
                 "Text": " removes the claims of the given writers.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Mask",
                 "Code": false
               }
             ]
@@ -19360,6 +21115,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Resolve",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -19449,6 +21213,15 @@
               },
               {
                 "Text": " use it to check that the result is a tree.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures",
                 "Code": false
               }
             ]
@@ -19732,6 +21505,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Step",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -19885,6 +21667,15 @@
               },
               {
                 "Text": ", so a retired step is forgotten only when its own unit leaves.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Layer",
                 "Code": false
               }
             ]
@@ -20067,6 +21858,15 @@
               },
               {
                 "Text": " is no breach, since the lower unit serves a contract the upper layer homes. A relation within one layer, one that skips layers downward, and one with an end no layer holds are no breach.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Row",
                 "Code": false
               }
             ]
@@ -20542,7 +22342,119 @@
             "internal/screen/inside.go inferred",
             "internal/screen/inside.go inside"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "inside.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): one view built by ",
+                  "Code": false
+                },
+                {
+                  "Text": "(*overview).inside",
+                  "Code": true
+                },
+                {
+                  "Text": ", within the overview's 1320 pixel budget, or 920 for a narrow tactic. Its frame carries the module's contracts and dashed ",
+                  "Code": false
+                },
+                {
+                  "Text": "← name",
+                  "Code": true
+                },
+                {
+                  "Text": " or ",
+                  "Code": false
+                },
+                {
+                  "Text": "→ name",
+                  "Code": true
+                },
+                {
+                  "Text": " ports for units outside it met without one. Lines from outside units into inside units come in on top. A crowded side hands its least committed ports to the other side, and the frame never grows past the budget. It also holds ",
+                  "Code": false
+                },
+                {
+                  "Text": "Units",
+                  "Code": true
+                },
+                {
+                  "Text": " with one sentence each, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Unwired",
+                  "Code": true
+                },
+                {
+                  "Text": " contracts kept off the frame and grouped by a first word that three or more share, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inferred",
+                  "Code": true
+                },
+                {
+                  "Text": " couplings with an end in the module or a direct child, ",
+                  "Code": false
+                },
+                {
+                  "Text": "Up",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Trail",
+                  "Code": true
+                },
+                {
+                  "Text": ", and the ",
+                  "Code": false
+                },
+                {
+                  "Text": "Understanding",
+                  "Code": true
+                },
+                {
+                  "Text": " of the module the view is for. Every top-level module and every unit that holds others has a view, so a nested module that holds units shows its text below its own inside. One that holds none has no view, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": " puts its text on its ",
+                  "Code": false
+                },
+                {
+                  "Text": "InsideUnit",
+                  "Code": true
+                },
+                {
+                  "Text": " in the parent's view, where the page folds it under the unit's entry.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0036",
@@ -20555,7 +22467,127 @@
             "internal/screen/layout.go route",
             "internal/screen/layout.go textWidth"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "arrange",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "layered",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "layout.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "layered.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): the layered layout. It orders nodes to leave few edges pointing back (Eades, Lin and Smyth), ranks without those edges, and sets each node above what it uses. A node nothing uses sits just above the highest thing it uses, and nodes with no line gather on a bottom layer. On the overview, a stored stack with two layers of two boxes or more (",
+                  "Code": false
+                },
+                {
+                  "Text": "stackOf",
+                  "Code": true
+                },
+                {
+                  "Text": ") ranks the boxes it names by ",
+                  "Code": false
+                },
+                {
+                  "Text": "tier",
+                  "Code": true
+                },
+                {
+                  "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. ",
+                  "Code": false
+                },
+                {
+                  "Text": "huddle",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps a layer's boxes next to each other in their row after every ordering, so each layer's band holds no other box. Within a layer, the boxes a stored flow runs through take their places in the order of its steps (",
+                  "Code": false
+                },
+                {
+                  "Text": "lnode.step",
+                  "Code": true
+                },
+                {
+                  "Text": "), so the lead reads one way along each row; only a drawing with a stored stack moves. Each pair of places more than a row apart gets a ",
+                  "Code": false
+                },
+                {
+                  "Text": "chain",
+                  "Code": true
+                },
+                {
+                  "Text": " of dummies. ",
+                  "Code": false
+                },
+                {
+                  "Text": "order",
+                  "Code": true
+                },
+                {
+                  "Text": " sorts every row, chains included, by one ",
+                  "Code": false
+                },
+                {
+                  "Text": "tactic",
+                  "Code": true
+                },
+                {
+                  "Text": ", then sets a box joined to nothing last in its row. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": " lays each view of a unit out with every tactic, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "choose",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps a later tactic's drawing only where its ",
+                  "Code": false
+                },
+                {
+                  "Text": "cost",
+                  "Code": true
+                },
+                {
+                  "Text": " beats the best so far, which starts as the first tactic's.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0037",
@@ -20569,7 +22601,245 @@
             "internal/screen/overview.go planOverview",
             "internal/screen/overview.go top"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "overview",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "overview.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): the plan ",
+                  "Code": false
+                },
+                {
+                  "Text": "planOverview",
+                  "Code": true
+                },
+                {
+                  "Text": " builds and the insides reuse. ",
+                  "Code": false
+                },
+                {
+                  "Text": "top",
+                  "Code": true
+                },
+                {
+                  "Text": " lists the top-level units and the live relations between them, with the stored relations and origins each drawn edge stands for. Each top-level contract gets its ",
+                  "Code": false
+                },
+                {
+                  "Text": "providers",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "users",
+                  "Code": true
+                },
+                {
+                  "Text": ", and a module that provides a contract is not drawn as its user.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Drawing",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Box",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Port",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Wire",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "overview.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): one SVG picture with its coordinates set. A ",
+                  "Code": false
+                },
+                {
+                  "Text": "Box",
+                  "Code": true
+                },
+                {
+                  "Text": " is a top-level module or feature, an inside unit, or a loose contract. Its ",
+                  "Code": false
+                },
+                {
+                  "Text": "Href",
+                  "Code": true
+                },
+                {
+                  "Text": " opens a view the blueprint holds, and it stays empty when there is none. On the overview, ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipFor",
+                  "Code": true
+                },
+                {
+                  "Text": " makes one chip per set of contracts a drawn line carries, labelled with its one contract or with ",
+                  "Code": false
+                },
+                {
+                  "Text": "계약 N개",
+                  "Code": true
+                },
+                {
+                  "Text": " joined by a no-break space so ",
+                  "Code": false
+                },
+                {
+                  "Text": "shorten",
+                  "Code": true
+                },
+                {
+                  "Text": " keeps the word. A module whose chips need more than ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipWrap",
+                  "Code": true
+                },
+                {
+                  "Text": " wraps them into at most two rows instead of widening, and the last row folds what does not fit into one \"+N\" ",
+                  "Code": false
+                },
+                {
+                  "Text": "Port",
+                  "Code": true
+                },
+                {
+                  "Text": ". ",
+                  "Code": false
+                },
+                {
+                  "Text": "settle",
+                  "Code": true
+                },
+                {
+                  "Text": " then moves a single unfolded row of chips over the x their lines run at. A chip is at most ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipMax",
+                  "Code": true
+                },
+                {
+                  "Text": " wide: ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipLines",
+                  "Code": true
+                },
+                {
+                  "Text": " wraps a longer label onto more lines, broken after a separator or before a space, so it is never cut and never leaves its edge, and every chip in a row takes the row's height, which ",
+                  "Code": false
+                },
+                {
+                  "Text": "chipBand",
+                  "Code": true
+                },
+                {
+                  "Text": " sums for a box or a frame edge. On an inside frame, two ports that land on one spot share a chip, and its ",
+                  "Code": false
+                },
+                {
+                  "Text": "Keys",
+                  "Code": true
+                },
+                {
+                  "Text": " name every port it stands for. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Drawing.Relations",
+                  "Code": true
+                },
+                {
+                  "Text": " lists the pairs of places the view requested before routing, which the checker holds the ink to. A line's ink is drawn in pieces, its stub, the buses it rides and their drops, so ",
+                  "Code": false
+                },
+                {
+                  "Text": "route",
+                  "Code": true
+                },
+                {
+                  "Text": " also gives each request a ",
+                  "Code": false
+                },
+                {
+                  "Text": "Route",
+                  "Code": true
+                },
+                {
+                  "Text": " along its whole way (",
+                  "Code": false
+                },
+                {
+                  "Text": "routing.ways",
+                  "Code": true
+                },
+                {
+                  "Text": "), drawn unseen above the ink in its source's colour and taking no pointer, with arrowheads that are ",
+                  "Code": false
+                },
+                {
+                  "Text": "\u003cuse\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": " of heads painted in the route's own colour.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0038",
@@ -20582,7 +22852,79 @@
             "internal/screen/page.go page",
             "internal/screen/page.html"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Indexes",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "site.go",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "page.html",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "contractRows",
+                  "Code": true
+                },
+                {
+                  "Text": " lists every contract grouped by kind, IF, EVT, DATA, then CFG, and by name within a kind, each with its responsibility, else its purpose. A module's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": " carries its unit's purpose and responsibility, which its page prints under its heading as 왜 있는가 and 맡은 것, and an overview box's tooltip adds the responsibility, else the purpose. Each row names the module it sits in as its owner, and the units whose live relations provide and use it. Each is a ",
+                  "Code": false
+                },
+                {
+                  "Text": "Ref",
+                  "Code": true
+                },
+                {
+                  "Text": " to the unit's page when it has one, else to its row ",
+                  "Code": false
+                },
+                {
+                  "Text": "u-\u003cID\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": " in the unit index. ",
+                  "Code": false
+                },
+                {
+                  "Text": "units.html",
+                  "Code": true
+                },
+                {
+                  "Text": " lists every unit by ID with its kind, its parent, its responsibility or purpose, its anchors, and its signature and quotes folded, so the browser's find reaches any ID, name, path or symbol.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0039",
@@ -20594,7 +22936,253 @@
             "internal/screen/screen.go ActualFreshness",
             "internal/screen/screen.go BlueprintFreshness"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Input",
+                  "Code": true
+                },
+                {
+                  "Text": " / ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "screen.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "Input",
+                  "Code": true
+                },
+                {
+                  "Text": " is what ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": " reads, including each module's understanding and its code digest now. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": " leaves ",
+                  "Code": false
+                },
+                {
+                  "Text": "Tree",
+                  "Code": true
+                },
+                {
+                  "Text": ", the git snapshot, for the caller to fill. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": " is what ",
+                  "Code": false
+                },
+                {
+                  "Text": "Build",
+                  "Code": true
+                },
+                {
+                  "Text": " derives. It holds the unit catalogue, the ",
+                  "Code": false
+                },
+                {
+                  "Text": "Overview",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Links",
+                  "Code": true
+                },
+                {
+                  "Text": " between two contracts listed as text, one ",
+                  "Code": false
+                },
+                {
+                  "Text": "Inside",
+                  "Code": true
+                },
+                {
+                  "Text": " per view, the overview's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Focus",
+                  "Code": true
+                },
+                {
+                  "Text": " views, every live relation as ",
+                  "Code": false
+                },
+                {
+                  "Text": "[]Line",
+                  "Code": true
+                },
+                {
+                  "Text": " for ",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.json",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "graph.go",
+                  "Code": true
+                },
+                {
+                  "Text": "), and the extraction command the page footer names.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Freshness",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "screen.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "ActualFreshness",
+                  "Code": true
+                },
+                {
+                  "Text": " compares the working-tree snapshot with the synced fingerprint. ",
+                  "Code": false
+                },
+                {
+                  "Text": "BlueprintFreshness",
+                  "Code": true
+                },
+                {
+                  "Text": " compares the state's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Blueprint",
+                  "Code": true
+                },
+                {
+                  "Text": ", the inputs hash the blueprint was rendered from, with the inputs hash now. It also compares the state's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rendered",
+                  "Code": true
+                },
+                {
+                  "Text": " with ",
+                  "Code": false
+                },
+                {
+                  "Text": "Input.Rendered",
+                  "Code": true
+                },
+                {
+                  "Text": ", the ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.BlueprintHash",
+                  "Code": true
+                },
+                {
+                  "Text": " of the files there now that ",
+                  "Code": false
+                },
+                {
+                  "Text": "Load",
+                  "Code": true
+                },
+                {
+                  "Text": " reads, so a page missing, added, edited or left from an older render reads STALE, a module's own page included. Either is ",
+                  "Code": false
+                },
+                {
+                  "Text": "UNKNOWN",
+                  "Code": true
+                },
+                {
+                  "Text": " when a side is missing, and either is ",
+                  "Code": false
+                },
+                {
+                  "Text": "STALE",
+                  "Code": true
+                },
+                {
+                  "Text": " when the state is ",
+                  "Code": false
+                },
+                {
+                  "Text": "Merged",
+                  "Code": true
+                },
+                {
+                  "Text": ", since a merged state's values match neither the merged tree nor its inputs. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Model",
+                  "Code": true
+                },
+                {
+                  "Text": " holds no freshness verdict and no value of the sync, so a render changes only with the data.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         },
         {
           "ID": "MOD-0040",
@@ -20606,7 +23194,175 @@
             "internal/screen/words.go blocks",
             "internal/screen/words.go spans"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Understanding",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "words.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): a how text cut into ",
+                  "Code": false
+                },
+                {
+                  "Text": "Block",
+                  "Code": true
+                },
+                {
+                  "Text": "s of headings, list items, paragraphs, pipe tables and fenced code, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Span",
+                  "Code": true
+                },
+                {
+                  "Text": "s of plain, ",
+                  "Code": false
+                },
+                {
+                  "Text": "code",
+                  "Code": true
+                },
+                {
+                  "Text": " and bold text. ",
+                  "Code": false
+                },
+                {
+                  "Text": "blocks",
+                  "Code": true
+                },
+                {
+                  "Text": " reads the text through ",
+                  "Code": false
+                },
+                {
+                  "Text": "narrative.Lines",
+                  "Code": true
+                },
+                {
+                  "Text": ", so the page splits it at the headings the readability report counts, and a ",
+                  "Code": false
+                },
+                {
+                  "Text": "#",
+                  "Code": true
+                },
+                {
+                  "Text": " or ",
+                  "Code": false
+                },
+                {
+                  "Text": "|",
+                  "Code": true
+                },
+                {
+                  "Text": " line inside a fence stays code. A fenced block becomes one block of kind ",
+                  "Code": false
+                },
+                {
+                  "Text": "pre",
+                  "Code": true
+                },
+                {
+                  "Text": ", whose ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": " holds its lines as written. A table's ",
+                  "Code": false
+                },
+                {
+                  "Text": "Rows",
+                  "Code": true
+                },
+                {
+                  "Text": " start with its header, drop the rule line and keep an escaped ",
+                  "Code": false
+                },
+                {
+                  "Text": "\\|",
+                  "Code": true
+                },
+                {
+                  "Text": " in its cell. It is marked ",
+                  "Code": false
+                },
+                {
+                  "Text": "Stale",
+                  "Code": true
+                },
+                {
+                  "Text": " when its stored digest differs from ",
+                  "Code": false
+                },
+                {
+                  "Text": "store.ModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": ", which hashes the files of the module and of every unit under it at any depth, and the lines around the quotes they cite in other files. The template draws it through ",
+                  "Code": false
+                },
+                {
+                  "Text": "howhead",
+                  "Code": true
+                },
+                {
+                  "Text": ", which marks it a reader's account, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "howtext",
+                  "Code": true
+                },
+                {
+                  "Text": " in both places, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "howtext",
+                  "Code": true
+                },
+                {
+                  "Text": " draws its blocks with the ",
+                  "Code": false
+                },
+                {
+                  "Text": "blocks",
+                  "Code": true
+                },
+                {
+                  "Text": " template the notes use too. It escapes the text and never trusts its markup. A module with no text gets one line that says so and names the ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd understand",
+                  "Code": true
+                },
+                {
+                  "Text": " command that stores one, and a unit with no responsibility line shows none.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -20926,6 +23682,15 @@
               },
               {
                 "Text": ", never writes the topology, and draws no box the store lacks, apart from a focus view's twin.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The overview draws each top-level module",
                 "Code": false
               }
             ]
@@ -21263,6 +24028,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Drawing / Box / Port / Wire",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -21439,7 +24213,25 @@
                 "Code": true
               },
               {
-                "Text": " of heads painted in the route's own colour. A route turns where its line's ink turns, so a line that rides a bus past its drop and back shows that detour lit too, and ",
+                "Text": " of heads painted in the route's own colour.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Drawing / Box / Port / Wire (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A route turns where its line's ink turns, so a line that rides a bus past its drop and back shows that detour lit too, and ",
                 "Code": false
               },
               {
@@ -21504,6 +24296,15 @@
               },
               {
                 "Text": " lightens the dots only climbing lines meet at.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lead / Zone / dress",
                 "Code": false
               }
             ]
@@ -21633,7 +24434,25 @@
                 "Code": true
               },
               {
-                "Text": "). On a stored flow's lead it is sought from the hop's arriving end back, so the numbers stand by the boxes the flow reaches, and once the bands are set (",
+                "Text": ").",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lead / Zone / dress (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "On a stored flow's lead it is sought from the hop's arriving end back, so the numbers stand by the boxes the flow reaches, and once the bands are set (",
                 "Code": false
               },
               {
@@ -21737,7 +24556,25 @@
                 "Code": true
               },
               {
-                "Text": ", so a quiet view's key draws the bypass grey. Each module's ",
+                "Text": ", so a quiet view's key draws the bypass grey.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lead / Zone / dress (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "Each module's ",
                 "Code": false
               },
               {
@@ -21761,7 +24598,71 @@
                 "Code": true
               },
               {
-                "Text": " puts one note above the list instead of a badge on each. A stamped purpose or responsibility (",
+                "Text": " puts one note above the list instead of a badge on each. A text's ",
+                "Code": false
+              },
+              {
+                "Text": "Understanding",
+                "Code": true
+              },
+              {
+                "Text": " carries its first section as ",
+                "Code": false
+              },
+              {
+                "Text": "Lead",
+                "Code": true
+              },
+              {
+                "Text": ", which the page shows (ending where ",
+                "Code": false
+              },
+              {
+                "Text": "narrative.Sections",
+                "Code": true
+              },
+              {
+                "Text": " ends it, at the first heading when prose comes before it), and the rest as ",
+                "Code": false
+              },
+              {
+                "Text": "Rest",
+                "Code": true
+              },
+              {
+                "Text": ", which it folds (",
+                "Code": false
+              },
+              {
+                "Text": "split",
+                "Code": true
+              },
+              {
+                "Text": "). ",
+                "Code": false
+              },
+              {
+                "Text": "concepts",
+                "Code": true
+              },
+              {
+                "Text": " sets each list item of the module's text that names a file an inside unit is anchored at, or the unit's ID, beside that unit as its ",
+                "Code": false
+              },
+              {
+                "Text": "Concepts",
+                "Code": true
+              },
+              {
+                "Text": ", but only when exactly one inside unit matches, so a shared file name such as ",
+                "Code": false
+              },
+              {
+                "Text": "mod.rs",
+                "Code": true
+              },
+              {
+                "Text": " ties nothing. A stamped purpose or responsibility (",
                 "Code": false
               },
               {
@@ -21873,9 +24774,23 @@
                 "Code": true
               },
               {
-                "Text": " tints an exit chip 15% toward it, writing it in that colour drawn 20% toward the ink, and outlines an entry chip in it, and a chip on a filled box keeps a panel-coloured border. ",
+                "Text": " tints an exit chip 15% toward it, writing it in that colour drawn 20% toward the ink, and outlines an entry chip in it, and a chip on a filled box keeps a panel-coloured border.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lead / Zone / dress (4)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "zoneWidth",
                 "Code": true
@@ -21906,6 +24821,15 @@
               },
               {
                 "Text": "), the colour hover lights its lines in, and darkens a filled box instead; a focus view's centre box keeps its weight. It also draws a bypass at the 1.5px of any other line, so its open head marks it without the weight.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered",
                 "Code": false
               }
             ]
@@ -22023,7 +24947,25 @@
                 "Code": true
               },
               {
-                "Text": " beats the best so far, which starts as the first tactic's. The overview keeps the plain order of its rows, since every module's page holds a focus view seated by it, but ",
+                "Text": " beats the best so far, which starts as the first tactic's.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "The overview keeps the plain order of its rows, since every module's page holds a focus view seated by it, but ",
                 "Code": false
               },
               {
@@ -22151,9 +25093,23 @@
                 "Code": true
               },
               {
-                "Text": " compares first. ",
+                "Text": " compares first.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "cost.beats",
                 "Code": true
@@ -22247,7 +25203,25 @@
                 "Code": true
               },
               {
-                "Text": " holds a one-box view and a three-row view to that guard, and shows the three-row view takes lanes once its chips fit. A ",
+                "Text": " holds a one-box view and a three-row view to that guard, and shows the three-row view takes lanes once its chips fit.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (4)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A ",
                 "Code": false
               },
               {
@@ -22335,7 +25309,25 @@
                 "Code": true
               },
               {
-                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip. A ",
+                "Text": " then stands such a chip off centre, back to where its line still meets its edge 4px in, when the chip before it would push it off its line, and the chips before it give way while their own lines still meet them. Two chips over one box whose lines share a chain 16px apart then stand edge to edge over their lanes, and both lines drop straight. The draw closure skips it for a view with no such chip.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (5)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A ",
                 "Code": false
               },
               {
@@ -22431,9 +25423,23 @@
                 "Code": true
               },
               {
-                "Text": " holds it. ",
+                "Text": " holds it.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (6)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "choose",
                 "Code": true
@@ -22575,9 +25581,23 @@
                 "Code": true
               },
               {
-                "Text": " treats each box and each straight run of a chain as one block, Brandes and Köpf style. Each chain, longest first, becomes as few runs as it can: a run grows down while the order holds and the drawing fits its budget, found by halving. ",
+                "Text": " treats each box and each straight run of a chain as one block, Brandes and Köpf style. Each chain, longest first, becomes as few runs as it can: a run grows down while the order holds and the drawing fits its budget, found by halving.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "arrange / layered (7)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "shorten",
                 "Code": true
@@ -22640,6 +25660,15 @@
               },
               {
                 "Text": " packs each row around the focus on one vertical axis.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "route",
                 "Code": false
               }
             ]
@@ -22717,7 +25746,25 @@
                 "Code": true
               },
               {
-                "Text": " finds it beats the bundled one. A line that leaves its departure trunk where the trunk ends runs on at the trunk's x in the next row unless another line steps down off that trunk in the same gap, and on a chain from the frame whose lanes carry one chip's lines of more than one kind, the lanes spread over the chain's width so two stems never run side by side. A chain no line uses keeps no room, a passing line keeps off the ",
+                "Text": " finds it beats the bundled one. A line that leaves its departure trunk where the trunk ends runs on at the trunk's x in the next row unless another line steps down off that trunk in the same gap, and on a chain from the frame whose lanes carry one chip's lines of more than one kind, the lanes spread over the chain's width so two stems never run side by side.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "route (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A chain no line uses keeps no room, a passing line keeps off the ",
                 "Code": false
               },
               {
@@ -22757,7 +25804,25 @@
                 "Code": true
               },
               {
-                "Text": " finds it beats the other. Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Where a pair steps down on the trunk, a line whose end lies under the trunk in the same gap keeps the trunk's x and runs straight on down. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
+                "Text": " finds it beats the other.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "route (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "Otherwise they step down above the lead line's end, or at the clear x nearest it on the trunk's side, so no line rides past its drop and comes back. Where a pair steps down on the trunk, a line whose end lies under the trunk in the same gap keeps the trunk's x and runs straight on down. Two or more lines of one kind into one box edge share an arrival bus, unless they all ride one departure bus into different boxes, and boxes in one row share one only when exactly the same places reach them. In a focus view (",
                 "Code": false
               },
               {
@@ -22781,7 +25846,25 @@
                 "Code": true
               },
               {
-                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. On any layout a slot no pin holds keeps between the pinned slots on either side of it, with room for the slots between, when that room is there, and only then steps off the chains passing the next row: otherwise a line that took the middle of a box's edge stepped onto the chain a pinned line drops down, and the order pushed the pinned line off it. Route and lint read hubs with one helper, ",
+                "Text": " spreads the slots no pin holds over the room between the pins, so the order never pushes a pinned line off its x, and moves a bus that has no side left for its count into the empty room past the next pin. On any layout a slot no pin holds keeps between the pinned slots on either side of it, with room for the slots between, when that room is there, and only then steps off the chains passing the next row: otherwise a line that took the middle of a box's edge stepped onto the chain a pinned line drops down, and the order pushed the pinned line off it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "route (4)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "Route and lint read hubs with one helper, ",
                 "Code": false
               },
               {
@@ -22877,7 +25960,25 @@
                 "Code": true
               },
               {
-                "Text": " finds a step onto an arrival track at the nearest clear x; where that x would fall past the line's end or before its trunk, the line steps at its trunk anyway unless something in its own gap holds that x, a step in another gap holding it only when that step is no straight step down its own trunk. A line that steps onto an arrival bus off a departure trunk it leads down the chain the bus's lead takes leads that bus instead, so the drop stands under its step and it runs straight on, and the bus's other lines on that chain join late off it where nothing stands within 12px; ",
+                "Text": " finds a step onto an arrival track at the nearest clear x; where that x would fall past the line's end or before its trunk, the line steps at its trunk anyway unless something in its own gap holds that x, a step in another gap holding it only when that step is no straight step down its own trunk.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "route (5)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A line that steps onto an arrival bus off a departure trunk it leads down the chain the bus's lead takes leads that bus instead, so the drop stands under its step and it runs straight on, and the bus's other lines on that chain join late off it where nothing stands within 12px; ",
                 "Code": false
               },
               {
@@ -22995,6 +26096,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "confluent / roads",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -23091,7 +26201,25 @@
                 "Code": true
               },
               {
-                "Text": "). A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, no line's end comes to lie beside a line of another kind, dotting or end shape wherever on the track it lands (",
+                "Text": ").",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "confluent / roads (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A move stays only where no route passes or runs along a box, folds, turns back or gains a jog, no line's end comes to lie beside a line of another kind, dotting or end shape wherever on the track it lands (",
                 "Code": false
               },
               {
@@ -23132,6 +26260,15 @@
               },
               {
                 "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "junctions / anchor",
                 "Code": false
               }
             ]
@@ -23250,6 +26387,15 @@
               },
               {
                 "Text": " never read the counts.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "mark / paint / gaps / labels",
                 "Code": false
               }
             ]
@@ -23391,9 +26537,23 @@
                 "Code": true
               },
               {
-                "Text": " holds joined boxes to different colours. ",
+                "Text": " holds joined boxes to different colours.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "mark / paint / gaps / labels (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "gaps",
                 "Code": true
@@ -23455,7 +26615,25 @@
                 "Code": true
               },
               {
-                "Text": " will give its own colour, so a word beside a drop never reads as the track's. The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
+                "Text": " will give its own colour, so a word beside a drop never reads as the track's.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "mark / paint / gaps / labels (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "The word is the phrase every relation the line stands for shares, else the phrase the most of them carry, the first by name among equals, with 등, else the ",
                 "Code": false
               },
               {
@@ -23536,6 +26714,15 @@
               },
               {
                 "Text": " holds each word upright, on the canvas, beside its own line and off everything else.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Inside",
                 "Code": false
               }
             ]
@@ -23651,6 +26838,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Focus",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -23748,6 +26944,15 @@
               },
               {
                 "Text": " hold both rules.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Freshness",
                 "Code": false
               }
             ]
@@ -23858,6 +27063,15 @@
               },
               {
                 "Text": " holds no freshness verdict and no value of the sync, so a render changes only with the data.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Understanding",
                 "Code": false
               }
             ]
@@ -24029,6 +27243,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Note",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -24078,6 +27301,15 @@
               },
               {
                 "Text": ", or under its entry in its parent's inside when it has none. A contract's go in the inside of its home: the module it sits in when that module provides it, else the provider whose provides relation, its own or one of a unit inside it, rests on the strongest origin, so a reader's coupling never moves a contract away from the provider the code shows. A unit no inside shows keeps its notes on its row of the unit list.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Entries",
                 "Code": false
               }
             ]
@@ -24140,6 +27372,15 @@
               },
               {
                 "Text": " says a row has a note: only then does the table carry a note column, and it starts open only when it also has 20 rows or fewer.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "site / Files",
                 "Code": false
               }
             ]
@@ -24330,6 +27571,15 @@
               },
               {
                 "Text": ", all from the model alone, so the same store renders the same bytes whatever sync wrote them.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Pages",
                 "Code": false
               }
             ]
@@ -24549,6 +27799,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Indexes",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -24676,6 +27935,15 @@
               },
               {
                 "Text": " checks that every link opens a page and a section that exist.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures",
                 "Code": false
               }
             ]
@@ -25001,7 +28269,25 @@
                 "Code": true
               },
               {
-                "Text": " says, and its page says 근거 유지 or 근거 어긋남. A text's ",
+                "Text": " says, and its page says 근거 유지 or 근거 어긋남.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "A text's ",
                 "Code": false
               },
               {
@@ -25042,6 +28328,15 @@
               },
               {
                 "Text": " draws a flow as a numbered list, a stack as a list of bands and a table as an HTML table, all of which wrap every line, and lists every figure by its question on the overview. At 560px and below a lane's unit and a band's name stand above their contents, and a table's rows fold to one card each, the row's unit across its top and every filled cell under its column's label.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Real states",
                 "Code": false
               }
             ]
@@ -25104,6 +28399,15 @@
               },
               {
                 "Text": " measures a small hand-written drawing whose chips leave their box and the canvas, so the escaped-chip count cannot read 0 unnoticed.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint",
                 "Code": false
               }
             ]
@@ -25261,9 +28565,23 @@
                 "Code": true
               },
               {
-                "Text": " for each moved chip), so the chooser and the gate weigh a drawing alike, and the placement debt counts the breaches of the placement criteria. ",
+                "Text": " for each moved chip), so the chooser and the gate weigh a drawing alike, and the placement debt counts the breaches of the placement criteria.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "lay",
                 "Code": true
@@ -25373,9 +28691,23 @@
                 "Code": true
               },
               {
-                "Text": " adds the per-view totals. ",
+                "Text": " adds the per-view totals.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (3)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "gate.go",
                 "Code": true
@@ -25477,9 +28809,23 @@
                 "Code": true
               },
               {
-                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals. ",
+                "Text": " holds the tee and the excess-turn ceilings each to refuse a trade the weighed sum alone would buy, and a page to refuse any rise of its paged totals.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (4)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "busy.go",
                 "Code": true
@@ -25613,9 +28959,23 @@
                 "Code": true
               },
               {
-                "Text": ") holds each ×N to rule 22: within reach of one stretch, clear of the next nearest, and nearer the ink of its own wire than any other wire's. ",
+                "Text": ") holds each ×N to rule 22: within reach of one stretch, clear of the next nearest, and nearer the ink of its own wire than any other wire's.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lint (5)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "readSVG",
                 "Code": true
@@ -25638,6 +28998,15 @@
               },
               {
                 "Text": " holds the renderer's traced self overview to the hand-laid reference on every count but the most crossings of one path, where the renderer draws fewer (4 to 6) and is pinned at 4 instead.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Levels",
                 "Code": false
               }
             ]
@@ -26019,7 +29388,7 @@
           "Kind": "consumes",
           "Via": "data",
           "Quotes": [
-            "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: blocks(u.Text)}\""
+            "internal/screen/screen.go \"return \u0026Understanding{Reader: u.Reader, Stale: u.Digest != in.Digests[id], Blocks: bs, Lead: lead, Rest: rest}\""
           ]
         },
         {
@@ -26161,7 +29530,527 @@
             "internal/store/understanding.go",
             "internal/store/understanding.go ModuleDigest"
           ],
-          "Understanding": null
+          "Understanding": null,
+          "Concepts": [
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Understanding",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "understanding.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): a reader's Overview and Key Concepts for one module or feature, at ",
+                  "Code": false
+                },
+                {
+                  "Text": "UnderstandingFile",
+                  "Code": true
+                },
+                {
+                  "Text": " from the project root, with ",
+                  "Code": false
+                },
+                {
+                  "Text": "Unit",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Origin",
+                  "Code": true
+                },
+                {
+                  "Text": ", the ",
+                  "Code": false
+                },
+                {
+                  "Text": "Reader",
+                  "Code": true
+                },
+                {
+                  "Text": " who wrote it (left out when none was named), ",
+                  "Code": false
+                },
+                {
+                  "Text": "Digest",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "Format",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": ", the hash of each anchor and quote the digest read when the text was written, in frontmatter and the text as the body. ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd understand",
+                  "Code": true
+                },
+                {
+                  "Text": " writes it as INFERRED, for a module or a feature at any depth. ",
+                  "Code": false
+                },
+                {
+                  "Text": "SaveUnderstanding",
+                  "Code": true
+                },
+                {
+                  "Text": " refuses a text with an empty digest, which would read current whatever the code did. ",
+                  "Code": false
+                },
+                {
+                  "Text": "CleanText",
+                  "Code": true
+                },
+                {
+                  "Text": " strips a leading byte order mark and gives every text LF line endings and no trailing blanks, on save, on load and before ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd understand",
+                  "Code": true
+                },
+                {
+                  "Text": " compares a new text with the stored one.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "codebase",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "understanding.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): one command's read of the project's code. It lists ",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.WorkingFiles",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "gitx.Gitlinks",
+                  "Code": true
+                },
+                {
+                  "Text": " once, ",
+                  "Code": false
+                },
+                {
+                  "Text": ".abbd/",
+                  "Code": true
+                },
+                {
+                  "Text": " left out, or walks the disk outside a repository. git lists an untracked repository inside the project as its directory, with a trailing slash, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "list",
+                  "Code": true
+                },
+                {
+                  "Text": " walks that directory instead. ",
+                  "Code": false
+                },
+                {
+                  "Text": "walk",
+                  "Code": true
+                },
+                {
+                  "Text": " skips a ",
+                  "Code": false
+                },
+                {
+                  "Text": ".git",
+                  "Code": true
+                },
+                {
+                  "Text": " directory and leaves out a ",
+                  "Code": false
+                },
+                {
+                  "Text": ".git",
+                  "Code": true
+                },
+                {
+                  "Text": " file, the gitfile of a worktree or submodule checkout, while still walking the files beside it. It hashes each path once, so ",
+                  "Code": false
+                },
+                {
+                  "Text": "status",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "sync",
+                  "Code": true
+                },
+                {
+                  "Text": " and the blueprint read each file once however many texts they check. ",
+                  "Code": false
+                },
+                {
+                  "Text": "read",
+                  "Code": true
+                },
+                {
+                  "Text": " gives a file with LF endings and a submodule as ",
+                  "Code": false
+                },
+                {
+                  "Text": "submodule \u003ccommit\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": " from the index, so an edit inside a submodule counts once it is committed there and staged.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "moduleCode",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "understanding.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): the code a module's text describes. It collects the module and every present unit under it at any depth, and takes each anchor once. A file anchor reads the file. A directory anchor reads the paths git lists under it, a submodule as one path. When git lists nothing there, ",
+                  "Code": false
+                },
+                {
+                  "Text": "under",
+                  "Code": true
+                },
+                {
+                  "Text": " falls back to the enclosing submodule's pin or, for an ignored directory, to the files on disk, and marks the anchor ",
+                  "Code": false
+                },
+                {
+                  "Text": "fallback",
+                  "Code": true
+                },
+                {
+                  "Text": ". An anchor that extraction derived from the unit's own evidence does not count as a whole file. The cited quotes count in files no anchor covers.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Stamp",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "ModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": " and ",
+                  "Code": false
+                },
+                {
+                  "Text": "Changed",
+                  "Code": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": "understanding.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "Stamp",
+                  "Code": true
+                },
+                {
+                  "Text": " returns the ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": " map and the digest over it. A file anchor maps to its file's hash, a directory anchor to one hash of every path and hash under it, and each place a quote is cited to the hash of ",
+                  "Code": false
+                },
+                {
+                  "Text": "evidence.Checker.Around",
+                  "Code": true
+                },
+                {
+                  "Text": ", the quoted lines and 5 on each side wherever they sit now. ",
+                  "Code": false
+                },
+                {
+                  "Text": "quotes",
+                  "Code": true
+                },
+                {
+                  "Text": " orders the places of one quote in a file by line, and the key is ",
+                  "Code": false
+                },
+                {
+                  "Text": "path#quote-\u003chash\u003e",
+                  "Code": true
+                },
+                {
+                  "Text": ", where the hash covers the quote and, from the second place on, which place it is. Counting places rather than lines keeps a key when code above the quote moves it down. An edit elsewhere in a shared file such as ",
+                  "Code": false
+                },
+                {
+                  "Text": "CLAUDE.md",
+                  "Code": true
+                },
+                {
+                  "Text": " changes neither. The digest is the first 16 hex characters of a SHA-256 over the sorted map, so it reads exactly what ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": " records. ",
+                  "Code": false
+                },
+                {
+                  "Text": "ModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": " is that digest. A text whose ",
+                  "Code": false
+                },
+                {
+                  "Text": "Digest",
+                  "Code": true
+                },
+                {
+                  "Text": " differs shows as STALE in ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd status",
+                  "Code": true
+                },
+                {
+                  "Text": ", ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd explain",
+                  "Code": true
+                },
+                {
+                  "Text": " and the blueprint. ",
+                  "Code": false
+                },
+                {
+                  "Text": "Changed",
+                  "Code": true
+                },
+                {
+                  "Text": " lists what blocks ",
+                  "Code": false
+                },
+                {
+                  "Text": "abbd understand --restamp",
+                  "Code": true
+                },
+                {
+                  "Text": ": an anchor or quote now whose hash differs from ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": ", naming a directory anchor as code under it, one missing from ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": ", and one in ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": " whose path is gone. One that left the module while its path still exists does not block it. A place's key counts its rank among the places cited, so when the unit citing an earlier place leaves, the place left takes that place's key and blocks a restamp. The hashes cannot show which code a place read before: a place can also take another's lines when its own quote is edited away or when code is swapped. So only a fresh text clears it.",
+                  "Code": false
+                }
+              ]
+            },
+            {
+              "Kind": "li",
+              "Parts": [
+                {
+                  "Text": "Digest upgrade",
+                  "Code": false,
+                  "Bold": true
+                },
+                {
+                  "Text": " (",
+                  "Code": false
+                },
+                {
+                  "Text": "understanding.go",
+                  "Code": true
+                },
+                {
+                  "Text": "): ",
+                  "Code": false
+                },
+                {
+                  "Text": "UpgradeUnderstandings",
+                  "Code": true
+                },
+                {
+                  "Text": ", which ",
+                  "Code": false
+                },
+                {
+                  "Text": "syncActual",
+                  "Code": true
+                },
+                {
+                  "Text": " runs, looks at each text not in ",
+                  "Code": false
+                },
+                {
+                  "Text": "CodeFormat",
+                  "Code": true
+                },
+                {
+                  "Text": ". A text with no ",
+                  "Code": false
+                },
+                {
+                  "Text": "Code",
+                  "Code": true
+                },
+                {
+                  "Text": " came from ABBD 0.6, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "legacyModuleDigest",
+                  "Code": true
+                },
+                {
+                  "Text": " recomputes its digest over the whole files cited by a module and its direct children. A format 1 text recorded a hash per file, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "format1Digest",
+                  "Code": true
+                },
+                {
+                  "Text": " recomputes its digest, where a directory git lists nothing under read nothing. A format 2 text recorded the hashes ",
+                  "Code": false
+                },
+                {
+                  "Text": "Stamp",
+                  "Code": true
+                },
+                {
+                  "Text": " records now, except that ",
+                  "Code": false
+                },
+                {
+                  "Text": "quotesOnce",
+                  "Code": true
+                },
+                {
+                  "Text": " kept one place of a quote cited at several, and ",
+                  "Code": false
+                },
+                {
+                  "Text": "stampQuotes",
+                  "Code": true
+                },
+                {
+                  "Text": " recomputes its digest that way. When the old digest matches and read every file and every quoted place the new one reads, the text is stamped again in the current format and stays current. When it matches but the new digest reads more, such as a fallback directory or the second place of a quote cited twice, the text is returned as widened, keeps its stamp and reads STALE. A text the old digest called STALE stays STALE.",
+                  "Code": false
+                }
+              ]
+            }
+          ]
         }
       ],
       "Understanding": {
@@ -26393,6 +30282,15 @@
               },
               {
                 "Text": " type.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "The store guards what it keeps",
                 "Code": false
               }
             ]
@@ -26936,6 +30834,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "State",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -27141,6 +31048,15 @@
               },
               {
                 "Text": " uses it.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "InputsHash",
                 "Code": false
               }
             ]
@@ -27406,6 +31322,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Understanding",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -27511,6 +31436,15 @@
               },
               {
                 "Text": " compares a new text with the stored one.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Note",
                 "Code": false
               }
             ]
@@ -27746,6 +31680,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "codebase",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -27889,6 +31832,15 @@
               },
               {
                 "Text": ". An anchor that extraction derived from the unit's own evidence does not count as a whole file. The cited quotes count in files no anchor covers.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Stamp, ModuleDigest and Changed",
                 "Code": false
               }
             ]
@@ -28060,6 +32012,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Digest upgrade",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -28200,6 +32161,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "LintDebt",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -28257,6 +32227,15 @@
               },
               {
                 "Text": " writes it under a comment that says what the file is. No page draws it, so it is no input of the blueprint.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures",
                 "Code": false
               }
             ]
@@ -28518,9 +32497,23 @@
                 "Code": true
               },
               {
-                "Text": " too, so a command can drop one whose code is back as it was written and refuse a part that repeats one on a file whose code changed. ",
+                "Text": " too, so a command can drop one whose code is back as it was written and refuse a part that repeats one on a file whose code changed.",
                 "Code": false
-              },
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Figures (2)",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
               {
                 "Text": "encodeFigure",
                 "Code": true
@@ -30279,6 +34272,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Explain / Explanation",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -30489,6 +34491,15 @@
             ]
           },
           {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "ByFeature / Feature",
+                "Code": false
+              }
+            ]
+          },
+          {
             "Kind": "li",
             "Parts": [
               {
@@ -30614,6 +34625,15 @@
               },
               {
                 "Text": ", which counts as EXTRACTED when empty.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Lifting",
                 "Code": false
               }
             ]
@@ -30788,6 +34808,15 @@
               },
               {
                 "Text": " keeps both texts.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Diff",
                 "Code": false
               }
             ]
@@ -31459,7 +35488,15 @@
                 "Code": true
               },
               {
-                "Text": ", 2000 characters. ",
+                "Text": ", 2000 characters. Status reports each such section, and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd understand",
+                "Code": true
+              },
+              {
+                "Text": " refuses a text only when its first section, the summary a page shows first, runs past it. ",
                 "Code": false
               },
               {
@@ -31727,6 +35764,15 @@
               },
               {
                 "Text": ". The threshold is a report line for the agent who writes the text, never a gate.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "History marks",
                 "Code": false
               }
             ]
@@ -32384,7 +36430,7 @@
           "N": 5,
           "ID": "stack-cli.5",
           "Name": "readers",
-          "Role": "read the extraction output, quoted code, git and module texts into facts",
+          "Role": "read the extraction output, quoted code, git and module texts into facts and section lengths",
           "Badge": "",
           "Source": "",
           "Units": [
