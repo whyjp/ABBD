@@ -122,6 +122,9 @@ type Totals struct {
 	LabelRepeats int `json:"label_repeats"`
 	Labelled     int `json:"labelled"`
 	Routes       int `json:"routes"`
+	// Density is the routes drawn per box, in tenths: the exemplars draw
+	// 10 to 17, and a page the debt file names may not raise it (gate.go).
+	Density int `json:"density"`
 }
 
 // Sum adds up the totals of several views.
@@ -139,6 +142,7 @@ func Sum(views []ViewLint) Totals {
 		t.ColourSwitches, t.Doglegs = t.ColourSwitches+o.ColourSwitches, t.Doglegs+o.Doglegs
 		t.Combs, t.Counts, t.Dots = t.Combs+o.Combs, t.Counts+o.Counts, t.Dots+o.Dots
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
+		t.Density += o.Density
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
 		}
@@ -334,6 +338,9 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
 	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
+	if n := len(v.d.Boxes); n > 0 {
+		vl.Totals.Density = 10 * len(v.d.ways) / n
+	}
 	return vl, nil
 }
 

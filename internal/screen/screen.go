@@ -33,6 +33,10 @@ type Input struct {
 	// the ordered walks, with the markdown files beside them that are no
 	// figures, and why.
 	Figures store.Figures
+	// Primary are the stored relations, by relation key (model.Edge's
+	// String), the overview must draw whatever else it counts instead
+	// (primary.go). Nil leaves the choice to the stored flows and stacks.
+	Primary map[string]bool
 }
 
 // Load reads the store. It leaves Tree empty: snapshotting the working tree
@@ -180,12 +184,13 @@ func Build(in Input) Model {
 	// what it joins (choose). The screen it fits is what the page leaves
 	// under the list of questions drawn above it.
 	ls, fs := layerings(in), walks(in)
-	o := planOverview(in.Units, "", nil, tactic{}, ls, fs)
+	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
+	c := o.primary(in.Primary, ls, fs)
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
-		p := planOverview(in.Units, "", nil, t, ls, fs)
+		p := planOverview(in.Units, "", nil, t, ls, fs, c)
 		if p.layout.idle {
 			return Drawing{}, false
 		}
@@ -196,7 +201,7 @@ func Build(in Input) Model {
 		read.judge(d)
 		read.over = pastScreen(d, room)
 	})
-	m.Focus = o.overviewFocus(in.Units, m.Overview)
+	m.Focus = o.overviewFocus(in.Units, m.Overview, c.hides())
 	for _, c := range o.contracts {
 		for _, r := range model.SortRelations(o.units[c].Relations) {
 			if _, ok := o.tree.units[r.To]; ok && !r.Dead {

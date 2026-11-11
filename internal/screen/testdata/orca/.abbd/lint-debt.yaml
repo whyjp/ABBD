@@ -28,6 +28,7 @@ pages:
         colour_switches: 31
         combs: 0
         counts: 21
+        density: 48
         doglegs: 5
         dots: 8
         label_repeats: 1
@@ -38,6 +39,7 @@ pages:
         colour_switches: 45
         combs: 0
         counts: 16
+        density: 56
         doglegs: 21
         dots: 11
         label_repeats: 0
