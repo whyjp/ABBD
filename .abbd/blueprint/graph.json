@@ -1315,6 +1315,7 @@
         "cmd/abbd/flow.go",
         "cmd/abbd/impact.go",
         "cmd/abbd/install.go",
+        "cmd/abbd/keyunits.go",
         "cmd/abbd/lint.go",
         "cmd/abbd/main.go",
         "cmd/abbd/migrate.go",
@@ -6538,7 +6539,117 @@
                 "Code": true
               },
               {
-                "Text": " note like any keyed slot. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": " note like any keyed slot.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "h",
+            "Parts": [
+              {
+                "Text": "Key units",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "p",
+            "Parts": [
+              {
+                "Text": "abbd brief",
+                "Code": true
+              },
+              {
+                "Text": " lists a module's key units by fan-in (",
+                "Code": false
+              },
+              {
+                "Text": "keyUnits",
+                "Code": true
+              },
+              {
+                "Text": ": the types and distinctive functions its non-test files declare, ranked by how often the repository's tracked files in the same languages name them outside the module, dunders left out, through one git grep of at most 40 names that gives up after 20 seconds), and ",
+                "Code": false
+              },
+              {
+                "Text": "understand",
+                "Code": true
+              },
+              {
+                "Text": " reports each the text never names; ",
+                "Code": false
+              },
+              {
+                "Text": "status",
+                "Code": true
+              },
+              {
+                "Text": " leaves that search out, since it runs in CI. Here they are ",
+                "Code": false
+              },
+              {
+                "Text": "env",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "opts",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "command",
+                "Code": true
+              },
+              {
+                "Text": ", which carry a verb's flags and run it, ",
+                "Code": false
+              },
+              {
+                "Text": "claims",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "target",
+                "Code": true
+              },
+              {
+                "Text": " in migrate and record, ",
+                "Code": false
+              },
+              {
+                "Text": "presentUnit",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "textModule",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "partial",
+                "Code": true
+              },
+              {
+                "Text": ". With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -31071,7 +31182,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "stores a finished text with a short summary, its reader, digest and code",
+              "Says": "stores a finished text with a short summary, its reader, digest and code, and names the key units it leaves out",
               "Verb": "사용"
             },
             {
