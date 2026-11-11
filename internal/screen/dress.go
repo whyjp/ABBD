@@ -224,6 +224,9 @@ func (d *Drawing) subtitle(b *Box) {
 		}
 		return
 	}
+	if b.Gist != "" {
+		kind = b.Gist
+	}
 	s := kind
 	switch {
 	case r == "외부":
@@ -231,7 +234,14 @@ func (d *Drawing) subtitle(b *Box) {
 	case r != "":
 		s += " · " + r
 	}
-	if s == "" || len(b.Lines) == 0 || subWidth(s) > b.W-16 {
+	width := subWidth
+	if b.Gist != "" {
+		width = monoWidth
+		if width(s) > b.W-16 {
+			s = kind
+		}
+	}
+	if s == "" || len(b.Lines) == 0 || width(s) > b.W-16 {
 		return
 	}
 	top, bottom := b.Y, b.Y+b.H
