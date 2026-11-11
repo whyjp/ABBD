@@ -567,6 +567,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	// there only where it is not already said nearby, and no word said
 	// again stands near it, so a freed spot adds no repeat.
 	var freed []box
+	// held are the buses of three or more lines that every line of says
+	// one word, by their counts. Each gives up its count only if its word
+	// is set for it.
+	held := map[int]owed{}
 	inFreed := func(l Label) bool {
 		return slices.ContainsFunc(freed, func(b box) bool { return hit(l.area(), b) })
 	}
@@ -577,11 +581,13 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
 		}
-		// A bus whose lines share a word says the word instead of its
-		// count, and one without a word shows its count only from three
-		// lines (rule 22).
-		if w.Count > 1 && (words[i] != "" || w.Count < 3) {
+		// A bus shows its count only from three lines (rule 22), and says
+		// instead the word every one of its lines says, once it is set.
+		if dropCounts && w.Count > 1 && (w.Count < 3 || everyUnit(t, w.lines, words[i], saids[i])) {
 			freed = append(freed, countBox(w))
+			if w.Count >= 3 {
+				held[i] = owed{w.Count, w.LX, w.LY, -1}
+			}
 			d.Wires[i].Count, d.Wires[i].LX, d.Wires[i].LY = 0, 0, 0
 		}
 	}
@@ -597,6 +603,10 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			whole[w.Net] = true
 		}
 		whole[w.Net] = whole[w.Net] && words[i] == words[slices.IndexFunc(d.Wires, func(o Wire) bool { return o.Net == w.Net })]
+	}
+	netMate := func(i, j int) bool {
+		n := d.Wires[i].Net
+		return i == j || n != 0 && d.Wires[j].Net == n
 	}
 	mate := func(i, j int) bool {
 		n := d.Wires[i].Net
@@ -688,6 +698,12 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			}
 			for _, o := range taken {
 				if hit(lb, grow(o, labelRoom)) {
+					return false
+				}
+			}
+			for c, o := range held {
+				spot := box{o.lx, o.ly - 9, textWidth(fmt.Sprintf("×%d", o.count), 11) + 2, 11}
+				if hit(lb, grow(spot, labelRoom)) && !(l.S == words[c] && mate(i, c)) {
 					return false
 				}
 			}
@@ -808,6 +824,57 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			done[n] = true
 		}
 	}
+	// A held bus's word is set for it when its own label, one of its net's,
+	// or one on its track within repeatNear of its count says it. Else the
+	// bus keeps its count.
+	for c, o := range held {
+		by, rank := -1, 3
+		for j, w := range d.Wires {
+			l := w.Label
+			if l == nil || l.S != words[c] {
+				continue
+			}
+			dx, dy := l.X-o.lx, l.Y-o.ly
+			r := 3
+			switch {
+			case j == c:
+				r = 0
+			case netMate(j, c):
+				r = 1
+			case track(j) == track(c) && dx*dx+dy*dy <= repeatNear*repeatNear:
+				r = 2
+			}
+			if r < rank {
+				by, rank = j, r
+			}
+		}
+		if by < 0 {
+			d.Wires[c].Count, d.Wires[c].LX, d.Wires[c].LY = o.count, o.lx, o.ly
+			continue
+		}
+		o.by = by
+		d.Wires[c].owed = &o
+	}
+}
+
+// everyUnit says w is what every unit (see units) of the lines says: the
+// via word all their relations name, or the first name of a phrase each
+// unit carries. Only such a word stands for a bus in place of its count;
+// a word some lines lack would hide their meaning.
+func everyUnit(t tree, lines [][]string, w string, said bool) bool {
+	if w == "" {
+		return false
+	}
+	if !said {
+		return allVia(t, lines) == w
+	}
+	us := units(lines)
+	return carried(us, func(r string) string {
+		if p := t.phrases[r].text; p != "" && phraseNames(p)[0] == w {
+			return w
+		}
+		return ""
+	})[w] == len(us)
 }
 
 // tracks says which track each wire's ink belongs to: wires join one track
@@ -845,6 +912,10 @@ func tracks(ws []Wire, touches func(i, j int) bool) func(i int) int {
 // sayOnce turns the drop on; a test turns it off to see which lines have
 // room for their word.
 var sayOnce = true
+
+// dropCounts turns on the trade of counts for words; a test turns it off to
+// see each bus's count.
+var dropCounts = true
 
 // touching says, of two wires, whether their ink touches: a piece of one
 // ends on a piece of the other, as a branch ends on its trunk, and not where
