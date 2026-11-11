@@ -225,7 +225,12 @@ func (e env) statusLines() error {
 	e.statusBreaches(in.Units, fs.Stacks)
 	e.statusCells(in.Units, fs.Tables)
 	if len(texts) > 0 {
-		readTexts(e.stdout, texts)
+		readTexts(e.stdout, texts, func(ref string) tier {
+			if strings.Contains(ref, ".") {
+				return smallTier
+			}
+			return e.tierOf(in.Units, model.ID(ref))
+		})
 	}
 	for _, id := range slices.Sorted(maps.Keys(in.Understandings)) {
 		if _, ok := textModule(in.Units, id); ok {

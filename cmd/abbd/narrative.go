@@ -17,12 +17,16 @@ import (
 )
 
 // readText prints what makes a module's text hard to read: each section
-// over narrative.MaxSection and each phrase that reads as history. It is a
-// report for the agent who writes the text, so it never refuses one and
-// never fails a check.
-func readText(w io.Writer, id, text string) (long, history int) {
-	for _, s := range narrative.Long(text) {
-		fmt.Fprintf(w, "long: %s %s holds %d characters, over %d; split it under ### headings or into shorter sections\n", id, section(s.Heading), s.Chars, narrative.MaxSection)
+// over its tier's characters, Key Concepts over its tier's bullets, and
+// each phrase that reads as history. It is a report for the agent who
+// writes the text, so it never refuses one and never fails a check.
+func readText(w io.Writer, id, text string, t tier) (long, history int) {
+	for _, s := range narrative.Long(text, t.Chars) {
+		fmt.Fprintf(w, "long: %s %s holds %d characters, over %d for its tier; split it under ### headings or into shorter sections\n", id, section(s.Heading), s.Chars, t.Chars)
+		long++
+	}
+	if n := bullets(text); n > t.Bullets {
+		fmt.Fprintf(w, "long: %s \"Key Concepts\" holds %d bullets, over %d for its tier; group units that work together into one bullet\n", id, n, t.Bullets)
 		long++
 	}
 	for _, m := range narrative.History(text) {
@@ -164,13 +168,13 @@ func section(heading string) string {
 
 // readTexts reports every text, by the module or the note it is, after a
 // summary line.
-func readTexts(w io.Writer, texts map[string]string) {
+func readTexts(w io.Writer, texts map[string]string, tierOf func(string) tier) {
 	var lines bytes.Buffer
 	var long, history int
 	for _, id := range slices.Sorted(maps.Keys(texts)) {
-		l, h := readText(&lines, id, texts[id])
+		l, h := readText(&lines, id, texts[id], tierOf(id))
 		long, history = long+l, history+h
 	}
-	fmt.Fprintf(w, "readability: %d section(s) over %d characters, %d phrase(s) that read as history; a report, the check ignores it\n", long, narrative.MaxSection, history)
+	fmt.Fprintf(w, "readability: %d section(s) over their tier's length, %d phrase(s) that read as history; a report, the check ignores it\n", long, history)
 	lines.WriteTo(w)
 }

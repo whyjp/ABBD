@@ -78,6 +78,7 @@ func (e env) brief(ref string) error {
 	for _, k := range e.keyUnitsOf(units, id, keyShown) {
 		keys = append(keys, fmt.Sprintf("`%s` in `%s`, named %d times elsewhere", k.Name, k.File, k.Uses))
 	}
+	list(w, "Length", []string{e.tierOf(units, id).String()})
 	list(w, "Key units by fan-in: name each in the text, or say why it stays out", keys)
 	list(w, "Boxes that say only their kind: each draft comes from a Go doc comment or a file's header comment; keep it only where the code bears it out, and store the line in the supplement, or a module's or feature's with abbd understand --sentence", e.drafts(byID, name, drawnWith(id, ex)))
 	list(w, "Run-time binding sites: record the tie each makes as a coupling with its quote, via load, spawn, trait, callback or config, and a registry as a contract its members provide", bindingSites(e.root, files))

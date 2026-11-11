@@ -75,3 +75,30 @@ func TestLintAndBriefNameTheBoxesThatSayOnlyTheirKind(t *testing.T) {
 	p.code("billing/charge.go", "package billing\n\n// Charge bills a card once. It never retries.\nfunc Charge() { _ = 1 }\n")
 	p.want(0, "\"Charge bills a card once.\" (from `billing/charge.go`)", "brief", "MOD-0001")
 }
+
+// A text's room follows the module's tier: a small module's sections hold
+// MaxSection characters and its Key Concepts bulletsSmall bullets, and a
+// module past largeUnits units or largeFiles files gets more.
+func TestATextsRoomFollowsTheModulesTier(t *testing.T) {
+	small := tier{Chars: 2000, Bullets: 10}
+	large := tier{Large: true, Chars: 3000, Bullets: 15}
+	var kc strings.Builder
+	kc.WriteString("## Overview\n\n" + strings.Repeat("a", 2500) + "\n\n## Key Concepts\n\n")
+	for range 12 {
+		kc.WriteString("- **x** (`x.go`): y.\n  - nested\n")
+	}
+	text := kc.String()
+	if n := bullets(text); n != 12 {
+		t.Fatalf("bullets = %d, want 12 top-level", n)
+	}
+	var out strings.Builder
+	if long, _ := readText(&out, "MOD-0001", text, small); long != 2 {
+		t.Errorf("a small module's text reported %d long marks, want the section and the bullets:\n%s", long, out.String())
+	}
+	out.Reset()
+	if long, _ := readText(&out, "MOD-0001", text, large); long != 0 {
+		t.Errorf("a large module's text reported %d long marks, want none:\n%s", long, out.String())
+	}
+	p := semanticProject(t)
+	p.want(0, "### Length\n\n- small module (1 inside units, 1 files", "brief", "MOD-0001")
+}

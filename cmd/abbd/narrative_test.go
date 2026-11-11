@@ -28,7 +28,7 @@ func TestLongAndHistoricalTextsAreReportedNeverRefused(t *testing.T) {
 	if !strings.Contains(p.read("understanding/MOD-0001.md"), "migrated from") {
 		t.Error("understand did not store the text it warned on")
 	}
-	out = p.want(0, "readability: 1 section(s) over 2000 characters, 2 phrase(s) that read as history; a report, the check ignores it", "status", "--check", "--verbose")
+	out = p.want(0, "readability: 1 section(s) over their tier's length, 2 phrase(s) that read as history; a report, the check ignores it", "status", "--check", "--verbose")
 	if !strings.Contains(out, `long: MOD-0001 "Key Concepts"`) || !strings.Contains(out, `history: MOD-0001 "Overview" says "PR #12"`) {
 		t.Errorf("status did not list what it counted:\n%s", out)
 	}
@@ -41,7 +41,7 @@ func TestAPresentStateTextOfShortSectionsReportsNothing(t *testing.T) {
 	if strings.Contains(out, "long:") || strings.Contains(out, "history:") {
 		t.Errorf("understand reported a clean text:\n%s", out)
 	}
-	p.want(0, "readability: 0 section(s) over 2000 characters, 0 phrase(s)", "status", "--check")
+	p.want(0, "readability: 0 section(s) over their tier's length, 0 phrase(s)", "status", "--check")
 }
 
 // Both skills that store a text tell the agent what the report checks, at

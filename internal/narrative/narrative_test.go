@@ -17,7 +17,7 @@ func TestSectionsRunFromOneHeadingToTheNextOfAnyLevel(t *testing.T) {
 
 func TestLongReportsOnlySectionsOverTheThreshold(t *testing.T) {
 	text := "## Short\n\n" + strings.Repeat("a", MaxSection) + "\n\n## Long\n\n" + strings.Repeat("a", MaxSection) + "\nb\n"
-	got := Long(text)
+	got := Long(text, MaxSection)
 	if len(got) != 1 || got[0].Heading != "Long" || got[0].Chars != MaxSection+1 {
 		t.Fatalf("long = %v, want only Long at %d", got, MaxSection+1)
 	}

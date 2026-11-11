@@ -85,8 +85,9 @@ func (e env) understand(ref string, args []string) error {
 	}
 	// The first section is the summary the page shows before it folds the
 	// rest, so it has to be short enough to read there.
-	if ss := narrative.Sections(text); len(ss) > 0 && ss[0].Chars > narrative.MaxSection {
-		return fmt.Errorf("the first section %q holds %d characters, over %d; the page shows it first, so keep it a short summary and move the rest under ### headings", ss[0].Heading, ss[0].Chars, narrative.MaxSection)
+	t := e.tierOf(units, id)
+	if ss := narrative.Sections(text); len(ss) > 0 && ss[0].Chars > t.Chars {
+		return fmt.Errorf("the first section %q holds %d characters, over %d for a %s; the page shows it first, so keep it a short summary and move the rest under ### headings", ss[0].Heading, ss[0].Chars, t.Chars, strings.SplitN(t.String(), " (", 2)[0])
 	}
 	if err := unfinished(text); err != nil {
 		return err
@@ -100,7 +101,7 @@ func (e env) understand(ref string, args []string) error {
 		return err
 	}
 	fmt.Fprintf(e.stdout, "understood %s %s, INFERRED, against code %s\n", id, u.Name.Value, digest)
-	readText(e.stdout, string(id), text)
+	readText(e.stdout, string(id), text, t)
 	e.checkText(e.stdout, units, id, text, true)
 	if s := strings.TrimSpace(e.sentence); s != "" {
 		// The reader who read the module again says its one line too,
@@ -200,7 +201,7 @@ func (e env) note(r model.NoteRef, args []string) error {
 	if dropped {
 		fmt.Fprintf(e.stdout, "dropped the why %s stated, since the decision now cites other code; ask again and store it with abbd record fact %s --value WHY --source WHERE\n", prev.Why.Source, r)
 	}
-	readText(e.stdout, r.String(), text)
+	readText(e.stdout, r.String(), text, smallTier)
 	return nil
 }
 

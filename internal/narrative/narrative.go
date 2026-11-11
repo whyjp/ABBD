@@ -13,8 +13,12 @@ import (
 // MaxSection is how many characters of prose a section holds before a
 // reader loses its thread. Status reports each section over it, and abbd
 // understand refuses a text only when its first section, the summary a
-// page shows first, runs over it.
-const MaxSection = 2000
+// page shows first, runs over it. A large module, which holds more to
+// name, has MaxSectionLarge instead.
+const (
+	MaxSection      = 2000
+	MaxSectionLarge = 3000
+)
 
 // Section is the prose under one heading, up to the next heading of any
 // level. Heading is empty for prose before the first heading. Chars counts
@@ -108,11 +112,11 @@ func Sections(text string) []Section {
 	return out
 }
 
-// Long is each section over MaxSection.
-func Long(text string) []Section {
+// Long is each section over max characters.
+func Long(text string, max int) []Section {
 	var out []Section
 	for _, s := range Sections(text) {
-		if s.Chars > MaxSection {
+		if s.Chars > max {
 			out = append(out, s)
 		}
 	}
