@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/whyjp/abbd/internal/model"
 	"github.com/whyjp/abbd/internal/screen"
 	"github.com/whyjp/abbd/internal/store"
 )
@@ -28,6 +29,9 @@ type lintReport struct {
 	Levels []screen.Level `json:"levels"`
 	// Lowerable is what the debt file records above what lint measures.
 	Lowerable []string `json:"lowerable,omitempty"`
+	// Undescribed names the drawn boxes that say only their kind, since
+	// their units record neither a purpose nor a responsibility.
+	Undescribed []model.ID `json:"undescribed,omitempty"`
 }
 
 // lint holds every drawing of the blueprint, or those of one view, to the
@@ -100,6 +104,7 @@ func (e env) lint(pos []string) error {
 	}
 	if every {
 		r.Ceilings = debt.Ceilings
+		r.Undescribed = undescribed(in.Units)
 	}
 	if r.Failures == nil {
 		r.Failures = []string{}
@@ -154,6 +159,9 @@ func printLint(e env, r lintReport) {
 	fmt.Fprintf(e.stdout, "lint: %s, %s\n", plural(len(r.Views), "view"), totalsLine(r.Totals))
 	if len(r.Ceilings) > 0 {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
+	}
+	if len(r.Undescribed) > 0 {
+		fmt.Fprintf(e.stdout, "lint: %s; abbd brief MOD-ID drafts one for each box of a module\n", describedLine(r.Undescribed))
 	}
 	// The levels come last, where a reader of the report's tail sees them.
 	for _, l := range r.Levels {
