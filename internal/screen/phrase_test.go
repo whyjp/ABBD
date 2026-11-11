@@ -35,7 +35,8 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		{[]string{"c", "a"}, "Cypher"},
 		{[]string{"a", "b", "c", "e"}, "Cypher"},
 		{[]string{"a", "c", "e"}, "호출"},
-		{[]string{"a", "d", "c", "x"}, ""},
+		{[]string{"a", "d", "c", "x"}, "호출"},
+		{[]string{"a", "d", "c", "x", "y"}, ""},
 		{[]string{"a", "x"}, "Cypher"},
 		{[]string{"c", "x", "y"}, ""},
 		{[]string{"d", "e"}, ""},
@@ -75,12 +76,13 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		{[][]string{{"a"}, {"b"}}, "Cypher"},
 		{[][]string{{"a", "e"}, {"b"}}, "Cypher"},
 		{[][]string{{"a", "e"}, {"x"}}, "Cypher"},
-		{[][]string{{"a", "e"}, {"x"}, {"c"}}, ""},
+		{[][]string{{"a", "e"}, {"x"}, {"c"}}, "호출"},
 		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}}, "schema fetch"},
-		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}, ""},
+		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}, "호출"},
+		{[][]string{{"c"}, {"b"}, {"d"}, {"x"}, {"y"}}, ""},
 	} {
 		if got, _ := word(tr, tc.lines); got != tc.want {
-			t.Errorf("a bus of %v says %q, want %q, the phrase most of its lines carry, if half do", tc.lines, got, tc.want)
+			t.Errorf("a bus of %v says %q, want %q, the phrase most of its lines carry if half do, else the via word most carry if half do", tc.lines, got, tc.want)
 		}
 	}
 	if got := said(tr, [][]string{{"a", "c"}, {"b"}, {"x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/3", "schema fetch (사람) 1/3"}) {
