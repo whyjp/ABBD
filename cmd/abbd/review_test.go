@@ -118,3 +118,12 @@ func TestExplainSaysWhoRecordedACoupling(t *testing.T) {
 		t.Errorf("explain names who recorded a coupling only with --history")
 	}
 }
+
+// review --markdown writes one pull request comment: the marker the
+// posting step finds it by, a drawing of the touched modules, and what is
+// worth a look.
+func TestReviewWritesAPullRequestComment(t *testing.T) {
+	p, base := diffProject(t)
+	out := p.want(0, "", "review", "--base", base, "--markdown")
+	contains(t, out, "<!-- abbd-review -->\n**ABBD review** since `"+base[:12]+"`", "**Touched modules:** ", "```mermaid\nflowchart LR", "MOD_0001 -->|depends_on| MOD_0004", "**Worth a look**", "<details><summary>The whole review</summary>")
+}

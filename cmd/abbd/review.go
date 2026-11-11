@@ -281,10 +281,98 @@ func (e env) review() error {
 	if len(look) == 0 {
 		fmt.Fprintln(w, "  nothing")
 	}
-	fmt.Fprintf(e.stdout, "review since %s: %d topology change(s), code changed under %d unit(s), %d touched contract(s) or entries with their users, %d unit(s) reached directly, %d thing(s) worth a look\n",
-		short(base), len(d.Lines()), len(codeChanged), touchedLines, reached, len(look))
+	headline := fmt.Sprintf("%d topology change(s), code changed under %d unit(s), %d touched contract(s) or entries with their users, %d unit(s) reached directly, %d thing(s) worth a look",
+		len(d.Lines()), len(codeChanged), touchedLines, reached, len(look))
+	if e.markdown {
+		return e.reviewMarkdown(base, headline, d, now, seeds, look, body.String())
+	}
+	fmt.Fprintf(e.stdout, "review since %s: %s\n", short(base), headline)
 	_, err = e.stdout.Write(body.Bytes())
 	return err
+}
+
+// reviewMarker opens the pull request comment review --markdown writes, so
+// the step that posts it finds the comment to update instead of adding one.
+const reviewMarker = "<!-- abbd-review -->"
+
+// reviewMarkdown writes the review as one pull request comment: the
+// headline, a drawing of the touched top-level modules and the relations
+// between them, the changes folded, and what is worth a look. It draws the
+// current state of what the change touched, never a mark of change.
+func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.Unit, seeds []model.ID, look []string, body string) error {
+	byID := map[model.ID]model.Unit{}
+	for _, u := range model.Present(now) {
+		byID[u.ID] = u
+	}
+	top := func(id model.ID) model.ID {
+		seen := map[model.ID]bool{}
+		for byID[id].Parent != "" && !seen[id] {
+			seen[id] = true
+			id = byID[id].Parent
+		}
+		return id
+	}
+	touched := map[model.ID]bool{}
+	for _, id := range seeds {
+		if t := top(id); !byID[t].Kind.IsContract() {
+			touched[t] = true
+		}
+	}
+	tops := slices.Sorted(maps.Keys(touched))
+	if len(tops) > maxDrawn {
+		tops = tops[:maxDrawn]
+	}
+	w := e.stdout
+	fmt.Fprintf(w, "%s\n**ABBD review** since `%s`: %s.\n\n", reviewMarker, short(base), headline)
+	if len(tops) > 0 {
+		var names []string
+		for _, id := range tops {
+			names = append(names, fmt.Sprintf("%s %s", id, byID[id].Name.Value))
+		}
+		fmt.Fprintf(w, "**Touched modules:** %s\n\n", strings.Join(names, ", "))
+		fmt.Fprintln(w, "```mermaid\nflowchart LR")
+		for _, id := range tops {
+			fmt.Fprintf(w, "  %s[\"%s\"]\n", mermaidID(id), mermaidText(byID[id].Name.Value))
+		}
+		drawn := map[string]bool{}
+		for _, u := range model.Present(now) {
+			from := top(u.ID)
+			if !touched[from] || !slices.Contains(tops, from) {
+				continue
+			}
+			for _, r := range u.Relations {
+				to := top(r.To)
+				if !r.Counts() || to == from || !slices.Contains(tops, to) {
+					continue
+				}
+				edge := fmt.Sprintf("  %s -->|%s| %s", mermaidID(from), r.Kind, mermaidID(to))
+				if !drawn[edge] {
+					drawn[edge] = true
+					fmt.Fprintln(w, edge)
+				}
+			}
+		}
+		fmt.Fprintln(w, "```")
+		fmt.Fprintln(w)
+	}
+	if len(look) > 0 {
+		fmt.Fprintln(w, "**Worth a look**")
+		for _, l := range look {
+			fmt.Fprintf(w, "- %s\n", l)
+		}
+		fmt.Fprintln(w)
+	}
+	fmt.Fprintf(w, "<details><summary>The whole review</summary>\n\n```\n%s```\n</details>\n", strings.TrimLeft(body, "\n"))
+	return nil
+}
+
+// maxDrawn is how many touched modules the comment's drawing holds.
+const maxDrawn = 12
+
+func mermaidID(id model.ID) string { return strings.ReplaceAll(string(id), "-", "_") }
+
+func mermaidText(s string) string {
+	return strings.NewReplacer(`"`, "'", "[", "(", "]", ")").Replace(s)
 }
 
 // reachShown is how many units review lists of what a change reaches.
