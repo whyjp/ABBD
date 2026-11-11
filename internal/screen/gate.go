@@ -58,6 +58,10 @@ var paged = []struct {
 	// by side, where a hand drawing draws one stem.
 	{"combs", func(t Totals) int { return t.Combs }, false},
 	{"doglegs", func(t Totals) int { return t.Doglegs }, false},
+	// counts and dots are the ×N and junction dots a reader sees, which
+	// the exemplars draw none of.
+	{"counts", func(t Totals) int { return t.Counts }, false},
+	{"dots", func(t Totals) int { return t.Dots }, false},
 	// label repeats are words said again beside the same lines, where a
 	// hand drawing says each once.
 	{"label_repeats", func(t Totals) int { return t.LabelRepeats }, false},

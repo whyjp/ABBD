@@ -22869,7 +22869,39 @@
                 "Code": true
               },
               {
-                "Text": " wherever ink of one colour goes three or more ways, and where a line crosses onto a trunk of its own kind that runs past it. ",
+                "Text": " wherever ink of one colour goes four ways, as where a line crosses onto a trunk of its own kind that runs past it; a T takes none, its shape says the join. ",
+                "Code": false
+              },
+              {
+                "Text": "dotCutTees",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "marks.go",
+                "Code": true
+              },
+              {
+                "Text": ") dots a T anyway where a gap cuts its line within ",
+                "Code": false
+              },
+              {
+                "Text": "gapJoin",
+                "Code": true
+              },
+              {
+                "Text": " of it (",
+                "Code": false
+              },
+              {
+                "Text": "nearCut",
+                "Code": true
+              },
+              {
+                "Text": "), since the cut stub reads as a corner, and lint's J2 reports such a T without its dot. ",
                 "Code": false
               },
               {

@@ -199,20 +199,31 @@ func TestDotJoinsOnlyItsOwnColour(t *testing.T) {
 	}
 }
 
-// A split marked only by a dot of another colour is unmarked.
+// A four-way join marked only by a dot of another colour is unmarked.
 func TestSplitNeedsADotOfItsColour(t *testing.T) {
-	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20"},
+	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20", "R 180 90 20 20"},
 		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass joins" d="M20 100 H50"/>`+
-			`<circle class="junction contract" cx="50" cy="100" r="3"/>`)
+			`<path class="w bypass joins" d="M180 100 H50"/><circle class="junction contract" cx="50" cy="100" r="3"/>`)
 	if got := trace(s, nil); got.UnmarkedT != 1 {
 		t.Fatalf("unmarked T %d; want 1", got.UnmarkedT)
 	}
 }
 
-// Two undotted splits a few pixels apart are two, not one.
+// A T says by its shape that one line ends on the other, so it needs no
+// dot.
+func TestATNeedsNoDot(t *testing.T) {
+	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20"},
+		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass joins" d="M20 100 H50"/>`)
+	if got := trace(s, nil); got.UnmarkedT != 0 || len(got.Splits) != 1 {
+		t.Fatalf("unmarked T %d, splits %v; want 0 and the one split", got.UnmarkedT, got.Splits)
+	}
+}
+
+// Two undotted four-way joins a few pixels apart are two, not one.
 func TestCloseSplitsCountApart(t *testing.T) {
 	s := sketch(t, []string{"T 40 0 20 20", "B 40 180 20 20", "L 0 90 20 20", "R 180 90 20 20"},
 		`<path class="w bypass" d="M50 20 V180"/><path class="w bypass joins" d="M20 100 H50"/>`+
+			`<path class="w bypass joins" d="M180 100 H50"/><path class="w bypass joins" d="M20 103 H50"/>`+
 			`<path class="w bypass joins" d="M180 103 H50"/>`)
 	if got := trace(s, nil); got.UnmarkedT != 2 {
 		t.Fatalf("unmarked T %d; want 2", got.UnmarkedT)
