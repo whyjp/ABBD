@@ -92,9 +92,11 @@ type Box struct {
 	Sub *Text `json:",omitempty"`
 	// Gist is a module's short phrase of what it does, set on its last line
 	// in place of its kind (gist).
-	Gist    string `json:"-"`
-	X, Y, W int
-	H       int
+	Gist string `json:"-"`
+	// Artifact is the build artifact a module is, said on its last line.
+	Artifact string `json:",omitempty"`
+	X, Y, W  int
+	H        int
 	// Href opens the module's inside.
 	Href string `json:",omitempty"`
 	// Hue is the palette key of the box's border and its tint (rule 11),
@@ -1095,7 +1097,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), Artifact: model.Words(u.Built()), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2
@@ -1103,6 +1105,9 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 			b.Lines = append(b.Lines, Text{S: s, X: r.X + r.W/2, Y: y + i*nameLine, Mid: true})
 		}
 		b.Title = fmt.Sprintf("%s %s", base(m), b.Name)
+		if b.Artifact != "" {
+			b.Title += " (" + b.Artifact + ")"
+		}
 		if f := sentence(u); f != nil {
 			b.Title += ": " + f.Value
 		}
