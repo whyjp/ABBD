@@ -283,8 +283,27 @@ func (e env) review() error {
 	}
 	headline := fmt.Sprintf("%d topology change(s), code changed under %d unit(s), %d touched contract(s) or entries with their users, %d unit(s) reached directly, %d thing(s) worth a look",
 		len(d.Lines()), len(codeChanged), touchedLines, reached, len(look))
+	sc, err := e.st.LoadScope()
+	if err != nil {
+		return err
+	}
+	scope := scopeLines(sc, byID, seeds)
+	if len(sc.Units) > 0 {
+		fmt.Fprintf(w, "\nscope declared: %s", joinIDs(sc.Units))
+		if sc.Why != "" {
+			fmt.Fprintf(w, ", %s", sc.Why)
+		}
+		fmt.Fprintln(w)
+		for _, l := range scope {
+			fmt.Fprintln(w, "  "+l)
+		}
+		if len(scope) == 0 {
+			fmt.Fprintln(w, "  the change stays inside it and touches each declared unit")
+		}
+		headline += fmt.Sprintf(", %d line(s) on the declared scope", len(scope))
+	}
 	if e.markdown {
-		return e.reviewMarkdown(base, headline, d, now, seeds, look, body.String())
+		return e.reviewMarkdown(base, headline, d, now, seeds, append(scope, look...), body.String())
 	}
 	fmt.Fprintf(e.stdout, "review since %s: %s\n", short(base), headline)
 	_, err = e.stdout.Write(body.Bytes())
@@ -424,4 +443,81 @@ func (e env) anchoredAt(units []model.Unit, base string) []model.ID {
 	}
 	slices.Sort(out)
 	return out
+}
+
+// scopeLines sets the units a change touched beside the scope an agent
+// declared: each touched unit outside every declared one, named by its
+// top-level unit, and each declared unit the change left alone. It reports
+// and never judges.
+func scopeLines(sc store.Scope, byID map[model.ID]model.Unit, seeds []model.ID) []string {
+	if len(sc.Units) == 0 {
+		return nil
+	}
+	declared := map[model.ID]bool{}
+	for _, id := range sc.Units {
+		declared[id] = true
+	}
+	chain := func(id model.ID) []model.ID {
+		var out []model.ID
+		seen := map[model.ID]bool{}
+		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
+			seen[p] = true
+			out = append(out, p)
+		}
+		return out
+	}
+	outside, hit := map[model.ID]bool{}, map[model.ID]bool{}
+	for _, id := range seeds {
+		c := chain(id)
+		in := false
+		for _, p := range c {
+			if declared[p] {
+				in, hit[p] = true, true
+			}
+		}
+		if !in {
+			outside[c[len(c)-1]] = true
+		}
+	}
+	var out []string
+	for _, id := range slices.Sorted(maps.Keys(outside)) {
+		out = append(out, fmt.Sprintf("outside the declared scope: %s %s", id, byID[id].Name.Value))
+	}
+	for _, id := range sc.Units {
+		if !hit[id] {
+			out = append(out, fmt.Sprintf("declared but untouched: %s %s", id, byID[id].Name.Value))
+		}
+	}
+	return out
+}
+
+func joinIDs(ids []model.ID) string {
+	var s []string
+	for _, id := range ids {
+		s = append(s, string(id))
+	}
+	return strings.Join(s, ", ")
+}
+
+// scope declares the units the task at hand means to touch, and why, for
+// review to set the change beside. It writes only the never-committed
+// scope file.
+func (e env) scope(list string) error {
+	units, err := e.st.LoadUnits()
+	if err != nil {
+		return err
+	}
+	var ids []model.ID
+	for _, s := range strings.Split(list, ",") {
+		id := model.ID(strings.TrimSpace(s))
+		if _, ok := presentUnit(units, id); !ok {
+			return fmt.Errorf("%s is not a unit of the state", id)
+		}
+		ids = append(ids, id)
+	}
+	if err := e.st.SaveScope(store.Scope{Units: ids, Why: strings.TrimSpace(e.why)}); err != nil {
+		return err
+	}
+	fmt.Fprintf(e.stdout, "scope declared: %s; abbd review sets the change beside it\n", joinIDs(ids))
+	return nil
 }

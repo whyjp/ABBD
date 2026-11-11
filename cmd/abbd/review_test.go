@@ -137,3 +137,19 @@ func TestReviewDrawsAUseThroughAContract(t *testing.T) {
 	p.want(0, "", "sync")
 	contains(t, p.want(0, "", "review", "--base", base, "--markdown"), "FEAT_0001 -->|http api| MOD_0001")
 }
+
+// A change that edits a module outside the scope an agent declared names
+// that module, and a declared unit it left alone, and still exits 0.
+func TestReviewSetsTheChangeBesideTheDeclaredScope(t *testing.T) {
+	p, base := entriesProject(t)
+	p.want(1, "is not a unit", "scope", "MOD-0099")
+	p.want(0, "scope declared: FEAT-0001", "scope", "FEAT-0001", "--why", "show refunds on the page")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "scope declared: FEAT-0001, show refunds on the page", "outside the declared scope: MOD-0001 billing", "declared but untouched: FEAT-0001 charges page")
+	contains(t, p.want(0, "", "review", "--base", base, "--markdown"), "- outside the declared scope: MOD-0001 billing")
+	if strings.Contains(p.want(0, "", "status"), "scope") {
+		t.Errorf("the declared scope is the task's, not the state's")
+	}
+}
