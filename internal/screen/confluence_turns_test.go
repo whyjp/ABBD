@@ -62,3 +62,32 @@ func TestALineThatCanDropStraightDoes(t *testing.T) {
 	}
 	t.Fatal("no overview")
 }
+
+// A road move is judged route by route: one that bends a route it touches
+// is refused even where it straightens another as much, and in the long-run
+// pass one that gives a route a dogleg is refused too.
+func TestAMoveBendsNoRouteItTouches(t *testing.T) {
+	t.Parallel()
+	bent := []pt{{0, 0}, {100, 0}, {100, 100}, {200, 100}}
+	flat := []pt{{0, 0}, {200, 0}}
+	legged := []pt{{0, 0}, {100, 0}, {100, 10}, {200, 10}, {200, 100}}
+	wider := []pt{{0, 0}, {100, 0}, {100, 50}, {200, 50}, {200, 100}}
+	for _, c := range []struct {
+		name      string
+		was, now  [][]pt
+		long, out bool
+	}{
+		{"one route bends as another straightens", [][]pt{flat, bent}, [][]pt{bent, flat}, false, true},
+		{"routes straighten", [][]pt{bent, bent}, [][]pt{flat, bent}, false, false},
+		{"a dogleg in the long-run pass", [][]pt{wider}, [][]pt{legged}, true, true},
+		{"a dogleg in the near passes", [][]pt{wider}, [][]pt{legged}, false, false},
+	} {
+		touched := map[int]bool{}
+		for i := range c.was {
+			touched[i] = true
+		}
+		if got := bendsMore(c.was, c.now, touched, c.long); got != c.out {
+			t.Errorf("%s: bendsMore = %v, want %v", c.name, got, c.out)
+		}
+	}
+}
