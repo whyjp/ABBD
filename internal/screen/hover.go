@@ -30,9 +30,12 @@ import (
 const hoverMax = 48
 
 // routeMax is how many lines a drawing may route and still take part,
-// since each line has its own rule that lights it. The fixtures' largest
-// drawing routes 79, and a test fails when a real drawing routes more.
-const routeMax = 96
+// since each line has its own rule that lights it. A drawing past it keeps
+// its lines on roads but lights none of them, so every join its roads
+// draw reads as a coupling (J3). The fixtures' largest drawing routes 79
+// and vector's vector-lib 98; each rule adds about 50 bytes to a page.
+// A test fails when a real drawing routes more.
+const routeMax = 160
 
 func (d *Drawing) hover() {
 	at := map[string]int{}
