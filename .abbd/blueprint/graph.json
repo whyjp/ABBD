@@ -23492,7 +23492,47 @@
                 "Code": true
               },
               {
-                "Text": "): the one ranking that decides how much the overview draws. An overview of more than ",
+                "Text": "): the one ranking that decides how much the overview draws, switched on by ",
+                "Code": false
+              },
+              {
+                "Text": "overview_cut: true",
+                "Code": true
+              },
+              {
+                "Text": " in ",
+                "Code": false
+              },
+              {
+                "Text": "project.yaml",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "store.Project.OverviewCut",
+                "Code": true
+              },
+              {
+                "Text": ") and off by default: with it off, ",
+                "Code": false
+              },
+              {
+                "Text": "Build",
+                "Code": true
+              },
+              {
+                "Text": " never calls ",
+                "Code": false
+              },
+              {
+                "Text": "primary",
+                "Code": true
+              },
+              {
+                "Text": ", so an overview draws every link and counts none. With it on, an overview of more than ",
                 "Code": false
               },
               {
@@ -26361,7 +26401,15 @@
                 "Code": true
               },
               {
-                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " finds there as an input, since the pages name owners), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv and the ",
+                "Code": false
+              },
+              {
+                "Text": "overview_cut",
+                "Code": true
+              },
+              {
+                "Text": " switch that turns on the overview's density cut, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
@@ -26857,11 +26905,24 @@
                 "Name": "extract",
                 "Shape": "[]string",
                 "Need": "선택"
+              },
+              {
+                "Key": "overview-cut",
+                "Name": "overview_cut",
+                "Shape": "bool",
+                "Need": "선택",
+                "Users": [
+                  {
+                    "ID": "MOD-0034",
+                    "Name": "internal/screen",
+                    "Badge": "extracted"
+                  }
+                ]
               }
             ],
             "Need": true,
             "Providers": false,
-            "Users": false,
+            "Users": true,
             "Data": true,
             "Notes": false
           }
@@ -27716,7 +27777,7 @@
             {
               "N": 1,
               "Unit": "internal/store",
-              "Does": "LoadProject() reads project.yaml → the registered extraction argv"
+              "Does": "LoadProject() reads project.yaml → the extraction argv and overview_cut"
             },
             {
               "N": 4,
@@ -30224,7 +30285,7 @@
             {
               "N": 1,
               "ID": "flow-sync.1",
-              "Does": "LoadProject() reads project.yaml → the registered extraction argv",
+              "Does": "LoadProject() reads project.yaml → the extraction argv and overview_cut",
               "Note": "",
               "Fails": "stops when project.yaml names no script; run abbd setup first",
               "Badge": "",
