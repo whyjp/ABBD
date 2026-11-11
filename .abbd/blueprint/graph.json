@@ -1310,6 +1310,7 @@
         "cmd/abbd",
         "cmd/abbd/brief.go",
         "cmd/abbd/diff.go",
+        "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
@@ -2961,6 +2962,14 @@
       "Origin": "EXTRACTED",
       "Via": "call",
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd lint\""
+    },
+    {
+      "From": "FEAT-0002",
+      "To": "IF-0028",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
       "From": "FEAT-0003",
@@ -5370,7 +5379,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 17,
+        "Uses": 18,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5480,7 +5489,8 @@
             "migrate",
             "record evidence",
             "flow",
-            "lint"
+            "lint",
+            "brief"
           ]
         }
       ],
@@ -5679,6 +5689,7 @@
         "Provides": 30,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -6104,7 +6115,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
