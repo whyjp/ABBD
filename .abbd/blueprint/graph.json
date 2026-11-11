@@ -4065,7 +4065,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "import",
+      "Via": "call",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4286,7 +4286,7 @@
       "To": "MOD-0017",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "import",
+      "Via": "call",
       "Phrase": "extract.Unit",
       "PhraseOrigin": "INFERRED"
     },
@@ -4745,7 +4745,7 @@
       "To": "MOD-0026",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
-      "Via": "import",
+      "Via": "call",
       "Phrase": "merge candidates",
       "PhraseOrigin": "INFERRED"
     },
