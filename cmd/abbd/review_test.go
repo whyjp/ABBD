@@ -143,5 +143,42 @@ func TestReviewDrawsAUseThroughAContract(t *testing.T) {
 	p.code("web/charges.ts", "export function Charges() { refund() }\n")
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
 	p.want(0, "", "sync")
-	contains(t, p.want(0, "", "review", "--base", base, "--markdown"), "FEAT_0001 -->|http api| MOD_0001")
+	out := p.want(0, "", "review", "--base", base, "--markdown")
+	contains(t, out, "FEAT_0001 -->|http api| MOD_0001")
+	if n := strings.Count(out, "FEAT_0001 -->"); n != 1 {
+		t.Errorf("one pair of modules is one line, not %d", n)
+	}
+}
+
+// A change that edits a module outside the scope an agent declared names
+// that module, and a declared unit it left alone, and still exits 0.
+func TestReviewSetsTheChangeBesideTheDeclaredScope(t *testing.T) {
+	p, base := entriesProject(t)
+	p.want(1, "is not a unit", "scope", "MOD-0099")
+	p.want(0, "scope declared: FEAT-0001", "scope", "FEAT-0001", "--why", "show refunds on the page")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	contains(t, out, "scope declared: FEAT-0001, show refunds on the page", "outside the declared scope: MOD-0001 billing", "declared but untouched: FEAT-0001 charges page")
+	contains(t, p.want(0, "", "review", "--base", base, "--markdown"), "**Declared scope:** FEAT-0001, show refunds on the page\n- outside the declared scope: MOD-0001 billing")
+	if strings.Contains(p.want(0, "", "status"), "scope") {
+		t.Errorf("the declared scope is the task's, not the state's")
+	}
+}
+
+// A declared part's change does not put the module above it outside the
+// scope, and a removed unit and a contract whose signature changed outside
+// it are named.
+func TestReviewCountsAPartsChangeInsideItsScope(t *testing.T) {
+	p, base := diffProject(t)
+	p.want(0, "", "scope", "MOD-0003,MOD-0004")
+	p.code("billing/charger.go", "package billing\n\nfunc Run() { send() }\n")
+	p.want(0, "", "sync")
+	out := p.want(0, "", "review", "--base", base)
+	for _, wrong := range []string{"outside the declared scope: MOD-0001", "declared but untouched: MOD-0003"} {
+		if strings.Contains(out, wrong) {
+			t.Errorf("review says %q:\n%s", wrong, out)
+		}
+	}
+	contains(t, out, "outside the declared scope: MOD-0002 ledger (removed)", "outside the declared scope: IF-0001 http api")
 }

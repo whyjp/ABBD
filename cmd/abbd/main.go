@@ -156,6 +156,10 @@ abbd diff [--base REV] [--unit ID] [--page] [--json] [--check] [--root DIR]
                                      committed at REV beside the current one, never committed
                                      REV prev is the copy of .abbd a write keeps from before its
                                      first change since the last commit
+abbd scope IDS [--why TEXT] [--root DIR]
+                                     declare the comma-separated units the task at hand means to
+                                     touch, and why, in a file git ignores; abbd review then names
+                                     what the change touched outside them and what it left alone
 abbd review [--base REV] [--features] [--markdown] [--root DIR]
                                      one surface for a reviewer: the change since REV, who uses
                                      each contract or entry it touched with origin and feature,
@@ -222,6 +226,7 @@ type opts struct {
 	base             string
 	unit             string
 	history          bool
+	why              string
 	markdown         bool
 	sentence         string
 	page             bool
@@ -271,6 +276,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	},
 	"markdown": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.markdown, "markdown", false, "print the review as one pull request comment in markdown, with a drawing of the touched modules")
+	},
+	"why": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.why, "why", "", "the one line the task means to do")
 	},
 	"history": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.history, "history", false, "name the commit and pull request that recorded each reader's coupling")
@@ -342,6 +350,7 @@ var commands = map[string]command{
 	"path":            {flags: []string{"root"}, pos: []int{2}, run: func(e env, pos []string) error { return e.path(pos[0], pos[1]) }},
 	"impact":          {flags: []string{"root", "features"}, pos: []int{1}, run: func(e env, pos []string) error { return e.impact(pos[0]) }},
 	"diff":            {flags: []string{"root", "base", "json", "check", "unit", "page"}, pos: []int{0}, run: func(e env, _ []string) error { return e.diff() }},
+	"scope":           {flags: []string{"root", "why"}, pos: []int{1}, run: func(e env, pos []string) error { return e.scope(pos[0]) }},
 	"review":          {flags: []string{"root", "base", "features", "markdown"}, pos: []int{0}, run: func(e env, _ []string) error { return e.review() }},
 	"evidence":        {flags: []string{"root"}, pos: []int{0}, run: func(e env, _ []string) error { return e.checkEvidence() }},
 	"status":          {flags: []string{"root", "check", "verbose"}, pos: []int{0}, run: func(e env, _ []string) error { return e.status() }},

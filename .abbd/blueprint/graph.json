@@ -1278,6 +1278,18 @@
       ]
     },
     {
+      "ID": "IF-0029",
+      "Kind": "IF",
+      "Name": "abbd scope",
+      "Signature": "abbd scope pos{1}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/main.go commands",
+        "cmd/abbd/review.go scope"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -2759,6 +2771,13 @@
       "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd review\""
     },
     {
+      "From": "FEAT-0001",
+      "To": "IF-0029",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Quote": "plugins/abbd/skills/abbd/SKILL.md \"abbd scope\""
+    },
+    {
       "From": "FEAT-0002",
       "To": "IF-0001",
       "Kind": "consumes",
@@ -3494,6 +3513,12 @@
     {
       "From": "MOD-0001",
       "To": "IF-0028",
+      "Kind": "provides",
+      "Origin": "EXTRACTED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "IF-0029",
       "Kind": "provides",
       "Origin": "EXTRACTED"
     },
@@ -4834,7 +4859,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 21,
+        "Uses": 22,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -4931,7 +4956,8 @@
             "stack",
             "table",
             "lint",
-            "review"
+            "review",
+            "scope"
           ]
         }
       ],
@@ -5497,7 +5523,7 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 29,
+        "Provides": 30,
         "Uses": 13,
         "Direct": 12,
         "StaleNotes": 0,
@@ -5925,7 +5951,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -6257,7 +6282,55 @@
                 "Code": true
               },
               {
-                "Text": "): diff compares the units at a base with now, and ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "cmd/abbd/review.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "abbd scope IDS --why TEXT",
+                "Code": true
+              },
+              {
+                "Text": " declares the units a task means to touch, and ",
+                "Code": false
+              },
+              {
+                "Text": "abbd review",
+                "Code": true
+              },
+              {
+                "Text": " sets what the change did beside them (",
+                "Code": false
+              },
+              {
+                "Text": "scopeLines",
+                "Code": true
+              },
+              {
+                "Text": ": units outside the scope, named by their top-level unit, and declared units it left alone); its ",
+                "Code": false
+              },
+              {
+                "Text": "--markdown",
+                "Code": true
+              },
+              {
+                "Text": " comment draws one line per pair of modules (",
+                "Code": false
+              },
+              {
+                "Text": "edgeLabel",
+                "Code": true
+              },
+              {
+                "Text": "). diff compares the units at a base with now, and ",
                 "Code": false
               },
               {
@@ -8389,6 +8462,41 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0029",
+          "Name": "abbd scope",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0029",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "why",
+                "Name": "--why",
+                "Shape": "string",
+                "Need": "",
+                "Users": [
+                  {
+                    "ID": "FEAT-0001",
+                    "Name": "/abbd",
+                    "Badge": "extracted"
+                  }
+                ]
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": true,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -8418,7 +8526,8 @@
             "table",
             "lint",
             "review",
-            "brief"
+            "brief",
+            "scope"
           ]
         },
         {
@@ -25612,7 +25721,6 @@
         }
       ],
       "Understanding": {
-        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -25979,7 +26087,47 @@
                 "Code": true
               },
               {
-                "Text": " file a page can render, leaving out the blueprint, the state, the lint debt and the compare view; ",
+                "Text": " file a page can render, leaving out the blueprint, the state, the lint debt and the compare view, where ",
+                "Code": false
+              },
+              {
+                "Text": "scope.yaml",
+                "Code": true
+              },
+              {
+                "Text": " holds the ",
+                "Code": false
+              },
+              {
+                "Text": "Scope",
+                "Code": true
+              },
+              {
+                "Text": " that ",
+                "Code": false
+              },
+              {
+                "Text": "LoadScope",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "SaveScope",
+                "Code": true
+              },
+              {
+                "Text": " read and write for ",
+                "Code": false
+              },
+              {
+                "Text": "abbd scope",
+                "Code": true
+              },
+              {
+                "Text": ", kept out of git; ",
                 "Code": false
               },
               {
