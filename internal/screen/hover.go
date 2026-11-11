@@ -19,20 +19,9 @@ import (
 // of the view joins it to. A line or a dot carries eN for each shape at an
 // end of a line it carries. Each line's route carries rK for its own number,
 // and each piece of ink rK for every route that runs along it. One fixed set
-// of rules (hoverCSS) then serves every drawing.
-
-// hoverMax is how many shapes a drawing may hold and still take part. A
-// twin counts with its unit, and a chip that stands for several ports
-// counts once. A drawing with more takes no part at all, since a shape the
-// rules cannot name would fade whatever was pointed at. The fixtures'
-// largest drawing holds 35, and a test fails when a real drawing holds
-// more than this.
-const hoverMax = 48
-
-// routeMax is how many lines a drawing may route and still take part,
-// since each line has its own rule that lights it. The fixtures' largest
-// drawing routes 79, and a test fails when a real drawing routes more.
-const routeMax = 96
+// of rules (hoverCSS), sized to the page's largest drawing, then serves every
+// drawing on the page. No drawing is too large to take part: a roads drawing
+// that lit nothing would read every join on its roads as a coupling (J3).
 
 func (d *Drawing) hover() {
 	at := map[string]int{}
@@ -56,10 +45,6 @@ func (d *Drawing) hover() {
 		number(p.Keys...)
 	}
 	d.ways = d.Routes
-	if n > hoverMax || len(d.Routes) > routeMax {
-		d.Routes = nil
-		return
-	}
 	d.numbers = at
 	num := func(id string) (int, bool) {
 		j, ok := at[string(base(model.ID(id)))]
@@ -254,22 +239,55 @@ func through(d string, p pt) bool {
 // ends, and the ink keeps its title. Every rule takes part only where a pointer can rest, so
 // a tap on a phone does not leave a view faded, and focus only when it came
 // from the keyboard, so a click that opens a focus view does not leave V
-// faded on the way back.
-var hoverCSS = func() string {
+// faded on the way back. A page carries rules for its own shapes and routes
+// only, numbered below shapes and routes.
+func hoverCSS(shapes, routes int) string {
+	if shapes == 0 {
+		return ""
+	}
 	var b strings.Builder
 	b.WriteString("@media (hover:hover){\n")
 	shape := `:is(.box,.port)[class*=" n"]`
 	pointed := fmt.Sprintf("svg:has(.route):has(%s:hover,:focus-visible>%s,.w:hover)", shape, shape)
 	fmt.Fprintf(&b, "%s :where(.w,.junction,.count,.lab,.origin,.hop,.badge){opacity:.1}\n", pointed)
 	fmt.Fprintf(&b, "%s :where(.box,.port[class*=\" n\"]){opacity:.3}\n", pointed)
-	for j := range hoverMax {
+	for j := range shapes {
 		on := fmt.Sprintf("svg:has(.p%d:hover,:focus-visible>.p%d)", j, j)
 		fmt.Fprintf(&b, "%s :is(.box,.port).n%d,%s :is(.count,.lab,.origin,.badge).e%d,svg:has(.w.e%d:hover) .p%d{opacity:1}\n", on, j, on, j, j, j)
 		fmt.Fprintf(&b, "%s .route.e%d{opacity:1;--c:var(--k%d)}\n", on, j, j)
 	}
-	for k := range routeMax {
+	for k := range routes {
 		fmt.Fprintf(&b, "svg:has(.w.r%d:hover) .r%d:not(.w){opacity:1}\n", k, k)
 	}
 	b.WriteString("}\n")
 	return b.String()
-}()
+}
+
+// hoverSize is how many shapes and routes the page's drawings number, at
+// most.
+func (p page) hoverSize() (shapes, routes int) {
+	var ds []*Drawing
+	switch p.Template {
+	case "index":
+		ds = append(ds, &p.Overview)
+	case "module":
+		if p.Inside != nil {
+			ds = append(ds, &p.Inside.Drawing)
+			for i := range p.Inside.Focus {
+				ds = append(ds, &p.Inside.Focus[i].Drawing)
+			}
+		}
+		if p.Around != nil {
+			ds = append(ds, &p.Around.Drawing)
+		}
+	case "around":
+		ds = append(ds, &p.Around.Drawing)
+	}
+	for _, d := range ds {
+		for _, j := range d.numbers {
+			shapes = max(shapes, j+1)
+		}
+		routes = max(routes, len(d.Routes))
+	}
+	return shapes, routes
+}

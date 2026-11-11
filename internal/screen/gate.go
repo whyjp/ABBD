@@ -71,6 +71,10 @@ var paged = []struct {
 	// density is the routes a box carries at rest, which the exemplars keep
 	// to one or two.
 	{"density", func(t Totals) int { return t.Density }, false},
+	// false joins are J3's breaches, ink a reader takes at rest for a
+	// coupling no relation makes. A page bound keeps a record from taking
+	// them on as debt.
+	{"false_joins", func(t Totals) int { return t.Criteria["J3"] }, false},
 }
 
 // past says a page total got breaks its bound c.
