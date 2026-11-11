@@ -25,6 +25,9 @@ type lnode struct {
 	// tier is the stored stack's tier the node stands in, from 1 at the
 	// top, 0 for none (tiers).
 	tier int
+	// step is where the node first comes in a stored flow, from 1, 0 for
+	// none: a tier's boxes stand in its row in that order (huddle).
+	step int
 }
 
 // ledge runs from a node to one it uses.
@@ -454,15 +457,18 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	for _, id := range append(slices.Clone(tops), bottoms...) {
 		w[id] = byID[id].w
 	}
-	tiers := map[string]int{}
+	tiers, steps := map[string]int{}, map[string]int{}
 	for _, nd := range nodes {
 		if nd.tier > 0 {
 			tiers[nd.id] = nd.tier
 		}
+		if nd.step > 0 {
+			steps[nd.id] = nd.step
+		}
 	}
 	if len(tiers) > 0 {
 		sorted := sortRows
-		sortRows = func(g *layered) { sorted(g); g.huddle(tiers) }
+		sortRows = func(g *layered) { sorted(g); g.huddle(tiers, steps) }
 	}
 	g := proper(withChips(ranks), w, pairs, lines)
 	sortRows(&g)
@@ -509,7 +515,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		// A move changes the gaps in its row, so a row may come out wider:
 		// past the budget, the drawing keeps the rows as they were.
 		if g.shorten(x) {
-			g.huddle(tiers)
+			g.huddle(tiers, steps)
 			if x2, w2 := g.place(budget, room); w2 <= max(width, budget) {
 				x, width = x2, w2
 			} else {

@@ -1993,11 +1993,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2093,11 +2095,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "keeps the first level a picture of what the code and the human say, never of guesses",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/overview.go",
@@ -2107,7 +2111,7 @@
       ],
       "Parent": "MOD-0034",
       "Evidence": [
-        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering) *overview {\""
+        "internal/screen/overview.go \"func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk) *overview {\""
       ]
     },
     {
@@ -20500,16 +20504,19 @@
       "Name": "internal/screen",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
         "Uses": 12,
         "Direct": 5,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20604,7 +20611,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -21627,7 +21634,31 @@
                 "Code": true
               },
               {
-                "Text": "); a band's title takes the first place along the top of its room above that keeps clear of ink, labels and counts (",
+                "Text": "). On a stored flow's lead it is sought from the hop's arriving end back, so the numbers stand by the boxes the flow reaches, and once the bands are set (",
+                "Code": false
+              },
+              {
+                "Text": "name",
+                "Code": true
+              },
+              {
+                "Text": "), the word its step opens with (",
+                "Code": false
+              },
+              {
+                "Text": "stepWord",
+                "Code": true
+              },
+              {
+                "Text": ") stands beside it where ",
+                "Code": false
+              },
+              {
+                "Text": "wordClear",
+                "Code": true
+              },
+              {
+                "Text": " finds room off ink, numbers and every band's title, at a corner of the number or else over or under it slid from centred, else only the number shows; a band's title takes the first place along the top of its room above that keeps clear of ink, labels and counts (",
                 "Code": false
               },
               {
@@ -21731,31 +21762,7 @@
                 "Code": true
               },
               {
-                "Text": " puts one note above the list instead of a badge on each. A stamped purpose or responsibility (",
-                "Code": false
-              },
-              {
-                "Text": "sentenceOf",
-                "Code": true
-              },
-              {
-                "Text": ") reads STALE when ",
-                "Code": false
-              },
-              {
-                "Text": "Load",
-                "Code": true
-              },
-              {
-                "Text": "'s digest of its unit differs from its ",
-                "Code": false
-              },
-              {
-                "Text": "Digest",
-                "Code": true
-              },
-              {
-                "Text": ", on the page and in the unit index. ",
+                "Text": " puts one note above the list instead of a badge on each. ",
                 "Code": false
               },
               {
@@ -21937,7 +21944,15 @@
                 "Code": true
               },
               {
-                "Text": " keeps a layer's boxes next to each other in their row after every ordering, so each layer's band holds no other box. Each pair of places more than a row apart gets a ",
+                "Text": " keeps a layer's boxes next to each other in their row after every ordering, so each layer's band holds no other box. Within a layer, the boxes a stored flow runs through take their places in the order of its steps (",
+                "Code": false
+              },
+              {
+                "Text": "lnode.step",
+                "Code": true
+              },
+              {
+                "Text": "), so the lead reads one way along each row; only a drawing with a stored stack moves. Each pair of places more than a row apart gets a ",
                 "Code": false
               },
               {
@@ -24243,7 +24258,15 @@
                 "Code": true
               },
               {
-                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1333px wide in a 1600px window, so a drawing at the 1320px budget does not scroll there. A module's page sets its text panel, the description and the list of its units, right after the drawing, its keys and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
+                "Text": " into every page, so each page opens on its own. Its 13rem nav and narrow gutters leave a drawing's box 1248px wide in a 1500px window, so from a 1300px window up ",
+                "Code": false
+              },
+              {
+                "Text": "page.css",
+                "Code": true
+              },
+              {
+                "Text": " shrinks a drawing wider than its box to fit, by at most 0.8, and below that the box scrolls. A module's page sets its text panel, the description and the list of its units, right after the drawing, its keys and its picker, and its unwired contracts, figures, inferred couplings and contract entries after that panel. A module's page shows its inside as ",
                 "Code": false
               },
               {

@@ -1123,8 +1123,10 @@ func (g *layered) ring(focus string, budget int) (map[string]int, int) {
 
 // huddle keeps each tier's boxes in a row next to each other, where the
 // mean of their places stands, so a tier's band holds no other box. Every
-// other item keeps its place among the tiers.
-func (g *layered) huddle(tiers map[string]int) {
+// other item keeps its place among the tiers. Within a tier, the boxes a
+// stored flow runs through take their places in the order of its steps, so
+// the lead reads one way along the row.
+func (g *layered) huddle(tiers, steps map[string]int) {
 	type run struct {
 		at  float64
 		ids []string
@@ -1150,6 +1152,17 @@ func (g *layered) huddle(tiers map[string]int) {
 		}
 		for _, p := range runs {
 			p.at /= float64(n[p])
+			var at []int
+			var on []string
+			for i, id := range p.ids {
+				if steps[id] > 0 {
+					at, on = append(at, i), append(on, id)
+				}
+			}
+			slices.SortFunc(on, func(a, b string) int { return cmp.Compare(steps[a], steps[b]) })
+			for k, i := range at {
+				p.ids[i] = on[k]
+			}
 		}
 		slices.SortStableFunc(runs, func(a, b *run) int { return cmp.Compare(a.at, b.at) })
 		g.rows[r] = g.rows[r][:0]

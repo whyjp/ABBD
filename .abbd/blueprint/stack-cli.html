@@ -69,6 +69,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
@@ -130,6 +135,7 @@ svg g.hop path.hop-way { fill: none; stroke: var(--c); stroke-width: 3.2; stroke
 svg g.badge circle { fill: var(--c); stroke: var(--panel); stroke-width: 2; }
 svg g.badge text { fill: var(--lead-ink); font: 700 10.5px system-ui, sans-serif; text-anchor: middle; }
 svg g.badge.small text { font-size: 8.5px; }
+svg g.badge text.step { fill: var(--c); font: 600 10px system-ui, sans-serif; text-anchor: start; }
 svg g.hop, svg g.badge { transition: opacity .12s; }
 svg path.w.back { stroke-dasharray: 6 4; stroke-width: 1.2; stroke: color-mix(in srgb, var(--c) 70%, var(--bg)); }
 svg circle.junction.back { fill: color-mix(in srgb, var(--c) 70%, var(--bg)); }

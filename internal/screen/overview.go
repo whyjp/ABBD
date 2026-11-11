@@ -477,8 +477,9 @@ func (o *overview) chipFor(at model.ID, cs []model.ID, exit bool) chip {
 // focus view (focus.go), its ring ordered by at, the x of each box in the
 // full view.
 // A stored stack among stacks stands the boxes of each of its tiers together in
-// the stack's order (tier) on the whole overview, not on a focus view.
-func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering) *overview {
+// the stack's order (tier) on the whole overview, not on a focus view, and
+// within a tier the boxes the stored flows run through in their steps' order.
+func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tactic, stacks []layering, flows []flowWalk) *overview {
 	o := &overview{tree: newTree(units), units: map[model.ID]model.Unit{}, providers: map[model.ID][]model.ID{}, users: map[model.ID][]model.ID{}, names: map[model.ID][]string{}, chipBands: map[model.ID][2]int{}, carry: map[[2]model.ID][]model.ID{}, chips: map[model.ID][2][]chip{}}
 	for _, u := range units {
 		o.units[u.ID] = u
@@ -588,7 +589,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 			edges = append(edges, ledge{string(e.From), string(e.To)})
 		}
 	}
-	tiers := map[string]int{}
+	tiers, steps := map[string]int{}, map[string]int{}
 	if focus == "" {
 		box := func(u model.ID) string {
 			if c := o.tree.chain(u); len(c) > 0 && isModule[c[0]] {
@@ -601,6 +602,13 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 				tiers[id] = i + 1
 			}
 		}
+		for _, f := range flows {
+			for _, u := range f.units {
+				if b := box(u); b != "" && steps[b] == 0 {
+					steps[b] = len(steps) + 1
+				}
+			}
+		}
 	}
 	var nodes []lnode
 	for _, m := range o.modules {
@@ -610,7 +618,7 @@ func planOverview(units []model.Unit, focus model.ID, at map[string]int, t tacti
 		w = max(w, min(chipWrap, max(chipsWidth(exits), chipsWidth(entries))))
 		bands := [2]int{chipBand(exits, w, chipRowsMax), chipBand(entries, w, chipRowsMax)}
 		o.chipBands[m] = bands
-		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)]})
+		nodes = append(nodes, lnode{id: string(m), w: w, h: boxH + (len(ls)-1)*nameLine + bands[0] + bands[1] - 2*chipRow, tier: tiers[string(m)], step: steps[string(m)]})
 	}
 	for _, c := range o.contracts {
 		if len(o.providers[c]) == 0 {
