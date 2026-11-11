@@ -15,10 +15,10 @@ pstack is an optional engine behind it. When `~/.claude/plugins/cache/cursor-plu
 
 **The module's text**, with `abbd understand <MOD-ID> <FILE> --reader "<WHO>"`:
 
-- Exactly two sections, `## Overview` then `## Key Concepts`. Split a long one under `###` headings inside it. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
+- Exactly two sections, `## Overview` then `## Key Concepts`. Each section, and each `###` part inside one, holds under 2,000 characters. Key Concepts runs over first, so count it before you store, and split it under `###` headings when it does. How it works, where things live and gotchas go to flows, the drawing and slots, never into the text.
 - Overview: one or two paragraphs, under 2,000 characters, in the present tense, with no dates, PR or issue numbers. It names what the module is responsible for, the contracts it provides and uses by their stored names, and one thing it does not do.
 - Key Concepts: 3 to 10 bullets, each `**Name** (` followed by a code span naming the file or symbol, then `): ` and one to three sentences. Every inside unit the module's page draws is named in some bullet. When a module holds more than ten, one bullet names the units that work together, so the count stays at ten.
-- Rewrite every TODO the brief left and delete its `## Read first` section. `abbd understand` refuses a text with a TODO line or a section other than the two.
+- Rewrite every TODO the brief left and delete its `## Read first` section. `abbd understand <MOD-ID> <FILE>` refuses a text with a TODO line or a section other than the two.
 - Inline marks are `code` spans and `**bold**` only. No links, images, HTML or mermaid. A fence holds code only.
 - `abbd understand <MOD-ID> <FILE>` reports each section over 2,000 characters, each phrase that reads as history, each inside unit the text never names (`unmentioned:`), and each path it names that is code of another unit (`names:`). Split each long section. Reword each flagged phrase that is history; a name or a version number that only reads as history may stay. Name each unmentioned unit. Name another unit's file by that unit instead.
 
