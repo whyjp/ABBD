@@ -41,6 +41,7 @@ type unit struct {
 	Anchors   []anchor `json:"anchors"`
 	Digest    string   `json:"digest,omitempty"`
 	Entries   []entry  `json:"entries,omitempty"`
+	Parent    string   `json:"parent,omitempty"`
 }
 
 // entry is one part of a contract the code spells: a command's flag.
@@ -329,6 +330,10 @@ func modules() []unit {
 			continue
 		}
 		u := unit{Key: "mod-" + strings.TrimPrefix(dir, "internal/"), Kind: "MOD", Name: dir, Anchors: []anchor{{Path: dir}}}
+		// A package inside another package's directory sits inside its module.
+		if up := path.Dir(dir); up != "internal" && len(byDir[up]) > 0 {
+			u.Parent = "mod-" + strings.TrimPrefix(up, "internal/")
+		}
 		for _, p := range byDir[dir] {
 			u.Anchors = append(u.Anchors, anchor{Path: p})
 		}

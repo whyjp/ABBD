@@ -76,9 +76,9 @@
         "Badge": "inferred"
       },
       "Anchors": [
-        "internal/extract/extract.go Parse",
-        "internal/extract/extract.go rawResult",
-        "internal/extract/extract.go rawUnit"
+        "internal/extract/extract.go Doc",
+        "internal/extract/extract.go DocUnit",
+        "internal/extract/extract.go Parse"
       ]
     },
     {
@@ -1294,6 +1294,18 @@
       ]
     },
     {
+      "ID": "IF-0030",
+      "Kind": "IF",
+      "Name": "abbd extract",
+      "Signature": "abbd extract pos{1,2}",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "cmd/abbd/extract.go extractBundled",
+        "cmd/abbd/main.go commands"
+      ]
+    },
+    {
       "ID": "MOD-0001",
       "Kind": "MOD",
       "Name": "abbd CLI",
@@ -1315,6 +1327,7 @@
         "cmd/abbd/diff.go",
         "cmd/abbd/draft.go",
         "cmd/abbd/evidence.go",
+        "cmd/abbd/extract.go",
         "cmd/abbd/figure.go",
         "cmd/abbd/flow.go",
         "cmd/abbd/impact.go",
@@ -1420,11 +1433,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so explain, path and impact answer architecture questions from the state without writing",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns resolving a unit by ID, exact name or near name, and printing topology's explain, path and impact results with names, origins and how's CURRENT or STALE text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/query.go explainHow",
@@ -1669,11 +1684,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract",
@@ -1710,11 +1727,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so no extraction can claim a purpose or responsibility as a code fact or as a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Gives every purpose and responsibility read from extraction output the INFERRED origin.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go inferred"
@@ -1753,11 +1772,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so malformed or overreaching extraction output fails loudly instead of entering the state",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes with unknown fields refused, requires a valid kind, a name and at least one anchor, allows a signature only on contracts, and appends each evidence item as an anchor so a reader's unit is identified by the code it cites.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/extract/extract.go parseUnits"
@@ -1862,11 +1883,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity",
@@ -1902,11 +1925,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader-found unit a human spoke about is not marked absent when a new supplement stops reporting it",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Computes, to a fixed point, the semantic units that carry a USER_STATED fact or relation or are pointed at by a stated relation from a unit that stays, and keeps them present as Stated.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity/identity.go heldByHuman"
@@ -1923,11 +1948,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a rerun of the script or of setup never overwrites what a human stated",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "On a match the extraction replaces anchors, signature, digest and EXTRACTED names and relations; INFERRED guesses are replaced only by a setup (ReplaceGuesses); USER_STATED facts and relations always survive.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/identity/identity.go merge",
@@ -2006,13 +2033,13 @@
         "Stale": true
       },
       "Anchors": [
+        "internal/model/model.go",
         "internal/model/model.go ends",
         "internal/model/model.go vias"
       ],
       "Parent": "MOD-0030",
       "Evidence": [
-        "internal/model/model.go \"var ends = map[RelationKind]struct{ from, to func(Kind) bool }{\"",
-        "internal/model/model.go \"var vias = map[Via]bool{\""
+        "internal/model/model.go \"var viaWords = map[Via]string{\""
       ]
     },
     {
@@ -2390,11 +2417,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/topology",
@@ -2592,6 +2621,21 @@
         "internal/owners",
         "internal/owners/owners.go"
       ]
+    },
+    {
+      "ID": "MOD-0058",
+      "Kind": "MOD",
+      "Name": "internal/extract/frontend",
+      "Signature": "",
+      "Purpose": null,
+      "Responsibility": null,
+      "Anchors": [
+        "internal/extract/frontend",
+        "internal/extract/frontend/cargo.go",
+        "internal/extract/frontend/cmake.go",
+        "internal/extract/frontend/frontend.go"
+      ],
+      "Parent": "MOD-0017"
     }
   ],
   "edges": [
@@ -2990,6 +3034,14 @@
       "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd brief\""
     },
     {
+      "From": "FEAT-0002",
+      "To": "IF-0030",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "call",
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"abbd extract\""
+    },
+    {
       "From": "FEAT-0003",
       "To": "FEAT-0002",
       "Kind": "depends_on",
@@ -3179,7 +3231,7 @@
       "Kind": "depends_on",
       "Origin": "INFERRED",
       "Via": "data",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"a script that prints the extraction JSON from the code alone\""
     },
     {
       "From": "FEAT-0012",
@@ -3648,6 +3700,13 @@
     },
     {
       "From": "MOD-0001",
+      "To": "IF-0030",
+      "Kind": "provides",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0001",
       "To": "MOD-0009",
       "Kind": "depends_on",
       "Origin": "EXTRACTED",
@@ -3854,6 +3913,13 @@
       "Via": "call",
       "Phrase": "long-section check",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0001",
+      "To": "MOD-0058",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     },
     {
       "From": "MOD-0002",
@@ -5023,6 +5089,27 @@
       "Via": "call",
       "Phrase": "Unit, Kind, Module",
       "PhraseOrigin": "INFERRED"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "DATA-0002",
+      "Kind": "consumes",
+      "Origin": "EXTRACTED",
+      "Via": "data"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0017",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
+    },
+    {
+      "From": "MOD-0058",
+      "To": "MOD-0030",
+      "Kind": "depends_on",
+      "Origin": "EXTRACTED",
+      "Via": "call"
     }
   ],
   "modules": [
@@ -5399,7 +5486,7 @@
       },
       "Standing": {
         "Provides": 0,
-        "Uses": 19,
+        "Uses": 20,
         "Direct": 2,
         "StaleNotes": 0,
         "Dead": 0
@@ -5534,7 +5621,8 @@
             "record evidence",
             "flow",
             "lint",
-            "brief"
+            "brief",
+            "extract"
           ]
         }
       ],
@@ -5585,7 +5673,7 @@
           "Kind": "depends_on",
           "Via": "data",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"Write `.abbd/extractor/extract.\u003cext\u003e`, a script that prints the extraction JSON from the code alone\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"a script that prints the extraction JSON from the code alone\""
           ]
         },
         {
@@ -5730,9 +5818,10 @@
         "Stale": true
       },
       "Standing": {
-        "Provides": 30,
+        "Provides": 31,
         "Uses": 13,
         "Direct": 12,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 4
       },
@@ -5803,7 +5892,7 @@
           ],
           "Understanding": {
             "Reader": "abbd reader",
-            "Stale": false,
+            "Stale": true,
             "Blocks": [
               {
                 "Kind": "h",
@@ -6158,7 +6247,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -8945,6 +9034,28 @@
             "Data": false,
             "Notes": false
           }
+        },
+        {
+          "ID": "IF-0030",
+          "Name": "abbd extract",
+          "Notes": null,
+          "Entries": {
+            "ID": "IF-0030",
+            "Shape": "시그니처",
+            "Rows": [
+              {
+                "Key": "root",
+                "Name": "--root",
+                "Shape": "string",
+                "Need": ""
+              }
+            ],
+            "Need": false,
+            "Providers": false,
+            "Users": false,
+            "Data": false,
+            "Notes": false
+          }
         }
       ],
       "Unwired": [
@@ -8975,7 +9086,8 @@
             "lint",
             "review",
             "brief",
-            "scope"
+            "scope",
+            "extract"
           ]
         },
         {
@@ -11142,16 +11254,19 @@
       "Name": "internal/extract",
       "Purpose": {
         "Value": "so untrusted script or model output becomes typed units only after it passes strict checks",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Decodes the extraction JSON with unknown fields refused, validates kinds, names, anchor paths, signatures, parents and relation kinds, and turns evidence into anchors so a reader's unit has a stable identity.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
-        "Uses": 1,
+        "Uses": 2,
         "Direct": 2,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -11200,10 +11315,24 @@
             "internal/extract/extract.go parseUnits"
           ],
           "Understanding": null
+        },
+        {
+          "ID": "MOD-0058",
+          "Name": "internal/extract/frontend",
+          "Kind": "모듈",
+          "Sentence": "",
+          "Guess": false,
+          "Anchors": [
+            "internal/extract/frontend",
+            "internal/extract/frontend/cargo.go",
+            "internal/extract/frontend/cmake.go",
+            "internal/extract/frontend/frontend.go"
+          ],
+          "Understanding": null
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -12287,7 +12416,7 @@
               {
                 "Key": "units",
                 "Name": "units",
-                "Shape": "[]rawUnit",
+                "Shape": "[]DocUnit",
                 "Need": "필수"
               },
               {
@@ -12453,9 +12582,15 @@
                 "Need": "선택"
               },
               {
+                "Key": "units-artifacts",
+                "Name": "units.artifacts",
+                "Shape": "[]model.Artifact",
+                "Need": "선택"
+              },
+              {
                 "Key": "relations",
                 "Name": "relations",
-                "Shape": "[]rawRelation",
+                "Shape": "[]DocRelation",
                 "Need": "선택"
               },
               {
@@ -13991,16 +14126,19 @@
       "Name": "internal/identity",
       "Purpose": {
         "Value": "so a design unit keeps its ID, and everything humans said about it, when the code moves and the script reruns",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Reconciles stored units with a fresh extraction purely: matches them by shared anchors, mints never-reused IDs, decides which facts and relations each origin keeps, and records merge candidates.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 4,
         "Uses": 2,
         "Direct": 3,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -14041,7 +14179,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -15137,6 +15275,7 @@
         "Provides": 2,
         "Uses": 0,
         "Direct": 0,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 0
       },
@@ -15239,6 +15378,7 @@
           "Sentence": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
           "Guess": true,
           "Anchors": [
+            "internal/model/model.go",
             "internal/model/model.go ends",
             "internal/model/model.go vias"
           ],
@@ -15258,7 +15398,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -27652,6 +27792,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "artifacts",
+                "Name": "artifacts",
+                "Shape": "[]Artifact",
+                "Need": "선택"
+              },
+              {
                 "Key": "relations",
                 "Name": "relations",
                 "Shape": "[]Relation",
@@ -28210,16 +28356,19 @@
       "Name": "internal/topology",
       "Purpose": {
         "Value": "so the CLI can answer questions about the stored topology without each command walking units and relations itself",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Answers read-only queries over stored units: one unit at a glance, the strongest shortest path between two units, what a change to some units reaches, and how the topology differs between two revisions.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
         "Uses": 4,
         "Direct": 1,
+        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 2
       },
@@ -28349,7 +28498,7 @@
         }
       ],
       "Understanding": {
-        "Stale": false,
+        "Stale": true,
         "Blocks": [
           {
             "Kind": "h",
@@ -30672,7 +30821,7 @@
         }
       ],
       "Steps": 13,
-      "Stale": 0,
+      "Stale": 1,
       "Lanes": [
         {
           "Unit": "MOD-0041",
@@ -30729,7 +30878,11 @@
               "Quotes": [
                 "cmd/abbd/main.go \"out, err := e.runScript(p.Extract)\"",
                 "cmd/abbd/main.go \"cmd := exec.Command(argv[0], argv[1:]...)\""
-              ]
+              ],
+              "Reasons": [
+                "cmd/abbd/main.go (the quote is gone, or no longer once in the file)"
+              ],
+              "Stale": true
             }
           ]
         },
@@ -31230,7 +31383,7 @@
         }
       ],
       "Rows": 5,
-      "Stale": 0,
+      "Stale": 1,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -31327,7 +31480,11 @@
             "cmd/abbd/main.go \"return res, st.SaveState(state)\"",
             "cmd/abbd/main.go \"current, widened, err := st.UpgradeUnderstandings(res.Units)\"",
             "cmd/abbd/main.go \"p, err := e.st.LoadProject()\""
-          ]
+          ],
+          "Reasons": [
+            "cmd/abbd/main.go (the lines around it changed)"
+          ],
+          "Stale": true
         },
         {
           "N": 2,
