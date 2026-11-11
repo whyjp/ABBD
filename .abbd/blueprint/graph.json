@@ -724,7 +724,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "Defines the JSON contract shared by swarm workers, the extractor script and the supplement: unit kinds, relation kinds, via values, evidence and parent rules.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md"
@@ -1309,6 +1310,7 @@
       },
       "Anchors": [
         "cmd/abbd",
+        "cmd/abbd/binding.go",
         "cmd/abbd/brief.go",
         "cmd/abbd/diff.go",
         "cmd/abbd/draft.go",
@@ -1970,11 +1972,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package decides the same way which units and relations are a reader's guess and which are drawn as the topology",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "A unit is semantic when its name is INFERRED; a relation counts as topology only when it is live and EXTRACTED or USER_STATED, and is a guess when INFERRED.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go Counts",
@@ -1992,11 +1996,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every relation, extracted, read or stated, has a meaning ABBD can draw",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "The table of which unit kinds each relation kind may join (a module or feature provides a contract, anything consumes a contract, anything depends_on any unit) and the list of allowed via values.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go ends",
@@ -2015,11 +2021,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so everyone can tell a code fact from a reader's guess from a human's word",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines the EXTRACTED, INFERRED and USER_STATED origins and enforces that a why-field is never EXTRACTED and that exactly the USER_STATED facts carry a source.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model/model.go sourced",
@@ -6683,7 +6691,15 @@
                 "Code": true
               },
               {
-                "Text": ". For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
+                "Text": ". Brief also lists the module's lines that bind at run time (",
+                "Code": false
+              },
+              {
+                "Text": "binding.go",
+                "Code": true
+              },
+              {
+                "Text": "): a load by name, a process started, a registry, a compiled-in bundle, up to five of each kind. For each box of the module that records neither a purpose nor a responsibility, brief drafts one from the Go doc comment of its anchored symbol, or else its file's header comment (",
                 "Code": false
               },
               {
@@ -6691,7 +6707,7 @@
                 "Code": true
               },
               {
-                "Text": "), never from code or a README,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
+                "Text": "), never from code, a README, a licence or a generated mark,, a lead the reader keeps only where the code bears it out, and lint names every such box as status does. With a CODEOWNERS, review groups the top-level units the change touches or reaches by owner, a catch-all rule giving way to the one for a module's directory. A human's why goes only on a decision; ",
                 "Code": false
               },
               {
@@ -17197,7 +17213,7 @@
                 "Code": true
               },
               {
-                "Text": " or ",
+                "Text": ", ",
                 "Code": false
               },
               {
@@ -17205,7 +17221,23 @@
                 "Code": true
               },
               {
-                "Text": ". ",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "load",
+                "Code": true
+              },
+              {
+                "Text": " for a library loaded by name or ",
+                "Code": false
+              },
+              {
+                "Text": "spawn",
+                "Code": true
+              },
+              {
+                "Text": " for a process started, and a phrase that only restates its via, such as dlopen for load, is refused. ",
                 "Code": false
               },
               {
