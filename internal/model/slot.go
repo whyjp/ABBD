@@ -66,7 +66,7 @@ var noteKey = regexp.MustCompile(`^[a-z0-9][a-z0-9-]*$`)
 func ParseNoteRef(s string) (NoteRef, error) {
 	parts := strings.Split(s, ".")
 	if len(parts) < 2 || len(parts) > 3 {
-		return NoteRef{}, fmt.Errorf("%q is not ID.SLOT or ID.decisions.KEY", s)
+		return NoteRef{}, fmt.Errorf("%q is not ID.SLOT or ID.SLOT.KEY for a keyed slot such as decisions or constraints", s)
 	}
 	if _, _, err := ParseID(parts[0]); err != nil {
 		return NoteRef{}, err

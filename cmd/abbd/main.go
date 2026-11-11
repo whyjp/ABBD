@@ -76,8 +76,9 @@ abbd understand MOD-ID --restamp [--root DIR]
                                      written against
 abbd understand ID.SLOT[.KEY] FILE|- --evidence PATH:LINES:QUOTE [--evidence ...] [--reader WHO] [--root DIR]
                                      store what a reader found for one slot of a module or a
-                                     contract: semantics, failure, states, decisions (one note
-                                     per KEY) or wire_sample; the note is stamped with the lines
+                                     contract: semantics, failure, states, decisions or
+                                     constraints (one note per KEY), wire_sample, or entries
+                                     (one note per entry key); the note is stamped with the lines
                                      around each quote it cites, so it goes STALE when that code
                                      changes and not when other code of the unit does; a human's
                                      why is kept when the decision is stored again on the same

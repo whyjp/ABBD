@@ -419,11 +419,14 @@ func TestAConstraintGoesStaleWithTheCodeThatKeepsIt(t *testing.T) {
 	git(t, p.root, "commit", "-qm", "base")
 	base := rev(t, p.root)
 	p.wantNote(0, "understood MOD-0001.constraints.order", "MOD-0001.constraints.order", "States run pending before charged, and nothing skips one.", statesQuote)
+	p.wantNote(0, "understood MOD-0002.constraints.charged", "MOD-0002.constraints.charged", "The books post only a charge billing marks charged.", statesQuote)
+	p.want(1, "only a decision takes a human's why", "record", "fact", "MOD-0001.constraints.order", "--value", "why", "--source", "pr 1")
 	if !strings.Contains(p.blueprint(), "제약과 불변식") {
 		t.Errorf("the page should show the constraint under its slot")
 	}
 	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
 	p.resync()
 	p.want(1, "stale: MOD-0001.constraints.order", "status", "--check", "--verbose")
-	contains(t, p.want(0, "", "review", "--base", base), "the constraint MOD-0001.constraints.order is STALE")
+	contains(t, p.want(0, "", "review", "--base", base), "the constraint MOD-0001.constraints.order is STALE",
+		"the constraint MOD-0002.constraints.charged is STALE")
 }
