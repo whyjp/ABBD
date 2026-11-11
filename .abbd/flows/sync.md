@@ -3,13 +3,13 @@ question: What does abbd sync do, in order?
 format: 1
 steps:
     - unit: MOD-0041
-      does: LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut
+      does: LoadProject() reads project.yaml → extraction argv, name, purpose, the overview_cut choice
       fails: stops when project.yaml names no script; run abbd setup first
       calls:
         - CFG-0002
       evidence:
         - path: internal/store/store.go
-          lines: "565"
+          lines: "569"
           quote: return p, readYAML(s.path("project.yaml"), &p)
         - path: cmd/abbd/main.go
           lines: "456"
@@ -21,7 +21,7 @@ steps:
       code:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
-        internal/store/store.go#quote-ac7ade60: 48cd87ae44eebe3c
+        internal/store/store.go#quote-ac7ade60: 384e6d146d0e2fc6
     - unit: MOD-0004
       does: runScript(argv) → the script's stdout, run in the project root
       fails: stops when the script exits non-zero, and prints its stderr
@@ -312,6 +312,23 @@ retired:
         cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
         cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
         internal/store/store.go#quote-ac7ade60: b76daadf56ef2bcd
+    - unit: MOD-0041
+      does: LoadProject() reads project.yaml → extraction argv, name, purpose, overview_cut
+      fails: stops when project.yaml names no script; run abbd setup first
+      evidence:
+        - path: internal/store/store.go
+          lines: "565"
+          quote: return p, readYAML(s.path("project.yaml"), &p)
+        - path: cmd/abbd/main.go
+          lines: "456"
+          quote: p, err := e.st.LoadProject()
+        - path: cmd/abbd/main.go
+          lines: "460"
+          quote: if len(p.Extract) == 0 {
+      code:
+        cmd/abbd/main.go#quote-db012aa7: b732db54bf14e694
+        cmd/abbd/main.go#quote-f3e597fc: fc7bb3d5697db4c4
+        internal/store/store.go#quote-ac7ade60: 48cd87ae44eebe3c
 ---
 
 What one `abbd sync` does, from the registered script to the rendered blueprint. Everything after the extraction runs inside `syncActual`, and publishing runs in `run` after any command that writes.

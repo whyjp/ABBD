@@ -124,6 +124,8 @@ When the human states a purpose, a responsibility or a coupling in the conversat
 - `abbd record relation <FROM> <KIND> <TO> --source <REF>`, for a coupling the code does not show
 - `abbd retract <TARGET> --reason "<why>" --source <REF>`, when the human says a reader's or the supplement's claim is wrong
 
+When the human says the overview has too many lines, or wants every line back, set `overview_cut: true` or `overview_cut: false` in `.abbd/project.yaml` and run `abbd sync`, which redraws it. With it on, the overview draws its main lines and counts the rest as a `+N` on each box that opens the box's own view. Tell the human they can flip it any time.
+
 ## After work
 
 1. Run `abbd sync` so the state and the blueprint match the changed code, then `abbd diff`. When sync reports drifted evidence, run `abbd evidence`. For each drifted item under the paths you changed, refresh it with `abbd record evidence <TARGET> --evidence <PATH:LINES:QUOTE>` if the claim still holds, or retract it if it does not. A drifted item dies at the first sync of a later revision, so this PR is where it gets fixed.
