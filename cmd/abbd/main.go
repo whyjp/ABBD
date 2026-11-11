@@ -121,11 +121,14 @@ abbd table KEY FILE|- [--source REF] [--root DIR]
                                      how many cells under a unit's column the stored relations
                                      do not bear out
 abbd table KEY [--root DIR]          print the stored table as a draft to edit and store again
-abbd explain QUERY [--root DIR]      one unit at a glance: its contracts, neighbours, inside
+abbd explain QUERY [--history] [--root DIR]
+                                     one unit at a glance: its contracts, neighbours, inside
                                      units, a reader's couplings with their quotes, a reader's text;
                                      QUERY is a unit ID or name, a file or directory path, a
                                      symbol, or a phrase, and a QUERY that is no unit lists
                                      the units it matches, best first, and explains the best
+                                     --history names the commit and pull request that recorded
+                                     each reader's coupling
 abbd path A B [--root DIR]           the shortest path between two units, each hop with its
                                      origin, and the path's weakest origin; A and B are QUERYs
 abbd impact QUERIES [--root DIR]     what a change to the comma-separated units reaches, in a
@@ -163,7 +166,8 @@ abbd lint [VIEW] [--json] [--list] [--record [--keep-level VIEW=REASON ...]] [--
                                      their debt and ceilings; the first --record refuses while a
                                      view with hard breaches has a level line, unless
                                      --keep-level names that view and why it stays
-abbd status [--check] [--root DIR]   whether the state and the blueprint are CURRENT, counts,
+abbd status [--check] [--verbose] [--root DIR]
+                                     whether the state and the blueprint are CURRENT, counts,
                                      drifted and dead evidence, retractions and parent conflicts;
                                      --check exits 1 when the state, the blueprint, a module
                                      text, a note, a flow's step, a stack's layer or a table's row
@@ -175,7 +179,8 @@ abbd status [--check] [--root DIR]   whether the state and the blueprint are CUR
                                      orphaned text, one whose module is gone or no longer
                                      top-level, a relation that runs up a stack, and a table's
                                      cell the stored relations do not bear out are reported but
-                                     do not fail it`
+                                     do not fail it; long: and unbacked: lines fold into one count
+                                     each unless --verbose lists them`
 
 const (
 	exitOK    = 0

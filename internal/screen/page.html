@@ -60,7 +60,7 @@
 {{define "module"}}{{template "head" .}}{{$p := .}}{{with .Inside}}
 <section class="inside page" id="m-{{.ID}}">
   <div class="drawhead"><h2>{{.Name}}의 안 <span class="muted key">{{.ID}}</span></h2><div class="views"><a href="{{.Up}}">한 단계 위로</a> <a href="#overview">모듈과 계약으로</a></div></div>
-{{with .Standing}}<p class="muted standing">{{if .Provides}}계약 {{.Provides}}개를 내놓고{{else}}내놓는 계약 없이{{end}} {{if .Uses}}{{.Uses}}개를 씁니다{{else}}쓰는 계약도 없습니다{{end}}. {{if .Direct}}계약 없이 {{.Direct}}곳에 직접 의존합니다.{{else}}계약 없이 닿는 곳은 없습니다.{{end}}{{if .TextStale}} 설명은 코드가 바뀐 뒤 다시 읽히지 않았습니다 <span class="pill STALE">STALE</span>.{{end}}{{if .StaleNotes}} STALE인 설명이 {{.StaleNotes}}개 있습니다.{{end}}{{if .Dead}} 근거 {{.Dead}}개가 코드에서 사라졌습니다.{{end}}</p>{{end}}
+{{with .Standing}}<p class="muted standing">{{if .Provides}}계약 {{.Provides}}개를 내놓고{{else}}내놓는 계약 없이{{end}} {{if .Uses}}{{if .Provides}}{{.Uses}}개를{{else}}계약 {{.Uses}}개를{{end}} 씁니다{{else}}쓰는 계약은 없습니다{{end}}. {{if .Direct}}계약 없이 {{.Direct}}곳에 직접 의존합니다.{{else}}계약 없이 닿는 곳은 없습니다.{{end}}{{if .TextStale}} 설명은 코드가 바뀐 뒤 다시 읽히지 않았습니다 <span class="pill STALE">STALE</span>.{{end}}{{if .StaleNotes}} STALE인 설명이 {{.StaleNotes}}개 있습니다.{{end}}{{if .Dead}} 근거 {{.Dead}}개가 코드에서 사라졌습니다.{{end}}</p>{{end}}
   {{with .Responsibility}}<p class="role"><strong>맡은 것</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}{{with .Purpose}}<p class="role"><strong>왜 있는가</strong> {{.Value}} <span class="pill {{.Badge}}" title="{{tip .Badge}}">{{label .Badge}}</span></p>{{end}}
   <div class="mapbox">{{template "drawing" .Drawing}}</div>
   {{template "keys" .Drawing}}
