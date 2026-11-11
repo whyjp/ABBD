@@ -6097,7 +6097,15 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. Status counts in its ",
+                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. ",
+                "Code": false
+              },
+              {
+                "Text": "abbd status",
+                "Code": true
+              },
+              {
+                "Text": " counts in its ",
                 "Code": false
               },
               {
@@ -6322,7 +6330,23 @@
                 "Code": true
               },
               {
-                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file.",
+                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file. The block says the blueprint is drawn at ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/blueprint/index.html",
+                "Code": true
+              },
+              {
+                "Text": " and that ",
+                "Code": false
+              },
+              {
+                "Text": "abbd sync",
+                "Code": true
+              },
+              {
+                "Text": " keeps it current, since the pages are committed.",
                 "Code": false
               }
             ]
@@ -22400,7 +22424,23 @@
                 "Code": true
               },
               {
-                "Text": "). Where no run moves, ",
+                "Text": "). Then a last pass merges long runs, ",
+                "Code": false
+              },
+              {
+                "Text": "roadLong",
+                "Code": true
+              },
+              {
+                "Text": " (96px) or more side by side, of one kind and dotting from up to ",
+                "Code": false
+              },
+              {
+                "Text": "roadReach",
+                "Code": true
+              },
+              {
+                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway. Where no run moves, ",
                 "Code": false
               },
               {
