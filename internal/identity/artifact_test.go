@@ -20,13 +20,13 @@ func TestAnArtifactKeepsItsWriterThroughSync(t *testing.T) {
 
 	set := Reconcile(nil, nil, unit(fact(model.Supplement, "shared")), nil, hw, Setup)
 	synced := Reconcile(set.Units, nil, unit(nil), nil, set.HighWater, Sync)
-	if got := synced.Units[0].Built(); got != "shared" {
+	if got := model.ArtifactSet(synced.Units[0].Built()); got != "shared" {
 		t.Errorf("a sync of the script alone dropped the supplement's artifact: %q", got)
 	}
 
 	set = Reconcile(nil, nil, unit(fact(model.Script, "static")), nil, hw, Setup)
 	synced = Reconcile(set.Units, nil, unit(nil), nil, set.HighWater, Sync)
-	if got := synced.Units[0].Built(); got != "" {
+	if got := model.ArtifactSet(synced.Units[0].Built()); got != "" {
 		t.Errorf("an artifact the script no longer reads stayed: %q", got)
 	}
 }

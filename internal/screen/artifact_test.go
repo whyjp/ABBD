@@ -11,14 +11,14 @@ import (
 // what it does, and a module it is not leaves its box as it was.
 func TestABoxSaysTheBuildArtifactItsModuleIs(t *testing.T) {
 	units := ripgrep()
-	exe, shared := model.Said(model.Script, "exe"), model.Said(model.Script, "shared")
+	exe, shared := model.Said(model.Script, "exe"), model.Said(model.Script, "shared,static")
 	units[0].Artifact, units[3].Artifact = &exe, &shared
 	m := Build(Input{Units: units})
 	got := map[string]Box{}
 	for _, b := range m.Overview.Boxes {
 		got[b.ID] = b
 	}
-	for id, want := range map[string]string{"MOD-0001": "실행 파일", "MOD-0004": "공유 라이브러리", "MOD-0002": ""} {
+	for id, want := range map[string]string{"MOD-0001": "실행 파일", "MOD-0004": "공유 라이브러리 · 정적 라이브러리", "MOD-0002": ""} {
 		b := got[id]
 		if b.Artifact != want {
 			t.Errorf("%s says artifact %q, want %q", id, b.Artifact, want)
@@ -31,8 +31,8 @@ func TestABoxSaysTheBuildArtifactItsModuleIs(t *testing.T) {
 		}
 	}
 	for _, r := range m.Units {
-		if r.ID == "MOD-0004" && r.Artifact != "shared" {
-			t.Errorf("graph.json row of MOD-0004 says artifact %q, want shared", r.Artifact)
+		if r.ID == "MOD-0004" && r.Artifact != "shared,static" {
+			t.Errorf("graph.json row of MOD-0004 says artifact %q, want shared,static", r.Artifact)
 		}
 	}
 }

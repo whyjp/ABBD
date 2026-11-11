@@ -28,7 +28,7 @@ type rawUnit struct {
 	Purpose        string           `json:"purpose,omitempty"`
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
-	Artifact       model.Artifact   `json:"artifact,omitempty"`
+	Artifacts      []model.Artifact `json:"artifacts,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
@@ -269,10 +269,15 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			f := model.Said(model.Script, ru.Signature)
 			sig = &f
 		}
-		if err := ru.Artifact.Validate(); err != nil {
-			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+		for j, a := range ru.Artifacts {
+			if err := a.Validate(); err != nil {
+				return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+			}
+			if slices.Contains(ru.Artifacts[:j], a) {
+				return nil, raw, fmt.Errorf("unit %d (%s): artifact %s is listed twice", i, ru.Name, a)
+			}
 		}
-		if ru.Artifact != "" && ru.Kind != model.Module {
+		if len(ru.Artifacts) > 0 && ru.Kind != model.Module {
 			return nil, raw, fmt.Errorf("unit %d (%s): only a module is a build artifact", i, ru.Name)
 		}
 		es, err := normalizeEntries(ru.Kind, ru.Entries)
@@ -289,7 +294,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
-			Artifact:       said(ru.Artifact),
+			Artifact:       said(ru.Artifacts),
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,
@@ -354,12 +359,12 @@ func normalizePath(p string) (string, error) {
 
 // Extraction reads code, so any statement of intent it makes is a guess, and
 // it ranks with the supplement's.
-// said is the build artifact the script read, or nil for none.
-func said(a model.Artifact) *model.Fact {
-	if a == "" {
+// said is the set of build artifacts the script read, or nil for none.
+func said(as []model.Artifact) *model.Fact {
+	if len(as) == 0 {
 		return nil
 	}
-	f := model.Said(model.Script, string(a))
+	f := model.Said(model.Script, model.ArtifactSet(as))
 	return &f
 }
 

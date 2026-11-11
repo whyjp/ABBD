@@ -202,9 +202,10 @@ type Unit struct {
 	// Digest fingerprints the code behind a contract's anchors, so a diff sees
 	// a change of meaning the signature cannot show.
 	Digest string `yaml:"digest,omitempty"`
-	// Artifact is what the build makes of a module, such as a shared library
-	// or a plugin module the host loads, with whoever said it: the script
-	// that reads the build, or the supplement where no script does.
+	// Artifact is the set of what the build makes of a module, such as a
+	// shared library or a plugin module the host loads, as ArtifactSet keeps
+	// it, with whoever said it: the script that reads the build, or the
+	// supplement where no script does.
 	Artifact *Fact `yaml:"artifact,omitempty"`
 	// Relations is the shown claim on each edge. Hidden holds the other
 	// writers' claims on a shown edge and the claims a mask hides.
@@ -644,12 +645,37 @@ var artifactWords = map[Artifact]string{
 	"exe": "실행 파일", "static": "정적 라이브러리", "shared": "공유 라이브러리", "module": "로드 모듈", "cdylib": "cdylib",
 }
 
-// Built is the build artifact the unit is, or "" for none.
-func (u Unit) Built() Artifact {
-	if u.Artifact == nil {
-		return ""
+// Built is the set of build artifacts the unit is, sorted, or none. A crate
+// may build as a cdylib and a staticlib at once.
+func (u Unit) Built() []Artifact {
+	if u.Artifact == nil || u.Artifact.Value == "" {
+		return nil
 	}
-	return Artifact(u.Artifact.Value)
+	var out []Artifact
+	for _, a := range strings.Split(u.Artifact.Value, ",") {
+		out = append(out, Artifact(a))
+	}
+	return out
+}
+
+// ArtifactSet is a set of artifacts as a unit stores it: sorted, without
+// repeats, joined by commas.
+func ArtifactSet(as []Artifact) string {
+	var ss []string
+	for _, a := range as {
+		ss = append(ss, string(a))
+	}
+	slices.Sort(ss)
+	return strings.Join(slices.Compact(ss), ",")
+}
+
+// Words says a set of artifacts in the blueprint's words.
+func Words(as []Artifact) string {
+	var ws []string
+	for _, a := range as {
+		ws = append(ws, a.Word())
+	}
+	return strings.Join(ws, " · ")
 }
 
 // Word is the artifact in the blueprint's words, or "" for none.

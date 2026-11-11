@@ -95,8 +95,8 @@ func (e env) explain(s string) error {
 	if u.Parent != "" {
 		fmt.Fprintf(w, "inside %s %s\n", u.Parent, name[u.Parent])
 	}
-	if a := u.Built(); a != "" {
-		fmt.Fprintf(w, "artifact: %s (%s; %s)\n", a, a.Word(), origin(u.Artifact))
+	if as := u.Built(); len(as) > 0 {
+		fmt.Fprintf(w, "artifacts: %s (%s; %s)\n", strings.ReplaceAll(model.ArtifactSet(as), ",", ", "), model.Words(as), origin(u.Artifact))
 	}
 	for _, f := range []struct {
 		label string
