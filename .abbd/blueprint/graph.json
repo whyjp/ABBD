@@ -809,7 +809,7 @@
       ],
       "Parent": "FEAT-0002",
       "Evidence": [
-        "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+        "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
       ]
     },
     {
@@ -3288,7 +3288,7 @@
       "Via": "call",
       "Phrase": "Overview, Key Concepts",
       "PhraseOrigin": "INFERRED",
-      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+      "Quote": "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
     },
     {
       "From": "FEAT-0025",
@@ -5348,7 +5348,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
           ]
         }
       ]
@@ -5637,7 +5637,7 @@
           "Kind": "depends_on",
           "Via": "call",
           "Quotes": [
-            "plugins/abbd/skills/abbd-setup/SKILL.md \"For each top-level module, read it per the reader\""
+            "plugins/abbd/skills/abbd-setup/SKILL.md \"for each top-level module, read it per the reader\""
           ]
         },
         {
@@ -19327,7 +19327,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " fills the project's name from its directory when project.yaml names none, and ",
+                  "Text": " names the project ABBD when project.yaml names none, never after the checkout's folder, and ",
                   "Code": false
                 },
                 {
@@ -20334,7 +20334,7 @@
                 "Code": true
               },
               {
-                "Text": " fills the project's name from its directory when project.yaml names none, and ",
+                "Text": " names the project ABBD when project.yaml names none, never after the checkout's folder, and ",
                 "Code": false
               },
               {
@@ -26362,7 +26362,7 @@
                 "Code": true
               },
               {
-                "Text": " from project.yaml, and ",
+                "Text": " from project.yaml, the name ABBD when none is written, and ",
                 "Code": false
               },
               {
