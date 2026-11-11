@@ -8,15 +8,11 @@ import (
 	"github.com/whyjp/abbd/internal/model"
 )
 
-// A line says the phrase its relations share. A line whose relations differ
-// says the phrase the most carry, the first by name among equals, with 등
-// when at least half carry it, and otherwise by its first name with 외 and
-// how many relations do not carry it, so one phrase of ten never
-// passes for the line (rule 25). A bus counts its lines instead, so its
-// label adds up to its ×N. A phrase too wide keeps the names before its
-// commas that fit, else the next phrase speaks if at least half carry it.
-// A line with no phrase that fits falls back to the via word its relations
-// share.
+// A line says one name at rest: the first of the phrase the most of its
+// relations carry, the first by name among equals, never a list, 등 or 외 N.
+// A bus counts its lines instead of relations. A name too wide gives way to
+// the next phrase's. A line with no phrase that fits falls back to the via
+// word its relations share. The tooltip keeps every phrase and its share.
 func TestALineSaysWhatCrossesIt(t *testing.T) {
 	long := strings.Repeat("x", model.PhraseMax)
 	tr := tree{
@@ -33,28 +29,28 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		want string
 	}{
 		{[]string{"a", "b"}, "Cypher"},
-		{[]string{"a", "b", "c"}, "Cypher 등"},
-		{[]string{"a", "c"}, "Cypher 등"},
-		{[]string{"c", "a"}, "Cypher 등"},
-		{[]string{"a", "b", "c", "e"}, "Cypher 등"},
-		{[]string{"a", "c", "e"}, "Cypher 외 2"},
-		{[]string{"a", "d", "c", "x"}, "Cypher 외 3"},
-		{[]string{"a", "x"}, "Cypher 등"},
-		{[]string{"c", "x", "y"}, "schema fetch 외 2"},
+		{[]string{"a", "b", "c"}, "Cypher"},
+		{[]string{"a", "c"}, "Cypher"},
+		{[]string{"c", "a"}, "Cypher"},
+		{[]string{"a", "b", "c", "e"}, "Cypher"},
+		{[]string{"a", "c", "e"}, "Cypher"},
+		{[]string{"a", "d", "c", "x"}, "Cypher"},
+		{[]string{"a", "x"}, "Cypher"},
+		{[]string{"c", "x", "y"}, "schema fetch"},
 		{[]string{"d", "e"}, ""},
 		{[]string{"e", "x"}, ""},
 		{[]string{"d"}, "데이터"},
 		{[]string{"x"}, ""},
 		{[]string{"l"}, long},
-		{[]string{"l", "e"}, "호출"},
+		{[]string{"l", "e"}, long},
 		{[]string{"m"}, "호출"},
-		{[]string{"l", "d"}, ""},
-		{[]string{"k"}, "COMP_WORDS 등"},
-		{[]string{"w", "v"}, "binding.Validator 등"},
-		{[]string{"n", "x", "y"}, "Evidence 외 2"},
-		{[]string{"n", "x"}, "Evidence, Entry 등"},
-		{[]string{"f", "x", "y"}, "render(ctx, w) 외 2"},
-		{[]string{"l", "l2", "c"}, "호출"},
+		{[]string{"l", "d"}, long},
+		{[]string{"k"}, "COMP_WORDS"},
+		{[]string{"w", "v"}, "EnableDecoderUseNumber"},
+		{[]string{"n", "x", "y"}, "Evidence"},
+		{[]string{"n", "x"}, "Evidence"},
+		{[]string{"f", "x", "y"}, "render(ctx, w)"},
+		{[]string{"l", "l2", "c"}, long},
 	} {
 		if got := wordOf(tr, tc.rels); got != tc.want {
 			t.Errorf("%v says %q, want %q", tc.rels, got, tc.want)
@@ -63,8 +59,8 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 	// Map order changes from run to run, so only many runs show a tie broken
 	// by chance.
 	for range 200 {
-		if got := wordOf(tr, []string{"t1", "t2", "t3", "t4"}); got != "alpha 외 3" {
-			t.Fatalf("four phrases carried once each say %q, want the first by name, \"alpha 외 3\"", got)
+		if got := wordOf(tr, []string{"t1", "t2", "t3", "t4"}); got != "alpha" {
+			t.Fatalf("four phrases carried once each say %q, want the first by name, \"alpha\"", got)
 		}
 	}
 	if got := said(tr, [][]string{{"c", "a", "b", "d", "x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/5", "schema fetch (사람) 1/5"}) {
@@ -75,12 +71,12 @@ func TestALineSaysWhatCrossesIt(t *testing.T) {
 		want  string
 	}{
 		{[][]string{{"a"}, {"b"}}, "Cypher"},
-		{[][]string{{"a", "e"}, {"b"}}, "Cypher 등"},
-		{[][]string{{"a", "e"}, {"x"}, {"y"}}, "Cypher 외 2"},
-		{[][]string{{"a"}, {"b"}, {"c"}, {"x"}, {"y"}}, "Cypher 외 3"},
+		{[][]string{{"a", "e"}, {"b"}}, "Cypher"},
+		{[][]string{{"a", "e"}, {"x"}, {"c"}}, "Cypher"},
+		{[][]string{{"c"}, {"b"}, {"c"}, {"x"}, {"y"}}, "schema fetch"},
 	} {
 		if got, _ := word(tr, tc.lines); got != tc.want {
-			t.Errorf("a bus of %v says %q, want %q, whose lines add up to its ×%d", tc.lines, got, tc.want, len(tc.lines))
+			t.Errorf("a bus of %v says %q, want %q, the phrase most of its lines carry", tc.lines, got, tc.want)
 		}
 	}
 	if got := said(tr, [][]string{{"a", "c"}, {"b"}, {"x"}}); !slices.Equal(got, []string{"Cypher (판독) 2/3", "schema fetch (사람) 1/3"}) {

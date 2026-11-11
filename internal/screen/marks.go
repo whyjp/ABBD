@@ -367,11 +367,8 @@ const (
 	// how far it stands off its line, and labelRoom how far it keeps from
 	// every other mark.
 	labelPx, labelH, labelPad, labelOff, labelRoom = 11, 10, 10, 3, 2
-	// labelMax is the widest a label may be, about 21 letters with 등.
+	// labelMax is the widest a label may be, about 24 lower-case letters.
 	labelMax = 170
-	// most is the mark after a phrase that names at least half of a line's
-	// relations but not all, or that keeps only its leading names.
-	most = " 등"
 )
 
 // Label is a word set upright beside one straight stretch of a line,
@@ -441,41 +438,29 @@ func phraseNames(p string) []string {
 	return append(out, p[from:])
 }
 
-// word is what a wire's label says about the lines it speaks for (units),
-// and whether it is a phrase. It names the phrase the most units carry, the
-// first by name among equals: alone when every relation carries it, with 등
-// when at least half the units do, and otherwise by its first name with 외
-// and how many units do not carry it, so a phrase that few lines carry
-// never passes for the bus, and the lines that carry it and N add up to
-// the bus's ×N. A phrase too wide for labelMax keeps the names before its
-// commas that fit, with 등. When it still does not fit the next phrase
-// speaks, but only one at least half the units carry; else the via word
-// all the relations share, else "".
+// sayings lists, each once, the first names of the phrases the lines a
+// wire's label speaks for (units) carry that fit labelMax: the phrase the
+// most units carry first, the first by name among equals.
+func sayings(t tree, lines [][]string) []string {
+	n := carried(units(lines), func(r string) string { return t.phrases[r].text })
+	var out []string
+	for _, p := range slices.SortedFunc(maps.Keys(n), func(a, b string) int { return cmp.Or(n[b]-n[a], strings.Compare(a, b)) }) {
+		if s := phraseNames(p)[0]; textWidth(s, labelPx) <= labelMax && !slices.Contains(out, s) {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// word is what a wire's label says at rest about the lines it speaks for,
+// and whether it is a phrase. It says one name, the first of sayings, so a
+// line reads one word as the exemplars' lines do, never a list or a count.
+// The phrase's other names, the other phrases and their shares stay in the
+// tooltip (see said). With no name it is the via word all the relations
+// share, else "".
 func word(t tree, lines [][]string) (string, bool) {
-	us := units(lines)
-	n := carried(us, func(r string) string { return t.phrases[r].text })
-	for i, p := range slices.SortedFunc(maps.Keys(n), func(a, b string) int { return cmp.Or(n[b]-n[a], strings.Compare(a, b)) }) {
-		c := n[p]
-		if i > 0 && 2*c < len(us) {
-			break
-		}
-		ns := phraseNames(p)
-		tries := []string{fmt.Sprintf("%s 외 %d", ns[0], len(us)-c)}
-		if 2*c >= len(us) {
-			rest := most
-			if every(lines, func(r string) bool { return t.phrases[r].text == p }) {
-				rest = ""
-			}
-			tries = []string{p + rest}
-			for k := len(ns) - 1; k > 0; k-- {
-				tries = append(tries, strings.Join(ns[:k], ", ")+most)
-			}
-		}
-		for _, s := range tries {
-			if textWidth(s, labelPx) <= labelMax {
-				return s, true
-			}
-		}
+	if ns := sayings(t, lines); len(ns) > 0 {
+		return ns[0], true
 	}
 	via := ""
 	for _, line := range lines {
@@ -488,10 +473,6 @@ func word(t tree, lines [][]string) (string, bool) {
 		}
 	}
 	return via, false
-}
-
-func every(lines [][]string, f func(string) bool) bool {
-	return !slices.ContainsFunc(lines, func(l []string) bool { return slices.ContainsFunc(l, func(r string) bool { return !f(r) }) })
 }
 
 // said lists the phrases of the lines a wire's label speaks for, each once
@@ -627,8 +608,13 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if s == "" || n != 0 && whole[n] && done[n] {
 			continue
 		}
-		tw := textWidth(s, labelPx)
 		said := saids[i]
+		// A phrase that would repeat a word set nearby gives way to the
+		// line's next phrase, which tells it apart from its neighbours.
+		says := []string{s}
+		if said {
+			says = sayings(t, d.Wires[i].lines)
+		}
 		var mine []seg
 		for _, g := range segs {
 			if mate(i, g.wire) {
@@ -712,43 +698,53 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		// the second lets a word come within labelRoom of an end where the
 		// line runs straight on along other lines' ink, a join and not a turn,
 		// so a road that shortens a line's own stretch does not lose its word.
+		// The first passes try each of says in turn. A phrase skips the last
+		// passes, so it never stands near the same phrase and keeps to its
+		// tooltip instead. Only a via word, with no other word to try, takes
+		// them.
 	search:
 		for _, pass := range [][2]bool{{false, false}, {false, true}, {true, false}, {true, true}} {
 			near, joined := pass[0], pass[1]
-			for _, g := range mine {
-				half := tw / 2
-				if !g.flat() {
-					half = labelH / 2
+			for k, s := range says {
+				if near && (said || k > 0) {
+					break
 				}
-				padLo, padHi := labelPad, labelPad
-				if joined {
-					padLo, padHi = pads(g)
-					if padLo == labelPad && padHi == labelPad {
-						continue
+				tw := textWidth(s, labelPx)
+				for _, g := range mine {
+					half := tw / 2
+					if !g.flat() {
+						half = labelH / 2
 					}
-				}
-				lo, hi := g.lo()+padLo+half, g.hi()-padHi-half
-				if lo > hi {
-					continue
-				}
-				mid := (lo + hi) / 2
-				for off := 0; mid-off >= lo || mid+off <= hi; off += 4 {
-					for _, c := range []int{mid - off, mid + off} {
-						if c < lo || c > hi {
+					padLo, padHi := labelPad, labelPad
+					if joined {
+						padLo, padHi = pads(g)
+						if padLo == labelPad && padHi == labelPad {
 							continue
 						}
-						var opts []Label
-						if g.flat() {
-							y := g.a.y
-							opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
-						} else {
-							x, y := g.a.x, c+labelH/2-1
-							opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
-						}
-						for _, l := range opts {
-							if !repeats(i, l, near) && clear(g, l, c-half, c+half) {
-								got = &l
-								break search
+					}
+					lo, hi := g.lo()+padLo+half, g.hi()-padHi-half
+					if lo > hi {
+						continue
+					}
+					mid := (lo + hi) / 2
+					for off := 0; mid-off >= lo || mid+off <= hi; off += 4 {
+						for _, c := range []int{mid - off, mid + off} {
+							if c < lo || c > hi {
+								continue
+							}
+							var opts []Label
+							if g.flat() {
+								y := g.a.y
+								opts = []Label{{s, c, y - labelOff - 1, said}, {s, c, y + labelOff + labelH - 1, said}}
+							} else {
+								x, y := g.a.x, c+labelH/2-1
+								opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
+							}
+							for _, l := range opts {
+								if !repeats(i, l, near) && clear(g, l, c-half, c+half) {
+									got = &l
+									break search
+								}
 							}
 						}
 					}
