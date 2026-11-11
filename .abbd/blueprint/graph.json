@@ -20008,6 +20008,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -22963,7 +22964,7 @@
                 "Code": true
               },
               {
-                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway. Where no run moves, ",
+                "Text": " (64px) apart, where that runs no more road beside road, so lanes the grid laid a few tracks apart join one highway, and after each such merge the nearer moves run again, since a run the long merge has moved can open a near merge it had shut out as a far split. Where no run moves, ",
                 "Code": false
               },
               {
