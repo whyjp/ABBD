@@ -5,6 +5,7 @@ import (
 	"maps"
 	"math"
 	"slices"
+	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
 )
@@ -42,15 +43,21 @@ type Hop struct {
 	X, Y, R int
 	Lit     string
 	way     int
+	// Word names the stored step the hop arrives at, set at WX, WY beside
+	// its number; "" where no step names it or it has no room.
+	Word   string
+	WX, WY int
 }
 
 // leadMin is the fewest hops a lead has: one line is no path.
 const leadMin = 2
 
-// flowWalk is a stored flow as a lead reads it: the unit of each step, in order.
+// flowWalk is a stored flow as a lead reads it: the unit of each step, in
+// order, and the word that names each step.
 type flowWalk struct {
 	key, question string
 	units         []model.ID
+	words         []string
 }
 
 func walks(in Input) []flowWalk {
@@ -62,10 +69,20 @@ func walks(in Input) []flowWalk {
 		w := flowWalk{key: string(f.Key), question: f.Question}
 		for _, p := range f.Parts {
 			w.units = append(w.units, p.Claim.Unit)
+			w.words = append(w.words, stepWord(p.Claim.Does))
 		}
 		out = append(out, w)
 	}
 	return out
+}
+
+// stepWord is the call a step's does line opens with: up to its first
+// bracket, space or comma.
+func stepWord(does string) string {
+	if i := strings.IndexAny(does, "( ,"); i >= 0 {
+		return does[:i]
+	}
+	return does
 }
 
 // use is a line the view draws from one box to another, by the route that
@@ -75,6 +92,8 @@ type use struct {
 	from, to string
 	way      int
 	weight   int
+	// word names the stored step at to, on a lead that follows a flow.
+	word string
 }
 
 func (d *Drawing) uses() []use {
@@ -88,9 +107,9 @@ func (d *Drawing) uses() []use {
 			continue
 		}
 		w := len(slices.Compact(slices.Sorted(slices.Values(r.rels))))
-		out = append(out, use{r.ends[0], r.ends[1], k, w})
+		out = append(out, use{from: r.ends[0], to: r.ends[1], way: k, weight: w})
 		if r.Both {
-			out = append(out, use{r.ends[1], r.ends[0], k, w})
+			out = append(out, use{from: r.ends[1], to: r.ends[0], way: k, weight: w})
 		}
 	}
 	return out
@@ -126,7 +145,7 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 	}
 	for i, h := range hops {
 		r := d.ways[h.way]
-		hp := Hop{N: i + 1, D: r.D, Head: r.Head, Tips: r.Tips, way: h.way}
+		hp := Hop{N: i + 1, D: r.D, Head: r.Head, Tips: r.Tips, way: h.way, Word: h.word}
 		if h.way < len(d.Routes) {
 			hp.Lit = d.Routes[h.way].Lit
 		}
@@ -169,8 +188,12 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 	}
 	var hops []use
 	var on []string
-	for _, u := range f.units {
+	said := map[string]string{}
+	for i, u := range f.units {
 		b := box(u)
+		if b != "" && i < len(f.words) {
+			said[b] = f.words[i]
+		}
 		if b == "" {
 			if len(on) == 0 {
 				continue
@@ -195,7 +218,9 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 		if j < 0 {
 			break
 		}
-		hops = append(hops, uses[j])
+		h := uses[j]
+		h.word = said[h.to]
+		hops = append(hops, h)
 		on = append(on, b)
 	}
 	return hops
@@ -243,11 +268,6 @@ func inferred(boxes []Box, uses []use) []use {
 	}
 }
 
-// badge is where a hop's number sits: halfway along its way, or failing
-// that the nearest point to it, by fortieths, off every box, label and
-// count, badgeApart from the numbers already set and inkGap from every other
-// line, arrowhead, dot and chip; failing that, set up to its radius to one
-// side; failing that, the same at the small radius.
 // number sets each hop's number once the view's boxes carry their last
 // lines (dress), so a number keeps off the words they end with. A number
 // first takes a place on ink no other hop runs along, so a trunk two hops
@@ -265,13 +285,78 @@ func (d *Drawing) number() {
 				others = append(others, runs(o.D)...)
 			}
 		}
-		at, rad := d.badge(runs(h.D), others, taken)
+		at, rad := d.badge(runs(h.D), others, taken, d.Lead.Key != "")
 		taken = append(taken, at)
 		h.X, h.Y, h.R = at.x, at.y, rad
 	}
 }
 
-func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
+// name sets each hop's step word beside its number, once the bands carry
+// their titles, so a word keeps off them; a word with no room is dropped.
+func (d *Drawing) name() {
+	if d.Lead == nil {
+		return
+	}
+	var words []box
+	for i := range d.Lead.Hops {
+		h := &d.Lead.Hops[i]
+		if h.Word == "" {
+			continue
+		}
+		w := textWidth(h.Word, wordPx)
+		spots := []box{{h.X + h.R + 3, h.Y - 7, w, 13}, {h.X - h.R - 3 - w, h.Y - 7, w, 13}, {h.X + 2, h.Y - h.R - 15, w, 13}, {h.X + 2, h.Y + h.R + 2, w, 13}, {h.X - 2 - w, h.Y - h.R - 15, w, 13}, {h.X - 2 - w, h.Y + h.R + 2, w, 13}}
+		// Failing those, the word sits right over or under its number,
+		// slid along from centred until it is clear.
+		for s := 0; s <= w/2; s += 2 {
+			for _, x := range []int{h.X - w/2 - s, h.X - w/2 + s} {
+				spots = append(spots, box{x, h.Y - h.R - 15, w, 13}, box{x, h.Y + h.R + 2, w, 13})
+			}
+		}
+		for _, a := range spots {
+			if d.wordClear(a, words) {
+				h.WX, h.WY = a.x, a.y+11
+				words = append(words, a)
+				break
+			}
+		}
+		if h.WX == 0 {
+			h.Word = ""
+		}
+	}
+}
+
+// wordPx is the size a step's word sets in beside its number.
+const wordPx = 10
+
+// wordClear says a step's word set over area meets no box, line, label,
+// number or other step's word, and stands inkGap off every band's title:
+// ink, labels and counts by clearOfInk.
+func (d *Drawing) wordClear(area box, words []box) bool {
+	for _, b := range d.Boxes {
+		if hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+			return false
+		}
+	}
+	for _, z := range d.Zones {
+		if hit(area, grow(z.titleArea(), inkGap)) {
+			return false
+		}
+	}
+	for _, w := range words {
+		if hit(area, w) {
+			return false
+		}
+	}
+	return d.clearOfInk(area, nil) && !d.onBadge(area)
+}
+
+// badge is where a hop's number sits: halfway along its way, or on a lead
+// that follows a stored flow (arrive) just short of where its way ends, or
+// failing that the nearest point to it, by fortieths, off every box, label
+// and count, badgeApart from the numbers already set and inkGap from every
+// other line, arrowhead, dot and chip; failing that, set up to its radius to
+// one side; failing that, the same at the small radius.
+func (d *Drawing) badge(way, others [][2]pt, taken []pt, arrive bool) (pt, int) {
 	total := 0
 	for _, r := range way {
 		total += abs(r[1].x-r[0].x) + abs(r[1].y-r[0].y)
@@ -323,6 +408,9 @@ func (d *Drawing) badge(way, others [][2]pt, taken []pt) (pt, int) {
 			for _, side := range []int{0, -r / 2, r / 2, -r, r, -r - badgeBeside, r + badgeBeside} {
 				for k := 0; k <= 36; k++ {
 					f := .5 + float64((k+1)/2)*.025*float64(1-2*(k%2))
+					if arrive {
+						f = 1 - float64(k+1)*.025
+					}
 					if p := along(f, side); free(p, r) && (!alone || !shared(along(f, 0))) {
 						return p, r
 					}

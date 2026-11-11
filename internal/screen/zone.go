@@ -40,6 +40,15 @@ type Zone struct {
 	Lines []string `json:",omitempty"`
 }
 
+// titleArea is the room the band's title takes as set.
+func (z Zone) titleArea() box {
+	lines := z.Lines
+	if len(lines) == 0 {
+		lines = []string{z.Label()}
+	}
+	return box{z.TX - 2, z.TY - 10, linesWidth(lines) + 4, 13 + (len(lines)-1)*zoneLine}
+}
+
 // Label is the band's title as set: its layer's number, then its name.
 func (z Zone) Label() string {
 	if z.N > 0 {
@@ -375,9 +384,6 @@ func (d *Drawing) band(g group) (Zone, bool) {
 	if len(spots) == 0 {
 		return Zone{}, false
 	}
-	area := func(s spot) box {
-		return box{s.x - 2, s.y - 10, linesWidth(s.lines) + 4, 13 + (len(s.lines)-1)*zoneLine}
-	}
 	set := func(s spot) Zone {
 		z := s.z
 		z.TX, z.TY = s.x, s.y
@@ -386,6 +392,7 @@ func (d *Drawing) band(g group) (Zone, bool) {
 		}
 		return z
 	}
+	area := func(s spot) box { return set(s).titleArea() }
 	// main is, of the usual room's corners, the one the fewest lines,
 	// labels and counts cross. Past the top of the room above it is tried
 	// first, then the rest of its room, so a band keeps the shape its
