@@ -2069,6 +2069,7 @@
         "internal/screen/notes.go",
         "internal/screen/overview.go",
         "internal/screen/page.go",
+        "internal/screen/primary.go",
         "internal/screen/route.go",
         "internal/screen/screen.go",
         "internal/screen/site.go",
@@ -22758,7 +22759,7 @@
                 "Code": true
               },
               {
-                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. ",
+                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
                 "Code": false
               },
               {
