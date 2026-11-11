@@ -60,6 +60,7 @@ const (
 
 // A note names its reader too, and explain prints it.
 func TestANoteKeepsItsReader(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.want(0, "understood MOD-0001.failure", "understand", "MOD-0001.failure", p.file(t, "note.md", "A charge is tried three times."), "--evidence", failureQuote, "--reader", "abbd reader")
 	p.want(0, "failure (INFERRED by abbd reader, CURRENT):", "explain", "MOD-0001")
@@ -70,6 +71,7 @@ func TestANoteKeepsItsReader(t *testing.T) {
 // stales that note and leaves the module's other notes, and the module's
 // own text, current; the check fails until a reader stores it again.
 func TestANoteGoesStaleOnlyWhenTheCodeItCitesChanges(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", "## Overview\n\nbilling inserts charges.\n"))
 	p.wantNote(0, "understood MOD-0001.failure billing, INFERRED", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
@@ -112,6 +114,7 @@ func TestANoteGoesStaleOnlyWhenTheCodeItCitesChanges(t *testing.T) {
 // A slot is one abbd knows, on a module or a contract, and a note enters
 // only on quotes the code holds now.
 func TestANoteNeedsLiveEvidenceAndASlotAbbdKnows(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	for _, c := range []struct {
 		ref, want string
@@ -145,6 +148,7 @@ func keys(m map[string]string) []string {
 // A reader writes what the code decided; the human states why, with where.
 // Storing the decision again keeps the human's reason.
 func TestAHumanStatesWhyADecisionWasTaken(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.want(1, "holds no decision; store it first", "record", "fact", "MOD-0001.decisions.three-tries", "--value", "card networks", "--source", "conversation 2026-11-03")
 	p.wantNote(0, "understood MOD-0001.decisions.three-tries", "MOD-0001.decisions.three-tries", "A charge is tried three times before it fails.", failureQuote)
@@ -167,6 +171,7 @@ func TestAHumanStatesWhyADecisionWasTaken(t *testing.T) {
 // the inside of the module that provides it, drawing a states matrix as a
 // table and a wire sample as code.
 func TestTheBlueprintShowsEachNoteBesideItsUnit(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "| state | next |\n|---|---|\n| pending | charged |", statesQuote)
 	p.wantNote(0, "understood", "DATA-0001.wire_sample", "```sql\nINSERT INTO charges (amount) VALUES (?)\n```", "billing/charge.go:3:INSERT INTO charges")
@@ -202,6 +207,7 @@ func TestTheBlueprintShowsEachNoteBesideItsUnit(t *testing.T) {
 // A note is read like a module's text: the agent who stores it, and status,
 // hear what reads as history, and nothing is refused for it.
 func TestANoteIsReadForHistoryAndLength(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	out := p.wantNote(0, "understood", "MOD-0001.failure", "## Retries\n\nA charge is tried three times since PR #12.", failureQuote)
 	if !strings.Contains(out, `history: MOD-0001.failure "Retries" says "PR #12"`) {
@@ -213,6 +219,7 @@ func TestANoteIsReadForHistoryAndLength(t *testing.T) {
 // A note whose unit left the state, or whose slot abbd no longer knows, shows
 // nowhere and no command can store it again. The check names it and passes.
 func TestStatusCheckReportsAnOrphanNoteAndPasses(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
 	text := strings.Replace(p.read("understanding/MOD-0001/failure.md"), "unit: MOD-0001", "unit: MOD-0099", 1)
@@ -230,6 +237,7 @@ func TestStatusCheckReportsAnOrphanNoteAndPasses(t *testing.T) {
 
 // The skill names every slot, so an agent knows what each one is for.
 func TestTheSkillNamesEverySlot(t *testing.T) {
+	t.Parallel()
 	text := readPlugin(t, "skills", "abbd", "SKILL.md")
 	for _, s := range model.Slots {
 		if !strings.Contains(text, "`"+s.Name+"`") {
@@ -241,6 +249,7 @@ func TestTheSkillNamesEverySlot(t *testing.T) {
 // A contract's notes sit with the module the code says provides it, even
 // when a reader also found a module of a lower ID providing it.
 func TestAContractsNotesSitWithTheProviderTheCodeShows(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// calls ledger.Post\nfunc Charge() {}\n")
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
@@ -262,6 +271,7 @@ func TestAContractsNotesSitWithTheProviderTheCodeShows(t *testing.T) {
 // Storing the same words on the same quotes in another order is still not
 // reading the code again.
 func TestReorderingTheQuotesDoesNotFreshenAStaleNote(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "states text", statesQuote, failureQuote)
 	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
@@ -273,6 +283,7 @@ func TestReorderingTheQuotesDoesNotFreshenAStaleNote(t *testing.T) {
 // A note follows its quote when code above it moves, so it cites only a
 // quote its file holds once; a quote that is in the file twice is refused.
 func TestANoteFollowsItsQuoteWhenTheCodeAboveMoves(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	body := strings.Repeat("// filler\n", 12) + "func a() error { return nil }\n\nfunc b() error { return nil }\n"
 	p.code("billing/nil.go", "package billing\n"+body)
@@ -287,6 +298,7 @@ func TestANoteFollowsItsQuoteWhenTheCodeAboveMoves(t *testing.T) {
 // Respacing the words, or citing a quote twice, is not reading the code
 // again either.
 func TestRespacingOrRepeatingDoesNotFreshenAStaleNote(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "states.\n\nmore.", statesQuote)
 	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
@@ -299,6 +311,7 @@ func TestRespacingOrRepeatingDoesNotFreshenAStaleNote(t *testing.T) {
 // which copy it was written on, so it reads STALE rather than following
 // whichever copy now sits near its old lines.
 func TestANoteWhoseQuoteIsNoLongerUniqueReadsStale(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	block := "func b() error {\n\treturn retry(charge)\n}\n"
 	p.code("billing/b.go", "package billing\n"+strings.Repeat("// filler\n", 12)+block)
@@ -312,6 +325,7 @@ func TestANoteWhoseQuoteIsNoLongerUniqueReadsStale(t *testing.T) {
 // A provider whose provides relation comes from a unit inside it, read by
 // the script, is still the home over a reader's provider.
 func TestAContractsHomeCountsWhatItsUnitsProvide(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// calls ledger.Post\nfunc Charge() {}\n")
 	p.code("ledger/core/book.go", "package core\n\nfunc Post() {}\n")
@@ -335,6 +349,7 @@ func TestAContractsHomeCountsWhatItsUnitsProvide(t *testing.T) {
 // again on other code is another decision, so the why does not carry over to
 // it, and the reader who stored it hears that it was dropped.
 func TestAWhyDoesNotSurviveADecisionOnOtherCode(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.decisions.k", "A charge is tried three times.", failureQuote)
 	p.want(0, "recorded", "record", "fact", "MOD-0001.decisions.k", "--value", "the card network bans a fourth try", "--source", "https://example.com/pr/7")
@@ -354,6 +369,7 @@ func TestAWhyDoesNotSurviveADecisionOnOtherCode(t *testing.T) {
 // its slot: status names the file as it sits, the check skips it, and the
 // note at the right path goes STALE and current on its own.
 func TestANoteFileAtTheWrongPathIsOrphaned(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "states text", statesQuote)
 	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "a.md"), p.read("understanding/MOD-0001/states.md"))
@@ -383,6 +399,7 @@ func TestANoteFileAtTheWrongPathIsOrphaned(t *testing.T) {
 // is no note: every command reads past it, and status names it. A file that
 // opens frontmatter is a note, and a malformed one still fails.
 func TestAStrayMarkdownFileBesideTheNotesIsAWarning(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
 	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "README.md"), "# what these are\n")

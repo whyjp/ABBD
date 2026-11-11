@@ -10,6 +10,7 @@ import (
 // crosses that edge with --phrase, through the same record command, and the
 // blueprint draws the phrase beside the line.
 func TestAReaderNamesWhatCrossesAnEdgeTheScriptRead(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
 	p.resync()
@@ -41,6 +42,7 @@ func TestAReaderNamesWhatCrossesAnEdgeTheScriptRead(t *testing.T) {
 // The supplement may give a phrase, even on an edge the script reads, and
 // the extraction script may not.
 func TestOnlyTheSupplementGivesAPhrase(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	topo := strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1)
 	p.extract(strings.Replace(topo, `"kind":"depends_on"}`, `"kind":"depends_on","phrase":"charge post"}`, 1))
@@ -58,6 +60,7 @@ func TestOnlyTheSupplementGivesAPhrase(t *testing.T) {
 // phrase, and the coupling stays retracted, because a phrase only relabels
 // a line.
 func TestAPhraseDoesNotReviveARetractedCoupling(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	edge := []string{"record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()"}
 	p.want(0, "INFERRED", edge...)
@@ -73,6 +76,7 @@ func TestAPhraseDoesNotReviveARetractedCoupling(t *testing.T) {
 // become a coupling. It names no line, and the check says so until a reader
 // retracts it.
 func TestAPhraseOnAnEdgeTheScriptDropsDangles(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
 	p.resync()
@@ -92,6 +96,7 @@ func TestAPhraseOnAnEdgeTheScriptDropsDangles(t *testing.T) {
 // While the code a phrase quotes has drifted, explain still lists the
 // phrase, marked drifted, and the blueprint does not draw it.
 func TestADriftedPhraseShowsAsDrifted(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
 	p.resync()
@@ -125,6 +130,7 @@ func claimsOf(md string) string {
 // note only, so when the supplement drops the edge, the edge is gone and the
 // note dangles.
 func TestAPhraseOnASupplementEdgeLeavesItTheSupplements(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	before := claimsOf(p.read("architecture/MOD-0002.md"))
 	p.want(0, `"amount query" names what crosses it`, "record", "relation", "MOD-0002", "consumes", "DATA-0001", "--phrase", "amount query", "--evidence", "ledger/book.go:3:SELECT amount")
@@ -142,6 +148,7 @@ func TestAPhraseOnASupplementEdgeLeavesItTheSupplements(t *testing.T) {
 
 // A phrase on a reader's own edge leaves that claim's evidence as it was.
 func TestAPhraseKeepsTheReadersOwnEvidence(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()", "--evidence", "billing/charge.go:4:func Charge()")
 	before := claimsOf(p.read("architecture/MOD-0002.md"))
@@ -154,6 +161,7 @@ func TestAPhraseKeepsTheReadersOwnEvidence(t *testing.T) {
 // A human names what crosses a reader's edge. The note is the human's, and
 // the edge stays the reader's INFERRED finding.
 func TestAHumansPhraseLeavesAReadersEdgeInferred(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--via", "call", "--evidence", "ledger/book.go:6:func Post()")
 	before := claimsOf(p.read("architecture/MOD-0002.md"))
@@ -170,6 +178,7 @@ func TestAHumansPhraseLeavesAReadersEdgeInferred(t *testing.T) {
 // A human retracts a reader's coupling. A reader who records the same edge
 // again is refused whatever via it gives, with a phrase or without.
 func TestAHumanRetractionHoldsWhateverTheVia(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	edge := []string{"record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--evidence", "ledger/book.go:6:func Post()"}
 	p.want(0, "INFERRED", append(edge, "--via", "call")...)
@@ -184,6 +193,7 @@ func TestAHumanRetractionHoldsWhateverTheVia(t *testing.T) {
 // A unit file that still holds the old phrase field on a relation is
 // refused on load, with the way to move it.
 func TestTheOldPhraseFieldIsRefusedOnLoad(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	md := p.read("architecture/MOD-0002.md")
 	old := strings.Replace(md, "      via: data\n", "      via: data\n      phrase: amount query\n", 1)
@@ -197,6 +207,7 @@ func TestTheOldPhraseFieldIsRefusedOnLoad(t *testing.T) {
 // The supplement's phrase on an edge the script reads may not repeat the
 // script's via, and one edge takes one supplement phrase.
 func TestTheSupplementsPhraseIsCheckedAgainstTheEdge(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on","via":"call"}]}`, 1))
 	p.resync()
@@ -211,6 +222,7 @@ func TestTheSupplementsPhraseIsCheckedAgainstTheEdge(t *testing.T) {
 
 // A human's phrase that names no line says to retract it with a source.
 func TestADanglingHumanPhraseSaysHowAHumanRetractsIt(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `],"relations":[{"from":"ledger","to":"billing","kind":"depends_on"}]}`, 1))
 	p.resync()

@@ -34,6 +34,7 @@ func entriesProject(t *testing.T) (*project, string) {
 // Each entry is stored on its own, with the key a note names it by, and
 // explain lists it with the units that use it.
 func TestAContractKeepsEachEntryWithItsUsers(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	file := p.read("architecture/IF-0001.md")
 	for _, want := range []string{"key: get-charges-id", "name: GET /charges/{id}", "shape: -> Charge"} {
@@ -60,6 +61,7 @@ func TestAContractKeepsEachEntryWithItsUsers(t *testing.T) {
 // boundary; a page calling one more route of an api it already calls is a
 // line too, but stays inside the boundary.
 func TestDiffNamesEachEntryThatChanged(t *testing.T) {
+	t.Parallel()
 	p, base := entriesProject(t)
 	now := strings.NewReplacer(
 		`{"name":"GET /charges/{id}","shape":"-> Charge"}`, `{"name":"GET /charges/{id}","shape":"-> ChargeView"}`,
@@ -103,6 +105,7 @@ func TestDiffNamesEachEntryThatChanged(t *testing.T) {
 // The revision that first lists a contract's entries says so once, not once
 // per entry, and an older store with no entries still loads.
 func TestDiffSaysOnceThatAContractNowListsItsEntries(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(diffBase, `"signature":"GET /charges"`, `"signature":"GET /charges,GET /charges/{id}"`, 1))
 	p.setup(0, "synced", "--", exe)
@@ -121,6 +124,7 @@ func TestDiffSaysOnceThatAContractNowListsItsEntries(t *testing.T) {
 // entry's row, goes stale on its own, and a note on an entry the contract
 // no longer lists is orphaned.
 func TestANoteDescribesOneEntry(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	p.wantNote(1, "IF-0001 lists no entry get-refund", "IF-0001.entries.get-refund", "Refunds one charge.", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	p.wantNote(0, "understood IF-0001.entries.get-charges-id http api", "IF-0001.entries.get-charges-id", "One charge, with its refunds.", `api/http.go:4:handle("GET /charges/{id}", charge)`)
@@ -143,6 +147,7 @@ func TestANoteDescribesOneEntry(t *testing.T) {
 // Entries are what the code spells, so the extraction gives each its own
 // key, names only entries its target lists, and a supplement lists none.
 func TestTheExtractionGuardsEntries(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(entriesBase, `{"name":"POST /refunds","shape":"Refund -> 201"}`, `{"name":"GET /charges/{ID}"}`, 1))
 	p.setup(1, `share the key "get-charges-id"`, "--", exe)
@@ -155,6 +160,7 @@ func TestTheExtractionGuardsEntries(t *testing.T) {
 // One line of an edge that names no entries uses the whole contract, so a
 // second, narrowed line of the same edge leaves the claim whole.
 func TestAWholeUseOutweighsANarrowedLineOfTheSameEdge(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(entriesBase, `{"from":"page","to":"api","kind":"consumes","entries":["GET /charges"]}`,
 		`{"from":"page","to":"api","kind":"consumes"},{"from":"page","to":"api","kind":"consumes","entries":["GET /charges"]}`, 1))
@@ -167,6 +173,7 @@ func TestAWholeUseOutweighsANarrowedLineOfTheSameEdge(t *testing.T) {
 // A use that comes to take the whole contract is one line saying so, not a
 // line per entry it seems to drop.
 func TestDiffSaysAUseWidenedToTheWholeContract(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	p.extract(strings.Replace(entriesBase, `,"entries":["GET /charges"]`, "", 1))
 	p.want(0, "", "sync")
@@ -187,6 +194,7 @@ func TestDiffSaysAUseWidenedToTheWholeContract(t *testing.T) {
 // A name with no letters or digits a key takes, such as Hangul, needs an
 // explicit key, and the error says so.
 func TestAnEntryWithNoKeyableNameAsksForAKey(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(entriesBase, `{"name":"POST /refunds","shape":"Refund -> 201"}`, `{"name":"금액"}`, 1))
 	p.setup(1, `give it a "key"`, "--", exe)
@@ -197,6 +205,7 @@ func TestAnEntryWithNoKeyableNameAsksForAKey(t *testing.T) {
 // Two contracts may each list an entry of the same key, and each row keeps
 // an id of its own on the page.
 func TestEntryRowsOfTwoContractsKeepTheirOwnIDs(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(entriesBase, `],"relations":[`, `,
  {"key":"admin","kind":"IF","name":"admin api","signature":"/admin","anchors":[{"path":"api/admin.go","symbol":"Admin"}],"entries":[{"name":"GET /charges"}]}
@@ -221,6 +230,7 @@ func TestEntryRowsOfTwoContractsKeepTheirOwnIDs(t *testing.T) {
 // table of entries stays as wide as the page; a browser measured this, and
 // the page keeps the rules that make it so.
 func TestALongEntryWrapsInsideItsCell(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	css := p.blueprint()
 	css = css[:strings.Index(css, "</style>")]

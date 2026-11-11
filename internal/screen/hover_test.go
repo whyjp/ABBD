@@ -16,6 +16,7 @@ import (
 // real state. A twin is lit with its unit, and a chip that stands for
 // several ports with every one of them.
 func TestPointingAtAShapeKeepsWhatItJoins(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			d := v.d

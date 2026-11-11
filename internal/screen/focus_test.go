@@ -42,6 +42,7 @@ func drawnIn(d Drawing) marks {
 // together they draw every line and chip of the view. Each unit box of the
 // view has one.
 func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
+	t.Parallel()
 	type full struct {
 		name  string
 		d     Drawing
@@ -111,6 +112,7 @@ func TestFocusViewsArePartialGraphsOfTheirView(t *testing.T) {
 // and below, so no line of the pair climbs; the twin opens the unit's own
 // focus view.
 func TestAUnitOnBothSidesOfTheFocusIsDrawnTwice(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "pstack")
 	for _, f := range m.Focus {
 		var twins []Box
@@ -141,6 +143,7 @@ func TestAUnitOnBothSidesOfTheFocusIsDrawnTwice(t *testing.T) {
 // Focus views are part of the page, and the page is the same bytes for the
 // same data.
 func TestFocusViewsAreDeterministic(t *testing.T) {
+	t.Parallel()
 	page := func() []byte {
 		b := renderAll(t, fixture(t, "orca"))
 		return b.Bytes()
@@ -160,6 +163,7 @@ func TestFocusViewsAreDeterministic(t *testing.T) {
 // middle of the drawing, and the boxes of each row stand left to right in
 // the order they stand in the view.
 func TestFocusViewsKeepTheMapOfTheirView(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		all := map[string][]Focus{"overview": m.Focus}

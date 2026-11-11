@@ -14,6 +14,7 @@ import (
 // 20,000 files under 200 directory anchors in four modules, and reports the
 // size of a stored text. It runs only with ABBD_PERF set.
 func TestPerfLargeTree(t *testing.T) {
+	t.Parallel()
 	if os.Getenv("ABBD_PERF") == "" {
 		t.Skip("set ABBD_PERF=1 to time a large tree")
 	}

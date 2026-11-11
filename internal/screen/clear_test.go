@@ -14,6 +14,7 @@ import (
 // line joins, whose edge it may sit on clear of their words, so it never
 // reads as sitting on another line or a head (user case 21).
 func TestABadgeKeepsClearOfOtherInk(t *testing.T) {
+	t.Parallel()
 	badges, bad := 0, 0
 	for name, m := range clearModels(t) {
 		for _, d := range m.drawings() {
@@ -76,6 +77,7 @@ func TestABadgeKeepsClearOfOtherInk(t *testing.T) {
 // buses run through the whole room above internal/screen there, which is
 // the routing's to clear.
 func TestAZoneTitleKeepsClearOfInk(t *testing.T) {
+	t.Parallel()
 	titles, bad := 0, 0
 	for name, m := range clearModels(t) {
 		for _, d := range m.drawings() {
@@ -127,6 +129,7 @@ func clearModels(t *testing.T) map[string]*Model {
 // this repository's own overview, whose lead doubles back through
 // internal/store and once stacked three numbers within 95x25px.
 func TestALeadsNumbersStandApart(t *testing.T) {
+	t.Parallel()
 	pairs := 0
 	for name, m := range clearModels(t) {
 		for _, d := range m.drawings() {
@@ -155,6 +158,7 @@ func TestALeadsNumbersStandApart(t *testing.T) {
 // overview, whose layers each name boxes the layout sets apart, keeps two
 // numbered bands at least.
 func TestABandHoldsTwoBoxesAndNumbersRunOn(t *testing.T) {
+	t.Parallel()
 	for name, m := range clearModels(t) {
 		for _, d := range m.drawings() {
 			n := 0

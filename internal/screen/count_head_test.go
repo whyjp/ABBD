@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/store"
 )
 
 var headAt = regexp.MustCompile(`translate\((-?[\d.]+) (-?[\d.]+)\) rotate\((-?\d+)\)`)
@@ -79,16 +76,13 @@ func countsByHeads(svg string) []string {
 // such room clear of the other lines. A count that comes clear fails too,
 // so its entry goes.
 func TestCountsKeepOffArrowheads(t *testing.T) {
+	t.Parallel()
 	left := map[string][]string{
 		"orca": {"MOD-0072 desktop renderer UI: ×5 at {661 214}"},
 	}
 	for _, name := range fixtures {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		if err != nil {
-			t.Fatal(err)
-		}
 		var got []string
-		for _, v := range views(Build(Input{Units: units})) {
+		for _, v := range views(fixture(t, name)) {
 			var b bytes.Buffer
 			if err := site.ExecuteTemplate(&b, "drawing", v.d); err != nil {
 				t.Fatal(err)

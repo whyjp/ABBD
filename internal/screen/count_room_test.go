@@ -4,12 +4,9 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/store"
 )
 
 // countMargin is how far a ×N keeps from every line but its own bus's, as a
@@ -102,11 +99,7 @@ func fixtureCountsCrowded(t *testing.T) map[string][]string {
 	t.Helper()
 	out := map[string][]string{}
 	for _, name := range fixtures {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		if err != nil {
-			t.Fatal(err)
-		}
-		for _, v := range views(Build(Input{Units: units})) {
+		for _, v := range views(fixture(t, name)) {
 			var b bytes.Buffer
 			if err := site.ExecuteTemplate(&b, "drawing", v.d); err != nil {
 				t.Fatal(err)
@@ -124,6 +117,7 @@ func fixtureCountsCrowded(t *testing.T) map[string][]string {
 // drawing more than lint weighs a crowded count. A count that comes clear
 // fails too, so its entry goes.
 func TestCountsStandClearOfTheNextLine(t *testing.T) {
+	t.Parallel()
 	left := map[string][]string{
 		"orca": {"MOD-0042 focus MOD-0052 desktop-main/ipc: ×12 at {667 285}"},
 	}

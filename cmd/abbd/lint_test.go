@@ -66,6 +66,7 @@ func copyFixture(t *testing.T, name, debt string) string {
 // its line's box end by unit ID: the last item of a line into a box, the
 // first of a line out of one.
 func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
+	t.Parallel()
 	code, out := lintAt(t, fixtureRoot("orca"), "MOD-0098 src/", "--json")
 	if code != exitOK {
 		t.Fatalf("exit %d, want 0:\n%s", code, out)
@@ -124,6 +125,7 @@ func TestLintNamesTheStaircasesOfSrc(t *testing.T) {
 
 // A hard breach the view has recorded as debt passes, and is marked so.
 func TestLintPassesARecordedDebt(t *testing.T) {
+	t.Parallel()
 	code, out := lintAt(t, fixtureRoot("self"), "MOD-0030", "--json")
 	if code != exitOK {
 		t.Fatalf("exit %d, want 0:\n%s", code, out)
@@ -151,6 +153,7 @@ func TestLintPassesARecordedDebt(t *testing.T) {
 // A hard breach the view has not recorded fails lint, and the report says
 // why.
 func TestLintFailsOnAHardBreachPastItsDebt(t *testing.T) {
+	t.Parallel()
 	code, out := lintAt(t, copyFixture(t, "self", ""), "MOD-0030")
 	if code != exitError || !strings.Contains(out, "R hard  rule 13:") || !strings.Contains(out, "MOD-0030 internal/model: 1 hard breach of R, 0 recorded as debt") {
 		t.Fatalf("exit %d, want 1 with rule 13 named:\n%s", code, out)
@@ -159,6 +162,7 @@ func TestLintFailsOnAHardBreachPastItsDebt(t *testing.T) {
 
 // Over every view, a total past its ceiling fails lint.
 func TestLintHoldsTheTotalsToTheirCeilings(t *testing.T) {
+	t.Parallel()
 	debt := "ceilings:\n  weighed: 100\n  placement: 50\ndebt:\n  MOD-0030 internal/model: {R: 1}\n  MOD-0047 internal/topology: {R: 1}\n"
 	code, out := lintAt(t, copyFixture(t, "self", debt))
 	if code != exitError || !strings.Contains(out, ", past its ceiling 100 by more than 0") || strings.Contains(out, "placement 50, past") {
@@ -169,6 +173,7 @@ func TestLintHoldsTheTotalsToTheirCeilings(t *testing.T) {
 // --record lowers a ceiling above what the drawings measure and keeps one
 // below it, so the slack the gate allows never ratchets a ceiling up.
 func TestLintRecordNeverRaisesACeiling(t *testing.T) {
+	t.Parallel()
 	root := copyFixture(t, "self", "ceilings:\n  weighed: 999999\n  placement: 1\n")
 	if code, out := lintAt(t, root, "--record"); code != exitOK {
 		t.Fatalf("exit %d:\n%s", code, out)
@@ -191,6 +196,7 @@ func TestLintRecordNeverRaisesACeiling(t *testing.T) {
 // owe those breaches. Orca's renderer page draws 21 lines between 9 parts,
 // and its shared types page 22 parts.
 func TestLintFirstRecordWaitsForTheLevels(t *testing.T) {
+	t.Parallel()
 	root := copyFixture(t, "orca", "")
 	code, out := lintAt(t, root, "--record")
 	if code != exitError || !strings.Contains(out, "will not take the first debt") || !strings.Contains(out, "MOD-0072 desktop renderer UI (the view draws 21 lines between 9 boxes") || !strings.Contains(out, "--keep-level VIEW=REASON") {
@@ -206,15 +212,24 @@ func TestLintFirstRecordWaitsForTheLevels(t *testing.T) {
 // and lint then prints it beside the level line and under levels in JSON.
 // A view kept without a reason, or one with no level line, is refused.
 func TestLintRecordKeepsAJustifiedLevel(t *testing.T) {
+	t.Parallel()
 	root := copyFixture(t, "orca", "")
-	for _, bad := range []string{"MOD-0072", "overview=it reads", "MOD-0072=  "} {
-		if code, out := lintAt(t, root, "--record", "--keep-level", bad); code != exitError || !strings.Contains(out, "--keep-level") {
-			t.Errorf("--keep-level %q: exit %d, want 1:\n%s", bad, code, out)
+	t.Run("refused", func(t *testing.T) {
+		for _, bad := range []string{"MOD-0072", "overview=it reads", "MOD-0072=  "} {
+			t.Run(bad, func(t *testing.T) {
+				t.Parallel()
+				if code, out := lintAt(t, root, "--record", "--keep-level", bad); code != exitError || !strings.Contains(out, "--keep-level") {
+					t.Errorf("--keep-level %q: exit %d, want 1:\n%s", bad, code, out)
+				}
+			})
 		}
-	}
-	if code, out := lintAt(t, root, "--keep-level", "MOD-0072=x"); code != exitError || !strings.Contains(out, "with --record") {
-		t.Errorf("--keep-level without --record: exit %d:\n%s", code, out)
-	}
+		t.Run("without --record", func(t *testing.T) {
+			t.Parallel()
+			if code, out := lintAt(t, root, "--keep-level", "MOD-0072=x"); code != exitError || !strings.Contains(out, "with --record") {
+				t.Errorf("--keep-level without --record: exit %d:\n%s", code, out)
+			}
+		})
+	})
 	if code, out := lintAt(t, root, "--record", "--keep-level", "MOD-0072=renderer UI parts are the app's screens", "--keep-level", "MOD-0081=one schema per wire format"); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: renderer UI parts are the app's screens") {
 		t.Fatalf("exit %d, want the record to keep both levels:\n%s", code, out)
 	}
@@ -222,27 +237,34 @@ func TestLintRecordKeepsAJustifiedLevel(t *testing.T) {
 	if err != nil || !strings.Contains(string(b), "levels:") || !strings.Contains(string(b), "MOD-0081 shared types and schemas: one schema per wire format") {
 		t.Fatalf("the debt file does not keep the reasons (%v):\n%s", err, b)
 	}
-	code, out := lintAt(t, root)
-	if code != exitOK || !strings.Contains(out, "level MOD-0072 desktop renderer UI: kept, renderer UI parts are the app's screens") {
-		t.Fatalf("exit %d, want lint to pass and print the kept reason:\n%s", code, out)
-	}
-	var r lintReport
-	_, out = lintAt(t, root, "--json")
-	if err := json.Unmarshal([]byte(out), &r); err != nil {
-		t.Fatal(err)
-	}
-	kept := map[string]string{}
-	for _, l := range r.Levels {
-		kept[l.View] = l.Kept
-	}
-	if kept["MOD-0072 desktop renderer UI"] == "" || kept["MOD-0081 shared types and schemas"] == "" || kept["overview"] != "" {
-		t.Errorf("levels kept %v, want the two kept views alone", kept)
-	}
+	t.Run("text", func(t *testing.T) {
+		t.Parallel()
+		code, out := lintAt(t, root)
+		if code != exitOK || !strings.Contains(out, "level MOD-0072 desktop renderer UI: kept, renderer UI parts are the app's screens") {
+			t.Fatalf("exit %d, want lint to pass and print the kept reason:\n%s", code, out)
+		}
+	})
+	t.Run("json", func(t *testing.T) {
+		t.Parallel()
+		var r lintReport
+		_, out := lintAt(t, root, "--json")
+		if err := json.Unmarshal([]byte(out), &r); err != nil {
+			t.Fatal(err)
+		}
+		kept := map[string]string{}
+		for _, l := range r.Levels {
+			kept[l.View] = l.Kept
+		}
+		if kept["MOD-0072 desktop renderer UI"] == "" || kept["MOD-0081 shared types and schemas"] == "" || kept["overview"] != "" {
+			t.Errorf("levels kept %v, want the two kept views alone", kept)
+		}
+	})
 }
 
 // A repository that already keeps a debt file records again whatever its
 // levels say, and the reasons it kept stay while their level lines do.
 func TestLintRecordOverAnExistingDebtFile(t *testing.T) {
+	t.Parallel()
 	debt := "ceilings:\n  weighed: 999999\n  placement: 999999\nlevels:\n  MOD-0072 desktop renderer UI: screens\n  MOD-0001 gone: a view that no longer has a level line\n"
 	root := copyFixture(t, "orca", debt)
 	if code, out := lintAt(t, root, "--record"); code != exitOK || !strings.Contains(out, "kept the level of MOD-0072 desktop renderer UI: screens") {
@@ -258,6 +280,7 @@ func TestLintRecordOverAnExistingDebtFile(t *testing.T) {
 // the parts and the lines between them, and leaves features' pages out:
 // they draw the units a feature reaches, not a module's parts.
 func TestLintJSONListsTheLevels(t *testing.T) {
+	t.Parallel()
 	_, out := lintAt(t, fixtureRoot("self"), "--json")
 	var r lintReport
 	if err := json.Unmarshal([]byte(out), &r); err != nil {
@@ -281,12 +304,14 @@ func TestLintJSONListsTheLevels(t *testing.T) {
 
 // This repository's own blueprint keeps the gate its debt file sets.
 func TestLintPassesThisRepository(t *testing.T) {
+	t.Parallel()
 	if code, out := lintAt(t, filepath.Join("..", "..")); code != exitOK {
 		t.Fatalf("exit %d, want 0:\n%s", code, out)
 	}
 }
 
 func TestLintListsTheViews(t *testing.T) {
+	t.Parallel()
 	code, out := lintAt(t, fixtureRoot("self"), "--list")
 	if code != exitOK || !strings.HasPrefix(out, "overview\n") || !strings.Contains(out, "\nMOD-0047 internal/topology\n") {
 		t.Fatalf("exit %d:\n%s", code, out)
@@ -294,6 +319,7 @@ func TestLintListsTheViews(t *testing.T) {
 }
 
 func TestLintRefusesAnUnknownView(t *testing.T) {
+	t.Parallel()
 	if code, out := lintAt(t, fixtureRoot("self"), "no such view"); code != exitError || !strings.Contains(out, `no view is named "no such view"`) {
 		t.Fatalf("exit %d:\n%s", code, out)
 	}

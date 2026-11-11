@@ -64,6 +64,7 @@ func misstated(t tree, w Wire, s string, phrase bool) string {
 // labels drawn, name a phrase or a via, and with ABBD_LABEL_DUMP set it
 // writes one row per misstated line there.
 func TestLabelAudit(t *testing.T) {
+	t.Parallel()
 	roots := map[string]string{"repo": filepath.Join("..", "..")}
 	for _, f := range fixtures {
 		roots[f] = filepath.Join("testdata", f)
@@ -86,7 +87,7 @@ func TestLabelAudit(t *testing.T) {
 			t.Fatal(err)
 		}
 		tr := newTree(loaded)
-		m := Build(Input{Units: loaded})
+		m := rootModel(t, name, roots[name], loaded)
 		var lines, phrased, dups int
 		words, drawn, over := map[string]int{}, map[string]int{}, map[string]int{}
 		for _, v := range views(m) {
@@ -155,6 +156,7 @@ func wordOf(t tree, rels []string) string {
 // bundle or on touching ink that leaves a place in common, as the three
 // Compare revisions along one track did, each just past repeatNear.
 func TestAPhraseIsSaidOncePerTrack(t *testing.T) {
+	t.Parallel()
 	in, err := Load(store.Open(filepath.Join("..", "..")))
 	if err != nil {
 		t.Fatal(err)

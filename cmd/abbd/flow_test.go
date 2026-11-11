@@ -43,6 +43,7 @@ func (p *project) flow(code int, contains, draft string, extra ...string) string
 // A flow is stored with each step stamped on the code it cites, and the page
 // draws it as numbered steps with the step's unit, note, failure and calls.
 func TestAFlowIsStoredAndDrawnInOrder(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored flow charge, 3 steps, INFERRED", chargeFlow)
 	stored := p.read("flows/charge.md")
@@ -66,6 +67,7 @@ func TestAFlowIsStoredAndDrawnInOrder(t *testing.T) {
 // An edit near one step's quote stales that step alone, and the check fails
 // until the flow is read again; the same steps on the moved code are refused.
 func TestAFlowStepGoesStaleOnItsOwn(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
@@ -95,6 +97,7 @@ func TestAFlowStepGoesStaleOnItsOwn(t *testing.T) {
 // steps or more, quotes the code holds once, units the state holds, and
 // calls that ride a stored relation.
 func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.code("billing/dup.go", "package billing\n// retry\n// retry\n")
 	for _, c := range []struct{ from, to, want string }{
@@ -123,6 +126,7 @@ func TestAFlowDraftIsCheckedBeforeItIsStored(t *testing.T) {
 // current one, and a reader who replaces a stale step takes over only that
 // step.
 func TestAReaderReplacesAHumansFlowOnlyOnceItIsStale(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored flow charge, 3 steps, USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
 	p.flow(1, "only a human changes it", strings.Replace(chargeFlow, "reads every charge", "reads each charge", 1))
@@ -137,6 +141,7 @@ func TestAReaderReplacesAHumansFlowOnlyOnceItIsStale(t *testing.T) {
 // A flow whose unit left the state fails the check, since storing the flow
 // again brings it current.
 func TestAFlowOnAUnitThatLeftFailsTheCheck(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.extract(`{"units":[{"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}]}`)
@@ -147,6 +152,7 @@ func TestAFlowOnAUnitThatLeftFailsTheCheck(t *testing.T) {
 // One flow file abbd cannot read is a named warning: sync, status and every
 // abbd flow go on, and the well-formed flows are still checked.
 func TestAMalformedFlowFileWarnsAndStopsNothing(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	if err := os.WriteFile(filepath.Join(p.root, ".abbd", "flows", "broken.md"), []byte("---\nsteps: [unclosed\n---\n"), 0o644); err != nil {
@@ -170,6 +176,7 @@ func movedRetry() string {
 // A stale step that comes back as it was is refused even when another step
 // changed, so rewording step 1 cannot restamp step 2.
 func TestAStaleStepStoredAgainUnreadIsRefused(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.code("billing/retry.go", movedRetry())
@@ -185,6 +192,7 @@ func TestAStaleStepStoredAgainUnreadIsRefused(t *testing.T) {
 // current steps must come back as written and keep the human's word, and
 // the page marks them so.
 func TestAReaderReplacesOnlyTheStaleStepsOfAHumansFlow(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
 	p.code("billing/retry.go", movedRetry())
@@ -209,6 +217,7 @@ func TestAReaderReplacesOnlyTheStaleStepsOfAHumansFlow(t *testing.T) {
 // The question and caption of a human's flow are the human's word too: a
 // reader who takes over a STALE step keeps them as they are.
 func TestAReaderKeepsTheQuestionAndCaptionOfAHumansFlow(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
 	p.code("billing/retry.go", movedRetry())
@@ -222,6 +231,7 @@ func TestAReaderKeepsTheQuestionAndCaptionOfAHumansFlow(t *testing.T) {
 // The guard holds across stores: dropping a STALE step and storing it again,
 // or storing it with one more quote, does not bring it back CURRENT unread.
 func TestAStaleStepCannotComeBackUnreadAcrossStores(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.code("billing/retry.go", movedRetry())
@@ -251,6 +261,7 @@ func TestAStaleStepCannotComeBackUnreadAcrossStores(t *testing.T) {
 // outside the anchored symbol does not count, and a quote that names a symbol
 // must lie inside it.
 func TestAFlowStepCitesCodeItsOwnUnitHolds(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	post := "\n      - {path: ledger/book.go, lines: \"6\", symbol: Post, quote: \"func Post() {}\"}"
 	p.flow(1, "none of the step's quotes is in the code of MOD-0002", strings.Replace(chargeFlow, post, "", 1))
@@ -261,6 +272,7 @@ func TestAFlowStepCitesCodeItsOwnUnitHolds(t *testing.T) {
 // the quote lies in. abbd does not read declarations, so it stores a claim
 // it cannot check.
 func TestAQuotesSymbolIsTheReadersClaim(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored flow charge, 3 steps", strings.Replace(chargeFlow, `{path: ledger/book.go, lines: "3-4", quote:`, `{path: ledger/book.go, lines: "3-4", symbol: Post, quote:`, 1))
 }
@@ -283,6 +295,7 @@ func stepTwoRetired(t *testing.T) *project {
 // A human is the authority on a flow: a retired step does not hold a human's
 // store back, and the human's word clears the retired steps it says again.
 func TestAHumanStoreClearsTheRetiredStepsItSays(t *testing.T) {
+	t.Parallel()
 	p := stepTwoRetired(t)
 	p.flow(0, "stored flow charge, 3 steps, USER_STATED", chargeFlow, "--source", "conversation 2026-11-03")
 	if stored := p.read("flows/charge.md"); strings.Contains(stored, "retired:") {
@@ -293,6 +306,7 @@ func TestAHumanStoreClearsTheRetiredStepsItSays(t *testing.T) {
 // A retired step is forgotten once its unit leaves the state, so the list
 // does not grow without bound.
 func TestARetiredStepOnAUnitThatLeftIsForgotten(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n// cached\nfunc Post() {}\n")
@@ -315,6 +329,7 @@ func TestARetiredStepOnAUnitThatLeftIsForgotten(t *testing.T) {
 // called: once that unit leaves the state, the step's old words still cannot
 // come back on the code that changed under them.
 func TestARetiredStepOutlivesAUnitItCalled(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.flow(0, "stored", chargeFlow)
 	p.code("ledger/book.go", "package ledger\n\nconst q = `SELECT amount\n    FROM charges`\n// cached\nfunc Post() {}\n")
@@ -332,6 +347,7 @@ func TestARetiredStepOutlivesAUnitItCalled(t *testing.T) {
 // A store warns on a step whose does runs past 80 characters, and not on a
 // long note or failure, which hold a rule or a cause in full.
 func TestALongDoesWarnsAndALongNoteDoesNot(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	long := strings.Repeat("and then some more ", 5)
 	out := p.flow(0, "stored", strings.Replace(strings.Replace(chargeFlow, "reads every charge, no cache", "reads every charge, no cache, "+long, 1), "gives up after three tries", "gives up after three tries, "+long, 1))

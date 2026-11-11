@@ -36,6 +36,7 @@ func withFigures(t *testing.T, flow []model.ID, layers map[string][]model.ID, or
 // step back on a box already on the lead adds no hop, and the hops are
 // numbered in that order from the box the first hop leaves, which is filled.
 func TestAStoredFlowLeadsInItsOrder(t *testing.T) {
+	t.Parallel()
 	cli, st, gitx, extract := model.ID("MOD-0001"), model.ID("MOD-0041"), model.ID("MOD-0022"), model.ID("MOD-0017")
 	m := withFigures(t, []model.ID{cli, st, gitx, cli, extract}, nil, nil)
 	l := m.Overview.Lead
@@ -60,6 +61,7 @@ func TestAStoredFlowLeadsInItsOrder(t *testing.T) {
 // A flow whose next step sits on a box no drawn line joins to the lead
 // stops there, and one hop is no lead.
 func TestAFlowStopsWhereNoLineJoinsIt(t *testing.T) {
+	t.Parallel()
 	gitx, external := model.ID("MOD-0022"), model.ID("MOD-0055")
 	m := withFigures(t, []model.ID{gitx, external, gitx}, nil, nil)
 	if m.Overview.Lead != nil {
@@ -71,6 +73,7 @@ func TestAFlowStopsWhereNoLineJoinsIt(t *testing.T) {
 // boxes or more bands every box it names, numbered from the top with no
 // gap, and its band holds no other box. A layer of one box takes no band.
 func TestAStackBandsItsLayers(t *testing.T) {
+	t.Parallel()
 	order := []string{"commands", "rules", "apart", "store"}
 	layers := map[string][]model.ID{
 		"commands": {"MOD-0001"},
@@ -130,6 +133,7 @@ func newTreeFor(t *testing.T) tree {
 // A view past hover's caps has no routes to light its lines again, so it
 // draws its lead but never rests its other lines grey.
 func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
+	t.Parallel()
 	cli, st, gitx := model.ID("MOD-0001"), model.ID("MOD-0041"), model.ID("MOD-0022")
 	m := withFigures(t, []model.ID{cli, st, gitx}, nil, nil)
 	if !m.Overview.Quiet {
@@ -152,6 +156,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 // not climb, a climbing line. Its area keeps cardRoom from all other ink
 // and every number, as the card promises.
 func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
+	t.Parallel()
 	marks := map[string]*regexp.Regexp{
 		"lead":   regexp.MustCompile(`<g class="leadway"`),
 		"fill":   regexp.MustCompile(`<g class="box [^"]*\blead\b`),
@@ -201,6 +206,7 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 
 // Every card's words fit inside the card.
 func TestACardsWordsFitIt(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {

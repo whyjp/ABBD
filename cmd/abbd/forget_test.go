@@ -19,6 +19,7 @@ func statesCommented() string {
 // keeps its words, its quotes and the human's why, and says who re-read it
 // and when, until a reader stores it with new words.
 func TestAReaderKeepsANoteAfterACosmeticEdit(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.decisions.k", "The states run pending then charged.", statesQuote)
 	p.want(0, "recorded", "record", "fact", "MOD-0001.decisions.k", "--value", "refunds come later", "--source", "https://example.com/pr/7")
@@ -60,6 +61,7 @@ func TestAReaderKeepsANoteAfterACosmeticEdit(t *testing.T) {
 // its file exactly once, word for word: the note no longer rests on code
 // that is there as it quotes it.
 func TestARereadIsRefusedWhenAQuoteNoLongerHolds(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
 	p.wantNote(0, "understood", "MOD-0001.states", "pending then charged.", statesQuote)
@@ -73,6 +75,7 @@ func TestARereadIsRefusedWhenAQuoteNoLongerHolds(t *testing.T) {
 // abbd forget removes a note by the name status gives it, whatever state it
 // is in, says what it removed, and names the human's why that went with it.
 func TestForgetRemovesANoteAndSaysWhatItWas(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.failure", "A charge is tried three times.", failureQuote)
 	p.wantNote(0, "understood", "MOD-0001.states", "states text", statesQuote)
@@ -109,6 +112,7 @@ func TestForgetRemovesANoteAndSaysWhatItWas(t *testing.T) {
 // MOD-0001.decisions/k.md, has no ref that names only its file: status names
 // the file to delete instead of a forget that would remove the current note.
 func TestForgetNeverNamesTwoFilesByOneRef(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.decisions.k", "A charge is tried three times.", failureQuote)
 	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001.decisions", "k.md"), p.read("understanding/MOD-0001/decisions.k.md"))
@@ -127,6 +131,7 @@ func TestForgetNeverNamesTwoFilesByOneRef(t *testing.T) {
 // code was stamped against other quotes. A reread would bless words and a
 // human's why given about the old quote, so it is refused.
 func TestARereadIsRefusedWhenTheEvidenceWasEditedByHand(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.decisions.k", "The states run pending then charged.", statesQuote)
 	p.want(0, "recorded", "record", "fact", "MOD-0001.decisions.k", "--value", "refunds come later", "--source", "https://example.com/pr/7")
@@ -146,6 +151,7 @@ func TestARereadIsRefusedWhenTheEvidenceWasEditedByHand(t *testing.T) {
 // A reread records where each quote sits now, as a store with fresh
 // --evidence would.
 func TestARereadMovesEachQuotesLinesToWhereItIsNow(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.wantNote(0, "understood", "MOD-0001.states", "pending then charged.", statesQuote)
 	p.code("billing/retry.go", "// new 1\n// new 2\n"+statesCommented())
@@ -161,6 +167,7 @@ func TestARereadMovesEachQuotesLinesToWhereItIsNow(t *testing.T) {
 // The skill and the check's summary send a reader to the commands, not to
 // deleting a note's file by hand.
 func TestTheSkillAndTheCheckNameTheNoteCommands(t *testing.T) {
+	t.Parallel()
 	if text := readPlugin(t, "skills", "abbd", "SKILL.md"); strings.Contains(text, "Delete `.abbd/understanding/<ID>/") {
 		t.Error("the abbd skill must remove a note with abbd forget, not by deleting its file")
 	}
