@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via,When},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,decisions.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Owners,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Concepts{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Artifact,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -2192,11 +2192,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "turns the model into the one page a human opens",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "holds the embedded Korean HTML template, its helper functions and the Korean labels for kinds and origin badges, and styles each wire kind and port class the model emits",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/page.go",
@@ -5818,7 +5820,6 @@
             "cmd/abbd/query.go resolve"
           ],
           "Understanding": {
-            "Reader": "abbd reader",
             "Stale": false,
             "Blocks": [
               {
@@ -6125,6 +6126,44 @@
                   },
                   {
                     "Text": "): with the features option, groups the impact under each feature with the contracts and entries it uses, then lists what no feature holds.",
+                    "Code": false
+                  }
+                ]
+              },
+              {
+                "Kind": "li",
+                "Parts": [
+                  {
+                    "Text": "Artifact",
+                    "Code": false,
+                    "Bold": true
+                  },
+                  {
+                    "Text": " (",
+                    "Code": false
+                  },
+                  {
+                    "Text": "explain",
+                    "Code": true
+                  },
+                  {
+                    "Text": " in ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "cmd/abbd/query.go",
+                    "Code": true
+                  },
+                  {
+                    "Text": "): explain prints a module's set of build artifacts with whoever said it, such as ",
+                    "Code": false
+                  },
+                  {
+                    "Text": "artifacts: shared, static (공유 라이브러리 · 정적 라이브러리; EXTRACTED)",
+                    "Code": true
+                  },
+                  {
+                    "Text": ", after its parent.",
                     "Code": false
                   }
                 ]
@@ -6719,7 +6758,7 @@
                 "Code": true
               },
               {
-                "Text": ". Brief also lists the module's lines that bind at run time (",
+                "Text": ". Explain also names a module's set of build artifacts and who said it, and diff names an artifact that changed. Brief also lists the module's lines that bind at run time (",
                 "Code": false
               },
               {
@@ -10120,7 +10159,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Supplement condition",
+                "Text": "Supplement artifact",
                 "Code": false,
                 "Bold": true
               },
@@ -10133,15 +10172,15 @@
                 "Code": true
               },
               {
-                "Text": "): a supplement coupling keeps its ",
+                "Text": "): a supplement unit's ",
                 "Code": false
               },
               {
-                "Text": "when",
+                "Text": "artifact",
                 "Code": true
               },
               {
-                "Text": ", the condition it holds under, like a script relation.",
+                "Text": " fills a matched script unit's only when the script read none, written by the supplement, so the build's own reading wins and a sync keeps it.",
                 "Code": false
               }
             ]
@@ -12327,7 +12366,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Condition",
+                "Text": "Artifact",
                 "Code": false,
                 "Bold": true
               },
@@ -12340,31 +12379,63 @@
                 "Code": true
               },
               {
-                "Text": "): a relation's ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": "when",
+                "Text": "artifacts",
                 "Code": true
               },
               {
-                "Text": " names the condition it holds under, a feature, a cfg, ",
+                "Text": " on a unit, one script fact kept sorted, lists what the build makes of it, each ",
                 "Code": false
               },
               {
-                "Text": "dev",
+                "Text": "exe",
                 "Code": true
               },
               {
-                "Text": " or a link scope; parse refuses one over ",
+                "Text": ", ",
                 "Code": false
               },
               {
-                "Text": "model.MaxWhen",
+                "Text": "static",
                 "Code": true
               },
               {
-                "Text": " characters or over one line.",
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "shared",
+                "Code": true
+              },
+              {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "module",
+                "Code": true
+              },
+              {
+                "Text": " or ",
+                "Code": false
+              },
+              {
+                "Text": "cdylib",
+                "Code": true
+              },
+              {
+                "Text": "; parse refuses them on anything but a ",
+                "Code": false
+              },
+              {
+                "Text": "MOD",
+                "Code": true
+              },
+              {
+                "Text": ", a kind ABBD does not know and a kind listed twice.",
                 "Code": false
               }
             ]
@@ -12450,6 +12521,12 @@
                 "Key": "units-digest",
                 "Name": "units.digest",
                 "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "units-artifacts",
+                "Name": "units.artifacts",
+                "Shape": "[]model.Artifact",
                 "Need": "선택"
               },
               {
@@ -12581,12 +12658,6 @@
               {
                 "Key": "relations-phrase",
                 "Name": "relations.phrase",
-                "Shape": "string",
-                "Need": "선택"
-              },
-              {
-                "Key": "relations-when",
-                "Name": "relations.when",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -15090,7 +15161,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Condition carry",
+                "Text": "Artifact carry",
                 "Code": false,
                 "Bold": true
               },
@@ -15103,23 +15174,15 @@
                 "Code": true
               },
               {
-                "Text": "): each extracted relation keeps its ",
+                "Text": "): a matched unit takes the extraction's ",
                 "Code": false
               },
               {
-                "Text": "When",
+                "Text": "Artifact",
                 "Code": true
               },
               {
-                "Text": " as ",
-                "Code": false
-              },
-              {
-                "Text": "setRelations",
-                "Code": true
-              },
-              {
-                "Text": " rebuilds the writer's claims.",
+                "Text": ", the set as one fact, as it takes a signature, by writer: a supplement's stays through a sync of the script, and a script's goes when the script stops reading it.",
                 "Code": false
               }
             ]
@@ -18740,7 +18803,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "When",
+                "Text": "Artifact",
                 "Code": true
               },
               {
@@ -18753,15 +18816,39 @@
                 "Code": true
               },
               {
-                "Text": "): the condition a relation holds under, empty when it always holds, checked by ",
+                "Text": "): the set of what the build makes of a module, one fact with its writer that ",
                 "Code": false
               },
               {
-                "Text": "ValidateWhen",
+                "Text": "ArtifactSet",
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": " writes sorted, ",
+                "Code": false
+              },
+              {
+                "Text": "Built",
+                "Code": true
+              },
+              {
+                "Text": " reads and ",
+                "Code": false
+              },
+              {
+                "Text": "Words",
+                "Code": true
+              },
+              {
+                "Text": " gives in the blueprint's words, such as 공유 라이브러리; ",
+                "Code": false
+              },
+              {
+                "Text": "link",
+                "Code": true
+              },
+              {
+                "Text": " joins the vias for an artifact that links another or compiles a module in.",
                 "Code": false
               }
             ]
@@ -21256,7 +21343,7 @@
                 "Code": true
               },
               {
-                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The fixed ",
+                "Text": " numbers a drawing's boxes and chips, a twin with its unit and a contract chip with its box, classes each route and dot by the shapes at its ends, each piece of ink by every route that runs along it, and each shape by the shapes its relations join it to. The ",
                 "Code": false
               },
               {
@@ -21280,23 +21367,7 @@
                 "Code": true
               },
               {
-                "Text": "). A drawing with more than ",
-                "Code": false
-              },
-              {
-                "Text": "hoverMax",
-                "Code": true
-              },
-              {
-                "Text": " shapes or ",
-                "Code": false
-              },
-              {
-                "Text": "routeMax",
-                "Code": true
-              },
-              {
-                "Text": " routes takes no part, and only a page with a drawing carries the rules. A climbing line is drawn in a lighter tint of its colour, and ",
+                "Text": "). No drawing is too large to take part, so a drawing on roads always keeps its routes and no join its roads draw reads as a J3 false join, and a page carries the rules for its own shapes and routes only. A climbing line is drawn in a lighter tint of its colour, and ",
                 "Code": false
               },
               {
@@ -23332,7 +23403,15 @@
                 "Code": true
               },
               {
-                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes.",
+                "Text": " holds each piece to its riders' majority kind. The svg's data-roads tells the checkers to trace each relation along its route, exempt from J3 a phantom way that runs wholly on routes, and read J1's splits off the routes. The lint gate bounds J3 per page as ",
+                "Code": false
+              },
+              {
+                "Text": "false_joins",
+                "Code": true
+              },
+              {
+                "Text": " on every page the debt file bounds, so a record cannot take a false join on as debt.",
                 "Code": false
               }
             ]
@@ -23435,7 +23514,23 @@
                 "Code": true
               },
               {
-                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
+                "Text": ", read from the drawn paths), then where the nearest other ink is farthest. ",
+                "Code": false
+              },
+              {
+                "Text": "labels",
+                "Code": true
+              },
+              {
+                "Text": " then drops the ×N of a bus of two lines, and of a bus whose every line says one word once that word is drawn on its ink or its net's, never for a word nearby on its track, which may sit on a sibling branch or the trunk; it keeps that spot for the bus's own word, keeps a word said again off a freed count spot, and ",
+                "Code": false
+              },
+              {
+                "Text": "unlabelKin",
+                "Code": true
+              },
+              {
+                "Text": " gives the count back when it drops the word. A stub or drop too short to stand its count clear of the head it ends in hands the count to the path's other stretches, which carry the same lines, so a count never sits beside an arrowhead only because the layout set a box's top close under its track. ",
                 "Code": false
               },
               {
@@ -26492,7 +26587,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Conditions",
+                "Text": "Artifact line",
                 "Code": false,
                 "Bold": true
               },
@@ -26501,7 +26596,7 @@
                 "Code": false
               },
               {
-                "Text": "marks.go",
+                "Text": "dress.go",
                 "Code": true
               },
               {
@@ -26509,19 +26604,19 @@
                 "Code": false
               },
               {
-                "Text": "conditions",
+                "Text": "role",
                 "Code": true
               },
               {
-                "Text": " lists, in a line's tooltip after what crosses it, each condition its relations hold under with how many it gates, and graph.json lines keep ",
+                "Text": " puts a module's build artifacts, joined by a dot, before its hub or entry part on the box's last line, and its title says them in brackets; ",
                 "Code": false
               },
               {
-                "Text": "When",
+                "Text": "link",
                 "Code": true
               },
               {
-                "Text": ".",
+                "Text": " draws dotted with the other build-time vias.",
                 "Code": false
               }
             ]
@@ -27861,6 +27956,36 @@
                 "Need": "선택"
               },
               {
+                "Key": "artifact",
+                "Name": "artifact",
+                "Shape": "*Fact",
+                "Need": "선택"
+              },
+              {
+                "Key": "artifact-value",
+                "Name": "artifact.value",
+                "Shape": "string",
+                "Need": "필수"
+              },
+              {
+                "Key": "artifact-writer",
+                "Name": "artifact.writer",
+                "Shape": "Writer",
+                "Need": "필수"
+              },
+              {
+                "Key": "artifact-source",
+                "Name": "artifact.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "artifact-digest",
+                "Name": "artifact.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "relations",
                 "Name": "relations",
                 "Shape": "[]Relation",
@@ -27957,12 +28082,6 @@
                 "Need": "선택"
               },
               {
-                "Key": "relations-when",
-                "Name": "relations.when",
-                "Shape": "string",
-                "Need": "선택"
-              },
-              {
                 "Key": "hidden",
                 "Name": "hidden",
                 "Shape": "[]Relation",
@@ -28055,12 +28174,6 @@
               {
                 "Key": "hidden-digest",
                 "Name": "hidden.digest",
-                "Shape": "string",
-                "Need": "선택"
-              },
-              {
-                "Key": "hidden-when",
-                "Name": "hidden.when",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -29894,7 +30007,7 @@
             "Kind": "li",
             "Parts": [
               {
-                "Text": "Link condition",
+                "Text": "Artifact change",
                 "Code": false,
                 "Bold": true
               },
@@ -29903,35 +30016,27 @@
                 "Code": false
               },
               {
-                "Text": "impact.go",
+                "Text": "diff.go",
                 "Code": true
               },
               {
-                "Text": "): a ",
+                "Text": "): ",
                 "Code": false
               },
               {
-                "Text": "Link",
+                "Text": "fields",
                 "Code": true
               },
               {
-                "Text": " carries its relation's ",
+                "Text": " notes a module whose build artifact changed, appeared or cleared, printed as ",
                 "Code": false
               },
               {
-                "Text": "When",
+                "Text": "~ artifact",
                 "Code": true
               },
               {
-                "Text": ", and ",
-                "Code": false
-              },
-              {
-                "Text": "Label",
-                "Code": true
-              },
-              {
-                "Text": " says it after the via.",
+                "Text": ".",
                 "Code": false
               }
             ]

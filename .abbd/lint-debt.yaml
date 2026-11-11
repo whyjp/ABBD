@@ -19,10 +19,11 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 6
+        counts: 2
         density: 14
         doglegs: 20
         dots: 0
+        false_joins: 0
         label_repeats: 0
         labelled: 20
         parallel_ink: 511

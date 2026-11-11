@@ -19,10 +19,11 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 8
+        counts: 1
         density: 28
         doglegs: 14
         dots: 3
+        false_joins: 0
         label_repeats: 6
         labelled: 17
         parallel_ink: 0
@@ -30,10 +31,11 @@ pages:
         abreast: 0
         colour_switches: 8
         combs: 0
-        counts: 5
+        counts: 0
         density: 15
         doglegs: 8
         dots: 0
+        false_joins: 0
         label_repeats: 7
         labelled: 11
         parallel_ink: 0
@@ -41,10 +43,11 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 2
+        counts: 1
         density: 12
         doglegs: 18
         dots: 3
+        false_joins: 0
         label_repeats: 0
         labelled: 1
         parallel_ink: 227
