@@ -141,7 +141,7 @@ func TestAViewPastTheHoverCapsIsNeverQuiet(t *testing.T) {
 	}
 	d := withFigures(t, []model.ID{cli, st, gitx}, nil, nil).Overview
 	d.Lead, d.Quiet, d.Routes = nil, false, nil
-	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}})
+	d.lead(newTreeFor(t), []flowWalk{{key: "walk", units: []model.ID{cli, st, gitx}}}, false)
 	if d.Lead == nil {
 		t.Fatal("a view past the caps draws no lead")
 	}
@@ -235,5 +235,96 @@ func TestAStepWordKeepsOffABandsTitle(t *testing.T) {
 	word := box{h.WX, h.WY - 11, textWidth(h.Word, wordPx), 13}
 	if hit(word, grow(z.titleArea(), inkGap)) {
 		t.Errorf("word %+v stands within %dpx of the title %+v", word, inkGap, z.titleArea())
+	}
+}
+
+// A stored flow that never leaves one box of the overview numbers its steps
+// on that box, which it fills, in a pill clear of every box; a module's
+// own view numbers none that way.
+func TestAFlowInOneBoxIsNumberedOnIt(t *testing.T) {
+	t.Parallel()
+	st := model.ID("MOD-0041")
+	m := withFigures(t, []model.ID{st, st, st}, nil, nil)
+	l := m.Overview.Lead
+	if l == nil || l.Stay == nil {
+		t.Fatalf("lead %+v, want the flow numbered on %s", l, st)
+	}
+	if s := *l.Stay; s.Box != string(st) || s.Text() != "1–3" || len(l.Hops) != 0 || l.Entry != string(st) {
+		t.Errorf("stay %+v with %d hops, want steps 1–3 on %s and no hop", s, len(l.Hops), st)
+	}
+	pill := box{l.Stay.X, l.Stay.Y, l.Stay.W, stayH}
+	for _, b := range m.Overview.Boxes {
+		if hit(pill, box{b.X, b.Y, b.W, b.H}) {
+			t.Errorf("the pill covers %s", b.ID)
+		}
+	}
+	if !m.Overview.clearOfInk(pill, nil) {
+		t.Errorf("the pill %+v lies on a line, junction, label or count", pill)
+	}
+	for _, in := range m.Insides {
+		if l := in.Drawing.Lead; l != nil && l.Stay != nil {
+			t.Errorf("%s numbers the flow on a box", in.ID)
+		}
+	}
+}
+
+// A stored flow that leaves its first box once draws that hop, numbered 1,
+// and goes on numbering, one to a step, the steps it then runs on the box
+// it reached, whichever way that hop's line runs; the pill's title names
+// the steps' own numbers in the flow.
+func TestAFlowThatLeavesOnceNumbersTheRest(t *testing.T) {
+	t.Parallel()
+	cli, st := model.ID("MOD-0001"), model.ID("MOD-0041")
+	for _, c := range []struct {
+		steps      []model.ID
+		box, text  string
+		titleSteps string
+	}{
+		{[]model.ID{cli, st, st, st}, string(st), "2–4", "2–4단계"},
+		{[]model.ID{cli, cli, st, st}, string(st), "2–3", "3–4단계"},
+		{[]model.ID{st, cli, cli}, string(cli), "2–3", "2–3단계"},
+	} {
+		l := withFigures(t, c.steps, nil, nil).Overview.Lead
+		if l == nil || len(l.Hops) != 1 || l.Stay == nil {
+			t.Fatalf("%v: lead %+v, want one hop and the rest numbered on %s", c.steps, l, c.box)
+		}
+		s := *l.Stay
+		if l.Hops[0].N != 1 || s.Box != c.box || s.Text() != c.text || !strings.Contains(s.Title, c.titleSteps) {
+			t.Errorf("%v: hop %d and stay %+v, want hop 1 and %s on %s titled with %s", c.steps, l.Hops[0].N, s, c.text, c.box, c.titleSteps)
+		}
+	}
+}
+
+// A box hemmed in by lines on every side keeps its pill off them all: in a
+// corner of the box clear of its name, or, with the name filling it, at the
+// nearest clear spot round it.
+func TestAStayPillKeepsOffEveryLine(t *testing.T) {
+	t.Parallel()
+	hem := []Wire{{D: "M370 100 L370 400"}, {D: "M190 100 L190 400"}, {D: "M100 185 L500 185"}, {D: "M100 275 L500 275"}}
+	dots := []Dot{{X: 370, Y: 185}, {X: 190, Y: 185}, {X: 370, Y: 275}, {X: 190, Y: 275}}
+	for _, c := range []struct {
+		name   string
+		inside bool
+	}{{"alpha", true}, {"a name that fills the box", false}} {
+		b := Box{ID: "A", X: 200, Y: 200, W: 160, H: 60, Lines: []Text{{S: c.name, X: 280, Y: 235, Mid: true}}}
+		other := Box{ID: "B", X: 380, Y: 200, W: 120, H: 60}
+		d := Drawing{Boxes: []Box{b, other}, Wires: hem, Dots: dots, Lead: &Lead{Stay: &Stay{Box: "A", First: 1, Last: 7}}}
+		d.pin()
+		s := d.Lead.Stay
+		pill := box{s.X, s.Y, s.W, stayH}
+		if !d.clearOfInk(grow(pill, inkGap), nil) {
+			t.Errorf("%s: the pill %+v lies on a line or junction", c.name, pill)
+		}
+		for _, w := range b.words() {
+			if hit(pill, w) {
+				t.Errorf("%s: the pill %+v covers the name %+v", c.name, pill, w)
+			}
+		}
+		if hit(pill, box{other.X, other.Y, other.W, other.H}) {
+			t.Errorf("%s: the pill %+v covers the next box", c.name, pill)
+		}
+		if in := hit(pill, box{b.X, b.Y, b.W, b.H}); in != c.inside {
+			t.Errorf("%s: pill %+v inside its box %v, want %v", c.name, pill, in, c.inside)
+		}
 	}
 }

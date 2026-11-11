@@ -5,6 +5,7 @@ import (
 	"maps"
 	"math"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -31,6 +32,143 @@ import (
 type Lead struct {
 	Key, Title, Entry, Hue string
 	Hops                   []Hop
+	Stay                   *Stay `json:",omitempty"`
+}
+
+// Stay numbers the steps a stored flow runs on one box of the overview
+// after its last hop, or all of them where it never leaves that box, in a
+// pill W wide set at X, Y beside the box, clear of every other mark. First
+// and Last go on from the hops' numbers, one to a step, and Title names the
+// flow and the steps' own numbers in it.
+type Stay struct {
+	Box         string
+	First, Last int
+	Title       string
+	X, Y, W     int
+}
+
+// Text is the pill's words: the first and last number it carries.
+func (s Stay) Text() string {
+	if s.First == s.Last {
+		return strconv.Itoa(s.First)
+	}
+	return strconv.Itoa(s.First) + "–" + strconv.Itoa(s.Last)
+}
+
+// stayH is how tall a stay's pill is.
+const stayH = 16
+
+// stayed is the steps of f that run on the box its last hop reached, from
+// that step, or, with no hop, on the box of its first step the view shows,
+// up to the first step on another box; nil where that is one step after no
+// hop.
+func (d *Drawing) stayed(t tree, f flowWalk, hops []use) *Stay {
+	box := d.shown(t)
+	i := 0
+	if len(hops) > 0 {
+		i = hops[len(hops)-1].step
+	}
+	for i < len(f.units) && box(f.units[i]) == "" {
+		i++
+	}
+	if i == len(f.units) {
+		return nil
+	}
+	at, k := box(f.units[i]), i+1
+	for k < len(f.units) && box(f.units[k]) == at {
+		k++
+	}
+	if len(hops) == 0 && k-i == 1 {
+		return nil
+	}
+	name := at
+	for _, b := range d.Boxes {
+		if b.ID == at && b.Name != "" {
+			name = b.Name
+		}
+	}
+	n := len(hops) + 1
+	steps := strconv.Itoa(i + 1)
+	if k-i > 1 {
+		steps += "–" + strconv.Itoa(k)
+	}
+	return &Stay{Box: at, First: n, Last: n + k - i - 1, Title: f.question + ": " + steps + "단계가 " + name + " 안에서 이어짐"}
+}
+
+// pin sets the stay's pill beside its box: right of its top corner, else
+// over it at its right, then left of it, then under it, then in a corner
+// inside it off its words, then the nearest spot round it, the first place
+// that keeps off every box, line, label, number, word and band title.
+func (d *Drawing) pin() {
+	if d.Lead == nil || d.Lead.Stay == nil {
+		return
+	}
+	s := d.Lead.Stay
+	w := textWidth(s.Text(), 10) + 12
+	for _, b := range d.Boxes {
+		if b.ID != s.Box {
+			continue
+		}
+		at := func(a box) {
+			s.X, s.Y, s.W = a.x, a.y, w
+		}
+		for _, a := range []box{{b.X + b.W + 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH}, {b.X + 4, b.Y - stayH - 5, w, stayH}, {b.X - w - 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y + b.H + 5, w, stayH}, {b.X + 4, b.Y + b.H + 5, w, stayH}} {
+			if d.wordClear(grow(a, inkGap), nil) {
+				at(a)
+				return
+			}
+		}
+		words := b.words()
+		for _, a := range []box{{b.X + b.W - w - 5, b.Y + 5, w, stayH}, {b.X + 5, b.Y + 5, w, stayH}, {b.X + b.W - w - 5, b.Y + b.H - stayH - 5, w, stayH}, {b.X + 5, b.Y + b.H - stayH - 5, w, stayH}} {
+			if d.wordClearOf(grow(a, inkGap), words, b.ID) {
+				at(a)
+				return
+			}
+		}
+		for g := 5; g <= stayReach; g += 4 {
+			for _, a := range ring(box{b.X, b.Y, b.W, b.H}, w, g) {
+				if d.wordClear(grow(a, inkGap), nil) {
+					at(a)
+					return
+				}
+			}
+		}
+		at(box{b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH})
+	}
+}
+
+// stayReach is the furthest a stay's pill stands off its box.
+const stayReach = 160
+
+// ring is the places a pill w wide stands g off b: along its top and its
+// bottom edge, then down its right and its left side, every 4px.
+func ring(b box, w, g int) []box {
+	var out []box
+	for x := b.x - w - g; x <= b.x+b.w+g; x += 4 {
+		out = append(out, box{x, b.y - stayH - g, w, stayH}, box{x, b.y + b.h + g, w, stayH})
+	}
+	for y := b.y - stayH - g; y <= b.y+b.h+g; y += 4 {
+		out = append(out, box{b.x + b.w + g, y, w, stayH}, box{b.x - w - g, y, w, stayH})
+	}
+	return out
+}
+
+// words is the area each line of the box's name and its last line covers.
+func (b Box) words() []box {
+	var out []box
+	ts := b.Lines
+	if b.Sub != nil {
+		ts = append(append([]Text(nil), ts...), *b.Sub)
+	}
+	for _, t := range ts {
+		n := textWidth(t.S, 13)
+		x := t.X
+		if t.Mid {
+			x -= n / 2
+		}
+		out = append(out, box{x, t.Y - 12, n, 15})
+	}
+	return out
 }
 
 // Hop is one numbered line of the lead: the route of a line the view draws,
@@ -92,8 +230,10 @@ type use struct {
 	from, to string
 	way      int
 	weight   int
-	// word names the stored step at to, on a lead that follows a flow.
+	// word names the stored step at to, on a lead that follows a flow, and
+	// step is that step's place in the flow, from 0.
 	word string
+	step int
 }
 
 func (d *Drawing) uses() []use {
@@ -116,25 +256,38 @@ func (d *Drawing) uses() []use {
 }
 
 // lead finds and draws the view's lead: a stored flow's where the state
-// holds any, else the one the lines show plainly.
-func (d *Drawing) lead(t tree, flows []flowWalk) {
+// holds any, else the one the lines show plainly. On the overview (whole)
+// a stored flow shows even where it leaves its first box once or never:
+// the steps it then runs on its last box are numbered on that box (Stay).
+func (d *Drawing) lead(t tree, flows []flowWalk, whole bool) {
 	uses := d.uses()
 	var hops []use
 	var key, title string
+	var stay *Stay
 	if len(flows) > 0 {
-		for _, f := range flows {
-			if hs := d.followed(t, f, uses); len(hs) > len(hops) {
-				hops, key, title = hs, f.key, f.question
+		best := -1
+		for k, f := range flows {
+			if hs := d.followed(t, f, uses); best < 0 || len(hs) > len(hops) {
+				hops, key, title, best = hs, f.key, f.question, k
 			}
+		}
+		if whole && len(hops) < leadMin {
+			stay = d.stayed(t, flows[best], hops)
 		}
 	} else {
 		hops = inferred(d.Boxes, uses)
 		title = "주 흐름 (추정): 아무도 쓰지 않는 하나뿐인 상자에서, 관계를 가장 많이 실은 선을 따라감"
 	}
-	if len(hops) < leadMin {
+	if len(hops) < leadMin && stay == nil {
 		return
 	}
-	l := &Lead{Key: key, Title: title, Entry: hops[0].from}
+	entry := ""
+	if len(hops) > 0 {
+		entry = hops[0].from
+	} else {
+		entry = stay.Box
+	}
+	l := &Lead{Key: key, Title: title, Entry: entry, Stay: stay}
 	for _, b := range d.Boxes {
 		if b.ID == l.Entry {
 			l.Hue = b.Hue
@@ -153,8 +306,9 @@ func (d *Drawing) lead(t tree, flows []flowWalk) {
 	}
 	d.Lead = l
 	// A view past hover's caps has no routes to light, so resting its lines
-	// grey would leave no way to see their colours.
-	if len(d.Routes) > 0 {
+	// grey would leave no way to see their colours. A lead with no line
+	// leaves every line its colour.
+	if len(d.Routes) > 0 && len(hops) > 0 {
 		d.quiet()
 		d.unlabelKin()
 	}
@@ -219,7 +373,7 @@ func (d *Drawing) followed(t tree, f flowWalk, uses []use) []use {
 			break
 		}
 		h := uses[j]
-		h.word = said[h.to]
+		h.word, h.step = said[h.to], i
 		hops = append(hops, h)
 		on = append(on, b)
 	}
@@ -332,8 +486,13 @@ const wordPx = 10
 // number or other step's word, and stands inkGap off every band's title:
 // ink, labels and counts by clearOfInk.
 func (d *Drawing) wordClear(area box, words []box) bool {
+	return d.wordClearOf(area, words, "")
+}
+
+// wordClearOf is wordClear inside the box own: it meets no other box.
+func (d *Drawing) wordClearOf(area box, words []box, own string) bool {
 	for _, b := range d.Boxes {
-		if hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+		if b.ID != own && hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
 			return false
 		}
 	}

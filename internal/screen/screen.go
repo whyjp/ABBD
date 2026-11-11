@@ -285,8 +285,8 @@ func Build(in Input) Model {
 		d.paint(hues)
 	}
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
-	for _, d := range leads {
-		d.lead(o.tree, fs)
+	for i, d := range leads {
+		d.lead(o.tree, fs, i == 0)
 	}
 	for _, d := range m.drawings() {
 		d.dress(o.tree)
@@ -296,6 +296,7 @@ func Build(in Input) Model {
 	for _, d := range leads {
 		d.number()
 		d.zone(o.tree, ls)
+		d.pin()
 		d.name()
 		d.card()
 	}
