@@ -199,8 +199,8 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	return page, os.WriteFile(page, []byte(b.String()), 0o644)
 }
 
-// pagesAt draws the blueprint of the state committed at base, which git
-// keeps without its pages, or reads the pages the kept copy holds.
+// pagesAt draws the blueprint of the state committed at base, so the base
+// reads in the renderer of now, or reads the pages the kept copy holds.
 func (e env) pagesAt(base string) (map[string][]byte, error) {
 	if base == prev {
 		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")

@@ -158,7 +158,7 @@ func (e env) statusLines() error {
 		fmt.Fprintf(e.stdout, "state: %s, synced at %s\n", in.ActualFreshness(), in.Synced.Revision)
 	}
 	if bp := in.BlueprintFreshness(); bp == screen.Undrawn {
-		fmt.Fprintln(e.stdout, "blueprint: NOT DRAWN here, git keeps only the state it is drawn from; abbd sync draws it")
+		fmt.Fprintln(e.stdout, "blueprint: NOT DRAWN here; abbd sync draws it from the state")
 	} else {
 		fmt.Fprintln(e.stdout, "blueprint:", bp)
 	}
