@@ -2250,6 +2250,7 @@
         "internal/store/figure.go",
         "internal/store/legacy.go",
         "internal/store/note.go",
+        "internal/store/owners.go",
         "internal/store/store.go",
         "internal/store/understanding.go"
       ]
@@ -2566,18 +2567,6 @@
       "Anchors": [
         "internal/narrative",
         "internal/narrative/narrative.go"
-      ]
-    },
-    {
-      "ID": "MOD-0057",
-      "Kind": "MOD",
-      "Name": "internal/owners",
-      "Signature": "",
-      "Purpose": null,
-      "Responsibility": null,
-      "Anchors": [
-        "internal/owners",
-        "internal/owners/owners.go"
       ]
     }
   ],
@@ -4552,13 +4541,6 @@
       "Via": "call",
       "Phrase": "text lines",
       "PhraseOrigin": "INFERRED"
-    },
-    {
-      "From": "MOD-0034",
-      "To": "MOD-0057",
-      "Kind": "depends_on",
-      "Origin": "EXTRACTED",
-      "Via": "call"
     },
     {
       "From": "MOD-0035",
@@ -18600,7 +18582,7 @@
       "Standing": {
         "Provides": 1,
         "Uses": 12,
-        "Direct": 6,
+        "Direct": 5,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -19264,7 +19246,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " reads, including each module's understanding and its code digest now, and the owners CODEOWNERS gives each unit (",
+                  "Text": " reads, including each module's understanding and its code digest now, and the owners the store's CODEOWNERS reading gives each unit (",
                   "Code": false
                 },
                 {
@@ -20151,7 +20133,7 @@
                 "Code": true
               },
               {
-                "Text": " reads, including each module's understanding and its code digest now, and the owners CODEOWNERS gives each unit (",
+                "Text": " reads, including each module's understanding and its code digest now, and the owners the store's CODEOWNERS reading gives each unit (",
                 "Code": false
               },
               {
@@ -26051,7 +26033,31 @@
                 "Code": true
               },
               {
-                "Text": " names the project root it sits in), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
+                "Text": " names the project root it sits in, where ",
+                "Code": false
+              },
+              {
+                "Text": "ReadOwners",
+                "Code": true
+              },
+              {
+                "Text": " reads CODEOWNERS into ",
+                "Code": false
+              },
+              {
+                "Text": "Owners",
+                "Code": true
+              },
+              {
+                "Text": ", whose ",
+                "Code": false
+              },
+              {
+                "Text": "For",
+                "Code": true
+              },
+              {
+                "Text": " gives a path the owners of the last rule it matches), where Markdown with YAML frontmatter is the source and everything else derives from it. It provides unit files (one file per unit under architecture or features), sync state in state.yaml, project.yaml with the registered extraction argv, module understanding texts, slot notes, and the stored flows, stacks and tables. It also keeps the merge candidates file, the lint debt, the blueprint pages, committed beside the state they are drawn from, and the copy of ",
                 "Code": false
               },
               {
@@ -29839,25 +29845,6 @@
           ]
         }
       ]
-    },
-    {
-      "ID": "MOD-0057",
-      "Name": "internal/owners",
-      "Standing": {
-        "Provides": 0,
-        "Uses": 0,
-        "Direct": 0,
-        "StaleNotes": 0,
-        "Dead": 0
-      },
-      "Units": null,
-      "Understanding": null,
-      "Unwired": null,
-      "Up": "#overview",
-      "Trail": [
-        "internal/owners"
-      ],
-      "Inferred": null
     }
   ],
   "flows": [
