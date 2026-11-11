@@ -19,7 +19,9 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
+        counts: 8
         doglegs: 14
+        dots: 3
         label_repeats: 6
         labelled: 17
         parallel_ink: 0
@@ -27,7 +29,9 @@ pages:
         abreast: 0
         colour_switches: 8
         combs: 0
+        counts: 5
         doglegs: 8
+        dots: 0
         label_repeats: 7
         labelled: 11
         parallel_ink: 0
@@ -35,7 +39,9 @@ pages:
         abreast: 0
         colour_switches: 26
         combs: 0
+        counts: 11
         doglegs: 31
+        dots: 5
         label_repeats: 1
         labelled: 5
         parallel_ink: 667

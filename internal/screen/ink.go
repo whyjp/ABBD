@@ -7,8 +7,8 @@ import (
 )
 
 // Ink is what the routed paths look like to a reader: straight pieces of
-// one kind, which meet where one ends on another. Rule 17 marks every
-// point where ink splits or merges with a dot, and rule 22 sets each ×N
+// one kind, which meet where one ends on another. Rule 17 marks with a dot
+// every point where ink goes four ways and joins, and rule 22 sets each ×N
 // beside the one stretch of ink it counts.
 
 // Dot marks a point where lines of one kind split or merge.
@@ -112,10 +112,15 @@ func sign(v int) int {
 	return 0
 }
 
-// junctions are the points where ink of one colour leaves in three or more
-// directions, and the points where a line crosses onto a trunk that runs on
-// past it: there two pieces cross, and only the dot says they join.
-func junctions(ps []piece, joins []join) []Dot {
+// junctions are the points where ink of one colour leaves in all four
+// directions: there two pieces cross, and only the dot says they join, as
+// where a line crosses onto a trunk that runs on past it. Where ink leaves
+// in three, a T, its shape says the line joins and it takes no dot, but
+// where a gap cuts its line close by (marks.go).
+func junctions(ps []piece, joins []join) []Dot { return ways(ps, joins, 4) }
+
+// ways are the points where ink of one colour leaves in n directions.
+func ways(ps []piece, joins []join, n int) []Dot {
 	arms := map[string]map[pt]bool{}
 	where := map[string]Dot{}
 	arm := func(k string, p, to pt) {
@@ -151,7 +156,7 @@ func junctions(ps []piece, joins []join) []Dot {
 	}
 	var out []Dot
 	for key, a := range arms {
-		if len(a) >= 3 {
+		if len(a) == n {
 			out = append(out, where[key])
 		}
 	}

@@ -329,6 +329,44 @@ func TestADotJoinsOnlyItsOwnKind(t *testing.T) {
 	}
 }
 
+// pstack's MOD-0010 at 486,206: a line drops onto a bus whose right arm
+// a line of another kind cuts 8px on, leaving a 4px stub. Left a T, it
+// reads as a corner and the bus beyond the gap starts from nothing, so
+// the T keeps its dot, and J2 reports it without one (rule 17).
+func TestATeeCutCloseByKeepsItsDot(t *testing.T) {
+	paths := []drawn{
+		{kind: "depends_on", parts: [][]pt{{{486, 78}, {486, 206}}}},
+		{kind: "depends_on", parts: [][]pt{{{486, 206}, {412, 206}}}},
+		{kind: "depends_on", parts: [][]pt{{{486, 206}, {559, 206}}}},
+		{kind: "contract", parts: [][]pt{{{494, 150}, {494, 260}}}},
+	}
+	d := Drawing{Width: 600, Height: 300}
+	for _, p := range paths {
+		d.Wires = append(d.Wires, Wire{D: polyline(p.parts[0]), Kind: p.kind, Hue: "0", Head: "dep-0"})
+	}
+	d.gaps(segsOf(paths))
+	if want := []Gap{{494, 494, 206}}; !slices.Equal(d.Wires[2].Gaps, want) {
+		t.Fatalf("cuts %v, want %v", d.Wires[2].Gaps, want)
+	}
+	j2 := func(d Drawing) []Breach {
+		s, err := sheetOf(d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return newLook(view{name: "sketch", d: d}, s).dotted()
+	}
+	if got := j2(d); len(got) != 1 || !strings.Contains(got[0].Text, "T at 486,206") {
+		t.Errorf("J2 on the undotted T: %+v; want one breach at 486,206", got)
+	}
+	d.dotCutTees(paths)
+	if want := []Dot{{X: 486, Y: 206, Kind: hue("depends_on")}}; !slices.Equal(d.Dots, want) {
+		t.Errorf("dots %+v, want %+v", d.Dots, want)
+	}
+	if got := j2(d); len(got) != 0 {
+		t.Errorf("J2 on the dotted T: %+v; want none", got)
+	}
+}
+
 // lineOf says which lines a label may name: its own, and every path of a
 // bus it names whole.
 func (r rendered) lineOf(w lettered, i int) bool {

@@ -16,7 +16,9 @@ pages:
         abreast: 0
         colour_switches: 55
         combs: 0
+        counts: 24
         doglegs: 9
+        dots: 12
         label_repeats: 0
         labelled: 8
         parallel_ink: 0

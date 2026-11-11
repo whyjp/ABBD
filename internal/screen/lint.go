@@ -111,6 +111,11 @@ type Totals struct {
 	// lines of one kind, within combGap of the next: teeth a hand drawing
 	// would draw as one stem (busy.go).
 	Combs int `json:"combs"`
+	// Counts are the ×N a reader sees on the drawing, and Dots its
+	// junction dots: marks a hand drawing does without, which a page the
+	// debt file names may not raise (gate.go).
+	Counts int `json:"counts"`
+	Dots   int `json:"dots"`
 	// LabelRepeats are the labels that say a word another label says
 	// nearby (busy.go); a page the debt file names may not raise them.
 	// Labelled is the routes a reader finds a word on at rest, of Routes.
@@ -132,7 +137,7 @@ func Sum(views []ViewLint) Totals {
 		t.ParallelInk, t.Segments, t.Lines, t.ForkLevels = t.ParallelInk+o.ParallelInk, t.Segments+o.Segments, t.Lines+o.Lines, t.ForkLevels+o.ForkLevels
 		t.InkCrossings, t.Abreast = t.InkCrossings+o.InkCrossings, t.Abreast+o.Abreast
 		t.ColourSwitches, t.Doglegs = t.ColourSwitches+o.ColourSwitches, t.Doglegs+o.Doglegs
-		t.Combs += o.Combs
+		t.Combs, t.Counts, t.Dots = t.Combs+o.Combs, t.Counts+o.Counts, t.Dots+o.Dots
 		t.LabelRepeats, t.Labelled, t.Routes = t.LabelRepeats+o.LabelRepeats, t.Labelled+o.Labelled, t.Routes+o.Routes
 		for k, n := range o.Criteria {
 			t.Criteria[k] += n
@@ -172,7 +177,7 @@ var criteria = []Criterion{
 	{ID: "B3", Says: "a line never runs past a turn and comes back: no stretch runs against the stretch two before it", check: (*look).noTurnBacks},
 	{ID: "B4", Says: "no two stretches of one line, or of one drawn bundle, run side by side within 12px for 24px or more", check: (*look).noDoubles},
 	{ID: "J1", Hard: true, Says: "a bundle splits only in a gap next to the row of a place it splits toward", check: (*look).splitsAtEnds},
-	{ID: "J2", Hard: true, Says: "every split and merge carries a dot (rule 17)", check: (*look).dotted},
+	{ID: "J2", Hard: true, Says: "every four-way join, and every T a gap cuts close by, carries a dot (rule 17)", check: (*look).dotted},
 	{ID: "J3", Hard: true, Says: "the ink joins no two places that no relation joins, but where lines ride roads and light whole (rule 18)", check: (*look).noPhantoms},
 	{ID: "H1", Placement: true, Says: "a box used by 3 or more places stands within the span of its users' centres", check: (*look).hubsCentred},
 	{ID: "H2", Placement: true, Says: "the forward lines of one kind into a hub reach it as one trunk", check: (*look).hubsOneTrunk},
@@ -327,7 +332,7 @@ func lintView(v view) (ViewLint, error) {
 	vl.Totals.ParallelInk, vl.Totals.Abreast, vl.Totals.Segments = parallelInk(s), abreastInk(s), len(inkStretches(s))
 	vl.Totals.Lines, vl.Totals.ForkLevels = len(t.Ways), forkLevels(l)
 	vl.Totals.InkCrossings, vl.Totals.ColourSwitches = inkCrossings(s), colourSwitches(v.d)
-	vl.Totals.Combs = combs(t.Ways)
+	vl.Totals.Combs, vl.Totals.Counts, vl.Totals.Dots = combs(t.Ways), len(s.counts), len(s.junctions)
 	vl.Totals.LabelRepeats, vl.Totals.Labelled, vl.Totals.Routes = labelRepeats(v.d), labelled(v.d), len(v.d.ways)
 	return vl, nil
 }
@@ -1037,12 +1042,13 @@ func (l *look) placeAt(id string) int {
 }
 
 // J1. Rule 4 lets lines from different places merge midway, so only a
-// split is held. A split is a dot where the lines through it arrive as one
-// strand, from one side, and leave it on two sides or more. It stands in a
-// gap next to the row of a place one of those lines goes to.
+// split is held. A split is a point where ink goes three or more ways and
+// the lines through it arrive as one strand, from one side, and leave it
+// on two sides or more. It stands in a gap next to the row of a place one
+// of those lines goes to.
 func (l *look) splitsAtEnds() []Breach {
 	var out []Breach
-	for _, j := range l.s.junctions {
+	for _, j := range l.trace.Splits {
 		if !l.splitAt(j) {
 			continue
 		}
@@ -1088,7 +1094,7 @@ func (l *look) splitWays() []tracedWay {
 	return out
 }
 
-// splitAt says the lines of j's kind through dot j arrive from one side
+// splitAt says the lines of j's kind through split j arrive from one side
 // and leave on more than one, to more than one place.
 func (l *look) splitAt(j junction) bool {
 	ins, outs, tos := map[fpt]bool{}, map[fpt]bool{}, map[string]bool{}
@@ -1130,7 +1136,14 @@ func absInt(x int) int { return max(x, -x) }
 func (l *look) dotted() []Breach {
 	var out []Breach
 	for _, p := range l.trace.Unmarked {
-		out = append(out, Breach{Got: 1, Allowed: 0, Text: fmt.Sprintf("ink splits or merges at %g,%g without a dot", p.x, p.y)})
+		out = append(out, Breach{Got: 1, Allowed: 0, Text: fmt.Sprintf("ink goes four ways at %g,%g without a dot", p.x, p.y)})
+	}
+	for _, j := range l.trace.Splits {
+		p := pt{int(math.Round(j.at.x)), int(math.Round(j.at.y))}
+		if slices.Contains(l.trace.Unmarked, j.at) || !l.v.d.nearCut(p, "") || slices.ContainsFunc(l.s.junctions, func(o junction) bool { return o.kind == j.kind && dist(j.at, o.at) < 3 }) {
+			continue
+		}
+		out = append(out, Breach{Got: 1, Allowed: 0, Text: fmt.Sprintf("a gap cuts the line within %dpx of the T at %g,%g, which has no dot", gapJoin, j.at.x, j.at.y)})
 	}
 	return out
 }

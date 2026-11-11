@@ -219,3 +219,15 @@ func TestAJoinMarksOnlyItsOwnKind(t *testing.T) {
 		t.Fatalf("a bypass join on crossing bypass lines got dots %v; want one", got)
 	}
 }
+
+// A line that ends on another, a T, says it joins by its shape and takes no
+// dot; one that crosses onto a trunk running on past it takes one.
+func TestOnlyAFourWayJoinTakesADot(t *testing.T) {
+	bar := piece{pt{0, 10}, pt{20, 10}, "road"}
+	if got := junctions([]piece{bar, {pt{10, 0}, pt{10, 10}, "road"}}, nil); len(got) != 0 {
+		t.Fatalf("a T got dots %v; want none", got)
+	}
+	if got := junctions([]piece{bar, {pt{10, 0}, pt{10, 10}, "road"}, {pt{10, 10}, pt{10, 20}, "road"}}, nil); len(got) != 1 {
+		t.Fatalf("a four-way join got dots %v; want one", got)
+	}
+}
