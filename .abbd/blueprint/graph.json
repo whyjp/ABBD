@@ -5951,6 +5951,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -6191,7 +6192,23 @@
                 "Code": true
               },
               {
-                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file.",
+                "Text": ". A marker counts only alone on its line and outside fences; install keeps line endings and the rest of the file. The block says the blueprint is drawn at ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd/blueprint/index.html",
+                "Code": true
+              },
+              {
+                "Text": " and that ",
+                "Code": false
+              },
+              {
+                "Text": "abbd sync",
+                "Code": true
+              },
+              {
+                "Text": " keeps it current, since the pages are committed.",
                 "Code": false
               }
             ]
@@ -19407,6 +19424,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
