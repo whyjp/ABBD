@@ -20516,7 +20516,6 @@
         "Provides": 1,
         "Uses": 12,
         "Direct": 5,
-        "TextStale": true,
         "StaleNotes": 0,
         "Dead": 11
       },
@@ -20611,7 +20610,7 @@
         }
       ],
       "Understanding": {
-        "Stale": true,
+        "Stale": false,
         "Blocks": [
           {
             "Kind": "h",
@@ -21762,7 +21761,31 @@
                 "Code": true
               },
               {
-                "Text": " puts one note above the list instead of a badge on each. ",
+                "Text": " puts one note above the list instead of a badge on each. A stamped purpose or responsibility (",
+                "Code": false
+              },
+              {
+                "Text": "sentenceOf",
+                "Code": true
+              },
+              {
+                "Text": ") reads STALE when ",
+                "Code": false
+              },
+              {
+                "Text": "Load",
+                "Code": true
+              },
+              {
+                "Text": "'s digest of its unit differs from its ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": ", on the module's page and in the unit index. ",
                 "Code": false
               },
               {
