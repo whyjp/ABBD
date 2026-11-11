@@ -234,3 +234,14 @@ func TestASentenceLeavesAPersonsLine(t *testing.T) {
 	}
 	p.want(1, "--sentence goes with", "understand", "MOD-0001", "--restamp", "--sentence", "x")
 }
+
+// Setup and status work in a repository whose .gitignore is a whitelist,
+// which ignores .abbd along with everything it does not name.
+func TestSetupWorksUnderAWhitelistGitignore(t *testing.T) {
+	p, exe := bare(t)
+	p.code(".gitignore", "/*\n!/.gitignore\n!/billing/\n!/ledger/\n!/api/\n")
+	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
+	p.extract(codeOnly)
+	p.setup(0, "synced", "--", exe)
+	p.want(0, "state: CURRENT", "status")
+}
