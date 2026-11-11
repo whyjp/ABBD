@@ -262,8 +262,10 @@ func kindWord(k model.Kind) string {
 // gist is the first clause of a unit's sentence, so a box says what it does
 // as the exemplars do: the longest run of its words that fits room and
 // ends where a phrase does, before a small word or at the clause's end. A
-// clause that leaves no run of two words or more gives no gist. The full
-// sentence stays in the box's tooltip.
+// cut never lands before "to" or "that", which carry what the verb needs,
+// and a clause that opens on an article names a thing rather than what it
+// does; either, or a clause that leaves no run of two words or more, gives
+// no gist. The full sentence stays in the box's tooltip.
 func gist(u model.Unit, room int) string {
 	f := sentence(u)
 	if f == nil {
@@ -274,10 +276,14 @@ func gist(u model.Unit, room int) string {
 		s, _, _ = strings.Cut(s, sep)
 	}
 	words := strings.Fields(strings.TrimRight(s, "."))
+	if len(words) == 0 || slices.Contains([]string{"a", "an", "the"}, strings.ToLower(words[0])) {
+		return ""
+	}
 	small := func(w string) bool { return slices.Contains(smallWords, strings.ToLower(w)) }
+	binds := func(w string) bool { w = strings.ToLower(w); return w == "to" || w == "that" }
 	for n := len(words); n >= 2; n-- {
 		run := strings.Join(words[:n], " ")
-		if (n == len(words) || small(words[n])) && !small(words[n-1]) && monoWidth(run) <= room {
+		if (n == len(words) || small(words[n]) && !binds(words[n])) && !small(words[n-1]) && monoWidth(run) <= room {
 			return run
 		}
 	}
