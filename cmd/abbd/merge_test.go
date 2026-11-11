@@ -46,6 +46,7 @@ func conflicted(t *testing.T, root string) []string {
 // Two syncs of unrelated changes differ only in the one state file, and abbd
 // sync on the merged tree resolves it, conflict markers and all.
 func TestTwoSyncedBranchesConflictOnlyInTheState(t *testing.T) {
+	t.Parallel()
 	p := mergeBranches(t, "")
 	if got := conflicted(t, p.root); len(got) != 1 || got[0] != ".abbd/state.yaml" {
 		t.Fatalf("the merge should conflict in .abbd/state.yaml alone, got %v", got)
@@ -61,6 +62,7 @@ func TestTwoSyncedBranchesConflictOnlyInTheState(t *testing.T) {
 // With the state merged by union, git merges cleanly and the state reads
 // STALE until a sync of the merged tree.
 func TestAUnionMergedStateReadsStale(t *testing.T) {
+	t.Parallel()
 	p := mergeBranches(t, ".abbd/state.yaml merge=union\n")
 	if got := conflicted(t, p.root); len(got) != 0 {
 		t.Fatalf("a union merge of the state should leave no conflict, got %v", got)
@@ -76,6 +78,7 @@ func TestAUnionMergedStateReadsStale(t *testing.T) {
 // A sync whose units did not change rewrites no rendered file, so the
 // blueprint of two such syncs never conflicts.
 func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	graph, page := p.read("blueprint/graph.json"), p.blueprint()
 	p.code("billing/charge.go", p.read("../billing/charge.go")+"\n// unrelated\n")
@@ -92,6 +95,7 @@ func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
 // as a fresh clone, passes the check while the state is current; the pages
 // are drawn by the next sync.
 func TestABlueprintNotDrawnHereStillPassesTheCheck(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	os.RemoveAll(filepath.Join(p.root, ".abbd", "blueprint"))
 	p.want(0, "blueprint: NOT DRAWN here", "status", "--check")

@@ -54,6 +54,7 @@ func lintRow(v ViewLint) []int {
 // every fixture go there as a table, and with ABBD_LINT_BREACHES set, every
 // breach.
 func TestLintFixtures(t *testing.T) {
+	t.Parallel()
 	cols := lintColumns()
 	totals := make([]int, len(cols))
 	var rows, breaches []string

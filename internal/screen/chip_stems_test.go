@@ -12,6 +12,7 @@ import (
 // stems of the two kinds run apart, not 16px beside each other down the
 // whole page as one doubled line.
 func TestAChipsStemsLeaveItCleanly(t *testing.T) {
+	t.Parallel()
 	var src *view
 	for _, v := range views(fixture(t, "orca")) {
 		if v.name == "MOD-0098 src/" {

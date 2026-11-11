@@ -11,6 +11,7 @@ import (
 // rendered: any file missing, added, edited or left from an older render
 // reads STALE, whatever the state says it was rendered from.
 func TestABlueprintThatIsNotTheRenderedOneReadsStale(t *testing.T) {
+	t.Parallel()
 	bp := func(p *project, name string) string { return filepath.Join(p.root, ".abbd", "blueprint", name) }
 	for name, tamper := range map[string]func(p *project){
 		"page deleted":  func(p *project) { os.Remove(bp(p, "index.html")) },
@@ -47,6 +48,7 @@ func TestABlueprintThatIsNotTheRenderedOneReadsStale(t *testing.T) {
 
 // A checkout that converts line endings holds the same render.
 func TestACRLFCheckoutOfTheBlueprintIsCurrent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	for _, f := range []string{"index.html", "graph.json"} {
 		path := filepath.Join(p.root, ".abbd", "blueprint", f)

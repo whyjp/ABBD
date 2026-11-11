@@ -251,6 +251,7 @@ const phantoms = 14
 // it, each on top and whole between the shapes it joins, and keeps lit the
 // shapes at their ends.
 func TestPointingAtInkLightsTheLinesThatRunAlongIt(t *testing.T) {
+	t.Parallel()
 	inks, lines, phantom := 0, 0, 0
 	why := map[string]int{}
 	for _, name := range fixtures {
@@ -369,6 +370,7 @@ func bare(p [2]fpt, own [][2]fpt) int {
 // top, and in one colour: a box's own, whatever the line's kind; a chip,
 // which wears no unit's colour, leaves each line its own.
 func TestPointingAtAShapeLightsItsLinesWholeInOneColour(t *testing.T) {
+	t.Parallel()
 	shapes, lines := 0, 0
 	why := map[string]int{}
 	for _, name := range fixtures {
@@ -417,6 +419,7 @@ func TestPointingAtAShapeLightsItsLinesWholeInOneColour(t *testing.T) {
 // one hop away, and nothing else. No lit stroke reaches a shape that is not
 // one of them.
 func TestPointingAtAShapeLightsOnlyItsOneHopNeighbours(t *testing.T) {
+	t.Parallel()
 	shapes := 0
 	why := map[string]int{}
 	for _, name := range fixtures {
@@ -476,6 +479,7 @@ func enters(p [2]fpt, r frect) bool {
 // the page sets on the route, so a head never shows in another colour or
 // none.
 func TestARouteHeadWearsItsRoutesColour(t *testing.T) {
+	t.Parallel()
 	pg := readDrawn(t, fixture(t, "ripgrep").Overview)
 	for _, s := range routeHeads {
 		if st := pg.heads[s]; !strings.Contains(st, "var(--c)") || strings.Contains(st, "context-") {
@@ -493,6 +497,7 @@ func TestARouteHeadWearsItsRoutesColour(t *testing.T) {
 
 // Every real drawing holds few enough shapes and lines to take part.
 func TestEveryRealDrawingTakesPart(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			if len(v.d.Wires) > 0 && len(v.d.Routes) == 0 {
@@ -520,6 +525,7 @@ func TestEveryRealDrawingTakesPart(t *testing.T) {
 const hairpins = 14
 
 func TestFewLinesDoubleBack(t *testing.T) {
+	t.Parallel()
 	n := 0
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
@@ -555,6 +561,7 @@ func doublesBack(rs [][2]pt) bool {
 // gaps lower. They step straight down their own trunk rather than riding
 // past their drop and coming back.
 func TestALineStepsDownItsTrunkBesideAnotherGapsStep(t *testing.T) {
+	t.Parallel()
 	seen := false
 	for _, v := range views(fixture(t, "pstack")) {
 		if v.name != "MOD-0007 understand code" {
@@ -577,6 +584,7 @@ func TestALineStepsDownItsTrunkBesideAnotherGapsStep(t *testing.T) {
 // x stands over the chip. They land on the chip at that x rather than jog
 // a lane aside to the chip's middle just above it.
 func TestALineIntoAGatheredChipLandsAtItsOwnX(t *testing.T) {
+	t.Parallel()
 	n := 0
 	for _, v := range views(fixture(t, "pstack")) {
 		if !strings.Contains(v.name, " focus ") {

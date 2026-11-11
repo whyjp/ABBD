@@ -14,6 +14,7 @@ import (
 const portBendDebt, preloadBendDebt = 777, 2
 
 func TestFramePortLinesTurnLittle(t *testing.T) {
+	t.Parallel()
 	over, preload := 0, -1
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {

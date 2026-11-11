@@ -51,6 +51,7 @@ func skills(t *testing.T) []string {
 // The plugin ships only its skills: no hooks, no agent of its own, and no
 // mode, since the active mode decides how work runs and ABBD is a capability.
 func TestThePluginShipsOnlySkills(t *testing.T) {
+	t.Parallel()
 	var manifest struct{ Name string }
 	if err := json.Unmarshal([]byte(readPlugin(t, ".claude-plugin", "plugin.json")), &manifest); err != nil || manifest.Name != "abbd" {
 		t.Fatalf("plugin.json must parse and name the plugin abbd: %v %+v", err, manifest)
@@ -96,6 +97,7 @@ func commandLines(text string) []string {
 // must be one the CLI accepts, so a renamed flag or command cannot leave an
 // instruction silently broken.
 func TestSkillCommandsAreRealCLICommands(t *testing.T) {
+	t.Parallel()
 	texts := map[string]string{"the CLAUDE.md block": block}
 	for _, path := range skills(t) {
 		b, err := os.ReadFile(path)
@@ -129,6 +131,7 @@ func TestSkillCommandsAreRealCLICommands(t *testing.T) {
 // and pstack appears only in the reader's paragraph that checks whether it is
 // installed before using it as an optional engine.
 func TestSkillsReferenceTheBundledReader(t *testing.T) {
+	t.Parallel()
 	for _, path := range skills(t) {
 		b, _ := os.ReadFile(path)
 		skill := string(b)
@@ -164,6 +167,7 @@ func TestSkillsReferenceTheBundledReader(t *testing.T) {
 // with the topology difference. It routes nothing and never says when to ask
 // the human, because the active mode owns both.
 func TestAbbdQueriesFirstEndsWithTheDiffAndRoutesNothing(t *testing.T) {
+	t.Parallel()
 	skill := readPlugin(t, "skills", "abbd", "SKILL.md")
 	front, _, _ := strings.Cut(strings.TrimPrefix(skill, "---\n"), "\n---\n")
 	for _, trigger := range []string{"name: abbd\n", "architecture", "topology", "blueprint", "/abbd"} {
@@ -209,6 +213,7 @@ func TestAbbdQueriesFirstEndsWithTheDiffAndRoutesNothing(t *testing.T) {
 // which carries what makes a semantic coupling checkable. It has no
 // alignment, and it ends by installing the always-on block.
 func TestAbbdSetupAsksForCheckableCouplingsAndNoAlignment(t *testing.T) {
+	t.Parallel()
 	skill := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
 	for _, want := range []string{"`../abbd/references/reader.md`", `"evidence"`, `"via"`, `"parent"`, "verbatim", "abbd understand", "`abbd install`"} {
 		if !strings.Contains(skill, want) {
@@ -229,6 +234,7 @@ func TestAbbdSetupAsksForCheckableCouplingsAndNoAlignment(t *testing.T) {
 // block, and names the way out of the first record's refusal. The bounds it
 // gives the agent choosing the units are the ones abbd lint holds.
 func TestAbbdSetupLintsRecordsThenInstallsAtTheBoundsLintHolds(t *testing.T) {
+	t.Parallel()
 	skill := readPlugin(t, "skills", "abbd-setup", "SKILL.md")
 	_, steps, _ := strings.Cut(skill, "## Steps")
 	steps, _, _ = strings.Cut(steps, "\n## ")
@@ -268,6 +274,7 @@ func claudeMD(t *testing.T, root string) string {
 // the file, replaces an older block where it stood, keeps what the project
 // wrote around it, and a second run changes nothing.
 func TestInstallKeepsOneBlockInClaudeMD(t *testing.T) {
+	t.Parallel()
 	p, _ := bare(t)
 	p.want(0, "added the abbd block", "install")
 	if got := claudeMD(t, p.root); got != block {
@@ -306,6 +313,7 @@ func TestInstallKeepsOneBlockInClaudeMD(t *testing.T) {
 // current state current: neither touches the code the state was synced from.
 // A state the code already moved past stays STALE.
 func TestInstallAndUnderstandKeepTheStateCurrent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "state: CURRENT", "status")
 	p.want(0, "added the abbd block", "install")
@@ -322,6 +330,7 @@ func TestInstallAndUnderstandKeepTheStateCurrent(t *testing.T) {
 // A CLAUDE.md that shows the markers in a fenced example keeps the example;
 // install appends its own block after it.
 func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {
+	t.Parallel()
 	p, _ := bare(t)
 	doc := "# Project\n\nThe abbd block looks like:\n\n```\n" + blockBegin + "\nmy own example\n" + blockEnd + "\n```\n"
 	write(t, filepath.Join(p.root, "CLAUDE.md"), doc)
@@ -335,6 +344,7 @@ func TestInstallLeavesMarkersInsideACodeFenceAlone(t *testing.T) {
 // same change: the state, the blueprint, the module texts and drifted evidence.
 // Dead evidence is history the views already dropped, so it never fails.
 func TestStatusCheckFailsOnlyOnWhatTheChangeCanBringCurrent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "state: CURRENT", "status", "--check")
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
@@ -364,6 +374,7 @@ func TestStatusCheckFailsOnlyOnWhatTheChangeCanBringCurrent(t *testing.T) {
 // A Windows checkout with core.autocrlf writes .abbd's text files with CRLF
 // endings. The same state must still read current there.
 func TestStatusCheckPassesOnACRLFCheckout(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
 	filepath.WalkDir(filepath.Join(p.root, ".abbd"), func(path string, d fs.DirEntry, err error) error {
@@ -380,6 +391,7 @@ func TestStatusCheckPassesOnACRLFCheckout(t *testing.T) {
 // accepts, shows beside no module and no command can restamp it. The check
 // names it and passes, so it cannot block CI for good.
 func TestStatusCheckReportsAnOrphanTextAndPasses(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "understood", "understand", "MOD-0001", p.file(t, "how.md", "### Overview\nbilling inserts charges.\n"))
 	text := strings.Replace(p.read("understanding/MOD-0001.md"), "unit: MOD-0001", "unit: MOD-0099", 1)
@@ -395,6 +407,7 @@ func TestStatusCheckReportsAnOrphanTextAndPasses(t *testing.T) {
 // the state. It fails and says why, rather than sending the agent to a sync
 // that changes nothing.
 func TestStatusCheckFailsOnAnUnknownStateWithTheRealCause(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	os.WriteFile(filepath.Join(p.root, ".git", "index"), []byte("not an index"), 0o644)
 	out := p.want(1, "git could not fingerprint the working tree", "status", "--check")

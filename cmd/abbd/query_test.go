@@ -18,6 +18,7 @@ func contains(t *testing.T, out string, wants ...string) {
 // guessed with the code they rest on, what a human stated, and how's text,
 // marked STALE once the module's code moves on. It writes nothing.
 func TestExplainShowsAModuleAtAGlance(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "USER_STATED", "record", "relation", "MOD-0002", "depends_on", "MOD-0001", "--source", "conversation 2026-11-01")
 	before := snapshot(t, p.root)
@@ -44,6 +45,7 @@ func TestExplainShowsAModuleAtAGlance(t *testing.T) {
 
 // A unit inside a module names its module and the evidence it rests on.
 func TestExplainResolvesNamesAndShowsAnInsideUnit(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	contains(t, p.want(0, "", "explain", "charges table"),
 		"DATA-0001 charges table (DATA, INFERRED)\ninside MOD-0001 billing\n",
@@ -56,6 +58,7 @@ func TestExplainResolvesNamesAndShowsAnInsideUnit(t *testing.T) {
 // symbol, or a few words. explain names the units that match and why, best
 // first, then explains the best. Whatever names the unit itself comes first.
 func TestExplainAcceptsAFileASymbolOrAPhrase(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	contains(t, p.want(0, "", "explain", "billing/charge.go"),
 		"\"billing/charge.go\" is not a unit; it matches, best first:\n"+
@@ -77,6 +80,7 @@ func TestExplainAcceptsAFileASymbolOrAPhrase(t *testing.T) {
 // A file no anchor names is found through the directory anchor that holds
 // it, innermost module first.
 func TestExplainFindsAFileThroughItsDirectoryAnchor(t *testing.T) {
+	t.Parallel()
 	p, out := nestedProject(t, `{"units":[]}`)
 	if p.setupCode(out) != 0 {
 		t.Fatalf("setup:\n%s", out)
@@ -88,6 +92,7 @@ func TestExplainFindsAFileThroughItsDirectoryAnchor(t *testing.T) {
 
 // path and impact take the same inputs, and say what each one matched.
 func TestPathAndImpactAcceptFilesAndPhrases(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	contains(t, p.want(0, "", "path", "ledger/book.go", "charges"),
 		"\"ledger/book.go\" is not a unit; it matches, best first:\n  MOD-0002 ledger",
@@ -98,6 +103,7 @@ func TestPathAndImpactAcceptFilesAndPhrases(t *testing.T) {
 // The path is the fewest hops between two units, each with how it arises,
 // and ends with the least certain origin on it.
 func TestPathNamesEachHopAndTheWeakestOrigin(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	contains(t, p.want(0, "", "path", "ledger", "MOD-0001"),
 		"MOD-0002 ledger\n  -consumes-> DATA-0001 charges table (inferred, via data)\n  <-provides- MOD-0001 billing (inferred, via data)\n2 hop(s), weakest origin INFERRED\n")
@@ -121,6 +127,7 @@ func TestPathNamesEachHopAndTheWeakestOrigin(t *testing.T) {
 // Two units that only consume the same contract are not joined by it, and
 // the path says so where they meet.
 func TestPathMarksTwoConsumersThatOnlyShareAContract(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("island/x.go", "package island\n\nfunc X() {}\n")
 	p.extract(strings.Replace(ledgerTopo, "\n]}", `,
@@ -135,6 +142,7 @@ func TestPathMarksTwoConsumersThatOnlyShareAContract(t *testing.T) {
 // diff counts an inside unit's relation to another module as its module's;
 // explain of the module lists it too, marked with the inside unit it comes from.
 func TestExplainModuleListsItsInsideUnitsLinksToOtherModules(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	p.want(0, "+ relation MOD-0001 depends_on MOD-0004", "diff", "--base", base)
 	contains(t, p.want(0, "MOD-0001 billing", "explain", "MOD-0001"),

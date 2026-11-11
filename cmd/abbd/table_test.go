@@ -39,6 +39,7 @@ func (p *project) table(code int, contains, draft string, extra ...string) strin
 // A table is stored with each row stamped on the code it cites, and the page
 // draws it as a grid whose row heads open the inside that shows each unit.
 func TestATableIsStoredAndDrawnAsAGrid(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	out := p.table(0, "stored table charge, 2 rows, INFERRED", chargeTable)
 	if !strings.Contains(out, "cells: 0 cell(s) say a use no stored relation carries, 0 empty cell(s) sit over a stored relation") {
@@ -73,6 +74,7 @@ func TestATableIsStoredAndDrawnAsAGrid(t *testing.T) {
 // named column, each unit a column or a row names present, and each row's
 // quotes in its own unit's code.
 func TestATableDraftIsCheckedBeforeItIsStored(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	for _, c := range []struct{ from, to, want string }{
 		{"cells: {charges: reads the amount of each charge}", "cells: {charge: reads the amount of each charge}", `row 2 fills a cell under "charge", which no column names`},
@@ -105,6 +107,7 @@ func TestATableDraftIsCheckedBeforeItIsStored(t *testing.T) {
 // An edit near one row's quote stales that row alone, and the check fails
 // until the table is read again; the same row on the moved code is refused.
 func TestATableRowGoesStaleOnItsOwn(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.table(0, "stored", chargeTable)
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
@@ -127,6 +130,7 @@ func TestATableRowGoesStaleOnItsOwn(t *testing.T) {
 // the page, and neither fails the check: only a reader of the code can say
 // whether the relation or the cell is wrong.
 func TestACellTheRelationsDoNotBearOutIsReportedNotChecked(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	draft := strings.NewReplacer(
 		"  - {name: retries}", "  - {name: retries}\n  - {name: books, unit: MOD-0002}",
@@ -172,6 +176,7 @@ func (p *project) dropLedger() {
 // A table whose column's unit left the state fails the check until it is
 // stored again without that column's unit.
 func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
 	p.extract(auditTopo)
@@ -189,6 +194,7 @@ func TestATableOnAColumnThatLeftFailsTheCheck(t *testing.T) {
 // it elsewhere, keeps the human's other columns and rows as written, and is
 // told it changed the human's head.
 func TestAReaderMendsAHumansColumnWhoseUnitLeft(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
 	p.extract(auditTopo)
@@ -208,6 +214,7 @@ func TestAReaderMendsAHumansColumnWhoseUnitLeft(t *testing.T) {
 // Renaming a column does not make a STALE row's cells new words: the same
 // cells on the same changed code are refused under any column.
 func TestARenamedColumnDoesNotBringAStaleRowBack(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.table(0, "stored", chargeTable)
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
@@ -221,6 +228,7 @@ func TestARenamedColumnDoesNotBringAStaleRowBack(t *testing.T) {
 // current one, and once a row is STALE the reader replaces that row alone
 // and keeps the human's head.
 func TestAReaderReplacesAHumansTableOnlyOnceItIsStale(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.table(0, "stored table charge, 2 rows, USER_STATED", chargeTable, "--source", "conversation 2026-11-04")
 	p.table(1, "only a human changes it", strings.Replace(chargeTable, "reads the amount of each charge", "reads each charge", 1))
@@ -236,6 +244,7 @@ func TestAReaderReplacesAHumansTableOnlyOnceItIsStale(t *testing.T) {
 
 // A store warns on a cell past 80 characters.
 func TestALongCellWarns(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	long := strings.Repeat(" and then some more", 5)
 	if out := p.table(0, "stored", strings.Replace(chargeTable, "reads the amount of each charge", "reads the amount of each charge"+long, 1)); !strings.Contains(out, "long: table charge row 2 charges holds") {

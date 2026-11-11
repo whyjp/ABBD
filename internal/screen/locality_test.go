@@ -10,13 +10,10 @@ import (
 	"github.com/whyjp/abbd/internal/store"
 )
 
-// rewritten names the files of the blueprint that differ between two states.
-func rewritten(t *testing.T, before, after []model.Unit) []string {
+// rewritten names the files of the blueprint that differ from a's once the
+// state is after.
+func rewritten(t *testing.T, a map[string][]byte, after []model.Unit) []string {
 	t.Helper()
-	a, err := Files(Build(Input{Units: before}))
-	if err != nil {
-		t.Fatal(err)
-	}
 	b, err := Files(Build(Input{Units: after}))
 	if err != nil {
 		t.Fatal(err)
@@ -81,12 +78,18 @@ func sampleModules(us []model.Unit) [][3]model.ID {
 // rewrites nothing. So a pull request's blueprint diff stays where its code
 // diff is.
 func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		base, err := store.Open("testdata/" + name).LoadUnits()
 		if err != nil {
 			t.Fatal(err)
 		}
+		files, err := Files(fixture(t, name))
+		if err != nil {
+			t.Fatal(err)
+		}
 		t.Run(name+" lines", func(t *testing.T) {
+			t.Parallel()
 			moved := clone(base)
 			n := 0
 			for i := range moved {
@@ -97,7 +100,7 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 					}
 				}
 			}
-			if got := rewritten(t, base, moved); len(got) > 0 {
+			if got := rewritten(t, files, moved); len(got) > 0 {
 				t.Errorf("moving every quote's lines rewrote %v", got)
 			}
 		})
@@ -105,10 +108,11 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 			mod, a, b := s[0], s[1], s[2]
 			own := []string{GraphFile, string(mod) + ".html"}
 			t.Run(fmt.Sprintf("%s relation in %s", name, mod), func(t *testing.T) {
+				t.Parallel()
 				joined := clone(base)
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})
-				got := rewritten(t, base, joined)
+				got := rewritten(t, files, joined)
 				// a's own page, when it has one, counts the dependency it gained.
 				may := append(slices.Clone(own), string(a)+".html")
 				for _, f := range got {
@@ -123,10 +127,11 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 				}
 			})
 			t.Run(fmt.Sprintf("%s unit in %s", name, mod), func(t *testing.T) {
+				t.Parallel()
 				grown := clone(base)
 				u := inside("MOD-9999", mod, model.Relation{To: a, Kind: model.DependsOn, Origin: model.Extracted})
 				grown = append(grown, u)
-				got := rewritten(t, base, grown)
+				got := rewritten(t, files, grown)
 				want := append(slices.Clone(own), UnitsFile)
 				for _, f := range got {
 					if !slices.Contains(want, f) {
@@ -149,6 +154,7 @@ func TestAChangeInOneModuleRewritesOnlyItsPage(t *testing.T) {
 // centre, and every module page's focus view seated by them, so a small
 // change that left plain fitting must not flip the overview to it.
 func TestARelationBetweenModulesKeepsThePlainRanking(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		base, err := store.Open("testdata/" + name).LoadUnits()
 		if err != nil {
@@ -163,6 +169,7 @@ func TestARelationBetweenModulesKeepsThePlainRanking(t *testing.T) {
 		for _, p := range [][2]int{{0, len(mods) - 1}, {len(mods) - 1, 0}} {
 			a, b := mods[p[0]], mods[p[1]]
 			t.Run(fmt.Sprintf("%s %s to %s", name, a, b), func(t *testing.T) {
+				t.Parallel()
 				joined := clone(base)
 				i := slices.IndexFunc(joined, func(u model.Unit) bool { return u.ID == a })
 				joined[i].Relations = append(joined[i].Relations, model.Relation{To: b, Kind: model.DependsOn, Origin: model.Extracted})

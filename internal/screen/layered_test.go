@@ -3,8 +3,8 @@ package screen
 import (
 	"fmt"
 	"math/rand"
+	"runtime"
 	"testing"
-	"time"
 )
 
 // A drawing too wide for its budget gives up chains, and the boxes it then
@@ -66,18 +66,24 @@ func randomGraph(seed int64, n, m int) ([]lnode, []ledge) {
 	return nodes, edges
 }
 
-// A large graph lays out in well under a second, with a tight budget that
-// sheds most chains and with wide ones that keep them all.
+// A large graph lays out within a fixed amount of work, with a tight
+// budget that sheds most chains and with wide ones that keep them all. The
+// work is counted in allocations, which arrange makes for every layout it
+// tries, so the count is the same run to run and on a busy machine, where a
+// time limit was not. 6M is about what a second of laying out allocates; the
+// costliest case makes 5.1M.
 func TestALargeGraphLaysOutQuickly(t *testing.T) {
 	for _, c := range []struct {
 		seed         int64
 		n, m, budget int
 	}{{1, 200, 400, 1320}, {2, 200, 400, 4000}, {1, 200, 400, 20000}, {1, 100, 300, 100000}, {1, 400, 800, 8000}} {
 		nodes, edges := randomGraph(c.seed, c.n, c.m)
-		start := time.Now()
+		var before, after runtime.MemStats
+		runtime.ReadMemStats(&before)
 		arrange(nodes, edges, c.budget, nil, tactic{})
-		if took := time.Since(start); took > time.Second {
-			t.Errorf("%d boxes and %d lines at budget %d took %v to lay out, past 1s", c.n, c.m, c.budget, took)
+		runtime.ReadMemStats(&after)
+		if n := after.Mallocs - before.Mallocs; n > 6_000_000 {
+			t.Errorf("%d boxes and %d lines at budget %d took %d allocations to lay out, past 6M", c.n, c.m, c.budget, n)
 		}
 	}
 }

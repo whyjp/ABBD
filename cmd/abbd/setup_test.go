@@ -27,6 +27,7 @@ const supplement = `{"units":[
 ]}`
 
 func TestSetupRegistersTheScriptAndSyncs(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "synced: 3 unit(s)", "--", exe)
@@ -39,6 +40,7 @@ func TestSetupRegistersTheScriptAndSyncs(t *testing.T) {
 }
 
 func TestSupplementAddsInferredFactsThatSurviveReextraction(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "3 matched by the supplement", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
@@ -53,6 +55,7 @@ func TestSupplementAddsInferredFactsThatSurviveReextraction(t *testing.T) {
 }
 
 func TestASupplementCouplingNeedsEvidence(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	bare := strings.Replace(supplement, `,"via":"call","evidence":[{"path":"api/http.go","quote":"func Serve()"}]`, "", 1)
@@ -63,6 +66,7 @@ func TestASupplementCouplingNeedsEvidence(t *testing.T) {
 }
 
 func TestSupplementNamingUnknownCodeIsRefused(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	bad := `{"units":[{"key":"x","kind":"MOD","name":"ghost","anchors":[{"path":"ghost/x.go","symbol":"X"}],"purpose":"haunts"}]}`
@@ -73,6 +77,7 @@ func TestSupplementNamingUnknownCodeIsRefused(t *testing.T) {
 }
 
 func TestSetupAgainOnUnchangedCodeRewritesNothing(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "synced", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
@@ -84,6 +89,7 @@ func TestSetupAgainOnUnchangedCodeRewritesNothing(t *testing.T) {
 }
 
 func TestNondeterministicScriptIsRefused(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(codeOnly, `"name":"ledger"`, `"name":"ledger {{RUN}}"`, 1))
 	p.setup(1, "not deterministic", "--", exe)
@@ -103,6 +109,7 @@ func TestScriptThatDependsOnTheHashSeedIsRefused(t *testing.T) {
 }
 
 func TestSetupResolvesFilesAgainstTheRoot(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	write(t, filepath.Join(p.root, ".abbd", "extractor", "supplement.json"), supplement)
@@ -110,6 +117,7 @@ func TestSetupResolvesFilesAgainstTheRoot(t *testing.T) {
 }
 
 func TestCorrectedSupplementWithdrawsEarlierGuesses(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "", "--supplement", p.file(t, "sup.json", supplement), "--", exe)
@@ -128,6 +136,7 @@ func TestCorrectedSupplementWithdrawsEarlierGuesses(t *testing.T) {
 // A project commits .abbd/ with its code. Syncing again afterwards must leave
 // that commit clean, or every commit would ask for another.
 func TestCommittedStateStaysCleanOnResync(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(codeOnly)
 	p.setup(0, "synced", "--", exe)
@@ -145,6 +154,7 @@ func TestCommittedStateStaysCleanOnResync(t *testing.T) {
 // supplement unit it no longer reports, with a reason, unless a human stated
 // something about it, which would otherwise sit where no command reaches it.
 func TestSetupKeepsReaderFindingsAndAUnitAHumanStatedAbout(t *testing.T) {
+	t.Parallel()
 	src := "conversation 2026-11-01"
 	p := semanticProject(t)
 	p.want(0, "recorded DATA-0002", "record", "unit", "DATA", "ledger query", "--parent", "MOD-0002", "--evidence", "ledger/book.go:3:SELECT amount")
@@ -170,6 +180,7 @@ func TestSetupKeepsReaderFindingsAndAUnitAHumanStatedAbout(t *testing.T) {
 // A script's or a reader's sentence about a module is stamped with the
 // module's code, and its page marks it STALE once that code changes.
 func TestASentenceGoesStaleWithItsCode(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.extract(codeOnly)
@@ -191,6 +202,7 @@ func TestASentenceGoesStaleWithItsCode(t *testing.T) {
 // A reader who reads a module again says its one line with the text, and
 // the line reads fresh against the code it was read with.
 func TestAReaderRewritesTheSentenceWithTheText(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.extract(codeOnly)
@@ -209,6 +221,7 @@ func TestAReaderRewritesTheSentenceWithTheText(t *testing.T) {
 
 // A person's responsibility outranks a reader's, so --sentence leaves it.
 func TestASentenceLeavesAPersonsLine(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.extract(codeOnly)

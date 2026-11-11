@@ -1,12 +1,9 @@
 package screen
 
 import (
-	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
-
-	"github.com/whyjp/abbd/internal/store"
 )
 
 // A road never bends a route to board it: every route of every view of
@@ -27,13 +24,7 @@ func TestARoadAddsNoTurnToARoute(t *testing.T) {
 		}
 	}
 	defer func() { roadsDrawn = nil }()
-	for _, name := range fixtures {
-		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
-		if err != nil {
-			t.Fatal(err)
-		}
-		Build(Input{Units: units})
-	}
+	buildEach(t, fresh)
 	if views == 0 {
 		t.Fatal("no view was drawn on roads")
 	}
@@ -44,6 +35,7 @@ func TestARoadAddsNoTurnToARoute(t *testing.T) {
 // straight: their mutual line drops straight, as on main, rather than
 // stepping over to ride the road beside it.
 func TestALineThatCanDropStraightDoes(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "pstack")) {
 		if v.name != "overview" {
 			continue

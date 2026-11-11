@@ -49,6 +49,7 @@ func (p *project) laterRevision() {
 }
 
 func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.extract(ledgerTopo)
@@ -73,6 +74,7 @@ func TestASupplementUnitOutsideTheScriptNeedsEvidence(t *testing.T) {
 // the PR that removed it. A sync at a later revision that still finds it
 // drifted kills it, and the dead coupling stays on record with its reason.
 func TestDeletingTheEvidenceKillsTheCoupling(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\nfunc Post() {}\n")
 	contains(t, p.resync(), "evidence: 1 drifted, 0 dead")
@@ -99,6 +101,7 @@ func TestDeletingTheEvidenceKillsTheCoupling(t *testing.T) {
 // Line drift within the slack is written back, so small edits above a quote
 // never add up to a false removal.
 func TestEvidenceFollowsAQuoteThatDriftsAcrossSyncs(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("ledger/book.go", "package ledger\n\n// a\n// b\n// c\nconst q = `SELECT amount\n    FROM charges`\n\nfunc Post() {}\n")
 	p.resync()
@@ -110,6 +113,7 @@ func TestEvidenceFollowsAQuoteThatDriftsAcrossSyncs(t *testing.T) {
 }
 
 func TestRelationKindsMustFitTheUnitsTheyJoin(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\n// INSERT INTO charges (amount) VALUES (?)\nfunc Charge() {}\n")
 	p.extract(ledgerTopo)
@@ -154,6 +158,7 @@ func (p *project) graph() graphFile {
 // A human judges a guessed coupling by how it arises and the code it rests
 // on. The overview draws none; the inside of each module it touches lists it.
 func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	html := p.blueprint()
 	for _, want := range []string{
@@ -203,6 +208,7 @@ func TestTheBlueprintListsAGuessInsideAndDrawsNoneOnTheOverview(t *testing.T) {
 // A module's text comes from a reader. The blueprint shows it beside the
 // module's inside and marks it STALE once the module's code moves on.
 func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	text := p.file(t, "how.md", "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n")
 	p.want(1, "is not a module", "understand", "DATA-0001", text)
@@ -227,6 +233,7 @@ func TestTheBlueprintShowsHowsTextAndMarksItStale(t *testing.T) {
 // Whoever read the module is named with its text, so a reading done without
 // pstack is told apart from one done with it.
 func TestTheReaderOfAModuleTextIsKeptAndExplained(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	text := p.file(t, "how.md", "## Overview\nbilling writes each `charge` to the charges table.\n\n## Key Concepts\n- **Charge** (`billing/charge.go`): records one payment.\n")
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", text, "--reader", "abbd reader")
@@ -243,6 +250,7 @@ func TestTheReaderOfAModuleTextIsKeptAndExplained(t *testing.T) {
 // Saving the text again with other line endings or trailing blanks does not
 // make it a new reading, so it cannot clear STALE either.
 func TestRestampingTheSameTextWithOtherLineEndingsIsRefused(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	words := "### Overview\nbilling writes each `charge` to the charges table.\n\n### Key Concepts\n- `Charge`: records one payment.\n"
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", words))
@@ -258,6 +266,7 @@ func TestRestampingTheSameTextWithOtherLineEndingsIsRefused(t *testing.T) {
 // Editors on Windows prepend a byte order mark when they save UTF-8; it is
 // not a word of the text, so it cannot make the same reading look new.
 func TestRestampingTheSameTextWithAByteOrderMarkIsRefused(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	words := "### Overview\nbilling writes each `charge` to the charges table.\n"
 	p.want(0, "understood MOD-0001", "understand", "MOD-0001", p.file(t, "how.md", words))
@@ -268,6 +277,7 @@ func TestRestampingTheSameTextWithAByteOrderMarkIsRefused(t *testing.T) {
 
 // status names the units that say nothing of what they are for.
 func TestStatusReportsUndescribedUnits(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "described: 3 unit(s) without a purpose or responsibility: DATA-0001, MOD-0001, MOD-0002\n", "status")
 	p.want(0, "", "record", "fact", "MOD-0001.responsibility", "--value", "writes each charge", "--source", "pr 1")
@@ -277,6 +287,7 @@ func TestStatusReportsUndescribedUnits(t *testing.T) {
 // status says how many top-level modules carry a text, who read them, and
 // which carry none.
 func TestStatusSaysWhichModulesHaveAText(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "coverage: 0 of 2 top-level module(s) and feature(s) have a text; none yet: MOD-0001, MOD-0002\n", "status")
 	text := p.file(t, "how.md", "### Overview\nbilling charges.\n")
@@ -287,6 +298,7 @@ func TestStatusSaysWhichModulesHaveAText(t *testing.T) {
 // abbd understand refuses a text whose first section, the summary a page
 // shows first, runs over the section limit.
 func TestUnderstandRefusesALongSummary(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	text := p.file(t, "how.md", "### Overview\n"+strings.Repeat("billing charges each card. ", 90)+"\n")
 	p.want(1, "the page shows it first", "understand", "MOD-0001", text)
