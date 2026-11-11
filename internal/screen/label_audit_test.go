@@ -21,7 +21,8 @@ var rest = regexp.MustCompile(` (등|외 \d+)$`)
 //     whose first name fits;
 //   - "listed": s gives more than one name, or adds 등 or 외 N;
 //   - "unknown": s is not the first name of a phrase any of them carries;
-//   - "minority": s names a phrase fewer than half of them carry.
+//   - "minority": s names a phrase, or a via word, fewer than half of them
+//     carry.
 func misstated(t tree, w Wire, s string, phrase bool) string {
 	us := units(w.lines)
 	n := carried(us, func(r string) string { return t.phrases[r].text })
@@ -30,6 +31,9 @@ func misstated(t tree, w Wire, s string, phrase bool) string {
 			if 2*c >= len(us) && textWidth(phraseNames(p)[0], labelPx) <= labelMax {
 				return "hidden"
 			}
+		}
+		if s != "" && 2*carried(us, func(r string) string { return t.vias[r].Word() })[s] < len(us) {
+			return "minority"
 		}
 		return ""
 	}

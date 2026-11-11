@@ -458,23 +458,44 @@ func sayings(t tree, lines [][]string) []string {
 // and whether it is a phrase. It says one name, the first of sayings, so a
 // line reads one word as the exemplars' lines do, never a list or a count.
 // The phrase's other names, the other phrases and their shares stay in the
-// tooltip (see said). With no name, as when no phrase is carried by half the
-// units, it is the via word all the relations share, else "".
+// tooltip (see said). With no name it says a via word: on a line whose
+// relations carry no phrase, the one they all share; on a line whose phrases
+// each speak for under half its units, the one the most units carry, the
+// first by name among equals, when at least half carry it. Else "".
 func word(t tree, lines [][]string) (string, bool) {
 	if ns := sayings(t, lines); len(ns) > 0 {
 		return ns[0], true
 	}
+	if w := allVia(t, lines); w != "" {
+		return w, false
+	}
+	us := units(lines)
+	if len(carried(us, func(r string) string { return t.phrases[r].text })) == 0 {
+		return "", false
+	}
+	n := carried(us, func(r string) string { return t.vias[r].Word() })
+	via := ""
+	for w, c := range n {
+		if 2*c >= len(us) && (via == "" || c > n[via] || c == n[via] && w < via) {
+			via = w
+		}
+	}
+	return via, false
+}
+
+// allVia is the via word every relation of the lines names, or "".
+func allVia(t tree, lines [][]string) string {
 	via := ""
 	for _, line := range lines {
 		for _, r := range line {
 			w := t.vias[r].Word()
 			if w == "" || via != "" && w != via {
-				return "", false
+				return ""
 			}
 			via = w
 		}
 	}
-	return via, false
+	return via
 }
 
 // said lists the phrases of the lines a wire's label speaks for, each once
@@ -542,9 +563,10 @@ func (d *Drawing) marked(heads []box) []box {
 func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	taken := d.marked(heads)
 	canvas := box{0, 0, d.Width, d.Height}
-	words, saids, phrased := make([]string, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires))
+	words, saids, phrased, most := make([]string, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires))
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
+		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
 		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
@@ -600,14 +622,15 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	// repeats says a label at l would say a word already set within
 	// repeatNear of it. With touch, only a word on a line of the same
 	// colour whose ink l's line touches counts, so the word reads for both.
-	// A phrase also repeats one set anywhere on its track, however far.
+	// A phrase, or a via word only most of the line's relations name, also
+	// repeats one set anywhere on its track, however far.
 	repeats := func(i int, l Label, touch bool) bool {
 		return slices.ContainsFunc(placed, func(p set) bool {
 			dx, dy := p.l.X-l.X, p.l.Y-l.Y
 			if p.l.S != l.S {
 				return false
 			}
-			return l.Said && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
+			return (l.Said || most[i]) && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
 		})
 	}
 	done := map[int]bool{}

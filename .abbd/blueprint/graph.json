@@ -20284,7 +20284,23 @@
                 "Code": true
               },
               {
-                "Text": " dots a line whose relations all arise by convention, import, trait, macro or build feature, fills a hub (half again as many lines as any other box) where no lead fills its entry, and gives each box a small-caps kind and role line where its chips leave room. A hop's number is set by ",
+                "Text": " dots a line whose relations all arise by convention, import, trait, macro or build feature, fills a hub (half again as many lines as any other box) where no lead fills its entry, and gives each box a small-caps kind and role line where its chips leave room. On a module's box that line is instead its ",
+                "Code": false
+              },
+              {
+                "Text": "gist",
+                "Code": true
+              },
+              {
+                "Text": ", the first clause of its stored responsibility or purpose cut at a phrase boundary to the width the box already has, measured in the line's monospaced face (",
+                "Code": false
+              },
+              {
+                "Text": "monoWidth",
+                "Code": true
+              },
+              {
+                "Text": "), so the box says what the module does; it never cuts before \"to\" or \"that\", which carry what the verb needs, and a clause that opens on an article names a thing, so a unit with no sentence, with such a clause, or with no two-word phrase that fits keeps its kind, and no box is widened for it. A hop's number is set by ",
                 "Code": false
               },
               {
@@ -22539,7 +22555,15 @@
                 "Code": true
               },
               {
-                "Text": ". Where a phrase's word already stands within ",
+                "Text": ", or, on a line whose phrases are each carried by under half its relations, the via word the most of them name if at least half do (",
+                "Code": false
+              },
+              {
+                "Text": "allVia",
+                "Code": true
+              },
+              {
+                "Text": " tells the two apart). Where a phrase's word, or such a majority via word, already stands within ",
                 "Code": false
               },
               {
@@ -22563,7 +22587,7 @@
                 "Code": true
               },
               {
-                "Text": " fails on a phrase fewer than half the line's relations carry, and ",
+                "Text": " fails on a phrase or a via word fewer than half the line's relations carry, and ",
                 "Code": false
               },
               {

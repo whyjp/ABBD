@@ -84,7 +84,10 @@ type Box struct {
 	// Lines are the name as set in the box, one or two lines.
 	Lines []Text
 	// Sub is a last line: the kind of an inside unit.
-	Sub     *Text `json:",omitempty"`
+	Sub *Text `json:",omitempty"`
+	// Gist is a module's short phrase of what it does, set on its last line
+	// in place of its kind (gist).
+	Gist    string `json:"-"`
 	X, Y, W int
 	H       int
 	// Href opens the module's inside.
@@ -255,6 +258,53 @@ func kindWord(k model.Kind) string {
 		model.Data: "데이터", model.Config: "설정", model.Feature: "기능",
 	}[k]
 }
+
+// gist is the first clause of a unit's sentence, so a box says what it does
+// as the exemplars do: the longest run of its words that fits room and
+// ends where a phrase does, before a small word or at the clause's end. A
+// cut never lands before "to" or "that", which carry what the verb needs,
+// and a clause that opens on an article names a thing rather than what it
+// does; either, or a clause that leaves no run of two words or more, gives
+// no gist. The full sentence stays in the box's tooltip.
+func gist(u model.Unit, room int) string {
+	f := sentence(u)
+	if f == nil {
+		return ""
+	}
+	s := strings.TrimPrefix(strings.TrimSpace(f.Value), "so ")
+	for _, sep := range []string{", ", ": ", "; ", ". ", " (", " —"} {
+		s, _, _ = strings.Cut(s, sep)
+	}
+	words := strings.Fields(strings.TrimRight(s, "."))
+	if len(words) == 0 || slices.Contains([]string{"a", "an", "the"}, strings.ToLower(words[0])) {
+		return ""
+	}
+	small := func(w string) bool { return slices.Contains(smallWords, strings.ToLower(w)) }
+	binds := func(w string) bool { w = strings.ToLower(w); return w == "to" || w == "that" }
+	for n := len(words); n >= 2; n-- {
+		run := strings.Join(words[:n], " ")
+		if (n == len(words) || small(words[n]) && !binds(words[n])) && !small(words[n-1]) && monoWidth(run) <= room {
+			return run
+		}
+	}
+	return ""
+}
+
+// monoWidth is how wide a last line is set in its monospaced face, 10px
+// with spacing: under 7px a narrow character and 11px a wide one. subWidth
+// measures capitals in the name's face and so leaves a gist half the room.
+func monoWidth(s string) int {
+	w := 0
+	for _, r := range s {
+		w += 7
+		if r >= 0x1100 {
+			w += 4
+		}
+	}
+	return w
+}
+
+var smallWords = []string{"a", "an", "the", "to", "of", "for", "on", "in", "into", "onto", "with", "and", "or", "by", "from", "at", "as", "that", "its", "their", "about", "over", "through", "without", "when", "so", "per", "across", "between"}
 
 // portLabel drops a trailing parenthesis, which names where the contract
 // lives, and a leading declaration keyword; the box the port sits on and the
@@ -996,7 +1046,7 @@ func (o *overview) draw(href func(model.ID) string) Drawing {
 	for _, m := range o.modules {
 		r := l.pos[string(m)]
 		u := o.units[m]
-		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
+		b := Box{ID: string(m), Name: o.name(m), Kind: string(u.Kind), Gist: gist(u, r.W-16), X: r.X, Y: r.Y, W: r.W, H: r.H, Class: "design"}
 		ls := o.names[m]
 		bands := o.chipBands[m]
 		y := r.Y + (r.H+bands[0]-bands[1])/2 + 5 - (len(ls)-1)*nameLine/2
