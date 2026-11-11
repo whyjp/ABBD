@@ -68,6 +68,9 @@ var paged = []struct {
 	// labelled routes are the ones a reader finds a word on at rest, which
 	// saying a word once must not take from the page.
 	{"labelled", func(t Totals) int { return t.Labelled }, true},
+	// density is the routes a box carries at rest, which the exemplars keep
+	// to one or two.
+	{"density", func(t Totals) int { return t.Density }, false},
 }
 
 // past says a page total got breaks its bound c.

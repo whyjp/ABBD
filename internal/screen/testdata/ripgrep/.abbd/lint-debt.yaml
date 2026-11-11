@@ -17,6 +17,7 @@ pages:
         colour_switches: 22
         combs: 0
         counts: 10
+        density: 20
         doglegs: 20
         dots: 4
         label_repeats: 0

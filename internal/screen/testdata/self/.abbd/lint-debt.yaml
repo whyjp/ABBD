@@ -20,6 +20,7 @@ pages:
         colour_switches: 0
         combs: 0
         counts: 8
+        density: 28
         doglegs: 14
         dots: 3
         label_repeats: 6
@@ -30,6 +31,7 @@ pages:
         colour_switches: 8
         combs: 0
         counts: 5
+        density: 15
         doglegs: 8
         dots: 0
         label_repeats: 7
@@ -40,6 +42,7 @@ pages:
         colour_switches: 26
         combs: 0
         counts: 11
+        density: 24
         doglegs: 31
         dots: 5
         label_repeats: 1

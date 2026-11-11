@@ -554,6 +554,10 @@ type Project struct {
 	// reader writes them here; with no name the blueprint says ABBD.
 	Name    string `yaml:"name,omitempty"`
 	Purpose string `yaml:"purpose,omitempty"`
+	// OverviewCut turns on the overview's density cut: a dense overview
+	// draws its primary links and counts the rest on a +N pill per box
+	// that opens the box's focus view. Off by default.
+	OverviewCut bool `yaml:"overview_cut,omitempty"`
 }
 
 func (s Store) LoadProject() (Project, error) {

@@ -140,14 +140,15 @@ func (o *overview) addTwin(id model.ID) model.ID {
 	return u.ID
 }
 
-// overviewFocus derives a focus view per module of a dense overview.
-func (o *overview) overviewFocus(units []model.Unit, full Drawing) []Focus {
-	if !dense(full) {
+// overviewFocus derives a focus view per module of a dense overview, or of
+// one that counts lines it does not draw.
+func (o *overview) overviewFocus(units []model.Unit, full Drawing, hides bool) []Focus {
+	if !hides && !dense(full) {
 		return nil
 	}
 	var out []Focus
 	for _, m := range o.modules {
-		f := planOverview(units, m, centres(full), tactic{roads: true}, nil, nil)
+		f := planOverview(units, m, centres(full), tactic{roads: true}, nil, nil, nil)
 		d := f.draw(func(id model.ID) string {
 			if id == m {
 				return viewOf(o.tree, id)
