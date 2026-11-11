@@ -18954,23 +18954,7 @@
                   "Code": true
                 },
                 {
-                  "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. With no such stack, ",
-                  "Code": false
-                },
-                {
-                  "Text": "clump",
-                  "Code": true
-                },
-                {
-                  "Text": " stands each derived group on one row where its boxes fit one row and no line then climbs, and leaves the rest as the lines rank them; the overview is drawn that way and, as another ranking like fold and entry (",
-                  "Code": false
-                },
-                {
-                  "Text": "tactic.plain",
-                  "Code": true
-                },
-                {
-                  "Text": "), without the groups. ",
+                  "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. ",
                   "Code": false
                 },
                 {
@@ -21102,7 +21086,7 @@
                 "Code": true
               },
               {
-                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none, except on the overview, where a stored flow that leaves its first box once or never draws that one hop and numbers the steps it then runs on its last box in a pill beside that box (",
+                "Text": " picks the view's lead: the stored flow whose steps run furthest on the view, each next step on a box a drawn line joins to the lead, or, with no flow stored, the line chain from the one box no other box uses, along the line with strictly the most relations, stopping at a tie. Fewer than two hops draws none, except on the overview, where a stored flow that leaves its first box once or never draws that one hop and numbers the steps it then runs on the box it reached in a pill beside that box (",
                 "Code": false
               },
               {
@@ -21118,7 +21102,7 @@
                 "Code": true
               },
               {
-                "Text": "), which fills its entry. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts and ",
+                "Text": "), going on from the hop's number one to a step, its title naming the flow and the steps' own numbers, and fills its entry. Each hop is a route the view already draws, numbered with a badge off boxes, labels and counts and ",
                 "Code": false
               },
               {
@@ -21142,31 +21126,7 @@
                 "Code": true
               },
               {
-                "Text": " tints the boxes of a stored stack's layers that hold two boxes or more, else, on the overview, of the groups ",
-                "Code": false
-              },
-              {
-                "Text": "derive",
-                "Code": true
-              },
-              {
-                "Text": " finds (modules under one top directory, a stem shared before a hyphen joining ",
-                "Code": false
-              },
-              {
-                "Text": "libobs",
-                "Code": true
-              },
-              {
-                "Text": " and ",
-                "Code": false
-              },
-              {
-                "Text": "libobs-winrt",
-                "Code": true
-              },
-              {
-                "Text": ", drawn only whole), else of a shared directory (",
+                "Text": " tints the boxes of a stored stack's layers that hold two boxes or more, else of a shared directory (",
                 "Code": false
               },
               {
@@ -21174,7 +21134,7 @@
                 "Code": true
               },
               {
-                "Text": "), plus the outside contracts, even a single one, only where their padded area holds no other box, chip or band, and numbers the numbered bands top down, then left to right, as they are drawn, with no gap; its title tries the top of its band first, left corner, right corner, then along the top. ",
+                "Text": "), plus the outside contracts, even a single one, only where their padded area holds no other box, chip or band, and numbers the layers' bands in the order they are drawn, with no gap; its title tries the top of its band first, left corner, right corner, then along the top. ",
                 "Code": false
               },
               {
@@ -21671,23 +21631,7 @@
                 "Code": true
               },
               {
-                "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. With no such stack, ",
-                "Code": false
-              },
-              {
-                "Text": "clump",
-                "Code": true
-              },
-              {
-                "Text": " stands each derived group on one row where its boxes fit one row and no line then climbs, and leaves the rest as the lines rank them; the overview is drawn that way and, as another ranking like fold and entry (",
-                "Code": false
-              },
-              {
-                "Text": "tactic.plain",
-                "Code": true
-              },
-              {
-                "Text": "), without the groups. ",
+                "Text": " instead: each layer's boxes take one row of their own in the stack's order, a line between two of them running within that row, and every other node sits below what uses it, or just above what it uses when nothing uses it. ",
                 "Code": false
               },
               {
