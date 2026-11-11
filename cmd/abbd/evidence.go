@@ -164,7 +164,7 @@ func (e env) statusLines() error {
 	}
 	kinds := map[model.Kind]int{}
 	origins := map[model.Origin]int{}
-	dead := 0
+	dead, noVia := 0, 0
 	for _, u := range model.Present(in.Units) {
 		kinds[u.Kind]++
 		for _, r := range u.Relations {
@@ -172,6 +172,9 @@ func (e env) statusLines() error {
 				dead++
 			} else {
 				origins[r.Origin]++
+				if r.Via == "" {
+					noVia++
+				}
 			}
 		}
 	}
@@ -185,6 +188,9 @@ func (e env) statusLines() error {
 	fmt.Fprintln(e.stdout, described(in.Units))
 	fmt.Fprintf(e.stdout, "relations: %d EXTRACTED, %d USER_STATED, %d INFERRED, %d dead\n",
 		origins[model.Extracted], origins[model.UserStated], origins[model.Inferred], dead)
+	// The drawing dots a line whose relations arise only in design, which
+	// it reads from via; a relation with none it draws as run-time.
+	fmt.Fprintf(e.stdout, "via: %d relation(s) say no via, so the drawing reads each as run-time; the extraction script names one where it can\n", noVia)
 	stale := 0
 	var orphans []model.ID
 	texts := map[string]string{}

@@ -342,7 +342,7 @@ func (e env) recordWhy(key string) error {
 	if err != nil {
 		return err
 	}
-	if !r.Slot.Keyed {
+	if r.Slot.Name != "decisions" {
 		return fmt.Errorf("only a decision takes a human's why, as ID.decisions.KEY; %s is a %s note", key, r.Slot.Name)
 	}
 	n, ok, err := e.st.LoadNote(r)

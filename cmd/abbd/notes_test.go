@@ -122,7 +122,7 @@ func TestANoteNeedsLiveEvidenceAndASlotAbbdKnows(t *testing.T) {
 	}{
 		{"MOD-0001.failure", "cite at least one --evidence", nil},
 		{"MOD-0001.failure", "the code does not hold", []string{"billing/retry.go:3:const tries = 4"}},
-		{"MOD-0001.gotchas", `"gotchas" is no slot; the slots are semantics, failure, states, decisions, wire_sample`, []string{failureQuote}},
+		{"MOD-0001.gotchas", `"gotchas" is no slot; the slots are semantics, failure, states, decisions, constraints, wire_sample`, []string{failureQuote}},
 		{"MOD-0001.decisions", "name it MOD-0001.decisions.KEY", []string{failureQuote}},
 		{"MOD-0001.semantics.main", "takes no key", []string{failureQuote}},
 		{"MOD-0001.decisions.Tries", "lower-case letters, digits and hyphens", []string{failureQuote}},
@@ -408,4 +408,25 @@ func TestAStrayMarkdownFileBesideTheNotesIsAWarning(t *testing.T) {
 	p.want(0, "failure (INFERRED, CURRENT)", "explain", "MOD-0001")
 	write(t, filepath.Join(p.root, ".abbd", "understanding", "MOD-0001", "semantics.md"), "---\nunit: MOD-0001\n")
 	p.want(1, "unterminated frontmatter", "status")
+}
+
+// A constraint the code keeps is a note of its own: it shows on the page,
+// goes STALE when the lines that keep it change, and review names it.
+func TestAConstraintGoesStaleWithTheCodeThatKeepsIt(t *testing.T) {
+	t.Parallel()
+	p := notesProject(t)
+	git(t, p.root, "add", "-A")
+	git(t, p.root, "commit", "-qm", "base")
+	base := rev(t, p.root)
+	p.wantNote(0, "understood MOD-0001.constraints.order", "MOD-0001.constraints.order", "States run pending before charged, and nothing skips one.", statesQuote)
+	p.wantNote(0, "understood MOD-0002.constraints.charged", "MOD-0002.constraints.charged", "The books post only a charge billing marks charged.", statesQuote)
+	p.want(1, "only a decision takes a human's why", "record", "fact", "MOD-0001.constraints.order", "--value", "why", "--source", "pr 1")
+	if !strings.Contains(p.blueprint(), "제약과 불변식") {
+		t.Errorf("the page should show the constraint under its slot")
+	}
+	p.code("billing/retry.go", strings.Replace(retryCode("const tries = 3", "var states = []string{\"pending\", \"charged\"}"), "// line 24\n", "var refunded = true\n", 1))
+	p.resync()
+	p.want(1, "stale: MOD-0001.constraints.order", "status", "--check", "--verbose")
+	contains(t, p.want(0, "", "review", "--base", base), "the constraint MOD-0001.constraints.order is STALE",
+		"the constraint MOD-0002.constraints.charged is STALE")
 }
