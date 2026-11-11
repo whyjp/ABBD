@@ -319,7 +319,9 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 		}
 	}
 	tops := slices.Sorted(maps.Keys(touched))
+	more := 0
 	if len(tops) > maxDrawn {
+		more = len(tops) - maxDrawn
 		tops = tops[:maxDrawn]
 	}
 	w := e.stdout
@@ -329,27 +331,51 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 		for _, id := range tops {
 			names = append(names, fmt.Sprintf("%s %s", id, byID[id].Name.Value))
 		}
+		if more > 0 {
+			names = append(names, fmt.Sprintf("and %d more", more))
+		}
 		fmt.Fprintf(w, "**Touched modules:** %s\n\n", strings.Join(names, ", "))
 		fmt.Fprintln(w, "```mermaid\nflowchart LR")
 		for _, id := range tops {
 			fmt.Fprintf(w, "  %s[\"%s\"]\n", mermaidID(id), mermaidText(byID[id].Name.Value))
 		}
+		// Modules meet mostly through contracts, which the drawing leaves
+		// out, so a use of a contract is drawn to the module that provides it.
+		providers := map[model.ID][]model.ID{}
+		for _, u := range model.Present(now) {
+			for _, r := range u.Relations {
+				if r.Counts() && r.Kind == model.Provides {
+					providers[r.To] = append(providers[r.To], top(u.ID))
+				}
+			}
+		}
 		drawn := map[string]bool{}
+		draw := func(from, to model.ID, label string) {
+			if to == from || !slices.Contains(tops, to) {
+				return
+			}
+			edge := fmt.Sprintf("  %s -->|%s| %s", mermaidID(from), mermaidText(label), mermaidID(to))
+			if !drawn[edge] {
+				drawn[edge] = true
+				fmt.Fprintln(w, edge)
+			}
+		}
 		for _, u := range model.Present(now) {
 			from := top(u.ID)
-			if !touched[from] || !slices.Contains(tops, from) {
+			if !slices.Contains(tops, from) {
 				continue
 			}
 			for _, r := range u.Relations {
-				to := top(r.To)
-				if !r.Counts() || to == from || !slices.Contains(tops, to) {
+				if !r.Counts() || r.Kind == model.Provides {
 					continue
 				}
-				edge := fmt.Sprintf("  %s -->|%s| %s", mermaidID(from), r.Kind, mermaidID(to))
-				if !drawn[edge] {
-					drawn[edge] = true
-					fmt.Fprintln(w, edge)
+				if c := byID[r.To]; c.Kind.IsContract() {
+					for _, p := range providers[r.To] {
+						draw(from, p, c.Name.Value)
+					}
+					continue
 				}
+				draw(from, top(r.To), string(r.Kind))
 			}
 		}
 		fmt.Fprintln(w, "```")
@@ -358,11 +384,11 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 	if len(look) > 0 {
 		fmt.Fprintln(w, "**Worth a look**")
 		for _, l := range look {
-			fmt.Fprintf(w, "- %s\n", l)
+			fmt.Fprintf(w, "- %s\n", strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`).Replace(l))
 		}
 		fmt.Fprintln(w)
 	}
-	fmt.Fprintf(w, "<details><summary>The whole review</summary>\n\n```\n%s```\n</details>\n", strings.TrimLeft(body, "\n"))
+	fmt.Fprintf(w, "<details><summary>The whole review</summary>\n\n~~~~\n%s~~~~\n</details>\n", strings.TrimLeft(body, "\n"))
 	return nil
 }
 
