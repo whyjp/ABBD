@@ -39,7 +39,7 @@ type Input struct {
 	Figures store.Figures
 	// Primary are the stored relations, by relation key (model.Edge's
 	// String), the overview must draw whatever else it counts instead
-	// (primary.go) when Project.OverviewCut is on. Nil leaves the choice to
+	// (primary.go) when Project.Cut() is on. Nil leaves the choice to
 	// the stored flows and stacks.
 	Primary map[string]bool
 }
@@ -208,7 +208,7 @@ func Build(in Input) Model {
 	ls, fs := layerings(in), walks(in)
 	o := planOverview(in.Units, "", nil, tactic{}, ls, fs, nil)
 	var c *cut
-	if in.Project.OverviewCut {
+	if in.Project.Cut() {
 		c = o.primary(in.Primary, ls, fs)
 	}
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)

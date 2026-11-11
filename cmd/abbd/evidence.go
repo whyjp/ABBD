@@ -314,19 +314,32 @@ func (e env) statusNotes(units []model.Unit, notes map[model.ID][]store.Note, st
 
 // described reports the present units that record neither a purpose nor a
 // responsibility, whose pages and rows can say nothing of what they are for.
-func described(units []model.Unit) string {
-	var bare []string
+func described(units []model.Unit) string { return describedLine(undescribed(units)) }
+
+// undescribed is every present unit, each drawn as a box on its parent's page or
+// the overview, that records neither a purpose nor a responsibility.
+func undescribed(units []model.Unit) []model.ID {
+	var out []model.ID
 	for _, u := range model.Present(units) {
 		if !hasValue(u.Purpose) && !hasValue(u.Responsibility) {
-			bare = append(bare, string(u.ID))
+			out = append(out, u.ID)
 		}
 	}
-	line := fmt.Sprintf("described: %d unit(s) without a purpose or responsibility", len(bare))
-	if len(bare) > 10 {
-		bare = append(bare[:10], "...")
+	return out
+}
+
+func describedLine(ids []model.ID) string {
+	line := fmt.Sprintf("described: %d unit(s) without a purpose or responsibility", len(ids))
+	var shown []string
+	for i, id := range ids {
+		if i == 10 {
+			shown = append(shown, "...")
+			break
+		}
+		shown = append(shown, string(id))
 	}
-	if len(bare) > 0 {
-		line += ": " + strings.Join(bare, ", ")
+	if len(shown) > 0 {
+		line += ": " + strings.Join(shown, ", ")
 	}
 	return line
 }
