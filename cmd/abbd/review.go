@@ -287,7 +287,23 @@ func (e env) review() error {
 	if err != nil {
 		return err
 	}
-	scope := scopeLines(sc, byID, seeds)
+	changed := slices.Clone(codeChanged)
+	for _, r := range d.UnitsAdded {
+		changed = append(changed, r.ID)
+	}
+	for _, c := range d.Changed {
+		changed = append(changed, c.ID)
+	}
+	for _, s := range d.Signatures {
+		changed = append(changed, s.ID)
+	}
+	for _, en := range d.Entries {
+		changed = append(changed, en.ID)
+	}
+	for _, r := range d.Code {
+		changed = append(changed, r.ID)
+	}
+	scope := scopeLines(sc, byID, wasByID, changed, d.UnitsRemoved)
 	if len(sc.Units) > 0 {
 		fmt.Fprintf(w, "\nscope declared: %s", joinIDs(sc.Units))
 		if sc.Why != "" {
@@ -303,7 +319,7 @@ func (e env) review() error {
 		headline += fmt.Sprintf(", %d line(s) on the declared scope", len(scope))
 	}
 	if e.markdown {
-		return e.reviewMarkdown(base, headline, d, now, seeds, append(scope, look...), body.String())
+		return e.reviewMarkdown(base, headline, d, now, seeds, sc, scope, look, body.String())
 	}
 	fmt.Fprintf(e.stdout, "review since %s: %s\n", short(base), headline)
 	_, err = e.stdout.Write(body.Bytes())
@@ -318,7 +334,7 @@ const reviewMarker = "<!-- abbd-review -->"
 // headline, a drawing of the touched top-level modules and the relations
 // between them, the changes folded, and what is worth a look. It draws the
 // current state of what the change touched, never a mark of change.
-func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.Unit, seeds []model.ID, look []string, body string) error {
+func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.Unit, seeds []model.ID, sc store.Scope, scope, look []string, body string) error {
 	byID := map[model.ID]model.Unit{}
 	for _, u := range model.Present(now) {
 		byID[u.ID] = u
@@ -405,10 +421,25 @@ func (e env) reviewMarkdown(base, headline string, d topology.Diff, now []model.
 		fmt.Fprintln(w, "```")
 		fmt.Fprintln(w)
 	}
+	esc := strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`, "`", "\\`", "[", `\[`)
+	if len(sc.Units) > 0 {
+		fmt.Fprintf(w, "**Declared scope:** %s", joinIDs(sc.Units))
+		if sc.Why != "" {
+			fmt.Fprintf(w, ", %s", esc.Replace(sc.Why))
+		}
+		fmt.Fprintln(w)
+		for _, l := range scope {
+			fmt.Fprintf(w, "- %s\n", esc.Replace(l))
+		}
+		if len(scope) == 0 {
+			fmt.Fprintln(w, "- the change stays inside it and touches each declared unit")
+		}
+		fmt.Fprintln(w)
+	}
 	if len(look) > 0 {
 		fmt.Fprintln(w, "**Worth a look**")
 		for _, l := range look {
-			fmt.Fprintf(w, "- %s\n", strings.NewReplacer("<", "&lt;", ">", "&gt;", "*", `\*`, "_", `\_`, "`", "\\`", "[", `\[`).Replace(l))
+			fmt.Fprintf(w, "- %s\n", esc.Replace(l))
 		}
 		fmt.Fprintln(w)
 	}
@@ -450,11 +481,16 @@ func (e env) anchoredAt(units []model.Unit, base string) []model.ID {
 	return out
 }
 
-// scopeLines sets the units a change touched beside the scope an agent
-// declared: each touched unit outside every declared one, named by its
-// top-level unit, and each declared unit the change left alone. It reports
-// and never judges.
-func scopeLines(sc store.Scope, byID map[model.ID]model.Unit, seeds []model.ID) []string {
+// scopeLines sets what a change did beside the scope an agent declared.
+// Only what the change itself did counts: code changed under a unit, a
+// unit added, changed or removed. A far end the change only started to use
+// is not something it touched. Of a changed unit and a changed unit inside
+// it, the inner one stands for both, so a file both a module and its part
+// are anchored at counts as the part's. A changed unit is inside the scope
+// when it or a unit above it was declared; each one outside is named by its
+// top-level unit, and each declared unit nothing touched is named too. It
+// reports and never judges.
+func scopeLines(sc store.Scope, now, was map[model.ID]model.Unit, changed []model.ID, removed []topology.Ref) []string {
 	if len(sc.Units) == 0 {
 		return nil
 	}
@@ -462,18 +498,29 @@ func scopeLines(sc store.Scope, byID map[model.ID]model.Unit, seeds []model.ID) 
 	for _, id := range sc.Units {
 		declared[id] = true
 	}
-	chain := func(id model.ID) []model.ID {
+	chain := func(units map[model.ID]model.Unit, id model.ID) []model.ID {
 		var out []model.ID
 		seen := map[model.ID]bool{}
-		for p := id; p != "" && !seen[p]; p = byID[p].Parent {
+		for p := id; p != "" && !seen[p]; p = units[p].Parent {
 			seen[p] = true
 			out = append(out, p)
 		}
 		return out
 	}
-	outside, hit := map[model.ID]bool{}, map[model.ID]bool{}
-	for _, id := range seeds {
-		c := chain(id)
+	set := map[model.ID]bool{}
+	for _, id := range changed {
+		if _, ok := now[id]; ok {
+			set[id] = true
+		}
+	}
+	for id := range set {
+		for _, p := range chain(now, id)[1:] {
+			delete(set, p)
+		}
+	}
+	outside, hit := map[model.ID]string{}, map[model.ID]bool{}
+	place := func(units map[model.ID]model.Unit, id model.ID, how string) {
+		c := chain(units, id)
 		in := false
 		for _, p := range c {
 			if declared[p] {
@@ -481,16 +528,31 @@ func scopeLines(sc store.Scope, byID map[model.ID]model.Unit, seeds []model.ID) 
 			}
 		}
 		if !in {
-			outside[c[len(c)-1]] = true
+			t := c[len(c)-1]
+			if _, ok := outside[t]; !ok || how != "" {
+				outside[t] = how
+			}
 		}
+	}
+	for _, id := range slices.Sorted(maps.Keys(set)) {
+		place(now, id, "")
+	}
+	for _, r := range removed {
+		place(was, r.ID, " (removed)")
+	}
+	name := func(id model.ID) string {
+		if u, ok := now[id]; ok {
+			return u.Name.Value
+		}
+		return was[id].Name.Value
 	}
 	var out []string
 	for _, id := range slices.Sorted(maps.Keys(outside)) {
-		out = append(out, fmt.Sprintf("outside the declared scope: %s %s", id, byID[id].Name.Value))
+		out = append(out, fmt.Sprintf("outside the declared scope: %s %s%s", id, name(id), outside[id]))
 	}
 	for _, id := range sc.Units {
 		if !hit[id] {
-			out = append(out, fmt.Sprintf("declared but untouched: %s %s", id, byID[id].Name.Value))
+			out = append(out, strings.TrimSpace(fmt.Sprintf("declared but untouched: %s %s", id, name(id))))
 		}
 	}
 	return out
