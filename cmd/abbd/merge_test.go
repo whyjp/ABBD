@@ -88,9 +88,13 @@ func TestTheBlueprintCarriesNoPerSyncValue(t *testing.T) {
 	p.want(0, "blueprint: CURRENT", "status", "--check")
 }
 
-// The blueprint is UNKNOWN without its files, whatever the state says.
-func TestAMissingBlueprintIsUnknown(t *testing.T) {
+// Git keeps the state and not its pages, so a checkout without them, such
+// as a fresh clone, passes the check while the state is current; the pages
+// are drawn by the next sync.
+func TestABlueprintNotDrawnHereStillPassesTheCheck(t *testing.T) {
 	p := semanticProject(t)
 	os.RemoveAll(filepath.Join(p.root, ".abbd", "blueprint"))
-	p.want(1, "the blueprint is UNKNOWN", "status", "--check")
+	p.want(0, "blueprint: NOT DRAWN here", "status", "--check")
+	p.resync()
+	p.want(0, "blueprint: CURRENT", "status", "--check")
 }

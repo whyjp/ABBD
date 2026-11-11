@@ -172,6 +172,33 @@ func (s Store) UnitsAt(rev string) ([]model.Unit, error) {
 	return units, nil
 }
 
+// CheckoutAt writes the .abbd committed at rev, its blueprint aside, under
+// dir and opens a store there, so the state as it was can be drawn again.
+// No code is checked out beside it, so its texts read against none.
+func (s Store) CheckoutAt(rev, dir string) (Store, error) {
+	project := filepath.Dir(s.root)
+	if err := os.RemoveAll(dir); err != nil {
+		return Store{}, err
+	}
+	files, err := gitx.Files(project, rev, Dir)
+	if err != nil {
+		return Store{}, err
+	}
+	for _, f := range files {
+		if strings.HasPrefix(f, Dir+"/blueprint/") {
+			continue
+		}
+		b, err := gitx.Show(project, rev, f)
+		if err != nil {
+			return Store{}, err
+		}
+		if err := writeFile(filepath.Join(dir, filepath.FromSlash(f)), b); err != nil {
+			return Store{}, err
+		}
+	}
+	return Open(dir), nil
+}
+
 func parseUnit(path string, b []byte) (u model.Unit, old bool, err error) {
 	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 	rest, ok := bytes.CutPrefix(b, []byte("---\n"))
@@ -538,6 +565,10 @@ func (s Store) NextID(kind model.Kind) (model.ID, error) {
 	return model.FormatID(kind, st.HighWater[kind]), s.SaveState(st)
 }
 
+// blueprintIgnore keeps the blueprint out of git. It is drawn from the
+// committed state on each sync, so committing it only repeats the state.
+const blueprintIgnore = ".gitignore"
+
 // SaveBlueprint writes the rendered files and removes every other one, so the
 // blueprint holds exactly what HashRender(files) records.
 func (s Store) SaveBlueprint(files map[string][]byte) error {
@@ -546,12 +577,15 @@ func (s Store) SaveBlueprint(files map[string][]byte) error {
 			return err
 		}
 	}
+	if err := writeFile(s.path("blueprint", blueprintIgnore), []byte("*\n")); err != nil {
+		return err
+	}
 	old, err := os.ReadDir(s.path("blueprint"))
 	if err != nil {
 		return err
 	}
 	for _, e := range old {
-		if _, keep := files[e.Name()]; !keep {
+		if _, keep := files[e.Name()]; !keep && e.Name() != blueprintIgnore {
 			if err := os.RemoveAll(s.path("blueprint", e.Name())); err != nil {
 				return err
 			}
@@ -571,7 +605,7 @@ func (s Store) BlueprintHash() (string, error) {
 	dir := s.path("blueprint")
 	var files []string
 	err := filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
-		if err == nil && !d.IsDir() {
+		if err == nil && !d.IsDir() && p != filepath.Join(dir, blueprintIgnore) {
 			files = append(files, p)
 		}
 		return err
