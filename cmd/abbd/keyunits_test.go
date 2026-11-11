@@ -36,3 +36,10 @@ func TestKeyUnitsRankByFanIn(t *testing.T) {
 		t.Errorf("unnamed: %+v", u)
 	}
 }
+
+// A Python dunder is no key unit; a snake-case function is.
+func TestADunderIsNoKeyUnit(t *testing.T) {
+	if distinctive("__init__") || distinctive("_private_") || !distinctive("charge_card") {
+		t.Errorf("distinctive misjudges a dunder or a snake-case name")
+	}
+}

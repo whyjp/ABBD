@@ -40,6 +40,9 @@ var funcs = []*regexp.Regexp{
 // distinctive is a function name a repository-wide search can count: a
 // plain lower-case word such as from or lock names many unrelated things.
 func distinctive(name string) bool {
+	if strings.HasPrefix(name, "__") || strings.HasPrefix(name, "_") && strings.HasSuffix(name, "_") {
+		return false // a Python dunder such as __init__
+	}
 	return len(name) >= 5 && (strings.Contains(name, "_") || strings.ToLower(name) != name)
 }
 
@@ -55,11 +58,16 @@ const (
 )
 
 // keyUnits ranks what a module's files declare by fan-in: how many matches
-// of the name the repository's files in the same languages hold outside its
-// declaring file, read through one git grep. The first n are the units a
-// text about the module covers. A search past searchFor yields none.
+// of the name the repository's tracked files in the same languages hold
+// outside the module, read through one git grep. The first n are the units
+// a text about the module covers. A search past searchFor, outside a git
+// repository or without git yields none.
 func keyUnits(root string, files []string, n int) []keyUnit {
 	decl := map[string]string{}
+	own := map[string]bool{}
+	for _, f := range files {
+		own[f] = true
+	}
 	inside := map[string]int{}
 	var words []string
 	for _, f := range files {
@@ -99,7 +107,7 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 	// The names the module itself uses most are the ones searched.
 	slices.SortStableFunc(names, func(a, b string) int { return inside[b] - inside[a] })
 	names = names[:min(len(names), searched)]
-	args := []string{"-C", root, "grep", "-I", "-o", "-w", "-F"}
+	args := []string{"-C", root, "-c", "core.quotePath=false", "grep", "-I", "-o", "-w", "-F"}
 	for _, nm := range names {
 		args = append(args, "-e", nm)
 	}
@@ -123,7 +131,7 @@ func keyUnits(root string, files []string, n int) []keyUnit {
 		if !ok {
 			continue
 		}
-		if f := decl[string(match)]; f != "" && f != string(path) {
+		if decl[string(match)] != "" && !own[string(path)] {
 			uses[string(match)]++
 		}
 	}
@@ -167,8 +175,9 @@ func (e env) keyUnitsOf(units []model.Unit, id model.ID, n int) []keyUnit {
 // unnamed are the key units a text never names.
 func unnamed(text string, keys []keyUnit) []keyUnit {
 	var out []keyUnit
+	lower := strings.ToLower(text)
 	for _, k := range keys {
-		if !strings.Contains(text, k.Name) {
+		if !strings.Contains(lower, strings.ToLower(k.Name)) {
 			out = append(out, k)
 		}
 	}
