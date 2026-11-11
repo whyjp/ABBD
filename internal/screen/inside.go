@@ -861,3 +861,14 @@ func sentence(u model.Unit) *model.Fact {
 	}
 	return nil
 }
+
+// Guessed says some inside unit's sentence only a reader vouches for, so
+// the page says once what the slanted sentences are.
+func (ins Inside) Guessed() bool {
+	for _, u := range ins.Units {
+		if u.Guess && u.Sentence != "" {
+			return true
+		}
+	}
+	return false
+}

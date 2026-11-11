@@ -134,7 +134,7 @@ func TestACellTheRelationsDoNotBearOutIsReportedNotChecked(t *testing.T) {
 		"cells: {charges: reads the amount of each charge}", "cells: {retries: never retries a read}",
 	).Replace(chargeTable)
 	p.table(0, "cells: 1 cell(s) say a use no stored relation carries, 1 empty cell(s) sit over a stored relation", draft)
-	out := p.want(0, "cells: 1 cell(s) say a use no stored relation carries, 1 empty cell(s) sit over a stored relation; reported, not checked", "status", "--check")
+	out := p.want(0, "cells: 1 cell(s) say a use no stored relation carries, 1 empty cell(s) sit over a stored relation; reported, not checked", "status", "--check", "--verbose")
 	for _, want := range []string{
 		`unbacked: table charge row 1: MOD-0001 billing says "hands each charge to the books" under MOD-0002 ledger, and no stored relation joins them`,
 		`unsaid: table charge row 2: MOD-0002 ledger consumes DATA-0001 charges table (INFERRED), and the cell under "charges" is empty`,

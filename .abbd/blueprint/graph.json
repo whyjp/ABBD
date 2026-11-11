@@ -7340,7 +7340,39 @@
                 "Code": true
               },
               {
-                "Text": " prints whether the state and the blueprint are current, prints a ",
+                "Text": " prints whether the state and the blueprint are current, folds its ",
+                "Code": false
+              },
+              {
+                "Text": "long:",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "unbacked:",
+                "Code": true
+              },
+              {
+                "Text": " lines into one count each unless ",
+                "Code": false
+              },
+              {
+                "Text": "--verbose",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "statusLines",
+                "Code": true
+              },
+              {
+                "Text": " prints them all, and the usage says so), prints a ",
                 "Code": false
               },
               {
@@ -7758,7 +7790,15 @@
                 "Code": true
               },
               {
-                "Text": " shows it with its reader as CURRENT or STALE. Under each reader's coupling, ",
+                "Text": " shows it with its reader as CURRENT or STALE. With ",
+                "Code": false
+              },
+              {
+                "Text": "--history",
+                "Code": true
+              },
+              {
+                "Text": ", under each reader's coupling, ",
                 "Code": false
               },
               {
@@ -9925,6 +9965,12 @@
                     "cmd/abbd/evidence.go \"if e.check \u0026\u0026 len(behind) \u003e 0 {\""
                   ]
                 }
+              },
+              {
+                "Key": "verbose",
+                "Name": "--verbose",
+                "Shape": "bool",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -10051,6 +10097,12 @@
                 "Key": "root",
                 "Name": "--root",
                 "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "history",
+                "Name": "--history",
+                "Shape": "bool",
                 "Need": ""
               }
             ],
@@ -21587,7 +21639,15 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. ",
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page says them as sentences under the heading, naming the contracts it uses even when it provides none. An inside unit's sentence that only a reader vouches for is set in italics with the 판독 source on hover, and ",
+                "Code": false
+              },
+              {
+                "Text": "Inside.Guessed",
+                "Code": true
+              },
+              {
+                "Text": " puts one note above the list instead of a badge on each. ",
                 "Code": false
               },
               {
