@@ -8859,7 +8859,7 @@
                 "Code": true
               },
               {
-                "Text": ": each touched top-level unit outside every declared unit, and each declared unit the change left alone. With ",
+                "Text": ", counting only what the change did (code changed under a unit, a unit added, changed or removed, the inner of two changed units standing for both): each such unit outside every declared unit, named by its top-level unit, and each declared unit the change left alone; the comment gives them a Declared scope section. With ",
                 "Code": false
               },
               {
