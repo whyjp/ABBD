@@ -101,11 +101,13 @@ func drawing(page []byte, anchor string) (svg, style string) {
 	if a, b, ok := strings.Cut(s, "<style>"); ok && a != "" {
 		style, _, _ = strings.Cut(b, "</style>")
 	}
-	_, rest, ok := strings.Cut(s, `id="`+anchor+`"`)
-	if !ok {
-		return "", style
+	// A unit with no inside of its own has a focus view as its page, under
+	// another anchor, so the page's first drawing stands in for it.
+	rest := s
+	if _, after, ok := strings.Cut(s, `id="`+anchor+`"`); ok {
+		rest = after
 	}
-	_, rest, ok = strings.Cut(rest, `<div class="mapbox">`)
+	_, rest, ok := strings.Cut(rest, `<div class="mapbox">`)
 	if !ok {
 		return "", style
 	}

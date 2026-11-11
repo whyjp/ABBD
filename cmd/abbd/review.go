@@ -184,7 +184,13 @@ func (e env) review() error {
 	if len(seeds) == 0 {
 		fmt.Fprintln(w, "  nothing the topology records")
 	} else if e.features {
-		(env{opts: e.opts, stdout: w, st: e.st}).byFeature(now, topology.ImpactOf(now, seeds))
+		im := topology.ImpactOf(now, seeds)
+		for _, it := range im.Direct {
+			if it.Why != "seed" {
+				reached++
+			}
+		}
+		(env{opts: e.opts, stdout: w, st: e.st}).byFeature(now, im)
 	} else {
 		// The seeds are the change itself, listed above; what they reach
 		// is the news, and only its first lines are worth reading here.

@@ -2,6 +2,7 @@ package topology
 
 import (
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -60,5 +61,23 @@ func TestRelationEndsFindsTheUnitsARelationJoins(t *testing.T) {
 	got := RelationEnds(units, []Relation{{From: "MOD-0001", Kind: model.DependsOn, To: "MOD-0003"}})
 	if want := []model.ID{"MOD-0002", "MOD-0004"}; !slices.Equal(got, want) {
 		t.Errorf("ends: got %v, want %v", got, want)
+	}
+}
+
+// A signature too long to read in a line names the words it gained and
+// lost, and a short one prints both texts as before.
+func TestALongSignatureChangeNamesItsWords(t *testing.T) {
+	long := func(extra string) model.Unit {
+		u := unit("DATA-0001", "")
+		u.Signature = &model.Fact{Value: strings.Repeat("field{a,b}; ", 20) + extra}
+		return u
+	}
+	got := Compare([]model.Unit{long("old")}, []model.Unit{long("new")}).Lines()
+	if want := []string{"~ contract DATA-0001 DATA-0001 signature changed: +new -old; --json has both"}; !slices.Equal(got, want) {
+		t.Errorf("got %q", got)
+	}
+	short := func(v string) model.Unit { u := unit("IF-0001", ""); u.Signature = &model.Fact{Value: v}; return u }
+	if got := Compare([]model.Unit{short("a")}, []model.Unit{short("b")}).Lines(); !slices.Equal(got, []string{`~ contract IF-0001 IF-0001 signature: "a" -> "b"`}) {
+		t.Errorf("a short signature reads %q", got)
 	}
 }

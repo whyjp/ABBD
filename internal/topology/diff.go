@@ -647,7 +647,7 @@ const longSignature = 200
 func sigDelta(old, now string) string {
 	words := func(s string) map[string]bool {
 		out := map[string]bool{}
-		for _, w := range strings.FieldsFunc(s, func(r rune) bool { return strings.ContainsRune("{},;: ()<>\"", r) }) {
+		for _, w := range strings.FieldsFunc(s, func(r rune) bool { return strings.ContainsRune("{},;: ()<>\"[]=|*.\n\t", r) }) {
 			out[w] = true
 		}
 		return out
