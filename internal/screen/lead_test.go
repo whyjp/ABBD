@@ -258,6 +258,9 @@ func TestAFlowInOneBoxIsNumberedOnIt(t *testing.T) {
 			t.Errorf("the pill covers %s", b.ID)
 		}
 	}
+	if !m.Overview.clearOfInk(pill, nil) {
+		t.Errorf("the pill %+v lies on a line, junction, label or count", pill)
+	}
 	for _, in := range m.Insides {
 		if l := in.Drawing.Lead; l != nil && l.Stay != nil {
 			t.Errorf("%s numbers the flow on a box", in.ID)
@@ -288,6 +291,40 @@ func TestAFlowThatLeavesOnceNumbersTheRest(t *testing.T) {
 		s := *l.Stay
 		if l.Hops[0].N != 1 || s.Box != c.box || s.Text() != c.text || !strings.Contains(s.Title, c.titleSteps) {
 			t.Errorf("%v: hop %d and stay %+v, want hop 1 and %s on %s titled with %s", c.steps, l.Hops[0].N, s, c.text, c.box, c.titleSteps)
+		}
+	}
+}
+
+// A box hemmed in by lines on every side keeps its pill off them all: in a
+// corner of the box clear of its name, or, with the name filling it, at the
+// nearest clear spot round it.
+func TestAStayPillKeepsOffEveryLine(t *testing.T) {
+	t.Parallel()
+	hem := []Wire{{D: "M370 100 L370 400"}, {D: "M190 100 L190 400"}, {D: "M100 185 L500 185"}, {D: "M100 275 L500 275"}}
+	dots := []Dot{{X: 370, Y: 185}, {X: 190, Y: 185}, {X: 370, Y: 275}, {X: 190, Y: 275}}
+	for _, c := range []struct {
+		name   string
+		inside bool
+	}{{"alpha", true}, {"a name that fills the box", false}} {
+		b := Box{ID: "A", X: 200, Y: 200, W: 160, H: 60, Lines: []Text{{S: c.name, X: 280, Y: 235, Mid: true}}}
+		other := Box{ID: "B", X: 380, Y: 200, W: 120, H: 60}
+		d := Drawing{Boxes: []Box{b, other}, Wires: hem, Dots: dots, Lead: &Lead{Stay: &Stay{Box: "A", First: 1, Last: 7}}}
+		d.pin()
+		s := d.Lead.Stay
+		pill := box{s.X, s.Y, s.W, stayH}
+		if !d.clearOfInk(grow(pill, inkGap), nil) {
+			t.Errorf("%s: the pill %+v lies on a line or junction", c.name, pill)
+		}
+		for _, w := range b.words() {
+			if hit(pill, w) {
+				t.Errorf("%s: the pill %+v covers the name %+v", c.name, pill, w)
+			}
+		}
+		if hit(pill, box{other.X, other.Y, other.W, other.H}) {
+			t.Errorf("%s: the pill %+v covers the next box", c.name, pill)
+		}
+		if in := hit(pill, box{b.X, b.Y, b.W, b.H}); in != c.inside {
+			t.Errorf("%s: pill %+v inside its box %v, want %v", c.name, pill, in, c.inside)
 		}
 	}
 }

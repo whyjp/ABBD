@@ -96,26 +96,79 @@ func (d *Drawing) stayed(t tree, f flowWalk, hops []use) *Stay {
 }
 
 // pin sets the stay's pill beside its box: right of its top corner, else
-// over it at its right, then left of it, then under it, the first place
+// over it at its right, then left of it, then under it, then in a corner
+// inside it off its words, then the nearest spot round it, the first place
 // that keeps off every box, line, label, number, word and band title.
 func (d *Drawing) pin() {
 	if d.Lead == nil || d.Lead.Stay == nil {
 		return
 	}
 	s := d.Lead.Stay
-	s.W = textWidth(s.Text(), 10) + 12
+	w := textWidth(s.Text(), 10) + 12
 	for _, b := range d.Boxes {
 		if b.ID != s.Box {
 			continue
 		}
-		for _, a := range []box{{b.X + b.W + 5, b.Y + 4, s.W, stayH}, {b.X + b.W - s.W - 4, b.Y - stayH - 5, s.W, stayH}, {b.X + 4, b.Y - stayH - 5, s.W, stayH}, {b.X - s.W - 5, b.Y + 4, s.W, stayH}, {b.X + b.W - s.W - 4, b.Y + b.H + 5, s.W, stayH}, {b.X + 4, b.Y + b.H + 5, s.W, stayH}} {
+		at := func(a box) {
+			s.X, s.Y, s.W = a.x, a.y, w
+		}
+		for _, a := range []box{{b.X + b.W + 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH}, {b.X + 4, b.Y - stayH - 5, w, stayH}, {b.X - w - 5, b.Y + 4, w, stayH}, {b.X + b.W - w - 4, b.Y + b.H + 5, w, stayH}, {b.X + 4, b.Y + b.H + 5, w, stayH}} {
 			if d.wordClear(grow(a, inkGap), nil) {
-				s.X, s.Y = a.x, a.y
+				at(a)
 				return
 			}
 		}
-		s.X, s.Y = b.X+b.W-s.W-4, b.Y-stayH-5
+		words := b.words()
+		for _, a := range []box{{b.X + b.W - w - 5, b.Y + 5, w, stayH}, {b.X + 5, b.Y + 5, w, stayH}, {b.X + b.W - w - 5, b.Y + b.H - stayH - 5, w, stayH}, {b.X + 5, b.Y + b.H - stayH - 5, w, stayH}} {
+			if d.wordClearOf(grow(a, inkGap), words, b.ID) {
+				at(a)
+				return
+			}
+		}
+		for g := 5; g <= stayReach; g += 4 {
+			for _, a := range ring(box{b.X, b.Y, b.W, b.H}, w, g) {
+				if d.wordClear(grow(a, inkGap), nil) {
+					at(a)
+					return
+				}
+			}
+		}
+		at(box{b.X + b.W - w - 4, b.Y - stayH - 5, w, stayH})
 	}
+}
+
+// stayReach is the furthest a stay's pill stands off its box.
+const stayReach = 160
+
+// ring is the places a pill w wide stands g off b: along its top and its
+// bottom edge, then down its right and its left side, every 4px.
+func ring(b box, w, g int) []box {
+	var out []box
+	for x := b.x - w - g; x <= b.x+b.w+g; x += 4 {
+		out = append(out, box{x, b.y - stayH - g, w, stayH}, box{x, b.y + b.h + g, w, stayH})
+	}
+	for y := b.y - stayH - g; y <= b.y+b.h+g; y += 4 {
+		out = append(out, box{b.x + b.w + g, y, w, stayH}, box{b.x - w - g, y, w, stayH})
+	}
+	return out
+}
+
+// words is the area each line of the box's name and its last line covers.
+func (b Box) words() []box {
+	var out []box
+	ts := b.Lines
+	if b.Sub != nil {
+		ts = append(append([]Text(nil), ts...), *b.Sub)
+	}
+	for _, t := range ts {
+		n := textWidth(t.S, 13)
+		x := t.X
+		if t.Mid {
+			x -= n / 2
+		}
+		out = append(out, box{x, t.Y - 12, n, 15})
+	}
+	return out
 }
 
 // Hop is one numbered line of the lead: the route of a line the view draws,
@@ -433,8 +486,13 @@ const wordPx = 10
 // number or other step's word, and stands inkGap off every band's title:
 // ink, labels and counts by clearOfInk.
 func (d *Drawing) wordClear(area box, words []box) bool {
+	return d.wordClearOf(area, words, "")
+}
+
+// wordClearOf is wordClear inside the box own: it meets no other box.
+func (d *Drawing) wordClearOf(area box, words []box, own string) bool {
 	for _, b := range d.Boxes {
-		if hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
+		if b.ID != own && hit(area, box{b.X - 2, b.Y - 2, b.W + 4, b.H + 4}) {
 			return false
 		}
 	}
