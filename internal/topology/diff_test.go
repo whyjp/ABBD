@@ -49,3 +49,16 @@ func TestADeadCouplingBesideALiveOneIsNoChange(t *testing.T) {
 		t.Errorf("a coupling still live on its edge reads %q", got)
 	}
 }
+
+// RelationEnds turns a relation lifted to its top-level ends back into the
+// units that really join it, and leaves a dead or reader's relation out.
+func TestRelationEndsFindsTheUnitsARelationJoins(t *testing.T) {
+	units := []model.Unit{
+		unit("MOD-0001", ""), unit("MOD-0002", "MOD-0001", rel("MOD-0004", model.DependsOn, model.Extracted), rel("MOD-0005", model.DependsOn, model.Inferred)),
+		unit("MOD-0003", ""), unit("MOD-0004", "MOD-0003"), unit("MOD-0005", "MOD-0003"),
+	}
+	got := RelationEnds(units, []Relation{{From: "MOD-0001", Kind: model.DependsOn, To: "MOD-0003"}})
+	if want := []model.ID{"MOD-0002", "MOD-0004"}; !slices.Equal(got, want) {
+		t.Errorf("ends: got %v, want %v", got, want)
+	}
+}

@@ -78,16 +78,63 @@ func (e env) diff() error {
 
 var compareTmpl = template.Must(template.New("compare").Parse(`<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><title>{{.Of}} 비교 · ABBD</title>
-<style>body{font:14px/1.5 system-ui,sans-serif;margin:16px}pre{background:#f6f6f6;padding:8px;white-space:pre-wrap}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}iframe{width:100%;height:80vh;border:1px solid #ccc}
-@media (prefers-color-scheme:dark){body{background:#111;color:#ddd}pre{background:#222}}</style></head><body>
+<style>{{.Style}}
+body.compare{margin:16px;max-width:100vw;overflow-x:hidden}
+.compare pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:40vh;overflow:auto}
+.compare .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.compare .side{overflow:auto;border:1px solid var(--line);border-radius:6px;padding:6px}
+.compare .side svg{max-width:100%;height:auto}</style></head><body class="compare">
 <h1>{{.Of}}: {{.Base}}와 지금</h1>
-<p>청사진은 언제나 지금의 상태만 그립니다. 이 비교는 그 밖에 따로 둡니다.</p>
-<pre>{{.Lines}}</pre>
-<div class="pair"><div><h2>{{.Base}}</h2>{{if .Before}}<iframe src="{{.Before}}"></iframe>{{else}}<p>그때의 청사진에는 이 페이지가 없습니다.</p>{{end}}</div>
-<div><h2>지금</h2>{{if .Now}}<iframe src="{{.Now}}"></iframe>{{else}}<p>지금의 청사진에는 이 페이지가 없습니다.</p>{{end}}</div></div>
+<p>{{.Summary}}</p>
+<p class="muted">청사진은 언제나 지금의 상태만 그립니다. 이 비교는 그 밖에 따로 둡니다. <a href="{{.NowPage}}">지금의 페이지</a>{{if .BasePage}} · <a href="{{.BasePage}}">그때의 페이지</a>{{end}}</p>
+<div class="pair"><div><h2>{{.Base}}</h2><div class="side">{{if .Before}}{{.Before}}{{else}}<p>그때의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div>
+<div><h2>지금</h2><div class="side">{{if .Now}}{{.Now}}{{else}}<p>지금의 청사진에는 이 그림이 없습니다.</p>{{end}}</div></div></div>
+<details><summary>바뀐 것 {{.Count}}줄</summary><pre>{{.Lines}}</pre></details>
 </body></html>
 `))
+
+// drawing cuts a page's drawing out of its HTML, the one in the section
+// anchor names, and the page's style, so the compare view shows the two
+// drawings side by side without the rest of either page.
+func drawing(page []byte, anchor string) (svg, style string) {
+	s := string(page)
+	if a, b, ok := strings.Cut(s, "<style>"); ok && a != "" {
+		style, _, _ = strings.Cut(b, "</style>")
+	}
+	_, rest, ok := strings.Cut(s, `id="`+anchor+`"`)
+	if !ok {
+		return "", style
+	}
+	_, rest, ok = strings.Cut(rest, `<div class="mapbox">`)
+	if !ok {
+		return "", style
+	}
+	svg, _, _ = strings.Cut(rest, "</svg>")
+	return svg + "</svg>", style
+}
+
+// summary says in one line how much changed, by kind.
+func summary(d topology.Diff) string {
+	var parts []string
+	add := func(n int, what string) {
+		if n > 0 {
+			parts = append(parts, fmt.Sprintf("%s %d", what, n))
+		}
+	}
+	add(len(d.UnitsAdded), "단위 추가")
+	add(len(d.UnitsRemoved), "단위 제거")
+	add(len(d.Changed), "단위 변경")
+	add(len(d.Signatures)+len(d.Entries)+len(d.Listed), "계약 모양 변경")
+	add(len(d.Code), "계약 코드 변경")
+	add(len(d.RelationsAdded), "관계 추가")
+	add(len(d.RelationsRemoved), "관계 제거")
+	add(len(d.InferredAdded), "판독한 결합 추가")
+	add(len(d.InferredDead), "근거가 죽은 결합")
+	if len(parts) == 0 {
+		return "토폴로지에는 바뀐 것이 없습니다."
+	}
+	return strings.Join(parts, " · ")
+}
 
 // comparePage writes the blueprint committed at base into the compare
 // directory, and a page that sets one of its pages beside the current one
@@ -141,10 +188,24 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 		}
 		return p
 	}
+	anchor := "overview"
+	if e.unit != "" {
+		anchor = "m-" + e.unit
+	}
+	load := func(p string) []byte {
+		if p == "" {
+			return nil
+		}
+		b, _ := os.ReadFile(filepath.Join(dir, filepath.FromSlash(p)))
+		return b
+	}
+	wasSVG, _ := drawing(load(exists("base/"+name)), anchor)
+	nowSVG, style := drawing(load(exists("../blueprint/"+name)), anchor)
 	var b strings.Builder
-	if err := compareTmpl.Execute(&b, map[string]string{
-		"Of": of, "Base": short(base), "Lines": d.String(),
-		"Before": exists("base/" + name), "Now": exists("../blueprint/" + name),
+	if err := compareTmpl.Execute(&b, map[string]any{
+		"Of": of, "Base": short(base), "Summary": summary(d), "Lines": d.String(), "Count": len(d.Lines()),
+		"Style": template.CSS(style), "Before": template.HTML(wasSVG), "Now": template.HTML(nowSVG),
+		"BasePage": exists("base/" + name), "NowPage": "../blueprint/" + name,
 	}); err != nil {
 		return "", err
 	}
