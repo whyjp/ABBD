@@ -824,28 +824,22 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			done[n] = true
 		}
 	}
-	// A held bus's word is set for it when its own label, one of its net's,
-	// or one on its track within repeatNear of its count says it. Else the
-	// bus keeps its count.
+	// A held bus's word is set for it only when its own label or one of
+	// its net's says it. A word nearby on its track may sit on a sibling
+	// branch or the trunk, which at rest reads as another line's word, so
+	// the bus keeps its count.
 	for c, o := range held {
-		by, rank := -1, 3
+		by := -1
 		for j, w := range d.Wires {
-			l := w.Label
-			if l == nil || l.S != words[c] {
+			if l := w.Label; l == nil || l.S != words[c] {
 				continue
 			}
-			dx, dy := l.X-o.lx, l.Y-o.ly
-			r := 3
-			switch {
-			case j == c:
-				r = 0
-			case netMate(j, c):
-				r = 1
-			case track(j) == track(c) && dx*dx+dy*dy <= repeatNear*repeatNear:
-				r = 2
+			if j == c {
+				by = j
+				break
 			}
-			if r < rank {
-				by, rank = j, r
+			if by < 0 && netMate(j, c) {
+				by = j
 			}
 		}
 		if by < 0 {

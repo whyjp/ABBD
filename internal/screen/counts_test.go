@@ -37,8 +37,8 @@ func TestOnlyAnUncontestedWordTakesACount(t *testing.T) {
 
 // Over every view of each fixture: no line shows ×1 or ×2; no bus shows
 // its ×N beside the word every one of its lines says, drawn for it on its
-// own ink, its net's, or its track within repeatNear of the count; and a
-// bus of three or more lines that gives up its ×N has that word drawn so.
+// own ink or its net's; and a bus of three or more lines that gives up its
+// ×N has that word drawn so.
 func TestABusSaysItsWordOrItsCount(t *testing.T) {
 	t.Cleanup(func() { dropCounts = true })
 	dropCounts = false
@@ -54,14 +54,9 @@ func TestABusSaysItsWordOrItsCount(t *testing.T) {
 		before := views(counted[name])
 		for k, v := range views(drawn[name]) {
 			d := v.d
-			track := tracks(d.Wires, inkTouches(d))
-			says := func(i int, s string, x, y int) bool {
+			says := func(i int, s string) bool {
 				for j, o := range d.Wires {
-					if o.Label == nil || o.Label.S != s {
-						continue
-					}
-					dx, dy := o.Label.X-x, o.Label.Y-y
-					if j == i || o.Net != 0 && o.Net == d.Wires[i].Net || track(j) == track(i) && dx*dx+dy*dy <= repeatNear*repeatNear {
+					if o.Label != nil && o.Label.S == s && (j == i || o.Net != 0 && o.Net == d.Wires[i].Net) {
 						return true
 					}
 				}
@@ -74,9 +69,9 @@ func TestABusSaysItsWordOrItsCount(t *testing.T) {
 				switch {
 				case w.Count == 1 || w.Count == 2:
 					t.Errorf("%s %s: wire %d shows ×%d", name, v.name, i, w.Count)
-				case w.Count >= 3 && full && says(i, s, w.LX, w.LY):
+				case w.Count >= 3 && full && says(i, s):
 					t.Errorf("%s %s: wire %d shows ×%d beside its word %q", name, v.name, i, w.Count, s)
-				case w.Count == 0 && was.Count >= 3 && !(full && says(i, s, was.LX, was.LY)):
+				case w.Count == 0 && was.Count >= 3 && !(full && says(i, s)):
 					t.Errorf("%s %s: wire %d gave up ×%d but its word %q is not drawn for it", name, v.name, i, was.Count, s)
 				}
 			}
