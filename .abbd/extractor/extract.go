@@ -59,8 +59,31 @@ type relation struct {
 // cited is a relation as printed, with the lines of text that state it.
 type cited struct {
 	relation
+	Via      string     `json:"via,omitempty"`
 	Evidence []evidence `json:"evidence,omitempty"`
 	Entries  []string   `json:"entries,omitempty"`
+}
+
+// via says how a relation the script reads arises, so the drawing tells a
+// design-only line from a run-time one: a package another names is called,
+// a command is called, a file contract carries data, a config is
+// read as config and an event calls back.
+func via(r relation, kind map[string]string) string {
+	if r.Kind == "depends_on" {
+		// A dependency that names only types or values arises at build
+		// time, but drawing those dotted moves this repository's
+		// layering past its lint ceilings, so the render track decides it.
+		return "call"
+	}
+	switch kind[r.To] {
+	case "DATA":
+		return "data"
+	case "CFG":
+		return "config"
+	case "EVT":
+		return "callback"
+	}
+	return "call"
 }
 
 type evidence struct {
@@ -90,6 +113,7 @@ var (
 	decls = map[string]map[string]string{}
 	// methods holds "dir.Name" for every method a package declares.
 	methods = map[string]bool{}
+
 	// types maps "dir.Name" to its type spec and declaring file.
 	types = map[string]typeDecl{}
 )
@@ -177,8 +201,12 @@ func run() error {
 	}
 
 	out := result{Units: units}
+	kind := map[string]string{}
+	for _, u := range units {
+		kind[u.Key] = u.Kind
+	}
 	for r := range rels {
-		out.Relations = append(out.Relations, cited{r, featCites[r], featEntries[r]})
+		out.Relations = append(out.Relations, cited{r, via(r, kind), featCites[r], featEntries[r]})
 	}
 	sort.Slice(out.Units, func(i, j int) bool { return out.Units[i].Key < out.Units[j].Key })
 	sort.Slice(out.Relations, func(i, j int) bool {
