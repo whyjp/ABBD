@@ -10,6 +10,7 @@ import (
 // reads a secret, since the rule keys on words such as "key". Stores and
 // supplements that spell it key keep loading and pairing.
 func TestASupplementRefPairsWithAUnitStoredUnderTheOldKey(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	data := filepath.Join(p.root, ".abbd", "architecture", "DATA-0001.md")
 	md := p.read("architecture/DATA-0001.md")
@@ -36,6 +37,7 @@ func TestASupplementRefPairsWithAUnitStoredUnderTheOldKey(t *testing.T) {
 }
 
 func TestASupplementUnitMayNotSpellTwoRefs(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.extract(ledgerTopo)
@@ -44,6 +46,7 @@ func TestASupplementUnitMayNotSpellTwoRefs(t *testing.T) {
 }
 
 func TestAStoredUnitMayNotSpellTwoSupplementRefs(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	data := filepath.Join(p.root, ".abbd", "architecture", "DATA-0001.md")
 	md := p.read("architecture/DATA-0001.md")

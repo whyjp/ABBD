@@ -9,6 +9,7 @@ import "testing"
 // back: the line ran left, right, left and right again, and screen's line
 // on the same trunk with it (user-05's knot).
 func TestALineIntoGitxTurnsBackAtMostOnce(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "self")) {
 		if v.name != "overview" {
 			continue

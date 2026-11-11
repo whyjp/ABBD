@@ -10,6 +10,7 @@ import (
 // reader's structure, so syncs that rerun the script keep it, and only the
 // script reporting a parent of its own replaces it.
 func TestAReaderGroupingSurvivesSyncs(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("money/README.md", "# money\n\nbilling and ledger move money.\n")
 	p.want(0, "recorded MOD-0003", "record", "unit", "MOD", "money", "--evidence", "money/README.md:3:billing and ledger move money.")
@@ -41,6 +42,7 @@ func TestAReaderGroupingSurvivesSyncs(t *testing.T) {
 // A human's placement outranks the script's. When the script's own parent
 // later changes, the human's may be stale, so sync and status say so.
 func TestAHumanParentOutranksTheScriptAndFlagsAScriptChange(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("money/README.md", "# money\n\nbilling and ledger move money.\n")
 	p.want(0, "recorded MOD-0003", "record", "unit", "MOD", "money", "--evidence", "money/README.md:3:billing and ledger move money.")
@@ -59,6 +61,7 @@ func TestAHumanParentOutranksTheScriptAndFlagsAScriptChange(t *testing.T) {
 }
 
 func TestAParentThatClosesACycleIsRefused(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("money/README.md", "# money\n\nbilling and ledger move money.\n")
 	p.want(0, "recorded MOD-0003", "record", "unit", "MOD", "money", "--evidence", "money/README.md:3:billing and ledger move money.")
@@ -70,6 +73,7 @@ func TestAParentThatClosesACycleIsRefused(t *testing.T) {
 // The script's word on its own units outranks a reader's: when it reports a
 // parent, that parent shows, and the reader's claim stays stored beneath it.
 func TestTheScriptsParentReplacesAReadersParent(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.code("money/README.md", "# money\n\nbilling and ledger move money.\n")
 	p.want(0, "recorded MOD-0003", "record", "unit", "MOD", "money", "--evidence", "money/README.md:3:billing and ledger move money.")
@@ -88,6 +92,7 @@ func TestTheScriptsParentReplacesAReadersParent(t *testing.T) {
 // A directory group exists only while the top level is too big, so a parent
 // on it would leave its unit nowhere once the group goes.
 func TestAParentOnADirectoryGroupIsRefused(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	var us []string
 	for i := 1; i <= 20; i++ {
@@ -111,6 +116,7 @@ func TestAParentOnADirectoryGroupIsRefused(t *testing.T) {
 // steps sit inside the skill, and a step's command is reached through it.
 // A contract still holds nothing.
 func TestAFeatureHoldsItsParts(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("cli/run.go", "package cli\n\nfunc Run() {}\n")
 	p.code("skills/go/SKILL.md", "---\nname: go\n---\n\n## Steps\n\n1. Run `cli run`.\n")
@@ -141,6 +147,7 @@ func TestAFeatureHoldsItsParts(t *testing.T) {
 
 // A script that comes to agree with a human's parent is no conflict.
 func TestNoConflictWhenTheScriptComesToAgreeWithTheHuman(t *testing.T) {
+	t.Parallel()
 	p := semanticProject(t)
 	p.want(0, "", "record", "parent", "MOD-0002", "MOD-0001", "--source", "pr 1")
 	p.extract(strings.Replace(ledgerTopo, `"name":"ledger",`, `"name":"ledger","parent":"billing",`, 1))

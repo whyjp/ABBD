@@ -46,6 +46,7 @@ func (p *project) stack(code int, contains, draft string, extra ...string) strin
 // page draws it as bands from the top down, each with its role and the units
 // it holds, linked to the inside that shows each unit.
 func TestAStackIsStoredAndDrawnInBands(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	out := p.stack(0, "stored stack charge, 2 layers, INFERRED", chargeStack)
 	if !strings.Contains(out, "breaches: 0 relation(s) run up the stack") {
@@ -76,6 +77,7 @@ func TestAStackIsStoredAndDrawnInBands(t *testing.T) {
 // unit held by one layer only, counting the units inside the ones a layer
 // names, and each layer's quotes in the code of its own units.
 func TestAStackDraftIsCheckedBeforeItIsStored(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	for _, c := range []struct{ from, to, want string }{
 		{"    units: [MOD-0002]", "    units: [MOD-0002, DATA-0001]", "DATA-0001 is held by layer 1 and, inside MOD-0001, by layer 2; a unit sits in one layer"},
@@ -102,6 +104,7 @@ func TestAStackDraftIsCheckedBeforeItIsStored(t *testing.T) {
 // fails until the stack is read again; the same layer on the moved code is
 // refused.
 func TestAStackLayerGoesStaleOnItsOwn(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.stack(0, "stored", chargeStack)
 	p.code("billing/retry.go", retryCode("const tries = 5", "var states = []string{\"pending\", \"charged\"}"))
@@ -120,6 +123,7 @@ func TestAStackLayerGoesStaleOnItsOwn(t *testing.T) {
 // A stack whose unit left the state fails the check, since storing the stack
 // again brings it current.
 func TestAStackOnAUnitThatLeftFailsTheCheck(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.stack(0, "stored", chargeStack)
 	p.extract(`{"units":[{"key":"billing","kind":"MOD","name":"billing","anchors":[{"path":"billing/charge.go","symbol":"Charge"}]}]}`)
@@ -131,6 +135,7 @@ func TestAStackOnAUnitThatLeftFailsTheCheck(t *testing.T) {
 // by status, and does not fail the check: it is debt or a layer drawn wrong,
 // which only a design call clears.
 func TestABreachIsDrawnAndReportedAndDoesNotFailTheCheck(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.stack(0, "breaches: 1 relation(s) run up the stack", upsideDown())
 	out := p.want(0, "breaches: 1 relation(s) run up a stack", "status", "--check")
@@ -150,6 +155,7 @@ func TestABreachIsDrawnAndReportedAndDoesNotFailTheCheck(t *testing.T) {
 // current one, and a reader who replaces a stale layer takes over only that
 // layer.
 func TestAReaderReplacesAHumansStackOnlyOnceItIsStale(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.stack(0, "stored stack charge, 2 layers, USER_STATED", chargeStack, "--source", "conversation 2026-11-03")
 	p.stack(1, "only a human changes it", strings.Replace(chargeStack, "posts each charge", "posts every charge", 1))
@@ -166,6 +172,7 @@ func TestAReaderReplacesAHumansStackOnlyOnceItIsStale(t *testing.T) {
 // A store warns on a layer whose role runs past 80 characters, and not on
 // its name.
 func TestALongRoleWarnsAndALongNameDoesNot(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	long := strings.Repeat("and then some more ", 5)
 	if out := p.stack(0, "stored", strings.Replace(chargeStack, "name: books", "name: books "+long, 1)); strings.Contains(out, "long:") {
@@ -190,6 +197,7 @@ const auditTopo = `{"units":[
 // CI never waits on the human. A layer that comes back as written keeps the
 // human's word.
 func TestAReaderMendsAHumansStackTheStateBrokeAsAWhole(t *testing.T) {
+	t.Parallel()
 	p := notesProject(t)
 	p.code("audit/log.go", "package audit\n\nfunc Log() {}\n")
 	p.extract(auditTopo)

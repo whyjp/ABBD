@@ -23,6 +23,7 @@ const fieldsBase = `{"units":[
 // it and who reads it; a change to one field's type or need is that field's
 // own line, and it reaches the boundary.
 func TestADataContractShowsAndDiffsEachField(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(fieldsBase)
 	p.setup(0, "synced: 3 unit(s)", "--", exe)

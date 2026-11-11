@@ -12,6 +12,7 @@ import (
 // kind only, so each line keeps its own look at its ends, in every view
 // of every fixture.
 func TestARouteEndRidesOnlyItsKind(t *testing.T) {
+	t.Parallel()
 	route := regexp.MustCompile(`<g class="route (\S+)[^"]*\br(\d+)\b[^"]*"[^>]*><path class="way" d="([^"]*)"`)
 	piece := regexp.MustCompile(`<path class="w ([^"]*)" d="([^"]*)"`)
 	rider := regexp.MustCompile(`\br(\d+)\b`)
@@ -79,6 +80,7 @@ func sharedRun(a, b, c, d fpt) float64 {
 // among the lines it carries outnumbers its own, in every view of every
 // fixture.
 func TestARoadPieceWearsItsRidersMajorityKind(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		for _, v := range views(fixture(t, name)) {
 			if !v.d.roads {

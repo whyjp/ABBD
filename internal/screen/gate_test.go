@@ -16,6 +16,7 @@ import (
 // while the reader sees a branch that is not there. The gate holds orca's
 // tees at their ceiling, so such a change fails it.
 func TestTheGateRefusesATeeTheWeighedSumWouldBuy(t *testing.T) {
+	t.Parallel()
 	views, err := Lint(fixture(t, "orca"), "")
 	if err != nil {
 		t.Fatal(err)
@@ -44,6 +45,7 @@ func TestTheGateRefusesATeeTheWeighedSumWouldBuy(t *testing.T) {
 // while the reader follows two more bends. The gate holds orca's excess
 // turns at their ceiling, so such a change fails it.
 func TestTheGateRefusesBendsTheWeighedSumWouldBuy(t *testing.T) {
+	t.Parallel()
 	views, err := Lint(fixture(t, "orca"), "")
 	if err != nil {
 		t.Fatal(err)
@@ -77,6 +79,7 @@ func TestTheGateRefusesBendsTheWeighedSumWouldBuy(t *testing.T) {
 // every view would trade, and recording a rise never raises its ceiling.
 // The fixture's debt file is what abbd lint --record writes.
 func TestTheGateHoldsEachPageAtItsTotals(t *testing.T) {
+	t.Parallel()
 	views, err := Lint(fixture(t, "orca"), "")
 	if err != nil {
 		t.Fatal(err)

@@ -197,6 +197,7 @@ const sameHueCeiling = 0
 // in every view that draws it, and the same state always colours the same
 // way (rule 11).
 func TestJoinedBoxesWearDifferentColours(t *testing.T) {
+	t.Parallel()
 	total, all := 0, 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -237,6 +238,7 @@ func TestJoinedBoxesWearDifferentColours(t *testing.T) {
 // are such dependencies still tells its lines apart at rest; its open head
 // says what it is. No line or dot wears the warning colour.
 func TestABypassWearsItsBoxsColour(t *testing.T) {
+	t.Parallel()
 	bypasses := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -268,6 +270,7 @@ func TestABypassWearsItsBoxsColour(t *testing.T) {
 // of different colours wears one of those colours on a road, the colour of
 // its rider that runs furthest on roads, and neutral grey elsewhere (rule 11).
 func TestALineWearsItsBoxsColour(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		m := fixture(t, name)
 		for _, d := range m.drawings() {
@@ -306,6 +309,7 @@ func TestALineWearsItsBoxsColour(t *testing.T) {
 // A view that draws a lead draws every other line grey, its dots too, so
 // the lead is its one coloured way (lead.go).
 func TestALeadQuietsEveryOtherLine(t *testing.T) {
+	t.Parallel()
 	leads := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -337,6 +341,7 @@ func TestALeadQuietsEveryOtherLine(t *testing.T) {
 // A view with a hub and no lead rests every line grey but the hub's own,
 // which wear the hub's colour (dress.go).
 func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
+	t.Parallel()
 	hubs := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -368,6 +373,7 @@ func TestAHubKeepsOnlyItsOwnLinesInColour(t *testing.T) {
 // its own and never in the accent blue beside it; a frame's chip, on no
 // box, keeps the accent.
 func TestAChipWearsItsBoxsColour(t *testing.T) {
+	t.Parallel()
 	chips := 0
 	for _, name := range fixtures {
 		m := fixture(t, name)
@@ -421,6 +427,7 @@ func TestAChipsWordsReadOnItsTint(t *testing.T) {
 // it is not quiet, and each line keeps its box's colour, so it reads at
 // rest. The self overview and orca's desktop main are such views.
 func TestABusyHubViewStaysInColour(t *testing.T) {
+	t.Parallel()
 	cases := map[string]string{"self": "", "orca": "MOD-0042"}
 	for name, inside := range cases {
 		m := fixture(t, name)

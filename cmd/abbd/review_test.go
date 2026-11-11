@@ -10,6 +10,7 @@ import (
 // lists what the change reaches, puts a coupling only a reader found under
 // what is worth a look, and exits 0 whatever it finds.
 func TestReviewNamesTheUsersOfANewEntry(t *testing.T) {
+	t.Parallel()
 	p, base := entriesProject(t)
 	p.code("web/refund.ts", "export function Refund() {}\n")
 	p.extract(strings.NewReplacer(
@@ -35,6 +36,7 @@ func TestReviewNamesTheUsersOfANewEntry(t *testing.T) {
 // review seeds what the change reaches from the units a new relation really
 // joins, and lists a STALE text only in what the change touched.
 func TestReviewKeepsToWhatTheChangeTouched(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	p.code("billing/charger.go", "package billing\n\nfunc Run() {}\n")
 	p.code("api/http.go", "package api\n\nfunc Serve() {}\n")
@@ -50,6 +52,7 @@ func TestReviewKeepsToWhatTheChangeTouched(t *testing.T) {
 
 // A STALE text on a unit the change did not touch stays out of review.
 func TestReviewLeavesAStaleTextElsewhereOut(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	p.code("web/charges.ts", "export function Charges() {}\n")
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
@@ -79,6 +82,7 @@ func TestReviewLeavesAStaleTextElsewhereOut(t *testing.T) {
 // A change that edits a module's code and leaves the topology alone still
 // seeds review from the units anchored at the changed file.
 func TestReviewSeedsFromChangedCode(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() {}\n")
 	p.want(0, "", "sync")
@@ -95,6 +99,7 @@ func TestReviewSeedsFromChangedCode(t *testing.T) {
 
 // A changed file whose name has a space still finds the unit anchored at it.
 func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("pay ments/charge.go", "package pay")
 	p.extract(`{"units":[{"key":"pay","kind":"MOD","name":"payments","anchors":[{"path":"pay ments/charge.go","symbol":"Charge"}]}]}`)
@@ -109,6 +114,7 @@ func TestReviewSeedsFromAChangedFileWithASpace(t *testing.T) {
 
 // explain names the commit that recorded a reader's coupling.
 func TestExplainSaysWhoRecordedACoupling(t *testing.T) {
+	t.Parallel()
 	p, _ := entriesProject(t)
 	p.want(0, "INFERRED", "record", "relation", "MOD-0001", "depends_on", "FEAT-0001", "--via", "call", "--evidence", `api/http.go:4:handle("GET /charges/{id}", charge)`)
 	git(t, p.root, "add", "-A")
@@ -123,6 +129,7 @@ func TestExplainSaysWhoRecordedACoupling(t *testing.T) {
 // posting step finds it by, a drawing of the touched modules, and what is
 // worth a look.
 func TestReviewWritesAPullRequestComment(t *testing.T) {
+	t.Parallel()
 	p, base := diffProject(t)
 	out := p.want(0, "", "review", "--base", base, "--markdown")
 	contains(t, out, "<!-- abbd-review -->\n**ABBD review** since `"+base[:12]+"`", "**Touched modules:** ", "```mermaid\nflowchart LR", "MOD_0001 -->|depends_on| MOD_0004", "**Worth a look**", "<details><summary>The whole review</summary>\n\n~~~~")
@@ -131,6 +138,7 @@ func TestReviewWritesAPullRequestComment(t *testing.T) {
 // The comment's drawing joins a module that uses a contract to the module
 // that provides it, since the drawing leaves contracts out.
 func TestReviewDrawsAUseThroughAContract(t *testing.T) {
+	t.Parallel()
 	p, base := entriesProject(t)
 	p.code("web/charges.ts", "export function Charges() { refund() }\n")
 	p.code("billing/charge.go", "package billing\n\nfunc Charge() { audit() }\n")

@@ -9,6 +9,7 @@ import (
 // line from their own place, where no dot joins them. A reader takes each
 // such T for a branch, so lint counts it as a crossing.
 func TestATeeCountsAsACrossing(t *testing.T) {
+	t.Parallel()
 	got, err := Lint(fixture(t, "orca"), "MOD-0098 src/")
 	if err != nil {
 		t.Fatal(err)
@@ -40,6 +41,7 @@ func TestATeeCountsAsACrossing(t *testing.T) {
 // and the page pays only that line's two turns (weighed 20), not a
 // redrawing of the page.
 func TestAStraightDropDoesNotCrossItsOwnBus(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "pstack")) {
 		if v.name != "MOD-0001 setup and help" {
 			continue

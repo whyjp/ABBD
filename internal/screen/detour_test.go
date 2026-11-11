@@ -11,6 +11,7 @@ import (
 // it never rides on to another box's drop and back (B3), and no line of
 // the view runs beside itself (B4).
 func TestALineToTheBoxBelowDoesNotRidePastIt(t *testing.T) {
+	t.Parallel()
 	got, err := Lint(fixture(t, "ripgrep"), "overview")
 	if err != nil {
 		t.Fatal(err)
@@ -30,6 +31,7 @@ func TestALineToTheBoxBelowDoesNotRidePastIt(t *testing.T) {
 // line: traced through the ink it once read as a second bypass line, which
 // its route never was.
 func TestALineKeepsToItsColumnPastAWideSpace(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "ripgrep")) {
 		if v.name != "overview" {
 			continue
@@ -65,6 +67,7 @@ func TestALineKeepsToItsColumnPastAWideSpace(t *testing.T) {
 // beside the trunk, since following its track from the trunk leads a
 // reader only where the trunk's lines already go.
 func TestAHarmlessJoinTakesNoStep(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "orca")) {
 		if v.name != "MOD-0098 src/" {
 			continue
@@ -100,6 +103,7 @@ func TestAHarmlessJoinTakesNoStep(t *testing.T) {
 // the bus's track under it: no contract line runs over grep-matcher's
 // whole width to the trunk and turns back to its drop.
 func TestAContractLineJoinsItsBusOnItsOwnSide(t *testing.T) {
+	t.Parallel()
 	for _, v := range views(fixture(t, "ripgrep")) {
 		if v.name != "overview" {
 			continue

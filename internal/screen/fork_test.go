@@ -14,6 +14,7 @@ import (
 // desktop renderer UI, renderer/app-shell uses five boxes in the row below
 // it, two of them under it, and renderer/lib five, one under it.
 func TestOneStemForksIntoARowBelow(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "orca")
 	i := slices.IndexFunc(m.Insides, func(in Inside) bool { return in.ID == "MOD-0072" })
 	if i < 0 {

@@ -410,6 +410,15 @@ func digestOf(code map[string]string) string {
 	return short([]byte(b.String()))
 }
 
+// Read is the code a module's text is stamped against, as a reader reads
+// it: every file its anchors read whole, sorted, and each quote of a file no
+// anchor covers.
+func (s Store) Read(units []model.Unit, id model.ID) ([]string, []model.Evidence) {
+	m := s.code.moduleCode(units, id)
+	files := m.files(true)
+	return files, m.quotes(files)
+}
+
 // ModuleDigest fingerprints the code a module's text describes, as Stamp
 // does. It is empty only for a module with no anchor and no quote.
 func (s Store) ModuleDigest(units []model.Unit, id model.ID) string {

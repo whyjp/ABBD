@@ -28,6 +28,7 @@ const pagesExtraction = `{"units":[
 // a part of a page under the page, and names the routes each page calls of
 // the contracts the change reaches.
 func TestImpactGroupsByFeature(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(pagesExtraction)
 	p.setup(0, "synced", "--", exe)
@@ -54,6 +55,7 @@ no feature
 
 // A page's own view of its contracts names the routes it calls.
 func TestExplainNamesTheEntriesAFeatureUses(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(pagesExtraction)
 	p.setup(0, "synced", "--", exe)
@@ -63,6 +65,7 @@ func TestExplainNamesTheEntriesAFeatureUses(t *testing.T) {
 // A part of a page that uses a contract whole makes the page use it whole,
 // whatever entries the page names itself.
 func TestImpactKeepsAFeaturesWholeUse(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.extract(strings.Replace(pagesExtraction, `{"from":"chart","to":"lib","kind":"depends_on"},`, `{"from":"chart","to":"lib","kind":"depends_on"},{"from":"chart","to":"api","kind":"consumes"},`, 1))
 	p.setup(0, "synced", "--", exe)

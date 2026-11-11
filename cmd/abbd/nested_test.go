@@ -9,6 +9,7 @@ import (
 // A repository inside the project with no commit yet is an untracked
 // directory: sync runs, and its files count toward the state's fingerprint.
 func TestANestedRepositoryWithNoCommitIsAnUntrackedDirectory(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("app/main.go", "package app\n")
 	p.code("nested/a.go", "package nested\n")
@@ -25,6 +26,7 @@ func TestANestedRepositoryWithNoCommitIsAnUntrackedDirectory(t *testing.T) {
 // A file staged in such a repository and then deleted is not on disk, so
 // it is not part of the tree, and sync still runs.
 func TestANestedRepositoryWithADeletedStagedFileSyncs(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code("app/main.go", "package app\n")
 	p.code("nested/a.go", "package nested\n")
@@ -43,6 +45,7 @@ func TestANestedRepositoryWithADeletedStagedFileSyncs(t *testing.T) {
 // The project's .gitignore holds inside such a repository, as it does for
 // any untracked directory, so an ignored file there never stales the state.
 func TestTheProjectsIgnoresHoldInsideANestedRepository(t *testing.T) {
+	t.Parallel()
 	p, exe := bare(t)
 	p.code(".gitignore", "nested/build.log\n")
 	p.code("app/main.go", "package app\n")

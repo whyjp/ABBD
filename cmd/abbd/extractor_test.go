@@ -68,6 +68,7 @@ func editFile(t *testing.T, path, old, new string) {
 // A new command changes no existing contract: it is one new contract the
 // CLI provides, so the repository's own diff shows exactly that.
 func TestANewCommandIsOneNewContract(t *testing.T) {
+	t.Parallel()
 	dir := repoCopy(t)
 	_, r1 := runExtractor(t, dir)
 	editFile(t, filepath.Join(dir, "cmd", "abbd", "main.go"), "\t\"status\":",
@@ -103,6 +104,7 @@ func TestANewCommandIsOneNewContract(t *testing.T) {
 // A two-word command is read within one line, so the next line's command
 // still counts.
 func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
+	t.Parallel()
 	dir := repoCopy(t)
 	write(t, filepath.Join(dir, "plugins", "abbd", "skills", "zz", "SKILL.md"),
 		"---\nname: zz\n---\n\n```bash\nabbd status\nabbd record unit MOD x --evidence a.go:1:x\n```\n")
@@ -123,6 +125,7 @@ func TestSkillCommandsOnConsecutiveLinesAreEachConsumed(t *testing.T) {
 }
 
 func TestExtractionIsStableAcrossRunsAndLineEndings(t *testing.T) {
+	t.Parallel()
 	dir := repoCopy(t)
 	a, _ := runExtractor(t, dir)
 	b, _ := runExtractor(t, dir)

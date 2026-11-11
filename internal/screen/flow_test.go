@@ -116,13 +116,14 @@ func TestTheCheckerCountsLinesThatClimb(t *testing.T) {
 // E17 (evaluation round 5): a view's frame shows only what lies outside
 // the unit, never one of its own units and never a unit that holds it.
 func TestAFrameShowsOnlyWhatIsOutside(t *testing.T) {
+	t.Parallel()
 	for _, name := range fixtures {
 		units, err := store.Open(filepath.Join("testdata", name)).LoadUnits()
 		if err != nil {
 			t.Fatal(err)
 		}
 		tr := newTree(units)
-		for _, ins := range Build(Input{Units: units}).Insides {
+		for _, ins := range fixture(t, name).Insides {
 			for _, p := range ins.Drawing.Ports {
 				if p.Contract == "" {
 					continue

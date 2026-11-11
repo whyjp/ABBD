@@ -43,6 +43,7 @@ func renderAll(t *testing.T, m Model) *bytes.Buffer {
 // The whole, each part and every unit have pages of their own: the
 // overview, one page per module that holds units, and the two indexes.
 func TestEveryModuleHasAPageOfItsOwn(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "orca")
 	ps := pages(t, m)
 	for _, f := range []string{PageFile, ContractsFile, UnitsFile} {
@@ -66,6 +67,7 @@ func TestEveryModuleHasAPageOfItsOwn(t *testing.T) {
 
 // Every link opens a page the blueprint has, at an anchor that page holds.
 func TestEveryLinkOpensAPageAndASection(t *testing.T) {
+	t.Parallel()
 	href, id := regexp.MustCompile(`href="([^"#]*)(?:#([^"]*))?"`), regexp.MustCompile(` id="([^"]+)"`)
 	for _, name := range fixtures {
 		ps := pages(t, fixture(t, name))
@@ -98,6 +100,7 @@ func TestEveryLinkOpensAPageAndASection(t *testing.T) {
 
 // Clicking a module in the overview follows it inside, onto its page.
 func TestAModuleBoxOpensItsPage(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "orca")
 	ps := pages(t, m)
 	_, svg, _ := strings.Cut(ps[PageFile], `<section id="overview">`)
@@ -121,6 +124,7 @@ func TestAModuleBoxOpensItsPage(t *testing.T) {
 // or goes rewrites no other page. A module's page lists the modules it sits
 // in, down to its own, which it marks.
 func TestEveryPageCarriesTheNav(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "orca")
 	ps := pages(t, m)
 	navOf := func(f string) string {
@@ -208,6 +212,7 @@ func TestTheContractIndexListsEveryContract(t *testing.T) {
 // The unit index lists every unit with its files, so the browser's find
 // looks a unit up by ID, name, path or symbol.
 func TestTheUnitIndexListsEveryUnitWithItsFiles(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "orca")
 	page := pages(t, m)[UnitsFile]
 	for _, u := range m.Units {
@@ -226,6 +231,7 @@ func TestTheUnitIndexListsEveryUnitWithItsFiles(t *testing.T) {
 // The overview's nav lists the features apart from the modules, as an
 // engineer names them: what the code is made of, then what it does for a user.
 func TestTheNavListsFeaturesApartFromModules(t *testing.T) {
+	t.Parallel()
 	m := fixture(t, "self")
 	nav := pages(t, m)[PageFile]
 	_, nav, _ = strings.Cut(nav, "<nav ")
