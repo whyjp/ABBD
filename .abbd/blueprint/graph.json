@@ -19698,6 +19698,7 @@
         }
       ],
       "Understanding": {
+        "Reader": "abbd reader",
         "Stale": false,
         "Blocks": [
           {
@@ -22607,7 +22608,23 @@
                 "Code": true
               },
               {
-                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. ",
+                "Text": "), and the view gains no crossing, turn, fork height, tee, near pair of two styles, far split (J1) or dotted line left without 30px of ink of its own. Since those counts are the view's, each move is also judged route by route (",
+                "Code": false
+              },
+              {
+                "Text": "bendsMore",
+                "Code": true
+              },
+              {
+                "Text": "): it may add a turn to no route it touches, nor, in the long-run pass, a dogleg, so one route is never bent to straighten another, which ",
+                "Code": false
+              },
+              {
+                "Text": "TestAMoveBendsNoRouteItTouches",
+                "Code": true
+              },
+              {
+                "Text": " holds. ",
                 "Code": false
               },
               {
