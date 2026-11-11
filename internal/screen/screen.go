@@ -206,8 +206,8 @@ func Build(in Input) Model {
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	// Where the overview derives groups to stand together (derive), it is
-	// drawn with them and without, and keeps them only where they read no
-	// worse: tried first, they win every tie.
+	// drawn with them, and without them only as another ranking is: kept
+	// where it has fewer hard breaches or fits the screen where they do not.
 	ts := overviewTactics
 	if o.derived != nil {
 		for _, t := range overviewTactics {

@@ -224,7 +224,8 @@ type tactic struct {
 	// choose and the focus views draw only the drawing they keep with it, so
 	// it moves no box: which drawing a view keeps is weighed on its own lines.
 	roads bool
-	// plain draws the overview without the groups it derives (derive).
+	// plain draws the overview without the groups it derives (derive),
+	// which ranks it anew as fold and entry do.
 	plain bool
 }
 

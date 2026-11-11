@@ -352,10 +352,11 @@ func newGates() gates {
 // where it may, lowers b by c where t is the plain kind of tactic the bound
 // is over. Laned and gathered drawings are measured by fits instead.
 func (b *gates) admit(t tactic, c cost) bool {
-	if (t.fold || t.entry) && (c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past) {
+	anew := t.fold || t.entry || t.plain
+	if anew && (c.moved > b.ranked || c.hard >= b.hard && c.past() >= b.past) {
 		return false
 	}
-	if !t.fold && !t.entry {
+	if !anew {
 		b.ranked, b.hard, b.past = min(b.ranked, c.moved), min(b.hard, c.hard), min(b.past, c.past())
 	}
 	b.crossed = min(b.crossed, c.crossed)

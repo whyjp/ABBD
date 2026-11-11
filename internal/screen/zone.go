@@ -132,14 +132,18 @@ func (d *Drawing) zone(t tree, stacks []layering) {
 			d.Zones = append(d.Zones, z)
 		}
 	}
-	slices.SortStableFunc(numbered, func(a, b int) int {
-		za, zb := d.Zones[a], d.Zones[b]
-		if za.Y != zb.Y {
-			return za.Y - zb.Y
+	var bands []Zone
+	for _, k := range numbered {
+		bands = append(bands, d.Zones[k])
+	}
+	slices.SortStableFunc(bands, func(a, b Zone) int {
+		if a.Y != b.Y {
+			return a.Y - b.Y
 		}
-		return za.X - zb.X
+		return a.X - b.X
 	})
 	for i, k := range numbered {
+		d.Zones[k] = bands[i]
 		d.Zones[k].N = i + 1
 	}
 }
