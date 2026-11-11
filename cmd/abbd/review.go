@@ -241,14 +241,33 @@ func (e env) review() error {
 			look = append(look, fmt.Sprintf("the text of %s %s is STALE: its code changed since it was read", id, name[id]))
 		}
 	}
+	// A note counts when it sits in what the change touched, or when the
+	// change edited a file it cites, which no unit need be anchored at.
+	edited := map[string]bool{}
+	if files, err := gitx.ChangedSince(e.root, base); err == nil {
+		for _, f := range files {
+			edited[f] = true
+		}
+	}
+	cites := func(n store.Note) bool {
+		for _, ev := range n.Evidence {
+			if edited[ev.Path] {
+				return true
+			}
+		}
+		return false
+	}
 	for _, id := range slices.Sorted(maps.Keys(in.Notes)) {
 		u, present := presentUnit(now, id)
 		for _, n := range in.Notes[id] {
-			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) || !related(id) {
+			if n.Misfiled || !present || !u.Kind.HoldsNotes() || !n.Known || n.Ref.Unheld(u) || !related(id) && !cites(n) {
 				continue
 			}
 			ref := string(id) + "." + n.Slot
-			if n.Stale() {
+			switch {
+			case n.Stale() && n.Ref.Slot.Name == "constraints":
+				look = append(look, fmt.Sprintf("the constraint %s is STALE: the code that keeps it changed, so read whether it still holds", ref))
+			case n.Stale():
 				look = append(look, fmt.Sprintf("the note %s is STALE: the code it cites changed", ref))
 			}
 			if n.Ref.Slot.Name == "decisions" && (n.Why == nil || n.Why.Value == "") {

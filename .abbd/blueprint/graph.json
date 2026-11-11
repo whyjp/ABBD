@@ -1940,11 +1940,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/model",
@@ -6485,7 +6487,23 @@
                 "Code": true
               },
               {
-                "Text": "). diff compares the units at a base with now, and ",
+                "Text": "). Review names a STALE ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
+                "Text": " note as a constraint to read again, and counts any note whose cited file the change edited, though no unit is anchored there. A human's why goes only on a decision; ",
+                "Code": false
+              },
+              {
+                "Text": "record fact",
+                "Code": true
+              },
+              {
+                "Text": " refuses one on any other keyed slot. diff compares the units at a base with now, and ",
                 "Code": false
               },
               {
@@ -14848,11 +14866,13 @@
       "Name": "internal/model",
       "Purpose": {
         "Value": "so every package shares one vocabulary of units, facts, origins and relations and one set of rules about which combinations are legal",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Defines units, facts with origins, anchors, IDs, relations, evidence and edges, and validates them: why-fields are never EXTRACTED, a USER_STATED fact carries a source, only contracts carry a signature, and only known relation kinds join known unit kinds.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 2,
@@ -16293,6 +16313,14 @@
                 "Code": true
               },
               {
+                "Text": ", ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
                 "Text": " and ",
                 "Code": false
               },
@@ -16301,7 +16329,23 @@
                 "Code": true
               },
               {
-                "Text": " are keyed, so each holds one note per key. A note in ",
+                "Text": " are keyed, so each holds one note per key; ",
+                "Code": false
+              },
+              {
+                "Text": "constraints",
+                "Code": true
+              },
+              {
+                "Text": " holds a constraint or invariant the code keeps, quoting the lines that keep it. ",
+                "Code": false
+              },
+              {
+                "Text": "ParseNoteRef",
+                "Code": true
+              },
+              {
+                "Text": " names both kinds of address in its refusal. A note in ",
                 "Code": false
               },
               {
