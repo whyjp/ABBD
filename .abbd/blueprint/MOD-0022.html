@@ -71,7 +71,8 @@ a { color: var(--accent); }
 .mapbox svg { display: block; margin: 0 auto; }
 /* Drawings are laid out up to 1320px, wider than the frame a desktop window
    leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
-   shrink would pass 0.8 and the words grow too small, so it scrolls instead. */
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
 @media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
@@ -258,6 +259,7 @@ table.index .who { display: block; }
 @media (max-width: 900px) { .shell { grid-template-columns: minmax(0, 1fr); } nav.site { position: static; max-height: 40vh; border-right: 0; border-bottom: 1px solid var(--line); } }
 table.index tr.kind th { color: var(--ink); font-size: 14px; padding-top: 14px; }
 table.index td:first-child { width: 46%; }
+.units-list .read { font-style: italic; }
 :root { --h0: #1a62a3; --h1: #08705e; --h2: #b3337c; --h3: #6a4cc4; --h4: #00708a; --h5: #af2caf; --hb: #b93e0a; --hn: #5f5b53; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; } }
 :root[data-theme="dark"] { --h0: #6cb0f0; --h1: #3fc4a3; --h2: #ee8cc4; --h3: #b29df5; --h4: #4cc3df; --h5: #d454d4; --hb: #fb923c; --hn: #aca89d; }
@@ -489,7 +491,7 @@ svg:has(.w.r95:hover) .r95:not(.w){opacity:1}
 
 <section class="inside page" id="m-MOD-0022">
   <div class="drawhead"><h2>internal/gitx의 안 <span class="muted key">MOD-0022</span></h2><div class="views"><a href="index.html">한 단계 위로</a> <a href="index.html">모듈과 계약으로</a></div></div>
-<p class="muted standing">제공 0 · 사용 1 · 계약 없는 직접 의존 0</p>
+<p class="muted standing">내놓는 계약 없이 계약 1개를 씁니다. 계약 없이 닿는 곳은 없습니다.</p>
   <p class="role"><strong>맡은 것</strong> Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></p><p class="role"><strong>왜 있는가</strong> so ABBD can ask git the few facts it needs without touching the user&#39;s index or history <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></p>
   <div class="mapbox"><svg xmlns="http://www.w3.org/2000/svg" data-roads="1" width="370" height="240" viewBox="0 0 370 240" role="img" aria-label="모듈의 안">
 <defs><marker id="m-dep-0" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h0); stroke-width: 1.6"/></marker><marker id="m-dep-1" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h1); stroke-width: 1.6"/></marker><marker id="m-dep-2" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--h2); stroke-width: 1.6"/></marker><g id="t-dep" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9" style="fill: none; stroke: var(--c); stroke-width: 1.6"/></g><g id="t-impl" transform="scale(.9) translate(-9 -5)"><path d="M1 1 L9 5 L1 9 z" style="fill: var(--bg); stroke: var(--c); stroke-width: 1.4"/></g><g id="t-use" transform="scale(.9) translate(-9 -5)"><path d="M0 0 L10 5 L0 10 z" style="fill: var(--c)"/></g></defs>
@@ -525,8 +527,8 @@ cmd/abbd/main.go &#34;tree, err := gitx.Snapshot(e.root, store.Dir)&#34;</title>
       
     </div>
     <div class="units">
-      <h3>안의 단위</h3>
-      <ul class="plain units-list"><li id="i-MOD-0023"><strong>default-branch base search</strong> <span class="muted">모듈</span><div>Tries origin&#39;s HEAD, the upstream, origin/main, origin/master, main and master in that order and returns the first merge base with HEAD. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0023</span> <span class="key muted">internal/gitx/gitx.go MergeBase</span></details></li><li id="i-MOD-0024"><strong>rename detection</strong> <span class="muted">모듈</span><div>Diffs two snapshot trees with unlimited rename detection, parses the NUL-separated name-status output into old-to-new paths, and reports ok=false when the old tree was garbage collected. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0024</span> <span class="key muted">internal/gitx/gitx.go Renames</span></details></li><li id="i-MOD-0025"><strong>working-tree snapshot</strong> <span class="muted">모듈</span><div>Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository. <span class="pill inferred" title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">판독</span></div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0025</span> <span class="key muted">internal/gitx/gitx.go Snapshot</span></details></li></ul>
+      <h3>안의 단위</h3><p class="muted">기울인 문장은 리더가 읽은 것입니다(판독). 가리키면 어떻게 검사하는지 봅니다.</p>
+      <ul class="plain units-list"><li id="i-MOD-0023"><strong>default-branch base search</strong> <span class="muted">모듈</span><div class="read" title="판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">Tries origin&#39;s HEAD, the upstream, origin/main, origin/master, main and master in that order and returns the first merge base with HEAD.</div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0023</span> <span class="key muted">internal/gitx/gitx.go MergeBase</span></details></li><li id="i-MOD-0024"><strong>rename detection</strong> <span class="muted">모듈</span><div class="read" title="판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">Diffs two snapshot trees with unlimited rename detection, parses the NUL-separated name-status output into old-to-new paths, and reports ok=false when the old tree was garbage collected.</div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0024</span> <span class="key muted">internal/gitx/gitx.go Renames</span></details></li><li id="i-MOD-0025"><strong>working-tree snapshot</strong> <span class="muted">모듈</span><div class="read" title="판독: 에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함">Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository.</div><details><summary class="muted" style="font-weight:400">키와 앵커</summary><span class="key">MOD-0025</span> <span class="key muted">internal/gitx/gitx.go Snapshot</span></details></li></ul>
       
     </div>
   </div>

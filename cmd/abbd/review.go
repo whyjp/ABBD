@@ -36,8 +36,10 @@ func (e env) review() error {
 	}
 	now := in.Units
 	d := topology.Compare(was, now)
-	w := e.stdout
-	fmt.Fprintf(w, "review since %s\n\nchanges:\n", short(base))
+	// The sections go to a buffer so a one-line headline can lead them.
+	var body bytes.Buffer
+	w := &body
+	fmt.Fprintln(w, "\nchanges:")
 	for _, l := range d.Lines() {
 		fmt.Fprintln(w, "  "+l)
 	}
@@ -92,6 +94,7 @@ func (e env) review() error {
 		note(en.ID, en.Entry)
 	}
 	links := topology.Links(now)
+	touchedLines := 0
 	fmt.Fprintln(w, "\nwho uses what changed:")
 	none := true
 	for _, id := range slices.Sorted(maps.Keys(touched)) {
@@ -135,6 +138,7 @@ func (e env) review() error {
 				users = []string{"no recorded user"}
 			}
 			none = false
+			touchedLines++
 			fmt.Fprintf(w, "  %s: %s\n", what, strings.Join(users, "; "))
 		}
 	}
@@ -176,13 +180,30 @@ func (e env) review() error {
 	slices.Sort(seeds)
 	seeds = slices.Compact(seeds)
 	fmt.Fprintln(w, "\nwhat the change reaches directly:")
+	reached := 0
 	if len(seeds) == 0 {
 		fmt.Fprintln(w, "  nothing the topology records")
 	} else if e.features {
-		e.byFeature(now, topology.ImpactOf(now, seeds))
+		im := topology.ImpactOf(now, seeds)
+		for _, it := range im.Direct {
+			if it.Why != "seed" {
+				reached++
+			}
+		}
+		(env{opts: e.opts, stdout: w, st: e.st}).byFeature(now, im)
 	} else {
+		// The seeds are the change itself, listed above; what they reach
+		// is the news, and only its first lines are worth reading here.
 		for _, it := range topology.ImpactOf(now, seeds).Direct {
-			fmt.Fprintf(w, "  %s %s: %s\n", it.Unit, name[it.Unit], it.Why)
+			if it.Why == "seed" {
+				continue
+			}
+			if reached++; reached <= reachShown {
+				fmt.Fprintf(w, "  %s %s: %s\n", it.Unit, name[it.Unit], it.Why)
+			}
+		}
+		if reached > reachShown {
+			fmt.Fprintf(w, "  and %d more; abbd impact lists them all\n", reached-reachShown)
 		}
 	}
 
@@ -260,8 +281,14 @@ func (e env) review() error {
 	if len(look) == 0 {
 		fmt.Fprintln(w, "  nothing")
 	}
-	return nil
+	fmt.Fprintf(e.stdout, "review since %s: %d topology change(s), code changed under %d unit(s), %d touched contract(s) or entries with their users, %d unit(s) reached directly, %d thing(s) worth a look\n",
+		short(base), len(d.Lines()), len(codeChanged), touchedLines, reached, len(look))
+	_, err = e.stdout.Write(body.Bytes())
+	return err
 }
+
+// reachShown is how many units review lists of what a change reaches.
+const reachShown = 15
 
 // anchoredAt lists the present units anchored at a file that changed
 // since base, the working tree included, in ID order.

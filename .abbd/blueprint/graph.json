@@ -7080,7 +7080,23 @@
                 "Code": true
               },
               {
-                "Text": ", which lists the changes and sets the unit's page then and now side by side. The blueprint itself stays the current state. With ",
+                "Text": ", which opens with a one-line ",
+                "Code": false
+              },
+              {
+                "Text": "summary",
+                "Code": true
+              },
+              {
+                "Text": " of the counts, sets the unit's drawing then and now side by side (",
+                "Code": false
+              },
+              {
+                "Text": "drawing",
+                "Code": true
+              },
+              {
+                "Text": " cuts each SVG and the page style out of the two pages, falling back to a page's first drawing when the unit's page is a focus view), and folds the change lines below. The blueprint itself stays the current state. With ",
                 "Code": false
               },
               {
@@ -7270,7 +7286,15 @@
                 "Code": true
               },
               {
-                "Text": ", or a line saying the evidence could not be checked. It always exits 0.",
+                "Text": ", or a line saying the evidence could not be checked. It opens with a one-line headline of its counts, lists of what the change reaches only the units past the seeds, the first 15 (",
+                "Code": false
+              },
+              {
+                "Text": "reachShown",
+                "Code": true
+              },
+              {
+                "Text": "), and always exits 0.",
                 "Code": false
               }
             ]
@@ -7316,7 +7340,39 @@
                 "Code": true
               },
               {
-                "Text": " prints whether the state and the blueprint are current, prints a ",
+                "Text": " prints whether the state and the blueprint are current, folds its ",
+                "Code": false
+              },
+              {
+                "Text": "long:",
+                "Code": true
+              },
+              {
+                "Text": " and ",
+                "Code": false
+              },
+              {
+                "Text": "unbacked:",
+                "Code": true
+              },
+              {
+                "Text": " lines into one count each unless ",
+                "Code": false
+              },
+              {
+                "Text": "--verbose",
+                "Code": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "statusLines",
+                "Code": true
+              },
+              {
+                "Text": " prints them all, and the usage says so), prints a ",
                 "Code": false
               },
               {
@@ -7734,7 +7790,15 @@
                 "Code": true
               },
               {
-                "Text": " shows it with its reader as CURRENT or STALE. Under each reader's coupling, ",
+                "Text": " shows it with its reader as CURRENT or STALE. With ",
+                "Code": false
+              },
+              {
+                "Text": "--history",
+                "Code": true
+              },
+              {
+                "Text": ", under each reader's coupling, ",
                 "Code": false
               },
               {
@@ -9901,6 +9965,12 @@
                     "cmd/abbd/evidence.go \"if e.check \u0026\u0026 len(behind) \u003e 0 {\""
                   ]
                 }
+              },
+              {
+                "Key": "verbose",
+                "Name": "--verbose",
+                "Shape": "bool",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -10027,6 +10097,12 @@
                 "Key": "root",
                 "Name": "--root",
                 "Shape": "string",
+                "Need": ""
+              },
+              {
+                "Key": "history",
+                "Name": "--history",
+                "Shape": "bool",
                 "Need": ""
               }
             ],
@@ -21563,7 +21639,31 @@
                 "Code": true
               },
               {
-                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page prints them in one line under the heading. The full legend and the reading intros sit once on ",
+                "Text": ") counts over its whole subtree the contracts it provides and uses, the top-level units it depends on with no contract, whether its text is STALE, its STALE notes, setting aside the notes status calls orphaned, and its dead evidence items, counted as status counts them, and its page says them as sentences under the heading, naming the contracts it uses even when it provides none. An inside unit's sentence that only a reader vouches for is set in italics with the 판독 source on hover, and ",
+                "Code": false
+              },
+              {
+                "Text": "Inside.Guessed",
+                "Code": true
+              },
+              {
+                "Text": " puts one note above the list instead of a badge on each. ",
+                "Code": false
+              },
+              {
+                "Text": "legend.html",
+                "Code": true
+              },
+              {
+                "Text": " gives each key once: the overview legend with its shared keys, a sentence for the quiet colours, and only the inside legend's own keys (",
+                "Code": false
+              },
+              {
+                "Text": "legendFor \"inside-keys\"",
+                "Code": true
+              },
+              {
+                "Text": "); a dot means four lines meet. The full legend and the reading intros sit once on ",
                 "Code": false
               },
               {
@@ -30485,7 +30585,39 @@
                 "Code": true
               },
               {
-                "Text": " turns a lifted relation back into the units that really join it.",
+                "Text": " turns a lifted relation back into the units that really join it. A signature change longer than ",
+                "Code": false
+              },
+              {
+                "Text": "longSignature",
+                "Code": true
+              },
+              {
+                "Text": " (200 characters) reads in ",
+                "Code": false
+              },
+              {
+                "Text": "Lines",
+                "Code": true
+              },
+              {
+                "Text": " as the words it gained and lost (",
+                "Code": false
+              },
+              {
+                "Text": "sigDelta",
+                "Code": true
+              },
+              {
+                "Text": ", splitting on brackets, separators and line breaks), and ",
+                "Code": false
+              },
+              {
+                "Text": "--json",
+                "Code": true
+              },
+              {
+                "Text": " keeps both texts.",
                 "Code": false
               }
             ]
