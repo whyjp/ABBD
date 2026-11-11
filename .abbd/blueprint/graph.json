@@ -26728,7 +26728,15 @@
                 "Code": true
               },
               {
-                "Text": ". Where a phrase's word already stands within ",
+                "Text": ", or, on a line whose phrases are each carried by under half its relations, the via word the most of them name if at least half do (",
+                "Code": false
+              },
+              {
+                "Text": "allVia",
+                "Code": true
+              },
+              {
+                "Text": " tells the two apart). Where a phrase's word, or such a majority via word, already stands within ",
                 "Code": false
               },
               {
@@ -26752,7 +26760,7 @@
                 "Code": true
               },
               {
-                "Text": " fails on a phrase fewer than half the line's relations carry, and ",
+                "Text": " fails on a phrase or a via word fewer than half the line's relations carry, and ",
                 "Code": false
               },
               {
