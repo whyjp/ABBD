@@ -60,7 +60,7 @@ abbd migrate [--supplement FILE] [--root DIR]
                                      convert an old-format state once, telling the supplement's
                                      claims from a reader's by the supplement (default
                                      .abbd/extractor/supplement.json)
-abbd understand MOD-ID|FEAT-ID FILE|- [--reader WHO] [--root DIR]
+abbd understand MOD-ID|FEAT-ID FILE|- [--reader WHO] [--sentence TEXT] [--root DIR]
                                      store a reader's Overview and Key Concepts for a module
                                      or feature, stamped with its code: every file of it and
                                      the units under it, a submodule by its recorded commit (so
@@ -209,6 +209,7 @@ type opts struct {
 	base             string
 	unit             string
 	history          bool
+	sentence         string
 	page             bool
 	asJSON, check    bool
 	list, record     bool
@@ -275,6 +276,9 @@ var flagDefs = map[string]func(*flag.FlagSet, *opts){
 	"restamp": func(fs *flag.FlagSet, o *opts) {
 		fs.BoolVar(&o.restamp, "restamp", false, "stamp the stored text against the module's code again, when only what the module holds moved")
 	},
+	"sentence": func(fs *flag.FlagSet, o *opts) {
+		fs.StringVar(&o.sentence, "sentence", "", "the one line the reader says the module is responsible for, stamped with its code")
+	},
 	"reader": func(fs *flag.FlagSet, o *opts) {
 		fs.StringVar(&o.reader, "reader", "", "who read the module and wrote its text, such as 'abbd reader' or 'pstack how 0.15.36'")
 	},
@@ -310,7 +314,7 @@ var commands = map[string]command{
 	"record evidence": {flags: []string{"root", "evidence"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.refresh(pos[0]) }},
 	"retract":         {flags: []string{"root", "reason", "source"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.retract(pos[0]) }},
 	"migrate":         {flags: []string{"root", "supplement"}, pos: []int{0}, writes: true, run: func(e env, _ []string) error { return e.migrate() }},
-	"understand":      {flags: []string{"root", "restamp", "evidence", "reread-by", "reader"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
+	"understand":      {flags: []string{"root", "restamp", "evidence", "reread-by", "reader", "sentence"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.understand(pos[0], pos[1:]) }},
 	"forget":          {flags: []string{"root"}, pos: []int{1}, writes: true, run: func(e env, pos []string) error { return e.forget(pos[0]) }},
 	"flow":            {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.flow(pos[0], pos[1:]) }},
 	"stack":           {flags: []string{"root", "source"}, pos: []int{1, 2}, writes: true, run: func(e env, pos []string) error { return e.stack(pos[0], pos[1:]) }},
@@ -531,6 +535,7 @@ func (e env) syncActual(ex extract.Result, ws identity.Writers) (identity.Result
 	res := identity.Reconcile(stored, renames, ex, prior, state.HighWater, ws)
 	res.Units = evidence.New(e.root).Apply(res.Units, rev)
 	res.Units, res.HighWater = group.Fallback(res.Units, res.HighWater)
+	stampSentences(st, stored, res.Units)
 	if err := st.SaveUnits(res.Units); err != nil {
 		return res, err
 	}

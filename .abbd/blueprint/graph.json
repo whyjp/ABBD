@@ -127,7 +127,7 @@
       "ID": "DATA-0005",
       "Kind": "DATA",
       "Name": "blueprint files",
-      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Purpose{Badge,Value},Responsibility{Badge,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Value}},Parent,Purpose{Badge,Value},Responsibility{Badge,Value},Signature}}",
+      "Signature": ".abbd/blueprint/{\u003cID\u003e.html,contracts.html,flow-\u003cKEY\u003e.html,graph.json,index.html,legend.html,stack-\u003cKEY\u003e.html,table-\u003cKEY\u003e.html,units.html}; graph.json {edges{From,Kind,Origin,Phrase,PhraseOrigin,Quote,To,Via},flows{Badge,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Lanes{Href,Kind,Name,Steps{Badge,Calls{Href,ID,Name,Verb},Does,Fails,ID,N,Note,Quotes,Reasons,Source,Stale},Unit},Question,Source,Stale,Steps},modules{Contracts{Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},ID,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}}},Flows{ID,Question,Steps{Does,N,Unit}},ID,Inferred{Drifted,From,Kind,Quotes,To,Via},Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Stacks{ID,Layers,Question},Standing{Dead,Direct,Provides,StaleNotes,TextStale,Uses},Tables{ID,Question,Rows},Trail,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale},Units{Anchors,Guess,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Sentence,Understanding{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Reader,Stale}},Unwired{Head,Names},Up},stacks{Badge,Bands{Badge,ID,N,Name,Quotes,Reasons,Role,Source,Stale,Units{Href,ID,Kind,Name},Up{From,FromName,Href,Origin,To,ToName,Upper,UpperName,Verb,Via}},Breaches,Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},ID,Key,Layers,Question,Reasons,Source,Stale},tables{Badge,Body{Badge,Cells{Column,Says,Unbacked,Unsaid,Verb},ID,N,Quotes,Reasons,Source,Stale,Unit{Href,ID,Kind,Name}},Caption{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Columns{Name,Unit{Href,ID,Kind,Name}},ID,Key,Question,Reasons,Rows,Source,Stale,Unbacked,Unsaid},units{Anchors,Entries{Data,ID,Need,Notes,Providers,Rows{Key,Name,Need,Note{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Providers{Badge,ID,Name},Shape,Users{Badge,ID,Name}},Shape,Users},Evidence,ID,Kind,Name,Notes{Blocks{Code,Kind,Parts{Bold,Code,Text},Rows{Bold,Code,Text}},Changed,Key,Quotes,Reader,Ref,RereadBy,RereadOn,Source,Stale,Title,Why{Badge,Stale,Value}},Parent,Purpose{Badge,Stale,Value},Responsibility{Badge,Stale,Value},Signature}}",
       "Purpose": {
         "Value": "lets a human read the topology in a browser and tools read it without the CLI",
         "Badge": "inferred"
@@ -478,11 +478,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd",
@@ -733,7 +735,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "pstack's subsystem walkthrough; ABBD uses it to read code and to write each module's text.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -1262,11 +1265,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd",
@@ -1349,11 +1354,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so the state always rests on the deterministic extraction alone",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns run script, parse, reconcile IDs across git renames, apply evidence, save units and candidates, then write state.yaml with a revision that moves only when the tree fingerprint does.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/main.go runScript",
@@ -1396,11 +1403,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a reader's or a human's finding enters the state only with live evidence or a stated source",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns record relation, record unit, record fact and understand: checking every quote against the tree, the origin precedence EXTRACTED over USER_STATED over INFERRED, the duplicate-code refusal, and refusing to restamp unchanged how text onto changed code.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "cmd/abbd/record.go citations",
@@ -1984,11 +1993,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen",
@@ -2084,11 +2095,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "keeps the first level a picture of what the code and the human say, never of guesses",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "picks the top-level units and only extracted or stated live relations between them, assigns each contract its providers and users, and draws contract wires between chips and bypass wires for module dependencies no contract covers",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/screen/overview.go",
@@ -2477,7 +2490,8 @@
       "Purpose": null,
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "plugins/abbd/skills/abbd-setup/SKILL.md",
@@ -4763,11 +4777,13 @@
       "Name": "/abbd",
       "Purpose": {
         "Value": "so an assistant consults and keeps current the repository's blueprint around every code change instead of grepping blind",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Tells the assistant to read the blueprint and ask explain, path and impact before work, record couplings, units and human-stated facts with their origin, and run sync and put the diff in the PR after work.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -5422,11 +5438,13 @@
       "Name": "abbd CLI",
       "Purpose": {
         "Value": "so a human or an assistant drives extraction, evidence, IDs, storage and rendering from one command line",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Owns the abbd command line: parsing argv against the command table, running each verb over the store, and rendering the blueprint after every verb that writes.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 28,
@@ -6971,6 +6989,52 @@
               },
               {
                 "Text": " drives both, including a part of a page whose whole use of a contract keeps the page's use whole.",
+                "Code": false
+              }
+            ]
+          },
+          {
+            "Kind": "li",
+            "Parts": [
+              {
+                "Text": "Sentences",
+                "Code": false,
+                "Bold": true
+              },
+              {
+                "Text": " (",
+                "Code": false
+              },
+              {
+                "Text": "understand.go",
+                "Code": true
+              },
+              {
+                "Text": "): ",
+                "Code": false
+              },
+              {
+                "Text": "stampSentences",
+                "Code": true
+              },
+              {
+                "Text": " runs in the shared sync path before the units are saved. It keeps the stamp a module's or feature's purpose and responsibility carried while their words stay the same, and stamps a sentence no stamp covers against the code as it is now, never a human's. ",
+                "Code": false
+              },
+              {
+                "Text": "understand ID FILE --sentence TEXT",
+                "Code": true
+              },
+              {
+                "Text": " stores a reader's new responsibility stamped with the text's digest, unless a person stated the responsibility, which outranks it and stays; it is refused with a note or ",
+                "Code": false
+              },
+              {
+                "Text": "--restamp",
+                "Code": true
+              },
+              {
+                "Text": ".",
                 "Code": false
               }
             ]
@@ -9136,7 +9200,9 @@
               "Quotes": [
                 "cmd/abbd/main.go \"if state.Fingerprint != tree || rev == \\\"\\\" {\"",
                 "cmd/abbd/main.go \"rev = gitx.Head(e.root)\""
-              ]
+              ],
+              "RereadBy": "concept-orch (Claude Opus 5.5)",
+              "RereadOn": "2026-11-11"
             },
             {
               "Ref": "DATA-0006.wire_sample",
@@ -9391,7 +9457,9 @@
                     "cmd/abbd/screen.go \"in.Synced.Blueprint, in.Synced.Rendered = in.Inputs, store.HashRender(files)\"",
                     "internal/screen/screen.go \"in.Synced.Rendered != in.Rendered\"",
                     "internal/screen/screen.go \"in.Rendered, err = st.BlueprintHash()\""
-                  ]
+                  ],
+                  "RereadBy": "concept-orch (Claude Opus 5.5)",
+                  "RereadOn": "2026-11-11"
                 }
               },
               {
@@ -9704,6 +9772,12 @@
               {
                 "Key": "why-source",
                 "Name": "why.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "why-digest",
+                "Name": "why.digest",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -10424,6 +10498,12 @@
                     "Badge": "extracted"
                   }
                 ]
+              },
+              {
+                "Key": "sentence",
+                "Name": "--sentence",
+                "Shape": "string",
+                "Need": ""
               }
             ],
             "Need": false,
@@ -17886,7 +17966,7 @@
                 "Code": true
               },
               {
-                "Text": ", and a ",
+                "Text": ", a ",
                 "Code": false
               },
               {
@@ -17894,7 +17974,15 @@
                 "Code": true
               },
               {
-                "Text": " for a human only. ",
+                "Text": " for a human only, and a ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": ": the code of a module or feature when a script's or a reader's sentence about it was first kept. ",
                 "Code": false
               },
               {
@@ -20416,11 +20504,13 @@
       "Name": "internal/screen",
       "Purpose": {
         "Value": "shows a human the architecture as it is, read-only over the store",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "builds a deterministic two-level model from the stored units (an overview of top-level modules and contracts, one inside per module, and the unit catalogue), says whether the state and the blueprint are current, and renders index.html and graph.json with a watermark",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 1,
@@ -21671,7 +21761,31 @@
                 "Code": true
               },
               {
-                "Text": " puts one note above the list instead of a badge on each. ",
+                "Text": " puts one note above the list instead of a badge on each. A stamped purpose or responsibility (",
+                "Code": false
+              },
+              {
+                "Text": "sentenceOf",
+                "Code": true
+              },
+              {
+                "Text": ") reads STALE when ",
+                "Code": false
+              },
+              {
+                "Text": "Load",
+                "Code": true
+              },
+              {
+                "Text": "'s digest of its unit differs from its ",
+                "Code": false
+              },
+              {
+                "Text": "Digest",
+                "Code": true
+              },
+              {
+                "Text": ", on the module's page and in the unit index. ",
                 "Code": false
               },
               {
@@ -28573,6 +28687,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "name-digest",
+                "Name": "name.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "anchors",
                 "Name": "anchors",
                 "Shape": "[]Anchor",
@@ -28741,6 +28861,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "purpose-digest",
+                "Name": "purpose.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "responsibility",
                 "Name": "responsibility",
                 "Shape": "*Fact",
@@ -28765,6 +28891,12 @@
                 "Need": "선택"
               },
               {
+                "Key": "responsibility-digest",
+                "Name": "responsibility.digest",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
                 "Key": "signature",
                 "Name": "signature",
                 "Shape": "*Fact",
@@ -28785,6 +28917,12 @@
               {
                 "Key": "signature-source",
                 "Name": "signature.source",
+                "Shape": "string",
+                "Need": "선택"
+              },
+              {
+                "Key": "signature-digest",
+                "Name": "signature.digest",
                 "Shape": "string",
                 "Need": "선택"
               },
@@ -31201,7 +31339,8 @@
       "Name": "pstack (external)",
       "Responsibility": {
         "Value": "The pstack plugin the ABBD skills hand reading and fan-out to; it lives outside this repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -31979,7 +32118,7 @@
               "N": 9,
               "ID": "flow-sync.9",
               "Does": "Apply(units, rev) → every quote live, drifted or dead",
-              "Note": "a drifted quote dies at the first sync of a later revision",
+              "Note": "a drifted quote dies at the first sync of a later revision, and only then does a crowded level fall back to directories",
               "Fails": "",
               "Badge": "",
               "Source": "",
@@ -32000,7 +32139,7 @@
               "N": 10,
               "ID": "flow-sync.10",
               "Does": "Fallback(units) → a crowded level placed in the directories its code lives in",
-              "Note": "",
+              "Note": "then each module sentence no stamp covers is stamped with its code, before the units are saved",
               "Fails": "",
               "Badge": "",
               "Source": "",
@@ -32395,7 +32534,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "rewrites every unit file from the reconciled extraction",
+              "Says": "rewrites every unit file from the reconciled extraction, a module's sentences stamped with its code",
               "Verb": "",
               "Unbacked": true
             },
@@ -32443,7 +32582,7 @@
           "Cells": [
             {
               "Column": "unit files",
-              "Says": "writes a record's claim, fact or parent, or just a phrase note on a shown edge",
+              "Says": "writes a record's claim, fact or parent, a phrase note on a shown edge, or a reader's stamped one-line responsibility",
               "Verb": "사용"
             },
             {

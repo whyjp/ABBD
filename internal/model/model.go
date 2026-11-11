@@ -26,6 +26,10 @@ type Fact struct {
 	Writer Writer `yaml:"writer"`
 	// Source is where a human stated the value, such as a PR URL.
 	Source string `yaml:"source,omitempty"`
+	// Digest is the unit's code as it was when a script's or a reader's
+	// sentence about a module or feature was first kept, so the sentence
+	// reads STALE once that code moves on. A human's is never stamped.
+	Digest string `yaml:"digest,omitempty"`
 	// Origin is what the reader of the state sees. Resolve derives it from Writer.
 	Origin Origin `yaml:"-"`
 }
