@@ -160,7 +160,7 @@ func printLint(e env, r lintReport) {
 		fmt.Fprintf(e.stdout, "lint: ceilings weighed %d, tees %d, excess turns %d, placement %d, overflow %d, detours %d\n", r.Ceilings["weighed"], r.Ceilings["tees"], r.Ceilings["excess_turns"], r.Ceilings["placement"], r.Ceilings["overflow"], r.Ceilings["detours"])
 	}
 	if n := len(r.Unphrased); n > 0 {
-		fmt.Fprintf(e.stdout, "lint: phrases: %s between overview boxes with no phrase on any relation, so each says only how it arises; give one relation of each a phrase:\n", plural(n, "line"))
+		fmt.Fprintf(e.stdout, "lint: phrases: %s between overview boxes with no live phrase on any relation, so each says only how it arises; give one relation of each a phrase, or more until half carry one:\n", plural(n, "line"))
 		for _, p := range r.Unphrased[:min(n, 10)] {
 			fmt.Fprintf(e.stdout, "  %s\n", p)
 		}
