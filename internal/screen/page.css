@@ -61,6 +61,11 @@ a { color: var(--accent); }
 .views a { margin-left: 10px; font-size: 14px; }
 .mapbox { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); margin-top: 6px; max-width: 100%; }
 .mapbox svg { display: block; margin: 0 auto; }
+/* Drawings are laid out up to 1320px, wider than the frame a desktop window
+   leaves beside the sidebar, so a wide one shrinks to fit. Below 1300px the
+   shrink would pass 0.8 and the words grow too small, so it scrolls instead.
+   The 1300px floor assumes the 13rem sidebar and the 1320px layout cap. */
+@media (min-width: 1300px) { .mapbox svg { max-width: 100%; height: auto; } }
 svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
 svg text.name { font-weight: 650; }
 svg text.sub { font: 500 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; fill: var(--muted); }
