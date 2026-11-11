@@ -68,7 +68,11 @@ type Group struct {
 // arises, and the code it rests on.
 type Coupling struct {
 	From, To, Kind, Via string
-	Quotes              []string
+	// FromID and ToID name the coupling's ends, and Note is the reader's
+	// account of why it exists, from the from unit's relations slot.
+	FromID, ToID string `json:"-"`
+	Note         *Note  `json:",omitempty"`
+	Quotes       []string
 	// Drifted says the coupling counts on drifted evidence only, as
 	// Relation.Drifted does, so the reader sees whether its evidence holds.
 	Drifted bool `json:",omitempty"`
@@ -843,7 +847,7 @@ func (o *overview) inferred(m model.ID, units []model.Unit) []Coupling {
 			if !r.Guess() || r.Dead || o.units[r.To].Absent || !(in(u.ID) || in(r.To)) {
 				continue
 			}
-			c := Coupling{From: o.name(u.ID), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via)}
+			c := Coupling{From: o.name(u.ID), To: o.name(r.To), Kind: string(r.Kind), Via: string(r.Via), FromID: string(u.ID), ToID: string(r.To)}
 			for _, e := range r.Evidence {
 				c.Quotes = append(c.Quotes, cite(e))
 			}
