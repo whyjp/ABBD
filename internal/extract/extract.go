@@ -28,6 +28,7 @@ type rawUnit struct {
 	Purpose        string           `json:"purpose,omitempty"`
 	Responsibility string           `json:"responsibility,omitempty"`
 	Digest         string           `json:"digest,omitempty"`
+	Artifact       model.Artifact   `json:"artifact,omitempty"`
 	Parent         string           `json:"parent,omitempty"`
 	ParentEvidence []model.Evidence `json:"parent_evidence,omitempty"`
 	Evidence       []model.Evidence `json:"evidence,omitempty"`
@@ -94,6 +95,7 @@ type Unit struct {
 	Purpose        *model.Fact
 	Responsibility *model.Fact
 	Digest         string
+	Artifact       model.Artifact
 	Entries        []model.Entry
 	// Parent is the key of the module or feature the input says contains the
 	// unit, and ParentEvidence what a supplement cites for it. The script's
@@ -267,6 +269,12 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			f := model.Said(model.Script, ru.Signature)
 			sig = &f
 		}
+		if err := ru.Artifact.Validate(); err != nil {
+			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
+		}
+		if ru.Artifact != "" && ru.Kind != model.Module {
+			return nil, raw, fmt.Errorf("unit %d (%s): only a module is a build artifact", i, ru.Name)
+		}
 		es, err := normalizeEntries(ru.Kind, ru.Entries)
 		if err != nil {
 			return nil, raw, fmt.Errorf("unit %d (%s): %w", i, ru.Name, err)
@@ -281,6 +289,7 @@ func parseUnits(r io.Reader) ([]Unit, rawResult, error) {
 			Purpose:        inferred(ru.Purpose),
 			Responsibility: inferred(ru.Responsibility),
 			Digest:         ru.Digest,
+			Artifact:       ru.Artifact,
 			Parent:         ru.Parent,
 			ParentEvidence: parentEvidence,
 			Evidence:       evidence,

@@ -141,6 +141,8 @@ type UnitRow struct {
 	Anchors                   []string
 	// Parent is the module that contains the unit.
 	Parent string `json:",omitempty"`
+	// Artifact is the build artifact a module is, such as a shared library.
+	Artifact string `json:",omitempty"`
 	// Evidence is the code a unit only a reader found rests on.
 	Evidence []string `json:",omitempty"`
 	// Notes are the unit's slots and Entries its table when no inside shows
@@ -186,7 +188,7 @@ func Build(in Input) Model {
 	for _, u := range model.Present(in.Units) {
 		row := UnitRow{
 			ID: string(u.ID), Kind: string(u.Kind), Name: u.Name.Value, Signature: value(u.Signature),
-			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u),
+			Purpose: sentenceOf(u.Purpose, in.Digests[u.ID]), Responsibility: sentenceOf(u.Responsibility, in.Digests[u.ID]), Anchors: anchors(u), Artifact: string(u.Artifact),
 			Parent: string(u.Parent),
 		}
 		for _, e := range u.Evidence {

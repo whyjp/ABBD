@@ -79,6 +79,11 @@ func Overlay(base, doc extract.Result) (extract.Result, Findings, error) {
 		if d.Responsibility != nil {
 			u.Responsibility = supplemented(d.Responsibility)
 		}
+		// A build artifact the script read stays; one only the supplement
+		// names, as when no script reads the build files, is added.
+		if u.Artifact == "" {
+			u.Artifact = d.Artifact
+		}
 	}
 	if len(gaps) > 0 {
 		sort.Strings(gaps)

@@ -177,7 +177,7 @@ func Reconcile(stored []model.Unit, renames map[string]string, extraction extrac
 		nu := model.Unit{
 			ID: model.FormatID(in.Kind, hw[in.Kind]), Kind: in.Kind, Name: in.Name,
 			SupplementRef: in.SupplementRef, Anchors: in.Anchors, Purpose: in.Purpose,
-			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Entries: in.Entries,
+			Responsibility: in.Responsibility, Signature: in.Signature, Digest: in.Digest, Artifact: in.Artifact, Entries: in.Entries,
 			Evidence: in.Evidence,
 		}
 		created = append(created, nu)
@@ -398,6 +398,7 @@ func items(u model.Unit) []model.Evidence {
 func merge(u *model.Unit, in extract.Unit, ws Writers) {
 	u.Anchors = in.Anchors
 	u.Digest = in.Digest
+	u.Artifact = in.Artifact
 	u.Entries = in.Entries
 	if in.SupplementRef != "" {
 		u.SupplementRef = in.SupplementRef
