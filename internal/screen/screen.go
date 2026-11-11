@@ -164,13 +164,13 @@ func Build(in Input) Model {
 	// that fits the screen or has fewer hard breaches and moves no box off
 	// what it joins (choose). The screen it fits is what the page leaves
 	// under the list of questions drawn above it.
-	ls := layerings(in)
-	o := planOverview(in.Units, "", nil, tactic{}, ls)
+	ls, fs := layerings(in), walks(in)
+	o := planOverview(in.Units, "", nil, tactic{}, ls, fs)
 	flows, stacks, tables := o.flows(in), o.stacks(in), o.tables(in)
 	room := overviewRoom(len(flows), len(stacks), len(tables))
 	href := func(id model.ID) string { return viewOf(o.tree, id) }
 	m.Overview = choose(overviewTactics, func(t tactic, read *cost) (Drawing, bool) {
-		p := planOverview(in.Units, "", nil, t, ls)
+		p := planOverview(in.Units, "", nil, t, ls, fs)
 		if p.layout.idle {
 			return Drawing{}, false
 		}
@@ -226,7 +226,6 @@ func Build(in Input) Model {
 	for _, d := range m.drawings() {
 		d.paint(hues)
 	}
-	fs := walks(in)
 	leads := append([]*Drawing{&m.Overview}, insides(m.Insides)...)
 	for _, d := range leads {
 		d.lead(o.tree, fs)
