@@ -48,7 +48,7 @@ func TestTheSkillsAskForPresentStateTextsInShortSections(t *testing.T) {
 	limit := fmt.Sprintf("%d,%03d characters", narrative.MaxSection/1000, narrative.MaxSection%1000)
 	for _, skill := range []string{"abbd", "abbd-setup"} {
 		text := readPlugin(t, "skills", skill, "SKILL.md")
-		for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither refuses the text or fails the check"} {
+		for _, want := range []string{"present tense", "issue and PR numbers", "migrated from X", limit, "`###` headings", "Neither fails the check", "refuses only a text whose first section"} {
 			if !strings.Contains(text, want) {
 				t.Errorf("%s must say %q", skill, want)
 			}

@@ -90,3 +90,20 @@ func TestATextLeadsWithItsSummaryAndTiesConceptsToBoxes(t *testing.T) {
 		t.Errorf("the concept naming sink.rs should stand by MOD-0006's entry")
 	}
 }
+
+// The lead ends where the first section ends: at the first heading when
+// prose comes before it. A file name two units share ties a concept to
+// neither.
+func TestALeadEndsWithTheFirstSection(t *testing.T) {
+	lead, rest := split(blocks("Intro prose.\n\n## Overview\nMore.\n"))
+	if len(lead) != 1 || len(rest) != 2 {
+		t.Errorf("an intro before the first heading is the whole lead: %d, %d", len(lead), len(rest))
+	}
+	if lead, rest := split(blocks("No heading at all.\n")); len(lead) != 1 || rest != nil {
+		t.Errorf("a text with no heading is all lead")
+	}
+	units := []InsideUnit{{ID: "MOD-0001", Anchors: []string{"a/mod.rs"}}, {ID: "MOD-0002", Anchors: []string{"b/mod.rs"}}}
+	if got := concepts(blocks("- **Mod** (`mod.rs`): shared.\n"), units); len(got) != 0 {
+		t.Errorf("a shared file name tied a concept: %v", got)
+	}
+}

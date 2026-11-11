@@ -21,11 +21,15 @@ type Understanding struct {
 	Rest []Block `json:"-"`
 }
 
-// split cuts blocks at the second heading: the first section, the
-// summary a reader meets first, and the rest. A text with no second
-// heading is all lead.
+// split cuts blocks where narrative.Sections ends the first section: at
+// the first heading when prose comes before it, else at the second. That
+// is the summary a reader meets first, the one abbd understand holds to the
+// section limit, and the rest.
 func split(bs []Block) (lead, rest []Block) {
 	heads := 0
+	if len(bs) > 0 && bs[0].Kind != "h" {
+		heads = 1
+	}
 	for i, b := range bs {
 		if b.Kind == "h" {
 			if heads++; heads == 2 {
@@ -45,10 +49,16 @@ func concepts(bs []Block, units []InsideUnit) map[string][]Block {
 		if b.Kind != "li" {
 			continue
 		}
+		// A file name several units share, such as mod.rs, names none of
+		// them for certain, so the item stays in the text alone.
+		var hits []string
 		for _, u := range units {
 			if namesUnit(b, u) {
-				out[u.ID] = append(out[u.ID], b)
+				hits = append(hits, u.ID)
 			}
+		}
+		if len(hits) == 1 {
+			out[hits[0]] = append(out[hits[0]], b)
 		}
 	}
 	return out
