@@ -30919,7 +30919,7 @@
         }
       ],
       "Rows": 5,
-      "Stale": 1,
+      "Stale": 0,
       "Unbacked": 9,
       "Unsaid": 0,
       "Columns": [
@@ -31042,7 +31042,7 @@
             },
             {
               "Column": "module texts",
-              "Says": "stores a finished text with a short summary, its reader, digest and code",
+              "Says": "stores a finished text with a short summary, its reader, digest and code, and names the key units it leaves out",
               "Verb": "사용"
             },
             {
@@ -31060,11 +31060,7 @@
             "cmd/abbd/record.go \"u.PutRelation(rel)\"",
             "cmd/abbd/record.go \"u.PutNote(note)\"",
             "cmd/abbd/understand.go \"if err := e.st.SaveUnderstanding(store.Understanding{Unit: id\""
-          ],
-          "Reasons": [
-            "cmd/abbd/understand.go (the lines around it changed)"
-          ],
-          "Stale": true
+          ]
         },
         {
           "N": 3,
