@@ -163,6 +163,7 @@ func TestACardListsOnlyWhatItsViewDraws(t *testing.T) {
 		"bypass": regexp.MustCompile(`<path class="w (bypass|mutual)\b`),
 		"plan":   regexp.MustCompile(`<path class="w [^"]*\bplan\b[^"]*"`),
 		"back":   regexp.MustCompile(`<path class="w [^"]*\bback\b`),
+		"more":   regexp.MustCompile(`<g class="more">`),
 	}
 	climbs := regexp.MustCompile(`\bback\b`)
 	cards := 0

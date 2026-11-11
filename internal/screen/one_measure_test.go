@@ -17,7 +17,7 @@ func TestTheGateWeighsAViewAsTheChooserRanksIt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	o := planOverview(units, "", nil, tactic{}, nil, nil)
+	o := planOverview(units, "", nil, tactic{}, nil, nil, nil)
 	type drawn struct {
 		weighed, hard, moved int
 	}

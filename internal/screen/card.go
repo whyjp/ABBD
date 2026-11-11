@@ -49,11 +49,21 @@ func (d *Drawing) card() {
 	if slices.ContainsFunc(d.Wires, func(w Wire) bool { return w.Back }) {
 		items = append(items, CardItem{Kind: "back", Text: "거슬러 오르는 선"})
 	}
+	if slices.ContainsFunc(d.Boxes, func(b Box) bool { return b.More > 0 }) {
+		items = append(items, CardItem{Kind: "more", Text: "줄인 선, 누르면 모두"})
+	}
 	if len(items) < 2 {
 		return
 	}
 	h := cardHead + len(items)*cardRow + cardPad
 	at, ok := d.room(cardW, h)
+	// The key to the counted lines goes first where the rest has no room
+	// for it: each count says what it is when pointed at.
+	if !ok && items[len(items)-1].Kind == "more" && len(items) > 2 {
+		items = items[:len(items)-1]
+		h -= cardRow
+		at, ok = d.room(cardW, h)
+	}
 	if !ok {
 		return
 	}

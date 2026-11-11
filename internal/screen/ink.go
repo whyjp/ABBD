@@ -186,7 +186,9 @@ func gapTo(b box, a, c pt) float64 {
 // nearest other ink is farthest, so the count reads as that stretch's.
 // A count stays off the boxes and, where its stretch leaves the room, more
 // than lineRoom off every other line; of those places, it takes one
-// headRoom off every arrowhead, its own included, where there is one.
+// headRoom off every arrowhead, its own included, where there is one. A
+// stretch too short to stand a count clear of the head it ends in hands
+// the count to the line's other stretches, which carry the same lines.
 func anchor(out []drawn, ps []piece, boxes []box) {
 	var taken []box
 	hs := heads(out)
@@ -196,12 +198,23 @@ func anchor(out []drawn, ps []piece, boxes []box) {
 			continue
 		}
 		w := textWidth(fmt.Sprintf("×%d", d.count), 11) + 2
-		a, b := d.own[0], d.own[1]
-		lo, hi := min(a.y, b.y), max(a.y, b.y)
-		best, bestGap, bestRank := d.label, -1.0, -1
-		for y := lo + 6; y <= hi+6; y += 2 {
-			for _, x := range []int{a.x + 5, a.x - 5 - w} {
-				lb := box{x, y - 9, w, 11}
+		stretches := [][2]pt{d.own}
+		for _, part := range d.parts {
+			part = straight(part)
+			for i := 1; i < len(part); i++ {
+				if s := [2]pt{part[i-1], part[i]}; part[i-1] != part[i] && !mine(piece{a: s[0], b: s[1]}, d.own[0], d.own[1]) {
+					stretches = append(stretches, s)
+				}
+			}
+		}
+		best, bestGap, bestRank, bestAt := d.label, -1.0, -1, 0
+		for si, st := range stretches {
+			if si > 0 && bestRank == 2 {
+				break
+			}
+			a, b := st[0], st[1]
+			for _, at := range countSpots(a, b, w) {
+				lb := box{at.x, at.y - 9, w, 11}
 				clear := true
 				for _, bx := range append(append([]box(nil), boxes...), taken...) {
 					if lb.x < bx.x+bx.w+2 && bx.x-2 < lb.x+lb.w && lb.y < bx.y+bx.h+2 && bx.y-2 < lb.y+lb.h {
@@ -225,14 +238,30 @@ func anchor(out []drawn, ps []piece, boxes []box) {
 						rank = 2
 					}
 				}
-				if rank > bestRank || rank == bestRank && near > bestGap {
-					best, bestGap, bestRank = pt{x, y}, near, rank
+				if rank > bestRank || rank == bestRank && near > bestGap && (si == 0 || bestAt > 0) {
+					best, bestGap, bestRank, bestAt = at, near, rank, si
 				}
 			}
 		}
 		d.label = best
 		taken = append(taken, box{best.x, best.y - 9, w, 11})
 	}
+}
+
+// countSpots are the places a count w wide may stand by the stretch a-b: either
+// side of a drop, down its length, or above and below a flat run.
+func countSpots(a, b pt, w int) []pt {
+	var out []pt
+	if a.x == b.x {
+		for y := min(a.y, b.y) + 6; y <= max(a.y, b.y)+6; y += 2 {
+			out = append(out, pt{a.x + 5, y}, pt{a.x - 5 - w, y})
+		}
+		return out
+	}
+	for x := min(a.x, b.x) + 6; x+w <= max(a.x, b.x)-6; x += 2 {
+		out = append(out, pt{x, a.y - 7}, pt{x, a.y + 14})
+	}
+	return out
 }
 
 // headRoom is how far a count keeps from an arrowhead's box, which reaches
