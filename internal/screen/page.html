@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>{{.Title}} · ABBD 청사진</title>
+<title>{{.Title}} · {{.Name}} 청사진</title>
 <style>
 {{css .Template}}
 </style>
@@ -12,7 +12,7 @@
 <body>
 <div class="shell">
 <nav class="site" aria-label="청사진 안내">
-  <a class="home" href="#overview">ABBD 청사진</a>
+  <a class="home" href="#overview">{{.Name}} 청사진</a>
   <ul class="plain top">
     <li><a href="#overview"{{if eq .Current "overview"}} aria-current="page"{{end}}>모듈과 계약</a></li>
     <li><a href="#contracts"{{if eq .Current "contracts"}} aria-current="page"{{end}}>계약 목록</a></li>
@@ -41,6 +41,8 @@
 {{end}}
 {{define "index"}}{{template "head" .}}
 <section id="overview">
+  <div class="project"><h1>{{.Name}}</h1>{{with .Purpose}}<p>{{.}}</p>{{else}}<p class="muted">이 프로젝트가 무엇을 하는지는 아직 적히지 않았습니다. <code>.abbd/project.yaml</code>의 <code>purpose</code>에 한 문단으로 적습니다.</p>{{end}}
+  {{if .Parts}}<h3>주요 부분</h3><ul class="plain parts">{{range .Parts}}<li>{{if index $.Paged .ID}}<a href="#m-{{.ID}}">{{.Name}}</a>{{else}}<a href="#u-{{.ID}}">{{.Name}}</a>{{end}} <span class="muted">{{label .Kind}}</span>{{with .Sentence}} <span>{{.}}</span>{{end}}</li>{{end}}</ul>{{end}}</div>
   <div class="drawhead">
     <h2>모듈과 계약 <span class="muted" style="font-weight:400;font-size:13px">모듈을 누르면 안을 봅니다</span></h2>
   </div>

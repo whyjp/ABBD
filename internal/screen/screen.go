@@ -4,6 +4,7 @@
 package screen
 
 import (
+	"path/filepath"
 	"slices"
 
 	"github.com/whyjp/abbd/internal/model"
@@ -49,6 +50,10 @@ func Load(st store.Store) (Input, error) {
 	}
 	if in.Project, err = st.LoadProject(); err != nil {
 		return in, err
+	}
+	if in.Project.Name == "" {
+		dir, _ := filepath.Abs(st.ProjectDir())
+		in.Project.Name = filepath.Base(dir)
 	}
 	if in.Synced, err = st.LoadState(); err != nil {
 		return in, err
@@ -156,6 +161,11 @@ type Model struct {
 	Flows  []FlowView
 	Stacks []StackView
 	Tables []TableView
+	// Name and Purpose are the project's, and Parts its top-level modules
+	// and every feature with the one line each says of itself, which the
+	// overview opens with.
+	Name, Purpose string `json:"-"`
+	Parts         []Part `json:"-"`
 	// Decisions are every decision note, the unit it sits on first, for the
 	// decisions index.
 	Decisions []Decision `json:"-"`
@@ -181,6 +191,8 @@ func Build(in Input) Model {
 	}
 	m.Edges = lines(in.Units)
 	m.Decisions = decisions(in)
+	m.Name, m.Purpose = in.Project.Name, in.Project.Purpose
+	m.Parts = parts(in.Units)
 	// The overview is drawn in the plain order of its rows only. Every
 	// module's page holds a focus view seated by it, so an overview that took
 	// another order after a small change would redraw every page. It may
@@ -382,4 +394,31 @@ func decisions(in Input) []Decision {
 		}
 	}
 	return out
+}
+
+// Part is a top-level module or a feature as the overview's opening lists
+// it: its name and the one line it says of itself.
+type Part struct {
+	ID, Name, Kind string
+	Sentence       string
+	Guess          bool
+}
+
+// parts lists the top-level modules, then every feature, each in ID order,
+// so a cold reader meets the main parts of the project before the drawing.
+func parts(units []model.Unit) []Part {
+	var mods, feats []Part
+	for _, u := range model.Present(units) {
+		p := Part{ID: string(u.ID), Name: u.Name.Value, Kind: string(u.Kind)}
+		if f := sentence(u); f != nil {
+			p.Sentence, p.Guess = f.Value, f.Guess()
+		}
+		switch {
+		case u.Kind == model.Feature:
+			feats = append(feats, p)
+		case u.Kind == model.Module && u.Parent == "":
+			mods = append(mods, p)
+		}
+	}
+	return append(mods, feats...)
 }
