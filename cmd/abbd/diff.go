@@ -10,6 +10,7 @@ import (
 
 	"github.com/whyjp/abbd/internal/gitx"
 	"github.com/whyjp/abbd/internal/model"
+	"github.com/whyjp/abbd/internal/screen"
 	"github.com/whyjp/abbd/internal/store"
 	"github.com/whyjp/abbd/internal/topology"
 )
@@ -138,10 +139,10 @@ func summary(d topology.Diff) string {
 	return strings.Join(parts, " · ")
 }
 
-// comparePage writes the blueprint committed at base into the compare
-// directory, and a page that sets one of its pages beside the current one
-// with the changes listed. Git and the state's fingerprint both ignore the
-// directory.
+// comparePage draws the blueprint of the state committed at base into the
+// compare directory, and a page that sets one of its pages beside the
+// current one with the changes listed. Git and the state's fingerprint both
+// ignore the directory.
 func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	dir := e.st.CompareDir()
 	then := filepath.Join(dir, "base")
@@ -154,29 +155,12 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	if err := os.WriteFile(filepath.Join(dir, ".gitignore"), []byte("*\n"), 0o644); err != nil {
 		return "", err
 	}
-	read := func(f string) ([]byte, error) { return gitx.Show(e.root, base, f) }
-	var files []string
-	var err error
-	if base == prev {
-		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
-		read = func(f string) ([]byte, error) { return os.ReadFile(filepath.Join(kept, f)) }
-		var es []os.DirEntry
-		es, err = os.ReadDir(kept)
-		for _, en := range es {
-			files = append(files, en.Name())
-		}
-	} else {
-		files, err = gitx.Files(e.root, base, store.Dir+"/blueprint")
-	}
+	pages, err := e.pagesAt(base)
 	if err != nil {
 		return "", err
 	}
-	for _, f := range files {
-		b, err := read(f)
-		if err != nil {
-			return "", err
-		}
-		if err := os.WriteFile(filepath.Join(then, filepath.Base(f)), b, 0o644); err != nil {
+	for f, b := range pages {
+		if err := os.WriteFile(filepath.Join(then, f), b, 0o644); err != nil {
 			return "", err
 		}
 	}
@@ -213,6 +197,36 @@ func (e env) comparePage(base string, d topology.Diff) (string, error) {
 	}
 	page := filepath.Join(dir, "index.html")
 	return page, os.WriteFile(page, []byte(b.String()), 0o644)
+}
+
+// pagesAt draws the blueprint of the state committed at base, which git
+// keeps without its pages, or reads the pages the kept copy holds.
+func (e env) pagesAt(base string) (map[string][]byte, error) {
+	if base == prev {
+		kept := filepath.Join(e.st.PreviousDir(), store.Dir, "blueprint")
+		es, err := os.ReadDir(kept)
+		if err != nil {
+			return nil, err
+		}
+		pages := map[string][]byte{}
+		for _, en := range es {
+			if pages[en.Name()], err = os.ReadFile(filepath.Join(kept, en.Name())); err != nil {
+				return nil, err
+			}
+		}
+		return pages, nil
+	}
+	at := filepath.Join(e.st.CompareDir(), "at")
+	defer os.RemoveAll(at)
+	st, err := e.st.CheckoutAt(base, at)
+	if err != nil {
+		return nil, err
+	}
+	in, err := screen.Load(st)
+	if err != nil || len(in.Units) == 0 {
+		return nil, err
+	}
+	return screen.Files(screen.Build(in))
 }
 
 // prev names the copy of .abbd that a write kept from before the first

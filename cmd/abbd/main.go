@@ -175,8 +175,9 @@ abbd status [--check] [--verbose] [--root DIR]
                                      line, for a hook or CI;
                                      it also exits 1 when the state or the blueprint is UNKNOWN,
                                      because it could not compare them (no git work tree, a git
-                                     error, or no graph.json), and says which; dead evidence, an
-                                     orphaned text, one whose module is gone or no longer
+                                     error, or a state that does not say what it drew), and
+                                     says which; a blueprint not drawn in this checkout does
+                                     not fail it; dead evidence, an orphaned text, one whose module is gone or no longer
                                      top-level, a relation that runs up a stack, and a table's
                                      cell the stored relations do not bear out are reported but
                                      do not fail it; long: and unbacked: lines fold into one count
