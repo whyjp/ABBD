@@ -19,7 +19,7 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 8
+        counts: 1
         density: 28
         doglegs: 14
         dots: 3
@@ -30,7 +30,7 @@ pages:
         abreast: 0
         colour_switches: 8
         combs: 0
-        counts: 5
+        counts: 0
         density: 15
         doglegs: 8
         dots: 0
@@ -41,7 +41,7 @@ pages:
         abreast: 0
         colour_switches: 0
         combs: 0
-        counts: 2
+        counts: 1
         density: 12
         doglegs: 18
         dots: 3

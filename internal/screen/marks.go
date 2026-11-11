@@ -561,9 +561,15 @@ func (d *Drawing) marked(heads []box) []box {
 // its word in its tooltip only, and so does a line whose touching ink
 // already says its word nearby.
 func (d *Drawing) labels(segs []seg, heads []box, t tree) {
-	taken := d.marked(heads)
 	canvas := box{0, 0, d.Width, d.Height}
 	words, saids, phrased, most := make([]string, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires)), make([]bool, len(d.Wires))
+	// freed is where the counts a word took over stood. A word stands
+	// there only where it is not already said nearby, and no word said
+	// again stands near it, so a freed spot adds no repeat.
+	var freed []box
+	inFreed := func(l Label) bool {
+		return slices.ContainsFunc(freed, func(b box) bool { return hit(l.area(), b) })
+	}
 	for i, w := range d.Wires {
 		words[i], saids[i] = word(t, w.lines)
 		most[i] = !saids[i] && words[i] != "" && allVia(t, w.lines) == ""
@@ -571,7 +577,15 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
 		}
+		// A bus whose lines share a word says the word instead of its
+		// count, and one without a word shows its count only from three
+		// lines (rule 22).
+		if w.Count > 1 && (words[i] != "" || w.Count < 3) {
+			freed = append(freed, countBox(w))
+			d.Wires[i].Count, d.Wires[i].LX, d.Wires[i].LY = 0, 0, 0
+		}
 	}
+	taken := d.marked(heads)
 	// whole says every path of a net says one word, so the net is labelled
 	// as one line.
 	whole := map[int]bool{}
@@ -615,8 +629,9 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 	track := tracks(d.Wires, touches)
 	// placed are the labels set so far, so a word is not said twice nearby.
 	type set struct {
-		l    Label
-		wire int
+		l     Label
+		wire  int
+		freed bool
 	}
 	var placed []set
 	// repeats says a label at l would say a word already set within
@@ -630,7 +645,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			if p.l.S != l.S {
 				return false
 			}
-			return (l.Said || most[i]) && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
+			return (l.Said || most[i]) && track(i) == track(p.wire) || dx*dx+dy*dy <= repeatNear*repeatNear && (!touch || p.freed || sayOnce && touches(i, p.wire) && ink(d.Wires[i]) != "" && kin(i, p.wire))
 		})
 	}
 	done := map[int]bool{}
@@ -773,7 +788,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 								opts = []Label{{s, x + labelOff + tw/2 + 1, y, said}, {s, x - labelOff - tw/2 - 1, y, said}}
 							}
 							for _, l := range opts {
-								if !repeats(i, l, near) && clear(g, l, c-half, c+half) {
+								if !repeats(i, l, near) && clear(g, l, c-half, c+half) && !(near && inFreed(l)) {
 									got = &l
 									break search
 								}
@@ -787,7 +802,7 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 			continue
 		}
 		d.Wires[i].Label = got
-		placed = append(placed, set{*got, i})
+		placed = append(placed, set{*got, i, inFreed(*got)})
 		taken = append(taken, got.area())
 		if n != 0 && whole[n] {
 			done[n] = true
