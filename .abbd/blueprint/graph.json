@@ -1767,11 +1767,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/gitx",
@@ -1828,11 +1830,13 @@
       "Signature": "",
       "Purpose": {
         "Value": "so a sync can fingerprint the working tree, untracked files included, without disturbing the user's index",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Stages the whole tree minus an excluded path into a throwaway GIT_INDEX_FILE and returns the written tree ID, or empty outside a repository.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Anchors": [
         "internal/gitx/gitx.go Snapshot"
@@ -5974,7 +5978,7 @@
                 "Code": true
               },
               {
-                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Its reading verbs are abbd install, abbd explain, abbd brief, abbd path, abbd impact, abbd diff, abbd review, abbd evidence, abbd status and abbd lint. Every verb keeps abbd exit codes: 0 on success, 1 when the command fails, 64 when the line does not parse.",
+                "Text": " state. It turns one command line into one verb, runs it, and after every writing verb renders the blueprint again. Its writing verbs are abbd setup, abbd sync, abbd migrate, abbd record relation, abbd record unit, abbd record parent, abbd record fact, abbd record evidence, abbd retract, abbd understand, abbd forget, abbd flow, abbd stack and abbd table. Setup and status work in a repository whose .gitignore is a whitelist. Its reading verbs are abbd install, abbd explain, abbd brief, abbd path, abbd impact, abbd diff, abbd review, abbd evidence, abbd status and abbd lint. Every verb keeps abbd exit codes: 0 on success, 1 when the command fails, 64 when the line does not parse.",
                 "Code": false
               }
             ]
@@ -6464,7 +6468,23 @@
                       "Code": true
                     },
                     {
-                      "Text": " left out. A submodule counts as the commit the superproject's index records, not the one checked out, so every clone of a commit fingerprints the same tree. A nested repository with no commit yet, which ",
+                      "Text": " left out, by an exclude pathspec unless ",
+                      "Code": false
+                    },
+                    {
+                      "Text": ".gitignore",
+                      "Code": true
+                    },
+                    {
+                      "Text": " already ignores it, as a whitelist ",
+                      "Code": false
+                    },
+                    {
+                      "Text": ".gitignore",
+                      "Code": true
+                    },
+                    {
+                      "Text": " does. A submodule counts as the commit the superproject's index records, not the one checked out, so every clone of a commit fingerprints the same tree. A nested repository with no commit yet, which ",
                       "Code": false
                     },
                     {
@@ -6531,7 +6551,7 @@
               ],
               "Quotes": [
                 "internal/screen/screen.go \"case in.Synced.Merged || in.Tree != in.Synced.Fingerprint:\"",
-                "internal/gitx/gitx.go \"add := []string{\\\"add\\\", \\\"-A\\\", \\\"--\\\", \\\".\\\", \\\":(exclude)\\\" + exclude}\"",
+                "internal/gitx/gitx.go \"add := []string{\\\"add\\\", \\\"-A\\\", \\\"--\\\", \\\".\\\"}\"",
                 "internal/gitx/gitx.go \"add = append(add, \\\":(exclude,literal)\\\"+r)\"",
                 "internal/gitx/gitx.go \"\\\"update-index\\\", \\\"--add\\\", \\\"--cacheinfo\\\", \\\"160000,\\\"+l.commit+\\\",\\\"+prefix+l.path\""
               ]
@@ -12181,11 +12201,13 @@
       "Name": "internal/gitx",
       "Purpose": {
         "Value": "so ABBD can ask git the few facts it needs without touching the user's index or history",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Responsibility": {
         "Value": "Shells out to git for HEAD, files and blobs at a revision, the merge base with the default branch, a working-tree snapshot tree, and renames or changes between two snapshots.",
-        "Badge": "inferred"
+        "Badge": "inferred",
+        "Stale": true
       },
       "Standing": {
         "Provides": 0,
@@ -12362,7 +12384,39 @@
                 "Code": true
               },
               {
-                "Text": ". A submodule enters as the commit the superproject's index records, not the one checked out, so a clean clone of a synced commit snapshots the same tree. Callers pass ",
+                "Text": ". It names no exclude for a path .gitignore already ignores (",
+                "Code": false
+              },
+              {
+                "Text": "ignored",
+                "Code": true
+              },
+              {
+                "Text": ", through ",
+                "Code": false
+              },
+              {
+                "Text": "git check-ignore",
+                "Code": true
+              },
+              {
+                "Text": "), since git refuses such a pathspec and a whitelist .gitignore such as ",
+                "Code": false
+              },
+              {
+                "Text": "/*",
+                "Code": true
+              },
+              {
+                "Text": " ignores ",
+                "Code": false
+              },
+              {
+                "Text": ".abbd",
+                "Code": true
+              },
+              {
+                "Text": " too. A submodule enters as the commit the superproject's index records, not the one checked out, so a clean clone of a synced commit snapshots the same tree. Callers pass ",
                 "Code": false
               },
               {
