@@ -67,21 +67,35 @@ func TestAFlowStopsWhereNoLineJoinsIt(t *testing.T) {
 	}
 }
 
-// A stored stack's layers band the boxes they name, numbered from the top
-// among the bands drawn, with no gap. A layer of one box takes no band, and
-// a band is drawn only where it holds no other box.
+// A stored stack's layers stand in rows of their own, so each layer of two
+// boxes or more bands every box it names, numbered from the top with no
+// gap, and its band holds no other box. A layer of one box takes no band.
 func TestAStackBandsItsLayers(t *testing.T) {
-	order := []string{"commands", "store", "vocabulary"}
-	layers := map[string][]model.ID{"commands": {"MOD-0001"}, "store": {"MOD-0041", "MOD-0017"}, "vocabulary": {"MOD-0030", "MOD-0013"}}
+	order := []string{"commands", "rules", "apart", "store"}
+	layers := map[string][]model.ID{
+		"commands": {"MOD-0001"},
+		"rules":    {"MOD-0013", "MOD-0054", "MOD-0026"},
+		"apart":    {"MOD-0022", "MOD-0009"},
+		"store":    {"MOD-0041", "MOD-0017"},
+	}
 	m := withFigures(t, nil, layers, order)
 	d := m.Overview
 	var l layering
 	for _, name := range order {
 		l.names, l.units = append(l.names, name), append(l.units, layers[name])
 	}
-	groups := d.layered(newTreeFor(t), []layering{l})
-	if len(groups) != 2 || groups[0].title != "store" || groups[1].title != "vocabulary" {
-		t.Fatalf("layered gives %+v, want store and vocabulary, not the one-box commands", groups)
+	bare := d
+	bare.Zones = nil
+	groups := bare.layered(newTreeFor(t), []layering{l})
+	want := map[string][]string{"rules": {"MOD-0013", "MOD-0026", "MOD-0054"}, "apart": {"MOD-0009", "MOD-0022"}, "store": {"MOD-0017", "MOD-0041"}}
+	if len(groups) != len(want) {
+		t.Fatalf("layered gives %+v, want every box of rules, apart and store", groups)
+	}
+	for _, g := range groups {
+		ids := slices.Sorted(slices.Values(g.ids))
+		if !slices.Equal(ids, want[g.title]) {
+			t.Errorf("layer %q bands %v, want %v", g.title, ids, want[g.title])
+		}
 	}
 	var drawn []string
 	for _, z := range d.Zones {
@@ -99,8 +113,8 @@ func TestAStackBandsItsLayers(t *testing.T) {
 			}
 		}
 	}
-	if len(drawn) == 0 {
-		t.Fatal("no layer is banded")
+	if !slices.Equal(drawn, []string{"rules", "apart", "store"}) {
+		t.Fatalf("bands %v are drawn, want rules, apart and store", drawn)
 	}
 }
 

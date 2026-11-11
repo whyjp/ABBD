@@ -9,7 +9,7 @@ import (
 // plainly. Folding leaves their two-way edges out of the ranking, so the
 // pairs share rows; with no two-way pair it has nothing to change.
 func TestFoldRanksTwoWayPairsTogether(t *testing.T) {
-	nodes := []lnode{{"a", 100, 60}, {"b", 100, 60}, {"c", 100, 60}, {"d", 100, 60}}
+	nodes := []lnode{{id: "a", w: 100, h: 60}, {id: "b", w: 100, h: 60}, {id: "c", w: 100, h: 60}, {id: "d", w: 100, h: 60}}
 	edges := []ledge{{"a", "b"}, {"b", "a"}, {"b", "c"}, {"c", "b"}, {"c", "d"}, {"d", "c"}}
 	rows := func(es []ledge, tc tactic) layout {
 		return arrange(slices.Clone(nodes), es, overviewBudget, nil, tc)

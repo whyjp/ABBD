@@ -22,6 +22,9 @@ import (
 type lnode struct {
 	id   string
 	w, h int
+	// tier is the stored stack's tier the node stands in, from 1 at the
+	// top, 0 for none (tiers).
+	tier int
 }
 
 // ledge runs from a node to one it uses.
@@ -366,6 +369,9 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		}
 		rank[v] = max(rank[v], low-1)
 	}
+	if seat == nil {
+		tier(nodes, order, out, keep, rank)
+	}
 	// The frame's edges leave the layering, and the layers they alone held
 	// close up.
 	if _, ok := byID[frameTopNode]; ok {
@@ -448,6 +454,16 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 	for _, id := range append(slices.Clone(tops), bottoms...) {
 		w[id] = byID[id].w
 	}
+	tiers := map[string]int{}
+	for _, nd := range nodes {
+		if nd.tier > 0 {
+			tiers[nd.id] = nd.tier
+		}
+	}
+	if len(tiers) > 0 {
+		sorted := sortRows
+		sortRows = func(g *layered) { sorted(g); g.huddle(tiers) }
+	}
 	g := proper(withChips(ranks), w, pairs, lines)
 	sortRows(&g)
 	room := budget - 2*padX
@@ -493,6 +509,7 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 		// A move changes the gaps in its row, so a row may come out wider:
 		// past the budget, the drawing keeps the rows as they were.
 		if g.shorten(x) {
+			g.huddle(tiers)
 			if x2, w2 := g.place(budget, room); w2 <= max(width, budget) {
 				x, width = x2, w2
 			} else {
@@ -958,4 +975,74 @@ func setName(name string, px, pad, minW, maxW int) ([]string, int) {
 		return []string{fa, fb}, maxW
 	}
 	return []string{a, b}, max(minW, max(textWidth(a, px), textWidth(b, px))+pad)
+}
+
+// tier ranks the boxes of a stored stack's tiers (lnode.tier) in the
+// stack's order, one row to a tier, so a tier's boxes stand together and
+// read top down as the stack does; a line between two boxes of one tier
+// runs within its row. Every other node sits below what uses it, or just
+// above what it uses when nothing uses it, and the rows close up.
+func tier(nodes []lnode, order []string, out map[string][]string, keep map[ledge]bool, rank map[string]int) {
+	of := map[string]int{}
+	for _, n := range nodes {
+		if n.tier > 0 {
+			of[n.id] = n.tier
+			rank[n.id] = n.tier - 1
+		}
+	}
+	if len(of) == 0 {
+		return
+	}
+	ins := map[string][]string{}
+	linked := map[string]bool{}
+	for _, v := range order {
+		for _, w := range out[v] {
+			if keep[ledge{v, w}] {
+				ins[w] = append(ins[w], v)
+				linked[v], linked[w] = true, true
+			}
+		}
+	}
+	for range len(order) {
+		moved := false
+		for _, v := range order {
+			if of[v] > 0 || !linked[v] {
+				continue
+			}
+			r := 0
+			if len(ins[v]) > 0 {
+				for _, u := range ins[v] {
+					r = max(r, rank[u]+1)
+				}
+			} else {
+				r = 1 << 30
+				for _, w := range out[v] {
+					if keep[ledge{v, w}] {
+						r = min(r, rank[w]-1)
+					}
+				}
+			}
+			if r != rank[v] {
+				rank[v], moved = r, true
+			}
+		}
+		if !moved {
+			break
+		}
+	}
+	used := map[int]bool{}
+	for _, v := range order {
+		if of[v] > 0 || linked[v] {
+			used[rank[v]] = true
+		}
+	}
+	at := map[int]int{}
+	for i, r := range slices.Sorted(maps.Keys(used)) {
+		at[r] = i
+	}
+	for _, v := range order {
+		if of[v] > 0 || linked[v] {
+			rank[v] = at[rank[v]]
+		}
+	}
 }

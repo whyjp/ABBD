@@ -35,7 +35,7 @@ func TestAViewWhoseChipsOverflowAnEdgeIsNotDrawnLaned(t *testing.T) {
 		alone[1].Relations = append(alone[1].Relations, rel(id, model.Consumes))
 	}
 	for name, units := range map[string][]model.Unit{"one box": alone, "three rows": rowsWithChips(20)} {
-		o := planOverview(units, "", nil, tactic{})
+		o := planOverview(units, "", nil, tactic{}, nil)
 		if _, ok := o.inside("MOD-0001", units, "", nil, tactic{}, nil); !ok {
 			t.Fatalf("%s: the plain tactic draws the view", name)
 		}
@@ -52,7 +52,7 @@ func TestAViewWhoseChipsOverflowAnEdgeIsNotDrawnLaned(t *testing.T) {
 // otherwise take lanes.
 func TestAViewWithRoomForItsChipsTakesLanes(t *testing.T) {
 	units := rowsWithChips(2)
-	o := planOverview(units, "", nil, tactic{})
+	o := planOverview(units, "", nil, tactic{}, nil)
 	plain, ok := o.inside("MOD-0001", units, "", nil, tactic{}, nil)
 	if !ok {
 		t.Fatal("the plain tactic draws the view")
