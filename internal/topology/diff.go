@@ -350,6 +350,12 @@ func (d Diff) Lines() []string {
 		out = append(out, s)
 	}
 	for _, s := range d.Signatures {
+		// A schema-sized signature would bury every other line, so a long
+		// one says what changed in it and leaves the text to --json.
+		if len(s.Old)+len(s.New) > longSignature {
+			out = append(out, fmt.Sprintf("~ contract %s %s signature changed: %s", s.ID, s.Name, sigDelta(s.Old, s.New)))
+			continue
+		}
 		out = append(out, fmt.Sprintf("~ contract %s %s signature: %q -> %q", s.ID, s.Name, s.Old, s.New))
 	}
 	for _, l := range d.Listed {
@@ -631,4 +637,38 @@ func (d Diff) String() string {
 		return "no topology change\n"
 	}
 	return strings.Join(ls, "\n") + "\n"
+}
+
+// longSignature is the length past which a signature change is summarised.
+const longSignature = 200
+
+// sigDelta names the words a long signature gained and lost, at most a few
+// of each, so a reader sees what changed without the whole schema.
+func sigDelta(old, now string) string {
+	words := func(s string) map[string]bool {
+		out := map[string]bool{}
+		for _, w := range strings.FieldsFunc(s, func(r rune) bool { return strings.ContainsRune("{},;: ()<>\"[]=|*.\n\t", r) }) {
+			out[w] = true
+		}
+		return out
+	}
+	was, is := words(old), words(now)
+	list := func(sign string, a, b map[string]bool) []string {
+		var out []string
+		for w := range a {
+			if !b[w] {
+				out = append(out, sign+w)
+			}
+		}
+		slices.Sort(out)
+		if len(out) > 6 {
+			out = append(out[:6], fmt.Sprintf("%s%d more", sign, len(out)-6))
+		}
+		return out
+	}
+	d := append(list("+", is, was), list("-", was, is)...)
+	if len(d) == 0 {
+		return "the same words in another order; --json has both"
+	}
+	return strings.Join(d, " ") + "; --json has both"
 }

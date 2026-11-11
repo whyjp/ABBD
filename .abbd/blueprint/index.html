@@ -744,9 +744,9 @@ internal/identity → internal/store: sync state 계약을 거쳐 씁니다, 판
 <span><svg width="34" height="10"><path d="M0 5 H31" style="stroke:var(--hn);stroke-width:1.5"/><path d="M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hn);stroke-width:1.6"/></svg>계약을 거치지 않는 직접 의존: 열린 머리, 나온 상자의 색</span>
 <span><svg width="34" height="10"><path d="M3 5 H31" style="stroke:var(--hn);stroke-width:1.5"/><path d="M9 1 L1 5 L9 9 M25 1 L33 5 L25 9" style="fill:none;stroke:var(--hn);stroke-width:1.6"/></svg>서로 직접 의존: 양쪽 열린 머리</span>
 <span><svg width="34" height="10"><rect x="1" y="1" width="14" height="8" rx="2" style="fill:var(--panel);stroke:var(--h2);stroke-width:1.6"/><path d="M15 5 H34" style="stroke:var(--hn);stroke-width:1.2"/></svg>색: 상자마다 한 색입니다. 이 그림은 주 흐름이나 허브의 선만 색으로 그리고, 다른 선은 직접 의존까지 모두 가는 회색입니다. 상자를 가리키면 그 상자의 선이 그 상자의 색으로, 선을 가리키면 그 선이 제 색으로 켜집니다. 선 끝의 모양이 종류를 말합니다</span>
-<span><svg width="34" height="12"><path d="M0 6 H13 M21 6 H34" style="stroke:var(--hn);stroke-width:1.5"/><path d="M17 0 V12" style="stroke:var(--hn);stroke-width:1.5"/></svg>끊긴 선: 다른 선 아래로 지나감. 점은 만나는 곳</span>
+<span><svg width="34" height="12"><path d="M0 6 H13 M21 6 H34" style="stroke:var(--hn);stroke-width:1.5"/><path d="M17 0 V12" style="stroke:var(--hn);stroke-width:1.5"/></svg>끊긴 선: 다른 선 아래로 지나감. 점은 네 갈래로 만나는 곳</span>
 <span><svg width="34" height="16"><path d="M0 14 H34" style="stroke:var(--hn);stroke-width:1.5"/><text x="17" y="10" text-anchor="middle" style="font-size:11px;fill:var(--hn)">호출</text></svg>선 위의 낱말: 건너는 것(phrase), 없으면 관계가 생기는 방식(via)</span>
-<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:color-mix(in srgb, var(--hn) 70%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4"/></svg>옅은 점선: 거슬러 오르는 선(위로, 또는 같은 줄에서 왼쪽으로). 상자에 마우스를 올리면 그 상자의 선만 남습니다</span>
+<span><svg width="30" height="8"><path d="M0 4 H30" style="stroke:color-mix(in srgb, var(--hn) 70%, var(--bg));stroke-width:1.2;stroke-dasharray:6 4"/></svg>옅은 점선: 층을 거슬러 위의 상자를 쓰는 의존</span>
 <span title="에이전트(리더)가 읽음. 인용한 코드가 아직 그대로인지 sync마다 검사함"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--panel);stroke:var(--guess);stroke-width:1.5"/></svg>판독: 리더가 읽은 관계</span>
 <span title="사람이 말한 것"><svg width="14" height="10"><circle cx="7" cy="5" r="3.5" style="fill:var(--ok)"/></svg>사람: 사람이 말한 관계</span>
 <span>표시 없는 선: 코드에서 추출</span>
