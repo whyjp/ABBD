@@ -459,9 +459,9 @@ func TestAnInsideKeepsItsSpineToTheStages(t *testing.T) {
 	t.Fatal("no inside of MOD-0001")
 }
 
-// A later stage that uses an earlier one runs back by the order the stages
-// set, which O4 judges: rule 13 leaves such lines out of its count.
-func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
+// backToConfig is five stages in a chain that each use the first, config,
+// so every line to config runs from a later stage to an earlier one.
+func backToConfig() ([]model.Unit, []store.Part[model.Layer]) {
 	units := []model.Unit{called("MOD-0001", "config")}
 	var parts []store.Part[model.Layer]
 	parts = append(parts, band("config", "MOD-0001"))
@@ -474,12 +474,63 @@ func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
 		units = append(units, called(id, fmt.Sprint("stage ", i), rels...))
 		parts = append(parts, band(fmt.Sprint("stage ", i), id))
 	}
+	return units, parts
+}
+
+// A later stage that uses an earlier one runs back by the order the stages
+// set, which O4 judges: rule 13 leaves such lines out of its count.
+func TestLinesBackToAnEarlierStageAreNotCountedAgainstTheAxis(t *testing.T) {
+	units, parts := backToConfig()
 	vs, err := Lint(Build(Input{Units: units, Figures: primaryStack(parts...)}), "overview")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if n := Sum(vs).Back; n != 0 {
 		t.Errorf("%d lines counted back, want none", n)
+	}
+}
+
+// A line from a later stage to an earlier one left out of rule 13's count
+// must still be dashed: drawn solid it reads forward, and rule 13 breaks.
+func TestALineBackToAnEarlierStageDrawnSolidBreaksTheAxis(t *testing.T) {
+	units, parts := backToConfig()
+	v := views(Build(Input{Units: units, Figures: primaryStack(parts...)}))[0]
+	s, err := sheetOf(v.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	solid := 0
+	for i, w := range s.strokes {
+		if c := strings.Fields(w.class); slices.Contains(c, "back") {
+			s.strokes[i].class = strings.Join(slices.DeleteFunc(c, func(f string) bool { return f == "back" }), " ")
+			solid++
+		}
+	}
+	if solid == 0 {
+		t.Fatal("no back line drawn to make solid")
+	}
+	got := newLook(v, s).metrics.violations(v.budget)
+	if !slices.ContainsFunc(got, func(b string) bool { return strings.HasPrefix(b, "13: ") && strings.Contains(b, "drawn like forward") }) {
+		t.Errorf("%d back lines drawn solid, rule 13 says %q", solid, got)
+	}
+}
+
+// Only lines between stages run back by the stage order: on a view that
+// lays the flow out, a back line between boxes no stage holds still
+// counts against the axis.
+func TestABackLineOffTheStagesStillCountsOnAFlowView(t *testing.T) {
+	units, parts := backToConfig()
+	units[1].Relations = append(units[1].Relations, deps("MOD-0010")...)
+	units = append(units,
+		called("MOD-0010", "lib a", deps("MOD-0011")...),
+		called("MOD-0011", "lib b", deps("MOD-0012")...),
+		called("MOD-0012", "lib c", deps("MOD-0010")...))
+	vs, err := Lint(Build(Input{Units: units, Figures: primaryStack(parts...)}), "overview")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := Sum(vs).Back; n == 0 {
+		t.Error("the cycle lib a, lib b, lib c counts no line back")
 	}
 }
 

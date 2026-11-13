@@ -425,10 +425,11 @@ func (m Metrics) String() string {
 
 func measure(s sheet) Metrics { return measureBy(s, nil) }
 
-// measureBy is measure, but a back stroke whose every route turns does
-// not count against rule 13: on a view that lays a primary flow out, a
-// line from a later stage to an earlier one runs back by the order the
-// flow's stages set, which O4 judges, not by the layout.
+// measureBy is measure, but a back stroke whose every route turns is
+// left out of rule 13's count of back lines, though it must still be
+// dashed: on a view that lays a primary flow out, a line from a later
+// stage to an earlier one runs back by the order the flow's stages set,
+// which O4 judges, not by the layout.
 func measureBy(s sheet, turns func(route int) bool) Metrics {
 	m := Metrics{Width: int(s.width), Wires: s.groups}
 	for _, sh := range s.shapes {
@@ -726,9 +727,10 @@ func measureBy(s sheet, turns func(route int) bool) Metrics {
 		switch {
 		case forward:
 			m.Forward++
-		case routes > 0 && turned == routes:
 		default:
-			m.Back++
+			if routes == 0 || turned < routes {
+				m.Back++
+			}
 			if !strings.Contains(" "+w.class+" ", " back ") {
 				m.BackPlain++
 			}
