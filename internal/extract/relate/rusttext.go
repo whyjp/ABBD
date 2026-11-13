@@ -1,18 +1,23 @@
 package relate
 
 import (
+	"strings"
 	"unicode/utf8"
+
+	"github.com/whyjp/abbd/internal/extract/lsp"
 )
 
 // span is what a byte of Rust source sits in, as far as reading a
-// reference needs: code, a use declaration, or text the compiler never
-// resolves (a comment or a literal), where a doc link names a symbol
-// without using it.
+// reference needs: code, an attribute, a private use declaration, a pub use
+// that re-exports, or text the compiler never resolves (a comment or a
+// literal), where a doc link names a symbol without using it.
 type span byte
 
 const (
 	inCode span = iota
+	inAttr
 	inUse
+	inExport
 	inText
 )
 
@@ -42,6 +47,27 @@ func readRust(src []byte) rustSource {
 	return s
 }
 
+// text is the source a single-line range covers.
+func (s rustSource) text(r lsp.Range) string {
+	if r.Start.Line != r.End.Line || r.Start.Line < 0 || r.Start.Line >= len(s.lines) {
+		return ""
+	}
+	l := s.lines[r.Start.Line]
+	if r.Start.Character < 0 || r.End.Character > len(l) || r.Start.Character > r.End.Character {
+		return ""
+	}
+	return l[r.Start.Character:r.End.Character]
+}
+
+// bang is whether a ! follows the position, past spaces, as a macro
+// invocation's name has.
+func (s rustSource) bang(p lsp.Position) bool {
+	if p.Line < 0 || p.Line >= len(s.lines) || p.Character > len(s.lines[p.Line]) {
+		return false
+	}
+	return strings.HasPrefix(strings.TrimLeft(s.lines[p.Line][p.Character:], " "), "!")
+}
+
 // at is the span the byte at line and column sits in.
 func (s rustSource) at(line, col int) span {
 	if line < 0 || line >= len(s.starts) {
@@ -64,7 +90,8 @@ func scanRust(src []byte) []span {
 			out[i] = k
 		}
 	}
-	use, depth := -1, 0
+	use, depth, kind := -1, 0, inUse
+	attr, nest := -1, 0
 	for i := 0; i < len(src); {
 		c := src[i]
 		switch {
@@ -132,10 +159,32 @@ func scanRust(src []byte) []span {
 				}
 			}
 			if !raw && use < 0 && string(src[i:j]) == "use" && !precise(src, j) {
-				use, depth = i, 0
+				use, depth, kind = i, 0, inUse
+				if exported(src, i) {
+					kind = inExport
+				}
 			}
 			i = j
+		case c == '#' && attr < 0 && (at(src, i+1) == '[' || at(src, i+1) == '!' && at(src, i+2) == '['):
+			attr, nest = i, 0
+			i++
 		default:
+			if attr >= 0 {
+				switch c {
+				case '[':
+					nest++
+				case ']':
+					nest--
+					if nest == 0 {
+						for k := attr; k <= i; k++ {
+							if out[k] == inCode {
+								out[k] = inAttr
+							}
+						}
+						attr = -1
+					}
+				}
+			}
 			if use >= 0 {
 				switch c {
 				case '{':
@@ -146,7 +195,7 @@ func scanRust(src []byte) []span {
 					if depth <= 0 {
 						for k := use; k <= i; k++ {
 							if out[k] == inCode {
-								out[k] = inUse
+								out[k] = kind
 							}
 						}
 						use = -1
@@ -170,6 +219,27 @@ func identStart(c byte) bool {
 	return c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= 0x80
 }
 func ident(c byte) bool { return identStart(c) || c >= '0' && c <= '9' }
+
+// exported is whether the use keyword at i follows a pub visibility, such
+// as pub or pub(crate), so the declaration re-exports what it names.
+func exported(src []byte, i int) bool {
+	j := i - 1
+	for j >= 0 && space(src[j]) {
+		j--
+	}
+	if j >= 0 && src[j] == ')' {
+		for j >= 0 && src[j] != '(' {
+			j--
+		}
+		j--
+		for j >= 0 && space(src[j]) {
+			j--
+		}
+	}
+	return j >= 2 && string(src[j-2:j+1]) == "pub" && (j < 3 || !ident(src[j-3]))
+}
+
+func space(c byte) bool { return c == ' ' || c == '\t' || c == '\n' || c == '\r' }
 
 // precise is whether the use keyword ending at j is a precise-capturing
 // bound, as in impl Trait + use<'a>, rather than a declaration.

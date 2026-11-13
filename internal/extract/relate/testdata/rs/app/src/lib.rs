@@ -23,8 +23,10 @@ pub fn shine() -> u32 {
 
 #[cfg(test)]
 mod tests {
+    use extra::probe;
+
     #[test]
     fn probes() {
-        assert_eq!(extra::probe(), 1);
+        assert_eq!(probe(), 1);
     }
 }

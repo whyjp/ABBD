@@ -17,9 +17,9 @@ import (
 // rustFixture is testdata/rs, a Cargo workspace: app calls engine and,
 // with the fancy feature, fancy; it uses shapes only for a type and a
 // constant and plugin only for a unit struct; app's net module calls a
-// private fn of app and calls util; plugin implements engine's trait; app's
-// cfg(windows) module calls util and its test module calls extra, and
-// neither is read.
+// private fn of app and calls util; plugin implements engine's trait and
+// invokes its macro; app's cfg(windows) module calls util, and its test
+// module and integration test use extra, and none of those is read.
 const rustFixture = "testdata/rs"
 
 func rustUnits() []extract.DocUnit {
@@ -89,7 +89,7 @@ func TestRustRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 		"mod-engine consumes if-speaker via trait [engine/src/lib.rs:6:s.speak()]",
 		"mod-net depends_on mod-app via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
 		"mod-net depends_on mod-util via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
-		"mod-plugin depends_on mod-engine via import [plugin/src/lib.rs:1:use engine::Speaker; plugin/src/lib.rs:5:impl Speaker for Dog {]",
+		"mod-plugin depends_on mod-engine via macro [plugin/src/lib.rs:7:engine::loud!(\"woof\")]",
 		"mod-plugin provides if-speaker via trait [plugin/src/lib.rs:5:impl Speaker for Dog {]",
 	}
 	if !slices.Equal(got, want) {
@@ -123,8 +123,8 @@ func TestRustTraitImplementationWithoutAContractIsADependency(t *testing.T) {
 	}
 }
 
-func TestRustSourceTellsUseDeclarationsFromCodeAndComments(t *testing.T) {
-	src := "use a::{b,\n  c};\n// use d;\nfn f() { let s = \"use x;\"; g(r#\"use\"#, 'u', b'\\''); use e::h; h::<'a>() }\nfn k() -> impl T + use<'a> { m() }\n"
+func TestRustSourceTellsCodeFromUsesAttributesAndComments(t *testing.T) {
+	src := "use a::{b,\n  c};\n// use d;\nfn f() { let s = \"use x;\"; g(r#\"use\"#, 'u', b'\\''); use e::h; h::<'a>() }\nfn k() -> impl T + use<'a> { m() }\npub(crate) use n::o;\npub use p::q;\n#[derive(Ser)]\n#![a(b = \"]\")] x();\n"
 	s := readRust([]byte(src))
 	cases := []struct {
 		line, col int
@@ -132,6 +132,7 @@ func TestRustSourceTellsUseDeclarationsFromCodeAndComments(t *testing.T) {
 	}{
 		{0, 0, inUse}, {0, 8, inUse}, {1, 2, inUse}, {2, 8, inText},
 		{3, 18, inText}, {3, 13, inCode}, {3, 31, inText}, {3, 52, inUse}, {3, 62, inCode}, {4, 30, inCode},
+		{5, 15, inExport}, {6, 8, inExport}, {7, 9, inAttr}, {8, 9, inText}, {8, 13, inAttr}, {8, 15, inCode},
 	}
 	for _, c := range cases {
 		if got := s.at(c.line, c.col); got != c.want {

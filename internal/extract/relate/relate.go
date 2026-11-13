@@ -29,7 +29,7 @@ var relaters = map[string]struct {
 	run              func(t tree, o owners) (found, error)
 }{
 	"go":   {"go.mod", "left out by build constraints (read as " + strings.Join(goEnv, ", ") + ")", golang},
-	"rust": {"Cargo.toml", "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared", rust},
+	"rust": {"Cargo.toml", "reached by no crate's module tree under " + rustReads + ", so cfg-inactive or never declared (test code is left out unlisted)", rust},
 }
 
 // Names lists the bundled relaters.
@@ -51,9 +51,10 @@ func ParseSpec(s string) (frontend.Spec, error) { return frontend.SpecOf("relate
 const maxQuotes = 3
 
 // vias ranks what a code-level depends_on rests on, best first: a call is
-// what runs, an implementation is a plug point, and an import that is never
-// called only shares a type or a constant.
-var vias = []model.Via{"call", "trait", "import"}
+// what runs, an implementation is a plug point, a macro writes code into
+// the caller, and an import that is never called only shares a type or a
+// constant.
+var vias = []model.Via{"call", "trait", "macro", "import"}
 
 // link is one relation between two units, by ref.
 type link struct {

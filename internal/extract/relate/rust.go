@@ -58,7 +58,7 @@ func rust(t tree, o owners) (found, error) {
 	if _, err := os.Stat(lock); errors.Is(err, fs.ErrNotExist) {
 		defer os.Remove(lock)
 	}
-	files, err := rustFiles(t, o)
+	files, err := rustFiles(t, o, md)
 	if err != nil {
 		return found{}, err
 	}
@@ -95,11 +95,25 @@ func rust(t tree, o owners) (found, error) {
 		}
 	}
 	for _, p := range files {
-		if !read[p] {
+		if !read[p] && !rustTest(p) {
 			f.unread = append(f.unread, p)
 		}
 	}
 	return f, nil
+}
+
+// rustTest is whether a path names test code, which cfg(test) gates and
+// the relater leaves out by design, so it is no gap worth reporting.
+func rustTest(p string) bool {
+	dirs := strings.Split(p, "/")
+	name := strings.TrimSuffix(dirs[len(dirs)-1], ".rs")
+	for _, d := range append(dirs[:len(dirs)-1], name) {
+		switch d {
+		case "test", "tests", "testing", "test_util", "test_utils", "test_support", "test_helpers":
+			return true
+		}
+	}
+	return strings.HasSuffix(name, "_test") || strings.HasSuffix(name, "_tests") || strings.HasPrefix(name, "test_")
 }
 
 // rustAnalyzer is the server to run: $ABBD_LSP_RUST, else rust-analyzer on
@@ -121,20 +135,54 @@ func rustAnalyzer() (string, error) {
 }
 
 type cargoMeta struct {
-	WorkspaceRoot string `json:"workspace_root"`
-	Packages      []struct {
-		Features map[string][]string `json:"features"`
-	} `json:"packages"`
+	WorkspaceRoot string        `json:"workspace_root"`
+	Packages      []cargoMember `json:"packages"`
+}
+
+type cargoMember struct {
+	ManifestPath string              `json:"manifest_path"`
+	Features     map[string][]string `json:"features"`
+	Targets      []struct {
+		Kind    []string `json:"kind"`
+		SrcPath string   `json:"src_path"`
+	} `json:"targets"`
 }
 
 // featured is whether any member declares a feature, so that all features
 // can read code the default ones leave out.
 func (m cargoMeta) featured() bool {
-	return slices.ContainsFunc(m.Packages, func(p struct {
-		Features map[string][]string `json:"features"`
-	}) bool {
-		return len(p.Features) > 0
-	})
+	return slices.ContainsFunc(m.Packages, func(p cargoMember) bool { return len(p.Features) > 0 })
+}
+
+// aside are the paths of the targets that are not what a crate compiles
+// to: tests, benches, examples and build scripts. rust-analyzer reads them
+// all, whatever cargo.allTargets says. A target's own directory, such as
+// tests/ or benches/, goes aside with the modules it holds, unless it is
+// the package root or holds the crate's lib or bin root too.
+func (m cargoMeta) aside() (dirs, files []string) {
+	for _, p := range m.Packages {
+		pkg := filepath.Dir(p.ManifestPath)
+		roots := map[string]bool{}
+		for _, t := range p.Targets {
+			if !slices.ContainsFunc(t.Kind, sideTarget) {
+				roots[filepath.Dir(t.SrcPath)] = true
+			}
+		}
+		for _, t := range p.Targets {
+			if !slices.ContainsFunc(t.Kind, sideTarget) {
+				continue
+			}
+			files = append(files, t.SrcPath)
+			if d := filepath.Dir(t.SrcPath); d != pkg && !roots[d] && !slices.Contains(t.Kind, "custom-build") {
+				dirs = append(dirs, d)
+			}
+		}
+	}
+	return dirs, files
+}
+
+func sideTarget(kind string) bool {
+	return kind == "test" || kind == "bench" || kind == "example" || kind == "custom-build"
 }
 
 func cargoWorkspace(dir string) (cargoMeta, error) {
@@ -159,20 +207,22 @@ func cargoWorkspace(dir string) (cargoMeta, error) {
 }
 
 // rustFiles are the .rs files under the relater's directory that a unit
-// holds, root-relative and sorted. A target directory is build output.
-func rustFiles(t tree, o owners) ([]string, error) {
+// holds, root-relative and sorted, with the tests, benches, examples and
+// build scripts left out. A target directory is build output.
+func rustFiles(t tree, o owners, md cargoMeta) ([]string, error) {
 	var out []string
+	dirs, files := md.aside()
 	err := filepath.WalkDir(t.dir, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 		if d.IsDir() {
-			if p != t.dir && (d.Name() == "target" || strings.HasPrefix(d.Name(), ".")) {
+			if p != t.dir && (d.Name() == "target" || strings.HasPrefix(d.Name(), ".") || slices.ContainsFunc(dirs, func(a string) bool { return sameFile(a, p) })) {
 				return filepath.SkipDir
 			}
 			return nil
 		}
-		if !strings.HasSuffix(p, ".rs") {
+		if !strings.HasSuffix(p, ".rs") || slices.ContainsFunc(files, func(a string) bool { return sameFile(a, p) }) {
 			return nil
 		}
 		if r, ok := t.rel(p); ok {
@@ -184,6 +234,16 @@ func rustFiles(t tree, o owners) ([]string, error) {
 	})
 	slices.Sort(out)
 	return out, err
+}
+
+// sameFile compares two absolute paths as the file system does: cargo
+// prints a Windows drive letter in either case.
+func sameFile(a, b string) bool {
+	a, b = filepath.Clean(a), filepath.Clean(b)
+	if filepath.Separator == '\\' {
+		return strings.EqualFold(a, b)
+	}
+	return a == b
 }
 
 // rustRun is what one configuration read: its facts, and the files the
@@ -235,8 +295,12 @@ func rustRead(t tree, o owners, ra string, c rustConfig, files []string) (rustRu
 	if err := srv.Wait(ctx, time.Second); err != nil {
 		return rustRun{}, err
 	}
-	r := rustReader{tree: t, owners: o, srv: srv, run: rustRun{read: map[string]bool{}}, src: map[string]rustSource{}, decl: map[string]bool{}}
-	return r.run, r.read(ctx, files)
+	r := rustReader{tree: t, owners: o, srv: srv, run: rustRun{read: map[string]bool{}}, src: map[string]rustSource{}, decl: map[string]bool{}, shown: map[link]bool{}}
+	if err := r.read(ctx, files); err != nil {
+		return rustRun{}, err
+	}
+	r.run.facts = slices.DeleteFunc(r.run.facts, func(x fact) bool { return !r.shown[x.link] })
+	return r.run, nil
 }
 
 type rustReader struct {
@@ -249,6 +313,11 @@ type rustReader struct {
 	// decl holds path:line:column of every declaration's name, since the
 	// server lists a trait method's implementations among its references.
 	decl map[string]bool
+	// shown are the links some reference outside a private use declaration
+	// shows. The server resolves the use declarations of a cfg-inactive
+	// module, such as cfg(test) tests, and nothing else in it, so a link
+	// that only private uses show may live in code no build compiles.
+	shown map[link]bool
 }
 
 func (r *rustReader) abs(p string) string { return filepath.Join(r.root, filepath.FromSlash(p)) }
@@ -293,26 +362,40 @@ func (r *rustReader) read(ctx context.Context, files []string) error {
 		r.mu.Lock()
 		defer r.mu.Unlock()
 		r.src[p] = readRust(b)
-		var walk func(list []lsp.DocumentSymbol, trait string)
-		walk = func(list []lsp.DocumentSymbol, trait string) {
+		// The items of a trait impl are never asked about: the server files
+		// a call to one under the trait's method, and lists every binding of
+		// the trait's associated type, any impl's, under each impl's type.
+		var walk func(list []lsp.DocumentSymbol, trait string, ask bool)
+		walk = func(list []lsp.DocumentSymbol, trait string, ask bool) {
 			for _, s := range list {
 				r.decl[site3(p, s.SelectionRange.Start)] = true
 				switch s.Kind {
-				case lsp.KindModule, lsp.KindObject:
-					walk(s.Children, "")
+				case lsp.KindModule:
+					walk(s.Children, "", ask)
+					continue
+				case lsp.KindObject:
+					walk(s.Children, "", ask && !strings.Contains(s.Name, " for "))
 					continue
 				case lsp.KindField, lsp.KindEnumMember, lsp.KindVariable:
 					continue
+				case lsp.KindTypeParameter:
+					// A trait's associated type lists every Self of
+					// every impl among its references.
+					if trait != "" {
+						continue
+					}
 				}
-				symbols[i] = append(symbols[i], rustSymbol{path: p, sym: s, unit: unit, trait: trait})
+				if ask {
+					symbols[i] = append(symbols[i], rustSymbol{path: p, sym: s, unit: unit, trait: trait})
+				}
 				if s.Kind == lsp.KindInterface {
-					walk(s.Children, s.Name)
+					walk(s.Children, s.Name, ask)
 				} else {
-					walk(s.Children, "")
+					walk(s.Children, "", ask)
 				}
 			}
 		}
-		walk(syms, "")
+		walk(syms, "", true)
 		return nil
 	})
 	if err != nil {
@@ -326,9 +409,10 @@ func site3(p string, pos lsp.Position) string {
 	return fmt.Sprintf("%s:%d:%d", p, pos.Line, pos.Character)
 }
 
-// uses adds a fact for every place another unit names s: a call where s is
-// a function or method named outside a use declaration, else an import;
-// and for a trait, a trait fact at every implementation another unit holds.
+// uses adds a fact for every place another unit names s: a macro where s is
+// a macro invoked with a bang or a proc macro named in an attribute, a call
+// where s is a function or method named in code, else an import; and for a
+// trait, a trait fact at every implementation another unit holds.
 func (r *rustReader) uses(ctx context.Context, s rustSymbol) error {
 	refs, err := r.srv.References(ctx, r.abs(s.path), s.sym.SelectionRange.Start)
 	if err != nil {
@@ -341,22 +425,28 @@ func (r *rustReader) uses(ctx context.Context, s rustSymbol) error {
 			continue
 		}
 		r.mu.Lock()
-		k := r.src[p].at(l.Range.Start.Line, l.Range.Start.Character)
+		src := r.src[p]
 		r.mu.Unlock()
+		k := src.at(l.Range.Start.Line, l.Range.Start.Character)
+		// Self names the type the impl is for, and the server lists it
+		// under any alias of that type, in any unit.
+		if k == inText || src.text(l.Range) == "Self" {
+			continue
+		}
 		via := model.Via("import")
 		switch {
-		case k == inText:
-			continue
-		case k == inCode && s.callable():
+		case s.callable() && (k == inAttr || src.bang(l.Range.End)):
+			via = "macro"
+		case s.callable() && k == inCode:
 			via = "call"
 		}
 		// A call through a contract trait consumes it, from the declaring
 		// unit too, as a host calls through its own plug point.
 		if via == "call" && contract && ifc != u {
-			r.add(fact{link{u, ifc, model.Consumes}, "trait", site{path: p, line: line}})
+			r.add(fact{link{u, ifc, model.Consumes}, "trait", site{path: p, line: line}}, true)
 		}
 		if u != s.unit {
-			r.add(fact{link{u, s.unit, model.DependsOn}, via, site{path: p, line: line}})
+			r.add(fact{link{u, s.unit, model.DependsOn}, via, site{path: p, line: line}}, k != inUse)
 		}
 	}
 	if s.sym.Kind != lsp.KindInterface {
@@ -373,9 +463,9 @@ func (r *rustReader) uses(ctx context.Context, s rustSymbol) error {
 			continue
 		}
 		if contract {
-			r.add(fact{link{u, ifc, model.Provides}, "trait", site{path: p, line: line}})
+			r.add(fact{link{u, ifc, model.Provides}, "trait", site{path: p, line: line}}, true)
 		} else {
-			r.add(fact{link{u, s.unit, model.DependsOn}, "trait", site{path: p, line: line}})
+			r.add(fact{link{u, s.unit, model.DependsOn}, "trait", site{path: p, line: line}}, true)
 		}
 	}
 	return nil
@@ -406,9 +496,12 @@ func (r *rustReader) contract(path, trait string) (string, bool) {
 	return r.owners.contract(path, trait)
 }
 
-func (r *rustReader) add(x fact) {
+func (r *rustReader) add(x fact, shows bool) {
 	r.mu.Lock()
 	r.run.facts = append(r.run.facts, x)
+	if shows {
+		r.shown[x.link] = true
+	}
 	r.mu.Unlock()
 }
 
