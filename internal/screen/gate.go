@@ -41,6 +41,11 @@ var gated = []struct {
 	// lines against the axis may not rise over every view, those of pages
 	// the debt file does not name included.
 	{"against_axis", func(t Totals) int { return t.AgainstAxis }, func(int) int { return 0 }},
+	// two_lane_off is the ink of lines that run opposite ways side by side
+	// other than as a two-lane road (#232), and opposite_shared the ink two
+	// lines run on one track opposite ways; neither may rise.
+	{"two_lane_off", func(t Totals) int { return t.TwoLaneOff }, func(int) int { return 0 }},
+	{"opposite_shared", func(t Totals) int { return t.OppositeShared }, func(int) int { return 0 }},
 	// overflow is how many views pass one screen (S).
 	{"overflow", func(t Totals) int { return t.Criteria["S"] }, func(int) int { return 0 }},
 }
@@ -56,6 +61,7 @@ var paged = []struct {
 }{
 	{"colour_switches", func(t Totals) int { return t.ColourSwitches }, false},
 	{"parallel_ink", func(t Totals) int { return t.ParallelInk }, false},
+	{"two_lane_off", func(t Totals) int { return t.TwoLaneOff }, false},
 	{"abreast", func(t Totals) int { return t.Abreast }, false},
 	// combs are stubs a box's lines of one kind leave or reach it by side
 	// by side, where a hand drawing draws one stem.
