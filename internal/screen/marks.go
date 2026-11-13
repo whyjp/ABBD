@@ -458,44 +458,58 @@ func sayings(t tree, lines [][]string) []string {
 // and whether it is a phrase. It says one name, the first of sayings, so a
 // line reads one word as the exemplars' lines do, never a list or a count.
 // The phrase's other names, the other phrases and their shares stay in the
-// tooltip (see said). With no name it says a via word: on a line whose
-// relations carry no phrase, the one they all share; on a line whose phrases
-// each speak for under half its units, the one the most units carry, the
-// first by name among equals, when at least half carry it. Else "".
+// tooltip (see said). With no name it says the word of via, unless that via
+// is plain: the line's style says it already, so it stays in the tooltip.
+// Else "".
 func word(t tree, lines [][]string) (string, bool) {
 	if ns := sayings(t, lines); len(ns) > 0 {
 		return ns[0], true
 	}
-	if w := allVia(t, lines); w != "" {
-		return w, false
+	if v := via(t, lines); !v.Plain() {
+		return v.Word(), false
+	}
+	return "", false
+}
+
+// via is the via a label with no phrase to say names: on a line whose
+// relations carry no phrase, the one they all share; on a line whose phrases
+// each speak for under half its units, the one the most units carry, the
+// first by word among equals, when at least half carry it. Else "".
+func via(t tree, lines [][]string) model.Via {
+	if v := allVia(t, lines); v != "" {
+		return v
 	}
 	us := units(lines)
 	if len(carried(us, func(r string) string { return t.phrases[r].text })) == 0 {
-		return "", false
+		return ""
 	}
-	n := carried(us, func(r string) string { return t.vias[r].Word() })
-	via := ""
+	of := map[string]model.Via{}
+	n := carried(us, func(r string) string {
+		of[t.vias[r].Word()] = t.vias[r]
+		return t.vias[r].Word()
+	})
+	best := ""
 	for w, c := range n {
-		if 2*c >= len(us) && (via == "" || c > n[via] || c == n[via] && w < via) {
-			via = w
+		if 2*c >= len(us) && (best == "" || c > n[best] || c == n[best] && w < best) {
+			best = w
 		}
 	}
-	return via, false
+	return of[best]
 }
 
-// allVia is the via word every relation of the lines names, or "".
-func allVia(t tree, lines [][]string) string {
-	via := ""
+// allVia is the via every relation of the lines names, or "".
+func allVia(t tree, lines [][]string) model.Via {
+	var one model.Via
 	for _, line := range lines {
 		for _, r := range line {
-			w := t.vias[r].Word()
-			if w == "" || via != "" && w != via {
+			v := t.vias[r]
+			if v == "" || one != "" && v != one {
 				return ""
 			}
-			via = w
+			one = v
 		}
 	}
-	return via
+	return one
 }
 
 // said lists the phrases of the lines a wire's label speaks for, each once
@@ -506,6 +520,30 @@ func said(t tree, lines [][]string) []string {
 	n := carried(us, func(r string) string {
 		if p := t.phrases[r]; p.text != "" {
 			return fmt.Sprintf("%s (%s)", p.text, labels[Badge(p.origin)])
+		}
+		return ""
+	})
+	out := make([]string, 0, len(n))
+	for s, c := range n {
+		out = append(out, fmt.Sprintf("%s %d/%d", s, c, len(us)))
+	}
+	slices.Sort(out)
+	return out
+}
+
+// conditions are the conditions the line's relations hold under, or with
+// scope their link scopes, each with how many of its relations it gates,
+// so a feature that gates one relation of ten does not pass for the line's.
+func conditions(t tree, lines [][]string, scope bool) []string {
+	us := units(lines)
+	n := carried(us, func(r string) string {
+		w := t.whens[r]
+		switch {
+		case w.text == "" || model.Scope(w.text) != scope:
+		case w.origin != "":
+			return fmt.Sprintf("%s (%s)", w.text, labels[Badge(w.origin)])
+		default:
+			return w.text
 		}
 		return ""
 	})
@@ -580,6 +618,15 @@ func (d *Drawing) labels(segs []seg, heads []box, t tree) {
 		if ps := said(t, w.lines); len(ps) > 0 {
 			d.Wires[i].Title += "\n건너는 것: " + strings.Join(ps, ", ")
 			phrased[i] = true
+		}
+		if cs := conditions(t, w.lines, false); len(cs) > 0 {
+			d.Wires[i].Title += "\n조건: " + strings.Join(cs, ", ")
+		}
+		if cs := conditions(t, w.lines, true); len(cs) > 0 {
+			d.Wires[i].Title += "\n범위: " + strings.Join(cs, ", ")
+		}
+		if v := via(t, w.lines); !saids[i] && v.Plain() {
+			d.Wires[i].Title += "\nvia " + v.Word()
 		}
 		// A bus shows its count only from three lines (rule 22), and says
 		// instead the word every one of its lines says, once it is set.
@@ -860,7 +907,7 @@ func everyUnit(t tree, lines [][]string, w string, said bool) bool {
 		return false
 	}
 	if !said {
-		return allVia(t, lines) == w
+		return allVia(t, lines).Word() == w
 	}
 	us := units(lines)
 	return carried(us, func(r string) string {

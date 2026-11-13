@@ -183,6 +183,9 @@ func (e env) explain(s string) error {
 		if l.Via != "" {
 			line += " via " + string(l.Via)
 		}
+		if c := l.ConditionLabel(); c != "" {
+			line += " " + c
+		}
 		if l.Drifted {
 			line += " (drifted: refresh or retract it)"
 		}

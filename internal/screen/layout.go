@@ -700,8 +700,12 @@ func polyline(pts []pt) string {
 }
 
 // straight drops repeated points and the points within a straight run.
-func straight(pts []pt) []pt {
-	var clean []pt
+func straight(pts []pt) []pt { return straightInto(nil, pts) }
+
+// straightInto is straight written over dst, which must not share pts's
+// points.
+func straightInto(dst, pts []pt) []pt {
+	clean := dst[:0]
 	for _, p := range pts {
 		if len(clean) > 0 && clean[len(clean)-1] == p {
 			continue

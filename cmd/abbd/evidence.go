@@ -63,6 +63,11 @@ func (e env) checkEvidence() error {
 			for _, ev := range r.Evidence {
 				line(edge, r.Writer, r.Via, ev)
 			}
+			if c, ok := u.ConditionEvidence(r.Kind, r.To); ok && !r.Dead && c.Writer != r.Writer {
+				for _, ev := range c.Evidence {
+					line(fmt.Sprintf("%s.when %q", edge, c.When), c.Writer, "", ev)
+				}
+			}
 			if n, ok := u.Note(r.Kind, r.To); ok && !r.Dead {
 				for _, ev := range n.Evidence {
 					line(fmt.Sprintf("%s.phrase %q", edge, n.Text), n.Writer, "", ev)
@@ -251,7 +256,7 @@ func (e env) statusLines() error {
 		}
 		behind = append(behind, fmt.Sprintf("%d phrase(s) dangling, retract each", len(ds)))
 	}
-	for _, c := range model.ParentConflicts(in.Units) {
+	for _, c := range append(model.ParentConflicts(in.Units), model.ConditionConflicts(in.Units)...) {
 		fmt.Fprintln(e.stdout, "conflict:", c)
 	}
 	if e.check && len(behind) > 0 {

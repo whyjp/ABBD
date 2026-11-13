@@ -307,7 +307,7 @@ func setRelations(units []model.Unit, input []extract.Unit, ids []model.ID, rels
 			w = model.Script
 		}
 		f := byKey[r.From]
-		made[f] = append(made[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Writer: w, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries})
+		made[f] = append(made[f], model.Relation{To: byKey[r.To], Kind: r.Kind, Writer: w, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, When: r.When})
 	}
 	for i := range units {
 		u := &units[i]

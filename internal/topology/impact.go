@@ -27,6 +27,11 @@ type Link struct {
 	// Drifted says the link counts on evidence the code no longer holds as
 	// quoted; a reader must refresh or retract it.
 	Drifted bool
+	// When is the condition the link holds under, empty when it always does.
+	// WhenOrigin is the origin of the claim that gives it, set only when that
+	// is a lower claim than the link's own.
+	When       string
+	WhenOrigin model.Origin
 }
 
 // Label says where the link comes from and how it arises, then what crosses
@@ -36,13 +41,36 @@ func (l Link) Label() string {
 	if l.Via != "" {
 		s += ", via " + string(l.Via)
 	}
+	c := l.ConditionLabel()
+	if c != "" && l.WhenOrigin == "" {
+		s += ", " + c
+	}
 	if l.Drifted {
 		s += ", drifted"
+	}
+	if c != "" && l.WhenOrigin != "" {
+		s += "; " + c
 	}
 	if p := l.PhraseLabel(); p != "" {
 		s += "; " + p
 	}
 	return " (" + s + ")"
+}
+
+// ConditionLabel says when the link holds, or its link scope, with the
+// origin of a lower claim that gives it: "when WIN32, inferred".
+func (l Link) ConditionLabel() string {
+	s := ""
+	switch {
+	case model.Scope(l.When):
+		s = "scope " + l.When
+	case l.When != "":
+		s = "when " + l.When
+	}
+	if s != "" && l.WhenOrigin != "" {
+		s += ", " + origins[l.WhenOrigin]
+	}
+	return s
 }
 
 // PhraseLabel says what crosses the link, by its note's own origin and
@@ -73,6 +101,12 @@ func Links(units []model.Unit) []Link {
 		for _, r := range model.SortRelations(u.Relations) {
 			if present[r.To] && !r.Dead {
 				l := Link{Edge: model.Edge{From: u.ID, To: r.To, Kind: r.Kind}, Origin: r.Origin, Via: r.Via, Evidence: r.Evidence, Entries: r.Entries, Drifted: r.Drifted()}
+				if w, o := u.Condition(r.Kind, r.To); w != "" {
+					l.When = w
+					if o != r.Origin {
+						l.WhenOrigin = o
+					}
+				}
 				if n, ok := u.Note(r.Kind, r.To); ok {
 					l.Phrase = &n
 				}
