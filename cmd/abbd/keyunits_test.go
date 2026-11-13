@@ -43,3 +43,50 @@ func TestADunderIsNoKeyUnit(t *testing.T) {
 		t.Errorf("distinctive misjudges a dunder or a snake-case name")
 	}
 }
+
+// A name a language or its library spells everywhere, or a plain word a help
+// text starts a line with, is no key unit; a distinctive type is.
+func TestAGenericNameIsNoKeyUnit(t *testing.T) {
+	for _, line := range []string{"type names", "    type that the", "struct Debug;", "struct File;", "pub fn as_bytes(&self) -> &[u8] {", "pub fn into_bytes(self) -> Vec<u8> {"} {
+		if got := declaration(line); got != "" {
+			t.Errorf("%q declares %q, a name too generic to count", line, got)
+		}
+	}
+	for line, want := range map[string]string{"pub struct HiArgs {": "HiArgs", "typedef struct lua_State {": "lua_State", "class SearchWorker:": "SearchWorker",
+		"pub struct Event {": "Event", "class Node:": "Node", "type Writer string": "Writer", "type Path []string": "Path", "pub struct Reader {": "Reader"} {
+		if got := declaration(line); got != want {
+			t.Errorf("%q declares %q, want %q", line, got, want)
+		}
+	}
+}
+
+// A type a language spells in lower case is a key unit, because what makes a
+// line a declaration is the shape after the name, not the name's case: Go's
+// unexported types and C's structs are most of what those modules declare.
+func TestALowerCaseTypeDeclarationStaysAKeyUnit(t *testing.T) {
+	for line, want := range map[string]string{
+		"type parser struct {":          "parser",
+		"type state map[ID]Unit":        "state",
+		"type env struct {":             "env",
+		"type visitor interface {":      "visitor",
+		"struct client {":               "client",
+		"typedef struct dict {":         "dict",
+		"struct inode {":                "inode",
+		"type handler = Box<dyn Fn()>;": "handler",
+		"struct ImGuiContext":           "ImGuiContext",
+		"class Widget":                  "Widget",
+		"type Kind string":              "Kind",
+		"type Duration int64":           "Duration",
+		"type Handler http.Handler":     "Handler",
+		"type Names []*Name":            "Names",
+	} {
+		if got := declaration(line); got != want {
+			t.Errorf("%q declares %q, want %q", line, got, want)
+		}
+	}
+	for _, line := range []string{"type names", "type names that the", "  type names  ", "struct that is", "type names and kinds"} {
+		if got := declaration(line); got != "" {
+			t.Errorf("%q is prose, and declares %q", line, got)
+		}
+	}
+}

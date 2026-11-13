@@ -37,6 +37,9 @@ func (e env) citations() ([]model.Evidence, error) {
 		if !c.Check(ev).Live {
 			return nil, fmt.Errorf("the code does not hold %s; quote it verbatim from the working tree", ev)
 		}
+		if at, off := misplaced(c, ev); off {
+			return nil, fmt.Errorf("%s holds the quote at line %s, more than %d lines from the lines %s you give; cite the lines the quote is on", ev.Path, at, evidence.Slack, ev.Lines)
+		}
 	}
 	return es, nil
 }
@@ -626,4 +629,24 @@ func (e env) retract(s string) error {
 	}
 	fmt.Fprintf(e.stdout, "retracted %s: %s\n", s, reason)
 	return nil
+}
+
+// misplaced reports where ev's quote is found when ev names lines and the
+// quote lies more than evidence.Slack lines from them. Check still finds such
+// a quote when its file holds it once, so a stored citation follows the code
+// that moved; a new citation must name the lines the quote is on.
+func misplaced(c *evidence.Checker, ev model.Evidence) (string, bool) {
+	first, last, ok := ev.Span()
+	if !ok {
+		return "", false
+	}
+	at := c.Check(ev).At
+	var from, to int
+	if _, err := fmt.Sscanf(at, "%d-%d", &from, &to); err != nil {
+		if _, err := fmt.Sscanf(at, "%d", &from); err != nil {
+			return "", false
+		}
+		to = from
+	}
+	return at, max(from-last, first-to, 0) > evidence.Slack
 }

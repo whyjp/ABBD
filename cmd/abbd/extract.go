@@ -18,7 +18,7 @@ func (e env) extractBundled(args []string) error {
 		}
 		specs = append(specs, s)
 	}
-	doc, err := frontend.Extract(e.root, cacheDir(), specs)
+	doc, err := frontend.ExtractWith(e.root, cacheDir(), specs, e.cacheOpts)
 	if err != nil {
 		return err
 	}
