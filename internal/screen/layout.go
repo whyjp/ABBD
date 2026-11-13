@@ -453,6 +453,19 @@ func arrange(nodes []lnode, edges []ledge, budget int, seat *focusSeat, t tactic
 				g.rows = rows
 			}
 		}
+		if t.reach {
+			rows := make([][]string, len(g.rows))
+			for r, row := range g.rows {
+				rows[r] = slices.Clone(row)
+			}
+			if g.reach(x) {
+				if x2, w2 := g.place(budget, room); w2 <= max(width, budget) {
+					x, width = x2, w2
+				} else {
+					g.rows = rows
+				}
+			}
+		}
 	}
 	// The chips leave the rows, each keeping where it was seated.
 	l.width = width

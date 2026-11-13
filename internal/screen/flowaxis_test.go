@@ -618,3 +618,37 @@ func TestASpineTooFullForItsNeighboursSendsThemBelow(t *testing.T) {
 		}
 	}
 }
+
+// Vector's modules with eight stages marked read down against what they
+// use, so most lines climb several stage rows. No line goes round the
+// drawing to get there: the overview breaks no hard rule.
+func TestADownFlowsClimbingLinesTakeTheShortWay(t *testing.T) {
+	units := []model.Unit{
+		called("MOD-0088", "topology", deps("MOD-0002", "MOD-0054", "MOD-0060", "MOD-0089", "MOD-0094")...),
+		called("MOD-0002", "observability API", deps("MOD-0001", "MOD-0054", "MOD-0060", "MOD-0094")...),
+		called("MOD-0064", "enrichment tables", deps("MOD-0060", "MOD-0075", "MOD-0080", "MOD-0094")...),
+		called("MOD-0075", "sinks", deps("MOD-0001", "MOD-0054", "MOD-0060", "MOD-0080", "MOD-0089", "MOD-0094")...),
+		called("MOD-0080", "sources", deps("MOD-0001", "MOD-0054", "MOD-0060", "MOD-0075", "MOD-0089", "MOD-0094")...),
+		called("MOD-0054", "vector app", deps("MOD-0002", "MOD-0060", "MOD-0080", "MOD-0088", "MOD-0094")...),
+		called("MOD-0089", "transforms", deps("MOD-0001", "MOD-0060", "MOD-0075", "MOD-0094")...),
+		called("MOD-0001", "integrations", deps("MOD-0060", "MOD-0094")...),
+		called("MOD-0060", "config", deps("MOD-0001", "MOD-0054", "MOD-0064", "MOD-0075", "MOD-0080", "MOD-0088", "MOD-0089", "MOD-0094")...),
+		called("MOD-0094", "foundation", deps("MOD-0001", "MOD-0002", "MOD-0060")...),
+	}
+	stages := primaryStack(band("vector app", "MOD-0054"), band("config", "MOD-0060"), band("topology", "MOD-0088"), band("sources", "MOD-0080"),
+		band("transforms", "MOD-0089"), band("sinks", "MOD-0075"), band("enrichment", "MOD-0064"), band("foundation", "MOD-0094"))
+	vs, err := Lint(Build(Input{Units: units, Figures: stages}), "overview")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range vs {
+		if v.View != "overview" {
+			continue
+		}
+		for _, b := range v.Breaches {
+			if b.Hard {
+				t.Errorf("the overview breaks %s", b.Text)
+			}
+		}
+	}
+}
