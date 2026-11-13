@@ -17,15 +17,15 @@ import (
 // rustFixture is testdata/rs, a Cargo workspace: app calls engine and,
 // with the fancy feature, fancy; it uses shapes only for a type and a
 // constant and plugin only for a unit struct; app's net module calls a
-// private fn of app and calls util; plugin implements engine's trait and
-// invokes its macro; app's cfg(windows) module calls util, and its test
+// private fn of app and calls util; plugin implements engine's trait,
+// invokes its macro and calls util through facade, which re-exports it; app's cfg(windows) module calls util, and its test
 // module and integration test use extra, and none of those is read.
 const rustFixture = "testdata/rs"
 
 func rustUnits() []extract.DocUnit {
 	return []extract.DocUnit{
 		mod("mod-app", "app"), mod("mod-net", "app/src/net"), mod("mod-engine", "engine"), mod("mod-plugin", "plugin"),
-		mod("mod-shapes", "shapes"), mod("mod-util", "util"), mod("mod-extra", "extra"), mod("mod-fancy", "fancy"),
+		mod("mod-shapes", "shapes"), mod("mod-util", "util"), mod("mod-extra", "extra"), mod("mod-fancy", "fancy"), mod("mod-facade", "facade"),
 	}
 }
 
@@ -89,9 +89,12 @@ func TestRustRelationsSayHowEachUnitUsesAnother(t *testing.T) {
 		"mod-app depends_on mod-shapes via import [app/src/lib.rs:1:use shapes::{Square, MAX}; app/src/lib.rs:10:let sq = Square { n: MAX };]",
 		"mod-app depends_on mod-util via build-feature []",
 		"mod-engine consumes if-speaker via trait [engine/src/lib.rs:6:s.speak()]",
+		"mod-facade depends_on mod-util via import [facade/src/lib.rs:1:pub extern crate util as tools;]",
 		"mod-net depends_on mod-app via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
 		"mod-net depends_on mod-util via call [app/src/net/mod.rs:2:super::helper() + util::wide()]",
 		"mod-plugin depends_on mod-engine via macro [plugin/src/lib.rs:7:engine::loud!(\"woof\")]",
+		"mod-plugin depends_on mod-facade via import [plugin/src/lib.rs:12:facade::tools::wide()]",
+		"mod-plugin depends_on mod-util via call [plugin/src/lib.rs:12:facade::tools::wide()]",
 		"mod-plugin provides if-speaker via trait [plugin/src/lib.rs:5:impl Speaker for Dog {]",
 	}
 	if !slices.Equal(got, want) {

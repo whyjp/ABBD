@@ -7,3 +7,7 @@ impl Speaker for Dog {
         engine::loud!("woof")
     }
 }
+
+pub fn width() -> u32 {
+    facade::tools::wide()
+}

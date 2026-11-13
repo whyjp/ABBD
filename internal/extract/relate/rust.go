@@ -70,7 +70,7 @@ func rust(t tree, o owners) (found, error) {
 	in := map[link][]string{}
 	read := map[string]bool{}
 	for _, c := range configs {
-		r, err := rustRead(t, o, ra, c, files)
+		r, err := rustRead(t, o, ra, c, files, md.crates(t, o))
 		if err != nil {
 			return found{}, fmt.Errorf("%s: %w", c.name, err)
 		}
@@ -143,6 +143,7 @@ type cargoMember struct {
 	ManifestPath string              `json:"manifest_path"`
 	Features     map[string][]string `json:"features"`
 	Targets      []struct {
+		Name    string   `json:"name"`
 		Kind    []string `json:"kind"`
 		SrcPath string   `json:"src_path"`
 	} `json:"targets"`
@@ -179,6 +180,28 @@ func (m cargoMeta) aside() (dirs, files []string) {
 		}
 	}
 	return dirs, files
+}
+
+// rustCrate is a workspace member's library as code names it: by its
+// crate name, with the unit that holds its root.
+type rustCrate struct{ name, unit string }
+
+// crates are the members' libraries that a unit holds.
+func (m cargoMeta) crates(t tree, o owners) []rustCrate {
+	var out []rustCrate
+	for _, p := range m.Packages {
+		for _, tg := range p.Targets {
+			if !slices.ContainsFunc(tg.Kind, func(k string) bool { return k == "lib" || k == "rlib" || k == "proc-macro" }) {
+				continue
+			}
+			if r, ok := t.rel(tg.SrcPath); ok {
+				if u, ok := o.of(r); ok {
+					out = append(out, rustCrate{strings.ReplaceAll(tg.Name, "-", "_"), u})
+				}
+			}
+		}
+	}
+	return out
 }
 
 func sideTarget(kind string) bool {
@@ -271,7 +294,7 @@ func (s rustSymbol) callable() bool {
 // rustRequests bounds the requests in flight at once.
 const rustRequests = 8
 
-func rustRead(t tree, o owners, ra string, c rustConfig, files []string) (rustRun, error) {
+func rustRead(t tree, o owners, ra string, c rustConfig, files []string, crates []rustCrate) (rustRun, error) {
 	init := map[string]any{
 		"cargo": map[string]any{
 			"features": c.features, "target": rustTarget, "allTargets": false,
@@ -296,7 +319,7 @@ func rustRead(t tree, o owners, ra string, c rustConfig, files []string) (rustRu
 		return rustRun{}, err
 	}
 	r := rustReader{tree: t, owners: o, srv: srv, run: rustRun{read: map[string]bool{}}, src: map[string]rustSource{}, decl: map[string]bool{}, shown: map[link]bool{}}
-	if err := r.read(ctx, files); err != nil {
+	if err := r.read(ctx, files, crates); err != nil {
 		return rustRun{}, err
 	}
 	r.run.facts = slices.DeleteFunc(r.run.facts, func(x fact) bool { return !r.shown[x.link] })
@@ -322,7 +345,7 @@ type rustReader struct {
 
 func (r *rustReader) abs(p string) string { return filepath.Join(r.root, filepath.FromSlash(p)) }
 
-func (r *rustReader) read(ctx context.Context, files []string) error {
+func (r *rustReader) read(ctx context.Context, files []string, crates []rustCrate) error {
 	// A file the server compiled has a parent module, or is a crate root
 	// whose parent is its manifest; one no module tree reaches has none.
 	err := parallel(len(files), func(i int) error {
@@ -402,7 +425,90 @@ func (r *rustReader) read(ctx context.Context, files []string) error {
 		return err
 	}
 	all := slices.Concat(symbols...)
-	return parallel(len(all), func(i int) error { return r.uses(ctx, all[i]) })
+	if err := parallel(len(all), func(i int) error { return r.uses(ctx, all[i]) }); err != nil {
+		return err
+	}
+	if err := parallel(len(crates), func(i int) error { return r.named(ctx, crates[i], compiled) }); err != nil {
+		return err
+	}
+	return parallel(len(compiled), func(i int) error { return r.exports(ctx, compiled[i]) })
+}
+
+// named adds an import from every unit whose code names the crate in a
+// path, as through a facade crate that re-exports others, where the
+// symbols' own references lead past it. The server lists a crate's
+// references when asked at any path that names it, so it is asked at the
+// first few such paths in another unit's code until one answers.
+func (r *rustReader) named(ctx context.Context, c rustCrate, compiled []string) error {
+	tries := 0
+	for _, p := range compiled {
+		if u, _ := r.of(p); u == c.unit {
+			continue
+		}
+		r.mu.Lock()
+		src := r.src[p]
+		r.mu.Unlock()
+		for line, text := range src.lines {
+			for col := strings.Index(text, c.name+"::"); col >= 0; {
+				if (col == 0 || !ident(text[col-1])) && src.at(line, col) != inText {
+					refs, err := r.srv.References(ctx, r.abs(p), lsp.Position{Line: line, Character: col})
+					if err != nil {
+						return err
+					}
+					if len(refs) > 0 {
+						r.crateRefs(c, refs)
+						return nil
+					}
+					if tries++; tries == 3 {
+						return nil
+					}
+				}
+				next := strings.Index(text[col+1:], c.name+"::")
+				if next < 0 {
+					break
+				}
+				col += 1 + next
+			}
+		}
+	}
+	return nil
+}
+
+func (r *rustReader) crateRefs(c rustCrate, refs []lsp.Location) {
+	for _, l := range refs {
+		p, u, line, ok := r.place(l)
+		if !ok || u == c.unit {
+			continue
+		}
+		r.mu.Lock()
+		k := r.src[p].at(l.Range.Start.Line, l.Range.Start.Character)
+		r.mu.Unlock()
+		if k != inText {
+			r.add(fact{link{u, c.unit, model.DependsOn}, "import", site{path: p, line: line}}, k != inUse)
+		}
+	}
+}
+
+// exports adds an import from the file's unit to the unit whose crate or
+// module each of its pub use or pub extern crate declarations re-exports
+// from, as the server resolves the first path segment.
+func (r *rustReader) exports(ctx context.Context, p string) error {
+	r.mu.Lock()
+	src := r.src[p]
+	r.mu.Unlock()
+	from, _ := r.of(p)
+	for _, at := range src.exports {
+		defs, err := r.srv.Definitions(ctx, r.abs(p), at)
+		if err != nil {
+			return err
+		}
+		for _, d := range defs {
+			if _, to, _, ok := r.place(d); ok && to != from {
+				r.add(fact{link{from, to, model.DependsOn}, "import", site{path: p, line: at.Line + 1}}, true)
+			}
+		}
+	}
+	return nil
 }
 
 func site3(p string, pos lsp.Position) string {

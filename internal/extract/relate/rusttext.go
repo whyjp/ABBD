@@ -1,6 +1,7 @@
 package relate
 
 import (
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -28,10 +29,14 @@ type rustSource struct {
 	// starts is the byte offset each line starts at.
 	starts []int
 	spans  []span
+	// exports are where each pub use or pub extern crate names the crate
+	// or module it re-exports from: its first path segment.
+	exports []lsp.Position
 }
 
 func readRust(src []byte) rustSource {
-	s := rustSource{spans: scanRust(src), starts: []int{0}}
+	spans, exports := scanRust(src)
+	s := rustSource{spans: spans, starts: []int{0}}
 	for i, b := range src {
 		if b == '\n' {
 			s.starts = append(s.starts, i+1)
@@ -43,6 +48,10 @@ func readRust(src []byte) rustSource {
 			end = s.starts[i+1]
 		}
 		s.lines = append(s.lines, string(src[st:end]))
+	}
+	for _, at := range exports {
+		line, _ := slices.BinarySearch(s.starts, at+1)
+		s.exports = append(s.exports, lsp.Position{Line: line - 1, Character: at - s.starts[line-1]})
 	}
 	return s
 }
@@ -80,10 +89,12 @@ func (s rustSource) at(line, col int) span {
 	return s.spans[i]
 }
 
-// scanRust marks every byte of src. It lexes only as far as telling code
-// from comments and literals, and finds each use declaration, which runs
-// from the use keyword to its semicolon.
-func scanRust(src []byte) []span {
+// scanRust marks every byte of src, and returns the byte offset of each
+// re-export's first path segment. It lexes only as far as telling code from
+// comments and literals, and finds each use declaration or extern crate,
+// which runs from its keyword to its semicolon.
+func scanRust(src []byte) ([]span, []int) {
+	var exports []int
 	out := make([]span, len(src))
 	mark := func(from, to int, k span) {
 		for i := from; i < to && i < len(out); i++ {
@@ -158,10 +169,20 @@ func scanRust(src []byte) []span {
 					j++
 				}
 			}
-			if !raw && use < 0 && string(src[i:j]) == "use" && !precise(src, j) {
+			word := string(src[i:j])
+			if !raw && use < 0 && (word == "use" && !precise(src, j) || word == "extern" && next(src, j) == "crate") {
 				use, depth, kind = i, 0, inUse
 				if exported(src, i) {
 					kind = inExport
+					k := j
+					if word == "extern" {
+						k = skip(src, j) + len("crate")
+					}
+					if k = skip(src, k); identStart(at(src, k)) {
+						if n := next(src, k); n != "crate" && n != "self" && n != "super" {
+							exports = append(exports, k)
+						}
+					}
 				}
 			}
 			i = j
@@ -205,7 +226,25 @@ func scanRust(src []byte) []span {
 			i++
 		}
 	}
-	return out
+	return out, exports
+}
+
+// skip is the first offset at or after j that is no space.
+func skip(src []byte, j int) int {
+	for j < len(src) && space(src[j]) {
+		j++
+	}
+	return j
+}
+
+// next is the identifier that starts at or after j, past spaces.
+func next(src []byte, j int) string {
+	j = skip(src, j)
+	k := j
+	for k < len(src) && ident(src[k]) {
+		k++
+	}
+	return string(src[j:k])
 }
 
 func at(src []byte, i int) byte {
