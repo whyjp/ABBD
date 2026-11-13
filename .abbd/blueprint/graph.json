@@ -27252,7 +27252,23 @@
                 "Code": true
               },
               {
-                "Text": "는 아직 project.yaml의 언어로 쓰이지 않은 텍스트를 lint가 보고하는 키로 나열하고 이유를 붙이며, 같은 언어일 때만 효력이 있다.",
+                "Text": "는 아직 project.yaml의 언어로 쓰이지 않은 텍스트를 lint가 보고하는 키로 나열하고 이유를 붙이며, 같은 언어일 때만 효력이 있다. ",
+                "Code": false
+              },
+              {
+                "Text": "SaveLintDebt",
+                "Code": true
+              },
+              {
+                "Text": "는 YAML 앞에 파일이 무엇을 담는지 밝히는 ",
+                "Code": false
+              },
+              {
+                "Text": "lintDebtHead",
+                "Code": true
+              },
+              {
+                "Text": " 주석을 붙인다.",
                 "Code": false
               }
             ]
