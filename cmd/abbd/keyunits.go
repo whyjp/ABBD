@@ -30,6 +30,12 @@ type keyUnit struct {
 // none of these, so it is no declaration.
 var types = []*regexp.Regexp{
 	regexp.MustCompile(`^\s*(?:export\s+)?(?:pub(?:\([^)]*\))?\s+)?(?:type|struct|class|enum|trait|interface|union)\s+([A-Za-z_]\w{2,})` + afterName),
+	// A brace on the next line, as in Allman-style C and C++, leaves the name last.
+	regexp.MustCompile(`^\s*(?:export\s+)?(?:pub(?:\([^)]*\))?\s+)?(?:struct|class|enum|trait|interface|union)\s+([A-Za-z_]\w{2,})\s*$`),
+	// A Go defined type: the name, then one type expression to the line's end.
+	// A lone lower-case word counts only when it is a builtin type, so prose
+	// such as "type that the" is no declaration.
+	regexp.MustCompile(`^\s*type\s+([A-Za-z_]\w{2,})\s+(?:[*\[\]]+[A-Za-z_][\w.]*|[A-Za-z_]\w*\.[\w.]+|[A-Z]\w*|string|bool|byte|rune|any|error|u?int(?:8|16|32|64|ptr)?|float(?:32|64)|complex(?:64|128))\s*(?://.*)?$`),
 	regexp.MustCompile(`^\s*(?:typedef\s+)?struct\s+([A-Za-z_]\w{2,})\s*\{`),
 }
 

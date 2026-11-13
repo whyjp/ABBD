@@ -73,12 +73,18 @@ func TestALowerCaseTypeDeclarationStaysAKeyUnit(t *testing.T) {
 		"typedef struct dict {":         "dict",
 		"struct inode {":                "inode",
 		"type handler = Box<dyn Fn()>;": "handler",
+		"struct ImGuiContext":           "ImGuiContext",
+		"class Widget":                  "Widget",
+		"type Kind string":              "Kind",
+		"type Duration int64":           "Duration",
+		"type Handler http.Handler":     "Handler",
+		"type Names []*Name":            "Names",
 	} {
 		if got := declaration(line); got != want {
 			t.Errorf("%q declares %q, want %q", line, got, want)
 		}
 	}
-	for _, line := range []string{"type names", "type names that the", "  type names  ", "struct that is"} {
+	for _, line := range []string{"type names", "type names that the", "  type names  ", "struct that is", "type names and kinds"} {
 		if got := declaration(line); got != "" {
 			t.Errorf("%q is prose, and declares %q", line, got)
 		}

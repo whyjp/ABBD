@@ -87,3 +87,22 @@ func TestTheOverviewDraftQuotesNoCommentOrDefinition(t *testing.T) {
 func quoteOf(line string) string {
 	return `"` + strings.NewReplacer(`\`, `\\`, `"`, `\"`).Replace(strings.TrimSpace(line)) + `"`
 }
+
+// A directory unit anchored at the top of the tree is found by an include
+// path under it, and a hash comment with no space after it is no use.
+func TestTheOverviewDraftFindsATopLevelDirectoryByItsIncludePath(t *testing.T) {
+	t.Parallel()
+	p, exe := bare(t)
+	p.code("util/env.c", "#comment db/format.h\n#include \"db/dbformat.h\"\n")
+	p.code("db/dbformat.h", "x\n")
+	p.code("db/dbformat.c", "x\n")
+	p.extract(`{"units":[
+ {"key":"util","kind":"MOD","name":"util","anchors":[{"path":"util"},{"path":"util/env.c"}]},
+ {"key":"db","kind":"MOD","name":"store","anchors":[{"path":"db"},{"path":"db/dbformat.c"}]}
+],"relations":[
+ {"from":"util","to":"db","kind":"depends_on","via":"import"}
+]}`)
+	p.setup(0, "synced: 2 unit(s)", "--", exe)
+	draft := p.want(0, "", "overview")
+	contains(t, draft, quoteOf(`#include "db/dbformat.h"`))
+}

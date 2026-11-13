@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -117,7 +118,7 @@ func cmake(t tree) (extract.Doc, error) {
 		return extract.Doc{}, err
 	}
 	if _, err := t.run(append([]string{"cmake", "-S", t.dir, "-B", build}, t.defs...)...); err != nil {
-		return extract.Doc{}, fmt.Errorf("%w\nA configure that fails on a missing subdirectory, as git submodules not checked out leave, or on a missing package, needs the option that turns that part off: pass it as abbd extract cmake=%s -D<NAME>=OFF, or check the submodules out", err, relDir(t))
+		return extract.Doc{}, fmt.Errorf("%w\nA configure that fails on a missing subdirectory, as git submodules not checked out leave, or on a missing package, needs the option that turns that part off: pass it as abbd extract cmake=%s -D<NAME>=OFF, or check the submodules out%s", err, relDir(t), optionHint(t.dir))
 	}
 	reply := filepath.Join(build, ".cmake", "api", "v1", "reply")
 	var cm cmakeCodemodel
@@ -413,4 +414,59 @@ func readJSON(p string, v any) error {
 		return fmt.Errorf("%s: %w", filepath.Base(p), err)
 	}
 	return nil
+}
+
+var optionLine = regexp.MustCompile(`(?im)^\s*(?:cmake_dependent_option|option)\s*\(\s*([A-Za-z_][\w]*)`)
+
+// optionHint lists the option( names the project's CMake files declare,
+// those that name a build or a test first, so a failed configure says which
+// -D to pass instead of leaving the reader to guess it.
+func optionHint(dir string) string {
+	var names []string
+	filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+		if d.IsDir() {
+			if p != dir && (strings.HasPrefix(d.Name(), ".") || slices.Contains([]string{"third_party", "vendor", "external", "node_modules"}, d.Name())) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if d.Name() != "CMakeLists.txt" && !strings.HasSuffix(d.Name(), ".cmake") {
+			return nil
+		}
+		text, err := os.ReadFile(p)
+		if err != nil {
+			return nil
+		}
+		for _, m := range optionLine.FindAllStringSubmatch(string(text), -1) {
+			if !slices.Contains(names, m[1]) {
+				names = append(names, m[1])
+			}
+		}
+		return nil
+	})
+	if len(names) == 0 {
+		return ", or read the option names from `cmake -LH`"
+	}
+	like := func(n string) bool {
+		u := strings.ToUpper(n)
+		return strings.Contains(u, "BUILD") || strings.Contains(u, "TEST")
+	}
+	slices.SortStableFunc(names, func(a, b string) int {
+		switch {
+		case like(a) && !like(b):
+			return -1
+		case !like(a) && like(b):
+			return 1
+		}
+		return 0
+	})
+	more := ""
+	if len(names) > 12 {
+		more = fmt.Sprintf(" and %d more (`cmake -LH`)", len(names)-12)
+		names = names[:12]
+	}
+	return "\nThe project's options: " + strings.Join(names, ", ") + more
 }

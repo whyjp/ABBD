@@ -149,7 +149,7 @@ func (q quoteFinder) line(f string, n needle, call bool, ends []model.ID) (model
 // commentary is a line of a comment in most languages, and definition the
 // line that defines a function, which names a function without using it.
 var (
-	commentary = regexp.MustCompile(`^(?://|/\*|\*|--|#\s|##|"""|;;)`)
+	commentary = regexp.MustCompile(`^(?://|/\*|\*|--|#(?:\s|$|[^a-z]|(?:todo|fixme|note|comment|xxx))|"""|;;)`)
 	definition = regexp.MustCompile(`^(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:func|fn|def|function)\b`)
 )
 
@@ -177,6 +177,10 @@ func needles(from, to model.Unit) []needle {
 	for _, d := range dirs {
 		segs := strings.Split(d, "/")
 		segs = segs[max(0, len(segs)-2):]
+		if len(segs) == 1 && oneSegment.MatchString(segs[0]) && !generic[segs[0]] {
+			// A top-level directory is found by an include or import path under it.
+			out = append(out, needle{segs[0] + "/", regexp.MustCompile(`["'<]` + regexp.QuoteMeta(segs[0]) + `/`), nil})
+		}
 		if len(segs) == 2 && !generic[segs[1]] {
 			out = append(out, needle{strings.Join(segs, "/"), regexp.MustCompile(`\b` + regexp.QuoteMeta(segs[0]) + `(?:/|\.|::)` + regexp.QuoteMeta(segs[1]) + `\b`), nil})
 		}
@@ -413,3 +417,6 @@ func zoneOffers(units []model.Unit, boxes []model.ID, byID map[model.ID]model.Un
 	}
 	return out
 }
+
+// oneSegment is a top-level directory name an include path can start with.
+var oneSegment = regexp.MustCompile(`^[A-Za-z_]\w+$`)

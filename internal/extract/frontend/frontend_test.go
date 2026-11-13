@@ -379,8 +379,8 @@ func TestCMakeTakesCacheOptionsAndSaysHowToTurnOffWhatFailsToConfigure(t *testin
 	if old := (oldCMake{}); errors.As(err, &old) {
 		t.Skip(err)
 	}
-	if err == nil || !strings.Contains(err.Error(), "-D<NAME>=OFF") || !strings.Contains(err.Error(), "git submodules") {
-		t.Fatalf("the configure of a missing subdirectory failed with %v, want the way to turn it off", err)
+	if err == nil || !strings.Contains(err.Error(), "-D<NAME>=OFF") || !strings.Contains(err.Error(), "git submodules") || !strings.Contains(err.Error(), "KV_BUILD_EXTRAS") {
+		t.Fatalf("the configure of a missing subdirectory failed with %v, want the way to turn it off and the project's option names", err)
 	}
 	if _, err := ExtractWith(root, cache, []Spec{{"cmake", "."}}, []string{"-DKV_BUILD_EXTRAS=OFF"}); err != nil {
 		t.Errorf("with the option that turns the extras off: %v", err)
